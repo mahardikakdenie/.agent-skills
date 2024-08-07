@@ -15,7 +15,7 @@ export class TransactionService {
   constructor() {
     const cookies = new Cookies();
     this.httpClient = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_TRANSACTION_SERVICE_URL,
+      baseURL: process.env.TRANSACTION_SERVICE_URL,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + cookies.get('token'),
