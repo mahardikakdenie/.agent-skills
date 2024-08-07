@@ -8,7 +8,7 @@ const useRequireAuth = () => {
 
   useEffect(() => {
     if (!state.isAuthenticated) {
-      router.push("/login");
+      router.push("/");
     }
   }, [state.isAuthenticated, router]);
 };
