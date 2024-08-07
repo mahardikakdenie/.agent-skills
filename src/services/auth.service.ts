@@ -16,10 +16,10 @@ export class AuthService {
 
   constructor() {
     this.httpClient = new AxiosHttpClient({
-      baseURL: process.env.AUTH_SERVICE_URL,
+      baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + process.env.AUTH_TOKEN,
+        'Authorization': 'Bearer ' + process.env.NEXT_PUBLIC_AUTH_TOKEN,
       }
     });
   }
