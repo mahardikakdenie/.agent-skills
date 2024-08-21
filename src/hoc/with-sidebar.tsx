@@ -29,24 +29,34 @@ export default function WithSidebar(Component: any) {
           <NavigationMenu>
             <NavigationMenuList className="flex flex-row p-5">
               <NavigationMenuItem>
-                <Link href="/home">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Home
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink
+                  href="/home"
+                  className={navigationMenuTriggerStyle()}
+                >
+                  Home
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="/transactions">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Transactions
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink
+                  href="/transactions"
+                  className={navigationMenuTriggerStyle()}
+                >
+                  Transactions
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  href="/promotion"
+                  className={navigationMenuTriggerStyle()}
+                >
+                  Promotions
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem className="relative">
                 <NavigationMenuTrigger className="cursor-pointer">
                   Product Catalog
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-0 top-10 bg-white rounded-md">
+                <NavigationMenuContent className="absolute left-0 top-10 bg-white rounded-md shadow-lg z-50">
                   <ul className="grid w-[200px] gap-3 p-4 md:w-[200px] md:grid-cols-1 lg:w-[200px]">
                     <ListItem href="/product-catalog/travel">Travel</ListItem>
                     <ListItem href="/product-catalog/personal-accident">
@@ -56,11 +66,13 @@ export default function WithSidebar(Component: any) {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link onClick={handleLogout} href="#">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Logout
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink
+                  className={navigationMenuTriggerStyle()}
+                  onClick={handleLogout}
+                  href="#"
+                >
+                  Logout
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
