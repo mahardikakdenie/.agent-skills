@@ -26,6 +26,9 @@ export default function WithSidebar(Component: any) {
               <NavigationMenuLink className="p-5" href="/transactions">
                 Transactions
               </NavigationMenuLink>
+              <NavigationMenuLink className="p-5" href="/promotion">
+                Promotions
+              </NavigationMenuLink>
               <NavigationMenuLink
                 className="p-5"
                 href="#"
