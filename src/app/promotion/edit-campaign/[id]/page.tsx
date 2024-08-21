@@ -208,18 +208,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const handleRemoveProduct = (index: number) => {
     setPromotion(prevState => {
       const removedProductId = prevState.embedded_discount_products[index].product_id;
-      
+
       const updatedProducts = prevState.embedded_discount_products.filter((_, i) => i !== index);
-      
+
       const updatedPromotion = {
         ...prevState,
         embedded_discount_products: updatedProducts,
       };
-  
-      const updatedPlans = updatedPromotion.embedded_discount_plans.filter(plan => 
+
+      const updatedPlans = updatedPromotion.embedded_discount_plans.filter(plan =>
         !prevState.embedded_discount_products.some(product => product.product_id === removedProductId)
       );
-  
+
       return {
         ...updatedPromotion,
         embedded_discount_plans: updatedPlans,
@@ -238,17 +238,14 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setIsChannelModalOpen(true);
   };
 
-  const handleSelectChannel = (channel: Channel) => {
-    setPromotion(prevState => {
-      const isDuplicate = prevState.embedded_discount_channels.some(c => c.channel_id === channel.id);
-
-      return isDuplicate
-        ? prevState
-        : {
-          ...prevState,
-          embedded_discount_channels: [...prevState.embedded_discount_channels, { channel_id: channel.id }]
-        };
-    });
+  const handleSelectChannel = (selectedChannels: Channel[]) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_channels: selectedChannels.map(channel => ({
+        channel_id: channel.id,
+        channel_name: channel.name
+      }))
+    }));
     setIsChannelModalOpen(false);
   };
 
@@ -400,27 +397,27 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
         {/* Channels */}
         <div>
-          <label className="font-semibold">Channels:</label>
-          <button
-            type="button"
-            onClick={handleAddChannel}
-            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Channel
-          </button>
-          {promotion.embedded_discount_channels.map((channel, index) => (
-            <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{channel.channel_id}</span>
-              <button
-                type="button"
-                onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
-                className="text-red-500"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))}
-        </div>
+        <label className="font-semibold">Channels:</label>
+        <button
+          type="button"
+          onClick={handleAddChannel}
+          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Add Channel
+        </button>
+        {promotion.embedded_discount_channels.map((channel, index) => (
+          <div key={index} className="flex items-center mt-2">
+            <span className="mr-2">{channel.channel_name}</span>
+            <button
+              type="button"
+              onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
+              className="text-red-500"
+            >
+              <FaTrash />
+            </button>
+          </div>
+        ))}
+      </div>
 
         {/* Insurances */}
         <div>
@@ -453,7 +450,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             type="button"
             onClick={handleAddProduct}
             className={`ml-2 px-4 py-2 ${hasProducts ? 'bg-blue-500' : 'bg-gray-500'} text-white rounded`}
-            disabled={!hasProducts} // Disable if no products available
+            disabled={!hasProducts}
           >
             Add Product
           </button>

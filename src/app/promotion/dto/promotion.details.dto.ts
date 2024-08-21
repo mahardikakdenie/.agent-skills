@@ -12,6 +12,7 @@ export interface EmbeddedDiscountPlan {
 
 export interface EmbeddedDiscountChannel {
     channel_id: string;
+    channel_name: string;
 }
 
 export interface PromotionDetails {
