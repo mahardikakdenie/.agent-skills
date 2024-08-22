@@ -50,34 +50,72 @@ const TransactionsPage = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((transaction) => (
-            <TableRow key={transaction.id}>
-              <TableCell>{transaction.insurance.insurance.id.name}</TableCell>
-              <TableCell>
-                {transaction.insurance.plan.name
-                  .split("|")
-                  .splice(0, 2)
-                  .join(" - ")}
-              </TableCell>
-              <TableCell>{transaction.customer.name}</TableCell>
-              <TableCell>IDR</TableCell>
-              <TableCell>
-                {moneyFormatter.format(
-                  (transaction.insurance.insurance?.currencies[0]?.value ?? 1) *
-                    transaction.insurance.premium
-                )}
-              </TableCell>
-              <TableCell>{transaction.status}</TableCell>
-              <TableCell>
-                <button
-                  onClick={() => handleViewDetail(transaction.id)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  View
-                </button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {transactions.map((transaction) => {
+            const currencies = transaction.insurance.insurance.currencies;
+            const currency = currencies.find(
+              (currency: any) =>
+                currency.currency_from === transaction.insurance.currency &&
+                currency.currency_to === "IDR"
+            );
+
+            const convertedPremium =
+              (currency?.value ?? 1) * transaction.insurance.premium;
+
+            const premiumWithEmbeddedDiscount =
+              transaction.insurance.plan.premium_discount_type === "percentage"
+                ? convertedPremium -
+                  (transaction.insurance.plan.premium_discount_value / 100) *
+                    convertedPremium
+                : convertedPremium -
+                  transaction.insurance.plan.premium_discount_value;
+
+            let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
+            if (transaction.voucher_info) {
+              premiumWithVoucherDiscount =
+                transaction.voucher_info?.data.value_type === "percentage"
+                  ? premiumWithEmbeddedDiscount -
+                    (transaction.voucher_info?.data.value / 100) *
+                      premiumWithEmbeddedDiscount
+                  : premiumWithEmbeddedDiscount -
+                    transaction.voucher_info?.data.value;
+            }
+
+            let totalPremium = premiumWithVoucherDiscount;
+
+            if (transaction.fees) {
+              totalPremium =
+                premiumWithVoucherDiscount +
+                transaction.fees
+                  .map((v: any) => v.value)
+                  .reduce((a: any, b: any) => {
+                    return a + b;
+                  }, 0);
+            }
+
+            return (
+              <TableRow key={transaction.id}>
+                <TableCell>{transaction.insurance.insurance.id.name}</TableCell>
+                <TableCell>
+                  {transaction.insurance.plan.name
+                    .split("|")
+                    .splice(0, 2)
+                    .join(" - ")}
+                </TableCell>
+                <TableCell>{transaction.customer.name}</TableCell>
+                <TableCell>IDR</TableCell>
+                <TableCell>{moneyFormatter.format(totalPremium)}</TableCell>
+                <TableCell>{transaction.status}</TableCell>
+                <TableCell>
+                  <button
+                    onClick={() => handleViewDetail(transaction.id)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                  >
+                    View
+                  </button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
         <TableFooter>
           <TableRow>
