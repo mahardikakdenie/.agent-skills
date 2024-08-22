@@ -12,7 +12,7 @@ import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import ProductSelectionModal from "../../components/product-selection-modal";
-import { Channel, ChannelResponseDTO, Plan } from "../../dto/promotion.dto";
+import { Channel, ChannelResponseDTO, Insurance, Plan, Product } from "../../dto/promotion.dto";
 import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
 
@@ -48,6 +48,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [channels, setChannels] = useState<ChannelResponseDTO>();
   const [insurances, setInsurances] = useState<any[]>([]);
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
+  const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<any[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
@@ -188,8 +190,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
       if (arrayName === 'embedded_discount_insurances') {
-        const updatedInsurances = prevState.embedded_discount_insurances.filter((_, i) => i !== index);
-        fetchProductsByInsurances(updatedInsurances.map(ins => ins.insurance_id));
+        const removedInsurance = prevState.embedded_discount_insurances[index];
+        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
 
         return {
           ...prevState,
@@ -203,7 +205,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         [arrayName]: updatedArray,
       };
     });
+
+    // Update the selectedInsurances state
+    if (arrayName === 'embedded_discount_insurances') {
+      setSelectedInsurances(prevInsurances =>
+        prevInsurances.filter((_, i) => i !== index)
+      );
+    }
   };
+
 
   const handleRemoveProduct = (index: number) => {
     setPromotion(prevState => {
@@ -235,8 +245,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAddChannel = () => {
+    setSelectedChannelIds(new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id)));
     setIsChannelModalOpen(true);
   };
+
 
   const handleSelectChannel = (selectedChannels: Channel[]) => {
     setPromotion(prevState => ({
@@ -246,6 +258,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         channel_name: channel.name
       }))
     }));
+    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id))); // Update selectedChannelIds
     setIsChannelModalOpen(false);
   };
 
@@ -253,35 +266,27 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setIsInsuranceModalOpen(true);
   };
 
-  const handleSelectInsurance = (insurance: any) => {
+  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+    const updatedInsurances = selectedInsurances.map(ins => ({
+      insurance_id: ins.id,
+      insurance_name: ins.name
+    }));
+  
     setPromotion(prevState => {
-      const isDuplicate = prevState.embedded_discount_insurances.some(i => i.insurance_id === insurance.id);
-
-      if (isDuplicate) {
-        return prevState;
-      }
-
-      const updatedInsurances = [...prevState.embedded_discount_insurances, { insurance_id: insurance.id }];
       fetchProductsByInsurances(updatedInsurances.map(ins => ins.insurance_id));
-
       return {
         ...prevState,
         embedded_discount_insurances: updatedInsurances,
+        embedded_discount_products: [],
       };
     });
-
-    setSelectedInsurances(prevInsurances => {
-      if (prevInsurances.some(i => i.id === insurance.id)) {
-        return prevInsurances;
-      }
-
-      const updatedInsurances = [...prevInsurances, insurance];
-      fetchProductsByInsurances(updatedInsurances.map(ins => ins.id));
-      return updatedInsurances;
-    });
-
+  
+    setSelectedInsurances(selectedInsurances);
     setIsInsuranceModalOpen(false);
   };
+  
+
+
 
   const handleAddProduct = () => {
     if (selectedInsurances.length > 0) {
@@ -291,19 +296,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleSelectProduct = (product: any) => {
-    setPromotion(prevState => {
-      const isDuplicate = prevState.embedded_discount_products.some(p => p.product_id === product.id);
-
-      return isDuplicate
-        ? prevState
-        : {
-          ...prevState,
-          embedded_discount_products: [...prevState.embedded_discount_products, { product_id: product.id }]
-        };
-    });
+  const handleSelectProduct = (selectedProducts: Product[]) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_products: selectedProducts.map(product => ({
+        product_id: product.id,
+        product_name: product.name
+      }))
+    }));
+    setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
     setIsProductModalOpen(false);
   };
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -397,27 +401,27 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
         {/* Channels */}
         <div>
-        <label className="font-semibold">Channels:</label>
-        <button
-          type="button"
-          onClick={handleAddChannel}
-          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Add Channel
-        </button>
-        {promotion.embedded_discount_channels.map((channel, index) => (
-          <div key={index} className="flex items-center mt-2">
-            <span className="mr-2">{channel.channel_name}</span>
-            <button
-              type="button"
-              onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
-              className="text-red-500"
-            >
-              <FaTrash />
-            </button>
-          </div>
-        ))}
-      </div>
+          <label className="font-semibold">Channels:</label>
+          <button
+            type="button"
+            onClick={handleAddChannel}
+            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Add Channel
+          </button>
+          {promotion.embedded_discount_channels.map((channel, index) => (
+            <div key={index} className="flex items-center mt-2">
+              <span className="mr-2">{channel.channel_name}</span>
+              <button
+                type="button"
+                onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
+                className="text-red-500"
+              >
+                <FaTrash />
+              </button>
+            </div>
+          ))}
+        </div>
 
         {/* Insurances */}
         <div>
@@ -429,18 +433,21 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           >
             Add Insurance
           </button>
-          {promotion.embedded_discount_insurances.map((insurance, index) => (
-            <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{insurance.insurance_id}</span>
-              <button
-                type="button"
-                onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
-                className="text-red-500"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))}
+          {promotion.embedded_discount_insurances.map((insurance, index) => {
+            const selectedInsurance = insurances.find(ins => ins.id === insurance.insurance_id);
+            return (
+              <div key={index} className="flex items-center mt-2">
+                <span className="mr-2">{selectedInsurance ? selectedInsurance.name : insurance.insurance_id}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
+                  className="text-red-500"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         {/* Products */}
@@ -456,7 +463,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </button>
           {promotion.embedded_discount_products.map((product, index) => (
             <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{product.product_id}</span>
+              <span className="mr-2">{product.product_name}</span>  {/* Display product_name here */}
               <button
                 type="button"
                 onClick={() => handleRemoveProduct(index)}
@@ -520,6 +527,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onSelect={handleSelectChannel}
           channels={channels}
           onPageChange={handlePageChange}
+          selectedChannelIds={selectedChannelIds}
         />
       )}
 
@@ -530,6 +538,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onClose={() => setIsInsuranceModalOpen(false)}
           onSelect={handleSelectInsurance}
           insurances={insurances}
+          initialSelectedInsurances={promotion.embedded_discount_insurances.map(ins => ({
+            id: ins.insurance_id,
+            name: ins.insurance_name,
+            brand: '',
+            logo_url: '',
+          }))}
         />
       )}
 
@@ -538,8 +552,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         <ProductSelectionModal
           isOpen={isProductModalOpen}
           onClose={() => setIsProductModalOpen(false)}
-          products={products}
           onSelect={handleSelectProduct}
+          products={products}
+          selectedProductIds={selectedProductIds}
         />
       )}
 

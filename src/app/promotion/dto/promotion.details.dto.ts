@@ -1,9 +1,11 @@
 export interface EmbeddedDiscountProduct {
     product_id: string;
+    product_name: string;
 }
 
 export interface EmbeddedDiscountInsurance {
     insurance_id: string;
+    insurance_name: string;
 }
 
 export interface EmbeddedDiscountPlan {

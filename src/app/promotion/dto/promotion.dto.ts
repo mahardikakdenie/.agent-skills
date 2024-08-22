@@ -1,10 +1,3 @@
-interface Product {
-    product_id: string;
-}
-
-interface Insurance {
-    insurance_id: string;
-}
 
 export interface Plan {
     id: string;
@@ -29,6 +22,16 @@ export interface Channel {
     channel_id?: string;
   }
 
+  export interface Product {
+    id: string;
+    created_at: string;
+    updated_at: string;
+    insurance: string;
+    category: string;
+    name: string;
+    instant_policy: boolean;
+  }
+
 export interface ChannelResponseDTO {
     data: [Channel];
     total: number;
@@ -37,20 +40,11 @@ export interface ChannelResponseDTO {
     page: number;
 }
 
-interface ChannelFriendsureDTO {
+export interface Insurance {
     id: string;
-}
-
-
-interface Promotion {
-    active: boolean;
-    value: number;
-    start_date: string;
-    end_date: string;
     name: string;
-    products: Product[];
-    insurances: Insurance[];
-    plans: Plan[];
-    channels: Channel[];
-}
+    brand: string;
+    logo_url: string | null;
+  }
+
 

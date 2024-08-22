@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Channel {
   id: string;
@@ -21,11 +21,16 @@ interface ChannelSelectionModalProps {
   onSelect: (channels: Channel[]) => void;
   channels?: ChannelResponseDTO;
   onPageChange: (page: number) => void;
+  selectedChannelIds: Set<string>; 
 }
 
-const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({ isOpen, onClose, onSelect, channels, onPageChange }) => {
+const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({ isOpen, onClose, onSelect, channels, onPageChange, selectedChannelIds }) => {
   const [currentPage, setCurrentPage] = useState(channels?.page || 1);
-  const [selectedChannels, setSelectedChannels] = useState<Set<string>>(new Set());
+  const [selectedChannels, setSelectedChannels] = useState<Set<string>>(new Set(selectedChannelIds));
+
+  useEffect(() => {
+    setSelectedChannels(new Set(selectedChannelIds));
+  }, [selectedChannelIds]);
 
   if (!isOpen) return null;
 
