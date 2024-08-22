@@ -24,7 +24,7 @@ export class TransactionService {
   }
 
   async getTransactions(page: number): Promise<TransactionResponse> {
-    return this.httpClient.get('/transactions?page=' + page);
+    return this.httpClient.get('/transactions?page=' + page + '&limit=10');
   }
 
   async getTransaction(id: string): Promise<any> {
