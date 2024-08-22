@@ -48,6 +48,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [channels, setChannels] = useState<ChannelResponseDTO>();
   const [insurances, setInsurances] = useState<any[]>([]);
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
+  const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<any[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
@@ -243,8 +244,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAddChannel = () => {
+    setSelectedChannelIds(new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id)));
     setIsChannelModalOpen(true);
   };
+
 
   const handleSelectChannel = (selectedChannels: Channel[]) => {
     setPromotion(prevState => ({
@@ -254,6 +257,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         channel_name: channel.name
       }))
     }));
+    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id))); // Update selectedChannelIds
     setIsChannelModalOpen(false);
   };
 
@@ -266,7 +270,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       insurance_id: ins.id,
       insurance_name: ins.name
     }));
-  
+
     setPromotion(prevState => {
       fetchProductsByInsurances(updatedInsurances.map(ins => ins.insurance_id));
       return {
@@ -275,12 +279,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         embedded_discount_products: [],
       };
     });
-  
+
     setSelectedInsurances(selectedInsurances);
     setIsInsuranceModalOpen(false);
   };
-  
-  
+
+
 
   const handleAddProduct = () => {
     if (selectedInsurances.length > 0) {
@@ -522,6 +526,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onSelect={handleSelectChannel}
           channels={channels}
           onPageChange={handlePageChange}
+          selectedChannelIds={selectedChannelIds}
         />
       )}
 
