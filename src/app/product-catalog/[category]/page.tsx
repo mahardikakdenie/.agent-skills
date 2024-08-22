@@ -17,7 +17,7 @@ import {
   ProductCatalogService,
 } from "@/services/product-catalog.service";
 
-const TransactionsPage = ({ params }: { params: { category: string } }) => {
+const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   useRequireAuth();
   const { category } = params;
   const productCatalogService = new ProductCatalogService();
@@ -26,7 +26,7 @@ const TransactionsPage = ({ params }: { params: { category: string } }) => {
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
   useEffect(() => {
-    productCatalogService.getPlans(1).then((res) => {
+    productCatalogService.getPlans(1, { category }).then((res) => {
       setProducts(res.data);
       setPage(res.meta.page);
       setTotalPages(res.meta.total);
@@ -85,11 +85,13 @@ const TransactionsPage = ({ params }: { params: { category: string } }) => {
               <div className="flex justify-end">
                 <button
                   onClick={() => {
-                    productCatalogService.getPlans(page - 1).then((res) => {
-                      setProducts(res.data);
-                      setPage(res.meta.page);
-                      setTotalPages(res.meta.total);
-                    });
+                    productCatalogService
+                      .getPlans(page - 1, { category })
+                      .then((res) => {
+                        setProducts(res.data);
+                        setPage(res.meta.page);
+                        setTotalPages(res.meta.total);
+                      });
                   }}
                   disabled={page === 1}
                   className="bg-slate-950 text-white px-4 py-2 rounded mr-2"
@@ -98,11 +100,13 @@ const TransactionsPage = ({ params }: { params: { category: string } }) => {
                 </button>
                 <button
                   onClick={() => {
-                    productCatalogService.getPlans(page + 1).then((res) => {
-                      setProducts(res.data);
-                      setPage(res.meta.page);
-                      setTotalPages(res.meta.total);
-                    });
+                    productCatalogService
+                      .getPlans(page + 1, { category })
+                      .then((res) => {
+                        setProducts(res.data);
+                        setPage(res.meta.page);
+                        setTotalPages(res.meta.total);
+                      });
                   }}
                   disabled={page === totalPages}
                   className="bg-slate-950 text-white px-4 py-2 rounded"
@@ -118,6 +122,6 @@ const TransactionsPage = ({ params }: { params: { category: string } }) => {
   );
 };
 
-const TransactionWithSidebar = (params: any) =>
-  WithSidebar(TransactionsPage)(params);
-export default TransactionWithSidebar;
+const ProductCatalogWithSidebar = (params: any) =>
+  WithSidebar(ProductCatalogPage)(params);
+export default ProductCatalogWithSidebar;

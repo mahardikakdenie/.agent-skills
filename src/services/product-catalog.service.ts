@@ -55,9 +55,10 @@ export class ProductCatalogService {
     });
   }
 
-  async getPlans(page: number): Promise<ProductcatalogResponse<ProductCatalogDto>> {
+  async getPlans(page: number, filter: { category: string; }): Promise<ProductcatalogResponse<ProductCatalogDto>> {
     try {
-      return await this.httpClient.get<ProductcatalogResponse<ProductCatalogDto>>('/v1/plans?page=' + page);
+      const queryString = new URLSearchParams({ ...filter, page: page.toString() }).toString();
+      return await this.httpClient.get<ProductcatalogResponse<ProductCatalogDto>>('/v1/plans?' + queryString);
     } catch (error) {
       console.error('Request failed:', error);
       throw error;
