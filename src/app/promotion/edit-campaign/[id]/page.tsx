@@ -12,7 +12,7 @@ import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import ProductSelectionModal from "../../components/product-selection-modal";
-import { Channel, ChannelResponseDTO, Insurance, Plan } from "../../dto/promotion.dto";
+import { Channel, ChannelResponseDTO, Insurance, Plan, Product } from "../../dto/promotion.dto";
 import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
 
@@ -294,19 +294,20 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleSelectProduct = (product: any) => {
+  const handleSelectProduct = (product: Product) => {
     setPromotion(prevState => {
       const isDuplicate = prevState.embedded_discount_products.some(p => p.product_id === product.id);
-
+  
       return isDuplicate
         ? prevState
         : {
           ...prevState,
-          embedded_discount_products: [...prevState.embedded_discount_products, { product_id: product.id }]
+          embedded_discount_products: [...prevState.embedded_discount_products, { product_id: product.id, product_name: product.name }]
         };
     });
     setIsProductModalOpen(false);
   };
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -462,7 +463,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </button>
           {promotion.embedded_discount_products.map((product, index) => (
             <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{product.product_id}</span>
+              <span className="mr-2">{product.product_name}</span>  {/* Display product_name here */}
               <button
                 type="button"
                 onClick={() => handleRemoveProduct(index)}

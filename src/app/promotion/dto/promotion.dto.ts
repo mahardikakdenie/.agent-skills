@@ -22,6 +22,16 @@ export interface Channel {
     channel_id?: string;
   }
 
+  export interface Product {
+    id: string;
+    created_at: string;
+    updated_at: string;
+    insurance: string;
+    category: string;
+    name: string;
+    instant_policy: boolean;
+  }
+
 export interface ChannelResponseDTO {
     data: [Channel];
     total: number;

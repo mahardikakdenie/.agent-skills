@@ -22,9 +22,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({ isOpen, o
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      {/* Overlay */}
       <div className="fixed inset-0 bg-gray-700 opacity-75" onClick={onClose}></div>
-      {/* Modal Content */}
       <div className="bg-white p-4 rounded shadow-lg max-w-lg w-full relative">
         <h2 className="text-xl font-semibold mb-4">Select a Product</h2>
         <div className="overflow-y-auto max-h-80">
