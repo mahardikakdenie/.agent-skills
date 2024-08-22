@@ -49,6 +49,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [insurances, setInsurances] = useState<any[]>([]);
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<any[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
@@ -270,7 +271,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       insurance_id: ins.id,
       insurance_name: ins.name
     }));
-
+  
     setPromotion(prevState => {
       fetchProductsByInsurances(updatedInsurances.map(ins => ins.insurance_id));
       return {
@@ -279,10 +280,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         embedded_discount_products: [],
       };
     });
-
+  
     setSelectedInsurances(selectedInsurances);
     setIsInsuranceModalOpen(false);
   };
+  
 
 
 
@@ -294,17 +296,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleSelectProduct = (product: Product) => {
-    setPromotion(prevState => {
-      const isDuplicate = prevState.embedded_discount_products.some(p => p.product_id === product.id);
-  
-      return isDuplicate
-        ? prevState
-        : {
-          ...prevState,
-          embedded_discount_products: [...prevState.embedded_discount_products, { product_id: product.id, product_name: product.name }]
-        };
-    });
+  const handleSelectProduct = (selectedProducts: Product[]) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_products: selectedProducts.map(product => ({
+        product_id: product.id,
+        product_name: product.name
+      }))
+    }));
+    setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
     setIsProductModalOpen(false);
   };
 
@@ -552,8 +552,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         <ProductSelectionModal
           isOpen={isProductModalOpen}
           onClose={() => setIsProductModalOpen(false)}
-          products={products}
           onSelect={handleSelectProduct}
+          products={products}
+          selectedProductIds={selectedProductIds}
         />
       )}
 

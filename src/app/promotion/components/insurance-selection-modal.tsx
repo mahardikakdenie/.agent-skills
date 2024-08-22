@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Insurance {
   id: string;
   name: string;
   brand: string;
-  logo_url: string | null;
+  logo_url: string;
 }
 
 interface InsuranceSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (insurances: Insurance[]) => void;
-  insurances: Insurance[];
+  insurances?: Insurance[];
   initialSelectedInsurances: Insurance[];
 }
 
@@ -20,82 +20,86 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   isOpen,
   onClose,
   onSelect,
-  insurances,
+  insurances = [],
   initialSelectedInsurances,
 }) => {
-  const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<string[]>([]);
-
-  const handleCheckboxChange = (id: string) => {
-    setSelectedInsuranceIds(prevSelected => {
-      const isSelected = prevSelected.includes(id);
-      return isSelected
-        ? prevSelected.filter(selectedId => selectedId !== id)
-        : [...prevSelected, id];
-    });
-  };
-
-  const handleConfirm = () => {
-    const selectedInsurances = insurances.filter(insurance =>
-      selectedInsuranceIds.includes(insurance.id)
-    );
-    onSelect(selectedInsurances);
-    onClose();
-  };
+  const [selectedInsurances, setSelectedInsurances] = useState<Set<string>>(new Set(initialSelectedInsurances.map(ins => ins.id)));
 
   useEffect(() => {
-    if (isOpen) {
-      setSelectedInsuranceIds(initialSelectedInsurances.map(insurance => insurance.id));
-    } else {
-      setSelectedInsuranceIds([]);
-    }
-  }, [initialSelectedInsurances, isOpen]);
+    setSelectedInsurances(new Set(initialSelectedInsurances.map(ins => ins.id)));
+  }, [initialSelectedInsurances]);
 
   if (!isOpen) return null;
 
+  const handleCheckboxChange = (insuranceId: string) => {
+    setSelectedInsurances(prevState => {
+      const newSelectedInsurances = new Set(prevState);
+      if (newSelectedInsurances.has(insuranceId)) {
+        newSelectedInsurances.delete(insuranceId);
+      } else {
+        newSelectedInsurances.add(insuranceId);
+      }
+      return newSelectedInsurances;
+    });
+  };
+
+  const handleApply = () => {
+    const selectedInsurancesArray = insurances.filter(insurance => selectedInsurances.has(insurance.id));
+    onSelect(selectedInsurancesArray);
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white rounded shadow-lg w-2/3 max-w-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Select Insurances</h2>
-          <button onClick={onClose} className="text-gray-600">
-            <FaTimes size={24} />
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded shadow-md w-3/4 max-w-2xl h-auto">
+        <h2 className="text-2xl font-semibold mb-4">Select Insurances</h2>
         <div className="overflow-y-auto max-h-80">
-          <div className="space-y-4">
-            {insurances.map((insurance) => (
-              <div
-                key={insurance.id}
-                className="flex items-center p-2 border rounded cursor-pointer hover:bg-gray-100"
-                onClick={() => handleCheckboxChange(insurance.id)}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedInsuranceIds.includes(insurance.id)}
-                  onChange={() => handleCheckboxChange(insurance.id)}
-                  className="mr-4"
-                />
-                {insurance.logo_url && (
-                  <img
-                    src={insurance.logo_url}
-                    alt={insurance.name}
-                    className="w-12 h-12 mr-4"
-                  />
-                )}
-                <div>
-                  <div className="font-semibold">{insurance.name}</div>
-                  <div className="text-gray-600">{insurance.brand}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {insurances.length > 0 ? (
+                insurances.map((insurance) => (
+                  <tr key={insurance.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <input
+                        type="checkbox"
+                        checked={selectedInsurances.has(insurance.id)}
+                        onChange={() => handleCheckboxChange(insurance.id)}
+                        className="form-checkbox"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{insurance.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{insurance.brand}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No insurances available</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-between mt-4">
           <button
-            onClick={handleConfirm}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            type="button"
+            onClick={onClose}
+            className="bg-gray-500 text-white px-4 py-2 rounded"
           >
-            Confirm Selection
+            Close
+          </button>
+          <button
+            type="button"
+            onClick={handleApply}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Apply
           </button>
         </div>
       </div>
