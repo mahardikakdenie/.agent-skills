@@ -38,12 +38,15 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   plans,
   products,
   preSelectedPlanIds = new Set(),
-  selectedProductIds,  // Destructure the prop
+  selectedProductIds,
 }) => {
   const [selectedPlans, setSelectedPlans] = useState<Set<string>>(preSelectedPlanIds);
 
   useEffect(() => {
-    setSelectedPlans(preSelectedPlanIds);
+    setSelectedPlans(prevSelectedPlans => {
+      const updatedSelectedPlans = new Set(preSelectedPlanIds);
+      return updatedSelectedPlans;
+    });
   }, [preSelectedPlanIds, plans]);
 
   const filteredPlans = plans.filter(plan => selectedProductIds.has(plan.product));

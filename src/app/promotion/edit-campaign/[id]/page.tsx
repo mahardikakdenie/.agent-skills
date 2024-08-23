@@ -187,15 +187,17 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const handleRemoveArrayItem = (arrayName: keyof PromotionDetails, index: number) => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
-  
+      
+      // Clear products and plans if insurance is removed
       if (arrayName === 'embedded_discount_insurances') {
-        const removedInsurance = prevState.embedded_discount_insurances[index];
+        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
   
         return {
           ...prevState,
           [arrayName]: updatedArray,
           embedded_discount_products: [],
+          embedded_discount_plans: []
         };
       }
   
@@ -205,13 +207,16 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       };
     });
   
+    // Clear selected insurances, products, and plans
     if (arrayName === 'embedded_discount_insurances') {
       setSelectedInsurances(prevInsurances =>
         prevInsurances.filter((_, i) => i !== index)
       );
       setSelectedProductIds(new Set());
+      setSelectedPlanIds(new Set());
     }
   };
+  
   
 
 
@@ -255,10 +260,24 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
   const handleRemovePlan = (index: number) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_plans: prevState.embedded_discount_plans.filter((_, i) => i !== index)
-    }));
+    setPromotion(prevState => {
+      const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
+  
+      const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
+      const updatedSelectedPlanIds = new Set(selectedPlanIds);
+      updatedSelectedPlanIds.delete(removedPlanId);
+  
+      return {
+        ...prevState,
+        embedded_discount_plans: updatedPlans,
+      };
+    });
+  
+    setSelectedPlanIds(prevIds => {
+      const updatedIds = new Set(prevIds);
+      updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
+      return updatedIds;
+    });
   };
 
   const handleAddChannel = () => {
@@ -322,18 +341,42 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       }))
     }));
     setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
-    setIsProductModalOpen(false);
   };
 
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    promotionService.updatePromotionCampaign(params.id, promotion).then(() => {
-      router.push("/promotion");
-    }).catch(error => {
-      console.error("Failed to update promotion:", error);
-    });
+  
+    const payload = {
+      active: promotion.active,
+      value: promotion.value,
+      start_date: promotion.start_date,
+      end_date: promotion.end_date,
+      name: promotion.name,
+      products: promotion.embedded_discount_products.map(product => ({
+        product_id: product.product_id,
+      })),
+      insurances: promotion.embedded_discount_insurances.map(insurance => ({
+        insurance_id: insurance.insurance_id,
+      })),
+      plans: promotion.embedded_discount_plans.map(plan => ({
+        plan_id: plan.plan_id,
+      })),
+      channels: promotion.embedded_discount_channels.map(channel => ({
+        channel_id: channel.channel_id,
+      })),
+    };
+  
+    promotionService.updatePromotionCampaign(params.id, payload)
+      .then(() => {
+        router.push("/promotion");
+      })
+      .catch(error => {
+        console.error("Failed to update promotion:", error);
+      });
   };
+  
+  
 
   const handleCancel = () => {
     router.push("/promotion");
@@ -590,7 +633,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           name: p.product_name,
         }))}
         preSelectedPlanIds={selectedPlanIds}
-        selectedProductIds={selectedProductIds} // Pass this prop
+        selectedProductIds={selectedProductIds}
       />
       )}
 

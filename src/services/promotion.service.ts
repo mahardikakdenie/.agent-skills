@@ -55,15 +55,22 @@ export class PromotionService {
   }
 
   async updatePromotionCampaign(id: string, data: any): Promise<void> {
-    // Update promotion data
-    const response = await fetch(`/api/promotions/${id}`, {
+    const baseURL = process.env.NEXT_PUBLIC_PROMOTION_SERVICE_URL;
+    const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+  
+    const response = await fetch(`${baseURL}/api/campaign/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error("Failed to update promotion");
+  
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to update promotion: ${errorText}`);
+    }
   }
 
 }
