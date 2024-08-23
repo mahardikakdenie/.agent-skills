@@ -1,19 +1,19 @@
 
 export interface Plan {
-    id: string;
-    created_at: string;
-    updated_at: string;
-    product: string;
-    name: string;
-    duration_max: number | null;
-    duration_max_additional_days: number | null;
-    duration_max_additional_premium: number | null;
-    policy_per_participant: boolean;
-    slug: string;
-    premium_discount_type: string;
-    premium_discount_value: string;
-    premium_campaign_id: string;
-  }
+  id: string;
+  created_at: string;
+  updated_at: string;
+  product: string;
+  name: string;
+  duration_max: number | null;
+  duration_max_additional_days: number | null;
+  duration_max_additional_premium: number | null;
+  policy_per_participant: boolean;
+  slug: string;
+  premium_discount_type: string;
+  premium_discount_value: string;
+  premium_campaign_id: string;
+}
 
 export interface Channel {
     id: string;

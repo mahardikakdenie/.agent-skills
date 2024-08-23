@@ -53,6 +53,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [products, setProducts] = useState<any[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
+  const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
+
 
   useEffect(() => {
     if (promotion.embedded_discount_products.length > 0) {
@@ -171,71 +173,86 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleSelectPlan = (plan: Plan) => {
-    setPromotion(prevState => {
-      const isDuplicate = prevState.embedded_discount_plans.some(p => p.plan_id === plan.id);
-
-      return isDuplicate
-        ? prevState
-        : {
-          ...prevState,
-          embedded_discount_plans: [...prevState.embedded_discount_plans, { plan_id: plan.id }]
-        };
-    });
-    setIsPlanModalOpen(false);
+  const handleSelectPlan = (selectedPlans: Plan[]) => {
+    const selectedPlanIds = new Set(selectedPlans.map(plan => plan.id));
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_plans: selectedPlans.map(plan => ({
+        plan_id: plan.id,
+      })),
+    }));
+    setSelectedPlanIds(selectedPlanIds);
   };
 
   const handleRemoveArrayItem = (arrayName: keyof PromotionDetails, index: number) => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
-
+  
       if (arrayName === 'embedded_discount_insurances') {
         const removedInsurance = prevState.embedded_discount_insurances[index];
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
-
+  
         return {
           ...prevState,
           [arrayName]: updatedArray,
           embedded_discount_products: [],
         };
       }
-
+  
       return {
         ...prevState,
         [arrayName]: updatedArray,
       };
     });
-
-    // Update the selectedInsurances state
+  
     if (arrayName === 'embedded_discount_insurances') {
       setSelectedInsurances(prevInsurances =>
         prevInsurances.filter((_, i) => i !== index)
       );
+      setSelectedProductIds(new Set());
     }
   };
+  
+
 
 
   const handleRemoveProduct = (index: number) => {
     setPromotion(prevState => {
       const removedProductId = prevState.embedded_discount_products[index].product_id;
-
+      
       const updatedProducts = prevState.embedded_discount_products.filter((_, i) => i !== index);
-
-      const updatedPromotion = {
+  
+      const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
+        updatedProducts.some(product => product.product_id === plan.plan_id)
+      );
+  
+      const updatedSelectedPlanIds = new Set(selectedPlanIds);
+      prevState.embedded_discount_plans.forEach(plan => {
+        if (!updatedPlans.some(p => p.plan_id === plan.plan_id)) {
+          updatedSelectedPlanIds.delete(plan.plan_id);
+        }
+      });
+  
+      return {
         ...prevState,
         embedded_discount_products: updatedProducts,
-      };
-
-      const updatedPlans = updatedPromotion.embedded_discount_plans.filter(plan =>
-        !prevState.embedded_discount_products.some(product => product.product_id === removedProductId)
-      );
-
-      return {
-        ...updatedPromotion,
         embedded_discount_plans: updatedPlans,
       };
     });
+  
+    setSelectedProductIds(prevIds => {
+      const updatedIds = new Set(prevIds);
+      updatedIds.delete(promotion.embedded_discount_products[index].product_id);
+      return updatedIds;
+    });
+  
+    setSelectedPlanIds(new Set());
   };
+  
+  
+  
+
+
 
   const handleRemovePlan = (index: number) => {
     setPromotion(prevState => ({
@@ -258,7 +275,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         channel_name: channel.name
       }))
     }));
-    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id))); // Update selectedChannelIds
+    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id)));
     setIsChannelModalOpen(false);
   };
 
@@ -271,7 +288,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       insurance_id: ins.id,
       insurance_name: ins.name
     }));
-  
+
     setPromotion(prevState => {
       fetchProductsByInsurances(updatedInsurances.map(ins => ins.insurance_id));
       return {
@@ -280,11 +297,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         embedded_discount_products: [],
       };
     });
-  
+
     setSelectedInsurances(selectedInsurances);
     setIsInsuranceModalOpen(false);
   };
-  
+
 
 
 
@@ -486,18 +503,21 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           >
             Add Plan
           </button>
-          {promotion.embedded_discount_plans.map((plan, index) => (
-            <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{plan.plan_id}</span>
-              <button
-                type="button"
-                onClick={() => handleRemovePlan(index)}
-                className="text-red-500"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))}
+          {promotion.embedded_discount_plans.map((plan, index) => {
+            const planDetail = plans.find(p => p.id === plan.plan_id);
+            return (
+              <div key={index} className="flex items-center mt-2">
+                <span className="mr-2">{planDetail ? planDetail.name : 'Unknown Plan'}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemovePlan(index)}
+                  className="text-red-500"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         <div className="flex justify-end space-x-4">
@@ -561,11 +581,17 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       {/* Plan Modal */}
       {isPlanModalOpen && (
         <PlanSelectionModal
-          isOpen={isPlanModalOpen}
-          onClose={() => setIsPlanModalOpen(false)}
-          onSelect={handleSelectPlan}
-          plans={plans}
-        />
+        isOpen={isPlanModalOpen}
+        onClose={() => setIsPlanModalOpen(false)}
+        onSelect={handleSelectPlan}
+        plans={plans}
+        products={promotion.embedded_discount_products.map(p => ({
+          id: p.product_id,
+          name: p.product_name,
+        }))}
+        preSelectedPlanIds={selectedPlanIds}
+        selectedProductIds={selectedProductIds} // Pass this prop
+      />
       )}
 
     </div>
