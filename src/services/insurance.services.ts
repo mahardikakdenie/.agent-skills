@@ -32,4 +32,9 @@ export class InsuranceService {
     return this.httpClientInsurance.get('/insurances');
   }
 
+  
+  async getInsuranceById(id: string): Promise<any> {
+    return this.httpClientInsurance.get('/insurances/' + id);
+  }
+
 }

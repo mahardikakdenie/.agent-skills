@@ -39,6 +39,11 @@ export class ChannelService {
 
   }
 
+  
+  async getChannelById(id: string): Promise<any> {
+    return this.httpClientChannels.get('/channels/' + id);
+  }
+
 }
 
 

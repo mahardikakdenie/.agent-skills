@@ -6,6 +6,8 @@ export interface EmbeddedDiscountProduct {
 export interface EmbeddedDiscountInsurance {
     insurance_id: string;
     insurance_name: string;
+    id: string;
+    name: string;
 }
 
 export interface EmbeddedDiscountPlan {

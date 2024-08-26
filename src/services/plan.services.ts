@@ -23,4 +23,8 @@ export class PlanService {
     return this.httpClientPlan.get('/plan/product/' + id);
   }
 
+  async getPlanById(id: string): Promise<any> {
+    return this.httpClientPlan.get('/plan/' + id);
+  }
+
 }

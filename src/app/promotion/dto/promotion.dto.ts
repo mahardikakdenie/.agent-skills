@@ -16,35 +16,36 @@ export interface Plan {
 }
 
 export interface Channel {
-    id: string;
-    name: string;
-    type: string;
-    channel_id?: string;
-  }
-
-  export interface Product {
-    id: string;
-    created_at: string;
-    updated_at: string;
-    insurance: string;
-    category: string;
-    name: string;
-    instant_policy: boolean;
-  }
-
-export interface ChannelResponseDTO {
-    data: [Channel];
-    total: number;
-    limit: number;
-    pageTotal: number;
-    page: number;
+  id: string;
+  name: string;
+  type: string;
+  channel_id?: string;
 }
 
+export interface Product {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  insurance: string;
+  category: string;
+  name: string;
+  instant_policy: boolean;
+}
+
+export interface ChannelResponseDTO {
+  data: Channel[];
+  total: number;
+  limit: number;
+  pageTotal: number;
+  page: number;
+}
+
+
 export interface Insurance {
-    id: string;
-    name: string;
-    brand: string;
-    logo_url: string | null;
-  }
+  id: string;
+  name: string;
+  brand: string;
+  logo_url: string | null;
+}
 
 
