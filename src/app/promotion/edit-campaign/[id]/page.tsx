@@ -56,7 +56,16 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
 
 
-
+  useEffect(() => {
+    if (promotion.embedded_discount_insurances.length > 0) {
+      setSelectedInsurances(
+        promotion.embedded_discount_insurances.map(ins => ({
+          id: ins.insurance_id,
+          name: ins.insurance_name,
+        }))
+      );
+    }
+  }, [promotion.embedded_discount_insurances]);
 
   useEffect(() => {
     if (promotion.embedded_discount_products.length > 0) {
@@ -151,6 +160,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       setHasProducts(false);
     }
   };
+
 
 
 
@@ -325,14 +335,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
     console.log('Updated Insurances:', updatedInsurances);
 
-    setPromotion(prevState => {
-      fetchProductsByInsurances(updatedInsurances.map(ins => ins.insurance_id));
-      return {
-        ...prevState,
-        embedded_discount_insurances: updatedInsurances,
-        embedded_discount_products: [],
-      };
-    });
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: updatedInsurances,
+      embedded_discount_products: [],
+    }));
 
     setSelectedInsurances(selectedInsurances);
     setIsInsuranceModalOpen(false);
@@ -340,14 +347,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
 
-
-
-
-
-
   const handleAddProduct = () => {
     if (selectedInsurances.length > 0) {
-      console.log('Opening Product Modal with Products:', products); // Debugging
       setIsProductModalOpen(true);
     } else {
       alert('Please select at least one insurance before adding products.');
@@ -355,8 +356,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
 
+
+
   const handleSelectProduct = (selectedProducts: Product[]) => {
-    console.log('Selected Products:', selectedProducts); // Debugging
+    console.log('Selected Products:', selectedProducts);
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_products: selectedProducts.map(product => ({
@@ -366,8 +369,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }));
     setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
   };
-
-
 
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -496,7 +497,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             Add Channel
           </button>
           {promotion.embedded_discount_channels.map((channel, index) => {
-            const channelDetail = channels?.data.find(c => c.id === channel.channel_id); // Access data property
+            const channelDetail = channels?.data.find(c => c.id === channel.channel_id);
             return (
               <div key={index} className="flex items-center mt-2">
                 <span className="mr-2">{channelDetail ? channelDetail.name : 'Unknown Channel'}</span>
@@ -546,8 +547,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <button
             type="button"
             onClick={handleAddProduct}
-            className={`ml-2 px-4 py-2 ${hasProducts ? 'bg-blue-500' : 'bg-gray-500'} text-white rounded`}
-            disabled={!hasProducts}
+            className={`ml-2 px-4 py-2 ${selectedInsurances.length > 0 ? 'bg-blue-500' : 'bg-gray-500'} text-white rounded`}
+            disabled={selectedInsurances.length === 0}
           >
             Add Product
           </button>
@@ -651,6 +652,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onSelect={handleSelectProduct}
           products={products}
           selectedProductIds={selectedProductIds}
+          initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
         />
       )}
 

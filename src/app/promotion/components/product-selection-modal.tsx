@@ -16,6 +16,7 @@ interface ProductSelectionModalProps {
   onSelect: (products: Product[]) => void;
   products: Product[];
   selectedProductIds: Set<string>;
+  initialSelectedProductIds: Set<string>; // New prop
 }
 
 const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
@@ -24,12 +25,13 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   onSelect,
   products,
   selectedProductIds,
+  initialSelectedProductIds
 }) => {
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set(selectedProductIds));
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setSelectedProducts(new Set(selectedProductIds));
-  }, [selectedProductIds]);
+    setSelectedProducts(new Set(initialSelectedProductIds)); // Initialize selected products
+  }, [initialSelectedProductIds]);
 
   const handleCheckboxChange = (productId: string) => {
     setSelectedProducts(prevSelected => {
