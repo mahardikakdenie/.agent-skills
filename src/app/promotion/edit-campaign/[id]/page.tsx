@@ -15,6 +15,7 @@ import ProductSelectionModal from "../../components/product-selection-modal";
 import { Channel, ChannelResponseDTO, Insurance, Plan, Product } from "../../dto/promotion.dto";
 import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
+import axios, { AxiosResponse } from "axios";
 
 const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -54,6 +55,28 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+
+  const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded shadow-md w-1/3">
+          <h2 className="text-lg font-semibold mb-4">Alert</h2>
+          <p>{message}</p>
+          <div className="flex justify-end mt-4">
+            <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
 
 
   useEffect(() => {
@@ -371,7 +394,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const payload = {
@@ -394,15 +417,25 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       })),
     };
 
-    promotionService.updatePromotionCampaign(params.id, payload)
-      .then(() => {
-        router.push("/promotion");
-      })
-      .catch(error => {
-        console.error("Failed to update promotion:", error);
-      });
-  };
 
+    const response: AxiosResponse<any> = await promotionService.updatePromotionCampaign(params.id, payload);
+
+    const { data } = response;
+
+    if (data.data != null) {
+      if (data.data.error.code == 409) {
+        // Handle 409 Conflict error
+        setErrorMessage("The plan already been used by other embedded campaign.");
+      } else {
+        // Handle successful response
+        router.push("/promotion");
+      }
+    } else {
+      // Handle successful response
+      router.push("/promotion");
+    }
+
+  };
 
 
   const handleCancel = () => {
@@ -616,6 +649,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         </div>
       </form>
 
+      {/* Error Modal */}
+      {errorMessage && (
+        <ErrorModal
+          isOpen={!!errorMessage}
+          message={errorMessage}
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
+
       {/* Channel Modal */}
       {isChannelModalOpen && (
         <ChannelSelectionModal
@@ -668,7 +710,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             name: p.product_name,
           }))}
           preSelectedPlanIds={selectedPlanIds}
-          selectedProductIds={selectedProductIds}
+          selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
         />
       )}
 

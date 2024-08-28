@@ -2,33 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import WithSidebar from '@/hoc/with-sidebar';
-import { PromotionDetails } from '../dto/promotion.details.dto';
+import { ChannelResponse, InsuranceResponse, PlanResponse, ProductResponse, PromotionDetails } from '../dto/promotion.details.dto';
 import { PromotionService } from '@/services/promotion.service';
 import { PlanService } from '@/services/plan.services';
 import { ChannelService } from '@/services/channel.services';
 import { InsuranceService } from '@/services/insurance.services';
 import { ProductService } from '@/services/product.services';
 
-// Define types for API responses
-interface ChannelResponse {
-  id: string;
-  name: string;
-}
-
-interface InsuranceResponse {
-  id: string;
-  name: string;
-}
-
-interface ProductResponse {
-  id: string;
-  name: string;
-}
-
-interface PlanResponse {
-  id: string;
-  name: string;
-}
 
 const ViewPromotionDetails: React.FC = () => {
   const [promotion, setPromotion] = useState<PromotionDetails | null>(null);
@@ -38,7 +18,7 @@ const ViewPromotionDetails: React.FC = () => {
   const [insuranceNames, setInsuranceNames] = useState<Map<string, string>>(new Map());
   const [productNames, setProductNames] = useState<Map<string, string>>(new Map());
   const [planNames, setPlanNames] = useState<Map<string, string>>(new Map());
-  
+
   const { id } = useParams();
   const router = useRouter();
   const promotionService = new PromotionService();
@@ -79,7 +59,7 @@ const ViewPromotionDetails: React.FC = () => {
 
           setChannelNames(new Map(channelResponses.map((res: ChannelResponse) => [res.id, res.name])));
           setInsuranceNames(new Map(insuranceResponses.map((res: InsuranceResponse) => [res.id, res.name])));
-          setProductNames(new Map(productResponses.map((res: ProductResponse) => [res.id, res.name])));
+          setProductNames(new Map(productResponses.map((res: ProductResponse) => [res.data[0].id, res.data[0].name])));
           setPlanNames(new Map(planResponses.map((res: PlanResponse) => [res.id, res.name])));
         };
 
@@ -97,6 +77,15 @@ const ViewPromotionDetails: React.FC = () => {
 
   const handleEditCampaign = (id: string) => {
     router.push("/promotion/edit-campaign/" + id);
+  };
+
+  const formatDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    };
+    return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
   };
 
   if (loading) {
@@ -118,9 +107,9 @@ const ViewPromotionDetails: React.FC = () => {
       <div className="mb-4">
         <p><strong>Name:</strong> {promotion.name}</p>
         <p><strong>Type:</strong> {promotion.type}</p>
-        <p><strong>Start Date:</strong> {new Date(promotion.start_date).toLocaleDateString()}</p>
-        <p><strong>End Date:</strong> {new Date(promotion.end_date).toLocaleDateString()}</p>
-        <p><strong>Value:</strong> {promotion.value} {promotion.value_currency}</p>
+        <p><strong>Start Date:</strong> {formatDate(promotion.start_date)}</p>
+        <p><strong>End Date:</strong> {formatDate(promotion.end_date)}</p>
+        <p><strong>Value:</strong> {promotion.value_currency} {promotion.value}</p>
         <p><strong>Status:</strong> {promotion.active ? 'Active' : 'Inactive'}</p>
         <p><strong>Minimum Amount:</strong> {promotion.minimum_amount}</p>
         <p><strong>Maximum Amount:</strong> {promotion.maximum_amount}</p>

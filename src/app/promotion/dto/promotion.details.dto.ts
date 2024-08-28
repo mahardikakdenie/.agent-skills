@@ -35,3 +35,34 @@ export interface PromotionDetails {
     embedded_discount_plans: EmbeddedDiscountPlan[];
     embedded_discount_products: EmbeddedDiscountProduct[];
 }
+
+
+export interface ChannelResponse {
+    id: string;
+    name: string;
+}
+
+export interface InsuranceResponse {
+    id: string;
+    name: string;
+}
+
+export interface ProductResponse {
+    data: [Product]
+}
+
+export interface PlanResponse {
+    id: string;
+    name: string;
+}
+
+export interface Product {
+    id: string;
+    name: string;
+}
+
+export interface ErrorModalProps {
+    isOpen: boolean;
+    message: string;
+    onClose: () => void;
+  }

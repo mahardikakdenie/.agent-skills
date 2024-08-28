@@ -28,7 +28,7 @@ interface PlanSelectionModalProps {
   plans: Plan[];
   products: Product[];
   preSelectedPlanIds: Set<string>;
-  selectedProductIds: Set<string>;  // Added this prop
+  selectedProductIds: Set<string>;
 }
 
 const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
@@ -37,17 +37,15 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   onSelect,
   plans,
   products,
-  preSelectedPlanIds = new Set(),
+  preSelectedPlanIds,
   selectedProductIds,
 }) => {
-  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(preSelectedPlanIds);
+  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setSelectedPlans(prevSelectedPlans => {
-      const updatedSelectedPlans = new Set(preSelectedPlanIds);
-      return updatedSelectedPlans;
-    });
-  }, [preSelectedPlanIds, plans]);
+    // Initialize selectedPlans with preSelectedPlanIds when the component mounts or when preSelectedPlanIds changes
+    setSelectedPlans(new Set(preSelectedPlanIds));
+  }, [preSelectedPlanIds]);
 
   const filteredPlans = plans.filter(plan => selectedProductIds.has(plan.product));
 
