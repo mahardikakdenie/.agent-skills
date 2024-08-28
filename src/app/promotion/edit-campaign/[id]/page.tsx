@@ -229,6 +229,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setSelectedPlanIds(selectedPlanIds);
   };
 
+
   const handleRemoveArrayItem = (arrayName: keyof PromotionDetails, index: number) => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
@@ -709,7 +710,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             id: p.product_id,
             name: p.product_name,
           }))}
-          preSelectedPlanIds={selectedPlanIds}
+          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
         />
       )}

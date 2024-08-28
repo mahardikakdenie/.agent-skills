@@ -43,7 +43,6 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // Initialize selectedPlans with preSelectedPlanIds when the component mounts or when preSelectedPlanIds changes
     setSelectedPlans(new Set(preSelectedPlanIds));
   }, [preSelectedPlanIds]);
 
