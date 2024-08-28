@@ -2,7 +2,6 @@ import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 import axios, { AxiosResponse } from "axios";
-import Cookies from "universal-cookie";
 
 
 interface PromotionResponse {

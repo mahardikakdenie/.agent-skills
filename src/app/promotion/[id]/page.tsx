@@ -8,7 +8,7 @@ import { PlanService } from '@/services/plan.services';
 import { ChannelService } from '@/services/channel.services';
 import { InsuranceService } from '@/services/insurance.services';
 import { ProductService } from '@/services/product.services';
-
+import { VoucherService } from '@/services/voucher.services';
 
 const ViewPromotionDetails: React.FC = () => {
   const [promotion, setPromotion] = useState<PromotionDetails | null>(null);
@@ -18,6 +18,7 @@ const ViewPromotionDetails: React.FC = () => {
   const [insuranceNames, setInsuranceNames] = useState<Map<string, string>>(new Map());
   const [productNames, setProductNames] = useState<Map<string, string>>(new Map());
   const [planNames, setPlanNames] = useState<Map<string, string>>(new Map());
+  const [voucher, setVoucher] = useState<{ code: string, usage_limit: number, used_count: number } | null>(null);
 
   const { id } = useParams();
   const router = useRouter();
@@ -26,6 +27,7 @@ const ViewPromotionDetails: React.FC = () => {
   const channelService = new ChannelService();
   const insuranceService = new InsuranceService();
   const productService = new ProductService();
+  const voucherService = new VoucherService();
 
   useEffect(() => {
     if (!id) return; // Exit if no ID is available
@@ -33,20 +35,21 @@ const ViewPromotionDetails: React.FC = () => {
     const fetchPromotionDetails = async () => {
       try {
         const response = await promotionService.getPromotionCampaignById(id as string);
-        setPromotion(response.data[0]);
+        const promotionData = response.data[0];
+        setPromotion(promotionData);
 
         // Fetch names for channels, insurances, products, and plans
         const fetchNames = async () => {
-          const channelFetches = response.data[0].embedded_discount_channels.map((channel: { channel_id: string }) =>
+          const channelFetches = promotionData.embedded_discount_channels.map((channel: { channel_id: string }) =>
             channelService.getChannelById(channel.channel_id)
           );
-          const insuranceFetches = response.data[0].embedded_discount_insurances.map((insurance: { insurance_id: string }) =>
+          const insuranceFetches = promotionData.embedded_discount_insurances.map((insurance: { insurance_id: string }) =>
             insuranceService.getInsuranceById(insurance.insurance_id)
           );
-          const productFetches = response.data[0].embedded_discount_products.map((product: { product_id: string }) =>
+          const productFetches = promotionData.embedded_discount_products.map((product: { product_id: string }) =>
             productService.getProductById(product.product_id)
           );
-          const planFetches = response.data[0].embedded_discount_plans.map((plan: { plan_id: string }) =>
+          const planFetches = promotionData.embedded_discount_plans.map((plan: { plan_id: string }) =>
             planService.getPlanById(plan.plan_id)
           );
 
@@ -64,6 +67,12 @@ const ViewPromotionDetails: React.FC = () => {
         };
 
         await fetchNames();
+
+        if (promotionData.type === 'voucher') {
+          const voucherResponse = await voucherService.getVoucherByCampaignId(promotionData.campaign_id);
+          setVoucher(voucherResponse.data[0]);
+        }
+
       } catch (err) {
         setError('Failed to fetch promotion details');
         console.error(err);
@@ -102,63 +111,81 @@ const ViewPromotionDetails: React.FC = () => {
 
   return (
     <div className="p-6 bg-white rounded shadow-md">
-      <h1 className="text-2xl font-semibold mb-4">Promotion Details</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="flex flex-col items-center">
+          <h2 className="text-xl font-semibold mb-2">Promotion Details</h2>
 
-      <div className="mb-4">
-        <p><strong>Name:</strong> {promotion.name}</p>
-        <p><strong>Type:</strong> {promotion.type}</p>
-        <p><strong>Start Date:</strong> {formatDate(promotion.start_date)}</p>
-        <p><strong>End Date:</strong> {formatDate(promotion.end_date)}</p>
-        <p><strong>Value:</strong> {promotion.value_currency} {promotion.value}</p>
-        <p><strong>Status:</strong> {promotion.active ? 'Active' : 'Inactive'}</p>
-        <p><strong>Minimum Amount:</strong> {promotion.minimum_amount}</p>
-        <p><strong>Maximum Amount:</strong> {promotion.maximum_amount}</p>
+          <div className="text-center">
+            <p><strong>Name:</strong> {promotion.name}</p>
+            <p><strong>Type:</strong> {promotion.type}</p>
+            <p><strong>Start Date:</strong> {formatDate(promotion.start_date)}</p>
+            <p><strong>End Date:</strong> {formatDate(promotion.end_date)}</p>
+            <p><strong>Value:</strong> {promotion.value_currency} {promotion.value}</p>
+            <p><strong>Status:</strong> {promotion.active ? 'Active' : 'Inactive'}</p>
+            <p><strong>Minimum Amount:</strong> {promotion.minimum_amount}</p>
+            <p><strong>Maximum Amount:</strong> {promotion.maximum_amount}</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <h2 className="text-xl font-semibold mb-4">Associated Details</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+            <div>
+              <p><strong>Channels</strong></p>
+              {promotion.embedded_discount_channels.length > 0 ? (
+                promotion.embedded_discount_channels.map((channel: { channel_id: string }) => (
+                  <p key={channel.channel_id}>{channelNames.get(channel.channel_id) || 'Unknown'}</p>
+                ))
+              ) : (
+                <p>No channels</p>
+              )}
+            </div>
+            <div>
+              <p><strong>Insurances</strong></p>
+              {promotion.embedded_discount_insurances.length > 0 ? (
+                promotion.embedded_discount_insurances.map((insurance: { insurance_id: string }) => (
+                  <p key={insurance.insurance_id}>{insuranceNames.get(insurance.insurance_id) || 'Unknown'}</p>
+                ))
+              ) : (
+                <p>No insurances</p>
+              )}
+            </div>
+            <div>
+              <p><strong>Products</strong></p>
+              {promotion.embedded_discount_products.length > 0 ? (
+                promotion.embedded_discount_products.map((product: { product_id: string }) => (
+                  <p key={product.product_id}>{productNames.get(product.product_id) || 'Unknown'}</p>
+                ))
+              ) : (
+                <p>No products</p>
+              )}
+            </div>
+            <div>
+              <p><strong>Plans</strong></p>
+              {promotion.embedded_discount_plans.length > 0 ? (
+                promotion.embedded_discount_plans.map((plan: { plan_id: string }) => (
+                  <p key={plan.plan_id}>{planNames.get(plan.plan_id) || 'Unknown'}</p>
+                ))
+              ) : (
+                <p>No plans</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="mb-4">
-        <div>
-          <p><strong>Channels</strong></p>
-          {promotion.embedded_discount_channels.length > 0 ? (
-            promotion.embedded_discount_channels.map((channel: { channel_id: string }) => (
-              <p key={channel.channel_id}>{channelNames.get(channel.channel_id) || 'Unknown'}</p>
-            ))
-          ) : (
-            <p>No channels</p>
-          )}
+      {promotion.type === 'voucher' && voucher && (
+        <div className="flex flex-col items-center mb-8">
+          <h2 className="text-xl font-semibold mb-2">Voucher Details</h2>
+          <div className="text-center">
+            <p><strong>Code:</strong> {voucher.code}</p>
+            <p><strong>Usage Limit:</strong> {voucher.usage_limit}</p>
+            <p><strong>Used Count:</strong> {voucher.used_count}</p>
+          </div>
         </div>
-        <div>
-          <p><strong>Insurances</strong></p>
-          {promotion.embedded_discount_insurances.length > 0 ? (
-            promotion.embedded_discount_insurances.map((insurance: { insurance_id: string }) => (
-              <p key={insurance.insurance_id}>{insuranceNames.get(insurance.insurance_id) || 'Unknown'}</p>
-            ))
-          ) : (
-            <p>No insurances</p>
-          )}
-        </div>
-        <div>
-          <p><strong>Products</strong></p>
-          {promotion.embedded_discount_products.length > 0 ? (
-            promotion.embedded_discount_products.map((product: { product_id: string }) => (
-              <p key={product.product_id}>{productNames.get(product.product_id) || 'Unknown'}</p>
-            ))
-          ) : (
-            <p>No products</p>
-          )}
-        </div>
+      )}
 
-        <div>
-          <p><strong>Plans</strong></p>
-          {promotion.embedded_discount_plans.length > 0 ? (
-            promotion.embedded_discount_plans.map((plan: { plan_id: string }) => (
-              <p key={plan.plan_id}>{planNames.get(plan.plan_id) || 'Unknown'}</p>
-            ))
-          ) : (
-            <p>No plans</p>
-          )}
-        </div>
-
-      </div>
       <div className="flex justify-center">
         <button
           onClick={() => handleEditCampaign(promotion.campaign_id)}
