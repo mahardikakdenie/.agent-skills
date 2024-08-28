@@ -67,3 +67,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+.alert {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background-color: #4caf50;
+  color: white;
+  padding: 16px;
+  border-radius: 4px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.alert.error {
+  background-color: #f44336;
+}

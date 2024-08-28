@@ -56,6 +56,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [hasProducts, setHasProducts] = useState(false);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
@@ -75,9 +77,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       </div>
     );
   };
-
-
-
 
   useEffect(() => {
     if (promotion.embedded_discount_insurances.length > 0) {
@@ -184,11 +183,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-
-
-
-
-
   const handleAddPlan = () => {
     if (promotion.embedded_discount_products.length > 0) {
       setIsPlanModalOpen(true);
@@ -261,11 +255,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-
-
-
-
-
   const handleRemoveProduct = (index: number) => {
     setPromotion(prevState => {
       const removedProductId = prevState.embedded_discount_products[index].product_id;
@@ -298,12 +287,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
     setSelectedPlanIds(new Set());
   };
-
-
-
-
-
-
 
   const handleRemovePlan = (index: number) => {
     setPromotion(prevState => {
@@ -369,8 +352,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setIsInsuranceModalOpen(false);
   };
 
-
-
   const handleAddProduct = () => {
     if (selectedInsurances.length > 0) {
       setIsProductModalOpen(true);
@@ -378,9 +359,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       alert('Please select at least one insurance before adding products.');
     }
   };
-
-
-
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
     console.log('Selected Products:', selectedProducts);
@@ -399,7 +377,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     e.preventDefault();
 
     const payload = {
-      active: promotion.active,
+      type: promotion.type,
       value: promotion.value,
       start_date: promotion.start_date,
       end_date: promotion.end_date,
@@ -418,24 +396,36 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       })),
     };
 
+    try {
+      const response: AxiosResponse<any> = await promotionService.updatePromotionCampaign(params.id, payload);
+      const { data } = response;
 
-    const response: AxiosResponse<any> = await promotionService.updatePromotionCampaign(params.id, payload);
-
-    const { data } = response;
-
-    if (data.data != null) {
-      if (data.data.error.code == 409) {
-        // Handle 409 Conflict error
-        setErrorMessage("The plan already been used by other embedded campaign.");
+      if (data.data != null) {
+        if (data.data.error.code === 409) {
+          // Handle 409 Conflict error
+          setErrorMessage("The plan already been used by other embedded campaign.");
+        } else {
+          // Handle successful response
+          setAlertMessage("Promotion updated successfully!");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+            router.push("/promotion");
+          }, 2000); // Delay redirection until after alert is hidden
+        }
       } else {
         // Handle successful response
-        router.push("/promotion");
+        setAlertMessage("Promotion updated successfully!");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          router.push("/promotion");
+        }, 2000); // Delay redirection until after alert is hidden
       }
-    } else {
-      // Handle successful response
-      router.push("/promotion");
+    } catch (error) {
+      console.error("Failed to update promotion:", error);
+      setErrorMessage("Failed to update promotion.");
     }
-
   };
 
 
@@ -466,6 +456,20 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             onChange={handleChange}
             className="w-3/4 p-2 border rounded"
             required
+          />
+        </div>
+
+        <div className="flex items-center">
+          <label htmlFor="type" className="w-1/4 font-semibold">Type:</label>
+          <input
+            id="type"
+            name="type"
+            type="text"
+            value={promotion.type}
+            onChange={handleChange}
+            className={`w-3/4 p-2 rounded ${promotion.active ? 'border-none bg-gray-100' : 'border border-gray-300'}`}
+            required
+            disabled={promotion.active}
           />
         </div>
 
@@ -509,15 +513,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         </div>
 
         <div>
-          <label className="font-semibold">Active:</label>
-          <input
-            id="active"
-            name="active"
-            type="checkbox"
-            checked={promotion.active}
-            onChange={handleChange}
-            className="ml-2"
-          />
+          <label className="font-semibold">Status:</label>
+          <span className={`ml-2 ${promotion.active ? 'text-green-500' : 'text-red-500'}`}>
+            {promotion.active ? 'Active' : 'Inactive'}
+          </span>
         </div>
 
         {/* Channels */}
@@ -649,6 +648,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </button>
         </div>
       </form>
+
+      {/* Alert Popup */}
+      {showAlert && (
+        <div className="alert">
+          {alertMessage}
+        </div>
+      )}
 
       {/* Error Modal */}
       {errorMessage && (
