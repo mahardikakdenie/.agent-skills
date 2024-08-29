@@ -1,6 +1,6 @@
 "use client";
 import WithSidebar from "@/hoc/with-sidebar";
-import { moneyFormatter } from "@/lib/formatter";
+import { formatMoney } from "@/lib/formatter";
 import { TransactionService } from "@/services/transaction.service";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -87,7 +87,7 @@ const DetailTransaction = ({ params }: { params: { id: string } }) => {
         </div>
         <div className="mb-2">
           <span className="font-semibold">Amount: </span>
-          {moneyFormatter.format(totalPremium)}
+          {formatMoney(totalPremium, "IDR")}
         </div>
         <div className="mb-2">
           <span className="font-semibold">Status: </span>

@@ -7,6 +7,8 @@ import {
   NavigationMenuLink,
 } from "@radix-ui/react-navigation-menu";
 import { AuthProvider } from "@/context/auth.context";
+import { LoadingProvider } from "@/context/loading.context";
+import Loading from "@/components/ui/loading";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <LoadingProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </LoadingProvider>
       </body>
     </html>
   );

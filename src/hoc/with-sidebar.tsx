@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Loading from "@/components/ui/loading";
+import { useLoading } from "@/context/loading.context";
 
 export default function WithSidebar(Component: any) {
+  const { isLoading } = useLoading();
   return Object.assign(
     (props?: any) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -26,6 +29,7 @@ export default function WithSidebar(Component: any) {
       };
       return (
         <div className="">
+          {isLoading && <Loading />}
           <NavigationMenu>
             <NavigationMenuList className="flex flex-row p-5">
               <NavigationMenuItem>
@@ -58,6 +62,7 @@ export default function WithSidebar(Component: any) {
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="absolute left-0 top-10 bg-white rounded-md shadow-lg z-50">
                   <ul className="grid w-[200px] gap-3 p-4 md:w-[200px] md:grid-cols-1 lg:w-[200px]">
+                    <ListItem href="/product-catalog/airpaz">Airpaz</ListItem>
                     <ListItem href="/product-catalog/travel">Travel</ListItem>
                     <ListItem href="/product-catalog/personal-accident">
                       Personal Accident

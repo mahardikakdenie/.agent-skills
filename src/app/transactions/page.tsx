@@ -12,7 +12,7 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { TransactionService } from "@/services/transaction.service";
 import { useEffect, useState } from "react";
-import { moneyFormatter } from "@/lib/formatter";
+import { formatMoney } from "@/lib/formatter";
 import { useRouter } from "next/navigation";
 
 const TransactionsPage = () => {
@@ -103,7 +103,7 @@ const TransactionsPage = () => {
                 </TableCell>
                 <TableCell>{transaction.customer.name}</TableCell>
                 <TableCell>IDR</TableCell>
-                <TableCell>{moneyFormatter.format(totalPremium)}</TableCell>
+                <TableCell>{formatMoney(totalPremium, "IDR")}</TableCell>
                 <TableCell>{transaction.status}</TableCell>
                 <TableCell>
                   <button

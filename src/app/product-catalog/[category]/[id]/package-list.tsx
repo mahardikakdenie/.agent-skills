@@ -13,7 +13,7 @@ import {
   PackageDto,
   ProductCatalogService,
 } from "@/services/product-catalog.service";
-import { moneyFormatter } from "@/lib/formatter";
+import { formatMoney } from "@/lib/formatter";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const [packages, setPackages] = useState<PackageDto[]>([]);
@@ -52,13 +52,16 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                 {Object.keys(packageData.search_params).map((value, i) => {
                   return (
                     <div key={i}>
-                      {value}: {packageData.search_params[value]}
+                      {value}:{" "}
+                      {Array.isArray(packageData.search_params[value])
+                        ? packageData.search_params[value].join(",")
+                        : packageData.search_params[value]}
                     </div>
                   );
                 })}
               </TableCell>
               <TableCell>
-                {moneyFormatter.format(packageData.premium)}
+                {formatMoney(packageData.premium, packageData.currency)}
               </TableCell>
               <TableCell>{packageData.currency}</TableCell>
               <TableCell>
