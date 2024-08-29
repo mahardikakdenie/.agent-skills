@@ -16,6 +16,7 @@ import { Channel, ChannelResponseDTO, Insurance, Plan, Product } from "../../dto
 import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
 import axios, { AxiosResponse } from "axios";
+import { VoucherService } from "@/services/voucher.services";
 
 const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -24,6 +25,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const insuranceService = new InsuranceService();
   const productService = new ProductService();
   const planService = new PlanService();
+  const voucherService = new VoucherService();
 
   const [promotion, setPromotion] = useState<PromotionDetails>({
     campaign_id: "",
@@ -58,6 +60,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [voucherDetails, setVoucherDetails] = useState<any>(null);
 
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
@@ -104,6 +107,16 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setPromotion(promotionData);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
           setLoading(false);
+
+          if (promotionData.type === "voucher") {
+            voucherService.getVoucherByCampaignId(promotionData.campaign_id)
+              .then(voucherRes => {
+                setVoucherDetails(voucherRes.data[0]);
+              })
+              .catch(error => {
+                console.error("Failed to fetch voucher details:", error);
+              });
+          }
         })
         .catch(error => {
           console.error("Failed to fetch promotion details:", error);
@@ -474,6 +487,20 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         </div>
 
         <div className="flex items-center">
+          <label htmlFor="type" className="w-1/4 font-semibold">Currency:</label>
+          <input
+            id="value_currency"
+            name="value_currency"
+            type="text"
+            value={promotion.value_currency}
+            onChange={handleChange}
+            className={`w-3/4 p-2 rounded ${promotion.active ? 'border-none bg-gray-100' : 'border border-gray-300'}`}
+            required
+            disabled
+          />
+        </div>
+
+        <div className="flex items-center">
           <label htmlFor="value" className="w-1/4 font-semibold">Value:</label>
           <input
             id="value"
@@ -629,6 +656,28 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             );
           })}
         </div>
+
+        {promotion.type === "voucher" && voucherDetails && (
+          <div className="bg-gray-100 p-4 rounded shadow-md mt-4">
+            <h2 className="text-lg font-semibold">Voucher Details</h2>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Campaign ID:</label>
+              <span className="w-3/4">{voucherDetails.campaign_id}</span>
+            </div>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Code:</label>
+              <span className="w-3/4">{voucherDetails.code}</span>
+            </div>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Usage Limit:</label>
+              <span className="w-3/4">{voucherDetails.usage_limit}</span>
+            </div>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Used Count:</label>
+              <span className="w-3/4">{voucherDetails.used_count}</span>
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-end space-x-4">
           <button
