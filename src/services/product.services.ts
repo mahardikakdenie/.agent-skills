@@ -23,4 +23,9 @@ export class ProductService {
     return this.httpClientProduct.get('/products/insurance/' + id);
   }
 
+  
+  async getProductById(id: string): Promise<any> {
+    return this.httpClientProduct.get('/v1/products?id=' + id);
+  }
+
 }

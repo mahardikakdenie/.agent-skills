@@ -1,7 +1,7 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import Cookies from "universal-cookie";
+import axios, { AxiosResponse } from "axios";
 
 
 interface PromotionResponse {
@@ -54,16 +54,17 @@ export class PromotionService {
     return this.httpClientPromotion_2.put('/api/campaign/delete/' + id);
   }
 
-  async updatePromotionCampaign(id: string, data: any): Promise<void> {
-    // Update promotion data
-    const response = await fetch(`/api/promotions/${id}`, {
-      method: 'PUT',
+  async updatePromotionCampaign(id: string, data: any): Promise<AxiosResponse<any>> {
+    const baseURL = process.env.NEXT_PUBLIC_PROMOTION_SERVICE_URL;
+    const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+
+    // Use axios to send the PUT request
+    return axios.put(`${baseURL}/api/campaign/update/${id}`, data, {
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+        'Authorization': `Bearer ${token}`,
+      }
     });
-    if (!response.ok) throw new Error("Failed to update promotion");
   }
 
 }

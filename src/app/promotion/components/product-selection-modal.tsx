@@ -16,6 +16,7 @@ interface ProductSelectionModalProps {
   onSelect: (products: Product[]) => void;
   products: Product[];
   selectedProductIds: Set<string>;
+  initialSelectedProductIds: Set<string>;
 }
 
 const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
@@ -24,12 +25,13 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   onSelect,
   products,
   selectedProductIds,
+  initialSelectedProductIds
 }) => {
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set(selectedProductIds));
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setSelectedProducts(new Set(selectedProductIds));
-  }, [selectedProductIds]);
+    setSelectedProducts(new Set(initialSelectedProductIds));
+  }, [initialSelectedProductIds]);
 
   const handleCheckboxChange = (productId: string) => {
     setSelectedProducts(prevSelected => {
@@ -52,43 +54,43 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="fixed inset-0 bg-gray-700 opacity-75" onClick={onClose}></div>
-      <div className="bg-white p-4 rounded shadow-lg max-w-lg w-full relative">
-        <h2 className="text-xl font-semibold mb-4">Select Products</h2>
+    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded shadow-md w-3/4 max-w-2xl h-auto">
+        <h2 className="text-2xl font-semibold mb-4">Select Products</h2>
         <div className="overflow-y-auto max-h-80">
           {products.length > 0 ? (
-            <table className="w-full border-collapse">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="border p-2">Select</th>
-                  <th className="border p-2">Product ID</th>
-                  <th className="border p-2">Product Name</th>
-                  <th className="border p-2">Price</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {products.map((product) => (
                   <tr key={product.id}>
-                    <td className="border p-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
                         type="checkbox"
                         checked={selectedProducts.has(product.id)}
                         onChange={() => handleCheckboxChange(product.id)}
+                        className="form-checkbox"
                       />
                     </td>
-                    <td className="border p-2">{product.id}</td>
-                    <td className="border p-2">{product.name}</td>
-                    <td className="border p-2">${product.instant_policy ? 'Free' : 'Paid'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.instant_policy ? 'Free' : 'Paid'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p>No products available.</p>
+            <p className="text-center text-sm text-gray-500">No products available.</p>
           )}
         </div>
-        <div className="mt-4 flex justify-end space-x-4">
+        <div className="flex justify-between mt-4">
           <button
             type="button"
             onClick={onClose}

@@ -15,6 +15,8 @@ import ProductSelectionModal from "../../components/product-selection-modal";
 import { Channel, ChannelResponseDTO, Insurance, Plan, Product } from "../../dto/promotion.dto";
 import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
+import axios, { AxiosResponse } from "axios";
+import { VoucherService } from "@/services/voucher.services";
 
 const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -23,6 +25,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const insuranceService = new InsuranceService();
   const productService = new ProductService();
   const planService = new PlanService();
+  const voucherService = new VoucherService();
 
   const [promotion, setPromotion] = useState<PromotionDetails>({
     campaign_id: "",
@@ -53,6 +56,41 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [products, setProducts] = useState<any[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
+  const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [voucherDetails, setVoucherDetails] = useState<any>(null);
+
+
+  const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded shadow-md w-1/3">
+          <h2 className="text-lg font-semibold mb-4">Alert</h2>
+          <p>{message}</p>
+          <div className="flex justify-end mt-4">
+            <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (promotion.embedded_discount_insurances.length > 0) {
+      setSelectedInsurances(
+        promotion.embedded_discount_insurances.map(ins => ({
+          id: ins.insurance_id,
+          name: ins.insurance_name,
+        }))
+      );
+    }
+  }, [promotion.embedded_discount_insurances]);
 
   useEffect(() => {
     if (promotion.embedded_discount_products.length > 0) {
@@ -62,15 +100,29 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (params.id) {
-      promotionService.getPromotionCampaignById(params.id as string).then((res) => {
-        setPromotion(res.data[0]);
-        setLoading(false);
-      }).catch(error => {
-        console.error("Failed to fetch promotion details:", error);
-        setLoading(false);
-      });
-    }
+      promotionService.getPromotionCampaignById(params.id as string)
+        .then((res) => {
+          const promotionData: PromotionDetails = res.data[0];
+          console.log('Fetched Promotion Data:', promotionData);
+          setPromotion(promotionData);
+          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
+          setLoading(false);
 
+          if (promotionData.type === "voucher") {
+            voucherService.getVoucherByCampaignId(promotionData.campaign_id)
+              .then(voucherRes => {
+                setVoucherDetails(voucherRes.data[0]);
+              })
+              .catch(error => {
+                console.error("Failed to fetch voucher details:", error);
+              });
+          }
+        })
+        .catch(error => {
+          console.error("Failed to fetch promotion details:", error);
+          setLoading(false);
+        });
+    }
     fetchChannels(1);
     fetchInsurances();
   }, [params.id]);
@@ -96,14 +148,16 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
+
   const fetchInsurances = async () => {
     try {
       const response = await insuranceService.getInsurances();
-      setInsurances(response);
+      setInsurances(response as Insurance[]);
     } catch (error) {
       console.error("Failed to fetch insurances:", error);
     }
   };
+
 
   const fetchPlansByProducts = async (productIds: string[]) => {
     if (productIds.length === 0) {
@@ -171,32 +225,31 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleSelectPlan = (plan: Plan) => {
-    setPromotion(prevState => {
-      const isDuplicate = prevState.embedded_discount_plans.some(p => p.plan_id === plan.id);
-
-      return isDuplicate
-        ? prevState
-        : {
-          ...prevState,
-          embedded_discount_plans: [...prevState.embedded_discount_plans, { plan_id: plan.id }]
-        };
-    });
-    setIsPlanModalOpen(false);
+  const handleSelectPlan = (selectedPlans: Plan[]) => {
+    const selectedPlanIds = new Set(selectedPlans.map(plan => plan.id));
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_plans: selectedPlans.map(plan => ({
+        plan_id: plan.id,
+      })),
+    }));
+    setSelectedPlanIds(selectedPlanIds);
   };
+
 
   const handleRemoveArrayItem = (arrayName: keyof PromotionDetails, index: number) => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
       if (arrayName === 'embedded_discount_insurances') {
-        const removedInsurance = prevState.embedded_discount_insurances[index];
+        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
 
         return {
           ...prevState,
           [arrayName]: updatedArray,
           embedded_discount_products: [],
+          embedded_discount_plans: []
         };
       }
 
@@ -206,14 +259,14 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       };
     });
 
-    // Update the selectedInsurances state
     if (arrayName === 'embedded_discount_insurances') {
       setSelectedInsurances(prevInsurances =>
         prevInsurances.filter((_, i) => i !== index)
       );
+      setSelectedProductIds(new Set());
+      setSelectedPlanIds(new Set());
     }
   };
-
 
   const handleRemoveProduct = (index: number) => {
     setPromotion(prevState => {
@@ -221,27 +274,52 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
       const updatedProducts = prevState.embedded_discount_products.filter((_, i) => i !== index);
 
-      const updatedPromotion = {
-        ...prevState,
-        embedded_discount_products: updatedProducts,
-      };
-
-      const updatedPlans = updatedPromotion.embedded_discount_plans.filter(plan =>
-        !prevState.embedded_discount_products.some(product => product.product_id === removedProductId)
+      const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
+        updatedProducts.some(product => product.product_id === plan.plan_id)
       );
 
+      const updatedSelectedPlanIds = new Set(selectedPlanIds);
+      prevState.embedded_discount_plans.forEach(plan => {
+        if (!updatedPlans.some(p => p.plan_id === plan.plan_id)) {
+          updatedSelectedPlanIds.delete(plan.plan_id);
+        }
+      });
+
       return {
-        ...updatedPromotion,
+        ...prevState,
+        embedded_discount_products: updatedProducts,
         embedded_discount_plans: updatedPlans,
       };
     });
+
+    setSelectedProductIds(prevIds => {
+      const updatedIds = new Set(prevIds);
+      updatedIds.delete(promotion.embedded_discount_products[index].product_id);
+      return updatedIds;
+    });
+
+    setSelectedPlanIds(new Set());
   };
 
   const handleRemovePlan = (index: number) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_plans: prevState.embedded_discount_plans.filter((_, i) => i !== index)
-    }));
+    setPromotion(prevState => {
+      const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
+
+      const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
+      const updatedSelectedPlanIds = new Set(selectedPlanIds);
+      updatedSelectedPlanIds.delete(removedPlanId);
+
+      return {
+        ...prevState,
+        embedded_discount_plans: updatedPlans,
+      };
+    });
+
+    setSelectedPlanIds(prevIds => {
+      const updatedIds = new Set(prevIds);
+      updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
+      return updatedIds;
+    });
   };
 
   const handleAddChannel = () => {
@@ -258,9 +336,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         channel_name: channel.name
       }))
     }));
-    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id))); // Update selectedChannelIds
+    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id)));
     setIsChannelModalOpen(false);
   };
+
 
   const handleAddInsurance = () => {
     setIsInsuranceModalOpen(true);
@@ -269,24 +348,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
     const updatedInsurances = selectedInsurances.map(ins => ({
       insurance_id: ins.id,
-      insurance_name: ins.name
+      insurance_name: ins.name,
+      id: ins.id,
+      name: ins.name
     }));
-  
-    setPromotion(prevState => {
-      fetchProductsByInsurances(updatedInsurances.map(ins => ins.insurance_id));
-      return {
-        ...prevState,
-        embedded_discount_insurances: updatedInsurances,
-        embedded_discount_products: [],
-      };
-    });
-  
+
+    console.log('Updated Insurances:', updatedInsurances);
+
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: updatedInsurances,
+      embedded_discount_products: [],
+    }));
+
     setSelectedInsurances(selectedInsurances);
     setIsInsuranceModalOpen(false);
   };
-  
-
-
 
   const handleAddProduct = () => {
     if (selectedInsurances.length > 0) {
@@ -297,6 +374,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
+    console.log('Selected Products:', selectedProducts);
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_products: selectedProducts.map(product => ({
@@ -305,18 +383,64 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       }))
     }));
     setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
-    setIsProductModalOpen(false);
   };
 
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    promotionService.updatePromotionCampaign(params.id, promotion).then(() => {
-      router.push("/promotion");
-    }).catch(error => {
+
+    const payload = {
+      type: promotion.type,
+      value: promotion.value,
+      start_date: promotion.start_date,
+      end_date: promotion.end_date,
+      name: promotion.name,
+      products: promotion.embedded_discount_products.map(product => ({
+        product_id: product.product_id,
+      })),
+      insurances: promotion.embedded_discount_insurances.map(insurance => ({
+        insurance_id: insurance.insurance_id,
+      })),
+      plans: promotion.embedded_discount_plans.map(plan => ({
+        plan_id: plan.plan_id,
+      })),
+      channels: promotion.embedded_discount_channels.map(channel => ({
+        channel_id: channel.channel_id,
+      })),
+    };
+
+    try {
+      const response: AxiosResponse<any> = await promotionService.updatePromotionCampaign(params.id, payload);
+      const { data } = response;
+
+      if (data.data != null) {
+        if (data.data.error.code === 409) {
+          // Handle 409 Conflict error
+          setErrorMessage("The plan already been used by other embedded campaign.");
+        } else {
+          // Handle successful response
+          setAlertMessage("Promotion updated successfully!");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+            router.push("/promotion");
+          }, 2000); // Delay redirection until after alert is hidden
+        }
+      } else {
+        // Handle successful response
+        setAlertMessage("Promotion updated successfully!");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          router.push("/promotion");
+        }, 2000); // Delay redirection until after alert is hidden
+      }
+    } catch (error) {
       console.error("Failed to update promotion:", error);
-    });
+      setErrorMessage("Failed to update promotion.");
+    }
   };
+
 
   const handleCancel = () => {
     router.push("/promotion");
@@ -345,6 +469,34 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             onChange={handleChange}
             className="w-3/4 p-2 border rounded"
             required
+          />
+        </div>
+
+        <div className="flex items-center">
+          <label htmlFor="type" className="w-1/4 font-semibold">Type:</label>
+          <input
+            id="type"
+            name="type"
+            type="text"
+            value={promotion.type}
+            onChange={handleChange}
+            className={`w-3/4 p-2 rounded ${promotion.active ? 'border-none bg-gray-100' : 'border border-gray-300'}`}
+            required
+            disabled={promotion.active}
+          />
+        </div>
+
+        <div className="flex items-center">
+          <label htmlFor="type" className="w-1/4 font-semibold">Currency:</label>
+          <input
+            id="value_currency"
+            name="value_currency"
+            type="text"
+            value={promotion.value_currency}
+            onChange={handleChange}
+            className={`w-3/4 p-2 rounded ${promotion.active ? 'border-none bg-gray-100' : 'border border-gray-300'}`}
+            required
+            disabled
           />
         </div>
 
@@ -388,15 +540,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         </div>
 
         <div>
-          <label className="font-semibold">Active:</label>
-          <input
-            id="active"
-            name="active"
-            type="checkbox"
-            checked={promotion.active}
-            onChange={handleChange}
-            className="ml-2"
-          />
+          <label className="font-semibold">Status:</label>
+          <span className={`ml-2 ${promotion.active ? 'text-green-500' : 'text-red-500'}`}>
+            {promotion.active ? 'Active' : 'Inactive'}
+          </span>
         </div>
 
         {/* Channels */}
@@ -409,19 +556,23 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           >
             Add Channel
           </button>
-          {promotion.embedded_discount_channels.map((channel, index) => (
-            <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{channel.channel_name}</span>
-              <button
-                type="button"
-                onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
-                className="text-red-500"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))}
+          {promotion.embedded_discount_channels.map((channel, index) => {
+            const channelDetail = channels?.data.find(c => c.id === channel.channel_id);
+            return (
+              <div key={index} className="flex items-center mt-2">
+                <span className="mr-2">{channelDetail ? channelDetail.name : 'Unknown Channel'}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
+                  className="text-red-500"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            );
+          })}
         </div>
+
 
         {/* Insurances */}
         <div>
@@ -456,23 +607,26 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <button
             type="button"
             onClick={handleAddProduct}
-            className={`ml-2 px-4 py-2 ${hasProducts ? 'bg-blue-500' : 'bg-gray-500'} text-white rounded`}
-            disabled={!hasProducts}
+            className={`ml-2 px-4 py-2 ${selectedInsurances.length > 0 ? 'bg-blue-500' : 'bg-gray-500'} text-white rounded`}
+            disabled={selectedInsurances.length === 0}
           >
             Add Product
           </button>
-          {promotion.embedded_discount_products.map((product, index) => (
-            <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{product.product_name}</span>  {/* Display product_name here */}
-              <button
-                type="button"
-                onClick={() => handleRemoveProduct(index)}
-                className="text-red-500"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))}
+          {promotion.embedded_discount_products.map((product, index) => {
+            const productDetail = products.find(p => p.id === product.product_id);
+            return (
+              <div key={index} className="flex items-center mt-2">
+                <span className="mr-2">{productDetail ? productDetail.name : 'Unknown Product'}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveProduct(index)}
+                  className="text-red-500"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         {/* Plans */}
@@ -486,19 +640,44 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           >
             Add Plan
           </button>
-          {promotion.embedded_discount_plans.map((plan, index) => (
-            <div key={index} className="flex items-center mt-2">
-              <span className="mr-2">{plan.plan_id}</span>
-              <button
-                type="button"
-                onClick={() => handleRemovePlan(index)}
-                className="text-red-500"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))}
+          {promotion.embedded_discount_plans.map((plan, index) => {
+            const planDetail = plans.find(p => p.id === plan.plan_id);
+            return (
+              <div key={index} className="flex items-center mt-2">
+                <span className="mr-2">{planDetail ? planDetail.name : 'Unknown Plan'}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemovePlan(index)}
+                  className="text-red-500"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            );
+          })}
         </div>
+
+        {promotion.type === "voucher" && voucherDetails && (
+          <div className="bg-gray-100 p-4 rounded shadow-md mt-4">
+            <h2 className="text-lg font-semibold">Voucher Details</h2>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Campaign ID:</label>
+              <span className="w-3/4">{voucherDetails.campaign_id}</span>
+            </div>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Code:</label>
+              <span className="w-3/4">{voucherDetails.code}</span>
+            </div>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Usage Limit:</label>
+              <span className="w-3/4">{voucherDetails.usage_limit}</span>
+            </div>
+            <div className="flex items-center mt-2">
+              <label className="w-1/4 font-semibold">Used Count:</label>
+              <span className="w-3/4">{voucherDetails.used_count}</span>
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-end space-x-4">
           <button
@@ -518,6 +697,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </button>
         </div>
       </form>
+
+      {/* Alert Popup */}
+      {showAlert && (
+        <div className="alert">
+          {alertMessage}
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {errorMessage && (
+        <ErrorModal
+          isOpen={!!errorMessage}
+          message={errorMessage}
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
 
       {/* Channel Modal */}
       {isChannelModalOpen && (
@@ -555,6 +750,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onSelect={handleSelectProduct}
           products={products}
           selectedProductIds={selectedProductIds}
+          initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
         />
       )}
 
@@ -565,6 +761,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onClose={() => setIsPlanModalOpen(false)}
           onSelect={handleSelectPlan}
           plans={plans}
+          products={promotion.embedded_discount_products.map(p => ({
+            id: p.product_id,
+            name: p.product_name,
+          }))}
+          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
+          selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
         />
       )}
 
