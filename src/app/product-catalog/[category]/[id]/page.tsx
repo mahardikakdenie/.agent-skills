@@ -5,60 +5,243 @@ import {
   ProductCatalogDto,
   ProductCatalogService,
 } from "@/services/product-catalog.service";
-import { Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import PackageList from "./package-list";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useProducts } from "../../hooks";
+import { Controller, useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const DetaildPage = ({ params }: { params: { id: string } }) => {
+const DetaildPage = ({
+  params,
+}: {
+  params: { id: string; category: string };
+}) => {
   useRequireAuth();
-  const [plan, setPlan] = useState<ProductCatalogDto | null>(null);
   const { id } = params;
+  const [selectedInsurance, setSelectedInsurance] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
+  const [name, setName] = useState("");
+
+  const [currency, setCurrency] = useState("");
+
+  const [slug, setSlug] = useState("");
+
+  const {
+    fetchInsurances,
+    insurances,
+    products,
+    fetchProducts,
+    savePlan,
+    fetchPlanById,
+    plan,
+  } = useProducts();
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    shouldUnregister: false,
+    defaultValues: {
+      insuranceId: selectedInsurance,
+      productId: selectedProduct,
+      name,
+      slug,
+    },
+    values: {
+      insuranceId: selectedInsurance,
+      productId: selectedProduct,
+      name,
+      slug,
+    },
+  });
+
   useEffect(() => {
     if (id) {
-      const productCatalogService = new ProductCatalogService();
-      productCatalogService.getPlanById(id).then((response) => {
-        setPlan(response.data[0]);
-      });
+      (async () => {
+        await fetchInsurances({});
+        await fetchPlanById(id);
+      })();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (plan === null || insurances.length === 0) {
+      return;
+    }
+
+    fetchProducts({ insuranceId: plan.products.insurances.id });
+    setValue("name", plan.name);
+    setValue("slug", plan.slug);
+    setValue("insuranceId", plan.products.insurances.id);
+  }, [plan, insurances]);
+
+  useEffect(() => {
+    if (plan === null && products.length === 0) {
+      return;
+    }
+    setValue("productId", plan.product);
+  }, [plan, products]);
+
+  const onSubmit = async (data: any) => {
+    await savePlan(data);
+  };
+
   return (
-    plan && (
-      <>
-        <div className="p-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-primary font-bold mb-4">
-            {plan?.name.split("|").map((item, i) => {
-              return (
-                <span key={i}>
-                  {item}
-                  <br />
-                </span>
-              );
-            })}
-          </h1>
-          <h2 className="text-primary font-semibold mb-2">Products</h2>
-          <ul>
-            <li key={plan?.products.id} className="mb-4">
-              <h3 className="text-primary font-medium mb-2">
-                {plan?.products.name}
-              </h3>
-              <h4 className="text-md font-semibold mb-1">Insurances</h4>
-              <ul className="list-disc list-inside ml-4 mb-2">
-                <li key={plan?.products.insurances.id} className="text-sm">
-                  {plan?.products.insurances.name}
-                </li>
-              </ul>
-              <h4 className="text-md font-semibold mb-1">Categories</h4>
-              <ul className="list-disc list-inside ml-4">
-                <li key={plan?.products.categories.id} className="text-sm">
-                  {plan?.products.categories.name}
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-        <PackageList id={id} />
-      </>
-    )
+    <>
+      <div className="p-10">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Plan Name
+            </label>
+            <Controller
+              name="name"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Plan Name is required" }}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="name"
+                  placeholder="Plan Name"
+                  {...field}
+                  className={`mt-1 block w-full ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } rounded-md shadow-sm`}
+                />
+              )}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Slug
+            </label>
+            <Controller
+              name="slug"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Slug is required" }}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="slug"
+                  placeholder="Slug"
+                  {...field}
+                  className={`mt-1 block w-full ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } rounded-md shadow-sm`}
+                />
+              )}
+            />
+            {errors.slug && (
+              <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="insuranceId"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Insurance
+            </label>
+            <Controller
+              name="insuranceId"
+              control={control}
+              rules={{ required: "Insurance ID is required" }}
+              render={({ field }) => (
+                <Select {...field} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Insurance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Insurances</SelectLabel>
+                      {insurances.map((insurance: any) => (
+                        <SelectItem key={insurance.id} value={insurance.id}>
+                          {insurance.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.insuranceId && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.insuranceId.message?.toString()}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="productId"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Product
+            </label>
+            <Controller
+              name="productId"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Product ID is required" }}
+              render={({ field }) => (
+                <Select {...field} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Products</SelectLabel>
+                      {products.map((product: any) => (
+                        <SelectItem key={product.id} value={product.id}>
+                          {product.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.productId && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.productId.message?.toString()}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+      <PackageList id={id} />
+    </>
   );
 };
 
