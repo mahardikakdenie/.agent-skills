@@ -774,5 +774,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const EditPromotionPageWithSidebar = WithSidebar(EditPromotionPage);
+const EditPromotionPageWithSidebar = (params: any) =>
+  WithSidebar(EditPromotionPage)(params);
 export default EditPromotionPageWithSidebar;
