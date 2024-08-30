@@ -65,4 +65,10 @@ export interface ErrorModalProps {
     isOpen: boolean;
     message: string;
     onClose: () => void;
-  }
+}
+
+export interface Voucher {
+    id: number;
+    code: string;
+    usage_limit: number;
+}

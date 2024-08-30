@@ -160,126 +160,90 @@ const ViewPromotionDetails: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded shadow-md">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="flex flex-col items-center">
-          <h2 className="text-xl font-semibold mb-2">Promotion Details</h2>
-
-          <div className="text-center">
-            <p>
-              <strong>Name:</strong> {promotion.name}
-            </p>
-            <p>
-              <strong>Type:</strong> {promotion.type}
-            </p>
-            <p>
-              <strong>Start Date:</strong> {formatDate(promotion.start_date)}
-            </p>
-            <p>
-              <strong>End Date:</strong> {formatDate(promotion.end_date)}
-            </p>
-            <p>
-              <strong>Value:</strong> {promotion.value_currency}{" "}
-              {promotion.value}
-            </p>
-            <p>
-              <strong>Status:</strong>{" "}
-              {promotion.active ? "Active" : "Inactive"}
-            </p>
-            <p>
-              <strong>Minimum Amount:</strong> {promotion.minimum_amount}
-            </p>
-            <p>
-              <strong>Maximum Amount:</strong> {promotion.maximum_amount}
-            </p>
-          </div>
+    <div className="p-6 bg-white rounded shadow-md flex flex-col items-center">
+      <div className="mb-8 w-full max-w-2xl">
+        <h2 className="text-2xl font-semibold mb-4 text-center">Promotion Details</h2>
+        <div className="text-center">
+          <p><strong>Name:</strong> {promotion.name}</p>
+          <p><strong>Type:</strong> {promotion.type}</p>
+          <p><strong>Start Date:</strong> {formatDate(promotion.start_date)}</p>
+          <p><strong>End Date:</strong> {formatDate(promotion.end_date)}</p>
+          <p><strong>Value:</strong> {promotion.value_currency} {promotion.value}</p>
+          <p><strong>Status:</strong> {promotion.active ? "Active" : "Inactive"}</p>
+          <p><strong>Minimum Amount:</strong> {promotion.minimum_amount}</p>
+          <p><strong>Maximum Amount:</strong> {promotion.maximum_amount}</p>
         </div>
+      </div>
 
-        <div className="flex flex-col items-center">
-          <h2 className="text-xl font-semibold mb-4">Associated Details</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
-            <div>
-              <p>
-                <strong>Channels</strong>
-              </p>
-              {promotion.embedded_discount_channels.length > 0 ? (
-                promotion.embedded_discount_channels.map(
-                  (channel: { channel_id: string }) => (
-                    <p key={channel.channel_id}>
-                      {channelNames.get(channel.channel_id) || "Unknown"}
-                    </p>
-                  )
+      <div className="mb-8 w-full max-w-2xl">
+        <h2 className="text-2xl font-semibold mb-4 text-center">Associated Details</h2>
+        <div className="grid grid-cols-1 gap-4 text-center">
+          <div>
+            <p className="font-semibold">Channels</p>
+            {promotion.embedded_discount_channels.length > 0 ? (
+              promotion.embedded_discount_channels.map(
+                (channel: { channel_id: string }) => (
+                  <p key={channel.channel_id}>
+                    {channelNames.get(channel.channel_id) || "Unknown"}
+                  </p>
                 )
-              ) : (
-                <p>No channels</p>
-              )}
-            </div>
-            <div>
-              <p>
-                <strong>Insurances</strong>
-              </p>
-              {promotion.embedded_discount_insurances.length > 0 ? (
-                promotion.embedded_discount_insurances.map(
-                  (insurance: { insurance_id: string }) => (
-                    <p key={insurance.insurance_id}>
-                      {insuranceNames.get(insurance.insurance_id) || "Unknown"}
-                    </p>
-                  )
+              )
+            ) : (
+              <p>No channels</p>
+            )}
+          </div>
+          <div>
+            <p className="font-semibold">Insurances</p>
+            {promotion.embedded_discount_insurances.length > 0 ? (
+              promotion.embedded_discount_insurances.map(
+                (insurance: { insurance_id: string }) => (
+                  <p key={insurance.insurance_id}>
+                    {insuranceNames.get(insurance.insurance_id) || "Unknown"}
+                  </p>
                 )
-              ) : (
-                <p>No insurances</p>
-              )}
-            </div>
-            <div>
-              <p>
-                <strong>Products</strong>
-              </p>
-              {promotion.embedded_discount_products.length > 0 ? (
-                promotion.embedded_discount_products.map(
-                  (product: { product_id: string }) => (
-                    <p key={product.product_id}>
-                      {productNames.get(product.product_id) || "Unknown"}
-                    </p>
-                  )
+              )
+            ) : (
+              <p>No insurances</p>
+            )}
+          </div>
+          <div>
+            <p className="font-semibold">Products</p>
+            {promotion.embedded_discount_products.length > 0 ? (
+              promotion.embedded_discount_products.map(
+                (product: { product_id: string }) => (
+                  <p key={product.product_id}>
+                    {productNames.get(product.product_id) || "Unknown"}
+                  </p>
                 )
-              ) : (
-                <p>No products</p>
-              )}
-            </div>
-            <div>
-              <p>
-                <strong>Plans</strong>
-              </p>
-              {promotion.embedded_discount_plans.length > 0 ? (
-                promotion.embedded_discount_plans.map(
-                  (plan: { plan_id: string }) => (
-                    <p key={plan.plan_id}>
-                      {planNames.get(plan.plan_id) || "Unknown"}
-                    </p>
-                  )
+              )
+            ) : (
+              <p>No products</p>
+            )}
+          </div>
+          <div>
+            <p className="font-semibold">Plans</p>
+            {promotion.embedded_discount_plans.length > 0 ? (
+              promotion.embedded_discount_plans.map(
+                (plan: { plan_id: string }) => (
+                  <p key={plan.plan_id}>
+                    {planNames.get(plan.plan_id) || "Unknown"}
+                  </p>
                 )
-              ) : (
-                <p>No plans</p>
-              )}
-            </div>
+              )
+            ) : (
+              <p>No plans</p>
+            )}
           </div>
         </div>
       </div>
 
       {promotion.type === "voucher" && voucher && (
-        <div className="flex flex-col items-center mb-8">
-          <h2 className="text-xl font-semibold mb-2">Voucher Details</h2>
+        <div className="mb-8 w-full max-w-2xl">
+          <h2 className="text-2xl font-semibold mb-4 text-center">Voucher Details</h2>
           <div className="text-center">
-            <p>
-              <strong>Code:</strong> {voucher.code}
-            </p>
-            <p>
-              <strong>Usage Limit:</strong> {voucher.usage_limit}
-            </p>
-            <p>
-              <strong>Used Count:</strong> {voucher.used_count}
-            </p>
+            <p><strong>Code:</strong> {voucher.code}</p>
+            <p><strong>Usage Limit:</strong> {voucher.usage_limit}</p>
+            <p><strong>Used Count:</strong> {voucher.used_count}</p>
           </div>
         </div>
       )}
