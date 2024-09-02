@@ -12,6 +12,7 @@ import { PlanService } from "@/services/plan.services";
 import { Insurance, Plan, Product } from "../dto/promotion.dto";
 import ChannelSelectionModal from "../components/channel-selection-modal";
 import InsuranceSelectionModal from "../components/insurance-selection-modal";
+import ProductSelectionModal from "../components/product-selection-modal";
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -36,7 +37,6 @@ interface ChannelResponseDTO {
   page: number;
 }
 
-
 const CreatePromotionPage = () => {
   const router = useRouter();
   const promotionService = new PromotionService();
@@ -47,7 +47,6 @@ const CreatePromotionPage = () => {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
-
   const [promotion, setPromotion] = useState<PromotionDetails>({
     campaign_id: "",
     name: "",
@@ -73,6 +72,8 @@ const CreatePromotionPage = () => {
   const [insurances, setInsurances] = useState<Insurance[]>([]);
   const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<Set<string>>(new Set());
   const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchChannels(1);
@@ -81,6 +82,15 @@ const CreatePromotionPage = () => {
   useEffect(() => {
     fetchInsurances();
   }, []);
+
+  useEffect(() => {
+    if (selectedInsuranceIds.size > 0) {
+      fetchProductsByInsurances(Array.from(selectedInsuranceIds));
+    } else {
+      setProducts([]);
+      setHasProducts(false);
+    }
+  }, [selectedInsuranceIds]);
 
   const fetchChannels = async (page: number) => {
     try {
@@ -98,89 +108,6 @@ const CreatePromotionPage = () => {
     } catch (error) {
       console.error("Failed to fetch insurances:", error);
     }
-  };
-
-  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
-    const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
-      insurance_id: insurance.id,
-      insurance_name: insurance.name,
-      id: insurance.id,
-      name: insurance.name
-    }));
-
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_insurances: updatedInsurances
-    }));
-
-    setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
-    setIsInsuranceModalOpen(false);
-  };
-
-
-  const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
-    if (!isOpen) return null;
-
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="bg-white p-6 rounded shadow-md w-1/3">
-          <h2 className="text-lg font-semibold mb-4">Alert</h2>
-          <p>{message}</p>
-          <div className="flex justify-end mt-4">
-            <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const target = e.target;
-    const { name, value } = target;
-
-    if (target.type === 'checkbox') {
-      setPromotion(prevState => ({
-        ...prevState,
-        [name]: target.checked
-      }));
-    } else {
-      setPromotion(prevState => ({
-        ...prevState,
-        [name]: value
-      }));
-    }
-  };
-
-  const handleAddChannel = () => {
-    setSelectedChannelIds(new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id)));
-    setIsModalOpen(true);
-  };
-
-  const handleRemoveArrayItem = (arrayName: keyof PromotionDetails, index: number) => {
-    setPromotion(prevState => {
-      const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
-
-      if (arrayName === 'embedded_discount_insurances') {
-        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
-        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
-
-        return {
-          ...prevState,
-          [arrayName]: updatedArray,
-          embedded_discount_products: [],
-          embedded_discount_plans: []
-        };
-      }
-
-      return {
-        ...prevState,
-        [arrayName]: updatedArray,
-      };
-    });
-
-
   };
 
   const fetchProductsByInsurances = async (insuranceIds: string[]) => {
@@ -205,7 +132,85 @@ const CreatePromotionPage = () => {
     }
   };
 
+  const isProductButtonDisabled = selectedInsuranceIds.size === 0;
 
+  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+    const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
+      insurance_id: insurance.id,
+      insurance_name: insurance.name,
+      id: insurance.id,
+      name: insurance.name
+    }));
+
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: updatedInsurances
+    }));
+
+    setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
+    setIsInsuranceModalOpen(false);
+  };
+
+  const handleSelectProduct = (selectedProducts: Product[]) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_products: selectedProducts.map(product => ({
+        product_id: product.id,
+        product_name: product.name,
+      }))
+    }));
+    setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
+    setIsProductModalOpen(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const target = e.target;
+    const { name, value } = target;
+
+    if (target.type === 'checkbox') {
+      setPromotion(prevState => ({
+        ...prevState,
+        [name]: target.checked
+      }));
+    } else {
+      setPromotion(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleAddChannel = () => {
+    setSelectedChannelIds(new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id)));
+    setIsModalOpen(true);
+  };
+
+  const handleAddProduct = () => {
+    setIsProductModalOpen(true);
+  };
+
+  const handleRemoveArrayItem = (arrayName: keyof PromotionDetails, index: number) => {
+    setPromotion(prevState => {
+      const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
+
+      if (arrayName === 'embedded_discount_insurances') {
+        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
+        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
+
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_products: [],
+          embedded_discount_plans: []
+        };
+      }
+
+      return {
+        ...prevState,
+        [arrayName]: updatedArray,
+      };
+    });
+  };
 
   const handleSave = async () => {
     if (!promotion.name || !promotion.type || !promotion.start_date || !promotion.end_date) {
@@ -243,6 +248,24 @@ const CreatePromotionPage = () => {
     fetchChannels(page);
   };
 
+  const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded shadow-md w-1/3">
+          <h2 className="text-lg font-semibold mb-4">Alert</h2>
+          <p>{message}</p>
+          <div className="flex justify-end mt-4">
+            <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Create New Promotion Campaign</h1>
@@ -253,9 +276,9 @@ const CreatePromotionPage = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelect={handleSelectChannel}
+        selectedChannelIds={selectedChannelIds}
         channels={channels}
         onPageChange={handlePageChange}
-        selectedChannelIds={selectedChannelIds}
       />
       <InsuranceSelectionModal
         isOpen={isInsuranceModalOpen}
@@ -269,176 +292,183 @@ const CreatePromotionPage = () => {
           logo_url: ''
         }))}
       />
-      <div className="grid grid-cols-1 gap-6">
-        <div className="bg-white p-6 rounded shadow-md">
-
-          {/* Form fields */}
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Campaign Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={promotion.name}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type</label>
-            <select
-              id="type"
-              name="type"
-              value={promotion.type}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="embedded">Embedded</option>
-              <option value="voucher">Voucher</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">Start Date</label>
-            <input
-              type="date"
-              id="start_date"
-              name="start_date"
-              value={promotion.start_date}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">End Date</label>
-            <input
-              type="date"
-              id="end_date"
-              name="end_date"
-              value={promotion.end_date}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="value_currency" className="block text-sm font-medium text-gray-700">Currency</label>
-            <select
-              id="value_currency"
-              name="value_currency"
-              value={promotion.value_currency}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              {CURRENCIES.map(currency => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.name} ({currency.code})
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="value" className="block text-sm font-medium text-gray-700">Value</label>
-            <input
-              type="number"
-              id="value"
-              name="value"
-              value={promotion.value}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="minimum_amount" className="block text-sm font-medium text-gray-700">Minimum Amount</label>
-            <input
-              type="number"
-              id="minimum_amount"
-              name="minimum_amount"
-              value={promotion.minimum_amount}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="maximum_amount" className="block text-sm font-medium text-gray-700">Maximum Amount</label>
-            <input
-              type="number"
-              id="maximum_amount"
-              name="maximum_amount"
-              value={promotion.maximum_amount}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-
-          {/* Channels */}
-          <div className="mb-6">
-            <label className="font-semibold">Channels:</label>
+      <ProductSelectionModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        onSelect={handleSelectProduct}
+        products={products}
+        selectedProductIds={selectedProductIds}
+        initialSelectedProductIds={selectedProductIds}
+      />
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Promotion Name</label>
+        <input
+          type="text"
+          name="name"
+          value={promotion.name}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Promotion Type</label>
+        <select
+          name="type"
+          value={promotion.type}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          <option value="embedded">Embedded</option>
+          {/* Add other promotion types if needed */}
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Start Date</label>
+        <input
+          type="date"
+          name="start_date"
+          value={promotion.start_date}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">End Date</label>
+        <input
+          type="date"
+          name="end_date"
+          value={promotion.end_date}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Discount Value</label>
+        <input
+          type="number"
+          name="value"
+          value={promotion.value}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Currency</label>
+        <select
+          name="value_currency"
+          value={promotion.value_currency}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          {CURRENCIES.map(currency => (
+            <option key={currency.code} value={currency.code}>{currency.name}</option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Minimum Amount</label>
+        <input
+          type="number"
+          name="minimum_amount"
+          value={promotion.minimum_amount}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Maximum Amount</label>
+        <input
+          type="number"
+          name="maximum_amount"
+          value={promotion.maximum_amount}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Channels</label>
+        <button
+          type="button"
+          onClick={handleAddChannel}
+          className="p-2 bg-blue-500 text-white rounded-md"
+        >
+          Add Channel
+        </button>
+        {promotion.embedded_discount_channels.map((channel, index) => (
+          <div key={index} className="flex items-center mt-2">
+            <span className="text-sm">{channel.channel_name}</span>
             <button
               type="button"
-              onClick={handleAddChannel}
-              className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+              onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
+              className="ml-2 text-red-500"
             >
-              Add Channel
+              <FaTrash />
             </button>
-            {promotion.embedded_discount_channels.map((channel, index) => {
-              const channelDetail = channels?.data.find(c => c.id === channel.channel_id);
-              return (
-                <div key={index} className="flex items-center mt-2">
-                  <span className="mr-2">{channelDetail ? channelDetail.name : 'Unknown Channel'}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
-                    className="text-red-500"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              );
-            })}
           </div>
+        ))}
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Insurances</label>
+        <button
+          type="button"
+          onClick={() => setIsInsuranceModalOpen(true)}
+          className="p-2 bg-blue-500 text-white rounded-md"
+        >
+          Add Insurance
+        </button>
+        {promotion.embedded_discount_insurances.map((insurance, index) => (
+          <div key={index} className="flex items-center mt-2">
+            <span className="text-sm">{insurance.insurance_name}</span>
+            <button
+              type="button"
+              onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
+              className="ml-2 text-red-500"
+            >
+              <FaTrash />
+            </button>
+          </div>
+        ))}
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Products</label>
+        <button
+          type="button"
+          onClick={handleAddProduct}
+          className={`p-2 rounded-md ${isProductButtonDisabled ? 'bg-gray-500 text-white cursor-not-allowed' : 'bg-blue-500 text-white'}`}
+          disabled={isProductButtonDisabled}
+        >
+          Add Product
+        </button>
+        {promotion.embedded_discount_products.map((product, index) => (
+          <div key={index} className="flex items-center mt-2">
+            <span className="text-sm">{product.product_name}</span>
+            <button
+              type="button"
+              onClick={() => handleRemoveArrayItem('embedded_discount_products', index)}
+              className="ml-2 text-red-500"
+            >
+              <FaTrash />
+            </button>
+          </div>
+        ))}
+      </div>
 
-          {/* Insurances */}
-          <div className="my-6"> 
-            <div>
-              <label className="font-semibold">Insurances:</label>
-              <button
-                type="button"
-                onClick={() => setIsInsuranceModalOpen(true)}
-                className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
-              >
-                Add Insurance
-              </button>
-              {promotion.embedded_discount_insurances.map((insurance, index) => (
-                <div key={index} className="flex items-center mt-2">
-                  <span className="mr-2">{insurance.insurance_name}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
-                    className="text-red-500"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <button
-              onClick={handleSave}
-              disabled={loading}
-              className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
-              Save
-            </button>
-            <button
-              onClick={() => router.push('/promotions')}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ml-4"
-            >
-              <FaTimes className="mr-2" />
-              Cancel
-            </button>
-          </div>
-        </div>
+      <div className="flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
+          Save
+        </button>
+        <button
+          onClick={() => router.push('/promotions')}
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ml-4"
+        >
+          <FaTimes className="mr-2" />
+          Cancel
+        </button>
       </div>
     </div>
   );
