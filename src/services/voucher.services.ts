@@ -21,9 +21,11 @@ export class VoucherService {
     return this.httpClientPromotion.get('/api/voucher/' + id);
   }
 
-  async createVoucher(voucherData: { code: string; campaignID: string }): Promise<AxiosResponse<any>> {
+  async createVoucher(voucherData: { code: string; campaign_id: string }): Promise<AxiosResponse<any>> {
     const baseURL = process.env.NEXT_PUBLIC_PROMOTION_SERVICE_URL;
     const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+
+    console.log(voucherData.code + " " + voucherData.campaign_id);
 
     return axios.post(`${baseURL}/api/voucher`, voucherData, {
       headers: {

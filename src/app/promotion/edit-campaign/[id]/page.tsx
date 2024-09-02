@@ -113,7 +113,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           if (promotionData.type === "voucher") {
             voucherService.getVoucherByCampaignId(promotionData.campaign_id)
               .then(voucherRes => {
-                setVoucherDetails(voucherRes.data[0]);
+                setVoucherDetails(voucherRes.data);
               })
               .catch(error => {
                 console.error("Failed to fetch voucher details:", error);
@@ -128,6 +128,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     fetchChannels(1);
     fetchInsurances();
   }, [params.id]);
+
+
 
   useEffect(() => {
     if (selectedInsurances.length > 0) {
@@ -427,13 +429,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
     try {
       if (promotion.type === "voucher" && !promotion.active && vouchers.length > 0) {
-        const campaignID = params.id;
+        const campaign_id = params.id;
 
         for (const voucher of vouchers) {
           try {
             const newVoucher = {
               code: voucher.code,
-              campaignID,
+              campaign_id,
             };
 
             await voucherService.createVoucher(newVoucher);
@@ -737,24 +739,51 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         {promotion.type === "voucher" && voucherDetails && (
           <div className="bg-gray-100 p-4 rounded shadow-md mt-4">
             <h2 className="text-lg font-semibold">Voucher Details</h2>
-            <div className="flex items-center mt-2">
-              <label className="w-1/4 font-semibold">Campaign ID:</label>
-              <span className="w-3/4">{voucherDetails.campaign_id}</span>
-            </div>
-            <div className="flex items-center mt-2">
-              <label className="w-1/4 font-semibold">Code:</label>
-              <span className="w-3/4">{voucherDetails.code}</span>
-            </div>
-            <div className="flex items-center mt-2">
-              <label className="w-1/4 font-semibold">Usage Limit:</label>
-              <span className="w-3/4">{voucherDetails.usage_limit}</span>
-            </div>
-            <div className="flex items-center mt-2">
-              <label className="w-1/4 font-semibold">Used Count:</label>
-              <span className="w-3/4">{voucherDetails.used_count}</span>
-            </div>
+            {Array.isArray(voucherDetails) ? (
+              voucherDetails.map((voucher, index) => (
+                <div key={index} className="mb-4 p-4 bg-white rounded shadow-sm">
+                  <h3 className="text-md font-semibold">Voucher {index + 1}</h3>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Campaign ID:</label>
+                    <span className="w-3/4">{voucher.campaign_id}</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Code:</label>
+                    <span className="w-3/4">{voucher.code}</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Usage Limit:</label>
+                    <span className="w-3/4">{voucher.usage_limit}</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Used Count:</label>
+                    <span className="w-3/4">{voucher.used_count}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-4 bg-white rounded shadow-sm">
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Campaign ID:</label>
+                  <span className="w-3/4">{voucherDetails.campaign_id}</span>
+                </div>
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Code:</label>
+                  <span className="w-3/4">{voucherDetails.code}</span>
+                </div>
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Usage Limit:</label>
+                  <span className="w-3/4">{voucherDetails.usage_limit}</span>
+                </div>
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Used Count:</label>
+                  <span className="w-3/4">{voucherDetails.used_count}</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
+
 
         <div className="flex justify-end space-x-4">
           <button

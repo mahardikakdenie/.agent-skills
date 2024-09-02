@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-interface Insurance {
+export interface Insurance {
   id: string;
   name: string;
   brand: string;
-  logo_url: string;
+  logo_url: string | null;
 }
 
 interface InsuranceSelectionModalProps {

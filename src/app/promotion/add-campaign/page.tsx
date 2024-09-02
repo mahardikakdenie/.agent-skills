@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { PromotionService } from "@/services/promotion.service";
 import { FaSave, FaTimes, FaChevronLeft, FaChevronRight, FaTrash } from "react-icons/fa";
 import WithSidebar from "@/hoc/with-sidebar";
-import { PromotionDetails } from "../dto/promotion.details.dto";
+import { EmbeddedDiscountInsurance, PromotionDetails } from "../dto/promotion.details.dto";
 import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import { PlanService } from "@/services/plan.services";
 import { Insurance, Plan, Product } from "../dto/promotion.dto";
 import ChannelSelectionModal from "../components/channel-selection-modal";
+import InsuranceSelectionModal from "../components/insurance-selection-modal";
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -69,9 +70,16 @@ const CreatePromotionPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [channels, setChannels] = useState<ChannelResponseDTO | undefined>(undefined);
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
+  const [insurances, setInsurances] = useState<Insurance[]>([]);
+  const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<Set<string>>(new Set());
+  const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
 
   useEffect(() => {
     fetchChannels(1);
+  }, []);
+
+  useEffect(() => {
+    fetchInsurances();
   }, []);
 
   const fetchChannels = async (page: number) => {
@@ -82,6 +90,33 @@ const CreatePromotionPage = () => {
       console.error("Failed to fetch channels:", error);
     }
   };
+
+  const fetchInsurances = async () => {
+    try {
+      const response = await insuranceService.getInsurances();
+      setInsurances(response);
+    } catch (error) {
+      console.error("Failed to fetch insurances:", error);
+    }
+  };
+
+  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+    const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
+      insurance_id: insurance.id,
+      insurance_name: insurance.name,
+      id: insurance.id,
+      name: insurance.name
+    }));
+
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: updatedInsurances
+    }));
+
+    setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
+    setIsInsuranceModalOpen(false);
+  };
+
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -222,6 +257,18 @@ const CreatePromotionPage = () => {
         onPageChange={handlePageChange}
         selectedChannelIds={selectedChannelIds}
       />
+      <InsuranceSelectionModal
+        isOpen={isInsuranceModalOpen}
+        onClose={() => setIsInsuranceModalOpen(false)}
+        onSelect={handleSelectInsurance}
+        insurances={insurances}
+        initialSelectedInsurances={promotion.embedded_discount_insurances.map(ins => ({
+          id: ins.insurance_id,
+          name: ins.insurance_name,
+          brand: '',
+          logo_url: ''
+        }))}
+      />
       <div className="grid grid-cols-1 gap-6">
         <div className="bg-white p-6 rounded shadow-md">
 
@@ -323,7 +370,7 @@ const CreatePromotionPage = () => {
           </div>
 
           {/* Channels */}
-          <div>
+          <div className="mb-6">
             <label className="font-semibold">Channels:</label>
             <button
               type="button"
@@ -347,6 +394,32 @@ const CreatePromotionPage = () => {
                 </div>
               );
             })}
+          </div>
+
+          {/* Insurances */}
+          <div className="my-6"> 
+            <div>
+              <label className="font-semibold">Insurances:</label>
+              <button
+                type="button"
+                onClick={() => setIsInsuranceModalOpen(true)}
+                className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Add Insurance
+              </button>
+              {promotion.embedded_discount_insurances.map((insurance, index) => (
+                <div key={index} className="flex items-center mt-2">
+                  <span className="mr-2">{insurance.insurance_name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
+                    className="text-red-500"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="flex justify-end">
             <button

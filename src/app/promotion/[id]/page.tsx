@@ -7,7 +7,7 @@ import {
   InsuranceResponse,
   PlanResponse,
   ProductResponse,
-  PromotionDetails,
+  PromotionDetails
 } from "../dto/promotion.details.dto";
 import { PromotionService } from "@/services/promotion.service";
 import { PlanService } from "@/services/plan.services";
@@ -30,11 +30,11 @@ const ViewPromotionDetails: React.FC = () => {
     new Map()
   );
   const [planNames, setPlanNames] = useState<Map<string, string>>(new Map());
-  const [voucher, setVoucher] = useState<{
+  const [vouchers, setVouchers] = useState<{
     code: string;
     usage_limit: number;
     used_count: number;
-  } | null>(null);
+  }[]>([]);
 
   const { id } = useParams();
   const router = useRouter();
@@ -56,7 +56,6 @@ const ViewPromotionDetails: React.FC = () => {
         const promotionData = response.data[0];
         setPromotion(promotionData);
 
-        // Fetch names for channels, insurances, products, and plans
         const fetchNames = async () => {
           const channelFetches = promotionData.embedded_discount_channels.map(
             (channel: { channel_id: string }) =>
@@ -118,10 +117,10 @@ const ViewPromotionDetails: React.FC = () => {
         await fetchNames();
 
         if (promotionData.type === "voucher") {
-          const voucherResponse = await voucherService.getVoucherByCampaignId(
+          const vouchersResponse = await voucherService.getVoucherByCampaignId(
             promotionData.campaign_id
           );
-          setVoucher(voucherResponse.data[0]);
+          setVouchers(vouchersResponse.data);
         }
       } catch (err) {
         setError("Failed to fetch promotion details");
@@ -237,13 +236,17 @@ const ViewPromotionDetails: React.FC = () => {
         </div>
       </div>
 
-      {promotion.type === "voucher" && voucher && (
+      {promotion.type === "voucher" && vouchers.length > 0 && (
         <div className="mb-8 w-full max-w-2xl">
           <h2 className="text-2xl font-semibold mb-4 text-center">Voucher Details</h2>
           <div className="text-center">
-            <p><strong>Code:</strong> {voucher.code}</p>
-            <p><strong>Usage Limit:</strong> {voucher.usage_limit}</p>
-            <p><strong>Used Count:</strong> {voucher.used_count}</p>
+            {vouchers.map((voucher, index) => (
+              <div key={index} className="mb-4">
+                <p><strong>Code:</strong> {voucher.code}</p>
+                <p><strong>Usage Limit:</strong> {voucher.usage_limit}</p>
+                <p><strong>Used Count:</strong> {voucher.used_count}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -262,4 +265,5 @@ const ViewPromotionDetails: React.FC = () => {
 
 const PromotionWithSidebar = (params: any) =>
   WithSidebar(ViewPromotionDetails)(params);
+
 export default PromotionWithSidebar;

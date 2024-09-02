@@ -47,5 +47,3 @@ export interface Insurance {
   brand: string;
   logo_url: string | null;
 }
-
-
