@@ -102,7 +102,6 @@ const CreatePromotionPage = () => {
       fetchPlansByProducts(Array.from(selectedProductIds));
     } else {
       setPlans([]);
-      setHasProducts(false);
       setSelectedPlanIds(new Set());
     }
   }, [selectedProductIds]);
@@ -168,6 +167,7 @@ const CreatePromotionPage = () => {
   };
 
 
+
   const isProductButtonDisabled = !hasProducts;
 
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
@@ -188,15 +188,15 @@ const CreatePromotionPage = () => {
   };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
+    console.log('Selected Products:', selectedProducts);
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_products: selectedProducts.map(product => ({
         product_id: product.id,
-        product_name: product.name,
+        product_name: product.name
       }))
     }));
     setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
-    setIsProductModalOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -229,18 +229,8 @@ const CreatePromotionPage = () => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
-      if (arrayName === 'embedded_discount_products') {
-        const removedProductId = (prevState[arrayName] as Array<any>)[index].product_id;
-
-        return {
-          ...prevState,
-          [arrayName]: updatedArray,
-          embedded_discount_plans: prevState.embedded_discount_plans.filter(plan => plan.plan_id !== removedProductId)
-        };
-      }
-
       if (arrayName === 'embedded_discount_insurances') {
-        const removedInsuranceId = (prevState[arrayName] as Array<any>)[index].insurance_id;
+        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
 
         return {
@@ -256,17 +246,6 @@ const CreatePromotionPage = () => {
         [arrayName]: updatedArray,
       };
     });
-
-    if (arrayName === 'embedded_discount_products') {
-      setSelectedProductIds(prevIds => {
-        const updatedIds = new Set(prevIds);
-        updatedIds.delete((promotion[arrayName] as Array<any>)[index].product_id);
-        return updatedIds;
-      });
-      // Also clear plans
-      setPlans([]);
-      setSelectedPlanIds(new Set());
-    }
 
     if (arrayName === 'embedded_discount_insurances') {
       setSelectedInsurances(prevInsurances =>
@@ -329,7 +308,10 @@ const CreatePromotionPage = () => {
   const handleRemovePlan = (index: number) => {
     setPromotion(prevState => {
       const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
+
       const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
+      const updatedSelectedPlanIds = new Set(selectedPlanIds);
+      updatedSelectedPlanIds.delete(removedPlanId);
 
       return {
         ...prevState,
@@ -344,6 +326,38 @@ const CreatePromotionPage = () => {
     });
   };
 
+  const handleRemoveProduct = (index: number) => {
+    setPromotion(prevState => {
+      const removedProductId = prevState.embedded_discount_products[index].product_id;
+
+      const updatedProducts = prevState.embedded_discount_products.filter((_, i) => i !== index);
+
+      const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
+        updatedProducts.some(product => product.product_id === plan.plan_id)
+      );
+
+      const updatedSelectedPlanIds = new Set(selectedPlanIds);
+      prevState.embedded_discount_plans.forEach(plan => {
+        if (!updatedPlans.some(p => p.plan_id === plan.plan_id)) {
+          updatedSelectedPlanIds.delete(plan.plan_id);
+        }
+      });
+
+      return {
+        ...prevState,
+        embedded_discount_products: updatedProducts,
+        embedded_discount_plans: updatedPlans,
+      };
+    });
+
+    setSelectedProductIds(prevIds => {
+      const updatedIds = new Set(prevIds);
+      updatedIds.delete(promotion.embedded_discount_products[index].product_id);
+      return updatedIds;
+    });
+
+    setHasProducts(products.length > 0);
+  };
 
   const handlePageChange = (page: number) => {
     fetchChannels(page);
@@ -560,7 +574,7 @@ const CreatePromotionPage = () => {
             <span className="text-sm">{product.product_name}</span>
             <button
               type="button"
-              onClick={() => handleRemoveArrayItem('embedded_discount_products', index)}
+              onClick={() => handleRemoveProduct(index)}
               className="ml-2 text-red-500"
             >
               <FaTrash />
@@ -595,6 +609,7 @@ const CreatePromotionPage = () => {
           );
         })}
       </div>
+
       <div className="flex justify-end">
         <button
           onClick={handleSave}
