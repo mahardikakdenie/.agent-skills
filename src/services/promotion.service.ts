@@ -58,8 +58,20 @@ export class PromotionService {
     const baseURL = process.env.NEXT_PUBLIC_PROMOTION_SERVICE_URL;
     const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
 
-    // Use axios to send the PUT request
     return axios.put(`${baseURL}/api/campaign/update/${id}`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+  }
+
+
+  async createPromotion(data: any): Promise<AxiosResponse<any>> {
+    const baseURL = process.env.NEXT_PUBLIC_PROMOTION_SERVICE_URL;
+    const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+
+    return axios.post(`${baseURL}/api/campaign`, data, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,

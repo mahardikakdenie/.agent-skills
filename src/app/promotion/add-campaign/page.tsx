@@ -2,18 +2,19 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PromotionService } from "@/services/promotion.service";
-import { FaSave, FaTimes, FaChevronLeft, FaChevronRight, FaTrash } from "react-icons/fa";
+import { FaSave, FaTimes, FaTrash } from "react-icons/fa";
 import WithSidebar from "@/hoc/with-sidebar";
 import { EmbeddedDiscountInsurance, PromotionDetails } from "../dto/promotion.details.dto";
 import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import { PlanService } from "@/services/plan.services";
-import { Insurance, Plan, Product } from "../dto/promotion.dto";
+import { Insurance, NewPromotionCampaign, Plan, Product } from "../dto/promotion.dto";
 import ChannelSelectionModal from "../components/channel-selection-modal";
 import InsuranceSelectionModal from "../components/insurance-selection-modal";
 import ProductSelectionModal from "../components/product-selection-modal";
 import PlanSelectionModal from "../components/plan-selection-modal";
+import { AxiosResponse } from "axios";
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -48,7 +49,7 @@ const CreatePromotionPage = () => {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
-  const [promotion, setPromotion] = useState<PromotionDetails>({
+  const [promotion, setPromotion] = useState<NewPromotionCampaign>({
     campaign_id: "",
     name: "",
     type: "embedded",
@@ -57,12 +58,14 @@ const CreatePromotionPage = () => {
     value: 0,
     active: true,
     value_currency: 'IDR',
+    value_type: "fixed",
     minimum_amount: 0,
     maximum_amount: 0,
     embedded_discount_channels: [],
     embedded_discount_insurances: [],
     embedded_discount_plans: [],
     embedded_discount_products: [],
+    vouchers: []
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -82,6 +85,7 @@ const CreatePromotionPage = () => {
   const [voucherDetails, setVoucherDetails] = useState<any>(null);
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [voucherCode, setVoucherCode] = useState<string>('');
+  const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
     fetchChannels(1);
@@ -259,19 +263,75 @@ const CreatePromotionPage = () => {
     }
   };
 
-
+  const handleValueTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      value_type: e.target.value
+    }));
+  };
 
   const handleSave = async () => {
-    if (!promotion.name || !promotion.type || !promotion.start_date || !promotion.end_date) {
+
+    if (!promotion.type || !promotion.value || !promotion.value_type || !promotion.value_currency || !promotion.start_date || !promotion.end_date
+      || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount
+    ) {
       alert('Please fill in all required fields.');
       return;
     }
 
+    const payload = {
+      type: promotion.type,
+      value: promotion.value,
+      value_type: promotion.value_type,
+      value_currency: promotion.value_currency,
+      start_date: promotion.start_date,
+      end_date: promotion.end_date,
+      name: promotion.name,
+      minimum_amount: promotion.minimum_amount,
+      maximum_amount: promotion.maximum_amount,
+      products: promotion.embedded_discount_products.map(product => ({
+        product_id: product.product_id,
+      })),
+      insurances: promotion.embedded_discount_insurances.map(insurance => ({
+        insurance_id: insurance.insurance_id,
+      })),
+      plans: promotion.embedded_discount_plans.map(plan => ({
+        plan_id: plan.plan_id,
+      })),
+      channels: promotion.embedded_discount_channels.map(channel => ({
+        channel_id: channel.channel_id,
+      })),
+      vouchers: vouchers.map(voucher => ({
+        code: voucher.code,
+      })),
+    };
+
     setLoading(true);
 
     try {
-      // await promotionService.createPromotion(promotion);
-      router.push('/promotions');
+      //console.log("data submit: " + payload.value_type + " " + payload.plans[0].plan_id + " " + payload.vouchers[1].code);
+      const response: AxiosResponse<any> = await promotionService.createPromotion(payload);
+      const { data } = response;
+
+      if (data.data != null) {
+        if (data.data.error.code === 409) {
+          setErrorMessage("The plan has already been used by another embedded campaign.");
+        } else {
+          setAlertMessage("Promotion Campaign Submitted!");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+            router.push("/promotion");
+          }, 2000);
+        }
+      } else {
+        setAlertMessage("Promotion Campaign Submitted!");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          router.push("/promotion");
+        }, 2000);
+      }
     } catch (error) {
       console.error('Failed to save promotion:', error);
       setErrorMessage('Failed to create promotion. Please try again.');
@@ -484,6 +544,18 @@ const CreatePromotionPage = () => {
         />
       </div>
       <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Value Type</label>
+        <select
+          name="value_type"
+          value={promotion.value_type}
+          onChange={handleValueTypeChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          <option value="fixed">Fixed</option>
+          <option value="percentage">Percentage</option>
+        </select>
+      </div>
+      <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Discount Value</label>
         <input
           type="number"
@@ -671,7 +743,7 @@ const CreatePromotionPage = () => {
           className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
-          Save
+          Submit
         </button>
         <button
           onClick={() => router.push('/promotions')}
