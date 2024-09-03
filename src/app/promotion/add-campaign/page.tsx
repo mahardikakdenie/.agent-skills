@@ -15,6 +15,7 @@ import InsuranceSelectionModal from "../components/insurance-selection-modal";
 import ProductSelectionModal from "../components/product-selection-modal";
 import PlanSelectionModal from "../components/plan-selection-modal";
 import { AxiosResponse } from "axios";
+import { VoucherService } from "@/services/voucher.services";
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -46,6 +47,7 @@ const CreatePromotionPage = () => {
   const insuranceService = new InsuranceService();
   const productService = new ProductService();
   const planService = new PlanService();
+  const voucherService = new VoucherService();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
@@ -83,8 +85,9 @@ const CreatePromotionPage = () => {
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
   const [voucherDetails, setVoucherDetails] = useState<any>(null);
-  const [vouchers, setVouchers] = useState<any[]>([]);
+  const [vouchers, setVouchers] = useState<{ code: string; usageLimit: number }[]>([]);
   const [voucherCode, setVoucherCode] = useState<string>('');
+  const [voucherUsageLimit, setVoucherUsageLimit] = useState<number>(1);
   const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
@@ -195,7 +198,6 @@ const CreatePromotionPage = () => {
   };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
-    console.log('Selected Products:', selectedProducts);
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_products: selectedProducts.map(product => ({
@@ -271,14 +273,13 @@ const CreatePromotionPage = () => {
   };
 
   const handleSave = async () => {
-
     if (!promotion.type || !promotion.value || !promotion.value_type || !promotion.value_currency || !promotion.start_date || !promotion.end_date
       || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount
     ) {
       alert('Please fill in all required fields.');
       return;
     }
-
+  
     const payload = {
       type: promotion.type,
       value: promotion.value,
@@ -303,30 +304,46 @@ const CreatePromotionPage = () => {
       })),
       vouchers: vouchers.map(voucher => ({
         code: voucher.code,
+        usage_limit: voucher.usageLimit
       })),
     };
-
+  
     setLoading(true);
-
+  
     try {
-      //console.log("data submit: " + payload.value_type + " " + payload.plans[0].plan_id + " " + payload.vouchers[1].code);
-      const response: AxiosResponse<any> = await promotionService.createPromotion(payload);
-      const { data } = response;
-
-      if (data.data != null) {
-        if (data.data.error.code === 409) {
-          setErrorMessage("The plan has already been used by another embedded campaign.");
-        } else {
-          setAlertMessage("Promotion Campaign Submitted!");
-          setShowAlert(true);
-          setTimeout(() => {
-            setShowAlert(false);
-            router.push("/promotion");
-          }, 2000);
+      let voucherExists = false;
+      let existingVoucherCodes: string[] = []; // Track existing voucher codes
+  
+      for (const element of payload.vouchers) {
+        const voucherVerify: AxiosResponse<any> = await voucherService.getVoucherByCode(element.code);
+        const { data } = voucherVerify;
+  
+        if (data.length > 0 && data[0].code != null) {
+          voucherExists = true;
+          existingVoucherCodes.push(element.code); // Collect existing voucher codes
         }
-      } else {
-        setAlertMessage("Promotion Campaign Submitted!");
+      }
+  
+      if (voucherExists) {
+        setErrorMessage(`Voucher Code(s) ${existingVoucherCodes.join(', ')} already exist.`);
         setShowAlert(true);
+      } else {
+        const response: AxiosResponse<any> = await promotionService.createPromotion(payload);
+        const { data } = response;
+  
+        if (data.data != null) {
+          if (data.data.error.code === 409) {
+            setErrorMessage("The plan has already been used by another embedded campaign.");
+            setShowAlert(true);
+          } else {
+            setAlertMessage("Promotion Campaign Submitted!");
+            setShowAlert(true);
+          }
+        } else {
+          setErrorMessage("Promotion Campaign Submitted!");
+          setShowAlert(true);
+        }
+  
         setTimeout(() => {
           setShowAlert(false);
           router.push("/promotion");
@@ -340,6 +357,8 @@ const CreatePromotionPage = () => {
       setLoading(false);
     }
   };
+  
+
 
   const handleSelectChannel = (selectedChannels: Channel[]) => {
     setPromotion(prevState => ({
@@ -389,10 +408,14 @@ const CreatePromotionPage = () => {
     });
   };
 
-  const handleAddVoucher = (code: string) => {
+  const handleAddVoucher = (code: string, usageLimit: number) => {
     if (code.trim()) {
-      setVouchers(prevVouchers => [...prevVouchers, { code }]);
+      setVouchers(prevVouchers => [
+        ...prevVouchers,
+        { code, usageLimit }
+      ]);
       setVoucherCode('');
+      setVoucherUsageLimit(1);
     }
   };
 
@@ -708,11 +731,19 @@ const CreatePromotionPage = () => {
                 className="p-2 border rounded"
                 placeholder="Enter voucher code"
               />
+              <input
+                type="number"
+                value={voucherUsageLimit}
+                onChange={(e) => setVoucherUsageLimit(Number(e.target.value))}
+                className="p-2 border rounded ml-2 w-24"
+                placeholder="Usage limit"
+                min={1}
+              />
               <button
                 type="button"
-                onClick={() => handleAddVoucher(voucherCode)}
+                onClick={() => handleAddVoucher(voucherCode, voucherUsageLimit)}
                 className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
-                disabled={!voucherCode}
+                disabled={!voucherCode || voucherUsageLimit <= 0}
               >
                 Add Voucher
               </button>
@@ -720,7 +751,7 @@ const CreatePromotionPage = () => {
             <div className="mt-4">
               {vouchers.map((voucher, index) => (
                 <div key={index} className="flex items-center mt-2">
-                  <span className="mr-2">{voucher.code}</span>
+                  <span className="mr-2">{voucher.code} (Usage Limit: {voucher.usageLimit})</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveVoucher(index)}
@@ -746,7 +777,7 @@ const CreatePromotionPage = () => {
           Submit
         </button>
         <button
-          onClick={() => router.push('/promotions')}
+          onClick={() => router.push('/promotion')}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ml-4"
         >
           <FaTimes className="mr-2" />

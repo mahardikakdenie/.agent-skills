@@ -159,10 +159,10 @@ const ViewPromotionDetails: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded shadow-md flex flex-col items-center">
+    <div className="p-6 bg-white rounded shadow-md">
       <div className="mb-8 w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Promotion Details</h2>
-        <div className="text-center">
+        <h2 className="text-2xl font-semibold mb-4">Promotion Details</h2>
+        <div>
           <p><strong>Name:</strong> {promotion.name}</p>
           <p><strong>Type:</strong> {promotion.type}</p>
           <p><strong>Start Date:</strong> {formatDate(promotion.start_date)}</p>
@@ -175,8 +175,8 @@ const ViewPromotionDetails: React.FC = () => {
       </div>
 
       <div className="mb-8 w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Associated Details</h2>
-        <div className="grid grid-cols-1 gap-4 text-center">
+        <h2 className="text-2xl font-semibold mb-4">Associated Details</h2>
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <p className="font-semibold">Channels</p>
             {promotion.embedded_discount_channels.length > 0 ? (
@@ -238,8 +238,8 @@ const ViewPromotionDetails: React.FC = () => {
 
       {promotion.type === "voucher" && vouchers.length > 0 && (
         <div className="mb-8 w-full max-w-2xl">
-          <h2 className="text-2xl font-semibold mb-4 text-center">Voucher Details</h2>
-          <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-4">Voucher Details</h2>
+          <div>
             {vouchers.map((voucher, index) => (
               <div key={index} className="mb-4">
                 <p><strong>Code:</strong> {voucher.code}</p>

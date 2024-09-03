@@ -70,6 +70,7 @@ export interface NewPromotionCampaign {
 
 export interface Vouchers {
   code: string;
+  usage_limit: number;
 }
 
 export interface EmbeddedDiscountProduct {

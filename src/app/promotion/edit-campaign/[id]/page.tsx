@@ -63,6 +63,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [voucherDetails, setVoucherDetails] = useState<any>(null);
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [voucherCode, setVoucherCode] = useState<string>('');
+  const [voucherUsageLimit, setVoucherUsageLimit] = useState<number>(1);
 
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
@@ -305,10 +306,14 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setSelectedPlanIds(new Set());
   };
 
-  const handleAddVoucher = (code: string) => {
+  const handleAddVoucher = (code: string, usageLimit: number) => {
     if (code.trim()) {
-      setVouchers(prevVouchers => [...prevVouchers, { code }]);
+      setVouchers(prevVouchers => [
+        ...prevVouchers,
+        { code, usageLimit }
+      ]);
       setVoucherCode('');
+      setVoucherUsageLimit(1);
     }
   };
 
@@ -424,6 +429,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       })),
       vouchers: vouchers.map(voucher => ({
         code: voucher.code,
+        usage_limit: voucher.usageLimit
       })),
     };
 
@@ -435,9 +441,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           try {
             const newVoucher = {
               code: voucher.code,
+              usage_limit: voucher.usageLimit,
               campaign_id,
             };
-
+            console.log("test" + newVoucher.usage_limit);
             await voucherService.createVoucher(newVoucher);
           } catch (voucherError) {
             console.error("Failed to create voucher:", voucherError);
@@ -709,11 +716,19 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                       className="p-2 border rounded"
                       placeholder="Enter voucher code"
                     />
+                    <input
+                      type="number"
+                      value={voucherUsageLimit}
+                      onChange={(e) => setVoucherUsageLimit(Number(e.target.value))}
+                      className="p-2 border rounded ml-2 w-24"
+                      placeholder="Usage limit"
+                      min={1}
+                    />
                     <button
                       type="button"
-                      onClick={() => handleAddVoucher(voucherCode)}
+                      onClick={() => handleAddVoucher(voucherCode, voucherUsageLimit)}
                       className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
-                      disabled={!voucherCode}
+                      disabled={!voucherCode || voucherUsageLimit <= 0}
                     >
                       Add Voucher
                     </button>
@@ -721,7 +736,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   <div className="mt-4">
                     {vouchers.map((voucher, index) => (
                       <div key={index} className="flex items-center mt-2">
-                        <span className="mr-2">{voucher.code}</span>
+                        <span className="mr-2">{voucher.code} (Usage Limit: {voucher.usageLimit})</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveVoucher(index)}
