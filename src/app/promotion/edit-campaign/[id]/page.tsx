@@ -696,45 +696,50 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
         {/* Vouchers */}
         <div>
-          <label className="font-semibold">Vouchers:</label>
-          {promotion.active ? (
-            <p className="text-red-500">Cannot add vouchers while the promotion is active.</p>
-          ) : (
-            <>
-              <div className="flex items-center mt-2">
-                <input
-                  type="text"
-                  value={voucherCode}
-                  onChange={(e) => setVoucherCode(e.target.value)}
-                  className="p-2 border rounded"
-                  placeholder="Enter voucher code"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAddVoucher(voucherCode)}
-                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
-                  disabled={!voucherCode}
-                >
-                  Add Voucher
-                </button>
-              </div>
-              <div className="mt-4">
-                {vouchers.map((voucher, index) => (
-                  <div key={index} className="flex items-center mt-2">
-                    <span className="mr-2">{voucher.code}</span>
+          {promotion.type === 'voucher' && (
+            <div>
+              <label className="font-semibold">Vouchers:</label>
+              {!promotion.active ? (
+                <>
+                  <div className="flex items-center mt-2">
+                    <input
+                      type="text"
+                      value={voucherCode}
+                      onChange={(e) => setVoucherCode(e.target.value)}
+                      className="p-2 border rounded"
+                      placeholder="Enter voucher code"
+                    />
                     <button
                       type="button"
-                      onClick={() => handleRemoveVoucher(index)}
-                      className="text-red-500"
+                      onClick={() => handleAddVoucher(voucherCode)}
+                      className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                      disabled={!voucherCode}
                     >
-                      <FaTrash />
+                      Add Voucher
                     </button>
                   </div>
-                ))}
-              </div>
-            </>
+                  <div className="mt-4">
+                    {vouchers.map((voucher, index) => (
+                      <div key={index} className="flex items-center mt-2">
+                        <span className="mr-2">{voucher.code}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveVoucher(index)}
+                          className="text-red-500"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-red-500">Cannot add vouchers while the promotion is active.</p>
+              )}
+            </div>
           )}
         </div>
+
 
         {promotion.type === "voucher" && voucherDetails && (
           <div className="bg-gray-100 p-4 rounded shadow-md mt-4">
