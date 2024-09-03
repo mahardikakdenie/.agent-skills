@@ -16,6 +16,7 @@ import ProductSelectionModal from "../components/product-selection-modal";
 import PlanSelectionModal from "../components/plan-selection-modal";
 import { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
+import { isValid, parseISO } from 'date-fns';
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -273,13 +274,32 @@ const CreatePromotionPage = () => {
   };
 
   const handleSave = async () => {
-    if (!promotion.type || !promotion.value || !promotion.value_type || !promotion.value_currency || !promotion.start_date || !promotion.end_date
-      || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount
-    ) {
-      alert('Please fill in all required fields.');
+    // Reset alert messages before validation
+    setErrorMessage('');
+    setAlertMessage('');
+    setShowAlert(false);
+
+    if (!promotion.type || !promotion.value || !promotion.value_type || !promotion.value_currency ||
+      !promotion.start_date || !promotion.end_date || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount) {
+        setErrorMessage('Please fill in all required fields.');
       return;
     }
-  
+
+    const startDate = parseISO(promotion.start_date);
+    const endDate = parseISO(promotion.end_date);
+
+    if (!isValid(startDate) || !isValid(endDate)) {
+      setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
+      setShowAlert(true);
+      return;
+    }
+
+    if (startDate > endDate) {
+      setErrorMessage('End date must be later than start date.');
+      setShowAlert(true);
+      return;
+    }
+
     const payload = {
       type: promotion.type,
       value: promotion.value,
@@ -307,43 +327,41 @@ const CreatePromotionPage = () => {
         usage_limit: voucher.usageLimit
       })),
     };
-  
+
     setLoading(true);
-  
+
     try {
       let voucherExists = false;
-      let existingVoucherCodes: string[] = []; // Track existing voucher codes
-  
+      let existingVoucherCodes: string[] = [];
+
       for (const element of payload.vouchers) {
         const voucherVerify: AxiosResponse<any> = await voucherService.getVoucherByCode(element.code);
         const { data } = voucherVerify;
-  
+
         if (data.length > 0 && data[0].code != null) {
           voucherExists = true;
-          existingVoucherCodes.push(element.code); // Collect existing voucher codes
+          existingVoucherCodes.push(element.code);
         }
       }
-  
+
       if (voucherExists) {
         setErrorMessage(`Voucher Code(s) ${existingVoucherCodes.join(', ')} already exist.`);
         setShowAlert(true);
       } else {
         const response: AxiosResponse<any> = await promotionService.createPromotion(payload);
         const { data } = response;
-  
+
         if (data.data != null) {
           if (data.data.error.code === 409) {
             setErrorMessage("The plan has already been used by another embedded campaign.");
-            setShowAlert(true);
           } else {
-            setAlertMessage("Promotion Campaign Submitted!");
-            setShowAlert(true);
+            setErrorMessage("Promotion Campaign Submitted!");
           }
         } else {
           setErrorMessage("Promotion Campaign Submitted!");
-          setShowAlert(true);
         }
-  
+
+        setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
           router.push("/promotion");
@@ -357,7 +375,8 @@ const CreatePromotionPage = () => {
       setLoading(false);
     }
   };
-  
+
+
 
 
   const handleSelectChannel = (selectedChannels: Channel[]) => {

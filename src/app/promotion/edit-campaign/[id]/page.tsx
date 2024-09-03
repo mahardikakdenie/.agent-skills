@@ -408,6 +408,32 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Reset alert messages before validation
+    setErrorMessage('');
+    setAlertMessage('');
+    setShowAlert(false);
+
+    if (!promotion.type || !promotion.value || !promotion.value_currency ||
+      !promotion.start_date || !promotion.end_date || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount) {
+        setErrorMessage('Please fill in all required fields.');
+      return;
+    }
+
+
+    const startDate = parseISO(promotion.start_date);
+    const endDate = parseISO(promotion.end_date);
+
+    if (!isValid(startDate) || !isValid(endDate)) {
+      setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
+      setShowAlert(true);
+      return;
+    }
+
+    if (startDate > endDate) {
+      setErrorMessage('End date must be later than start date.');
+      setShowAlert(true);
+      return;
+    }
 
     const payload = {
       type: promotion.type,
