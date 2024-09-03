@@ -13,6 +13,7 @@ import { Insurance, Plan, Product } from "../dto/promotion.dto";
 import ChannelSelectionModal from "../components/channel-selection-modal";
 import InsuranceSelectionModal from "../components/insurance-selection-modal";
 import ProductSelectionModal from "../components/product-selection-modal";
+import PlanSelectionModal from "../components/plan-selection-modal";
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -74,6 +75,10 @@ const CreatePromotionPage = () => {
   const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
+  const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
 
   useEffect(() => {
     fetchChannels(1);
@@ -91,6 +96,36 @@ const CreatePromotionPage = () => {
       setHasProducts(false);
     }
   }, [selectedInsuranceIds]);
+
+  useEffect(() => {
+    if (selectedProductIds.size > 0) {
+      fetchPlansByProducts(Array.from(selectedProductIds));
+    } else {
+      setPlans([]);
+      setHasProducts(false);
+      setSelectedPlanIds(new Set());
+    }
+  }, [selectedProductIds]);
+
+
+  const fetchPlansByProducts = async (productIds: string[]) => {
+    if (productIds.length === 0) {
+      setPlans([]);
+      return;
+    }
+
+    try {
+      const responses = await Promise.all(
+        productIds.map(id => planService.getPlansByProductId(id))
+      );
+
+      const allPlans = responses.flat();
+      setPlans(allPlans);
+    } catch (error) {
+      console.error("Failed to fetch plans:", error);
+      setPlans([]);
+    }
+  };
 
   const fetchChannels = async (page: number) => {
     try {
@@ -132,7 +167,8 @@ const CreatePromotionPage = () => {
     }
   };
 
-  const isProductButtonDisabled = selectedInsuranceIds.size === 0;
+
+  const isProductButtonDisabled = !hasProducts;
 
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
     const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
@@ -193,8 +229,18 @@ const CreatePromotionPage = () => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
+      if (arrayName === 'embedded_discount_products') {
+        const removedProductId = (prevState[arrayName] as Array<any>)[index].product_id;
+
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_plans: prevState.embedded_discount_plans.filter(plan => plan.plan_id !== removedProductId)
+        };
+      }
+
       if (arrayName === 'embedded_discount_insurances') {
-        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
+        const removedInsuranceId = (prevState[arrayName] as Array<any>)[index].insurance_id;
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
 
         return {
@@ -210,7 +256,28 @@ const CreatePromotionPage = () => {
         [arrayName]: updatedArray,
       };
     });
+
+    if (arrayName === 'embedded_discount_products') {
+      setSelectedProductIds(prevIds => {
+        const updatedIds = new Set(prevIds);
+        updatedIds.delete((promotion[arrayName] as Array<any>)[index].product_id);
+        return updatedIds;
+      });
+      // Also clear plans
+      setPlans([]);
+      setSelectedPlanIds(new Set());
+    }
+
+    if (arrayName === 'embedded_discount_insurances') {
+      setSelectedInsurances(prevInsurances =>
+        prevInsurances.filter((_, i) => i !== index)
+      );
+      setSelectedProductIds(new Set());
+      setSelectedPlanIds(new Set());
+    }
   };
+
+
 
   const handleSave = async () => {
     if (!promotion.name || !promotion.type || !promotion.start_date || !promotion.end_date) {
@@ -243,6 +310,40 @@ const CreatePromotionPage = () => {
     setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id)));
     setIsModalOpen(false);
   };
+
+  const handleSelectPlan = (selectedPlans: Plan[]) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_plans: selectedPlans.map(plan => ({
+        plan_id: plan.id,
+        plan_name: plan.name
+      }))
+    }));
+    setIsPlanModalOpen(false);
+  };
+
+  const handleAddPlan = () => {
+    setIsPlanModalOpen(true);
+  };
+
+  const handleRemovePlan = (index: number) => {
+    setPromotion(prevState => {
+      const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
+      const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
+
+      return {
+        ...prevState,
+        embedded_discount_plans: updatedPlans,
+      };
+    });
+
+    setSelectedPlanIds(prevIds => {
+      const updatedIds = new Set(prevIds);
+      updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
+      return updatedIds;
+    });
+  };
+
 
   const handlePageChange = (page: number) => {
     fetchChannels(page);
@@ -298,7 +399,19 @@ const CreatePromotionPage = () => {
         onSelect={handleSelectProduct}
         products={products}
         selectedProductIds={selectedProductIds}
-        initialSelectedProductIds={selectedProductIds}
+        initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+      />
+      <PlanSelectionModal
+        isOpen={isPlanModalOpen}
+        onClose={() => setIsPlanModalOpen(false)}
+        onSelect={handleSelectPlan}
+        plans={plans}
+        products={promotion.embedded_discount_products.map(p => ({
+          id: p.product_id,
+          name: p.product_name,
+        }))}
+        preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
+        selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
       />
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Promotion Name</label>
@@ -385,6 +498,7 @@ const CreatePromotionPage = () => {
           className="w-full p-2 border border-gray-300 rounded-md"
         />
       </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Channels</label>
         <button
@@ -407,6 +521,7 @@ const CreatePromotionPage = () => {
           </div>
         ))}
       </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Insurances</label>
         <button
@@ -429,6 +544,7 @@ const CreatePromotionPage = () => {
           </div>
         ))}
       </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Products</label>
         <button
@@ -453,6 +569,32 @@ const CreatePromotionPage = () => {
         ))}
       </div>
 
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Plans</label>
+        <button
+          type="button"
+          onClick={handleAddPlan}
+          className={`p-2 rounded-md ${promotion.embedded_discount_products.length > 0 ? 'bg-blue-500' : 'bg-gray-500'} text-white ${promotion.embedded_discount_products.length > 0 ? 'hover:bg-blue-600' : 'cursor-not-allowed'} ${promotion.embedded_discount_products.length === 0 ? 'cursor-not-allowed' : ''}`}
+          disabled={promotion.embedded_discount_products.length === 0}
+        >
+          Add Plan
+        </button>
+        {promotion.embedded_discount_plans.map((plan, index) => {
+          const planDetail = plans.find(p => p.id === plan.plan_id);
+          return (
+            <div key={index} className="flex items-center mt-2">
+              <span className="text-sm">{planDetail ? planDetail.name : 'Unknown Plan'}</span>
+              <button
+                type="button"
+                onClick={() => handleRemovePlan(index)}
+                className="text-red-500"
+              >
+                <FaTrash />
+              </button>
+            </div>
+          );
+        })}
+      </div>
       <div className="flex justify-end">
         <button
           onClick={handleSave}
