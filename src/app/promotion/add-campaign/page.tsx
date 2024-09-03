@@ -79,6 +79,9 @@ const CreatePromotionPage = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
+  const [voucherDetails, setVoucherDetails] = useState<any>(null);
+  const [vouchers, setVouchers] = useState<any[]>([]);
+  const [voucherCode, setVoucherCode] = useState<string>('');
 
   useEffect(() => {
     fetchChannels(1);
@@ -326,6 +329,17 @@ const CreatePromotionPage = () => {
     });
   };
 
+  const handleAddVoucher = (code: string) => {
+    if (code.trim()) {
+      setVouchers(prevVouchers => [...prevVouchers, { code }]);
+      setVoucherCode('');
+    }
+  };
+
+  const handleRemoveVoucher = (index: number) => {
+    setVouchers(prevVouchers => prevVouchers.filter((_, i) => i !== index));
+  };
+
   const handleRemoveProduct = (index: number) => {
     setPromotion(prevState => {
       const removedProductId = prevState.embedded_discount_products[index].product_id;
@@ -446,7 +460,7 @@ const CreatePromotionPage = () => {
           className="w-full p-2 border border-gray-300 rounded-md"
         >
           <option value="embedded">Embedded</option>
-          {/* Add other promotion types if needed */}
+          <option value="voucher">Voucher</option>
         </select>
       </div>
       <div className="mb-4">
@@ -609,6 +623,46 @@ const CreatePromotionPage = () => {
           );
         })}
       </div>
+
+      <div>
+        {promotion.type === 'voucher' && (
+          <div>
+            <label className="block text-sm font-medium mb-1">Vouchers:</label>
+            <div className="flex items-center mt-2">
+              <input
+                type="text"
+                value={voucherCode}
+                onChange={(e) => setVoucherCode(e.target.value)}
+                className="p-2 border rounded"
+                placeholder="Enter voucher code"
+              />
+              <button
+                type="button"
+                onClick={() => handleAddVoucher(voucherCode)}
+                className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                disabled={!voucherCode}
+              >
+                Add Voucher
+              </button>
+            </div>
+            <div className="mt-4">
+              {vouchers.map((voucher, index) => (
+                <div key={index} className="flex items-center mt-2">
+                  <span className="mr-2">{voucher.code}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveVoucher(index)}
+                    className="text-red-500"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
 
       <div className="flex justify-end">
         <button
