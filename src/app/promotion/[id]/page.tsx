@@ -164,7 +164,7 @@ const ViewPromotionDetails: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Promotion Details</h2>
         <div>
           <p><strong>Name:</strong> {promotion.name}</p>
-          <p><strong>Type:</strong> {promotion.type}</p>
+          <p><strong>Promotion Type:</strong> {promotion.type}</p>
           <p><strong>Start Date:</strong> {formatDate(promotion.start_date)}</p>
           <p><strong>End Date:</strong> {formatDate(promotion.end_date)}</p>
           <p><strong>Value:</strong> {promotion.value_currency} {promotion.value}</p>

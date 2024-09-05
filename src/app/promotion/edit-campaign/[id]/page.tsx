@@ -415,7 +415,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
     if (!promotion.type || !promotion.value || !promotion.value_currency ||
       !promotion.start_date || !promotion.end_date || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount) {
-        setErrorMessage('Please fill in all required fields.');
+      setErrorMessage('Please fill in all required fields.');
       return;
     }
 
@@ -542,18 +542,19 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           />
         </div>
 
-        <div className="flex items-center">
-          <label htmlFor="type" className="w-1/4 font-semibold">Type:</label>
-          <input
+        <div className="flex items-center mb-4">
+          <label htmlFor="type" className="w-1/4 font-semibold">Promotion Type:</label>
+          <select
             id="type"
             name="type"
-            type="text"
             value={promotion.type}
             onChange={handleChange}
-            className={`w-3/4 p-2 rounded ${promotion.active ? 'border-none bg-gray-100' : 'border border-gray-300'}`}
-            required
+            className="w-3/4 p-2 border border-gray-300 rounded-md"
             disabled={promotion.active}
-          />
+          >
+            <option value="embedded">Embedded</option>
+            <option value="voucher">Voucher</option>
+          </select>
         </div>
 
         <div className="flex items-center">
