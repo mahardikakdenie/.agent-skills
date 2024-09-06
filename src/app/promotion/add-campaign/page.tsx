@@ -274,14 +274,14 @@ const CreatePromotionPage = () => {
   };
 
   const handleSave = async () => {
-    // Reset alert messages before validation
     setErrorMessage('');
     setAlertMessage('');
     setShowAlert(false);
 
     if (!promotion.type || !promotion.value || !promotion.value_type || !promotion.value_currency ||
       !promotion.start_date || !promotion.end_date || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount) {
-        setErrorMessage('Please fill in all required fields.');
+      setErrorMessage('Please fill in all required fields.');
+      setShowAlert(true);
       return;
     }
 
@@ -335,7 +335,7 @@ const CreatePromotionPage = () => {
       let existingVoucherCodes: string[] = [];
 
       for (const element of payload.vouchers) {
-        const voucherVerify: AxiosResponse<any> = await voucherService.getVoucherByCode(element.code);
+        const voucherVerify = await voucherService.getVoucherByCode(element.code);
         const { data } = voucherVerify;
 
         if (data.length > 0 && data[0].code != null) {
@@ -348,7 +348,7 @@ const CreatePromotionPage = () => {
         setErrorMessage(`Voucher Code(s) ${existingVoucherCodes.join(', ')} already exist.`);
         setShowAlert(true);
       } else {
-        const response: AxiosResponse<any> = await promotionService.createPromotion(payload);
+        const response = await promotionService.createPromotion(payload);
         const { data } = response;
 
         if (data.data != null) {
