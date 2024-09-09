@@ -5,7 +5,7 @@ import { PromotionService } from "@/services/promotion.service";
 import { format, parseISO, isValid } from "date-fns";
 import { FaSave, FaTimes, FaTrash } from "react-icons/fa";
 import WithSidebar from "@/hoc/with-sidebar";
-import { PromotionDetails } from "../../dto/promotion.details.dto";
+import { EmbeddedDiscountInsurance, PromotionDetails } from "../../dto/promotion.details.dto";
 import ChannelSelectionModal from "../../components/channel-selection-modal";
 import InsuranceSelectionModal from "../../components/insurance-selection-modal";
 import { ChannelService } from "@/services/channel.services";
@@ -64,6 +64,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [voucherCode, setVoucherCode] = useState<string>('');
   const [voucherUsageLimit, setVoucherUsageLimit] = useState<number>(1);
+  const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<Set<string>>(new Set());
 
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
@@ -365,23 +366,41 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setIsInsuranceModalOpen(true);
   };
 
-  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
-    const updatedInsurances = selectedInsurances.map(ins => ({
-      insurance_id: ins.id,
-      insurance_name: ins.name,
-      id: ins.id,
-      name: ins.name
-    }));
+  // const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+  //   const updatedInsurances = selectedInsurances.map(ins => ({
+  //     insurance_id: ins.id,
+  //     insurance_name: ins.name,
+  //     id: ins.id,
+  //     name: ins.name
+  //   }));
 
-    console.log('Updated Insurances:', updatedInsurances);
+  //   console.log('Updated Insurances:', updatedInsurances);
+
+  //   setPromotion(prevState => ({
+  //     ...prevState,
+  //     embedded_discount_insurances: updatedInsurances,
+  //     embedded_discount_products: [],
+  //   }));
+
+  //   setSelectedInsurances(selectedInsurances);
+  //   setIsInsuranceModalOpen(false);
+  // };
+
+
+  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+    const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
+      insurance_id: insurance.id,
+      insurance_name: insurance.name,
+      id: insurance.id,
+      name: insurance.name
+    }));
 
     setPromotion(prevState => ({
       ...prevState,
-      embedded_discount_insurances: updatedInsurances,
-      embedded_discount_products: [],
+      embedded_discount_insurances: updatedInsurances
     }));
 
-    setSelectedInsurances(selectedInsurances);
+    setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
     setIsInsuranceModalOpen(false);
   };
 
