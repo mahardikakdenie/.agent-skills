@@ -34,27 +34,36 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   initialSelectedProductIds
 }) => {
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
-  const [selectedCategory, setSelectedCategory] = useState<string>('All Product');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(''); // Default to empty string
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const productService = new ProductService();
 
+  const formatCategoryName = (name: string): string => {
+    return name
+      .replace(/[-_]/g, ' ') // Replace hyphens and underscores with spaces
+      .toLowerCase() // Convert to lowercase for uniformity
+      .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize the first letter of each word
+  };
+
   useEffect(() => {
     setSelectedProducts(new Set(initialSelectedProductIds));
   }, [initialSelectedProductIds]);
 
   useEffect(() => {
+    // Only run this effect once when the component mounts
     const fetchCategories = async () => {
       try {
         const response = await productService.getPromotionCategories();
 
-        if (response.data) {
+        if (response.data && Array.isArray(response.data)) {
           const categoryList = response.data.map((category: { id: string; name: string }) => ({
             id: category.id,
-            name: category.name
+            name: formatCategoryName(category.name)
           }));
+
           setCategories([{ id: '', name: 'All Product' }, ...categoryList]);
         } else {
           throw new Error('Unexpected response structure');
@@ -62,13 +71,14 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching categories:', err);
         setError('Failed to fetch categories');
         setLoading(false);
       }
     };
 
     fetchCategories();
-  }, [productService]);
+  }, []); // Empty dependency array ensures this effect runs only once
 
   const handleCheckboxChange = (productId: string) => {
     setSelectedProducts(prevSelected => {
@@ -89,11 +99,11 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   };
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(event.target.value);
+    setSelectedCategoryId(event.target.value);
   };
 
-  const filteredProducts = products.filter(product => 
-    selectedCategory === 'All Product' || product.category === selectedCategory
+  const filteredProducts = products.filter(product =>
+    selectedCategoryId === '' || product.category === selectedCategoryId
   );
 
   if (!isOpen) return null;
@@ -115,12 +125,12 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           ) : (
             <select
               id="category-filter"
-              value={selectedCategory}
+              value={selectedCategoryId}
               onChange={handleCategoryChange}
               className="block w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
               {categories.map(category => (
-                <option key={category.id} value={category.name}>
+                <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
