@@ -46,7 +46,7 @@ const TransactionsPage = () => {
       .getTransactions(page, rowsPerPage, tab == "All" ? "" : tab)
       .then((res) => {
         setTransactions(res.data);
-        setFilteredTransactions(res.data); // Initialize filtered transactions
+        setFilteredTransactions(res.data);
         setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
@@ -66,10 +66,6 @@ const TransactionsPage = () => {
       setFilteredTransactions(transactions);
     }
   }, [searchTerm, transactions]);
-
-  const handleViewDetail = (id: string) => {
-    router.push("/transactions/" + id);
-  };
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -410,32 +406,14 @@ const TransactionsPage = () => {
                   </select>
                   <span className="mr-2">of {totalItems} items</span>
                   <button
-                    onClick={() => {
-                      transactionService
-                        .getTransactions(page - 1, rowsPerPage, tab)
-                        .then((res) => {
-                          setTransactions(res.data);
-                          setPage(res.page);
-                          setTotalPages(res.pageTotal);
-                          setTotalItems(res.total);
-                        });
-                    }}
+                    onClick={() => setPage((prevState) => prevState - 1)}
                     disabled={page === 1}
                     title="Prev"
                   >
                     <ChevronLeft />
                   </button>
                   <button
-                    onClick={() => {
-                      transactionService
-                        .getTransactions(page + 1, rowsPerPage, tab)
-                        .then((res) => {
-                          setTransactions(res.data);
-                          setPage(res.page);
-                          setTotalPages(res.pageTotal);
-                          setTotalItems(res.total);
-                        });
-                    }}
+                    onClick={() => setPage((prevState) => prevState + 1)}
                     disabled={page === totalPages}
                     title="Next"
                   >
