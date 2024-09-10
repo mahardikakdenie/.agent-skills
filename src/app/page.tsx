@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import logoImg from "/public/images/logo-friendsure-lsh.webp";
 import { useState } from "react";
-import { Eye, EyeOff } from "react-feather"; // Import Feather icons
+import { Eye, EyeOff } from "react-feather";
 
 export default function LoginPage() {
   const authService = new AuthService();

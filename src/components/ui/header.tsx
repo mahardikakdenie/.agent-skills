@@ -23,7 +23,7 @@ const Header = () => {
       <div className="bg-[#006EA7] flex items-center w-full px-4 h-16">
         <div className="ml-auto">
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center text-white gap-2">
+            <DropdownMenuTrigger className="flex items-center text-white gap-2 text-sm">
               Hi, Super Admin <ChevronDown className="w-4 h-4" />
               <span className="text-[#5D5FEF] bg-white w-8 h-8 rounded-full inline-flex items-center justify-center font-semibold text-base">
                 S
