@@ -366,26 +366,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setIsInsuranceModalOpen(true);
   };
 
-  // const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
-  //   const updatedInsurances = selectedInsurances.map(ins => ({
-  //     insurance_id: ins.id,
-  //     insurance_name: ins.name,
-  //     id: ins.id,
-  //     name: ins.name
-  //   }));
-
-  //   console.log('Updated Insurances:', updatedInsurances);
-
-  //   setPromotion(prevState => ({
-  //     ...prevState,
-  //     embedded_discount_insurances: updatedInsurances,
-  //     embedded_discount_products: [],
-  //   }));
-
-  //   setSelectedInsurances(selectedInsurances);
-  //   setIsInsuranceModalOpen(false);
-  // };
-
 
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
     const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
@@ -433,10 +413,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setShowAlert(false);
 
     if (!promotion.type || !promotion.value || !promotion.value_currency ||
-      !promotion.start_date || !promotion.end_date || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount) {
+      !promotion.start_date || !promotion.end_date || !promotion.name ) {
       setErrorMessage('Please fill in all required fields.');
       return;
     }
+
+
+    if (promotion.embedded_discount_insurances.length < 1 || promotion.embedded_discount_products.length < 1 ||
+      promotion.embedded_discount_plans.length < 1 || promotion.embedded_discount_channels.length < 1) {
+      setErrorMessage('Please select at least one data in Channel/Insurance/Product/Plan.');
+      setShowAlert(true);
+      return;
+      }
 
 
     const startDate = parseISO(promotion.start_date);

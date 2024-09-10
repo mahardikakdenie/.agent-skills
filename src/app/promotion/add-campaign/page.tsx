@@ -285,6 +285,21 @@ const CreatePromotionPage = () => {
       return;
     }
 
+    if (promotion.embedded_discount_insurances.length < 1 || promotion.embedded_discount_products.length < 1 ||
+      promotion.embedded_discount_plans.length < 1 || promotion.embedded_discount_channels.length < 1) {
+      setErrorMessage('Please select at least one data in Channel/Insurance/Product/Plan.');
+      setShowAlert(true);
+      return;
+      }
+
+    if (promotion.type == "voucher"){
+      if (vouchers.length < 1  ){
+        setErrorMessage('Please insert at least one voucher.');
+        setShowAlert(true);
+        return;
+      }
+    }
+
     const startDate = parseISO(promotion.start_date);
     const endDate = parseISO(promotion.end_date);
 
