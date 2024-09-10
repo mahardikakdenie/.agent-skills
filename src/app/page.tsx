@@ -12,8 +12,10 @@ import { useAuth } from "@/context/auth.context";
 import { AuthService } from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import logoImg from "/public/images/logo-friendsure-lsh.webp";
 import Image from "next/image";
+import logoImg from "/public/images/logo-friendsure-lsh.webp";
+import { useState } from "react";
+import { Eye, EyeOff } from "react-feather"; // Import Feather icons
 
 export default function LoginPage() {
   const authService = new AuthService();
@@ -25,6 +27,8 @@ export default function LoginPage() {
     },
   });
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+
   const onSubmit = async (data: any) => {
     try {
       const token = await authService.login(data);
@@ -36,6 +40,7 @@ export default function LoginPage() {
 
     router.push("/transactions");
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-96 max-w-full">
@@ -61,10 +66,26 @@ export default function LoginPage() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem className="mb-4">
+                  <FormItem className="mb-4 relative">
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff size={18} />
+                          ) : (
+                            <Eye size={18} />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                   </FormItem>
                 )}
