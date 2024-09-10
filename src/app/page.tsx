@@ -12,6 +12,8 @@ import { useAuth } from "@/context/auth.context";
 import { AuthService } from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import logoImg from "/public/images/logo-friendsure-lsh.webp";
+import Image from "next/image";
 
 export default function LoginPage() {
   const authService = new AuthService();
@@ -32,42 +34,49 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/home");
+    router.push("/transactions");
   };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded shadow-md">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <div className="mt-4">
-              <Button type="submit">Login</Button>
-            </div>
-          </form>
-        </Form>
+      <div className="w-96 max-w-full">
+        <div className="px-6 pt-4 pb-6 bg-white rounded-lg shadow-lg">
+          <div className="px-16 mb-5">
+            <Image alt="Logo" src={logoImg} />
+          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <div className="pt-3">
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );
