@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ProductService } from '@/services/product.services';
 
 interface Product {
   id: string;
@@ -19,6 +20,11 @@ interface ProductSelectionModalProps {
   initialSelectedProductIds: Set<string>;
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   isOpen,
   onClose,
@@ -28,10 +34,41 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   initialSelectedProductIds
 }) => {
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [selectedCategory, setSelectedCategory] = useState<string>('All Product');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const productService = new ProductService();
 
   useEffect(() => {
     setSelectedProducts(new Set(initialSelectedProductIds));
   }, [initialSelectedProductIds]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await productService.getPromotionCategories();
+
+        if (response.data) {
+          const categoryList = response.data.map((category: { id: string; name: string }) => ({
+            id: category.id,
+            name: category.name
+          }));
+          setCategories([{ id: '', name: 'All Product' }, ...categoryList]);
+        } else {
+          throw new Error('Unexpected response structure');
+        }
+
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch categories');
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, [productService]);
 
   const handleCheckboxChange = (productId: string) => {
     setSelectedProducts(prevSelected => {
@@ -51,14 +88,48 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     onClose();
   };
 
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const filteredProducts = products.filter(product => 
+    selectedCategory === 'All Product' || product.category === selectedCategory
+  );
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded shadow-md w-3/4 max-w-2xl h-auto">
         <h2 className="text-2xl font-semibold mb-4">Select Products</h2>
+        
+        {/* Filter Dropdown */}
+        <div className="mb-4">
+          <label htmlFor="category-filter" className="block text-sm font-medium text-gray-700 mb-2">
+            Filter by Category
+          </label>
+          {loading ? (
+            <p className="text-center text-sm text-gray-500">Loading categories...</p>
+          ) : error ? (
+            <p className="text-center text-sm text-red-500">{error}</p>
+          ) : (
+            <select
+              id="category-filter"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="block w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            >
+              {categories.map(category => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
         <div className="overflow-y-auto max-h-80">
-          {products.length > 0 ? (
+          {filteredProducts.length > 0 ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -68,7 +139,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <tr key={product.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
@@ -88,6 +159,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
             <p className="text-center text-sm text-gray-500">No products available.</p>
           )}
         </div>
+
         <div className="flex justify-between mt-4">
           <button
             type="button"

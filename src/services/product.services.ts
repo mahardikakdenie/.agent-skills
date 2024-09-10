@@ -28,4 +28,12 @@ export class ProductService {
     return this.httpClientProduct.get('/v1/products?id=' + id);
   }
 
+  async getPromotionCategories(): Promise<any> {
+    return this.httpClientProduct.get('/v1/categories');
+  }
+
+  async getSpecProdbyCatIdAndInsId(catId: string, insId: string): Promise<any> {
+    return this.httpClientProduct.get('/v1/products?categoryId=' + catId +"&insuranceId=" + insId);
+  }
+
 }
