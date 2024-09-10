@@ -1,6 +1,6 @@
 // AxiosHttpClient.ts
-import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
-import { IHttpClient } from './http-client-interface';
+import axios, { AxiosInstance, CreateAxiosDefaults } from "axios";
+import { IHttpClient } from "./http-client-interface";
 
 export class AxiosHttpClient implements IHttpClient {
   private apiClient: AxiosInstance;
@@ -13,7 +13,7 @@ export class AxiosHttpClient implements IHttpClient {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          console.error('Unauthorized access - redirecting to login');
+          console.error("Unauthorized access - redirecting to login");
         }
         return Promise.reject(error);
       }

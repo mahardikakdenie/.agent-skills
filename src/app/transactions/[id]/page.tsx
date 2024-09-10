@@ -1,9 +1,20 @@
 "use client";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import WithSidebar from "@/hoc/with-sidebar";
 import { formatMoney } from "@/lib/formatter";
 import { TransactionService } from "@/services/transaction.service";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { ChevronLeft } from "react-feather";
 import { useParams } from "react-router-dom";
 
 const DetailTransaction = ({ params }: { params: { id: string } }) => {
@@ -70,38 +81,72 @@ const DetailTransaction = ({ params }: { params: { id: string } }) => {
       }, 0);
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <div className="p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Transaction Details</h2>
-        <div className="mb-2">
-          <span className="font-semibold">Insurance Name: </span>
-          {transaction.insurance.insurance.name}
+    <div className="flex flex-col w-full">
+      <div className="bg-white md:px-6 p-4 flex items-center">
+        <div>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/transactions">
+                  Transactions
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Detail</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <h2 className="text-black font-bold text-2xl mt-2">
+            Transaction Details
+          </h2>
         </div>
-        <div className="mb-2">
-          <span className="font-semibold">Plan Name: </span>
-          {transaction.insurance.plan.name}
+        <Link
+          href="/transactions"
+          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Kembali
+        </Link>
+      </div>
+      <div className="flex flex-col w-full p-4 md:p-6 ">
+        <div className="p-6 bg-white rounded-lg flex flex-col gap-4">
+          <div className="flex gap-2 text-sm font-medium">
+            <div className="min-w-40 w-40">Insurance Name</div>
+            <div className="max-w-1 w-1">:</div>
+            <div>{transaction.insurance.insurance.name}</div>
+          </div>
+          <div className="flex gap-2 text-sm font-medium">
+            <div className="min-w-40 w-40">Plan Name</div>
+            <div className="max-w-1 w-1">:</div>
+            <div>{transaction.insurance.plan.name}</div>
+          </div>
+          <div className="flex gap-2 text-sm font-medium">
+            <div className="min-w-40 w-40">Customer Name</div>
+            <div className="max-w-1 w-1">:</div>
+            <div>{transaction.customer.name}</div>
+          </div>
+          <div className="flex gap-2 text-sm font-medium">
+            <div className="min-w-40 w-40">Amount</div>
+            <div className="max-w-1 w-1">:</div>
+            <div>{formatMoney(totalPremium, "IDR")}</div>
+          </div>
+          <div className="flex gap-2 text-sm font-medium">
+            <div className="min-w-40 w-40">Status</div>
+            <div className="max-w-1 w-1">:</div>
+            <div className="text-warning">{transaction.status}</div>
+          </div>
+          {transaction.status.toLowerCase() === "pending" && (
+            <div className="mt-4">
+              <Button
+                onClick={() => handleUpdateToPaid(transaction.id)}
+                className="bg-primary text-white px-4 py-2 rounded-md"
+              >
+                Update to Paid
+              </Button>
+            </div>
+          )}
         </div>
-        <div className="mb-2">
-          <span className="font-semibold">Customer Name: </span>
-          {transaction.customer.name}
-        </div>
-        <div className="mb-2">
-          <span className="font-semibold">Amount: </span>
-          {formatMoney(totalPremium, "IDR")}
-        </div>
-        <div className="mb-2">
-          <span className="font-semibold">Status: </span>
-          {transaction.status}
-        </div>
-
-        {transaction.status.toLowerCase() === "pending" && (
-          <button
-            onClick={() => handleUpdateToPaid(transaction.id)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Update to Paid
-          </button>
-        )}
       </div>
     </div>
   );

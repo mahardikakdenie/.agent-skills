@@ -16,6 +16,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Loading from "@/components/ui/loading";
 import { useLoading } from "@/context/loading.context";
+import Sidebar from "@/components/ui/sidebar";
+import Header from "@/components/ui/header";
 
 export default function WithSidebar(Component: any) {
   const { isLoading } = useLoading();
@@ -28,61 +30,14 @@ export default function WithSidebar(Component: any) {
         checkLogin();
       };
       return (
-        <div className="">
+        <div className="flex">
           {isLoading && <Loading />}
-          <NavigationMenu>
-            <NavigationMenuList className="flex flex-row p-5">
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="/home"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Home
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="/transactions"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Transactions
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="/promotion"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Promotions
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem className="relative">
-                <NavigationMenuTrigger className="cursor-pointer">
-                  Product Catalog
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-0 top-10 bg-white rounded-md shadow-lg z-50">
-                  <ul className="grid w-[200px] gap-3 p-4 md:w-[200px] md:grid-cols-1 lg:w-[200px]">
-                    <ListItem href="/product-catalog/airpaz">Airpaz</ListItem>
-                    <ListItem href="/product-catalog/travel">Travel</ListItem>
-                    <ListItem href="/product-catalog/personal-accident">
-                      Personal Accident
-                    </ListItem>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className={navigationMenuTriggerStyle()}
-                  onClick={handleLogout}
-                  href="#"
-                >
-                  Logout
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <div>
-            <Component {...props} />
+          <Sidebar />
+          <div className="w-full relative flex flex-col">
+            <Header />
+            <div className="flex frame-body min-w-full">
+              <Component {...props} />
+            </div>
           </div>
         </div>
       );
