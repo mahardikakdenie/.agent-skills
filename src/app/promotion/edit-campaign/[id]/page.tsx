@@ -532,7 +532,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="w-full p-6 m-2 bg-white rounded shadow-md">
+    <div className="container mx-auto p-6">
       <h1 className="text-2xl font-semibold">Edit Promotion Campaign</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Form fields */}

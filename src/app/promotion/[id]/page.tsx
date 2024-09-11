@@ -159,7 +159,7 @@ const ViewPromotionDetails: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded shadow-md">
+    <div className="container mx-auto p-6">
       <div className="mb-8 w-full max-w-2xl">
         <h2 className="text-2xl font-semibold mb-4">Promotion Details</h2>
         <div>
