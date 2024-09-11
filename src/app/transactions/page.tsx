@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { formatMoney } from "@/lib/formatter";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Search, X } from "react-feather";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -23,8 +24,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/drewer";
 
 const TransactionsPage = () => {
   useRequireAuth();
@@ -301,7 +301,7 @@ const TransactionsPage = () => {
                   <TableCell>{transaction.customer.name}</TableCell>
                   <TableCell>IDR</TableCell>
                   <TableCell>{formatMoney(totalPremium, "IDR")}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-semibold">
                     <span className={getStatusColor(transaction.status)}>
                       {transaction.status}
                     </span>
