@@ -35,14 +35,11 @@ export class PromotionService {
   }
   
 
-  async getPromotionCampaign(page: number): Promise<PromotionResponse> {
-    let limit = 10;
-    if (page > 0) {
-      return this.httpClientPromotion.get('/api/campaign?page=' + page + "&limit=" + limit);
-    } else {
+  async getPromotionCampaign(page: number, limit: number): Promise<PromotionResponse> {
+    if (page <= 0) {
       page = 1;
-      return this.httpClientPromotion.get('/api/campaign?page=' + page + "&limit=" + limit);
     }
+    return this.httpClientPromotion.get(`/api/campaign?page=${page}&limit=${limit}`);
 
   }
 
