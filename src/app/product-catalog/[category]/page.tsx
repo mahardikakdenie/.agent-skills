@@ -34,56 +34,100 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   useRequireAuth();
   const { category } = params;
   const productCatalogService = new ProductCatalogService();
-  const [products, setProducts] = useState<ProductCatalogDto[]>([]);
+  const [product, setProducts] = useState<ProductCatalogDto[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  // const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchPlanName, setSearchPlanName] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
+  const [searchPlanName, setSearchPlanName] = useState("");
   const [searchInsurer, setSearchInsurer] = useState("");
+  const [searchProduct, setSearchProduct] = useState("");
   const { fetchInsurances, insurances } = useProducts();
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    productCatalogService
-      .getPlans(1, {
-        category,
-        planName: searchPlanName,
-        insuranceId: searchInsurer,
-      })
-      .then((res) => {
-        setProducts(res.data);
-        setPage(res.meta.page);
-        setTotalPages(res.meta.total);
-        setTotalItems(res.meta.total);
-      });
-  };
+  const { fetchProducts, products } = useProducts();
 
   const router = useRouter();
+
   useEffect(() => {
-    productCatalogService.getPlans(1, { category }).then((res) => {
-      setProducts(res.data);
-      setPage(res.meta.page);
-      setTotalPages(res.meta.total);
-      setTotalItems(res.meta.total);
-    });
+    const fetchPlans = async () => {
+      try {
+        const params = {
+          page: page,
+          pageSize: rowsPerPage,
+        };
+        if (searchPlanName) {
+          params.planName = searchPlanName;
+        }
+        if (searchInsurer) {
+          params.insuranceId = searchInsurer;
+        }
+        if (searchProduct) {
+          params.productId = searchProduct;
+        }
+        const response = await productCatalogService.getPlans(params);
+
+        setProducts(response.data);
+        setPage(response.meta.page);
+        setTotalPages(Math.ceil(response.meta.total / rowsPerPage));
+        setTotalItems(response.meta.total);
+      } catch (error) {
+        console.error("Failed to fetch plans:", error);
+      }
+    };
+
+    fetchPlans();
+  }, [
+    category,
+    searchPlanName,
+    searchInsurer,
+    searchProduct,
+    page,
+    rowsPerPage,
+  ]);
+
+  useEffect(() => {
     fetchInsurances({});
+    fetchProducts({});
   }, []);
 
-  // const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   setRowsPerPage(Number(e.target.value));
-  //   setPage(1);
-  // };
+  useEffect(() => {
+    if (searchInsurer) {
+      fetchProducts({
+        insuranceId: searchInsurer,
+      });
+    }
+  }, [searchInsurer]);
 
   const handleViewDetail = (id: string) => {
     router.push("/product-catalog/" + "/" + category + "/" + id);
   };
+
   const handleDeletePlan = (id: string) => {
     alert("delete");
   };
 
-  const handleSearchInsurerOnChange = (v: any) => {
+  const handleSearchInsurerOnChange = (v: string) => {
     setSearchInsurer(v);
   };
+
+  const handleSearchProductOnChange = (v: string) => {
+    setSearchProduct(v);
+  };
+
+  const handleClearFilters = () => {
+    setSearchPlanName("");
+    setSearchInsurer("");
+    setSearchProduct("");
+    setPage(1);
+  };
+
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number(e.target.value));
+    setPage(1);
+  };
+
+  const isClearButtonVisible =
+    searchPlanName !== "" || searchInsurer !== "" || searchProduct !== "";
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex gap-2">
@@ -101,8 +145,8 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
         </Button>
       </div>
 
-      <div className="w-full px-4 px-md-6 py-2 bg-white rounded-lg mb-4">
-        <form className="flex space-x-4" onSubmit={handleSearch}>
+      <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
+        <div className="flex space-x-4 items-center">
           <Input
             type="text"
             placeholder="Search by Plan Name"
@@ -128,15 +172,40 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
               </SelectGroup>
             </SelectContent>
           </Select>
-
-          <Button
-            type="submit"
-            className="bg-blue-500 text-white hover:bg-blue-700"
+          <Select
+            value={searchProduct}
+            onValueChange={handleSearchProductOnChange}
           >
-            Search
-          </Button>
-        </form>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Product" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Products</SelectLabel>
+                {/* {products.map((product: any) => (
+                  <SelectItem key={product.id} value={product.id}>
+                    {product.name}
+                  </SelectItem>
+                ))} */}
+                {products?.map((item: any, index) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {isClearButtonVisible && (
+            <Button
+              onClick={handleClearFilters}
+              className="text-red-500 bg-transparent border border-red-500 hover:bg-gray-300 rounded"
+            >
+              Clear
+            </Button>
+          )}
+        </div>
       </div>
+
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
         <Table>
           <TableHeader>
@@ -144,16 +213,14 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
               <TableHead>No.</TableHead>
               <TableHead>Insurer</TableHead>
               <TableHead>Plan Name</TableHead>
-              <TableHead>Category</TableHead>
+              <TableHead>Product</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product, index) => (
+            {product.map((product, index) => (
               <TableRow key={product.id}>
-                <TableCell>
-                  {(page - 1) * products.length + index + 1}
-                </TableCell>
+                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                 <TableCell>
                   <div className="flex gap-2 items-center">
                     <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
@@ -163,11 +230,11 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {product.name.split("|").map((item, i) => (
+                  {product.name.split("|").map((item: any, i: any) => (
                     <div key={i}>{item}</div>
                   ))}
                 </TableCell>
-                <TableCell>{product.products.categories.name}</TableCell>
+                <TableCell>{product.products.name}</TableCell>
                 <TableCell>
                   <div className="flex gap-4 items-center">
                     <Button
@@ -196,9 +263,9 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
                   <label htmlFor="rowsPerPage">Showing:</label>
                   <select
                     id="rowsPerPage"
-                    // value={}
-                    // onChange={}
                     className="p-2 border rounded"
+                    value={rowsPerPage}
+                    onChange={handleRowsPerPageChange}
                   >
                     {[10, 20, 30, 50].map((option) => (
                       <option key={option} value={option}>
@@ -208,9 +275,9 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
                   </select>
                   <span className="mr-2">of {totalItems} items</span>
                   <button
-                    onClick={() => setPage((prevState) => prevState + 1)}
-                    disabled={page === totalPages}
-                    title="Next"
+                    onClick={() => setPage((prevState) => prevState - 1)}
+                    disabled={page === 1}
+                    title="Previous"
                   >
                     <ChevronLeft />
                   </button>

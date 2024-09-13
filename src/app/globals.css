@@ -158,7 +158,7 @@ button:disabled {
 }
 [vaul-drawer][vaul-drawer-visible="true"][vaul-drawer-direction="right"] {
   max-width: 100%;
-  width: 700px;
+  width: 620px;
   margin-top: 0;
   height: 100vh;
   border-radius: 0;
