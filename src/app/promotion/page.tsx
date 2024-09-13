@@ -12,7 +12,7 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { PromotionService } from "@/services/promotion.service";
 import { useEffect, useState } from "react";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
@@ -28,16 +28,19 @@ const PromotionPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    promotionService.getPromotionCampaign(page, rowsPerPage).then((res) => {
-      setPromotions(res.data);
-      setTotalItems(res.total);
-      setTotalPages(res.pageTotal);
-    }).catch(error => {
-      console.error("Failed to fetch promotions:", error);
-    });
+    promotionService
+      .getPromotionCampaign(page, rowsPerPage)
+      .then((res) => {
+        setPromotions(res.data);
+        setTotalItems(res.total);
+        setTotalPages(res.pageTotal);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch promotions:", error);
+      });
   }, [page, rowsPerPage]);
 
-  const renderStatus = (isActive: any) => (isActive ? 'ACTIVE' : 'NOT ACTIVE');
+  const renderStatus = (isActive: any) => (isActive ? "ACTIVE" : "NOT ACTIVE");
   const handleViewDetail = (id: string) => {
     router.push("/promotion/" + id);
   };
@@ -47,11 +50,16 @@ const PromotionPage = () => {
 
   const handleDelete = (id: string) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
-      promotionService.deleteDiscCampaignById(id).then(() => {
-        setPromotions(promotions.filter(promotion => promotion.campaign_id !== id));
-      }).catch(error => {
-        console.error("Failed to delete promotion:", error);
-      });
+      promotionService
+        .deleteDiscCampaignById(id)
+        .then(() => {
+          setPromotions(
+            promotions.filter((promotion) => promotion.campaign_id !== id)
+          );
+        })
+        .catch((error) => {
+          console.error("Failed to delete promotion:", error);
+        });
     }
   };
 
@@ -86,9 +94,15 @@ const PromotionPage = () => {
               <TableCell>{promotion.name}</TableCell>
               <TableCell>{promotion.type}</TableCell>
               <TableCell>{promotion.value_currency}</TableCell>
-              <TableCell>{promotion.value_currency} {promotion.value}</TableCell>
-              <TableCell>{format(new Date(promotion.start_date), 'dd-MM-yyyy')}</TableCell>
-              <TableCell>{format(new Date(promotion.end_date), 'dd-MM-yyyy')}</TableCell>
+              <TableCell>
+                {promotion.value_currency} {promotion.value}
+              </TableCell>
+              <TableCell>
+                {format(new Date(promotion.start_date), "dd-MM-yyyy")}
+              </TableCell>
+              <TableCell>
+                {format(new Date(promotion.end_date), "dd-MM-yyyy")}
+              </TableCell>
               <TableCell>{renderStatus(promotion.active)}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">

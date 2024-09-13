@@ -69,7 +69,7 @@ export interface ProductcatalogResponse<T> {
   meta: {
     total: number;
     page: number;
-    pageSize: number;
+    limit: number;
   };
 }
 
@@ -77,7 +77,7 @@ export interface ProductCatalogRequest {
   insuranceId?: string;
   categoryId?: string;
   instantPolicy?: string;
-  pageSize?: number;
+  limit?: number;
   page?: number;
 }
 
@@ -86,7 +86,7 @@ export interface GetPlansRequest {
   insuranceId?: string;
   category?: string;
   productId?: string;
-  pageSize?: number;
+  limit?: number;
   page?: number;
 }
 

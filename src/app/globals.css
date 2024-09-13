@@ -167,3 +167,12 @@ button:disabled {
 [vaul-drawer][vaul-drawer-direction="right"]::after {
   display: none;
 }
+.table-product-catalog tr td:first-child {
+  max-width: 115px;
+}
+.table-product-catalog tr td:last-child {
+  max-width: 133px;
+}
+.table-transactions tr td:last-child {
+  max-width: 100px;
+}

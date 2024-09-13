@@ -51,24 +51,23 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
     const fetchPlans = async () => {
       try {
         const params = {
-          page: page,
+          page,
           pageSize: rowsPerPage,
+          ...(searchPlanName && { planName: searchPlanName }),
+          ...(searchInsurer && { insuranceId: searchInsurer }),
+          ...(searchProduct && { productId: searchProduct }),
         };
-        if (searchPlanName) {
-          params.planName = searchPlanName;
-        }
-        if (searchInsurer) {
-          params.insuranceId = searchInsurer;
-        }
-        if (searchProduct) {
-          params.productId = searchProduct;
-        }
+
         const response = await productCatalogService.getPlans(params);
 
-        setProducts(response.data);
-        setPage(response.meta.page);
-        setTotalPages(Math.ceil(response.meta.total / rowsPerPage));
-        setTotalItems(response.meta.total);
+        if (response?.data && response?.meta) {
+          setProducts(response.data);
+          setPage(response.meta.page);
+          setTotalPages(Math.ceil(response.meta.total / rowsPerPage));
+          setTotalItems(response.meta.total);
+        } else {
+          console.error("Unexpected response structure:", response);
+        }
       } catch (error) {
         console.error("Failed to fetch plans:", error);
       }
@@ -207,7 +206,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
       </div>
 
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
-        <Table>
+        <Table className="table-product-catalog">
           <TableHeader>
             <TableRow>
               <TableHead>No.</TableHead>

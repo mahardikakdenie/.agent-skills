@@ -219,7 +219,7 @@ const TransactionsPage = () => {
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
-        <Table>
+        <Table className="table-transactions">
           <TableHeader>
             <TableRow>
               <TableHead>No.</TableHead>
