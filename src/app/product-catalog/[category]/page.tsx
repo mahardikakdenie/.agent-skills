@@ -181,11 +181,6 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Products</SelectLabel>
-                {/* {products.map((product: any) => (
-                  <SelectItem key={product.id} value={product.id}>
-                    {product.name}
-                  </SelectItem>
-                ))} */}
                 {products?.map((item: any, index) => (
                   <SelectItem key={item.id} value={item.id}>
                     {item.name}
