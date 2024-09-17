@@ -168,7 +168,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 ">
           <div className="p-6 bg-white rounded-lg flex flex-col gap-4">
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="insuranceId"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -214,7 +214,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                 </p>
               )}
             </div>
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="productId"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -256,7 +256,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                 </p>
               )}
             </div>
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -286,8 +286,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                 </p>
               )}
             </div>
-
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="currency"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -303,7 +302,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                   <Input
                     type="text"
                     id="currency"
-                    placeholder="Choose currency"
+                    placeholder="Currency"
                     {...field}
                     className={`mt-1 block w-full ${
                       errors.currency ? "border-red-500" : "border-gray-300"
@@ -317,7 +316,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                 </p>
               )}
             </div>
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"

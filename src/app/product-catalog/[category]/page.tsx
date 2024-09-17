@@ -193,7 +193,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
           {isClearButtonVisible && (
             <Button
               onClick={handleClearFilters}
-              className="text-red-500 bg-transparent border border-red-500 hover:bg-gray-300 rounded"
+              className="text-red-500 bg-transparent border border-red-500 hover:bg-gray-300 rounded h-[56px]"
             >
               Clear
             </Button>
@@ -201,15 +201,15 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
         </div>
       </div>
 
-      <div className="w-full p-4 md:p-6 bg-white rounded-lg">
+      <div className="w-full p-4 bg-white rounded-lg">
         <Table className="table-product-catalog">
           <TableHeader>
             <TableRow>
-              <TableHead>No.</TableHead>
-              <TableHead>Insurer</TableHead>
+              <TableHead className="whitespace-nowrap">No.</TableHead>
+              <TableHead className="whitespace-nowrap">Insurer</TableHead>
               <TableHead>Plan Name</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead className="whitespace-nowrap">Product</TableHead>
+              <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

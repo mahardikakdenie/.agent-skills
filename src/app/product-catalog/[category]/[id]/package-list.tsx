@@ -35,20 +35,20 @@ export default function PackageList(props: Readonly<{ id: string }>) {
     // page(`/transactions/${id}`);
   };
   return (
-    <div className="w-full p-6 m-2 bg-white rounded shadow-md">
-      <Table>
+    <div className="w-full p-6 bg-white rounded-lg overflow-auto">
+      <Table className="table-search-params">
         <TableHeader>
           <TableRow>
             <TableHead>Search Params</TableHead>
             <TableHead>Premium</TableHead>
-            <TableHead>Currency</TableHead>
+            <TableHead className="whitespace-nowrap">Currency</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {packages?.map((packageData) => (
             <TableRow key={packageData.id}>
-              <TableCell>
+              <TableCell className="td-search-params">
                 {Object.keys(packageData.search_params).map((value, i) => {
                   return (
                     <div key={i}>
@@ -60,14 +60,14 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                   );
                 })}
               </TableCell>
-              <TableCell>
+              <TableCell className="whitespace-nowrap">
                 {formatMoney(packageData.premium, packageData.currency)}
               </TableCell>
               <TableCell>{packageData.currency}</TableCell>
               <TableCell>
                 <button
                   onClick={() => handleViewDetail(packageData.id)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                  className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 py-2 rounded-full whitespace-nowrap"
                 >
                   View
                 </button>
