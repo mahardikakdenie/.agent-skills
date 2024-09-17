@@ -30,6 +30,7 @@ export interface ProductCatalogDto {
     };
   };
 }
+
 export interface ProductList {
   id: string;
   created_at: string;
@@ -69,7 +70,6 @@ export interface ProductcatalogResponse<T> {
   meta: {
     total: number;
     page: number;
-    limit: number;
   };
 }
 
@@ -77,7 +77,6 @@ export interface ProductCatalogRequest {
   insuranceId?: string;
   categoryId?: string;
   instantPolicy?: string;
-  limit?: number;
   page?: number;
 }
 
@@ -86,7 +85,6 @@ export interface GetPlansRequest {
   insuranceId?: string;
   category?: string;
   productId?: string;
-  limit?: number;
   page?: number;
 }
 

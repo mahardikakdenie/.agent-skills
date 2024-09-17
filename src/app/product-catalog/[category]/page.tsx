@@ -53,6 +53,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
         const params = {
           page,
           pageSize: rowsPerPage,
+          category,
           ...(searchPlanName && { planName: searchPlanName }),
           ...(searchInsurer && { insuranceId: searchInsurer }),
           ...(searchProduct && { productId: searchProduct }),
@@ -146,13 +147,6 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
 
       <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
         <div className="flex space-x-4 items-center">
-          <Input
-            type="text"
-            placeholder="Search by Plan Name"
-            className="p-2 border rounded"
-            value={searchPlanName}
-            onChange={(e) => setSearchPlanName(e.target.value)}
-          />
           <Select
             value={searchInsurer}
             onValueChange={handleSearchInsurerOnChange}
@@ -189,6 +183,13 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
               </SelectGroup>
             </SelectContent>
           </Select>
+          <Input
+            type="text"
+            placeholder="Search by Plan Name"
+            className="p-2 border rounded"
+            value={searchPlanName}
+            onChange={(e) => setSearchPlanName(e.target.value)}
+          />
           {isClearButtonVisible && (
             <Button
               onClick={handleClearFilters}

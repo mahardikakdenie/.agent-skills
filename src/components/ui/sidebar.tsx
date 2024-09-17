@@ -12,6 +12,7 @@ import iconMobil from "/public/images/mobil.webp";
 import iconMotor from "/public/images/motor.webp";
 import iconPolicy from "/public/images/icon-policy.png";
 import iconClaim from "/public/images/icon-claim.png";
+import logoAirpaz from "/public/images/logo-airpaz.webp";
 import { Menu } from "react-feather";
 import { Button } from "./button";
 
@@ -118,7 +119,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <a
-                  href="/mobil"
+                  href="/product-catalog/mobil"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconMobil} alt="Mobil" className="w-7 min-w-7" />
@@ -127,11 +128,24 @@ const Sidebar = () => {
               </li>
               <li>
                 <a
-                  href="/motor"
+                  href="/product-catalog/motor"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconMotor} alt="Motor" className="w-7 min-w-7" />
                   Motor
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/product-catalog/airpaz"
+                  className="hover:text-[#006EA7] flex text-sm items-center gap-2"
+                >
+                  <Image
+                    src={logoAirpaz}
+                    alt="Airpaz"
+                    className="w-7 min-w-7"
+                  />
+                  Airpaz
                 </a>
               </li>
               <li className="mt-2 text-sm">
