@@ -34,5 +34,11 @@ export class AxiosHttpClient implements IHttpClient {
     const response = await this.apiClient.put<T>(url, data);
     return response.data;
   }
+
+  async delete<T>(url: string): Promise<T> {
+    const response = await this.apiClient.delete<T>(url);
+    return response.data;
+  }
+
   // Implement other methods as needed
 }
