@@ -389,12 +389,16 @@ const CreatePromotionPage = () => {
         setErrorMessage(`Voucher Code(s) ${existingVoucherCodes.join(', ')} already exist.`);
         setShowAlert(true);
       } else {
-        const response = await promotionService.createPromotion(payload);
+        const response: AxiosResponse<any> = await promotionService.createPromotion(payload);
         const { data } = response;
 
-        if (data.data != null) {
-          if (data.data.error.code === 409) {
-            setErrorMessage("The plan has already been used by another embedded campaign.");
+        // console.log("data: "+ response.data.data.data.error.code);
+
+        if (data.data.data != null) {
+          if (data.data.data.error.code === 409) {
+            setErrorMessage("Unable to submit campaign, one or more plan has already been used by another embedded campaign.");
+            setShowAlert(true);
+            return;
           } else {
             setErrorMessage("Promotion Campaign Submitted!");
           }
