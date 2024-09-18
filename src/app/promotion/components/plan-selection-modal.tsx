@@ -42,10 +42,22 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 }) => {
   const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
+  const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
+    // Initialize selected plans when preSelectedPlanIds changes
     setSelectedPlans(new Set(preSelectedPlanIds));
   }, [preSelectedPlanIds]);
+
+  useEffect(() => {
+    // Map product IDs to their names
+    const names: { [key: string]: string } = {};
+    // console.log("products planmodal: "+ products[0].id);
+    products.forEach(product => {
+      names[product.id] = product.name;
+    });
+    setProductNames(names);
+  }, [products]);
 
   const filteredPlans = plans.filter(plan => selectedProductIds.has(plan.product));
 
@@ -82,8 +94,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   };
 
   const getProductNameById = (productId: string) => {
-    const product = products.find(p => p.id === productId);
-    return product ? product.name : 'Unknown Product';
+    return productNames[productId] || 'Unknown Product';
   };
 
   if (!isOpen) return null;
@@ -152,3 +163,4 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 };
 
 export default PlanSelectionModal;
+

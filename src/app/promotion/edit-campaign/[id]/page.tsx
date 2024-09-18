@@ -56,7 +56,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [hasProducts, setHasProducts] = useState(false);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
@@ -114,7 +114,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setPromotion(promotionData);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
           setLoading(false);
-
+  
           if (promotionData.type === "voucher") {
             voucherService.getVoucherByCampaignId(promotionData.campaign_id)
               .then(voucherRes => {
@@ -124,6 +124,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                 console.error("Failed to fetch voucher details:", error);
               });
           }
+          console.log("product: " + promotionData.embedded_discount_products[0].product_id);
         })
         .catch(error => {
           console.error("Failed to fetch promotion details:", error);
@@ -409,7 +410,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
-    console.log('Selected Products:', selectedProducts);
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_products: selectedProducts.map(product => ({
@@ -511,7 +511,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         if (data.data.error.code === 409) {
           setErrorMessage("The plan has already been used by another embedded campaign.");
         } else {
-          setAlertMessage("Promotion updated successfully!");
+          setErrorMessage("Promotion updated successfully!");
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
@@ -519,7 +519,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           }, 2000);
         }
       } else {
-        setAlertMessage("Promotion updated successfully!");
+        setErrorMessage("Promotion updated successfully!");
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
@@ -549,42 +549,41 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink>Campaign</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <h2 className="text-black font-bold text-2xl mt-2">
-            Edit Campaign
-          </h2>
-        </div>
-        <div className="flex space-x-4">
-          <div
-            onClick={handleCancel}
-            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </div>
-          <button
-            type="submit"
-            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
-          >
-            <FaCheck className="mr-2" />
-            Save
-          </button>
-        </div>
-      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Form fields */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink>Campaign</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <h2 className="text-black font-bold text-2xl mt-2">
+              Edit Campaign
+            </h2>
+          </div>
+          <div className="flex space-x-4">
+            <div
+              onClick={handleCancel}
+              className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </div>
+            <button
+              type="submit"
+              className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+            >
+              <FaCheck className="mr-2" />
+              Save
+            </button>
+          </div>
+        </div>
 
         {/* Campaign Name and Promotion Type */}
         <div className="flex space-x-4">
