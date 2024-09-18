@@ -24,10 +24,15 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   initialSelectedInsurances,
 }) => {
   const [selectedInsurances, setSelectedInsurances] = useState<Set<string>>(new Set(initialSelectedInsurances.map(ins => ins.id)));
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     setSelectedInsurances(new Set(initialSelectedInsurances.map(ins => ins.id)));
   }, [initialSelectedInsurances]);
+
+  useEffect(() => {
+    setSelectAll(insurances.length > 0 && insurances.every(insurance => selectedInsurances.has(insurance.id)));
+  }, [selectedInsurances, insurances]);
 
   if (!isOpen) return null;
 
@@ -41,6 +46,16 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
       }
       return newSelectedInsurances;
     });
+  };
+
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedInsurances(new Set());
+    } else {
+      const allInsuranceIds = new Set(insurances.map(insurance => insurance.id));
+      setSelectedInsurances(allInsuranceIds);
+    }
+    setSelectAll(!selectAll);
   };
 
   const handleApply = () => {
@@ -57,7 +72,14 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAllChange}
+                    className="form-checkbox"
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
               </tr>

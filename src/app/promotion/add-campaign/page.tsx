@@ -275,13 +275,37 @@ const CreatePromotionPage = () => {
     }));
   };
 
+  const handleAddVoucher = async (code: string, usageLimit: number) => {
+    if (!code.trim()) return; // Early return if code is empty
+
+    // Check if the voucher already exists
+    const voucherVerify = await voucherService.getVoucherByCode(code);
+    const { data } = voucherVerify;
+
+    if (data.length > 0 && data[0].code != null) {
+      // If voucher exists, set error message and show alert
+      setErrorMessage(`Voucher Code ${code} already exists.`);
+      setShowAlert(true);
+      return; // Exit the function to prevent adding the voucher
+    }
+
+    // If the voucher does not exist, proceed to add it
+    setVouchers(prevVouchers => [
+      ...prevVouchers,
+      { code, usageLimit }
+    ]);
+    setVoucherCode('');
+    setVoucherUsageLimit(1);
+
+  };
+
   const handleSave = async () => {
     setErrorMessage('');
     setAlertMessage('');
     setShowAlert(false);
 
     if (!promotion.type || !promotion.value || !promotion.value_type || !promotion.value_currency ||
-      !promotion.start_date || !promotion.end_date || !promotion.name || !promotion.minimum_amount || !promotion.maximum_amount) {
+      !promotion.start_date || !promotion.end_date || !promotion.name) {
       setErrorMessage('Please fill in all required fields.');
       setShowAlert(true);
       return;
@@ -444,17 +468,6 @@ const CreatePromotionPage = () => {
     });
   };
 
-  const handleAddVoucher = (code: string, usageLimit: number) => {
-    if (code.trim()) {
-      setVouchers(prevVouchers => [
-        ...prevVouchers,
-        { code, usageLimit }
-      ]);
-      setVoucherCode('');
-      setVoucherUsageLimit(1);
-    }
-  };
-
   const handleRemoveVoucher = (index: number) => {
     setVouchers(prevVouchers => prevVouchers.filter((_, i) => i !== index));
   };
@@ -516,434 +529,429 @@ const CreatePromotionPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink>Campaign</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <h2 className="text-black font-bold text-2xl mt-2">
-            Create New Campaign
-          </h2>
-        </div>
-        <div className="flex space-x-4">
-          <div
-            onClick={() => router.push('/promotion')}
-            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
+      <form onSubmit={handleSave}>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink>Campaign</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <h2 className="text-black font-bold text-2xl mt-2">
+              Create New Campaign
+            </h2>
           </div>
-          <button
-            type="submit"
-            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
-          >
-            <FaCheck className="mr-2" />
-            Submit
-          </button>
+          <div className="flex space-x-4">
+            <div
+              onClick={() => router.push('/promotion')}
+              className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </div>
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+            >
+              {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
+              Submit
+            </button>
+          </div>
         </div>
-      </div>
-      {showAlert && (
-        <ErrorModal isOpen={showAlert} message={errorMessage!} onClose={() => setShowAlert(false)} />
-      )}
-      <ChannelSelectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelect={handleSelectChannel}
-        selectedChannelIds={selectedChannelIds}
-        channels={channels}
-        onPageChange={handlePageChange}
-      />
-      <InsuranceSelectionModal
-        isOpen={isInsuranceModalOpen}
-        onClose={() => setIsInsuranceModalOpen(false)}
-        onSelect={handleSelectInsurance}
-        insurances={insurances}
-        initialSelectedInsurances={promotion.embedded_discount_insurances.map(ins => ({
-          id: ins.insurance_id,
-          name: ins.insurance_name,
-          brand: '',
-          logo_url: ''
-        }))}
-      />
-      <ProductSelectionModal
-        isOpen={isProductModalOpen}
-        onClose={() => setIsProductModalOpen(false)}
-        onSelect={handleSelectProduct}
-        products={products}
-        selectedProductIds={selectedProductIds}
-        initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
-      />
-      <PlanSelectionModal
-        isOpen={isPlanModalOpen}
-        onClose={() => setIsPlanModalOpen(false)}
-        onSelect={handleSelectPlan}
-        plans={plans}
-        products={promotion.embedded_discount_products.map(p => ({
-          id: p.product_id,
-          name: p.product_name,
-        }))}
-        preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
-        selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
-      />
+        {showAlert && (
+          <ErrorModal isOpen={showAlert} message={errorMessage!} onClose={() => setShowAlert(false)} />
+        )}
+        <ChannelSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelect={handleSelectChannel}
+          selectedChannelIds={selectedChannelIds}
+          channels={channels}
+          onPageChange={handlePageChange}
+        />
+        <InsuranceSelectionModal
+          isOpen={isInsuranceModalOpen}
+          onClose={() => setIsInsuranceModalOpen(false)}
+          onSelect={handleSelectInsurance}
+          insurances={insurances}
+          initialSelectedInsurances={promotion.embedded_discount_insurances.map(ins => ({
+            id: ins.insurance_id,
+            name: ins.insurance_name,
+            brand: '',
+            logo_url: ''
+          }))}
+        />
+        <ProductSelectionModal
+          isOpen={isProductModalOpen}
+          onClose={() => setIsProductModalOpen(false)}
+          onSelect={handleSelectProduct}
+          products={products}
+          selectedProductIds={selectedProductIds}
+          initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+        />
+        <PlanSelectionModal
+          isOpen={isPlanModalOpen}
+          onClose={() => setIsPlanModalOpen(false)}
+          onSelect={handleSelectPlan}
+          plans={plans}
+          products={promotion.embedded_discount_products.map(p => ({
+            id: p.product_id,
+            name: p.product_name,
+          }))}
+          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
+          selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+        />
 
-      {/* Create New Campaign */}
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="name" className="font-normal">Promotion Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={promotion.name}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-            required
-          />
-        </div>
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="type" className="font-normal">Type</label>
-          <select
-            id="type"
-            name="type"
-            value={promotion.type}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-          >
-            <option value="embedded">Embedded</option>
-            <option value="voucher">Voucher</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="start_date" className="font-normal">Start Date</label>
-          <input
-            type="date"
-            id="start_date"
-            name="start_date"
-            value={promotion.start_date}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-            required
-          />
-        </div>
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="end_date" className="font-normal">End Date</label>
-          <input
-            type="date"
-            id="end_date"
-            name="end_date"
-            value={promotion.end_date}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-            required
-          />
-        </div>
-      </div>
-
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="value_type" className="font-normal">Value Type</label>
-          <select
-            id="value_type"
-            name="value_type"
-            value={promotion.value_type}
-            onChange={handleValueTypeChange}
-            className="p-2 border rounded w-full"
-          >
-            <option value="fixed">Fixed</option>
-            <option value="percentage">Percentage</option>
-          </select>
-        </div>
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="value" className="font-normal">Value</label>
-          <input
-            type="number"
-            id="value"
-            name="value"
-            value={promotion.value}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-            required
-          />
-        </div>
-      </div>
-
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="minimum_amount" className="font-normal">Minimum Amount</label>
-          <input
-            type="number"
-            id="minimum_amount"
-            name="minimum_amount"
-            value={promotion.minimum_amount}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-          />
-        </div>
-        <div className="flex flex-col w-1/2">
-          <label htmlFor="maximum_amount" className="font-normal">Maximum Amount</label>
-          <input
-            type="number"
-            id="maximum_amount"
-            name="maximum_amount"
-            value={promotion.maximum_amount}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-6"> 
+        {/* Create New Campaign */}
         <div className="flex space-x-4 mb-4">
-          <div className="flex flex-col w-full">
-            <label htmlFor="value_currency" className="font-normal">Currency</label>
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="name" className="font-normal">Promotion Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={promotion.name}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+              required
+            />
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="type" className="font-normal">Type</label>
             <select
-              id="value_currency"
-              name="value_currency"
-              value={promotion.value_currency}
+              id="type"
+              name="type"
+              value={promotion.type}
               onChange={handleChange}
               className="p-2 border rounded w-full"
             >
-              {CURRENCIES.map(currency => (
-                <option key={currency.code} value={currency.code}>{currency.name}</option>
-              ))}
+              <option value="embedded">Embedded</option>
+              <option value="voucher">Voucher</option>
             </select>
           </div>
         </div>
 
-        {/* Channels Section */}
-        <div>
-          <label className="font-normal">Channels</label>
-          <div className="flex items-start mt-2">
-            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_channels.length > 0 ? (
-                  promotion.embedded_discount_channels.map((channel, index) => (
-                    <div key={index} className="flex items-center mb-1 mr-1">
-                      <input
-                        type="text"
-                        value={channel.channel_name}
-                        readOnly
-                        className="p-1 border-none bg-white h-8 w-40"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
-                        className="text-red-500 ml-1"
-                      >
-                        X
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <span>No channels added</span>
-                )}
-              </div>
-            </div>
-            <div className="flex-shrink-0 flex justify-center items-center">
-              <button
-                type="button"
-                onClick={handleAddChannel}
-                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
-              >
-                <FaPlus className="mr-2" />
-                Channel
-              </button>
-            </div>
+        <div className="flex space-x-4 mb-4">
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="start_date" className="font-normal">Start Date</label>
+            <input
+              type="date"
+              id="start_date"
+              name="start_date"
+              value={promotion.start_date}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+              required
+            />
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="end_date" className="font-normal">End Date</label>
+            <input
+              type="date"
+              id="end_date"
+              name="end_date"
+              value={promotion.end_date}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+              required
+            />
           </div>
         </div>
 
-        {/* Insurances Section */}
-        <div>
-          <label className="font-normal">Insurances</label>
-          <div className="flex items-start mt-2">
-            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_insurances.length > 0 ? (
-                  promotion.embedded_discount_insurances.map((insurance, index) => (
-                    <div key={index} className="flex items-center mb-1 mr-1">
-                      <input
-                        type="text"
-                        value={insurance.insurance_name}
-                        readOnly
-                        className="p-1 border-none bg-white h-8 w-40"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
-                        className="text-red-500 ml-1"
-                      >
-                        X
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <span>No insurances added</span>
-                )}
-              </div>
-            </div>
-            <div className="flex-shrink-0 flex justify-center items-center">
-              <button
-                type="button"
-                onClick={() => setIsInsuranceModalOpen(true)}
-                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
-              >
-                <FaPlus className="mr-2" />
-                Insurance
-              </button>
-            </div>
+        <div className="flex space-x-4 mb-4">
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="value_type" className="font-normal">Value Type</label>
+            <select
+              id="value_type"
+              name="value_type"
+              value={promotion.value_type}
+              onChange={handleValueTypeChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="fixed">Fixed</option>
+              <option value="percentage">Percentage</option>
+            </select>
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="value" className="font-normal">Value</label>
+            <input
+              type="number"
+              id="value"
+              name="value"
+              value={promotion.value}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+              required
+            />
           </div>
         </div>
 
-        {/* Products Section */}
-        <div>
-          <label className="font-normal">Products</label>
-          <div className="flex items-start mt-2">
-            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_products.length > 0 ? (
-                  promotion.embedded_discount_products.map((product, index) => (
-                    <div key={index} className="flex items-center mb-1 mr-1">
-                      <input
-                        type="text"
-                        value={product.product_name}
-                        readOnly
-                        className="p-1 border-none bg-white h-8 w-40"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveProduct(index)}
-                        className="text-red-500 ml-1"
-                      >
-                        X
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <span>No products added</span>
-                )}
-              </div>
-            </div>
-            <div className="flex-shrink-0 flex justify-center items-center">
-              <button
-                type="button"
-                onClick={handleAddProduct}
-                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${isProductButtonDisabled ? 'bg-gray-500 text-white cursor-not-allowed' : ''}`}
-                disabled={isProductButtonDisabled}
-              >
-                <FaPlus className="mr-2" />
-                Product
-              </button>
-            </div>
+        <div className="flex space-x-4 mb-4">
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="minimum_amount" className="font-normal">Minimum Amount</label>
+            <input
+              type="number"
+              id="minimum_amount"
+              name="minimum_amount"
+              value={promotion.minimum_amount}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+            />
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label htmlFor="maximum_amount" className="font-normal">Maximum Amount</label>
+            <input
+              type="number"
+              id="maximum_amount"
+              name="maximum_amount"
+              value={promotion.maximum_amount}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+            />
           </div>
         </div>
 
-        {/* Plans Section */}
-        <div>
-          <label className="font-normal">Plans</label>
-          <div className="flex items-start mt-2">
-            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_plans.length > 0 ? (
-                  promotion.embedded_discount_plans.map((plan, index) => {
-                    const planDetail = plans.find(p => p.id === plan.plan_id);
-                    return (
-                      <div key={index} className="flex items-center mb-1 mr-1">
-                        <input
-                          type="text"
-                          value={planDetail ? planDetail.name : 'Unknown Plan'}
-                          readOnly
-                          className="p-1 border-none bg-white h-8 w-40"
-                        />
+        <div className="space-y-6">
+          <div className="flex space-x-4 mb-4">
+            <div className="flex flex-col w-full">
+              <label htmlFor="value_currency" className="font-normal">Currency</label>
+              <select
+                id="value_currency"
+                name="value_currency"
+                value={promotion.value_currency}
+                onChange={handleChange}
+                className="p-2 border rounded w-full"
+              >
+                {CURRENCIES.map(currency => (
+                  <option key={currency.code} value={currency.code}>{currency.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Channels Section */}
+          <div>
+            <label className="font-normal">Channels</label>
+            <div className="flex items-start mt-2">
+              <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+                <div className="flex flex-wrap p-2">
+                  {promotion.embedded_discount_channels.length > 0 ? (
+                    promotion.embedded_discount_channels.map((channel, index) => (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                          {channel.channel_name || 'Unknown Channel'}
+                        </span>
                         <button
                           type="button"
-                          onClick={() => handleRemovePlan(index)}
+                          onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
                           className="text-red-500 ml-1"
                         >
                           X
                         </button>
                       </div>
-                    );
-                  })
-                ) : (
-                  <span>No plans added</span>
-                )}
+                    ))
+                  ) : (
+                    <span>No channels added</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex-shrink-0 flex justify-center items-center">
+                <button
+                  type="button"
+                  onClick={handleAddChannel}
+                  className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                >
+                  <FaPlus className="mr-2" />
+                  Channel
+                </button>
               </div>
             </div>
-            <div className="flex-shrink-0 flex justify-center items-center">
-              <button
-                type="button"
-                onClick={handleAddPlan}
-                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'}`}
-                disabled={promotion.embedded_discount_products.length === 0}
-              >
-                <FaPlus className="mr-2" />
-                Plan
-              </button>
+          </div>
+
+
+          {/* Insurances Section */}
+          <div>
+            <label className="font-normal">Insurances</label>
+            <div className="flex items-start mt-2">
+              <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+                <div className="flex flex-wrap p-2">
+                  {promotion.embedded_discount_insurances.length > 0 ? (
+                    promotion.embedded_discount_insurances.map((insurance, index) => (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                          {insurance.insurance_name || 'Unknown Insurance'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
+                          className="text-red-500 ml-1"
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <span>No insurances added</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex-shrink-0 flex justify-center items-center">
+                <button
+                  type="button"
+                  onClick={() => setIsInsuranceModalOpen(true)}
+                  className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                >
+                  <FaPlus className="mr-2" />
+                  Insurance
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
 
-
-      <div>
-        {promotion.type === 'voucher' && (
+          {/* Products Section */}
           <div>
-            <label className="block text-sm font-medium mb-1">Vouchers:</label>
-            <div className="flex items-center mt-2">
-              <input
-                type="text"
-                value={voucherCode}
-                onChange={(e) => setVoucherCode(e.target.value)}
-                className="p-2 border rounded"
-                placeholder="Enter voucher code"
-              />
-              <input
-                type="number"
-                value={voucherUsageLimit}
-                onChange={(e) => setVoucherUsageLimit(Number(e.target.value))}
-                className="p-2 border rounded ml-2 w-24"
-                placeholder="Usage limit"
-                min={1}
-              />
-              <button
-                type="button"
-                onClick={() => handleAddVoucher(voucherCode, voucherUsageLimit)}
-                className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
-                disabled={!voucherCode || voucherUsageLimit <= 0}
-              >
-                Add Voucher
-              </button>
+            <label className="font-normal">Products</label>
+            <div className="flex items-start mt-2">
+              <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+                <div className="flex flex-wrap p-2">
+                  {promotion.embedded_discount_products.length > 0 ? (
+                    promotion.embedded_discount_products.map((product, index) => (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                          {product.product_name || 'Unknown Product'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveProduct(index)}
+                          className="text-red-500 ml-1"
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <span>No products added</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex-shrink-0 flex justify-center items-center">
+                <button
+                  type="button"
+                  onClick={handleAddProduct}
+                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${isProductButtonDisabled ? 'bg-gray-500 text-white cursor-not-allowed' : ''}`}
+                  disabled={isProductButtonDisabled}
+                >
+                  <FaPlus className="mr-2" />
+                  Product
+                </button>
+              </div>
             </div>
-            <div className="mt-4">
-              {vouchers.map((voucher, index) => (
-                <div key={index} className="flex items-center mt-2">
-                  <span className="mr-2">{voucher.code} (Usage Limit: {voucher.usageLimit})</span>
+          </div>
+
+
+          {/* Plans Section */}
+          <div>
+            <label className="font-normal">Plans</label>
+            <div className="flex items-start mt-2">
+              <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+                <div className="flex flex-wrap p-2">
+                  {promotion.embedded_discount_plans.length > 0 ? (
+                    promotion.embedded_discount_plans.map((plan, index) => {
+                      const planDetail = plans.find(p => p.id === plan.plan_id);
+                      return (
+                        <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                          <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                            {planDetail ? planDetail.name : 'Unknown Plan'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemovePlan(index)}
+                            className="text-red-500 ml-1"
+                          >
+                            X
+                          </button>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <span>No plans added</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex-shrink-0 flex justify-center items-center">
+                <button
+                  type="button"
+                  onClick={handleAddPlan}
+                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'}`}
+                  disabled={promotion.embedded_discount_products.length === 0}
+                >
+                  <FaPlus className="mr-2" />
+                  Plan
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Vouchers Section */}
+          <div className="my-4" />
+          <div>
+            {promotion.type === 'voucher' && (
+              <div>
+                <label className="font-normal">Vouchers</label>
+                <div className="flex items-center mt-2">
+                  <input
+                    type="text"
+                    value={voucherCode}
+                    onChange={(e) => setVoucherCode(e.target.value)}
+                    className="p-2 border rounded"
+                    placeholder="Enter voucher code"
+                  />
+                  <input
+                    type="number"
+                    value={voucherUsageLimit}
+                    onChange={(e) => setVoucherUsageLimit(Number(e.target.value))}
+                    className="p-2 border rounded ml-2 w-24"
+                    placeholder="Usage limit"
+                    min={1}
+                  />
                   <button
                     type="button"
-                    onClick={() => handleRemoveVoucher(index)}
-                    className="text-red-500"
+                    onClick={() => handleAddVoucher(voucherCode, voucherUsageLimit)}
+                    className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                    disabled={!voucherCode || voucherUsageLimit <= 0}
                   >
-                    <FaTrash />
+                    Add Voucher
                   </button>
                 </div>
-              ))}
-            </div>
+                <div className="mt-4">
+                  {vouchers.map((voucher, index) => (
+                    <div key={index} className="flex items-center mt-2">
+                      <span className="mr-2">{voucher.code} (Usage Limit: {voucher.usageLimit})</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveVoucher(index)}
+                        className="text-red-500"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+          </div>
 
+
+      </form>
     </div>
   );
 };

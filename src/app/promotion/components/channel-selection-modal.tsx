@@ -21,21 +21,27 @@ interface ChannelSelectionModalProps {
   onSelect: (channels: Channel[]) => void;
   channels?: ChannelResponseDTO;
   onPageChange: (page: number) => void;
-  selectedChannelIds: Set<string>; 
+  selectedChannelIds: Set<string>;
 }
 
 const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({ isOpen, onClose, onSelect, channels, onPageChange, selectedChannelIds }) => {
   const [currentPage, setCurrentPage] = useState(channels?.page || 1);
   const [selectedChannels, setSelectedChannels] = useState<Set<string>>(new Set(selectedChannelIds));
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Define data before using it in useEffect
+  const data = channels?.data || [];
+  const totalPages = channels?.pageTotal || 1;
 
   useEffect(() => {
     setSelectedChannels(new Set(selectedChannelIds));
   }, [selectedChannelIds]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setSelectAll(data.length > 0 && data.every(channel => selectedChannels.has(channel.id)));
+  }, [selectedChannels, data]);
 
-  const data = channels?.data || [];
-  const totalPages = channels?.pageTotal || 1;
+  if (!isOpen) return null;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -54,6 +60,16 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({ isOpen, o
     });
   };
 
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedChannels(new Set());
+    } else {
+      const allChannelIds = new Set(data.map(channel => channel.id));
+      setSelectedChannels(allChannelIds);
+    }
+    setSelectAll(!selectAll);
+  };
+
   const handleApply = () => {
     const selectedChannelsArray = data.filter(channel => selectedChannels.has(channel.id));
     onSelect(selectedChannelsArray);
@@ -67,7 +83,14 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({ isOpen, o
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAllChange}
+                  className="form-checkbox"
+                />
+              </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
             </tr>

@@ -34,7 +34,8 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   initialSelectedProductIds
 }) => {
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(''); // Default to empty string
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(''); 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,9 +44,9 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   const formatCategoryName = (name: string): string => {
     return name
-      .replace(/[-_]/g, ' ') // Replace hyphens and underscores with spaces
-      .toLowerCase() // Convert to lowercase for uniformity
-      .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize the first letter of each word
+      .replace(/[-_]/g, ' ')
+      .toLowerCase()
+      .replace(/\b\w/g, char => char.toUpperCase());
   };
 
   useEffect(() => {
@@ -53,7 +54,6 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   }, [initialSelectedProductIds]);
 
   useEffect(() => {
-    // Only run this effect once when the component mounts
     const fetchCategories = async () => {
       try {
         const response = await productService.getPromotionCategories();
@@ -64,7 +64,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
             name: formatCategoryName(category.name)
           }));
 
-          setCategories([{ id: '', name: 'All Product' }, ...categoryList]);
+          setCategories([{ id: '', name: 'All Products' }, ...categoryList]);
         } else {
           throw new Error('Unexpected response structure');
         }
@@ -78,7 +78,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     };
 
     fetchCategories();
-  }, []); // Empty dependency array ensures this effect runs only once
+  }, []);
 
   const handleCheckboxChange = (productId: string) => {
     setSelectedProducts(prevSelected => {
@@ -90,6 +90,16 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       }
       return updatedSelected;
     });
+  };
+
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedProducts(new Set());
+    } else {
+      const allProductIds = new Set(filteredProducts.map(product => product.id));
+      setSelectedProducts(allProductIds);
+    }
+    setSelectAll(!selectAll);
   };
 
   const handleConfirm = () => {
@@ -105,6 +115,10 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const filteredProducts = products.filter(product =>
     selectedCategoryId === '' || product.category === selectedCategoryId
   );
+
+  useEffect(() => {
+    setSelectAll(filteredProducts.length > 0 && filteredProducts.every(product => selectedProducts.has(product.id)));
+  }, [selectedProducts, filteredProducts]);
 
   if (!isOpen) return null;
 
@@ -143,7 +157,14 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={handleSelectAllChange}
+                      className="form-checkbox"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
                 </tr>

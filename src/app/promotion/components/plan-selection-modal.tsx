@@ -41,12 +41,17 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   selectedProductIds,
 }) => {
   const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     setSelectedPlans(new Set(preSelectedPlanIds));
   }, [preSelectedPlanIds]);
 
   const filteredPlans = plans.filter(plan => selectedProductIds.has(plan.product));
+
+  useEffect(() => {
+    setSelectAll(filteredPlans.length > 0 && filteredPlans.every(plan => selectedPlans.has(plan.id)));
+  }, [selectedPlans, filteredPlans]);
 
   const handleCheckboxChange = (planId: string) => {
     setSelectedPlans(prevState => {
@@ -58,6 +63,16 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
       }
       return newState;
     });
+  };
+
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedPlans(new Set());
+    } else {
+      const allPlanIds = new Set(filteredPlans.map(plan => plan.id));
+      setSelectedPlans(allPlanIds);
+    }
+    setSelectAll(!selectAll);
   };
 
   const handleApply = () => {
@@ -82,7 +97,14 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={handleSelectAllChange}
+                      className="form-checkbox"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                 </tr>

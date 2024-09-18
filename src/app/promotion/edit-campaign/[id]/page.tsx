@@ -310,15 +310,28 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setSelectedPlanIds(new Set());
   };
 
-  const handleAddVoucher = (code: string, usageLimit: number) => {
-    if (code.trim()) {
-      setVouchers(prevVouchers => [
-        ...prevVouchers,
-        { code, usageLimit }
-      ]);
-      setVoucherCode('');
-      setVoucherUsageLimit(1);
+  const handleAddVoucher = async (code: string, usageLimit: number) => {
+    if (!code.trim()) return; // Early return if code is empty
+
+    // Check if the voucher already exists
+    const voucherVerify = await voucherService.getVoucherByCode(code);
+    const { data } = voucherVerify;
+
+    if (data.length > 0 && data[0].code != null) {
+      // If voucher exists, set error message and show alert
+      setErrorMessage(`Voucher Code ${code} already exists.`);
+      setShowAlert(true);
+      return; // Exit the function to prevent adding the voucher
     }
+
+    // If the voucher does not exist, proceed to add it
+    setVouchers(prevVouchers => [
+      ...prevVouchers,
+      { code, usageLimit }
+    ]);
+    setVoucherCode('');
+    setVoucherUsageLimit(1);
+
   };
 
   const handleRemoveVoucher = (index: number) => {
@@ -680,13 +693,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   promotion.embedded_discount_channels.map((channel, index) => {
                     const channelDetail = channels?.data.find(c => c.id === channel.channel_id);
                     return (
-                      <div key={index} className="flex items-center mb-1 mr-1">
-                        <input
-                          type="text"
-                          value={channelDetail ? channelDetail.name : 'Unknown Channel'}
-                          readOnly
-                          className="p-1 border-none bg-white h-8 w-40"
-                        />
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                          {channelDetail ? channelDetail.name : 'Unknown Channel'}
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
@@ -706,7 +716,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <button
                 type="button"
                 onClick={handleAddChannel}
-                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40" // Fixed width for button
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
               >
                 <FaPlus className="mr-2" />
                 Channel
@@ -714,6 +724,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+
 
         {/* Insurances */}
         <div>
@@ -725,13 +736,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   promotion.embedded_discount_insurances.map((insurance, index) => {
                     const selectedInsurance = insurances.find(ins => ins.id === insurance.insurance_id);
                     return (
-                      <div key={index} className="flex items-center mb-1 mr-1">
-                        <input
-                          type="text"
-                          value={selectedInsurance ? selectedInsurance.name : insurance.insurance_id}
-                          readOnly
-                          className="p-1 border-none bg-white h-8 w-40"
-                        />
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                          {selectedInsurance ? selectedInsurance.name : 'Unknown Insurance'}
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
@@ -760,6 +768,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
 
+
         {/* Products */}
         <div>
           <label className="font-normal">Products</label>
@@ -770,8 +779,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   promotion.embedded_discount_products.map((product, index) => {
                     const productDetail = products.find(p => p.id === product.product_id);
                     return (
-                      <div key={index} className="flex items-center mb-1 mr-1">
-                        <span className="p-1 border-none bg-white h-8 w-40">
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
                           {productDetail ? productDetail.name : 'Unknown Product'}
                         </span>
                         <button
@@ -793,8 +802,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <button
                 type="button"
                 onClick={handleAddProduct}
-                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${selectedInsurances.length > 0 ? 'bg-[#F5BA41]' : 'bg-gray-500'
-                  }`}
+                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${selectedInsurances.length > 0 ? 'bg-[#F5BA41]' : 'bg-gray-500'}`}
                 disabled={selectedInsurances.length === 0}
               >
                 <FaPlus className="mr-2" />
@@ -803,6 +811,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+
 
 
         {/* Plans */}
@@ -815,8 +824,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   promotion.embedded_discount_plans.map((plan, index) => {
                     const planDetail = plans.find(p => p.id === plan.plan_id);
                     return (
-                      <div key={index} className="flex items-center mb-1 mr-1">
-                        <span className="p-1 border-none bg-white h-8 w-40">
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
                           {planDetail ? planDetail.name : 'Unknown Plan'}
                         </span>
                         <button
@@ -838,8 +847,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <button
                 type="button"
                 onClick={handleAddPlan}
-                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? 'bg-[#F5BA41]' : 'bg-gray-500'
-                  }`}
+                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? 'bg-[#F5BA41]' : 'bg-gray-500'}`}
                 disabled={promotion.embedded_discount_products.length === 0}
               >
                 <FaPlus className="mr-2" />
@@ -849,12 +857,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
 
-
         {/* Vouchers */}
+        <div className="my-4" />
         <div>
           {promotion.type === 'voucher' && (
             <div>
-              <label className="font-semibold">Vouchers:</label>
+              <label className="font-normal">Vouchers</label>
               {!promotion.active ? (
                 <>
                   <div className="flex items-center mt-2">
@@ -903,6 +911,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             </div>
           )}
         </div>
+
 
 
         {promotion.type === "voucher" && voucherDetails && (
