@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PromotionService } from "@/services/promotion.service";
-import { FaSave, FaTimes, FaTrash } from "react-icons/fa";
+import { FaCheck, FaPlus, FaSave, FaTimes, FaTrash } from "react-icons/fa";
 import WithSidebar from "@/hoc/with-sidebar";
 import { EmbeddedDiscountInsurance, PromotionDetails } from "../dto/promotion.details.dto";
 import { ChannelService } from "@/services/channel.services";
@@ -17,6 +17,8 @@ import PlanSelectionModal from "../components/plan-selection-modal";
 import { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
 import { isValid, parseISO } from 'date-fns';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
+import { ChevronLeft } from "react-feather";
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -290,10 +292,10 @@ const CreatePromotionPage = () => {
       setErrorMessage('Please select at least one data in Channel/Insurance/Product/Plan.');
       setShowAlert(true);
       return;
-      }
+    }
 
-    if (promotion.type == "voucher"){
-      if (vouchers.length < 1  ){
+    if (promotion.type == "voucher") {
+      if (vouchers.length < 1) {
         setErrorMessage('Please insert at least one voucher.');
         setShowAlert(true);
         return;
@@ -514,7 +516,40 @@ const CreatePromotionPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Create New Promotion Campaign</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink>Campaign</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <h2 className="text-black font-bold text-2xl mt-2">
+            Create New Campaign
+          </h2>
+        </div>
+        <div className="flex space-x-4">
+          <div
+            onClick={() => router.push('/promotion')}
+            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back
+          </div>
+          <button
+            type="submit"
+            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+          >
+            <FaCheck className="mr-2" />
+            Submit
+          </button>
+        </div>
+      </div>
       {showAlert && (
         <ErrorModal isOpen={showAlert} message={errorMessage!} onClose={() => setShowAlert(false)} />
       )}
@@ -558,200 +593,309 @@ const CreatePromotionPage = () => {
         preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
         selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
       />
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Promotion Name</label>
-        <input
-          type="text"
-          name="name"
-          value={promotion.name}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Promotion Type</label>
-        <select
-          name="type"
-          value={promotion.type}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        >
-          <option value="embedded">Embedded</option>
-          <option value="voucher">Voucher</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Start Date</label>
-        <input
-          type="date"
-          name="start_date"
-          value={promotion.start_date}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">End Date</label>
-        <input
-          type="date"
-          name="end_date"
-          value={promotion.end_date}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Value Type</label>
-        <select
-          name="value_type"
-          value={promotion.value_type}
-          onChange={handleValueTypeChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        >
-          <option value="fixed">Fixed</option>
-          <option value="percentage">Percentage</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Discount Value</label>
-        <input
-          type="number"
-          name="value"
-          value={promotion.value}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Currency</label>
-        <select
-          name="value_currency"
-          value={promotion.value_currency}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        >
-          {CURRENCIES.map(currency => (
-            <option key={currency.code} value={currency.code}>{currency.name}</option>
-          ))}
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Minimum Amount</label>
-        <input
-          type="number"
-          name="minimum_amount"
-          value={promotion.minimum_amount}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Maximum Amount</label>
-        <input
-          type="number"
-          name="maximum_amount"
-          value={promotion.maximum_amount}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
+
+      {/* Create New Campaign */}
+      <div className="flex space-x-4 mb-4">
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="name" className="font-normal">Promotion Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={promotion.name}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+            required
+          />
+        </div>
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="type" className="font-normal">Type</label>
+          <select
+            id="type"
+            name="type"
+            value={promotion.type}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+          >
+            <option value="embedded">Embedded</option>
+            <option value="voucher">Voucher</option>
+          </select>
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Channels</label>
-        <button
-          type="button"
-          onClick={handleAddChannel}
-          className="p-2 bg-blue-500 text-white rounded-md"
-        >
-          Add Channel
-        </button>
-        {promotion.embedded_discount_channels.map((channel, index) => (
-          <div key={index} className="flex items-center mt-2">
-            <span className="text-sm">{channel.channel_name}</span>
-            <button
-              type="button"
-              onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
-              className="ml-2 text-red-500"
+      <div className="flex space-x-4 mb-4">
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="start_date" className="font-normal">Start Date</label>
+          <input
+            type="date"
+            id="start_date"
+            name="start_date"
+            value={promotion.start_date}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+            required
+          />
+        </div>
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="end_date" className="font-normal">End Date</label>
+          <input
+            type="date"
+            id="end_date"
+            name="end_date"
+            value={promotion.end_date}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="flex space-x-4 mb-4">
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="value_type" className="font-normal">Value Type</label>
+          <select
+            id="value_type"
+            name="value_type"
+            value={promotion.value_type}
+            onChange={handleValueTypeChange}
+            className="p-2 border rounded w-full"
+          >
+            <option value="fixed">Fixed</option>
+            <option value="percentage">Percentage</option>
+          </select>
+        </div>
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="value" className="font-normal">Value</label>
+          <input
+            type="number"
+            id="value"
+            name="value"
+            value={promotion.value}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="flex space-x-4 mb-4">
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="minimum_amount" className="font-normal">Minimum Amount</label>
+          <input
+            type="number"
+            id="minimum_amount"
+            name="minimum_amount"
+            value={promotion.minimum_amount}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+          />
+        </div>
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="maximum_amount" className="font-normal">Maximum Amount</label>
+          <input
+            type="number"
+            id="maximum_amount"
+            name="maximum_amount"
+            value={promotion.maximum_amount}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-6"> 
+        <div className="flex space-x-4 mb-4">
+          <div className="flex flex-col w-full">
+            <label htmlFor="value_currency" className="font-normal">Currency</label>
+            <select
+              id="value_currency"
+              name="value_currency"
+              value={promotion.value_currency}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
             >
-              <FaTrash />
-            </button>
+              {CURRENCIES.map(currency => (
+                <option key={currency.code} value={currency.code}>{currency.name}</option>
+              ))}
+            </select>
           </div>
-        ))}
-      </div>
+        </div>
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Insurances</label>
-        <button
-          type="button"
-          onClick={() => setIsInsuranceModalOpen(true)}
-          className="p-2 bg-blue-500 text-white rounded-md"
-        >
-          Add Insurance
-        </button>
-        {promotion.embedded_discount_insurances.map((insurance, index) => (
-          <div key={index} className="flex items-center mt-2">
-            <span className="text-sm">{insurance.insurance_name}</span>
-            <button
-              type="button"
-              onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
-              className="ml-2 text-red-500"
-            >
-              <FaTrash />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Products</label>
-        <button
-          type="button"
-          onClick={handleAddProduct}
-          className={`p-2 rounded-md ${isProductButtonDisabled ? 'bg-gray-500 text-white cursor-not-allowed' : 'bg-blue-500 text-white'}`}
-          disabled={isProductButtonDisabled}
-        >
-          Add Product
-        </button>
-        {promotion.embedded_discount_products.map((product, index) => (
-          <div key={index} className="flex items-center mt-2">
-            <span className="text-sm">{product.product_name}</span>
-            <button
-              type="button"
-              onClick={() => handleRemoveProduct(index)}
-              className="ml-2 text-red-500"
-            >
-              <FaTrash />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Plans</label>
-        <button
-          type="button"
-          onClick={handleAddPlan}
-          className={`p-2 rounded-md ${promotion.embedded_discount_products.length > 0 ? 'bg-blue-500' : 'bg-gray-500'} text-white ${promotion.embedded_discount_products.length > 0 ? 'hover:bg-blue-600' : 'cursor-not-allowed'} ${promotion.embedded_discount_products.length === 0 ? 'cursor-not-allowed' : ''}`}
-          disabled={promotion.embedded_discount_products.length === 0}
-        >
-          Add Plan
-        </button>
-        {promotion.embedded_discount_plans.map((plan, index) => {
-          const planDetail = plans.find(p => p.id === plan.plan_id);
-          return (
-            <div key={index} className="flex items-center mt-2">
-              <span className="text-sm">{planDetail ? planDetail.name : 'Unknown Plan'}</span>
+        {/* Channels Section */}
+        <div>
+          <label className="font-normal">Channels</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-wrap p-2">
+                {promotion.embedded_discount_channels.length > 0 ? (
+                  promotion.embedded_discount_channels.map((channel, index) => (
+                    <div key={index} className="flex items-center mb-1 mr-1">
+                      <input
+                        type="text"
+                        value={channel.channel_name}
+                        readOnly
+                        className="p-1 border-none bg-white h-8 w-40"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
+                        className="text-red-500 ml-1"
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <span>No channels added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
               <button
                 type="button"
-                onClick={() => handleRemovePlan(index)}
-                className="text-red-500"
+                onClick={handleAddChannel}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
               >
-                <FaTrash />
+                <FaPlus className="mr-2" />
+                Channel
               </button>
             </div>
-          );
-        })}
+          </div>
+        </div>
+
+        {/* Insurances Section */}
+        <div>
+          <label className="font-normal">Insurances</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-wrap p-2">
+                {promotion.embedded_discount_insurances.length > 0 ? (
+                  promotion.embedded_discount_insurances.map((insurance, index) => (
+                    <div key={index} className="flex items-center mb-1 mr-1">
+                      <input
+                        type="text"
+                        value={insurance.insurance_name}
+                        readOnly
+                        className="p-1 border-none bg-white h-8 w-40"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
+                        className="text-red-500 ml-1"
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <span>No insurances added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
+              <button
+                type="button"
+                onClick={() => setIsInsuranceModalOpen(true)}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+              >
+                <FaPlus className="mr-2" />
+                Insurance
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Products Section */}
+        <div>
+          <label className="font-normal">Products</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-wrap p-2">
+                {promotion.embedded_discount_products.length > 0 ? (
+                  promotion.embedded_discount_products.map((product, index) => (
+                    <div key={index} className="flex items-center mb-1 mr-1">
+                      <input
+                        type="text"
+                        value={product.product_name}
+                        readOnly
+                        className="p-1 border-none bg-white h-8 w-40"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveProduct(index)}
+                        className="text-red-500 ml-1"
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <span>No products added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
+              <button
+                type="button"
+                onClick={handleAddProduct}
+                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${isProductButtonDisabled ? 'bg-gray-500 text-white cursor-not-allowed' : ''}`}
+                disabled={isProductButtonDisabled}
+              >
+                <FaPlus className="mr-2" />
+                Product
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Plans Section */}
+        <div>
+          <label className="font-normal">Plans</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-wrap p-2">
+                {promotion.embedded_discount_plans.length > 0 ? (
+                  promotion.embedded_discount_plans.map((plan, index) => {
+                    const planDetail = plans.find(p => p.id === plan.plan_id);
+                    return (
+                      <div key={index} className="flex items-center mb-1 mr-1">
+                        <input
+                          type="text"
+                          value={planDetail ? planDetail.name : 'Unknown Plan'}
+                          readOnly
+                          className="p-1 border-none bg-white h-8 w-40"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlan(index)}
+                          className="text-red-500 ml-1"
+                        >
+                          X
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span>No plans added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
+              <button
+                type="button"
+                onClick={handleAddPlan}
+                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'}`}
+                disabled={promotion.embedded_discount_products.length === 0}
+              >
+                <FaPlus className="mr-2" />
+                Plan
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+
+
 
       <div>
         {promotion.type === 'voucher' && (
@@ -800,24 +944,6 @@ const CreatePromotionPage = () => {
         )}
       </div>
 
-
-      <div className="flex justify-end">
-        <button
-          onClick={handleSave}
-          disabled={loading}
-          className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
-          Submit
-        </button>
-        <button
-          onClick={() => router.push('/promotion')}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ml-4"
-        >
-          <FaTimes className="mr-2" />
-          Cancel
-        </button>
-      </div>
     </div>
   );
 };
