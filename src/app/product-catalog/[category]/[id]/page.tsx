@@ -42,6 +42,7 @@ const DetaildPage = ({
   const [selectedInsurance, setSelectedInsurance] = useState<any>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
+  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const [name, setName] = useState("");
 
   const [currency, setCurrency] = useState("");
@@ -53,7 +54,7 @@ const DetaildPage = ({
     insurances,
     products,
     fetchProducts,
-    savePlan,
+    updatePlan,
     fetchPlanById,
     plan,
   } = useProducts();
@@ -66,12 +67,6 @@ const DetaildPage = ({
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
-      insuranceId: selectedInsurance,
-      productId: selectedProduct,
-      name,
-      slug,
-    },
-    values: {
       insuranceId: selectedInsurance,
       productId: selectedProduct,
       name,
@@ -107,8 +102,24 @@ const DetaildPage = ({
   }, [plan, products]);
 
   const onSubmit = async (data: any) => {
-    await savePlan(data);
+    try {
+      const id = params.id;
+      await updatePlan(data, id);
+      setSaveSuccess(true);
+    } catch (error) {
+      setSaveSuccess(false);
+    }
   };
+
+  useEffect(() => {
+    if (saveSuccess === true) {
+      alert("Data berhasil disimpan!");
+      router.push(`/product-catalog/${category}`);
+    } else if (saveSuccess === false) {
+      alert("Terjadi kesalahan saat menyimpan data.");
+    }
+    setSaveSuccess(null);
+  }, [saveSuccess, router, category]);
 
   return (
     <>
@@ -225,7 +236,7 @@ const DetaildPage = ({
                     control={control}
                     rules={{ required: "Insurance ID is required" }}
                     render={({ field }) => (
-                      <Select {...field} onValueChange={field.onChange}>
+                      <Select {...field}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select Insurance" />
                         </SelectTrigger>

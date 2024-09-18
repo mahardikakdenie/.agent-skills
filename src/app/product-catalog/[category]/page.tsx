@@ -44,6 +44,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   const [searchProduct, setSearchProduct] = useState("");
   const { fetchInsurances, insurances } = useProducts();
   const { fetchProducts, products } = useProducts();
+  const [plans, setPlans] = useState<any[]>([]);
 
   const router = useRouter();
 
@@ -101,10 +102,6 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
     router.push("/product-catalog/" + "/" + category + "/" + id);
   };
 
-  const handleDeletePlan = (id: string) => {
-    alert("delete");
-  };
-
   const handleSearchInsurerOnChange = (v: string) => {
     setSearchInsurer(v);
   };
@@ -127,6 +124,20 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
 
   const isClearButtonVisible =
     searchPlanName !== "" || searchInsurer !== "" || searchProduct !== "";
+
+  const handleDeletePlan = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this campaign?")) {
+      try {
+        await productCatalogService.deletePlan(id);
+        setProducts((prevProducts) =>
+          prevProducts.filter((plan) => plan.id !== id)
+        );
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to delete plan:", error);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">

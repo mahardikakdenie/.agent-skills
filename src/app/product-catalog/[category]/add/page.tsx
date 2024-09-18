@@ -240,11 +240,30 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {products.map((product: any) => (
-                          <SelectItem key={product.id} value={product.id}>
-                            {product.name}
-                          </SelectItem>
-                        ))}
+                        {products
+                          .filter((item) => {
+                            if (category == "airpaz") {
+                              return (
+                                item.category ==
+                                "38555c54-38f2-4251-9e81-c6332e0aaa44"
+                              );
+                            } else if (category == "travel") {
+                              return (
+                                item.category ==
+                                "efeb7f65-7807-40b5-8053-e45805711bef"
+                              );
+                            } else if (category == "personal-accident") {
+                              return (
+                                item.category ==
+                                "b140a15e-af58-43c9-9888-e83cbca816e4"
+                              );
+                            }
+                          })
+                          .map((product: any) => (
+                            <SelectItem key={product.id} value={product.id}>
+                              {product.name}
+                            </SelectItem>
+                          ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -283,36 +302,6 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
               {errors.name && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.name.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="currency"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Currency
-              </label>
-              <Controller
-                name="currency"
-                control={control}
-                defaultValue=""
-                rules={{ required: "Currency is required" }}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="currency"
-                    placeholder="Currency"
-                    {...field}
-                    className={`mt-1 block w-full ${
-                      errors.currency ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.currency && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.currency.message}
                 </p>
               )}
             </div>

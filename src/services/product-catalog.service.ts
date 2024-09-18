@@ -4,6 +4,7 @@ import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "./../lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
 import qs from "qs";
+import axios from "axios";
 
 export interface PackageDto {
   premium: number;
@@ -159,9 +160,14 @@ export class ProductCatalogService {
   async getProducts(params: ProductCatalogRequest): Promise<ProductList[]> {
     try {
       const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-      return await this.httpClient.get<ProductList[]>(
-        "/products?" + queryString
+      const response = await this.httpClient.get<any>(
+        "/v1/products?" + queryString
       );
+      if (response) {
+        return response.data;
+      } else {
+        return [];
+      }
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
@@ -185,6 +191,24 @@ export class ProductCatalogService {
   async savePlan(data: any): Promise<any> {
     try {
       return await this.httpClient.post("/v1/plans", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async updatePlan(data: any, id: string): Promise<any> {
+    try {
+      return await this.httpClient.put("/v1/plans/" + id, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async deletePlan(id: string): Promise<any> {
+    try {
+      return await this.httpClient.delete("/v1/plans/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
