@@ -71,16 +71,6 @@ const PromotionPage = () => {
       });
   }, [page, rowsPerPage]);
 
-
-  const formatDate = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    };
-    return new Intl.DateTimeFormat("en-GB", options).format(new Date(date));
-  };
-
   const getStatusColor = (status: Boolean) => {
     switch (status) {
       case false:
