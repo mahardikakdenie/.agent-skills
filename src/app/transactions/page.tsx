@@ -219,17 +219,17 @@ const TransactionsPage = () => {
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
-        <Table>
+        <Table className="table-transactions">
           <TableHeader>
             <TableRow>
-              <TableHead>No.</TableHead>
+              <TableHead className="whitespace-nowrap">No.</TableHead>
               <TableHead>Insurance Name</TableHead>
               <TableHead>Plan Name</TableHead>
               <TableHead>Customer Name</TableHead>
-              <TableHead>Currency</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead className="whitespace-nowrap">Currency</TableHead>
+              <TableHead className="whitespace-nowrap">Amount</TableHead>
+              <TableHead className="whitespace-nowrap">Status</TableHead>
+              <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -299,9 +299,11 @@ const TransactionsPage = () => {
                       .join(" - ")}
                   </TableCell>
                   <TableCell>{transaction.customer.name}</TableCell>
-                  <TableCell>IDR</TableCell>
-                  <TableCell>{formatMoney(totalPremium, "IDR")}</TableCell>
-                  <TableCell className="font-semibold">
+                  <TableCell>{transaction.insurance.currency}</TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {formatMoney(totalPremium, "IDR")}
+                  </TableCell>
+                  <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(transaction.status)}>
                       {transaction.status}
                     </span>
@@ -353,7 +355,7 @@ const TransactionsPage = () => {
                                 <div className="flex gap-2 text-sm font-medium">
                                   <div className="min-w-40 w-40">Status</div>
                                   <div className="max-w-1 w-1">:</div>
-                                  <div className="text-warning">
+                                  <div className="text-warning font-semibold">
                                     <span
                                       className={getStatusColor(
                                         transaction.status

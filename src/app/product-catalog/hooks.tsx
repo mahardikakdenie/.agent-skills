@@ -1,13 +1,19 @@
-import { ProductCatalogService } from "@/services/product-catalog.service";
+import {
+  ProductCatalogRequest,
+  ProductcatalogResponse,
+  ProductCatalogService,
+  ProductList,
+} from "@/services/product-catalog.service";
 import { useState } from "react";
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductList[]>([]);
   const [insurances, setInsurances] = useState<any[]>([]);
   const [plan, setPlan] = useState<any | null>(null);
   const productCatalogService = new ProductCatalogService();
-  const fetchProducts = async (search: any) => {
-    const { data } = await productCatalogService.getProducts(search);
+
+  const fetchProducts = async (params: ProductCatalogRequest) => {
+    const data = await productCatalogService.getProducts(params);
     setProducts(data);
   };
   const fetchInsurances = async (search: any) => {

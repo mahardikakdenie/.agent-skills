@@ -152,13 +152,20 @@ main {
 .frame-body {
   height: calc(100vh - 85px);
   overflow: auto;
+  max-width: calc(100vw - 18rem);
+
+  -ms-word-break: break-all;
+  white-space: pre-wrap;
+}
+.td-search-params {
+  word-break: break-all;
 }
 button:disabled {
   opacity: 0.4;
 }
 [vaul-drawer][vaul-drawer-visible="true"][vaul-drawer-direction="right"] {
   max-width: 100%;
-  width: 700px;
+  width: 620px;
   margin-top: 0;
   height: 100vh;
   border-radius: 0;
@@ -166,4 +173,29 @@ button:disabled {
 }
 [vaul-drawer][vaul-drawer-direction="right"]::after {
   display: none;
+}
+.table-product-catalog tr td:first-child {
+  max-width: 115px;
+}
+.table-product-catalog tr td:last-child {
+  max-width: 133px;
+}
+.table-transactions tr td:last-child {
+  max-width: 100px;
+}
+.frame-body button[role="combobox"],
+.frame-body input {
+  height: 56px !important;
+}
+.table-search-params tr td:last-child {
+  max-width: 100px !important;
+}
+table tr td button {
+  white-space: nowrap;
+}
+nav[aria-label="breadcrumb"] nav span,
+nav[aria-label="breadcrumb"] nav a,
+nav[aria-label="breadcrumb"] li span,
+nav[aria-label="breadcrumb"] li a {
+  color: #03a89e !important;
 }

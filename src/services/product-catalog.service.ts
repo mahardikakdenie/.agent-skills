@@ -3,6 +3,7 @@ import { Insurance } from "./../app/promotion/dto/promotion.dto";
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "./../lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
+import qs from "qs";
 
 export interface PackageDto {
   premium: number;
@@ -27,6 +28,20 @@ export interface ProductCatalogDto {
       id: string;
       name: string;
     };
+  };
+}
+
+export interface ProductList {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  insurance: string;
+  category: string;
+  name: string;
+  instant_policy: boolean;
+  riplay: {
+    general: string;
+    personal: string;
   };
 }
 
@@ -55,8 +70,22 @@ export interface ProductcatalogResponse<T> {
   meta: {
     total: number;
     page: number;
-    pageSize: number;
   };
+}
+
+export interface ProductCatalogRequest {
+  insuranceId?: string;
+  categoryId?: string;
+  instantPolicy?: string;
+  page?: number;
+}
+
+export interface GetPlansRequest {
+  planName?: string;
+  insuranceId?: string;
+  category?: string;
+  productId?: string;
+  page?: number;
 }
 
 export class ProductCatalogService {
@@ -73,14 +102,11 @@ export class ProductCatalogService {
   }
 
   async getPlans(
-    page: number,
-    filter: { category: string; planName?: string; insuranceId?: string }
+    params: GetPlansRequest
   ): Promise<ProductcatalogResponse<ProductCatalogDto>> {
     try {
-      const queryString = new URLSearchParams({
-        ...filter,
-        page: page.toString(),
-      }).toString();
+      const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+      console.log("queryString", queryString, params);
       return await this.httpClient.get<
         ProductcatalogResponse<ProductCatalogDto>
       >("/v1/plans?" + queryString);
@@ -130,14 +156,12 @@ export class ProductCatalogService {
     }
   }
 
-  async getProducts(
-    search: any
-  ): Promise<ProductcatalogResponse<ProductCatalogDto>> {
+  async getProducts(params: ProductCatalogRequest): Promise<ProductList[]> {
     try {
-      const queryString = new URLSearchParams({ ...search }).toString();
-      return await this.httpClient.get<
-        ProductcatalogResponse<ProductCatalogDto>
-      >("/v1/products?" + queryString);
+      const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+      return await this.httpClient.get<ProductList[]>(
+        "/products?" + queryString
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
