@@ -400,9 +400,19 @@ const CreatePromotionPage = () => {
             setShowAlert(true);
             return;
           } else {
+
+            if(promotion.type == "embedded"){
+              planService.getSyncEmbeddedDiscount();
+            }
+
             setErrorMessage("Promotion Campaign Submitted!");
           }
         } else {
+
+          if(promotion.type == "embedded"){
+            planService.getSyncEmbeddedDiscount();
+          }
+
           setErrorMessage("Promotion Campaign Submitted!");
         }
 
