@@ -14,6 +14,8 @@ import {
 } from "@/services/product-catalog.service";
 import { formatMoney } from "@/lib/formatter";
 import { useParams } from "next/navigation";
+import Image from "next/image";
+import noData from "/public/images/no-data.webp";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const [packages, setPackages] = useState<PackageDto[]>([]);
@@ -310,7 +312,12 @@ export default function PackageList(props: Readonly<{ id: string }>) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8}>No data available</TableCell>{" "}
+                <TableCell colSpan={8}>
+                  <div className="min-h-96 flex flex-col gap-4 items-center justify-center py-50">
+                    <Image alt="no data" src={noData} width={200} /> No
+                    transaction data available
+                  </div>
+                </TableCell>{" "}
               </TableRow>
             )}
           </TableBody>

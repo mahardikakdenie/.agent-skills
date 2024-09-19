@@ -30,6 +30,9 @@ import {
 import { useProducts } from "../hooks";
 import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
 
+import noData from "/public/images/no-data.webp";
+import Image from "next/image";
+
 const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   useRequireAuth();
   const { category } = params;
@@ -224,47 +227,61 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {product.map((product, index) => (
-              <TableRow key={product.id}>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2 items-center">
-                    <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                      <img src={product.products.insurances.logo_url} alt="" />
+            {product.length > 0 ? (
+              product.map((product, index) => (
+                <TableRow key={product.id}>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2 items-center">
+                      <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
+                        <img
+                          src={product.products.insurances.logo_url}
+                          alt=""
+                        />
+                      </div>
+                      {product.products.insurances.name}
                     </div>
-                    {product.products.insurances.name}
+                  </TableCell>
+                  <TableCell>
+                    {product.name.split("|").map((item: any, i: any) => (
+                      <div key={i}>{item}</div>
+                    ))}
+                  </TableCell>
+                  <TableCell>{product.products.name}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-4 items-center">
+                      <Button
+                        variant="secondary"
+                        onClick={() => handleViewDetail(product.id)}
+                        className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
+                      >
+                        View
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleDeletePlan(product.id)}
+                        className="text-red-600 px-0"
+                      >
+                        <Trash />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <div className="min-h-96 flex flex-col gap-4 items-center justify-center py-50">
+                    <Image alt="no data" src={noData} width={200} /> No
+                    transaction data available
                   </div>
-                </TableCell>
-                <TableCell>
-                  {product.name.split("|").map((item: any, i: any) => (
-                    <div key={i}>{item}</div>
-                  ))}
-                </TableCell>
-                <TableCell>{product.products.name}</TableCell>
-                <TableCell>
-                  <div className="flex gap-4 items-center">
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleViewDetail(product.id)}
-                      className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                    >
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleDeletePlan(product.id)}
-                      className="text-red-600 px-0"
-                    >
-                      <Trash />
-                    </Button>
-                  </div>
-                </TableCell>
+                </TableCell>{" "}
               </TableRow>
-            ))}
+            )}
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={7}>
+              <TableCell colSpan={5}>
                 <div className="flex justify-center items-center gap-2 font-normal">
                   <label htmlFor="rowsPerPage">Showing:</label>
                   <select
