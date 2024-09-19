@@ -49,7 +49,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <a
-                  href="/dashboard"
+                  href="/home"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
