@@ -114,7 +114,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setPromotion(promotionData);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
           setLoading(false);
-  
+
           if (promotionData.type === "voucher") {
             voucherService.getVoucherByCampaignId(promotionData.campaign_id)
               .then(voucherRes => {
@@ -507,9 +507,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       const response: AxiosResponse<any> = await promotionService.updatePromotionCampaign(params.id, payload);
       const { data } = response;
 
-      if (data.data != null) {
-        if (data.data.error.code === 409) {
-          setErrorMessage("The plan has already been used by another embedded campaign.");
+      if (promotion.type == "embedded") {
+        if (data.data != null) {
+          if (data.data.error.code === 409) {
+            setErrorMessage("The plan has already been used by another embedded campaign.");
+          } else {
+            setErrorMessage("Promotion updated successfully!");
+            setShowAlert(true);
+            setTimeout(() => {
+              setShowAlert(false);
+              router.push("/promotion");
+            }, 2000);
+          }
         } else {
           setErrorMessage("Promotion updated successfully!");
           setShowAlert(true);

@@ -393,23 +393,33 @@ const CreatePromotionPage = () => {
         const { data } = response;
 
         // console.log("data: "+ response.data.data.data.error.code);
+        if (promotion.type == "embedded") {
 
-        if (data.data.data != null) {
-          if (data.data.data.error.code === 409) {
-            setErrorMessage("Unable to submit campaign, one or more plan has already been used by another embedded campaign.");
-            setShowAlert(true);
-            return;
-          } else {
+          if (data.data.data != null) {
+            if (data.data.data.error.code === 409) {
+              setErrorMessage("Unable to submit campaign, one or more plan has already been used by another embedded campaign.");
+              setShowAlert(true);
+              return;
+            } else {
 
-            if(promotion.type == "embedded"){
-              planService.getSyncEmbeddedDiscount();
+            planService.getSyncEmbeddedDiscount();
+
+              setErrorMessage("Promotion Campaign Submitted!");
             }
 
-            setErrorMessage("Promotion Campaign Submitted!");
+          }else{
+            setErrorMessage("Promotion updated successfully!");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+            router.push("/promotion");
+          }, 2000);
           }
-        } else {
+        }
 
-          if(promotion.type == "embedded"){
+        else {
+
+          if (promotion.type == "embedded") {
             planService.getSyncEmbeddedDiscount();
           }
 
@@ -962,7 +972,7 @@ const CreatePromotionPage = () => {
               </div>
             )}
           </div>
-          </div>
+        </div>
 
 
       </form>
