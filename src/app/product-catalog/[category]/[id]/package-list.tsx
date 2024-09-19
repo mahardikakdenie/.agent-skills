@@ -6,6 +6,7 @@ import {
   TableBody,
   TableCell,
   Table,
+  TableFooter,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import {
@@ -16,51 +17,41 @@ import { formatMoney } from "@/lib/formatter";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
+import { ChevronLeft, ChevronRight } from "react-feather";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const [packages, setPackages] = useState<PackageDto[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<PackageDto[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(10);
-
-  const [typeFilter, setTypeFilter] = useState("");
-  const [durationFilter, setDurationFilter] = useState("");
+  const [totalItems, setTotalItems] = useState(0);
   const [adultFilter, setAdultFilter] = useState("");
   const [childrenFilter, setChildrenFilter] = useState("");
-
   const [ageFilter, setAgeFilter] = useState("");
   const [occupationClassFilter, setOcupationClassFilter] = useState("");
-
   const { id } = props;
   const productCatalogService = new ProductCatalogService();
-
   const { category } = useParams();
 
   useEffect(() => {
-    productCatalogService.getPackagesByPlanId(id, page).then((response) => {
-      setPackages(response.data);
-      setFilteredPackages(response.data);
-      setPage(response.meta.page);
-      setTotalPages(response.meta.total);
-    });
-  }, [id]);
+    productCatalogService
+      .getPackagesByPlanId(id, page, rowsPerPage)
+      .then((response) => {
+        const sortedPackages = response.data.sort((a, b) => {
+          const durationA = a.search_params.duration_to;
+          const durationB = b.search_params.duration_to;
+          return durationA - durationB;
+        });
+
+        setPackages(sortedPackages);
+        setFilteredPackages(sortedPackages);
+        setPage(response.meta.page);
+        setTotalItems(response.meta.total);
+      });
+  }, [id, page, rowsPerPage]);
 
   const handleFilter = () => {
     let filtered = packages;
-
-    if (typeFilter) {
-      filtered = filtered.filter(
-        (pkg) => pkg.search_params.trip.indexOf(typeFilter) > -1
-      );
-    }
-
-    if (durationFilter) {
-      filtered = filtered.filter(
-        (pkg) => pkg.search_params.duration_to === Number(durationFilter)
-      );
-    }
 
     if (adultFilter) {
       filtered = filtered.filter(
@@ -93,14 +84,12 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
   useEffect(() => {
     handleFilter();
-  }, [
-    typeFilter,
-    durationFilter,
-    adultFilter,
-    childrenFilter,
-    ageFilter,
-    occupationClassFilter,
-  ]);
+  }, [adultFilter, childrenFilter, ageFilter, occupationClassFilter]);
+
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number(e.target.value));
+    setPage(1);
+  };
 
   return (
     <>
@@ -161,49 +150,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
         </div>
       ) : (
         <>
-          <div className="w-full py-4 px-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-4 gap-4">
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm capitalize"
-            >
-              <option value="">All Types</option>
-              {Array.from(
-                new Set(
-                  packages
-                    .map((pkg) => String(pkg.search_params.trip))
-                    .filter((trip) => trip)
-                )
-              )
-                .sort((a, b) => a.localeCompare(b))
-                .map((trip, index) => (
-                  <option key={index} value={trip}>
-                    {trip}
-                  </option>
-                ))}
-            </select>
-
-            <select
-              value={durationFilter}
-              onChange={(e) => setDurationFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm"
-            >
-              <option value="">All Durations</option>
-              {Array.from(
-                new Set(
-                  packages
-                    .map((pkg) => pkg.search_params.duration_to)
-                    .filter(Boolean)
-                )
-              )
-                .sort((a, b) => a - b)
-                .map((duration, index) => (
-                  <option key={index} value={duration}>
-                    {duration} days
-                  </option>
-                ))}
-            </select>
-
+          <div className="w-full py-4 px-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
             <select
               value={adultFilter}
               onChange={(e) => setAdultFilter(e.target.value)}
@@ -246,7 +193,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
           </div>
         </>
       )}
-      <div className="w-full p-4 bg-white rounded-lg overflow-auto">
+      <div className="w-full bg-white rounded-lg overflow-auto">
         <Table className="table-search-params">
           <TableHeader>
             <TableRow>
@@ -311,7 +258,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <TableRow className="hover:!bg-white">
                 <TableCell colSpan={8}>
                   <div className="min-h-96 flex flex-col gap-4 items-center justify-center py-50">
                     <Image alt="no data" src={noData} width={200} /> No
@@ -321,6 +268,42 @@ export default function PackageList(props: Readonly<{ id: string }>) {
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>
+                <div className="flex justify-center items-center gap-2 font-normal">
+                  <label htmlFor="rowsPerPage">Showing:</label>
+                  <select
+                    id="rowsPerPage"
+                    className="p-2 border rounded"
+                    value={rowsPerPage}
+                    onChange={handleRowsPerPageChange}
+                  >
+                    {[10, 20, 30, 50, 100].map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mr-2">of {totalItems} items</span>
+                  <button
+                    onClick={() => setPage((prevState) => prevState - 1)}
+                    disabled={page === 1}
+                    title="Previous"
+                  >
+                    <ChevronLeft />
+                  </button>
+                  <button
+                    onClick={() => setPage((prevState) => prevState + 1)}
+                    disabled={page == Math.ceil(totalItems / rowsPerPage)}
+                    title="Next"
+                  >
+                    <ChevronRight />
+                  </button>
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
     </>

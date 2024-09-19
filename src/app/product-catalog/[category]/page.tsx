@@ -179,7 +179,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select
+          {/* <Select
             value={searchProduct}
             onValueChange={handleSearchProductOnChange}
           >
@@ -196,7 +196,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
                 ))}
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
           <Input
             type="text"
             placeholder="Search by Plan Name"
@@ -269,9 +269,9 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <TableRow className="hover:!bg-white">
                 <TableCell colSpan={5}>
-                  <div className="min-h-96 flex flex-col gap-4 items-center justify-center py-50">
+                  <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
                   </div>

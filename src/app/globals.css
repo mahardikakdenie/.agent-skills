@@ -199,3 +199,17 @@ nav[aria-label="breadcrumb"] li span,
 nav[aria-label="breadcrumb"] li a {
   color: #03a89e !important;
 }
+.table-search-params tr:nth-child(even) {
+  background-color: #f8f8fa;
+}
+.table-search-params tr:hover {
+  background-color: #e3e3e3;
+}
+.table-search-params th {
+  background-color: #006ea7;
+  color: white;
+  font-weight: 500;
+}
+tfoot tr:hover {
+  background-color: white !important;
+}

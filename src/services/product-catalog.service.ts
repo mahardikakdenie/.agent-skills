@@ -132,11 +132,17 @@ export class ProductCatalogService {
 
   async getPackagesByPlanId(
     id: string,
-    page: number
+    page: number,
+    rowsPerPage: number
   ): Promise<ProductcatalogResponse<PackageDto>> {
     try {
       return await this.httpClient.get<ProductcatalogResponse<PackageDto>>(
-        "/v1/packages?active=true&planId=" + id + "&page=" + page
+        "/v1/packages?active=true&planId=" +
+          id +
+          "&page=" +
+          page +
+          "&pageSize=" +
+          rowsPerPage
       );
     } catch (error) {
       console.error("Request failed:", error);
