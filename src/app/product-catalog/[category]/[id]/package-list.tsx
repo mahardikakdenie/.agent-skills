@@ -22,7 +22,7 @@ import { ChevronLeft, ChevronRight } from "react-feather";
 export default function PackageList(props: Readonly<{ id: string }>) {
   const [packages, setPackages] = useState<PackageDto[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<PackageDto[]>([]);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(180);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [adultFilter, setAdultFilter] = useState("");
@@ -279,7 +279,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                     value={rowsPerPage}
                     onChange={handleRowsPerPageChange}
                   >
-                    {[10, 20, 30, 50, 100].map((option) => (
+                    {[200, 300, 400, 500, 1000].map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>
