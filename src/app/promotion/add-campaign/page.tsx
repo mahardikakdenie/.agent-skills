@@ -402,27 +402,21 @@ const CreatePromotionPage = () => {
               return;
             } else {
 
-            planService.getSyncEmbeddedDiscount();
+              planService.getSyncEmbeddedDiscount();
 
               setErrorMessage("Promotion Campaign Submitted!");
             }
 
-          }else{
+          } else {
             setErrorMessage("Promotion updated successfully!");
-          setShowAlert(true);
-          setTimeout(() => {
-            setShowAlert(false);
-            router.push("/promotion");
-          }, 2000);
+            setShowAlert(true);
+            setTimeout(() => {
+              setShowAlert(false);
+              router.push("/promotion");
+            }, 2000);
           }
         }
-
         else {
-
-          if (promotion.type == "embedded") {
-            planService.getSyncEmbeddedDiscount();
-          }
-
           setErrorMessage("Promotion Campaign Submitted!");
         }
 
