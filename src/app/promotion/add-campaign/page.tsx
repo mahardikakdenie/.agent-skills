@@ -408,7 +408,7 @@ const CreatePromotionPage = () => {
             }
 
           } else {
-            setErrorMessage("Promotion updated successfully!");
+            setErrorMessage("Promotion Campaign Submitted!");
             setShowAlert(true);
             setTimeout(() => {
               setShowAlert(false);
