@@ -207,7 +207,7 @@ const PolicyPage = () => {
               <TableHead>Policy Number</TableHead>
               <TableHead>Plan Name</TableHead>
               <TableHead className="whitespace-nowrap">Status</TableHead>
-              <TableHead>Issued Date</TableHead>
+              {/* <TableHead>Issued Date</TableHead> */}
               <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -220,7 +220,7 @@ const PolicyPage = () => {
                   <TableCell>{rowNumber}</TableCell>
                   <TableCell>
                     <div className="flex gap-2 items-center">
-                      {policy.declarations.transaction_data.customer.name}
+                      {policy.number}
                     </div>
                   </TableCell>
                   <TableCell>{policy.number}</TableCell>
@@ -232,7 +232,7 @@ const PolicyPage = () => {
                       {policy.status}
                     </span>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {new Date(
                       policy.declarations.transaction_data.date
                     ).toLocaleDateString("en-US", {
@@ -240,7 +240,7 @@ const PolicyPage = () => {
                       month: "long",
                       day: "numeric",
                     })}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <Button
                       onClick={() => goToDetail(policy.id)}

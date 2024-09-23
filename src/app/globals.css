@@ -213,3 +213,6 @@ nav[aria-label="breadcrumb"] li a {
 tfoot tr:hover {
   background-color: white !important;
 }
+th {
+  font-weight: 600 !important;
+}
