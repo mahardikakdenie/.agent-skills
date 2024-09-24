@@ -3,18 +3,51 @@ import { IHttpClient } from "@/lib/http-client-interface";
 import Cookies from "universal-cookie";
 import qs from "qs";
 
-interface PolicyResponse {
+interface ClaimResponse {
   data: any;
   page: any;
   total: any;
   pageTotal: any;
+
+  id: string;
+  number: string;
+  status: string;
+  policy_data: Claim;
+  participant_data: Participant;
+  benefit: {
+    id?: string;
+    description_en: string;
+    description_id: string;
+  };
+  bank_info: {
+    bank: string;
+    branch: string;
+    account_name: string;
+    account_number: number;
+  };
+  personal_info: {
+    city: string;
+    phone: string;
+    state: string;
+    address: string;
+    address2: string;
+    district: string;
+    subdistrict: string;
+  };
+  general: any;
+  claim: any;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Claim {
   id: string;
   type: string;
   draft: boolean;
   number: string;
   status: string;
   category: string;
-  participants: any;
+  participants: Participant[];
   package_data?: any;
   declarations: {
     transaction_data: any;
@@ -25,13 +58,21 @@ interface PolicyResponse {
     phone: string;
   };
 }
-export class PolicyService {
+export interface Participant {
+  id: string;
+  data: {
+    id: string;
+    data: any;
+  };
+}
+
+export class ClaimService {
   private httpClient: IHttpClient;
 
   constructor() {
     const cookies = new Cookies();
     this.httpClient = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_API_POLICY_BASE_URL,
+      baseURL: process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL,
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + cookies.get("token"),
@@ -39,11 +80,11 @@ export class PolicyService {
     });
   }
 
-  async getPolicy(
+  async getClaims(
     page: number,
     rowsPerPage: number,
     status: string
-  ): Promise<PolicyResponse> {
+  ): Promise<ClaimResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
@@ -53,10 +94,10 @@ export class PolicyService {
       params["status"] = status;
     }
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get(`/policies?${queryString}`);
+    return this.httpClient.get(`/claims?${queryString}`);
   }
 
-  async getPolicyDetail(id: string): Promise<any> {
-    return this.httpClient.get("/policies/" + id);
+  async getClaimsDetail(id: string): Promise<any> {
+    return this.httpClient.get("/claims/" + id);
   }
 }
