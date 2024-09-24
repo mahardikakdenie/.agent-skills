@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'react-feather';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import { ProductService } from '@/services/product.services';
 
 interface Product {
@@ -16,9 +18,11 @@ interface ProductSelectionModalProps {
   onClose: () => void;
   onSelect: (products: Product[]) => void;
   products: Product[];
-  selectedProductIds: Set<string>;
   initialSelectedProductIds: Set<string>;
+  selectedProductIds: Set<string>;
+  onPageChange: (page: number) => void;
 }
+
 
 interface Category {
   id: string;
@@ -30,16 +34,21 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   onClose,
   onSelect,
   products,
-  selectedProductIds,
-  initialSelectedProductIds
+  initialSelectedProductIds,
+  onPageChange,
 }) => {
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set(initialSelectedProductIds));
   const [selectAll, setSelectAll] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(''); 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const totalItems = products.length;
+  const totalPages = Math.ceil(totalItems / rowsPerPage);
+  
   const productService = new ProductService();
 
   const formatCategoryName = (name: string): string => {
@@ -81,7 +90,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   }, []);
 
   const handleCheckboxChange = (productId: string) => {
-    setSelectedProducts(prevSelected => {
+    setSelectedProducts((prevSelected) => {
       const updatedSelected = new Set(prevSelected);
       if (updatedSelected.has(productId)) {
         updatedSelected.delete(productId);
@@ -96,36 +105,48 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     if (selectAll) {
       setSelectedProducts(new Set());
     } else {
-      const allProductIds = new Set(filteredProducts.map(product => product.id));
+      const allProductIds = new Set(filteredProducts.map((product) => product.id));
       setSelectedProducts(allProductIds);
     }
     setSelectAll(!selectAll);
   };
 
-  const handleConfirm = () => {
-    const selected = products.filter(product => selectedProducts.has(product.id));
+  const handleApply = () => {
+    const selected = products.filter((product) => selectedProducts.has(product.id));
     onSelect(selected);
     onClose();
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      onPageChange(page);
+    }
   };
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategoryId(event.target.value);
   };
 
-  const filteredProducts = products.filter(product =>
+  const filteredProducts = (Array.isArray(products) ? products : []).filter(product =>
     selectedCategoryId === '' || product.category === selectedCategoryId
   );
 
   useEffect(() => {
-    setSelectAll(filteredProducts.length > 0 && filteredProducts.every(product => selectedProducts.has(product.id)));
+    setSelectAll(filteredProducts.length > 0 && filteredProducts.every((product) => selectedProducts.has(product.id)));
   }, [selectedProducts, filteredProducts]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-3/4 max-w-2xl h-auto">
-        <h2 className="text-2xl font-semibold mb-4">Select Products</h2>
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-3xl h-[90vh] flex flex-col relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+          <FaTimes />
+        </button>
+        <h2 className="text-2xl font-semibold mb-4">
+          <span className="text-[#016DA1]">Select Products</span>
+        </h2>
         
         {/* Filter Dropdown */}
         <div className="mb-4">
@@ -152,59 +173,96 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           )}
         </div>
 
-        <div className="overflow-y-auto max-h-80">
-          {filteredProducts.length > 0 ? (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
+        {/* Product List with Pagination */}
+        <div className="flex-grow overflow-y-auto mb-4">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAllChange}
+                    className="form-checkbox"
+                  />
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredProducts.length > 0 ? (
+                filteredProducts
+                  .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+                  .map((product) => (
+                    <tr key={product.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.has(product.id)}
+                          onChange={() => handleCheckboxChange(product.id)}
+                          className="form-checkbox"
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.category}</td>
+                    </tr>
+                  ))
+              ) : (
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <input
-                      type="checkbox"
-                      checked={selectAll}
-                      onChange={handleSelectAllChange}
-                      className="form-checkbox"
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No products available.</td>
                 </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredProducts.map((product) => (
-                  <tr key={product.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts.has(product.id)}
-                        onChange={() => handleCheckboxChange(product.id)}
-                        className="form-checkbox"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="text-center text-sm text-gray-500">No products available.</p>
-          )}
+              )}
+            </tbody>
+          </table>
         </div>
 
-        <div className="flex justify-between mt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
+        {/* Pagination and Rows Per Page Controls */}
+        <div className="flex justify-center items-center gap-2 font-normal mb-4">
+          <label htmlFor="rowsPerPage" className="mr-2">Showing:</label>
+          <select
+            id="rowsPerPage"
+            className="p-2 border rounded"
+            value={rowsPerPage}
+            onChange={(e) => {
+              const newRowsPerPage = Number(e.target.value);
+              setRowsPerPage(newRowsPerPage);
+              setCurrentPage(1);
+            }}
           >
-            Close
+            {[10, 20, 30, 50].map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+          <span className="mr-2">of {totalItems} items</span>
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            title="Previous"
+            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+          >
+            <ChevronLeft />
           </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            title="Next"
+            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+          >
+            <ChevronRight />
+          </button>
+        </div>
+
+        {/* Save Button */}
+        <div className="flex justify-center mt-4">
           <button
             type="button"
-            onClick={handleConfirm}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            onClick={handleApply}
+            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
           >
-            Confirm
+            <FaCheck className="mr-2" />
+            Save
           </button>
         </div>
       </div>

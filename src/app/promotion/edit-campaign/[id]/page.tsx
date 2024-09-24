@@ -12,7 +12,7 @@ import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import ProductSelectionModal from "../../components/product-selection-modal";
-import { Channel, ChannelResponseDTO, Insurance, Plan, Product } from "../../dto/promotion.dto";
+import { Channel, ChannelResponseDTO, Insurance, InsuranceResponseDTO, Plan, Product } from "../../dto/promotion.dto";
 import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
 import axios, { AxiosResponse } from "axios";
@@ -51,8 +51,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
-  const [channels, setChannels] = useState<ChannelResponseDTO>();
-  const [insurances, setInsurances] = useState<any[]>([]);
+  const [channels, setChannels] = useState<ChannelResponseDTO | undefined>(undefined);
+  const [insurances, setInsurances] = useState<InsuranceResponseDTO | undefined>(undefined);
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
@@ -68,6 +68,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [voucherCode, setVoucherCode] = useState<string>('');
   const [voucherUsageLimit, setVoucherUsageLimit] = useState<number>(1);
   const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
 
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
@@ -131,9 +132,17 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setLoading(false);
         });
     }
-    fetchChannels(1);
-    fetchInsurances();
+    // fetchChannels(1);
+    // fetchInsurances(1);
   }, [params.id]);
+
+  useEffect(() => {
+    fetchInsurances(currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchChannels(currentPage);
+  }, [currentPage]);
 
 
 
@@ -146,12 +155,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   }, [selectedInsurances]);
 
   const handlePageChange = (page: number) => {
-    fetchChannels(page);
+    if (page >= 1) {
+      setCurrentPage(page);
+    }
   };
 
   const fetchChannels = async (page: number) => {
     try {
-      const response = await channelService.getChannels(page);
+      const limit = 10;
+      const response = await channelService.getChannels(page, limit);
       setChannels(response);
     } catch (error) {
       console.error("Failed to fetch channels:", error);
@@ -159,10 +171,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
 
-  const fetchInsurances = async () => {
+  const fetchInsurances = async (page: number) => {
     try {
-      const response = await insuranceService.getInsurances();
-      setInsurances(response as Insurance[]);
+      const limit = 10;
+      const response = await insuranceService.getInsurances(page, limit);
+      setInsurances(response);
     } catch (error) {
       console.error("Failed to fetch insurances:", error);
     }
@@ -742,7 +755,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <div className="flex flex-wrap p-2">
                 {promotion.embedded_discount_insurances.length > 0 ? (
                   promotion.embedded_discount_insurances.map((insurance, index) => {
-                    const selectedInsurance = insurances.find(ins => ins.id === insurance.insurance_id);
+                    const selectedInsurance = insurances?.data.find(ins => ins.id === insurance.insurance_id);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
@@ -1012,6 +1025,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             brand: '',
             logo_url: '',
           }))}
+          onPageChange={handlePageChange}
         />
       )}
 

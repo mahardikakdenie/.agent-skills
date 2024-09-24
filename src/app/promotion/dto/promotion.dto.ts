@@ -41,6 +41,15 @@ export interface ChannelResponseDTO {
 }
 
 
+export interface InsuranceResponseDTO {
+  data: Insurance[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+}
+
 export interface Insurance {
   id: string;
   name: string;

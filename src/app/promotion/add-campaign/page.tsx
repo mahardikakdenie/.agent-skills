@@ -9,7 +9,7 @@ import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import { PlanService } from "@/services/plan.services";
-import { Insurance, NewPromotionCampaign, Plan, Product } from "../dto/promotion.dto";
+import { Insurance, InsuranceResponseDTO, NewPromotionCampaign, Plan, Product } from "../dto/promotion.dto";
 import ChannelSelectionModal from "../components/channel-selection-modal";
 import InsuranceSelectionModal from "../components/insurance-selection-modal";
 import ProductSelectionModal from "../components/product-selection-modal";
@@ -39,9 +39,10 @@ interface ChannelResponseDTO {
   data: Channel[];
   total: number;
   limit: number;
-  pageTotal: number;
   page: number;
+  pageTotal: number;
 }
+
 
 const CreatePromotionPage = () => {
   const router = useRouter();
@@ -78,7 +79,7 @@ const CreatePromotionPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [channels, setChannels] = useState<ChannelResponseDTO | undefined>(undefined);
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
-  const [insurances, setInsurances] = useState<Insurance[]>([]);
+  const [insurances, setInsurances] = useState<InsuranceResponseDTO | undefined>(undefined);
   const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<Set<string>>(new Set());
   const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -92,18 +93,24 @@ const CreatePromotionPage = () => {
   const [voucherCode, setVoucherCode] = useState<string>('');
   const [voucherUsageLimit, setVoucherUsageLimit] = useState<number>(1);
   const [alertMessage, setAlertMessage] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageIns, setCurrentPageIns] = useState(1);
+  const [currentPagePlan, setCurrentPagePlan] = useState(1);
+  const [currentPageChannel, setCurrentPageChannel] = useState(1);
+  const [totalPlanItems, setTotalPlanItems] = useState(0);
 
   useEffect(() => {
-    fetchChannels(1);
-  }, []);
+    fetchInsurances(currentPageIns);
+  }, [currentPageIns]);
 
   useEffect(() => {
-    fetchInsurances();
-  }, []);
+    fetchChannels(currentPageChannel);
+  }, [currentPageChannel]);
+
 
   useEffect(() => {
     if (selectedInsuranceIds.size > 0) {
-      fetchProductsByInsurances(Array.from(selectedInsuranceIds));
+      fetchProductsByInsurances(Array.from(selectedInsuranceIds), currentPageIns);
     } else {
       setProducts([]);
       setHasProducts(false);
@@ -112,7 +119,7 @@ const CreatePromotionPage = () => {
 
   useEffect(() => {
     if (selectedProductIds.size > 0) {
-      fetchPlansByProducts(Array.from(selectedProductIds));
+      fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan);
     } else {
       setPlans([]);
       setSelectedPlanIds(new Set());
@@ -120,44 +127,49 @@ const CreatePromotionPage = () => {
   }, [selectedProductIds]);
 
 
-  const fetchPlansByProducts = async (productIds: string[]) => {
+  const fetchPlansByProducts = async (productIds: string[], currentPagePlan: number) => {
     if (productIds.length === 0) {
       setPlans([]);
+      setTotalPlanItems(0);
       return;
     }
 
     try {
-      const responses = await Promise.all(
-        productIds.map(id => planService.getPlansByProductId(id))
-      );
+      const limit = 10;
+      const responses = await planService.getPlansByProductId(productIds, limit, currentPagePlan);
 
-      const allPlans = responses.flat();
-      setPlans(allPlans);
+      console.log("Fetching plans for page number: " + currentPagePlan);
+
+      setPlans(responses.data);
+      setTotalPlanItems(responses.meta.total);
     } catch (error) {
       console.error("Failed to fetch plans:", error);
       setPlans([]);
     }
   };
 
+
   const fetchChannels = async (page: number) => {
     try {
-      const response = await channelService.getChannels(page);
+      const limit = 10;
+      const response = await channelService.getChannels(page, limit);
       setChannels(response);
     } catch (error) {
       console.error("Failed to fetch channels:", error);
     }
   };
 
-  const fetchInsurances = async () => {
+  const fetchInsurances = async (page: number) => {
     try {
-      const response = await insuranceService.getInsurances();
+      const limit = 10;
+      const response = await insuranceService.getInsurances(page, limit);
       setInsurances(response);
     } catch (error) {
       console.error("Failed to fetch insurances:", error);
     }
   };
 
-  const fetchProductsByInsurances = async (insuranceIds: string[]) => {
+  const fetchProductsByInsurances = async (insuranceIds: string[], page: number) => {
     if (insuranceIds.length === 0) {
       setProducts([]);
       setHasProducts(false);
@@ -165,13 +177,10 @@ const CreatePromotionPage = () => {
     }
 
     try {
-      const responses = await Promise.all(
-        insuranceIds.map(id => productService.getProductByInsuranceId(id))
-      );
-
-      const allProducts = responses.flat();
-      setProducts(allProducts);
-      setHasProducts(allProducts.length > 0);
+      const limit = 10;
+      const allProducts = await productService.getProductByInsuranceId(insuranceIds, limit, page);
+      setProducts(allProducts.data);
+      setHasProducts(allProducts.data.length > 0);
     } catch (error) {
       console.error("Failed to fetch products:", error);
       setProducts([]);
@@ -243,7 +252,7 @@ const CreatePromotionPage = () => {
 
       if (arrayName === 'embedded_discount_insurances') {
         const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
-        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
+        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), currentPage);
 
         return {
           ...prevState,
@@ -524,8 +533,30 @@ const CreatePromotionPage = () => {
   };
 
   const handlePageChange = (page: number) => {
-    fetchChannels(page);
+    if (page >= 1) {
+      setCurrentPage(page);
+    }
   };
+
+  const handlePageChangeChannel = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageChannel(page);
+    }
+  };
+
+  const handlePageChangeIns = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageIns(page);
+    }
+  };
+
+  const handlePageChangePlans = (page: number) => {
+    if (page >= 1 && page !== currentPagePlan) {
+      setCurrentPagePlan(page); 
+      fetchPlansByProducts(Array.from(selectedProductIds), page); 
+    }
+  };
+
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -592,7 +623,7 @@ const CreatePromotionPage = () => {
           onSelect={handleSelectChannel}
           selectedChannelIds={selectedChannelIds}
           channels={channels}
-          onPageChange={handlePageChange}
+          onPageChangeChannel={handlePageChangeChannel}
         />
         <InsuranceSelectionModal
           isOpen={isInsuranceModalOpen}
@@ -605,6 +636,7 @@ const CreatePromotionPage = () => {
             brand: '',
             logo_url: ''
           }))}
+          onPageChange={handlePageChangeIns}
         />
         <ProductSelectionModal
           isOpen={isProductModalOpen}
@@ -613,6 +645,7 @@ const CreatePromotionPage = () => {
           products={products}
           selectedProductIds={selectedProductIds}
           initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+          onPageChange={handlePageChange}
         />
         <PlanSelectionModal
           isOpen={isPlanModalOpen}
@@ -625,7 +658,11 @@ const CreatePromotionPage = () => {
           }))}
           preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+          onPageChangePlan={handlePageChangePlans}
+          totalPlanItems={totalPlanItems}
+          pagePlan={currentPagePlan}
         />
+
 
         {/* Create New Campaign */}
         <div className="flex space-x-4 mb-4">

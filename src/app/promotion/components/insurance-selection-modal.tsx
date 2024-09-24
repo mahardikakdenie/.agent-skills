@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { ChevronLeft, ChevronRight } from 'react-feather';
+import { FaCheck, FaTimes } from 'react-icons/fa';
+
+export interface InsuranceResponseDTO {
+  data: Insurance[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+}
 
 export interface Insurance {
   id: string;
@@ -12,27 +22,39 @@ interface InsuranceSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (insurances: Insurance[]) => void;
-  insurances?: Insurance[];
+  insurances?: InsuranceResponseDTO;
   initialSelectedInsurances: Insurance[];
+  onPageChange: (page: number) => void;
 }
 
 const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   isOpen,
   onClose,
   onSelect,
-  insurances = [],
+  insurances,
   initialSelectedInsurances,
+  onPageChange,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedInsurances, setSelectedInsurances] = useState<Set<string>>(new Set(initialSelectedInsurances.map(ins => ins.id)));
   const [selectAll, setSelectAll] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const data = insurances?.data || [];
+  const totalItems = insurances?.meta.total || 0;
+  const totalPages = Math.ceil(totalItems / rowsPerPage);
 
   useEffect(() => {
     setSelectedInsurances(new Set(initialSelectedInsurances.map(ins => ins.id)));
   }, [initialSelectedInsurances]);
 
   useEffect(() => {
-    setSelectAll(insurances.length > 0 && insurances.every(insurance => selectedInsurances.has(insurance.id)));
-  }, [selectedInsurances, insurances]);
+    setSelectAll(data.length > 0 && data.every(insurance => selectedInsurances.has(insurance.id)));
+  }, [selectedInsurances, data]);
+
+  useEffect(() => {
+    onPageChange(currentPage);
+  }, [currentPage, onPageChange]);
 
   if (!isOpen) return null;
 
@@ -52,23 +74,39 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
     if (selectAll) {
       setSelectedInsurances(new Set());
     } else {
-      const allInsuranceIds = new Set(insurances.map(insurance => insurance.id));
+      const allInsuranceIds = new Set(data.map(insurance => insurance.id));
       setSelectedInsurances(allInsuranceIds);
     }
     setSelectAll(!selectAll);
   };
 
   const handleApply = () => {
-    const selectedInsurancesArray = insurances.filter(insurance => selectedInsurances.has(insurance.id));
+    const selectedInsurancesArray = data.filter(insurance => selectedInsurances.has(insurance.id));
     onSelect(selectedInsurancesArray);
     onClose();
   };
 
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      onPageChange(page);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-3/4 max-w-2xl h-auto">
-        <h2 className="text-2xl font-semibold mb-4">Select Insurances</h2>
-        <div className="overflow-y-auto max-h-80">
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-3xl h-[90vh] flex flex-col relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
+          <FaTimes />
+        </button>
+
+        <h2 className="text-2xl font-semibold mb-4">
+          <span className="text-[#016DA1]">Select Insurances</span>
+        </h2>
+        <div className="flex-grow overflow-y-auto mb-4">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
@@ -85,8 +123,8 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {insurances.length > 0 ? (
-                insurances.map((insurance) => (
+              {data.length > 0 ? (
+                data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage).map((insurance) => (
                   <tr key={insurance.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
@@ -108,20 +146,53 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
             </tbody>
           </table>
         </div>
-        <div className="flex justify-between mt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
+
+        <div className="flex justify-center items-center gap-2 font-normal mb-4">
+          <label htmlFor="rowsPerPage" className="mr-2">Showing:</label>
+          <select
+            id="rowsPerPage"
+            className="p-2 border rounded"
+            value={rowsPerPage}
+            onChange={(e) => {
+              const newRowsPerPage = Number(e.target.value);
+              setRowsPerPage(newRowsPerPage);
+              setCurrentPage(1);
+            }}
           >
-            Close
+            {[10, 20, 30, 50].map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <span className="mr-2">of {totalItems} items</span>
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            title="Previous"
+            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+          >
+            <ChevronLeft />
           </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            title="Next"
+            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+          >
+            <ChevronRight />
+          </button>
+        </div>
+
+        <div className="flex justify-center mt-4">
           <button
             type="button"
             onClick={handleApply}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
           >
-            Apply
+            <FaCheck className="mr-2" />
+            Save
           </button>
         </div>
       </div>
