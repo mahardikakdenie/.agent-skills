@@ -128,12 +128,14 @@ const CreatePromotionPage = () => {
   }, [selectedProductIds]);
 
   useEffect(() => {
-    // Initial fetch for plans
-    fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan, showPlansPerPage);
+    if (selectedProductIds.size > 0) {
+      fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan, showPlansPerPage);
+    }
   }, [selectedProductIds, currentPagePlan, showPlansPerPage]);
 
 
   const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
+    console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlans(responses.data);
@@ -143,6 +145,7 @@ const CreatePromotionPage = () => {
       setPlans([]);
     }
   };
+  
 
 
   const fetchChannels = async (page: number) => {
@@ -566,7 +569,7 @@ const CreatePromotionPage = () => {
       setCurrentPagePlan(page);
       fetchPlansByProducts(Array.from(selectedProductIds), page, showPlansPerPage);
     }
-  };
+  };  
 
   const handlePlansPerPageChange = async (newPlansPerPage: number) => {
     setShowPlansPerPage(newPlansPerPage);

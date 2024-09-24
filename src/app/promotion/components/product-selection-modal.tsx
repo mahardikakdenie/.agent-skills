@@ -186,8 +186,8 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     className="form-checkbox"
                   />
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -204,8 +204,8 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                           className="form-checkbox"
                         />
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.category}</td>
                     </tr>
                   ))
               ) : (

@@ -132,7 +132,9 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
           ✖
         </button>
-        <h2 className="text-2xl font-semibold mb-4">Select Plans</h2>
+        <h2 className="text-2xl font-semibold mb-4">
+          <span className="text-[#016DA1]">Select Plans</span>
+        </h2>
 
         {/* Plan List */}
         <div className="overflow-y-auto flex-grow mb-4">
@@ -192,6 +194,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
           <span className="mr-2">of {totalPlanItems} items</span>
 
           <button
+            type="button"
             onClick={() => handlePageChange(pagePlan - 1)}
             disabled={pagePlan === 1}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
@@ -200,6 +203,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
           </button>
           <span>Page {pagePlan} of {totalPages}</span>
           <button
+            type="button"
             onClick={() => handlePageChange(pagePlan + 1)}
             disabled={pagePlan === totalPages}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
