@@ -98,6 +98,7 @@ const CreatePromotionPage = () => {
   const [currentPagePlan, setCurrentPagePlan] = useState(1);
   const [currentPageChannel, setCurrentPageChannel] = useState(1);
   const [totalPlanItems, setTotalPlanItems] = useState(0);
+  const [showPlansPerPage, setShowPlansPerPage] = useState(10);
 
   useEffect(() => {
     fetchInsurances(currentPageIns);
@@ -119,27 +120,22 @@ const CreatePromotionPage = () => {
 
   useEffect(() => {
     if (selectedProductIds.size > 0) {
-      fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan);
+      fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan, showPlansPerPage);
     } else {
       setPlans([]);
       setSelectedPlanIds(new Set());
     }
   }, [selectedProductIds]);
 
+  useEffect(() => {
+    // Initial fetch for plans
+    fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan, showPlansPerPage);
+  }, [selectedProductIds, currentPagePlan, showPlansPerPage]);
 
-  const fetchPlansByProducts = async (productIds: string[], currentPagePlan: number) => {
-    if (productIds.length === 0) {
-      setPlans([]);
-      setTotalPlanItems(0);
-      return;
-    }
 
+  const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
     try {
-      const limit = 10;
-      const responses = await planService.getPlansByProductId(productIds, limit, currentPagePlan);
-
-      console.log("Fetching plans for page number: " + currentPagePlan);
-
+      const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlans(responses.data);
       setTotalPlanItems(responses.meta.total);
     } catch (error) {
@@ -210,15 +206,30 @@ const CreatePromotionPage = () => {
   };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_products: selectedProducts.map(product => ({
-        product_id: product.id,
-        product_name: product.name
-      }))
-    }));
-    setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
+    // Get the selected product IDs from the updated selection
+    const selectedProductIdsSet = new Set(selectedProducts.map(product => product.id));
+
+    // Update promotion state with the new selected products
+    setPromotion(prevState => {
+      // Filter plans associated with selected products only
+      const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
+        selectedProductIdsSet.has(plan.plan_id)
+      );
+
+      return {
+        ...prevState,
+        embedded_discount_products: selectedProducts.map(product => ({
+          product_id: product.id,
+          product_name: product.name
+        })),
+        embedded_discount_plans: updatedPlans,  // Update plans to keep only those tied to selected products
+      };
+    });
+
+    // Update the state for selected product IDs
+    setSelectedProductIds(selectedProductIdsSet);
   };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -552,9 +563,15 @@ const CreatePromotionPage = () => {
 
   const handlePageChangePlans = (page: number) => {
     if (page >= 1 && page !== currentPagePlan) {
-      setCurrentPagePlan(page); 
-      fetchPlansByProducts(Array.from(selectedProductIds), page); 
+      setCurrentPagePlan(page);
+      fetchPlansByProducts(Array.from(selectedProductIds), page, showPlansPerPage);
     }
+  };
+
+  const handlePlansPerPageChange = async (newPlansPerPage: number) => {
+    setShowPlansPerPage(newPlansPerPage);
+    setCurrentPagePlan(1);  // Reset to first page
+    fetchPlansByProducts(Array.from(selectedProductIds), 1, newPlansPerPage);
   };
 
 
@@ -661,6 +678,8 @@ const CreatePromotionPage = () => {
           onPageChangePlan={handlePageChangePlans}
           totalPlanItems={totalPlanItems}
           pagePlan={currentPagePlan}
+          showPlansPerPage={showPlansPerPage}
+          onPlansPerPageChange={handlePlansPerPageChange}
         />
 
 
