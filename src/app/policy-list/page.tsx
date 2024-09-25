@@ -225,7 +225,9 @@ const PolicyPage = () => {
                   </TableCell>
                   <TableCell>{policy.number}</TableCell>
                   <TableCell>
-                    {policy.declarations.transaction_data.insurance.plan.name}
+                    {policy.declarations.transaction_data.insurance.plan.name
+                      .split("|")
+                      .join(" - ")}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(policy.status)}>
