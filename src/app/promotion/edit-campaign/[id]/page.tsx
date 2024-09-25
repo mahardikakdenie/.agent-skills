@@ -76,6 +76,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [currentPageIns, setCurrentPageIns] = useState(1);
   const [currentPageChannels, setCurrentPageChannels] = useState(1);
   const [showChannelsPerPage, setShowChannelsPerPage] = useState(10);
+  const [globalSelectedChannels, setGlobalSelectedChannels] = useState<Set<string>>(new Set());
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -315,7 +316,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   const handleChannelsPerPageChange = async (newChannelsPerPage: number) => {
     setShowChannelsPerPage(newChannelsPerPage);
-    setCurrentPageChannels(1);  // Reset to first page
+    setCurrentPageChannels(1);
     fetchChannels(1, newChannelsPerPage);
   };
 
@@ -418,8 +419,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAddChannel = () => {
-    setSelectedChannelIds(new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id)));
-    setIsChannelModalOpen(true);
+    const selectedChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
+    setGlobalSelectedChannels(selectedChannelIds);
+    setIsModalOpen(true);
   };
 
 
@@ -431,7 +433,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         channel_name: channel.name
       }))
     }));
-    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id)));
+  
+    setGlobalSelectedChannels(new Set(selectedChannels.map(channel => channel.id)));
+  
     setIsModalOpen(false);
   };
 
@@ -1050,15 +1054,17 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       {/* Channel Modal */}
       {isModalOpen && (
         <ChannelSelectionModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSelect={handleSelectChannel}
-          selectedChannelIds={selectedChannelIds}
-          channels={channels}
-          onPageChangeChannel={handlePageChangeChannel}
-          showChannelsPerPage={showChannelsPerPage}
-          onChannelsPerPageChange={handleChannelsPerPageChange}
-        />
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={handleSelectChannel}
+        channels={channels}
+        onPageChangeChannel={handlePageChangeChannel}
+        selectedChannelIds={selectedChannelIds}
+        showChannelsPerPage={showChannelsPerPage}
+        onChannelsPerPageChange={handleChannelsPerPageChange}
+        globalSelectedChannels={globalSelectedChannels}
+        setGlobalSelectedChannels={setGlobalSelectedChannels}
+      />
       )}
 
 

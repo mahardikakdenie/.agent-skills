@@ -101,6 +101,7 @@ const CreatePromotionPage = () => {
   const [showPlansPerPage, setShowPlansPerPage] = useState(10);
   const [showChannelsPerPage, setShowChannelsPerPage] = useState(10);
   const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
+  const [globalSelectedChannels, setGlobalSelectedChannels] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchInsurances(currentPageIns);
@@ -108,7 +109,7 @@ const CreatePromotionPage = () => {
 
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
-  }, [currentPageChannels]);
+  }, [currentPageChannels, showChannelsPerPage]);
 
 
   useEffect(() => {
@@ -265,7 +266,8 @@ const CreatePromotionPage = () => {
   };
 
   const handleAddChannel = () => {
-    setSelectedChannelIds(new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id)));
+    const selectedChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
+    setGlobalSelectedChannels(selectedChannelIds);
     setIsModalOpen(true);
   };
 
@@ -467,16 +469,40 @@ const CreatePromotionPage = () => {
 
 
   const handleSelectChannel = (selectedChannels: Channel[]) => {
+    // Get the existing channels from the promotion state
+    const existingChannels = promotion.embedded_discount_channels;
+
+    // Create a new array with existing channels and newly selected channels, ensuring no duplicates
+    const updatedChannels = [...existingChannels];
+
+    selectedChannels.forEach(channel => {
+      const existingChannel = updatedChannels.find(c => c.channel_id === channel.id);
+      if (!existingChannel) {
+        updatedChannels.push({
+          channel_id: channel.id,
+          channel_name: channel.name // Store the channel name for display
+        });
+      }
+    });
+
+    // Update the promotion state
     setPromotion(prevState => ({
       ...prevState,
-      embedded_discount_channels: selectedChannels.map(channel => ({
-        channel_id: channel.id,
-        channel_name: channel.name
-      }))
+      embedded_discount_channels: updatedChannels
     }));
-    setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id)));
+
+    // Update global selected channels
+    setGlobalSelectedChannels(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedChannels.forEach(channel => newSelected.add(channel.id)); // Only add channel IDs
+      return newSelected;
+    });
+
     setIsModalOpen(false);
   };
+
+
+
 
   const handleSelectPlan = (newSelectedPlans: Plan[]) => {
     const updatedPlans = [...promotion.embedded_discount_plans];
@@ -584,7 +610,7 @@ const CreatePromotionPage = () => {
 
   const handleChannelsPerPageChange = async (newChannelsPerPage: number) => {
     setShowChannelsPerPage(newChannelsPerPage);
-    setCurrentPageChannels(1);  // Reset to first page
+    setCurrentPageChannels(1);
     fetchChannels(1, newChannelsPerPage);
   };
 
@@ -652,11 +678,13 @@ const CreatePromotionPage = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSelect={handleSelectChannel}
-          selectedChannelIds={selectedChannelIds}
           channels={channels}
           onPageChangeChannel={handlePageChangeChannel}
+          selectedChannelIds={selectedChannelIds}
           showChannelsPerPage={showChannelsPerPage}
           onChannelsPerPageChange={handleChannelsPerPageChange}
+          globalSelectedChannels={globalSelectedChannels}
+          setGlobalSelectedChannels={setGlobalSelectedChannels}
         />
         <InsuranceSelectionModal
           isOpen={isInsuranceModalOpen}
@@ -852,6 +880,7 @@ const CreatePromotionPage = () => {
                   )}
                 </div>
               </div>
+
               <div className="flex-shrink-0 flex justify-center items-center">
                 <button
                   type="button"
@@ -864,6 +893,7 @@ const CreatePromotionPage = () => {
               </div>
             </div>
           </div>
+
 
 
           {/* Insurances Section */}

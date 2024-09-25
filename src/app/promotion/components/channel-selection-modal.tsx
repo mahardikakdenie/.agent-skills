@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'react-feather';
-import { FaCheck, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaPlus } from 'react-icons/fa';
 
 interface Channel {
   id: string;
@@ -23,8 +23,10 @@ interface ChannelSelectionModalProps {
   channels?: ChannelResponseDTO;
   onPageChangeChannel: (page: number) => void;
   selectedChannelIds: Set<string>;
-  showChannelsPerPage: number; // Add this prop
-  onChannelsPerPageChange: (channelsPerPage: number) => void; // Add this prop
+  showChannelsPerPage: number;
+  onChannelsPerPageChange: (channelsPerPage: number) => void;
+  globalSelectedChannels: Set<string>;
+  setGlobalSelectedChannels: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
 const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
@@ -36,35 +38,25 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   selectedChannelIds,
   showChannelsPerPage,
   onChannelsPerPageChange,
+  globalSelectedChannels,
+  setGlobalSelectedChannels
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedChannels, setSelectedChannels] = useState<Set<string>>(new Set(selectedChannelIds));
   const [selectAll, setSelectAll] = useState(false);
-  
+
   const data = channels?.data || [];
-  const totalPages = channels?.pageTotal || 1;
   const totalItems = channels?.total || 0;
+  const totalPages = Math.ceil(totalItems / showChannelsPerPage);
 
   useEffect(() => {
-    setSelectedChannels(new Set(selectedChannelIds));
-  }, [selectedChannelIds]);
-
-  useEffect(() => {
-    const allSelected = data.every(channel => selectedChannels.has(channel.id));
-    setSelectAll(allSelected);
-  }, [data, selectedChannels]);
+    setSelectAll(data.every(channel => globalSelectedChannels.has(channel.id)));
+  }, [data, globalSelectedChannels]);
 
   useEffect(() => {
     if (isOpen) {
       onPageChangeChannel(currentPage);
     }
   }, [isOpen, currentPage, onPageChangeChannel]);
-
-  useEffect(() => {
-    // Fetch channels when rows per page changes
-    setCurrentPage(1); // Reset to first page
-    onPageChangeChannel(1); // Call onPageChange to get the first page
-  }, [showChannelsPerPage, onPageChangeChannel]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -73,10 +65,8 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   const handleCheckboxChange = (channelId: string) => {
-    setSelectedChannels(prevSelected => {
+    setGlobalSelectedChannels(prevSelected => {
       const newSelected = new Set(prevSelected);
       newSelected.has(channelId) ? newSelected.delete(channelId) : newSelected.add(channelId);
       return newSelected;
@@ -85,21 +75,29 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
 
   const handleSelectAllChange = () => {
     setSelectAll(prevSelectAll => {
-      const allChannelIds = new Set(data.map(channel => channel.id));
-      if (prevSelectAll) {
-        setSelectedChannels(new Set()); // Clear selection
-      } else {
-        setSelectedChannels(allChannelIds); // Select all
-      }
-      return !prevSelectAll; // Toggle selectAll
+      const newSelected = new Set(globalSelectedChannels);
+      data.forEach(channel => {
+        if (prevSelectAll) {
+          newSelected.delete(channel.id); // Deselecting
+        } else {
+          newSelected.add(channel.id); // Selecting
+        }
+      });
+      setGlobalSelectedChannels(newSelected);
+      return !prevSelectAll;
     });
   };
 
   const handleApply = () => {
-    const selectedChannelsArray = data.filter(channel => selectedChannels.has(channel.id));
-    onSelect(selectedChannelsArray);
+    const selectedChannelsData: Channel[] = Array.from(globalSelectedChannels)
+      .map(channelId => data.find(channel => channel.id === channelId))
+      .filter((channel): channel is Channel => Boolean(channel));
+
+    onSelect(selectedChannelsData);
     onClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
@@ -111,7 +109,6 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
           <span className="text-[#016DA1]">Select Channels</span>
         </h2>
 
-        {/* Make the table scrollable */}
         <div className="overflow-y-auto flex-grow mb-4">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
@@ -135,7 +132,7 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
                         type="checkbox"
-                        checked={selectedChannels.has(channel.id)}
+                        checked={globalSelectedChannels.has(channel.id)}
                         onChange={() => handleCheckboxChange(channel.id)}
                         className="form-checkbox"
                       />
@@ -153,16 +150,14 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
           </table>
         </div>
 
+        {/* Pagination controls */}
         <div className="flex justify-center items-center gap-2 font-normal mt-4">
           <label htmlFor="rowsPerPage">Showing:</label>
           <select
             id="rowsPerPage"
             className="p-2 border rounded"
             value={showChannelsPerPage}
-            onChange={(e) => {
-              const newRowsPerPage = Number(e.target.value);
-              onChannelsPerPageChange(newRowsPerPage); // Update parent with new rows per page
-            }}
+            onChange={(e) => onChannelsPerPageChange(Number(e.target.value))}
           >
             {[10, 20, 30, 50].map((option) => (
               <option key={option} value={option}>
@@ -171,23 +166,24 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
             ))}
           </select>
           <span className="mr-2">of {totalItems} items</span>
+
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            title="Previous"
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronLeft />
           </button>
+          <span>{`Page ${currentPage} of ${totalPages}`}</span>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            title="Next"
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronRight />
           </button>
         </div>
+
         <div className="flex justify-center mt-4">
           <button
             type="button"
