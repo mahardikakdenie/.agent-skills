@@ -51,6 +51,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [channels, setChannels] = useState<ChannelResponseDTO | undefined>(undefined);
   const [insurances, setInsurances] = useState<InsuranceResponseDTO | undefined>(undefined);
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
@@ -74,7 +75,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [totalPlanItems, setTotalPlanItems] = useState(0);
   const [currentPageIns, setCurrentPageIns] = useState(1);
   const [currentPageChannel, setCurrentPageChannel] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -164,6 +164,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       setCurrentPage(page);
     }
   };
+
+  const existingChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
 
   const fetchChannels = async (page: number) => {
     try {
@@ -412,7 +414,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       }))
     }));
     setSelectedChannelIds(new Set(selectedChannels.map(channel => channel.id)));
-    setIsChannelModalOpen(false);
+    setIsModalOpen(false);
   };
 
 
@@ -760,7 +762,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             <div className="flex-shrink-0 flex justify-center items-center">
               <button
                 type="button"
-                onClick={handleAddChannel}
+                onClick={() => {
+                  setSelectedChannelIds(existingChannelIds); // Update the selectedChannelIds state
+                  setIsModalOpen(true); // Open the modal
+                }}
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
               >
                 <FaPlus className="mr-2" />
@@ -1025,7 +1030,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       )}
 
       {/* Channel Modal */}
-      {isChannelModalOpen && (
+      {isModalOpen && (
         <ChannelSelectionModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -1035,6 +1040,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onPageChangeChannel={handlePageChangeChannel}
         />
       )}
+
 
       {/* Insurance Modal */}
       {isInsuranceModalOpen && (
