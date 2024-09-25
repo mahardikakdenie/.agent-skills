@@ -111,10 +111,10 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   };
 
   const handleApply = () => {
-    // Create an array of selected plan details (not just the current page's plans)
-    const selectedPlansArray = Array.from(selectedPlans).map(planId =>
-      plans.find(plan => plan.id === planId)
-    ).filter(Boolean) as Plan[];
+    // Create an array of selected plan details
+    const selectedPlansArray = Array.from(selectedPlans)
+      .map(planId => plans.find(plan => plan.id === planId))
+      .filter(Boolean) as Plan[];
 
     onSelect(selectedPlansArray);  // Pass full plan details to the parent component
     onClose();

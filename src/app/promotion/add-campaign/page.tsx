@@ -487,17 +487,17 @@ const CreatePromotionPage = () => {
   };
 
   const handleSelectPlan = (newSelectedPlans: Plan[]) => {
-    // Merge the newly selected plans with the already selected ones
     const updatedPlans = [...selectedPlans];
 
     newSelectedPlans.forEach(newPlan => {
       const existingPlan = updatedPlans.find(plan => plan.id === newPlan.id);
       if (!existingPlan) {
-        updatedPlans.push(newPlan);  // Add new plan if it hasn't been selected already
+        updatedPlans.push(newPlan); // Add new plan if it hasn't been selected already
       }
     });
 
-    setSelectedPlans(updatedPlans);  // Update the state with all selected plans
+    setSelectedPlans(updatedPlans); // Update the state with all selected plans
+    setSelectedPlanIds(new Set(updatedPlans.map(plan => plan.id))); // Sync modal checkboxes with textbox
   };
 
 
@@ -506,31 +506,17 @@ const CreatePromotionPage = () => {
     setIsPlanModalOpen(true);
   };
 
-  // const handleRemovePlan = (index: number) => {
-  //   setPromotion(prevState => {
-  //     const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
-
-  //     const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
-  //     const updatedSelectedPlanIds = new Set(selectedPlanIds);
-  //     updatedSelectedPlanIds.delete(removedPlanId);
-
-  //     return {
-  //       ...prevState,
-  //       embedded_discount_plans: updatedPlans,
-  //     };
-  //   });
-
-  //   setSelectedPlanIds(prevIds => {
-  //     const updatedIds = new Set(prevIds);
-  //     updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
-  //     return updatedIds;
-  //   });
-  // };
-
   const handleRemovePlan = (index: number) => {
     const updatedPlans = [...selectedPlans];
-    updatedPlans.splice(index, 1); // Remove plan by index
+    const removedPlan = updatedPlans.splice(index, 1)[0]; // Remove plan by index
+
+    // Update selected plans state and also untick the corresponding checkbox in the modal
     setSelectedPlans(updatedPlans);
+    setSelectedPlanIds(prevIds => {
+      const updatedIds = new Set(prevIds);
+      updatedIds.delete(removedPlan.id);
+      return updatedIds;
+    });
   };
 
   const handleRemoveVoucher = (index: number) => {
