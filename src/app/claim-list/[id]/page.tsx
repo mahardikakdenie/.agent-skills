@@ -8,38 +8,37 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import WithSidebar from "@/hoc/with-sidebar";
-import {
-  ClaimHistory,
-  ClaimService,
-  ListClaimHistoryResponse,
-  ListClaimRequest,
-} from "@/services/claim.service";
+import { ClaimService } from "@/services/claim.service";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "react-feather";
+import { ChevronLeft, X } from "react-feather";
 import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
-import qs from "qs";
-import { AxiosResponse } from "axios";
 import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drewer";
 
 const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [claim, setClaim] = useState<any>(null);
   const [tab, setTab] = useState("Summary");
   const [histories, setHistories] = useState<any[]>([]);
-  const [passportLink, setPassportLink] = useState("");
-  const [claimHistories, setClaimHistories] = useState<any>(null);
   const [documents, setDocuments] = useState<any[]>([]);
 
   const personalInfo = [
@@ -57,7 +56,10 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
       try {
         const claimDetailResponse = await claimService.getClaimsDetail(id);
         setClaim(claimDetailResponse);
-
+        setDocuments([
+          ...claimDetailResponse.general,
+          ...claimDetailResponse.claim,
+        ]);
         const claimHistoriesResponse = await claimService.getClaimsHistories(
           id
         );
@@ -82,17 +84,13 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Declaration":
-        return "text-[#016DA1]";
-      case "Grace Period":
-        return "text-orange-500";
-      case "Expired":
-        return "text-gray-400";
-      default:
-        return "text-[#016DA1]";
-    }
+  const downloadDocument = (url: string) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = url.substring(url.lastIndexOf("/") + 1);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -287,7 +285,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               <div className="bg-white rounded-md mb-3 py-5 px-7">
                 <p className="font-semibold mb-3">Informasi Tertanggung</p>
                 <div className="flex flex-col md:flex-row">
-                  <div className="md:w-1/3 mb-3 md:mr-2">
+                  <div className="md:w-1/3 mb-3 mr-4">
                     <img
                       src={claim?.general[0]?.value}
                       alt="passport-participant"
@@ -480,20 +478,48 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                 {documents.length > 0 ? (
                   documents.map((document, index) => (
                     <TableRow key={document.id}>
-                      <TableCell>1</TableCell>
-                      {/* <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell> */}
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
-                          {document.number}
+                          {document?.label.en}
                         </div>
                       </TableCell>
                       <TableCell>
-                        {/* <Button
-                        onClick={() => goToDetail(document.id)}
-                        className="rounded-full"
-                      >
-                        View
-                      </Button> */}
+                        <Drawer direction="right">
+                          <DrawerTrigger className="bg-[#016DA1] text-white px-4 py-2 rounded-full">
+                            View
+                          </DrawerTrigger>
+                          <DrawerContent>
+                            <DrawerHeader>
+                              <DrawerClose className="absolute right-2 top-2">
+                                <Button variant="ghost">
+                                  <X />
+                                </Button>
+                              </DrawerClose>
+                              <DrawerTitle className="text-black font-bold text-xl">
+                                Original Boarding Pass, Ticket or Itinerary
+                              </DrawerTitle>
+                              <DrawerDescription>
+                                <div className="flex flex-col w-full mt-5 rounded-xl overflow-hidden">
+                                  <img
+                                    src={claim?.general[0]?.value}
+                                    alt="passport-participant"
+                                  />
+                                </div>
+                                <div className="w-full flex items-center justify-center mt-3">
+                                  <Button
+                                    className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
+                                    onClick={() =>
+                                      downloadDocument(claim?.general[0]?.value)
+                                    }
+                                  >
+                                    Download
+                                  </Button>
+                                </div>
+                              </DrawerDescription>
+                            </DrawerHeader>
+                          </DrawerContent>
+                        </Drawer>
                       </TableCell>
                     </TableRow>
                   ))
@@ -508,42 +534,6 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </TableRow>
                 )}
               </TableBody>
-              {/* <TableFooter>
-              <TableRow>
-                <TableCell colSpan={8}>
-                  <div className="flex justify-center items-center gap-2 font-normal">
-                    <label htmlFor="rowsPerPage">Showing:</label>
-                    <select
-                      id="rowsPerPage"
-                      value={rowsPerPage}
-                      onChange={handleRowsPerPageChange}
-                      className="p-2 border rounded"
-                    >
-                      {[10, 20, 30, 50, 100].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <span className="mr-2">of {totalItems} items</span>
-                    <button
-                      onClick={() => setPage((prevState) => prevState - 1)}
-                      disabled={page === 1}
-                      title="Prev"
-                    >
-                      <ChevronLeft />
-                    </button>
-                    <button
-                      onClick={() => setPage((prevState) => prevState + 1)}
-                      disabled={page === totalPages}
-                      title="Next"
-                    >
-                      <ChevronRight />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableFooter> */}
             </Table>
           </div>
         )}
