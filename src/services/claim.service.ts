@@ -65,6 +65,35 @@ export interface Participant {
     data: any;
   };
 }
+export interface ClaimHistory {
+  id: string;
+  name: string;
+  data: Claim;
+  created_at: string;
+}
+export interface ListClaimResponse {
+  data: Claim[];
+  total: number;
+  limit: number;
+  pageTotal: number;
+  page: number;
+}
+export interface ListClaimHistoryResponse {
+  data: ClaimHistory[];
+  total: number;
+  limit: number;
+  pageTotal: number;
+  page: number;
+}
+export interface ListClaimRequest {
+  category?: string;
+  limit: number;
+  page: number;
+  keyword?: string;
+  policy?: string;
+  claim?: string;
+  status?: string[];
+}
 
 export class ClaimService {
   private httpClient: IHttpClient;
@@ -99,5 +128,9 @@ export class ClaimService {
 
   async getClaimsDetail(id: string): Promise<any> {
     return this.httpClient.get("/claims/" + id);
+  }
+
+  async getClaimsHistories(id: string): Promise<any> {
+    return this.httpClient.get(`/claim-histories?claim=${id}`);
   }
 }
