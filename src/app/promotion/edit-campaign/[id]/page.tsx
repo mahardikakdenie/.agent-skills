@@ -121,6 +121,16 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), currentPageIns);
           setLoading(false);
 
+          // Fetch plans based on existing products
+          if (promotionData.embedded_discount_products.length > 0) {
+            fetchPlansByProducts(
+              promotionData.embedded_discount_products.map(p => p.product_id),
+              currentPagePlan,
+              showPlansPerPage
+            );
+
+          }
+
           if (promotionData.type === "voucher") {
             voucherService.getVoucherByCampaignId(promotionData.campaign_id)
               .then(voucherRes => {
@@ -130,16 +140,14 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                 console.error("Failed to fetch voucher details:", error);
               });
           }
-          console.log("product: " + promotionData.embedded_discount_products[0].product_id);
         })
         .catch(error => {
           console.error("Failed to fetch promotion details:", error);
           setLoading(false);
         });
     }
-    // fetchChannels(1);
-    // fetchInsurances(1);
   }, [params.id]);
+
 
   useEffect(() => {
     fetchInsurances(currentPage);
@@ -315,6 +323,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     if (page >= 1) {
       setCurrentPageChannel(page);
     }
+  };
+
+  const handleClosePlanModal = () => {
+    setIsPlanModalOpen(false);
   };
 
   const handleRemoveProduct = (index: number) => {
@@ -1076,7 +1088,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       {isPlanModalOpen && (
         <PlanSelectionModal
           isOpen={isPlanModalOpen}
-          onClose={() => setIsPlanModalOpen(false)}
+          onClose={handleClosePlanModal}
           onSelect={handleSelectPlan}
           plans={plans}
           products={promotion.embedded_discount_products.map(p => ({

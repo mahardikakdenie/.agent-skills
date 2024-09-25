@@ -16,6 +16,17 @@ interface Plan {
   premium_discount_type: string;
   premium_discount_value: string;
   premium_campaign_id: string;
+  products: Product;
+}
+
+interface Product{
+  id: string;
+  created_at: string;
+  updated_at: string;
+  insurance: string;
+  category: string;
+  name: string;
+  instant_policy: boolean;
 }
 
 interface PlanSelectionModalProps {
@@ -172,7 +183,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                       />
                     </td>
                     <td className="px-6 py-4">{plan.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getProductNameById(plan.product)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{plan.products.name}</td>
                   </tr>
                 ))}
               </tbody>

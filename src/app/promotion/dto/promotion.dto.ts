@@ -13,6 +13,7 @@ export interface Plan {
   premium_discount_type: string;
   premium_discount_value: string;
   premium_campaign_id: string;
+  products: Product;
 }
 
 export interface Channel {

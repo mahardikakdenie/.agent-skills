@@ -43,13 +43,10 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   const totalItems = channels?.total || 0;
 
   useEffect(() => {
-    // Update selectedChannels when selectedChannelIds prop changes
     setSelectedChannels(new Set(selectedChannelIds));
   }, [selectedChannelIds]);
 
   useEffect(() => {
-    // Only set selectAll when data changes or when selectedChannels changes
-    if (data.length === 0) return; // Early return if no channels available
     const allSelected = data.every(channel => selectedChannels.has(channel.id));
     setSelectAll(allSelected);
   }, [data, selectedChannels]);
@@ -58,10 +55,16 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
     onPageChangeChannel(currentPage);
   }, [currentPage, onPageChangeChannel]);
 
+  useEffect(() => {
+    // Fetch channels when modal opens and currentPage changes
+    if (isOpen) {
+      onPageChangeChannel(currentPage);
+    }
+  }, [isOpen, currentPage, onPageChangeChannel]);
+
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      onPageChangeChannel(page);
     }
   };
 
@@ -70,15 +73,10 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   const handleCheckboxChange = (channelId: string) => {
     setSelectedChannels(prevSelected => {
       const newSelected = new Set(prevSelected);
-      if (newSelected.has(channelId)) {
-        newSelected.delete(channelId);
-      } else {
-        newSelected.add(channelId);
-      }
+      newSelected.has(channelId) ? newSelected.delete(channelId) : newSelected.add(channelId);
       return newSelected;
     });
   };
-
 
   const handleSelectAllChange = () => {
     setSelectAll(prevSelectAll => {
@@ -100,51 +98,56 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-3/4 max-w-2xl relative">
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-3xl h-[90vh] flex flex-col relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
           <FaTimes />
         </button>
         <h2 className="text-2xl font-semibold mb-4">
           <span className="text-[#016DA1]">Select Channels</span>
         </h2>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <input
-                  type="checkbox"
-                  checked={selectAll}
-                  onChange={handleSelectAllChange}
-                  className="form-checkbox"
-                />
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {data.length > 0 ? (
-              data.map((channel) => (
-                <tr key={channel.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <input
-                      type="checkbox"
-                      checked={selectedChannels.has(channel.id)}
-                      onChange={() => handleCheckboxChange(channel.id)}
-                      className="form-checkbox"
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{channel.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{channel.type}</td>
-                </tr>
-              ))
-            ) : (
+        
+        {/* Make the table scrollable */}
+        <div className="overflow-y-auto flex-grow mb-4">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
               <tr>
-                <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No channels available</td>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAllChange}
+                    className="form-checkbox"
+                  />
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {data.length > 0 ? (
+                data.map(channel => (
+                  <tr key={channel.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <input
+                        type="checkbox"
+                        checked={selectedChannels.has(channel.id)}
+                        onChange={() => handleCheckboxChange(channel.id)}
+                        className="form-checkbox"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{channel.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{channel.type}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No channels available</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
         <div className="flex justify-center items-center gap-2 font-normal mt-4">
           <label htmlFor="rowsPerPage">Showing:</label>
           <select
@@ -154,7 +157,7 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
             onChange={(e) => {
               const newRowsPerPage = Number(e.target.value);
               setRowsPerPage(newRowsPerPage);
-              setCurrentPage(1);
+              setCurrentPage(1); // Reset to first page when rows per page change
             }}
           >
             {[10, 20, 30, 50].map((option) => (
