@@ -354,14 +354,6 @@ const CreatePromotionPage = () => {
       return;
     }
 
-    if (promotion.type == "voucher") {
-      if (vouchers.length < 1) {
-        setErrorMessage('Please insert at least one voucher.');
-        setShowAlert(true);
-        return;
-      }
-    }
-
     const startDate = parseISO(promotion.start_date);
     const endDate = parseISO(promotion.end_date);
 
@@ -394,7 +386,7 @@ const CreatePromotionPage = () => {
         insurance_id: insurance.insurance_id,
       })),
       plans: promotion.embedded_discount_plans.map(plan => ({
-        plan_id: plan.plan_id,
+        plan_id: plan.plan_id, // Sending the selected plan ids
       })),
       channels: promotion.embedded_discount_channels.map(channel => ({
         channel_id: channel.channel_id,
@@ -487,18 +479,21 @@ const CreatePromotionPage = () => {
   };
 
   const handleSelectPlan = (newSelectedPlans: Plan[]) => {
-    const updatedPlans = [...selectedPlans];
+    const updatedPlans = [...promotion.embedded_discount_plans];
 
     newSelectedPlans.forEach(newPlan => {
-      const existingPlan = updatedPlans.find(plan => plan.id === newPlan.id);
+      const existingPlan = updatedPlans.find(plan => plan.plan_id === newPlan.id);
       if (!existingPlan) {
-        updatedPlans.push(newPlan); // Add new plan if it hasn't been selected already
+        updatedPlans.push({ plan_id: newPlan.id, name: newPlan.name }); // Add new plan if not already in the list
       }
     });
 
-    setSelectedPlans(updatedPlans); // Update the state with all selected plans
-    setSelectedPlanIds(new Set(updatedPlans.map(plan => plan.id))); // Sync modal checkboxes with textbox
+    setPromotion(prev => ({
+      ...prev,
+      embedded_discount_plans: updatedPlans, // Update promotion with selected plans
+    }));
   };
+
 
 
 
@@ -950,15 +945,15 @@ const CreatePromotionPage = () => {
             <div className="flex items-start mt-2">
               <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
                 <div className="flex flex-wrap p-2">
-                  {selectedPlans.length > 0 ? (
-                    selectedPlans.map((plan, index) => (
+                  {promotion.embedded_discount_plans.length > 0 ? (
+                    promotion.embedded_discount_plans.map((plan, index) => (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
-                          {plan.name} {/* Displaying plan name from selectedPlans */}
+                          {plan.name} {/* Displaying plan name from promotion's embedded plans */}
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleRemovePlan(index)}  // Remove plan by index
+                          onClick={() => handleRemovePlan(index)} // Remove plan by index
                           className="text-red-500 ml-1"
                         >
                           X
@@ -975,8 +970,7 @@ const CreatePromotionPage = () => {
                 <button
                   type="button"
                   onClick={handleAddPlan}
-                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'
-                    }`}
+                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'}`}
                   disabled={promotion.embedded_discount_products.length === 0}
                 >
                   <FaPlus className="mr-2" />
@@ -985,6 +979,7 @@ const CreatePromotionPage = () => {
               </div>
             </div>
           </div>
+
 
           {/* Vouchers Section */}
           <div className="my-4" />
