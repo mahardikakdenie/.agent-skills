@@ -69,7 +69,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [voucherUsageLimit, setVoucherUsageLimit] = useState<number>(1);
   const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [showPlansPerPage, setShowPlansPerPage] = useState(10);
+  const [currentPagePlan, setCurrentPagePlan] = useState(1);
+  const [totalPlanItems, setTotalPlanItems] = useState(0);
+  const [currentPageIns, setCurrentPageIns] = useState(1);
+  const [currentPageChannel, setCurrentPageChannel] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -102,7 +107,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (promotion.embedded_discount_products.length > 0) {
-      fetchPlansByProducts(promotion.embedded_discount_products.map(p => p.product_id));
+      fetchPlansByProducts(promotion.embedded_discount_products.map(p => p.product_id), currentPagePlan, showPlansPerPage);
     }
   }, [promotion.embedded_discount_products]);
 
@@ -113,7 +118,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           const promotionData: PromotionDetails = res.data[0];
           console.log('Fetched Promotion Data:', promotionData);
           setPromotion(promotionData);
-          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
+          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), currentPageIns);
           setLoading(false);
 
           if (promotionData.type === "voucher") {
@@ -148,7 +153,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (selectedInsurances.length > 0) {
-      fetchProductsByInsurances(selectedInsurances.map(ins => ins.id));
+      fetchProductsByInsurances(selectedInsurances.map(ins => ins.id), currentPageIns);
     } else {
       setProducts([]);
     }
@@ -182,24 +187,19 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
 
-  const fetchPlansByProducts = async (productIds: string[]) => {
-    if (productIds.length === 0) {
-      setPlans([]);
-      return;
-    }
-
+  const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
+    console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
-      const responses = await Promise.all(
-        productIds.map(id => planService.getPlansByProductId(id))
-      );
-      const allPlans = responses.flat();
-      setPlans(allPlans);
+      const responses = await planService.getPlansByProductId(productIds, limit, page);
+      setPlans(responses.data);
+      setTotalPlanItems(responses.meta.total);
     } catch (error) {
       console.error("Failed to fetch plans:", error);
+      setPlans([]);
     }
   };
 
-  const fetchProductsByInsurances = async (insuranceIds: string[]) => {
+  const fetchProductsByInsurances = async (insuranceIds: string[], page: number) => {
     if (insuranceIds.length === 0) {
       setProducts([]);
       setHasProducts(false);
@@ -207,14 +207,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
 
     try {
-      const responses = await Promise.all(
-        insuranceIds.map(id => productService.getProductByInsuranceId(id))
-      );
-      const allProducts = responses.flat();
-      setProducts(allProducts);
-      setHasProducts(allProducts.length > 0);
+      const limit = 10;
+      const allProducts = await productService.getProductByInsuranceId(insuranceIds, limit, page);
+      setProducts(allProducts.data);
+      setHasProducts(allProducts.data.length > 0);
     } catch (error) {
       console.error("Failed to fetch products:", error);
+      setProducts([]);
       setHasProducts(false);
     }
   };
@@ -266,7 +265,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
       if (arrayName === 'embedded_discount_insurances') {
         const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
-        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id));
+        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), currentPage);
 
         return {
           ...prevState,
@@ -288,6 +287,31 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       );
       setSelectedProductIds(new Set());
       setSelectedPlanIds(new Set());
+    }
+  };
+
+  const handlePlansPerPageChange = async (newPlansPerPage: number) => {
+    setShowPlansPerPage(newPlansPerPage);
+    setCurrentPagePlan(1);  // Reset to first page
+    fetchPlansByProducts(Array.from(selectedProductIds), 1, newPlansPerPage);
+  };
+
+  const handlePageChangePlans = (page: number) => {
+    if (page >= 1 && page !== currentPagePlan) {
+      setCurrentPagePlan(page);
+      fetchPlansByProducts(Array.from(selectedProductIds), page, showPlansPerPage);
+    }
+  };
+
+  const handlePageChangeIns = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageIns(page);
+    }
+  };
+
+  const handlePageChangeChannel = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageChannel(page);
     }
   };
 
@@ -1003,12 +1027,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       {/* Channel Modal */}
       {isChannelModalOpen && (
         <ChannelSelectionModal
-          isOpen={isChannelModalOpen}
-          onClose={() => setIsChannelModalOpen(false)}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
           onSelect={handleSelectChannel}
-          channels={channels}
-          onPageChange={handlePageChange}
           selectedChannelIds={selectedChannelIds}
+          channels={channels}
+          onPageChangeChannel={handlePageChangeChannel}
         />
       )}
 
@@ -1023,9 +1047,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             id: ins.insurance_id,
             name: ins.insurance_name,
             brand: '',
-            logo_url: '',
+            logo_url: ''
           }))}
-          onPageChange={handlePageChange}
+          onPageChange={handlePageChangeIns}
         />
       )}
 
@@ -1038,6 +1062,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           products={products}
           selectedProductIds={selectedProductIds}
           initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+          onPageChange={handlePageChange}
         />
       )}
 
@@ -1054,6 +1079,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           }))}
           preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+          onPageChangePlan={handlePageChangePlans}
+          totalPlanItems={totalPlanItems}
+          pagePlan={currentPagePlan}
+          showPlansPerPage={showPlansPerPage}
+          onPlansPerPageChange={handlePlansPerPageChange}
         />
       )}
 

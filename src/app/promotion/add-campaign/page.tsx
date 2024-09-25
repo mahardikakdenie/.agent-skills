@@ -99,6 +99,7 @@ const CreatePromotionPage = () => {
   const [currentPageChannel, setCurrentPageChannel] = useState(1);
   const [totalPlanItems, setTotalPlanItems] = useState(0);
   const [showPlansPerPage, setShowPlansPerPage] = useState(10);
+  const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
 
   useEffect(() => {
     fetchInsurances(currentPageIns);
@@ -145,7 +146,7 @@ const CreatePromotionPage = () => {
       setPlans([]);
     }
   };
-  
+
 
 
   const fetchChannels = async (page: number) => {
@@ -207,6 +208,18 @@ const CreatePromotionPage = () => {
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
     setIsInsuranceModalOpen(false);
   };
+
+
+  // const handleSelectProduct = (selectedProducts: Product[]) => {
+  //   setPromotion(prevState => ({
+  //     ...prevState,
+  //     embedded_discount_products: selectedProducts.map(product => ({
+  //       product_id: product.id,
+  //       product_name: product.name
+  //     }))
+  //   }));
+  //   setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
+  // };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
     // Get the selected product IDs from the updated selection
@@ -473,40 +486,51 @@ const CreatePromotionPage = () => {
     setIsModalOpen(false);
   };
 
-  const handleSelectPlan = (selectedPlans: Plan[]) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_plans: selectedPlans.map(plan => ({
-        plan_id: plan.id,
-        plan_name: plan.name
-      }))
-    }));
-    setIsPlanModalOpen(false);
+  const handleSelectPlan = (newSelectedPlans: Plan[]) => {
+    // Merge the newly selected plans with the already selected ones
+    const updatedPlans = [...selectedPlans];
+
+    newSelectedPlans.forEach(newPlan => {
+      const existingPlan = updatedPlans.find(plan => plan.id === newPlan.id);
+      if (!existingPlan) {
+        updatedPlans.push(newPlan);  // Add new plan if it hasn't been selected already
+      }
+    });
+
+    setSelectedPlans(updatedPlans);  // Update the state with all selected plans
   };
+
+
 
   const handleAddPlan = () => {
     setIsPlanModalOpen(true);
   };
 
+  // const handleRemovePlan = (index: number) => {
+  //   setPromotion(prevState => {
+  //     const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
+
+  //     const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
+  //     const updatedSelectedPlanIds = new Set(selectedPlanIds);
+  //     updatedSelectedPlanIds.delete(removedPlanId);
+
+  //     return {
+  //       ...prevState,
+  //       embedded_discount_plans: updatedPlans,
+  //     };
+  //   });
+
+  //   setSelectedPlanIds(prevIds => {
+  //     const updatedIds = new Set(prevIds);
+  //     updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
+  //     return updatedIds;
+  //   });
+  // };
+
   const handleRemovePlan = (index: number) => {
-    setPromotion(prevState => {
-      const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
-
-      const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
-      const updatedSelectedPlanIds = new Set(selectedPlanIds);
-      updatedSelectedPlanIds.delete(removedPlanId);
-
-      return {
-        ...prevState,
-        embedded_discount_plans: updatedPlans,
-      };
-    });
-
-    setSelectedPlanIds(prevIds => {
-      const updatedIds = new Set(prevIds);
-      updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
-      return updatedIds;
-    });
+    const updatedPlans = [...selectedPlans];
+    updatedPlans.splice(index, 1); // Remove plan by index
+    setSelectedPlans(updatedPlans);
   };
 
   const handleRemoveVoucher = (index: number) => {
@@ -569,7 +593,7 @@ const CreatePromotionPage = () => {
       setCurrentPagePlan(page);
       fetchPlansByProducts(Array.from(selectedProductIds), page, showPlansPerPage);
     }
-  };  
+  };
 
   const handlePlansPerPageChange = async (newPlansPerPage: number) => {
     setShowPlansPerPage(newPlansPerPage);
@@ -676,7 +700,7 @@ const CreatePromotionPage = () => {
             id: p.product_id,
             name: p.product_name,
           }))}
-          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
+          preSelectedPlanIds={new Set(selectedPlans.map(plan => plan.id))} // Pre-select already selected plans
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
           onPageChangePlan={handlePageChangePlans}
           totalPlanItems={totalPlanItems}
@@ -940,34 +964,33 @@ const CreatePromotionPage = () => {
             <div className="flex items-start mt-2">
               <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
                 <div className="flex flex-wrap p-2">
-                  {promotion.embedded_discount_plans.length > 0 ? (
-                    promotion.embedded_discount_plans.map((plan, index) => {
-                      const planDetail = plans.find(p => p.id === plan.plan_id);
-                      return (
-                        <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                          <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
-                            {planDetail ? planDetail.name : 'Unknown Plan'}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemovePlan(index)}
-                            className="text-red-500 ml-1"
-                          >
-                            X
-                          </button>
-                        </div>
-                      );
-                    })
+                  {selectedPlans.length > 0 ? (
+                    selectedPlans.map((plan, index) => (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                          {plan.name} {/* Displaying plan name from selectedPlans */}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlan(index)}  // Remove plan by index
+                          className="text-red-500 ml-1"
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))
                   ) : (
                     <span>No plans added</span>
                   )}
                 </div>
               </div>
+              {/* Add Plan Button */}
               <div className="flex-shrink-0 flex justify-center items-center">
                 <button
                   type="button"
                   onClick={handleAddPlan}
-                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'}`}
+                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'
+                    }`}
                   disabled={promotion.embedded_discount_products.length === 0}
                 >
                   <FaPlus className="mr-2" />

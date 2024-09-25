@@ -47,7 +47,8 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   showPlansPerPage,
   onPlansPerPageChange,
 }) => {
-  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
+  // const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
+  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set(preSelectedPlanIds));
   const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
   const [selectAll, setSelectAll] = useState(false);
   const [currentPagePlan, setCurrentPagePlan] = useState(pagePlan);
@@ -110,10 +111,15 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   };
 
   const handleApply = () => {
-    const selectedPlansArray = plans.filter(plan => selectedPlans.has(plan.id));
-    onSelect(selectedPlansArray);
+    // Create an array of selected plan details (not just the current page's plans)
+    const selectedPlansArray = Array.from(selectedPlans).map(planId =>
+      plans.find(plan => plan.id === planId)
+    ).filter(Boolean) as Plan[];
+
+    onSelect(selectedPlansArray);  // Pass full plan details to the parent component
     onClose();
   };
+
 
   const getProductNameById = (productId: string) => {
     return productNames[productId] || 'Unknown Product';
