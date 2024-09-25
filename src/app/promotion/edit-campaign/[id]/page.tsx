@@ -605,7 +605,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Add Campaign</BreadcrumbPage>
+                  <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

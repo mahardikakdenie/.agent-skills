@@ -613,7 +613,7 @@ const CreatePromotionPage = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
+                  <BreadcrumbPage>Add Campaign</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
