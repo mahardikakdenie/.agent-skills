@@ -74,7 +74,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [currentPagePlan, setCurrentPagePlan] = useState(1);
   const [totalPlanItems, setTotalPlanItems] = useState(0);
   const [currentPageIns, setCurrentPageIns] = useState(1);
-  const [currentPageChannel, setCurrentPageChannel] = useState(1);
+  const [currentPageChannels, setCurrentPageChannels] = useState(1);
+  const [showChannelsPerPage, setShowChannelsPerPage] = useState(10);
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -154,7 +155,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   }, [currentPage]);
 
   useEffect(() => {
-    fetchChannels(currentPage);
+    fetchChannels(currentPage, showChannelsPerPage);
   }, [currentPage]);
 
 
@@ -175,9 +176,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   const existingChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
 
-  const fetchChannels = async (page: number) => {
+  const fetchChannels = async (page: number, limit: number) => {
     try {
-      const limit = 10;
       const response = await channelService.getChannels(page, limit);
       setChannels(response);
     } catch (error) {
@@ -313,6 +313,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  const handleChannelsPerPageChange = async (newChannelsPerPage: number) => {
+    setShowChannelsPerPage(newChannelsPerPage);
+    setCurrentPageChannels(1);  // Reset to first page
+    fetchChannels(1, newChannelsPerPage);
+  };
+
   const handlePageChangeIns = (page: number) => {
     if (page >= 1) {
       setCurrentPageIns(page);
@@ -321,7 +327,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   const handlePageChangeChannel = (page: number) => {
     if (page >= 1) {
-      setCurrentPageChannel(page);
+      setCurrentPageChannels(page);
     }
   };
 
@@ -1050,6 +1056,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           selectedChannelIds={selectedChannelIds}
           channels={channels}
           onPageChangeChannel={handlePageChangeChannel}
+          showChannelsPerPage={showChannelsPerPage}
+          onChannelsPerPageChange={handleChannelsPerPageChange}
         />
       )}
 

@@ -132,10 +132,6 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   };
 
 
-  const getProductNameById = (productId: string) => {
-    return productNames[productId] || 'Unknown Product';
-  };
-
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPlansPerPage = Number(e.target.value);
     onPlansPerPageChange(newPlansPerPage);

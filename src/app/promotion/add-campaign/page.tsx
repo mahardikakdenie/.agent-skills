@@ -96,9 +96,10 @@ const CreatePromotionPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageIns, setCurrentPageIns] = useState(1);
   const [currentPagePlan, setCurrentPagePlan] = useState(1);
-  const [currentPageChannel, setCurrentPageChannel] = useState(1);
+  const [currentPageChannels, setCurrentPageChannels] = useState(1);
   const [totalPlanItems, setTotalPlanItems] = useState(0);
   const [showPlansPerPage, setShowPlansPerPage] = useState(10);
+  const [showChannelsPerPage, setShowChannelsPerPage] = useState(10);
   const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
 
   useEffect(() => {
@@ -106,8 +107,8 @@ const CreatePromotionPage = () => {
   }, [currentPageIns]);
 
   useEffect(() => {
-    fetchChannels(currentPageChannel);
-  }, [currentPageChannel]);
+    fetchChannels(currentPageChannels, showChannelsPerPage);
+  }, [currentPageChannels]);
 
 
   useEffect(() => {
@@ -149,9 +150,8 @@ const CreatePromotionPage = () => {
 
 
 
-  const fetchChannels = async (page: number) => {
+  const fetchChannels = async (page: number, limit: number) => {
     try {
-      const limit = 10;
       const response = await channelService.getChannels(page, limit);
       setChannels(response);
     } catch (error) {
@@ -559,7 +559,7 @@ const CreatePromotionPage = () => {
 
   const handlePageChangeChannel = (page: number) => {
     if (page >= 1) {
-      setCurrentPageChannel(page);
+      setCurrentPageChannels(page);
     }
   };
 
@@ -580,6 +580,12 @@ const CreatePromotionPage = () => {
     setShowPlansPerPage(newPlansPerPage);
     setCurrentPagePlan(1);  // Reset to first page
     fetchPlansByProducts(Array.from(selectedProductIds), 1, newPlansPerPage);
+  };
+
+  const handleChannelsPerPageChange = async (newChannelsPerPage: number) => {
+    setShowChannelsPerPage(newChannelsPerPage);
+    setCurrentPageChannels(1);  // Reset to first page
+    fetchChannels(1, newChannelsPerPage);
   };
 
 
@@ -649,6 +655,8 @@ const CreatePromotionPage = () => {
           selectedChannelIds={selectedChannelIds}
           channels={channels}
           onPageChangeChannel={handlePageChangeChannel}
+          showChannelsPerPage={showChannelsPerPage}
+          onChannelsPerPageChange={handleChannelsPerPageChange}
         />
         <InsuranceSelectionModal
           isOpen={isInsuranceModalOpen}

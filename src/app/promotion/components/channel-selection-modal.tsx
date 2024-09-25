@@ -23,6 +23,8 @@ interface ChannelSelectionModalProps {
   channels?: ChannelResponseDTO;
   onPageChangeChannel: (page: number) => void;
   selectedChannelIds: Set<string>;
+  showChannelsPerPage: number; // Add this prop
+  onChannelsPerPageChange: (channelsPerPage: number) => void; // Add this prop
 }
 
 const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
@@ -32,12 +34,13 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   channels,
   onPageChangeChannel,
   selectedChannelIds,
+  showChannelsPerPage,
+  onChannelsPerPageChange,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedChannels, setSelectedChannels] = useState<Set<string>>(new Set(selectedChannelIds));
   const [selectAll, setSelectAll] = useState(false);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
+  
   const data = channels?.data || [];
   const totalPages = channels?.pageTotal || 1;
   const totalItems = channels?.total || 0;
@@ -52,19 +55,21 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   }, [data, selectedChannels]);
 
   useEffect(() => {
-    onPageChangeChannel(currentPage);
-  }, [currentPage, onPageChangeChannel]);
-
-  useEffect(() => {
-    // Fetch channels when modal opens and currentPage changes
     if (isOpen) {
       onPageChangeChannel(currentPage);
     }
   }, [isOpen, currentPage, onPageChangeChannel]);
 
+  useEffect(() => {
+    // Fetch channels when rows per page changes
+    setCurrentPage(1); // Reset to first page
+    onPageChangeChannel(1); // Call onPageChange to get the first page
+  }, [showChannelsPerPage, onPageChangeChannel]);
+
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      onPageChangeChannel(page);
     }
   };
 
@@ -105,7 +110,7 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
         <h2 className="text-2xl font-semibold mb-4">
           <span className="text-[#016DA1]">Select Channels</span>
         </h2>
-        
+
         {/* Make the table scrollable */}
         <div className="overflow-y-auto flex-grow mb-4">
           <table className="min-w-full divide-y divide-gray-200">
@@ -153,11 +158,10 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
           <select
             id="rowsPerPage"
             className="p-2 border rounded"
-            value={rowsPerPage}
+            value={showChannelsPerPage}
             onChange={(e) => {
               const newRowsPerPage = Number(e.target.value);
-              setRowsPerPage(newRowsPerPage);
-              setCurrentPage(1); // Reset to first page when rows per page change
+              onChannelsPerPageChange(newRowsPerPage); // Update parent with new rows per page
             }}
           >
             {[10, 20, 30, 50].map((option) => (
