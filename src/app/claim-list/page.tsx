@@ -154,22 +154,22 @@ const PolicyPage = () => {
           </span>
         </div>
         <div
-          onClick={() => selectTab("Proccessing")}
+          onClick={() => selectTab("Processing")}
           className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Proccessing" && "border-b-[3px] border-primary px-7"
+            tab === "Processing" && "border-b-[3px] border-primary px-7"
           }`}
         >
           <button
             className={`text-sm py-5 mr-3 ${
-              tab === "Proccessing" && "text-primary"
+              tab === "Processing" && "text-primary"
             }`}
           >
-            Proccessing
+            Processing
           </button>
           <span
             className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
               totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Proccessing" && "hidden"}`}
+            } ${tab !== "Processing" && "hidden"}`}
           >
             {totalData}
             <span
@@ -381,12 +381,6 @@ const PolicyPage = () => {
                       }
                       className={getStatusColor(claim.status)}
                     >
-                      {/* {
-                        claim.status.map((item:any) => (
-                        <option value="Application Sent">{item.status}</option>
-
-                        ))
-                      } */}
                       <option value="Application Sent">Application Sent</option>
                       <option value="Processing">Processing</option>
                       <option value="Approved">Approved</option>
@@ -400,9 +394,6 @@ const PolicyPage = () => {
                       </option>
                       <option value="Rejected">Rejected</option>
                     </select>
-                    {/* <span className={getStatusColor(claim.status)}>
-                      {claim.status || "-"}
-                    </span> */}
                   </TableCell>
                   <TableCell>
                     <Button
