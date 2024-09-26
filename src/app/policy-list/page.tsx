@@ -12,7 +12,6 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { PolicyService } from "@/services/policy.service";
 import { useEffect, useState } from "react";
-import { formatMoney } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Search, X } from "react-feather";
 import { Button } from "@/components/ui/button";
