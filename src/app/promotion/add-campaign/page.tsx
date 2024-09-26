@@ -216,7 +216,6 @@ const CreatePromotionPage = () => {
     // Update global selected insurance IDs
     const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
     setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
-
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
     setIsInsuranceModalOpen(false);
   };
