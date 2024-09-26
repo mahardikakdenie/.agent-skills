@@ -379,6 +379,7 @@ const PolicyPage = () => {
                       onChange={(e) =>
                         handleChangeStatus(claim.id, e.target.value)
                       }
+                      className={getStatusColor(claim.status)}
                     >
                       {/* {
                         claim.status.map((item:any) => (
