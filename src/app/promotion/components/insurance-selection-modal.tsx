@@ -24,13 +24,12 @@ interface InsuranceSelectionModalProps {
   onSelect: (insurances: Insurance[]) => void;
   insurances?: InsuranceResponseDTO;
   initialSelectedInsurances: Insurance[];
-  onPageChange: (page: number) => void;
-  currentPage: number;
-  totalItems: number;
-  rowsPerPage: number;
-  fetchInsurances: (page: number, limit: number) => Promise<void>;
+  onPageChangeIns: (page: number) => void;
+  showInsPerPage: number;
+  onInsurancePerPageChange: (insPerPage: number) => void;
   globalSelectedInsuranceIds: Set<string>;
   setGlobalSelectedInsuranceIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  currentPageIns: number;
 }
 
 const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
@@ -39,35 +38,24 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   onSelect,
   insurances,
   initialSelectedInsurances,
-  onPageChange,
-  currentPage,
-  totalItems,
-  rowsPerPage,
-  fetchInsurances,
+  onPageChangeIns,
+  showInsPerPage,
+  onInsurancePerPageChange,
   globalSelectedInsuranceIds,
   setGlobalSelectedInsuranceIds,
+  currentPageIns,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
-  const [selectedInsurances, setSelectedInsurances] = useState<Set<string>>(new Set(initialSelectedInsurances.map(ins => ins.id)));
   const data = insurances?.data || [];
-  const totalPages = Math.ceil(totalItems / rowsPerPage);
+  const totalItems = insurances?.meta.total || 0;
+  const totalPages = Math.ceil(totalItems / showInsPerPage);
 
   useEffect(() => {
-    setSelectAll(data.length > 0 && data.every(insurance => selectedInsurances.has(insurance.id)));
-  }, [data, selectedInsurances]);
-
-  // Update selected insurances state when modal opens
-  useEffect(() => {
-    setSelectedInsurances(new Set(initialSelectedInsurances.map(ins => ins.id)));
-  }, [initialSelectedInsurances, isOpen]);
-
-  // Update global selected insurance ids when modal is closed
-  useEffect(() => {
-    setGlobalSelectedInsuranceIds(selectedInsurances);
-  }, [selectedInsurances, setGlobalSelectedInsuranceIds]);
+    setSelectAll(data.length > 0 && data.every(insurance => globalSelectedInsuranceIds.has(insurance.id)));
+  }, [data, globalSelectedInsuranceIds]);
 
   const handleCheckboxChange = (insuranceId: string) => {
-    setSelectedInsurances(prevSelected => {
+    setGlobalSelectedInsuranceIds(prevSelected => {
       const newSelected = new Set(prevSelected);
       newSelected.has(insuranceId) ? newSelected.delete(insuranceId) : newSelected.add(insuranceId);
       return newSelected;
@@ -76,7 +64,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
 
   const handleSelectAllChange = () => {
     setSelectAll(prevSelectAll => {
-      const newSelected = new Set(selectedInsurances);
+      const newSelected = new Set(globalSelectedInsuranceIds);
       data.forEach(insurance => {
         if (prevSelectAll) {
           newSelected.delete(insurance.id); // Deselecting
@@ -84,21 +72,23 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
           newSelected.add(insurance.id); // Selecting
         }
       });
-      setSelectedInsurances(newSelected);
+      setGlobalSelectedInsuranceIds(newSelected);
       return !prevSelectAll;
     });
   };
 
   const handleApply = () => {
-    const selectedInsurancesArray = data.filter(insurance => selectedInsurances.has(insurance.id));
-    onSelect(selectedInsurancesArray);
+    const selectedInsurancesData: Insurance[] = Array.from(globalSelectedInsuranceIds)
+      .map(channelId => data.find(channel => channel.id === channelId))
+      .filter((ins): ins is Insurance => Boolean(ins));
+
+    onSelect(selectedInsurancesData);
     onClose();
   };
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      onPageChange(page);
-      fetchInsurances(page, rowsPerPage); // Fetch new insurances
+      onPageChangeIns(page);
     }
   };
 
@@ -164,16 +154,12 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
         </div>
 
         <div className="flex justify-center items-center gap-2 font-normal mb-4">
-          <label htmlFor="rowsPerPage" className="mr-2">Showing:</label>
+          <label htmlFor="rowsPerPage">Showing:</label>
           <select
             id="rowsPerPage"
             className="p-2 border rounded"
-            value={rowsPerPage}
-            onChange={(e) => {
-              const newRowsPerPage = Number(e.target.value);
-              onPageChange(1); // Reset to first page when changing rows per page
-              fetchInsurances(1, newRowsPerPage); // Fetch new insurances
-            }}
+            value={showInsPerPage}
+            onChange={(e) => onInsurancePerPageChange(Number(e.target.value))}
           >
             {[10, 20, 30, 50].map((option) => (
               <option key={option} value={option}>
@@ -183,23 +169,22 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
           </select>
           <span className="mr-2">of {totalItems} items</span>
           <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            title="Previous"
+            onClick={() => handlePageChange(currentPageIns - 1)}
+            disabled={currentPageIns === 1}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronLeft />
           </button>
-          <span>Page {currentPage} of {totalPages}</span>
+          <span>{`Page ${currentPageIns} of ${totalPages}`}</span>
           <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            title="Next"
+            onClick={() => handlePageChange(currentPageIns + 1)}
+            disabled={currentPageIns === totalPages}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronRight />
           </button>
         </div>
+
 
         <div className="flex justify-center mt-4">
           <button
@@ -215,5 +200,6 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
     </div>
   );
 };
+
 
 export default InsuranceSelectionModal;

@@ -105,10 +105,12 @@ const CreatePromotionPage = () => {
   const [showInsurancesPerPage, setShowInsurancesPerPage] = useState(10);
   const [totalInsuranceItems, setTotalInsuranceItems] = useState(0);
   const [globalSelectedInsuranceIds, setGlobalSelectedInsuranceIds] = useState<Set<string>>(new Set());
+  const [showInsPerPage, setShowInsPerPage] = useState(10);
 
   useEffect(() => {
-    fetchInsurances(currentPageIns, showInsurancesPerPage);
-  }, [currentPageIns, showInsurancesPerPage]);
+    fetchInsurances(currentPageIns, showInsPerPage);
+  }, [showInsPerPage]);  // Trigger only when the page size changes
+  
 
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
@@ -199,26 +201,26 @@ const CreatePromotionPage = () => {
 
   const isProductButtonDisabled = !hasProducts;
 
-  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
-    const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
-      insurance_id: insurance.id,
-      insurance_name: insurance.name,
-      id: insurance.id,
-      name: insurance.name
-    }));
+  // const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+  //   const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
+  //     insurance_id: insurance.id,
+  //     insurance_name: insurance.name,
+  //     id: insurance.id,
+  //     name: insurance.name
+  //   }));
 
-    // Update the promotion state
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_insurances: updatedInsurances
-    }));
+  //   // Update the promotion state
+  //   setPromotion(prevState => ({
+  //     ...prevState,
+  //     embedded_discount_insurances: updatedInsurances
+  //   }));
 
-    // Update global selected insurance IDs
-    const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
-    setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
-    setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
-    setIsInsuranceModalOpen(false);
-  };
+  //   // Update global selected insurance IDs
+  //   const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
+  //   setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
+  //   setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
+  //   setIsInsuranceModalOpen(false);
+  // };
 
 
   // const handleSelectProduct = (selectedProducts: Product[]) => {
@@ -279,6 +281,12 @@ const CreatePromotionPage = () => {
     const selectedChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
     setGlobalSelectedChannels(selectedChannelIds);
     setIsModalOpen(true);
+  };
+
+  const handleAddIns = () => {
+    const selectedInsIds = new Set(promotion.embedded_discount_insurances.map(insurances => insurances.insurance_id));
+    setGlobalSelectedInsuranceIds(selectedInsIds);
+    setIsInsuranceModalOpen(true);
   };
 
   const handleAddProduct = () => {
@@ -542,6 +550,39 @@ const CreatePromotionPage = () => {
     setIsModalOpen(false);
   };
 
+  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+
+    // Get the existing channels from the promotion state
+    const existingInsurance = promotion.embedded_discount_insurances;
+
+    // Create a new array with existing channels and newly selected channels, ensuring no duplicates
+    const updatedInsurances = [...existingInsurance];
+
+
+    selectedInsurances.forEach(insurance => {
+      const existingInsurance = updatedInsurances.find(c => c.insurance_id === insurance.id);
+      if (!existingInsurance) {
+        updatedInsurances.push({
+          insurance_id: insurance.id,
+          insurance_name: insurance.name
+        });
+      }
+    });
+
+    // Update the promotion state
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: updatedInsurances
+    }));
+
+    // Update global selected insurance IDs
+    const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
+    setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
+    setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
+    setIsInsuranceModalOpen(false);
+  };
+
+
 
 
 
@@ -559,6 +600,15 @@ const CreatePromotionPage = () => {
       ...prev,
       embedded_discount_plans: updatedPlans, // Update promotion with selected plans
     }));
+
+
+    // Update global selected ins
+    setGlobalSelectedInsuranceIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      newSelectedPlans.forEach(ins => newSelected.add(ins.id)); // Only add ins IDs
+      return newSelected;
+    });
+
   };
 
 
@@ -649,11 +699,22 @@ const CreatePromotionPage = () => {
     fetchChannels(1, newChannelsPerPage);
   };
 
+  const handleInsurancePerPageChange = async (newInsPerPage: number) => {
+    console.log("insPerPage: " + newInsPerPage);
+    setShowInsPerPage(newInsPerPage);
+    setCurrentPageIns(1);
+    fetchInsurances(1, newInsPerPage); // Fetch the first page with the new per-page value
+  };
+
+
   const handlePageChangeInsurances = (page: number) => {
-    if (page >= 1 && page !== currentPageIns) {
-      setCurrentPageIns(page);
+    if (page >= 1) {
+      setCurrentPageIns(page); // Correctly updates page state
+      fetchInsurances(page, showInsPerPage); // Fetches insurance data for the new page
     }
-  }
+  };
+  
+
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -732,13 +793,12 @@ const CreatePromotionPage = () => {
           onSelect={handleSelectInsurance}
           insurances={insurances}
           initialSelectedInsurances={selectedInsurances}
-          onPageChange={handlePageChangeInsurances}
-          currentPage={currentPageIns}
-          totalItems={totalInsuranceItems}
-          rowsPerPage={showInsurancesPerPage}
-          fetchInsurances={fetchInsurances}
+          onPageChangeIns={handlePageChangeInsurances}
+          showInsPerPage={showInsPerPage}
+          onInsurancePerPageChange={handleInsurancePerPageChange}
           globalSelectedInsuranceIds={globalSelectedInsuranceIds}
           setGlobalSelectedInsuranceIds={setGlobalSelectedInsuranceIds}
+          currentPageIns={currentPageIns}
         />
         <ProductSelectionModal
           isOpen={isProductModalOpen}
@@ -966,7 +1026,7 @@ const CreatePromotionPage = () => {
               <div className="flex-shrink-0 flex justify-center items-center">
                 <button
                   type="button"
-                  onClick={() => setIsInsuranceModalOpen(true)}
+                  onClick={handleAddIns}
                   className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
                 >
                   <FaPlus className="mr-2" />
