@@ -88,7 +88,7 @@ const ProductCategory = ({ params }: { params: { category: string } }) => {
           <TableBody>
             {category.length > 0 ? (
               category.map((category, index) => (
-                <TableRow>
+                <TableRow key={category.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{category.name}</TableCell>
                   <TableCell>

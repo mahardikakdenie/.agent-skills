@@ -84,6 +84,23 @@ const PolicyPage = () => {
     router.push(`${path}/${claimId}`);
   };
 
+  const handleChangeStatus = (claimId: string, newStatus: string) => {
+    claimService
+      .updateClaimStatus(claimId, newStatus)
+      .then((res) => {
+        setClaims((prevClaims) =>
+          prevClaims.map((claim) =>
+            claim.id === claimId ? { ...claim, status: newStatus } : claim
+          )
+        );
+        alert(`Status updated to ${newStatus}`);
+      })
+      .catch((error) => {
+        console.error("Error updating status:", error);
+        alert("Failed to update status. Please try again.");
+      });
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <h1 className="text-black font-bold text-2xl mt-2 mb-4">Claim List</h1>
@@ -357,9 +374,34 @@ const PolicyPage = () => {
                     ).value || "-"}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
-                    <span className={getStatusColor(claim.status)}>
+                    <select
+                      value={claim.status}
+                      onChange={(e) =>
+                        handleChangeStatus(claim.id, e.target.value)
+                      }
+                    >
+                      {/* {
+                        claim.status.map((item:any) => (
+                        <option value="Application Sent">{item.status}</option>
+
+                        ))
+                      } */}
+                      <option value="Application Sent">Application Sent</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Payment Proccessing">
+                        Payment Processing
+                      </option>
+                      <option value="Paid">Paid</option>
+                      <option value="Closed">Closed</option>
+                      <option value="Lack of Documents">
+                        Lack of Documents
+                      </option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                    {/* <span className={getStatusColor(claim.status)}>
                       {claim.status || "-"}
-                    </span>
+                    </span> */}
                   </TableCell>
                   <TableCell>
                     <Button

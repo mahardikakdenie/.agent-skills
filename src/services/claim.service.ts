@@ -133,4 +133,15 @@ export class ClaimService {
   async getClaimsHistories(id: string): Promise<any> {
     return this.httpClient.get(`/claim-histories?claim=${id}`);
   }
+
+  async updateClaimStatus(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.put("/claims/update-status/" + id, {
+        status: data,
+        note: "",
+      });
+    } catch (error: any) {
+      throw new Error(error.response.data.message);
+    }
+  }
 }
