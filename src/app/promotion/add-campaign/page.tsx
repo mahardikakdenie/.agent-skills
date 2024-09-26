@@ -102,10 +102,12 @@ const CreatePromotionPage = () => {
   const [showChannelsPerPage, setShowChannelsPerPage] = useState(10);
   const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
   const [globalSelectedChannels, setGlobalSelectedChannels] = useState<Set<string>>(new Set());
+  const [showInsurancesPerPage, setShowInsurancesPerPage] = useState(10);
+  const [totalInsuranceItems, setTotalInsuranceItems] = useState(0);
 
   useEffect(() => {
-    fetchInsurances(currentPageIns);
-  }, [currentPageIns]);
+    fetchInsurances(currentPageIns, showInsurancesPerPage);
+  }, [currentPageIns, showInsurancesPerPage]);
 
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
@@ -160,15 +162,18 @@ const CreatePromotionPage = () => {
     }
   };
 
-  const fetchInsurances = async (page: number) => {
+  const fetchInsurances = async (page: number, limit: number) => {
+    console.log("Fetching insurances for page:", page, "with limit:", limit);
     try {
-      const limit = 10;
       const response = await insuranceService.getInsurances(page, limit);
       setInsurances(response);
+      setTotalInsuranceItems(response.meta.total);
     } catch (error) {
       console.error("Failed to fetch insurances:", error);
+      setInsurances(undefined);
     }
   };
+
 
   const fetchProductsByInsurances = async (insuranceIds: string[], page: number) => {
     if (insuranceIds.length === 0) {
@@ -589,12 +594,6 @@ const CreatePromotionPage = () => {
     }
   };
 
-  const handlePageChangeIns = (page: number) => {
-    if (page >= 1) {
-      setCurrentPageIns(page);
-    }
-  };
-
   const handlePageChangePlans = (page: number) => {
     if (page >= 1 && page !== currentPagePlan) {
       setCurrentPagePlan(page);
@@ -614,6 +613,11 @@ const CreatePromotionPage = () => {
     fetchChannels(1, newChannelsPerPage);
   };
 
+  const handlePageChangeInsurances = (page: number) => {
+    if (page >= 1 && page !== currentPageIns) {
+      setCurrentPageIns(page);
+    }
+  }
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -691,13 +695,12 @@ const CreatePromotionPage = () => {
           onClose={() => setIsInsuranceModalOpen(false)}
           onSelect={handleSelectInsurance}
           insurances={insurances}
-          initialSelectedInsurances={promotion.embedded_discount_insurances.map(ins => ({
-            id: ins.insurance_id,
-            name: ins.insurance_name,
-            brand: '',
-            logo_url: ''
-          }))}
-          onPageChange={handlePageChangeIns}
+          initialSelectedInsurances={selectedInsurances}
+          onPageChange={handlePageChangeInsurances}
+          currentPage={currentPageIns}
+          totalItems={totalInsuranceItems}
+          rowsPerPage={showInsurancesPerPage}
+          fetchInsurances={fetchInsurances}
         />
         <ProductSelectionModal
           isOpen={isProductModalOpen}
@@ -717,7 +720,7 @@ const CreatePromotionPage = () => {
             id: p.product_id,
             name: p.product_name,
           }))}
-          preSelectedPlanIds={new Set(selectedPlans.map(plan => plan.id))} // Pre-select already selected plans
+          preSelectedPlanIds={new Set(selectedPlans.map(plan => plan.id))}
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
           onPageChangePlan={handlePageChangePlans}
           totalPlanItems={totalPlanItems}
@@ -987,11 +990,11 @@ const CreatePromotionPage = () => {
                     promotion.embedded_discount_plans.map((plan, index) => (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
-                          {plan.name} {/* Displaying plan name from promotion's embedded plans */}
+                          {plan.name}
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleRemovePlan(index)} // Remove plan by index
+                          onClick={() => handleRemovePlan(index)}
                           className="text-red-500 ml-1"
                         >
                           X

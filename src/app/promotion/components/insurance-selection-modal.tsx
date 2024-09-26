@@ -25,6 +25,10 @@ interface InsuranceSelectionModalProps {
   insurances?: InsuranceResponseDTO;
   initialSelectedInsurances: Insurance[];
   onPageChange: (page: number) => void;
+  currentPage: number; 
+  totalItems: number; 
+  rowsPerPage: number; 
+  fetchInsurances: (page: number, limit: number) => Promise<void>; 
 }
 
 const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
@@ -34,14 +38,15 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   insurances,
   initialSelectedInsurances,
   onPageChange,
+  currentPage,
+  totalItems,
+  rowsPerPage,
+  fetchInsurances,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedInsurances, setSelectedInsurances] = useState<Set<string>>(new Set(initialSelectedInsurances.map(ins => ins.id)));
   const [selectAll, setSelectAll] = useState(false);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const data = insurances?.data || [];
-  const totalItems = insurances?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
   useEffect(() => {
@@ -51,10 +56,6 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   useEffect(() => {
     setSelectAll(data.length > 0 && data.every(insurance => selectedInsurances.has(insurance.id)));
   }, [selectedInsurances, data]);
-
-  useEffect(() => {
-    onPageChange(currentPage);
-  }, [currentPage, onPageChange]);
 
   if (!isOpen) return null;
 
@@ -88,18 +89,15 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
       onPageChange(page);
+      fetchInsurances(page, rowsPerPage);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-3xl h-[90vh] flex flex-col relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
           <FaTimes />
         </button>
 
@@ -120,11 +118,12 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {data.length > 0 ? (
-                data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage).map((insurance) => (
+                data.map((insurance) => (
                   <tr key={insurance.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
@@ -136,14 +135,22 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{insurance.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{insurance.brand}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {insurance.logo_url ? (
+                        <img src={insurance.logo_url} alt={insurance.name} className="w-12 h-12 object-cover" />
+                      ) : (
+                        <span>No Logo</span>
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No insurances available</td>
+                  <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">No insurances available</td>
                 </tr>
               )}
             </tbody>
+
           </table>
         </div>
 
@@ -155,8 +162,8 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
             value={rowsPerPage}
             onChange={(e) => {
               const newRowsPerPage = Number(e.target.value);
-              setRowsPerPage(newRowsPerPage);
-              setCurrentPage(1);
+              onPageChange(1); // Reset to first page when changing rows per page
+              fetchInsurances(1, newRowsPerPage); // Fetch new insurances
             }}
           >
             {[10, 20, 30, 50].map((option) => (

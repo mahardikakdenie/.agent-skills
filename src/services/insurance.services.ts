@@ -36,13 +36,7 @@ export class InsuranceService {
   }
   
 
-
-  // async getInsurances(): Promise<any> {
-  //   return this.httpClientInsurance.get('/insurances');
-  // }
-
-
-  async getInsurances(page: number, limit: number): Promise<InsuranceResponse> {
+  async getInsurances(page: number, limit: number): Promise<any> {
     if (page > 0) {
       return this.httpClientInsurance.get('/v1/insurances?page=' + page + "&pageSize=" + limit);
     } else {
