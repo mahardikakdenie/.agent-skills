@@ -110,7 +110,7 @@ const CreatePromotionPage = () => {
   useEffect(() => {
     fetchInsurances(currentPageIns, showInsPerPage);
   }, [showInsPerPage]);  // Trigger only when the page size changes
-  
+
 
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
@@ -119,12 +119,14 @@ const CreatePromotionPage = () => {
 
   useEffect(() => {
     if (selectedInsuranceIds.size > 0) {
-      fetchProductsByInsurances(Array.from(selectedInsuranceIds), currentPageIns);
+      // Fetch products based on current selected insurance IDs
+      fetchProductsByInsurances(Array.from(selectedInsuranceIds), currentPage);
     } else {
       setProducts([]);
       setHasProducts(false);
     }
-  }, [selectedInsuranceIds]);
+  }, [selectedInsuranceIds, currentPage]); // Ensure currentPage is also a dependency
+
 
   useEffect(() => {
     if (selectedProductIds.size > 0) {
@@ -199,7 +201,7 @@ const CreatePromotionPage = () => {
 
 
 
-  const isProductButtonDisabled = !hasProducts;
+  const isProductButtonDisabled = selectedInsuranceIds.size === 0;
 
   // const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
   //   const updatedInsurances: EmbeddedDiscountInsurance[] = selectedInsurances.map(insurance => ({
@@ -551,13 +553,10 @@ const CreatePromotionPage = () => {
   };
 
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
-
-    // Get the existing channels from the promotion state
     const existingInsurance = promotion.embedded_discount_insurances;
 
-    // Create a new array with existing channels and newly selected channels, ensuring no duplicates
+    // Create a new array with existing insurances and newly selected ones
     const updatedInsurances = [...existingInsurance];
-
 
     selectedInsurances.forEach(insurance => {
       const existingInsurance = updatedInsurances.find(c => c.insurance_id === insurance.id);
@@ -579,8 +578,15 @@ const CreatePromotionPage = () => {
     const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
     setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
+
+    // Fetch products based on the updated insurances
+    const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
+    fetchProductsByInsurances(insuranceIdsToFetch, currentPage); // Pass the correct list of IDs
+
     setIsInsuranceModalOpen(false);
   };
+
+
 
 
 
@@ -713,7 +719,7 @@ const CreatePromotionPage = () => {
       fetchInsurances(page, showInsPerPage); // Fetches insurance data for the new page
     }
   };
-  
+
 
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
