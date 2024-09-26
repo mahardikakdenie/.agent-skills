@@ -104,6 +104,7 @@ const CreatePromotionPage = () => {
   const [globalSelectedChannels, setGlobalSelectedChannels] = useState<Set<string>>(new Set());
   const [showInsurancesPerPage, setShowInsurancesPerPage] = useState(10);
   const [totalInsuranceItems, setTotalInsuranceItems] = useState(0);
+  const [globalSelectedInsuranceIds, setGlobalSelectedInsuranceIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchInsurances(currentPageIns, showInsurancesPerPage);
@@ -206,10 +207,15 @@ const CreatePromotionPage = () => {
       name: insurance.name
     }));
 
+    // Update the promotion state
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_insurances: updatedInsurances
     }));
+
+    // Update global selected insurance IDs
+    const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
+    setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
 
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
     setIsInsuranceModalOpen(false);
@@ -280,7 +286,38 @@ const CreatePromotionPage = () => {
     setIsProductModalOpen(true);
   };
 
-  const handleRemoveArrayItem = (arrayName: keyof PromotionDetails, index: number) => {
+  const handleRemoveArrayItemChan = (arrayName: keyof PromotionDetails, index: number) => {
+    setPromotion(prevState => {
+      const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
+
+      if (arrayName === 'embedded_discount_insurances') {
+        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
+        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), currentPage);
+
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_products: [],
+          embedded_discount_plans: []
+        };
+      }
+
+      return {
+        ...prevState,
+        [arrayName]: updatedArray,
+      };
+    });
+
+    if (arrayName === 'embedded_discount_insurances') {
+      setSelectedInsurances(prevInsurances =>
+        prevInsurances.filter((_, i) => i !== index)
+      );
+      setSelectedProductIds(new Set());
+      setSelectedPlanIds(new Set());
+    }
+  };
+
+  const handleRemoveArrayItemIns = (arrayName: keyof PromotionDetails, index: number) => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
@@ -701,6 +738,8 @@ const CreatePromotionPage = () => {
           totalItems={totalInsuranceItems}
           rowsPerPage={showInsurancesPerPage}
           fetchInsurances={fetchInsurances}
+          globalSelectedInsuranceIds={globalSelectedInsuranceIds}
+          setGlobalSelectedInsuranceIds={setGlobalSelectedInsuranceIds}
         />
         <ProductSelectionModal
           isOpen={isProductModalOpen}
@@ -871,7 +910,7 @@ const CreatePromotionPage = () => {
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveArrayItem('embedded_discount_channels', index)}
+                          onClick={() => handleRemoveArrayItemChan('embedded_discount_channels', index)}
                           className="text-red-500 ml-1"
                         >
                           X
@@ -913,7 +952,7 @@ const CreatePromotionPage = () => {
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveArrayItem('embedded_discount_insurances', index)}
+                          onClick={() => handleRemoveArrayItemIns('embedded_discount_insurances', index)}
                           className="text-red-500 ml-1"
                         >
                           X
