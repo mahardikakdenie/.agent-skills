@@ -45,7 +45,7 @@ const PolicyPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
-  }, [page, rowsPerPage, tab]);
+  }, [page, rowsPerPage, tab, claims]);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -65,7 +65,7 @@ const PolicyPage = () => {
         return "text-[#00AB4F]";
       case "Approved":
         return "text-[#00AB4F]";
-      case "Payment Proccessing":
+      case "Payment Processing":
         return "text-[#016DA1]";
       case "Paid":
         return "text-[#016DA1]";
@@ -93,7 +93,7 @@ const PolicyPage = () => {
             claim.id === claimId ? { ...claim, status: newStatus } : claim
           )
         );
-        alert(`Status updated to ${newStatus}`);
+        router.refresh();
       })
       .catch((error) => {
         console.error("Error updating status:", error);
@@ -204,23 +204,22 @@ const PolicyPage = () => {
           </span>
         </div>
         <div
-          onClick={() => selectTab("Payment Proccessing")}
+          onClick={() => selectTab("Payment Processing")}
           className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Payment Proccessing" &&
-            "border-b-[3px] border-primary px-7"
+            tab === "Payment Processing" && "border-b-[3px] border-primary px-7"
           }`}
         >
           <button
             className={`text-sm py-5 mr-3 ${
-              tab === "Payment Proccessing" && "text-primary"
+              tab === "Payment Processing" && "text-primary"
             }`}
           >
-            Payment Proccessing
+            Payment Processing
           </button>
           <span
             className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
               totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Payment Proccessing" && "hidden"}`}
+            } ${tab !== "Payment Processing" && "hidden"}`}
           >
             {totalData}
             <span
@@ -384,7 +383,7 @@ const PolicyPage = () => {
                       <option value="Application Sent">Application Sent</option>
                       <option value="Processing">Processing</option>
                       <option value="Approved">Approved</option>
-                      <option value="Payment Proccessing">
+                      <option value="Payment Processing">
                         Payment Processing
                       </option>
                       <option value="Paid">Paid</option>
