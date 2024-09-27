@@ -63,27 +63,35 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   };
 
   const handleSelectAllChange = () => {
-    setSelectAll(prevSelectAll => {
-      const newSelected = new Set(globalSelectedInsuranceIds);
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+
+    const newSelected = new Set(globalSelectedInsuranceIds);
+
+    if (newSelectAll) {
+      // Selecting all
       data.forEach(insurance => {
-        if (prevSelectAll) {
-          newSelected.delete(insurance.id); // Deselecting
-        } else {
-          newSelected.add(insurance.id); // Selecting
-        }
+        newSelected.add(insurance.id);
       });
-      setGlobalSelectedInsuranceIds(newSelected);
-      return !prevSelectAll;
-    });
+    } else {
+      // Deselecting all
+      data.forEach(insurance => {
+        newSelected.delete(insurance.id);
+      });
+    }
+    setGlobalSelectedInsuranceIds(newSelected);
   };
 
   const handleApply = () => {
     const selectedInsurancesData: Insurance[] = Array.from(globalSelectedInsuranceIds)
-      .map(channelId => data.find(channel => channel.id === channelId))
+      .map(insuranceId => data.find(insurance => insurance.id === insuranceId))
       .filter((ins): ins is Insurance => Boolean(ins));
 
-    onSelect(selectedInsurancesData);
+
     onClose();
+    setTimeout(() => {
+      onSelect(selectedInsurancesData);
+    }, 100);
   };
 
   const handlePageChange = (page: number) => {
