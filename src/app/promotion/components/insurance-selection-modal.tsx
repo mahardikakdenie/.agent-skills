@@ -30,6 +30,7 @@ interface InsuranceSelectionModalProps {
   globalSelectedInsuranceIds: Set<string>;
   setGlobalSelectedInsuranceIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   currentPageIns: number;
+  onRemoveInsurance: (insuranceId: string) => void;
 }
 
 const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
@@ -44,6 +45,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   globalSelectedInsuranceIds,
   setGlobalSelectedInsuranceIds,
   currentPageIns,
+  onRemoveInsurance,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
   const data = insurances?.data || [];
@@ -57,10 +59,16 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   const handleCheckboxChange = (insuranceId: string) => {
     setGlobalSelectedInsuranceIds(prevSelected => {
       const newSelected = new Set(prevSelected);
-      newSelected.has(insuranceId) ? newSelected.delete(insuranceId) : newSelected.add(insuranceId);
+      if (newSelected.has(insuranceId)) {
+        newSelected.delete(insuranceId);
+        onRemoveInsurance(insuranceId);
+      } else {
+        newSelected.add(insuranceId);
+      }
       return newSelected;
     });
   };
+  
 
   const handleSelectAllChange = () => {
     const newSelectAll = !selectAll;
@@ -77,6 +85,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
       // Deselecting all
       data.forEach(insurance => {
         newSelected.delete(insurance.id);
+        onRemoveInsurance(insurance.id); 
       });
     }
     setGlobalSelectedInsuranceIds(newSelected);

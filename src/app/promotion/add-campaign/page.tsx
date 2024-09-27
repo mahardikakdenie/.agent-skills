@@ -703,6 +703,13 @@ const CreatePromotionPage = () => {
     }));
   };
 
+  const handleRemoveInsurance = (insuranceId: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: prevState.embedded_discount_insurances.filter(insurance => insurance.insurance_id !== insuranceId)
+    }));
+  };
+
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -788,6 +795,7 @@ const CreatePromotionPage = () => {
           globalSelectedInsuranceIds={globalSelectedInsuranceIds}
           setGlobalSelectedInsuranceIds={setGlobalSelectedInsuranceIds}
           currentPageIns={currentPageIns}
+          onRemoveInsurance={handleRemoveInsurance}
         />
         <ProductSelectionModal
           isOpen={isProductModalOpen}
