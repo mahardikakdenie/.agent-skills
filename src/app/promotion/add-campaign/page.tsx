@@ -203,7 +203,7 @@ const CreatePromotionPage = () => {
     }
   };
 
-  const isProductButtonDisabled = selectedInsuranceIds.size === 0;
+  const isProductButtonDisabled = globalSelectedInsuranceIds.size === 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -536,7 +536,7 @@ const CreatePromotionPage = () => {
 
     // Fetch products based on the updated insurances
     const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
-    fetchProductsByInsurances(insuranceIdsToFetch, currentPage, showProdPerPage); // Pass the correct list of IDs
+    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), currentPage, showProdPerPage); // Pass the correct list of IDs
 
     setIsInsuranceModalOpen(false);
   };
@@ -647,7 +647,7 @@ const CreatePromotionPage = () => {
   const handlePageChangeProd = (page: number) => {
     if (page >= 1) {
       setCurrentPageProd(page);
-      fetchProductsByInsurances(Array.from(selectedInsuranceIds), page, showProdPerPage);
+      fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), page, showProdPerPage);
     }
   };
 
@@ -686,7 +686,7 @@ const CreatePromotionPage = () => {
   const handleProdPerPageChange = async (newProdPerPage: number) => {
     setShowProdPerPage(newProdPerPage);
     setCurrentPageProd(1);
-    fetchProductsByInsurances(Array.from(selectedInsuranceIds), 1, newProdPerPage); // Fetch the first page with the new per-page value
+    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, newProdPerPage); // Fetch the first page with the new per-page value
   };
 
 
@@ -697,6 +697,12 @@ const CreatePromotionPage = () => {
     }
   };
 
+  const handleRemoveChannel = (channelId: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_channels: prevState.embedded_discount_channels.filter(channel => channel.channel_id !== channelId)
+    }));
+  };
 
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
@@ -769,6 +775,7 @@ const CreatePromotionPage = () => {
           onChannelsPerPageChange={handleChannelsPerPageChange}
           globalSelectedChannels={globalSelectedChannels}
           setGlobalSelectedChannels={setGlobalSelectedChannels}
+          onRemoveChannel={handleRemoveChannel}
         />
         <InsuranceSelectionModal
           isOpen={isInsuranceModalOpen}

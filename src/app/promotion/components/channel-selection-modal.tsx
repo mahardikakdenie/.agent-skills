@@ -27,6 +27,7 @@ interface ChannelSelectionModalProps {
   onChannelsPerPageChange: (channelsPerPage: number) => void;
   globalSelectedChannels: Set<string>;
   setGlobalSelectedChannels: React.Dispatch<React.SetStateAction<Set<string>>>;
+  onRemoveChannel: (channelId: string) => void;
 }
 
 const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
@@ -39,7 +40,8 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   showChannelsPerPage,
   onChannelsPerPageChange,
   globalSelectedChannels,
-  setGlobalSelectedChannels
+  setGlobalSelectedChannels,
+  onRemoveChannel,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
@@ -68,10 +70,16 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   const handleCheckboxChange = (channelId: string) => {
     setGlobalSelectedChannels(prevSelected => {
       const newSelected = new Set(prevSelected);
-      newSelected.has(channelId) ? newSelected.delete(channelId) : newSelected.add(channelId);
+      if (newSelected.has(channelId)) {
+        newSelected.delete(channelId);
+        onRemoveChannel(channelId); // Call to remove the channel from main state
+      } else {
+        newSelected.add(channelId);
+      }
       return newSelected;
     });
   };
+
 
   const handleSelectAllChange = () => {
     const newSelectAll = !selectAll;  // Toggle selectAll state
@@ -88,11 +96,13 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
       // Deselecting all channels
       data.forEach(channel => {
         newSelected.delete(channel.id);
+        onRemoveChannel(channel.id); // Remove each channel from the main state
       });
     }
 
     setGlobalSelectedChannels(newSelected);  // Update the selected channels
   };
+
 
 
   const handleApply = () => {
