@@ -592,12 +592,6 @@ const CreatePromotionPage = () => {
       };
     });
 
-    // setSelectedProductIds(prevIds => {
-    //   const updatedIds = new Set(prevIds);
-    //   updatedIds.delete(promotion.embedded_discount_products[index].product_id);
-    //   return updatedIds;
-    // });
-
     // Update global selected channels
     setGlobalSelectedProdIds(prevSelected => {
       const newSelected = new Set(prevSelected);
@@ -810,7 +804,6 @@ const CreatePromotionPage = () => {
           onPageChangeProd={handlePageChangeProd}
           currentPageProd={currentPageProd}
           onRemoveProd={handleRemoveProd}
-        //
         />
         <PlanSelectionModal
           isOpen={isPlanModalOpen}
