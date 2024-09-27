@@ -116,12 +116,9 @@ const CreatePromotionPage = () => {
     fetchInsurances(currentPageIns, showInsPerPage);
   }, [showInsPerPage]);  // Trigger only when the page size changes
 
-
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
   }, [currentPageChannels, showChannelsPerPage]);
-
-
 
   useEffect(() => {
     if (selectedProductIds.size > 0) {
@@ -193,7 +190,7 @@ const CreatePromotionPage = () => {
     }
   };
 
-  const isProductButtonDisabled = globalSelectedInsuranceIds.size === 0;
+  const isProductButtonDisabled = selectedInsuranceIds.size === 0 || globalSelectedInsuranceIds.size === 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -498,13 +495,22 @@ const CreatePromotionPage = () => {
       };
     });
 
-    // Update global selected insurance IDs
-    const newSelectedIds = new Set<string>(selectedProducts.map(prod => prod.id));
-    setGlobalSelectedProdIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
-    setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
+    // // Update global selected insurance IDs
+    // const newSelectedIds = new Set<string>(selectedProducts.map(prod => prod.id));
+    // setGlobalSelectedProdIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
+    // setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
 
-    // Update the state for selected product IDs
-    setSelectedProductIds(selectedProductIdsSet);
+    // // Update the state for selected product IDs
+    // setSelectedProductIds(selectedProductIdsSet);
+
+    // Update global selected channels
+    setGlobalSelectedProdIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedProducts.forEach(prod => newSelected.add(prod.id)); // Only add channel IDs
+      return newSelected;
+    });
+
+
   };
 
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
@@ -528,7 +534,6 @@ const CreatePromotionPage = () => {
     }));
 
     const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
-    // setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds]));
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
 
     const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
@@ -598,10 +603,17 @@ const CreatePromotionPage = () => {
       };
     });
 
-    setSelectedProductIds(prevIds => {
-      const updatedIds = new Set(prevIds);
-      updatedIds.delete(promotion.embedded_discount_products[index].product_id);
-      return updatedIds;
+    // setSelectedProductIds(prevIds => {
+    //   const updatedIds = new Set(prevIds);
+    //   updatedIds.delete(promotion.embedded_discount_products[index].product_id);
+    //   return updatedIds;
+    // });
+
+    // Update global selected channels
+    setGlobalSelectedProdIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedProducts.forEach(prod => newSelected.add(prod.id)); // Only add channel IDs
+      return newSelected;
     });
 
     setHasProducts(products?.data?.length ? products.data.length > 0 : false);
@@ -698,6 +710,13 @@ const CreatePromotionPage = () => {
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_insurances: prevState.embedded_discount_insurances.filter(insurance => insurance.insurance_id !== insuranceId)
+    }));
+  };
+
+  const handleRemoveProd = (prodId: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_products: prevState.embedded_discount_products.filter(product => product.product_id !== prodId)
     }));
   };
 
@@ -801,6 +820,7 @@ const CreatePromotionPage = () => {
           setGlobalSelectedProdIds={setGlobalSelectedProdIds}
           onPageChangeProd={handlePageChangeProd}
           currentPageProd={currentPageProd}
+          onRemoveProd={handleRemoveProd}
         />
         <PlanSelectionModal
           isOpen={isPlanModalOpen}

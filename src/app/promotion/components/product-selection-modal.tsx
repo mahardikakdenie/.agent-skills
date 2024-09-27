@@ -35,6 +35,7 @@ interface ProductSelectionModalProps {
   setGlobalSelectedProdIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   onPageChangeProd: (page: number) => void;
   currentPageProd: number;
+  onRemoveProd: (prodId: string) => void;
 }
 
 interface Category {
@@ -55,6 +56,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   setGlobalSelectedProdIds,
   onPageChangeProd,
   currentPageProd,
+  onRemoveProd,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
@@ -108,10 +110,16 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const handleCheckboxChange = (productId: string) => {
     setGlobalSelectedProdIds(prevSelected => {
       const newSelected = new Set(prevSelected);
-      newSelected.has(productId) ? newSelected.delete(productId) : newSelected.add(productId);
+      if (newSelected.has(productId)) {
+        newSelected.delete(productId);
+        onRemoveProd(productId); // Call to remove the product from main state
+      } else {
+        newSelected.add(productId);
+      }
       return newSelected;
     });
   };
+
 
   const handleSelectAllChange = () => {
     const newSelectAll = !selectAll;
@@ -128,6 +136,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       // Deselecting all
       data.forEach(product => {
         newSelected.delete(product.id);
+        onRemoveProd(product.id);
       });
     }
     setGlobalSelectedProdIds(newSelected);
