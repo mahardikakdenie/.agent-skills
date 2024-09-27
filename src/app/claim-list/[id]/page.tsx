@@ -469,9 +469,11 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             <Table className="table-claims">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap">No.</TableHead>
+                  <TableHead className="whitespace-nowrap w-12">No.</TableHead>
                   <TableHead>File Name</TableHead>
-                  <TableHead className="whitespace-nowrap">Action</TableHead>
+                  <TableHead className="whitespace-nowrap w-36">
+                    Action
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

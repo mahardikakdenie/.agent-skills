@@ -14,7 +14,13 @@ import { ClaimService } from "@/services/claim.service";
 import { useEffect, useState } from "react";
 import { formatMoney } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Search, X } from "react-feather";
+import {
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  X,
+} from "react-feather";
 import { Button } from "@/components/ui/button";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
@@ -25,6 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 const PolicyPage = () => {
   useRequireAuth();
@@ -39,13 +47,23 @@ const PolicyPage = () => {
   const router = useRouter();
   const [tab, setTab] = useState("All");
   const [totalData, setTotalData] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null);
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+  const [amountApproved, setAmountApproved] = useState(0);
+  const [reqAmountApproved, setReqAmountApproved] = useState(0);
+  const [numberId, setNumberID] = useState("-");
+  const [statusOld, setStatusOld] = useState("-");
+  const [notes, setNotes] = useState("");
+  const [amApprovedMsg, setAmApprovedMsg] = useState("");
+  const [noteMsg, setNoteMsg] = useState("");
 
   useEffect(() => {
     claimService
       .getClaims(page, rowsPerPage, tab == "All" ? "" : tab)
       .then((res) => {
-        setClaims(res.data);
         setFilteredTransactions(res.data);
         setPage(res.page);
         setTotalPages(res.pageTotal);
@@ -62,6 +80,10 @@ const PolicyPage = () => {
   const selectTab = (tab: string) => {
     setTab(tab);
     setPage(1);
+  };
+
+  const goToDetail = (claimId: string) => {
+    router.push(`${path}/${claimId}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -87,14 +109,60 @@ const PolicyPage = () => {
     }
   };
 
-  const goToDetail = (claimId: string) => {
-    router.push(`${path}/${claimId}`);
+  const handleChangeStatus = (claimId: string, newStatus: string) => {
+    console.log(newStatus);
+    setSelectedClaimId(claimId);
+    setPendingStatus(newStatus);
+    setIsModalOpen(true);
+    setNotes("");
+    setAmountApproved(0);
+    setNoteMsg("");
+    const reqAmount = filteredTransactions
+      .map((item) => {
+        const matchingClaim = item.claim.find(
+          (d: any) => d.type === "Number" && d.name === "claim"
+        );
+        return item.id === claimId
+          ? matchingClaim
+            ? matchingClaim.value
+            : "-"
+          : null;
+      })
+      .filter(Boolean);
+    const numberId = filteredTransactions
+      .map((item) => {
+        const matchingClaim = item.number;
+        return item.id === claimId
+          ? matchingClaim
+            ? matchingClaim
+            : "-"
+          : null;
+      })
+      .filter(Boolean);
+    const statusOld = filteredTransactions
+      .map((item) => {
+        const matchingClaim = item.status;
+        return item.id === claimId
+          ? matchingClaim
+            ? matchingClaim
+            : "-"
+          : null;
+      })
+      .filter(Boolean);
+    setReqAmountApproved(reqAmount[0]);
+    setNumberID(numberId[0]);
+    setStatusOld(statusOld[0]);
   };
 
-  const handleChangeStatus = (claimId: string, newStatus: string) => {
+  const updateStatus = (
+    claimId: string,
+    newStatus: string,
+    amount_approved?: number,
+    note?: string
+  ) => {
     claimService
-      .updateClaimStatus(claimId, newStatus)
-      .then((res) => {
+      .updateClaimStatus(claimId, newStatus, amount_approved, note)
+      .then(() => {
         setClaims((prevClaims) =>
           prevClaims.map((claim) =>
             claim.id === claimId ? { ...claim, status: newStatus } : claim
@@ -108,9 +176,171 @@ const PolicyPage = () => {
       });
   };
 
+  const confirmModal = () => {
+    if (amountApproved > reqAmountApproved) {
+      setAmApprovedMsg(
+        "Approved Amount tidak boleh lebih dari Requested Amount"
+      );
+      return;
+    }
+    if (amountApproved === 0 && pendingStatus === "Approved") {
+      setAmApprovedMsg("Approved Amount wajib diisi !");
+      console.log("masuk");
+      return;
+    }
+    if (
+      (notes === "" && pendingStatus === "Rejected") ||
+      (notes === "" && pendingStatus === "Lack of Documents")
+    ) {
+      setNoteMsg("Wajib diisi!");
+      return;
+    }
+
+    if (selectedClaimId && pendingStatus) {
+      updateStatus(selectedClaimId, pendingStatus, amountApproved, notes);
+      setClaims((prevClaims) =>
+        prevClaims.map((claim) =>
+          claim.id === selectedClaimId
+            ? { ...claim, status: pendingStatus }
+            : claim
+        )
+      );
+      setIsModalOpen(false);
+    }
+  };
+
+  const cancelModal = () => {
+    setIsModalOpen(false);
+    setSelectedClaimId(null);
+    setPendingStatus(null);
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <h1 className="text-black font-bold text-2xl mt-2 mb-4">Claim List</h1>
+      {isModalOpen && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <p className="text-center">
+              <AlertCircle
+                width={88}
+                height={88}
+                className="mx-auto text-[#F5AB1D]"
+              />
+            </p>
+            <p className="text-center font-bold mb-0 text-sm">Are you sure?</p>
+            <div className="flex flex-col gap-4">
+              <p className="text-center text-sm">
+                Update <strong>{numberId}</strong> status <br />
+                from <strong>{statusOld}</strong> to{" "}
+                <strong>{pendingStatus}</strong>
+              </p>
+              {pendingStatus === "Approved" && (
+                <>
+                  <div>
+                    <p className="text-sm mb-2">Requested Amount</p>
+                    <Input
+                      type="number"
+                      value={reqAmountApproved}
+                      disabled
+                      className="bg-gray-50 h-12 !opacity-100"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm mb-2">
+                      Approved Amount <span className="!text-red-500">*</span>
+                    </p>
+                    <Input
+                      type="number"
+                      value={amountApproved === 0 ? "" : amountApproved}
+                      onChange={(e) => {
+                        setAmountApproved(Number(e.target.value));
+                        setAmApprovedMsg("");
+                      }}
+                      className="h-12"
+                      required
+                    />
+                    <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
+                  </div>
+                  <div className="w-full">
+                    <p className="text-sm mb-2">Reason (Opsional)</p>
+                    <textarea
+                      name=""
+                      id=""
+                      rows={4}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                      placeholder="Insert reason (Opsional)"
+                    ></textarea>
+                  </div>
+                </>
+              )}
+
+              {pendingStatus === "Rejected" && (
+                <>
+                  <div className="w-full">
+                    <p className="text-sm mb-2">Reason (Opsional)</p>
+                    <textarea
+                      name=""
+                      id=""
+                      rows={4}
+                      value={notes}
+                      onChange={(e) => {
+                        setNotes(e.target.value);
+                        setNoteMsg("");
+                      }}
+                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                      placeholder="Insert reason (Opsional)"
+                      required
+                    ></textarea>
+                    <p className="text-xs text-red-500">{noteMsg}</p>
+                  </div>
+                </>
+              )}
+
+              {pendingStatus === "Lack of Documents" && (
+                <>
+                  <div className="w-full">
+                    <p className="text-sm mb-2">Reason (Opsional)</p>
+                    <textarea
+                      name=""
+                      id=""
+                      rows={4}
+                      value={notes}
+                      onChange={(e) => {
+                        setNotes(e.target.value);
+                        setNoteMsg("");
+                      }}
+                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                      placeholder="Insert reason (Opsional)"
+                      required
+                    ></textarea>
+                    <p className="text-xs text-red-500">{noteMsg}</p>
+                  </div>
+                </>
+              )}
+
+              <div className="flex gap-4 justify-center">
+                <Button
+                  variant="outline"
+                  onClick={cancelModal}
+                  className="border-[#E83F3F] text-[#E83F3F] rounded-full w-24"
+                >
+                  No
+                </Button>
+                <Button
+                  color="warning"
+                  onClick={confirmModal}
+                  className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black"
+                >
+                  Yes
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
       <div className="flex items-center justify-start h-16 bg-white rounded-md mb-3">
         <div
           onClick={() => selectTab("All")}
@@ -344,7 +574,8 @@ const PolicyPage = () => {
               <TableHead>Plan Name</TableHead>
               <TableHead className="whitespace-nowrap">Benefit</TableHead>
               <TableHead className="whitespace-nowrap">Currency</TableHead>
-              <TableHead className="whitespace-nowrap">Amount</TableHead>
+              <TableHead>Requested Amount</TableHead>
+              <TableHead>Approved Amount </TableHead>
               <TableHead className="whitespace-nowrap">Status</TableHead>
               <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
@@ -378,6 +609,11 @@ const PolicyPage = () => {
                     {claim.claim.find(
                       (d: any) => d.type === "Number" && d.name === "claim"
                     ).value || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2 items-center">
+                      {claim.amount_approved || "-"}
+                    </div>
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <Select

@@ -134,11 +134,17 @@ export class ClaimService {
     return this.httpClient.get(`/claim-histories?claim=${id}`);
   }
 
-  async updateClaimStatus(id: string, data: any): Promise<any> {
+  async updateClaimStatus(
+    id: string,
+    data: any,
+    amount_approved?: number,
+    note?: string
+  ): Promise<any> {
     try {
       return await this.httpClient.put("/claims/update-status/" + id, {
         status: data,
-        note: "",
+        note: note,
+        amount_approved: amount_approved,
       });
     } catch (error: any) {
       throw new Error(error.response.data.message);
