@@ -245,10 +245,9 @@ const CreatePromotionPage = () => {
       if (arrayName === 'embedded_discount_insurances') {
         const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
 
-        // Remove the insurance ID from the globalSelectedInsuranceIds
         setGlobalSelectedInsuranceIds(prevIds => {
           const newIds = new Set(prevIds);
-          newIds.delete(removedInsuranceId); // Remove the specific insurance ID
+          newIds.delete(removedInsuranceId);
           return newIds;
         });
 
@@ -361,7 +360,7 @@ const CreatePromotionPage = () => {
         insurance_id: insurance.insurance_id,
       })),
       plans: promotion.embedded_discount_plans.map(plan => ({
-        plan_id: plan.plan_id, // Sending the selected plan ids
+        plan_id: plan.plan_id,
       })),
       channels: promotion.embedded_discount_channels.map(channel => ({
         channel_id: channel.channel_id,
@@ -395,7 +394,6 @@ const CreatePromotionPage = () => {
         const response: AxiosResponse<any> = await promotionService.createPromotion(payload);
         const { data } = response;
 
-        // console.log("data: "+ response.data.data.data.error.code);
         if (promotion.type == "embedded") {
 
           if (data.data.data != null) {
@@ -442,10 +440,9 @@ const CreatePromotionPage = () => {
 
 
   const handleSelectChannel = (selectedChannels: Channel[]) => {
-    // Get the existing channels from the promotion state
+
     const existingChannels = promotion.embedded_discount_channels;
 
-    // Create a new array with existing channels and newly selected channels, ensuring no duplicates
     const updatedChannels = [...existingChannels];
 
     selectedChannels.forEach(channel => {
@@ -453,21 +450,19 @@ const CreatePromotionPage = () => {
       if (!existingChannel) {
         updatedChannels.push({
           channel_id: channel.id,
-          channel_name: channel.name // Store the channel name for display
+          channel_name: channel.name
         });
       }
     });
 
-    // Update the promotion state
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_channels: updatedChannels
     }));
 
-    // Update global selected channels
     setGlobalSelectedChannels(prevSelected => {
       const newSelected = new Set(prevSelected);
-      selectedChannels.forEach(channel => newSelected.add(channel.id)); // Only add channel IDs
+      selectedChannels.forEach(channel => newSelected.add(channel.id));
       return newSelected;
     });
 
@@ -475,43 +470,43 @@ const CreatePromotionPage = () => {
   };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
-    // Get the selected product IDs from the updated selection
-    const selectedProductIdsSet = new Set(selectedProducts.map(product => product.id));
+    const existingProducts = promotion.embedded_discount_products;
 
-    // Update promotion state with the new selected products
+    const updatedProducts = [...existingProducts];
+
+    selectedProducts.forEach(product => {
+      const existingProduct = updatedProducts.find(p => p.product_id === product.id);
+      if (!existingProduct) {
+        updatedProducts.push({
+          product_id: product.id,
+          product_name: product.name
+        });
+      }
+    });
+
     setPromotion(prevState => {
-      // Filter plans associated with selected products only
       const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
-        selectedProductIdsSet.has(plan.plan_id)
+        updatedProducts.some(prod => prod.product_id === plan.plan_id)
       );
 
       return {
         ...prevState,
-        embedded_discount_products: selectedProducts.map(product => ({
-          product_id: product.id,
-          product_name: product.name
-        })),
-        embedded_discount_plans: updatedPlans,  // Update plans to keep only those tied to selected products
+        embedded_discount_products: updatedProducts,
+        embedded_discount_plans: updatedPlans,
       };
     });
 
-    // // Update global selected insurance IDs
-    // const newSelectedIds = new Set<string>(selectedProducts.map(prod => prod.id));
-    // setGlobalSelectedProdIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
-    // setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
+    const newSelectedIds = new Set<string>(selectedProducts.map(prod => prod.id));
+    setSelectedProductIds(newSelectedIds);
 
-    // // Update the state for selected product IDs
-    // setSelectedProductIds(selectedProductIdsSet);
-
-    // Update global selected channels
     setGlobalSelectedProdIds(prevSelected => {
       const newSelected = new Set(prevSelected);
-      selectedProducts.forEach(prod => newSelected.add(prod.id)); // Only add channel IDs
+      selectedProducts.forEach(prod => newSelected.add(prod.id));
       return newSelected;
     });
 
-
   };
+
 
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
     const existingInsurance = promotion.embedded_discount_insurances;
@@ -542,12 +537,6 @@ const CreatePromotionPage = () => {
     setIsInsuranceModalOpen(false);
     setCurrentPageProd(1); // Reset the product modal page to 1 after changing insurances
   };
-
-
-
-
-
-
 
 
   const handleSelectPlan = (newSelectedPlans: Plan[]) => {
@@ -668,7 +657,7 @@ const CreatePromotionPage = () => {
 
   const handlePlansPerPageChange = async (newPlansPerPage: number) => {
     setShowPlansPerPage(newPlansPerPage);
-    setCurrentPagePlan(1);  // Reset to first page
+    setCurrentPagePlan(1);
     fetchPlansByProducts(Array.from(selectedProductIds), 1, newPlansPerPage);
   };
 
@@ -682,20 +671,20 @@ const CreatePromotionPage = () => {
     console.log("insPerPage: " + newInsPerPage);
     setShowInsPerPage(newInsPerPage);
     setCurrentPageIns(1);
-    fetchInsurances(1, newInsPerPage); // Fetch the first page with the new per-page value
+    fetchInsurances(1, newInsPerPage); 
   };
 
   const handleProdPerPageChange = async (newProdPerPage: number) => {
     setShowProdPerPage(newProdPerPage);
     setCurrentPageProd(1);
-    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, newProdPerPage); // Fetch the first page with the new per-page value
+    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, newProdPerPage); 
   };
 
 
   const handlePageChangeInsurances = (page: number) => {
     if (page >= 1) {
-      setCurrentPageIns(page); // Correctly updates page state
-      fetchInsurances(page, showInsPerPage); // Fetches insurance data for the new page
+      setCurrentPageIns(page);
+      fetchInsurances(page, showInsPerPage); 
     }
   };
 
@@ -821,6 +810,7 @@ const CreatePromotionPage = () => {
           onPageChangeProd={handlePageChangeProd}
           currentPageProd={currentPageProd}
           onRemoveProd={handleRemoveProd}
+        //
         />
         <PlanSelectionModal
           isOpen={isPlanModalOpen}
