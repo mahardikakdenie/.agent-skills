@@ -123,14 +123,14 @@ const CreatePromotionPage = () => {
 
 
   useEffect(() => {
-    if (selectedInsuranceIds.size > 0) {
+    if (globalSelectedInsuranceIds.size > 0) {
       // Fetch products based on current selected insurance IDs
       fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), currentPage, showProdPerPage);
     } else {
       setProducts(undefined);
       setHasProducts(false);
     }
-  }, [selectedInsuranceIds, currentPage]); // Ensure currentPage is also a dependency
+  }, [globalSelectedInsuranceIds, currentPage]); // Ensure currentPage is also a dependency
 
 
   useEffect(() => {
@@ -257,7 +257,7 @@ const CreatePromotionPage = () => {
 
       if (arrayName === 'embedded_discount_insurances') {
         const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
-        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), currentPage, showProdPerPage);
+        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), 1, showProdPerPage);
 
         return {
           ...prevState,
@@ -279,6 +279,7 @@ const CreatePromotionPage = () => {
       );
       setSelectedProductIds(new Set());
       setSelectedPlanIds(new Set());
+      setCurrentPageProd(1);
     }
   };
 
@@ -510,7 +511,6 @@ const CreatePromotionPage = () => {
   const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
     const existingInsurance = promotion.embedded_discount_insurances;
 
-    // Create a new array with existing insurances and newly selected ones
     const updatedInsurances = [...existingInsurance];
 
     selectedInsurances.forEach(insurance => {
@@ -523,23 +523,22 @@ const CreatePromotionPage = () => {
       }
     });
 
-    // Update the promotion state
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_insurances: updatedInsurances
     }));
 
-    // Update global selected insurance IDs
     const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
-    setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds])); // Add new selections
+    setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds]));
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
 
-    // Fetch products based on the updated insurances
     const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
-    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), currentPage, showProdPerPage); // Pass the correct list of IDs
+    fetchProductsByInsurances(Array.from(insuranceIdsToFetch), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
 
     setIsInsuranceModalOpen(false);
+    setCurrentPageProd(1); // Reset the product modal page to 1 after changing insurances
   };
+
 
 
 
