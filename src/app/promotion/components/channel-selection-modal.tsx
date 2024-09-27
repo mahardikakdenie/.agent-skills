@@ -74,19 +74,26 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   };
 
   const handleSelectAllChange = () => {
-    setSelectAll(prevSelectAll => {
-      const newSelected = new Set(globalSelectedChannels);
+    const newSelectAll = !selectAll;  // Toggle selectAll state
+    setSelectAll(newSelectAll);
+
+    const newSelected = new Set(globalSelectedChannels);  // Copy the current selected channels
+
+    if (newSelectAll) {
+      // Selecting all channels
       data.forEach(channel => {
-        if (prevSelectAll) {
-          newSelected.delete(channel.id); // Deselecting
-        } else {
-          newSelected.add(channel.id); // Selecting
-        }
+        newSelected.add(channel.id);
       });
-      setGlobalSelectedChannels(newSelected);
-      return !prevSelectAll;
-    });
+    } else {
+      // Deselecting all channels
+      data.forEach(channel => {
+        newSelected.delete(channel.id);
+      });
+    }
+
+    setGlobalSelectedChannels(newSelected);  // Update the selected channels
   };
+
 
   const handleApply = () => {
     const selectedChannelsData: Channel[] = Array.from(globalSelectedChannels)
