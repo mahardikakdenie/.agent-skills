@@ -41,6 +41,15 @@ export interface ChannelResponseDTO {
   page: number;
 }
 
+export interface ProductResponseDTO {
+  data: Product[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+}
+
 
 export interface InsuranceResponseDTO {
   data: Insurance[];
