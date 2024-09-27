@@ -18,6 +18,13 @@ import { ChevronLeft, ChevronRight, Search, X } from "react-feather";
 import { Button } from "@/components/ui/button";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const PolicyPage = () => {
   useRequireAuth();
@@ -373,26 +380,36 @@ const PolicyPage = () => {
                     ).value || "-"}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
-                    <select
+                    <Select
                       value={claim.status}
-                      onChange={(e) =>
-                        handleChangeStatus(claim.id, e.target.value)
+                      onValueChange={(value) =>
+                        handleChangeStatus(claim.id, value)
                       }
-                      className={getStatusColor(claim.status)}
                     >
-                      <option value="Application Sent">Application Sent</option>
-                      <option value="Processing">Processing</option>
-                      <option value="Approved">Approved</option>
-                      <option value="Payment Processing">
-                        Payment Processing
-                      </option>
-                      <option value="Paid">Paid</option>
-                      <option value="Closed">Closed</option>
-                      <option value="Lack of Documents">
-                        Lack of Documents
-                      </option>
-                      <option value="Rejected">Rejected</option>
-                    </select>
+                      <SelectTrigger
+                        className={`w-[180px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
+                          claim.status
+                        )}`}
+                      >
+                        <SelectValue placeholder="Theme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Application Sent">
+                          Application Sent
+                        </SelectItem>
+                        <SelectItem value="Processing">Processing</SelectItem>
+                        <SelectItem value="Approved">Approved</SelectItem>
+                        <SelectItem value="Payment Processing">
+                          Payment Processing
+                        </SelectItem>
+                        <SelectItem value="Paid">Paid</SelectItem>
+                        <SelectItem value="Closed">Closed</SelectItem>
+                        <SelectItem value="Lack of Documents">
+                          Lack of Documents
+                        </SelectItem>
+                        <SelectItem value="Rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </TableCell>
                   <TableCell>
                     <Button

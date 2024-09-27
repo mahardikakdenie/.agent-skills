@@ -216,3 +216,10 @@ tfoot tr:hover {
 th {
   font-weight: 600 !important;
 }
+.select-status option {
+  color: rgb(71, 71, 71);
+  padding: 15px;
+}
+.frame-body button[role="combobox"].h-10 {
+  height: 2.5rem !important;
+}
