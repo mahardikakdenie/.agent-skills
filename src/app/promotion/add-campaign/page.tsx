@@ -122,16 +122,6 @@ const CreatePromotionPage = () => {
   }, [currentPageChannels, showChannelsPerPage]);
 
 
-  useEffect(() => {
-    if (globalSelectedInsuranceIds.size > 0) {
-      // Fetch products based on current selected insurance IDs
-      fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), currentPage, showProdPerPage);
-    } else {
-      setProducts(undefined);
-      setHasProducts(false);
-    }
-  }, [globalSelectedInsuranceIds, currentPage]); // Ensure currentPage is also a dependency
-
 
   useEffect(() => {
     if (selectedProductIds.size > 0) {
@@ -257,6 +247,14 @@ const CreatePromotionPage = () => {
 
       if (arrayName === 'embedded_discount_insurances') {
         const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
+
+        // Remove the insurance ID from the globalSelectedInsuranceIds
+        setGlobalSelectedInsuranceIds(prevIds => {
+          const newIds = new Set(prevIds);
+          newIds.delete(removedInsuranceId); // Remove the specific insurance ID
+          return newIds;
+        });
+
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), 1, showProdPerPage);
 
         return {
@@ -282,6 +280,7 @@ const CreatePromotionPage = () => {
       setCurrentPageProd(1);
     }
   };
+
 
   const handleValueTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPromotion(prevState => ({
@@ -529,11 +528,11 @@ const CreatePromotionPage = () => {
     }));
 
     const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
-    setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds]));
+    // setGlobalSelectedInsuranceIds(prev => new Set([...prev, ...newSelectedIds]));
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
 
     const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
-    fetchProductsByInsurances(Array.from(insuranceIdsToFetch), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
+    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
 
     setIsInsuranceModalOpen(false);
     setCurrentPageProd(1); // Reset the product modal page to 1 after changing insurances
@@ -560,14 +559,6 @@ const CreatePromotionPage = () => {
       ...prev,
       embedded_discount_plans: updatedPlans, // Update promotion with selected plans
     }));
-
-
-    // // Update global selected ins
-    // setGlobalSelectedInsuranceIds(prevSelected => {
-    //   const newSelected = new Set(prevSelected);
-    //   newSelectedPlans.forEach(plan => newSelected.add(plan.id)); // Only add ins IDs
-    //   return newSelected;
-    // });
 
   };
 
