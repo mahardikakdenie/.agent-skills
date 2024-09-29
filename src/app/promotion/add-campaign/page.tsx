@@ -9,7 +9,7 @@ import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import { PlanService } from "@/services/plan.services";
-import { Insurance, InsuranceResponseDTO, NewPromotionCampaign, Plan, Product, ProductResponseDTO } from "../dto/promotion.dto";
+import { Insurance, InsuranceResponseDTO, NewPromotionCampaign, Plan, PlanResponseDTO, Product, ProductResponseDTO } from "../dto/promotion.dto";
 import ChannelSelectionModal from "../components/channel-selection-modal";
 import InsuranceSelectionModal from "../components/insurance-selection-modal";
 import ProductSelectionModal from "../components/product-selection-modal";
@@ -85,7 +85,7 @@ const CreatePromotionPage = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plans, setPlans] = useState<PlanResponseDTO | undefined>(undefined);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
@@ -110,6 +110,7 @@ const CreatePromotionPage = () => {
   const [totalProductItems, setTotalProductItems] = useState(0);
   const [globalSelectedInsuranceIds, setGlobalSelectedInsuranceIds] = useState<Set<string>>(new Set());
   const [globalSelectedProdIds, setGlobalSelectedProdIds] = useState<Set<string>>(new Set());
+  const [globalSelectedPlanIds, setGlobalSelectedPlanIds] = useState<Set<string>>(new Set());
   const [showInsPerPage, setShowInsPerPage] = useState(10);
 
   useEffect(() => {
@@ -122,29 +123,23 @@ const CreatePromotionPage = () => {
 
   useEffect(() => {
     if (selectedProductIds.size > 0) {
-      fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan, showPlansPerPage);
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), currentPagePlan, showPlansPerPage);
     } else {
-      setPlans([]);
+      setPlans(undefined);
       setSelectedPlanIds(new Set());
     }
-  }, [selectedProductIds]);
-
-  useEffect(() => {
-    if (selectedProductIds.size > 0) {
-      fetchPlansByProducts(Array.from(selectedProductIds), currentPagePlan, showPlansPerPage);
-    }
-  }, [selectedProductIds, currentPagePlan, showPlansPerPage]);
+  }, [globalSelectedProdIds]);
 
 
   const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
     console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
-      setPlans(responses.data);
+      setPlans(responses);
       setTotalPlanItems(responses.meta.total);
     } catch (error) {
       console.error("Failed to fetch plans:", error);
-      setPlans([]);
+      setPlans(undefined);
     }
   };
 
@@ -556,10 +551,9 @@ const CreatePromotionPage = () => {
 
   };
 
-
-
-
   const handleAddPlan = () => {
+    const selectedPlanIds = new Set(promotion.embedded_discount_plans.map(plans => plans.plan_id));
+    setGlobalSelectedPlanIds(selectedPlanIds);
     setIsPlanModalOpen(true);
   };
 
@@ -620,12 +614,20 @@ const CreatePromotionPage = () => {
       };
     });
 
-    // Update the selected plan IDs state
-    setSelectedPlanIds(prevIds => {
-      const updatedIds = new Set(prevIds);
-      updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
-      return updatedIds;
+    // Update global selected channels
+    setGlobalSelectedPlanIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedPlans.forEach(plan => newSelected.add(plan.id));
+      return newSelected;
     });
+
+  };
+
+  const handleRemovePlans = (planId: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_plans: prevState.embedded_discount_plans.filter(plan => plan.plan_id !== planId)
+    }));
   };
 
 
@@ -645,14 +647,14 @@ const CreatePromotionPage = () => {
   const handlePageChangePlans = (page: number) => {
     if (page >= 1 && page !== currentPagePlan) {
       setCurrentPagePlan(page);
-      fetchPlansByProducts(Array.from(selectedProductIds), page, showPlansPerPage);
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), page, showPlansPerPage);
     }
   };
 
   const handlePlansPerPageChange = async (newPlansPerPage: number) => {
     setShowPlansPerPage(newPlansPerPage);
     setCurrentPagePlan(1);
-    fetchPlansByProducts(Array.from(selectedProductIds), 1, newPlansPerPage);
+    fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, newPlansPerPage);
   };
 
   const handleChannelsPerPageChange = async (newChannelsPerPage: number) => {
@@ -821,6 +823,9 @@ const CreatePromotionPage = () => {
           pagePlan={currentPagePlan}
           showPlansPerPage={showPlansPerPage}
           onPlansPerPageChange={handlePlansPerPageChange}
+          globalSelectedPlanIds={globalSelectedPlanIds}
+          setGlobalSelectedPlanIds={setGlobalSelectedPlanIds}
+          onRemovePlan={handleRemovePlans}
         />
 
 

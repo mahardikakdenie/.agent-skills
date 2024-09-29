@@ -60,6 +60,15 @@ export interface InsuranceResponseDTO {
   };
 }
 
+export interface PlanResponseDTO {
+  data: Plan[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+}
+
 export interface Insurance {
   id: string;
   name: string;
