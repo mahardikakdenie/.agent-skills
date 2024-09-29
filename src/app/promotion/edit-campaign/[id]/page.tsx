@@ -446,7 +446,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setHasProducts(products?.data?.length ? products.data.length > 0 : false);
   };
 
-
   const handleAddVoucher = async (code: string, usageLimit: number) => {
     if (!code.trim()) return; // Early return if code is empty
 

@@ -48,54 +48,57 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   onRemoveInsurance,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
+  const [localSelectedInsuranceIds, setLocalSelectedInsuranceIds] = useState<Set<string>>(new Set());
   const data = insurances?.data || [];
   const totalItems = insurances?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / showInsPerPage);
 
+  // Initialize local selection based on global selected IDs when modal opens
   useEffect(() => {
-    setSelectAll(data.length > 0 && data.every(insurance => globalSelectedInsuranceIds.has(insurance.id)));
-  }, [data, globalSelectedInsuranceIds]);
+    if (isOpen) {
+      setLocalSelectedInsuranceIds(new Set(globalSelectedInsuranceIds));
+    }
+  }, [isOpen, globalSelectedInsuranceIds]);
+
+  useEffect(() => {
+    setSelectAll(data.length > 0 && data.every(insurance => localSelectedInsuranceIds.has(insurance.id)));
+  }, [data, localSelectedInsuranceIds]);
 
   const handleCheckboxChange = (insuranceId: string) => {
-    setGlobalSelectedInsuranceIds(prevSelected => {
+    setLocalSelectedInsuranceIds(prevSelected => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(insuranceId)) {
         newSelected.delete(insuranceId);
-        onRemoveInsurance(insuranceId);
       } else {
         newSelected.add(insuranceId);
       }
       return newSelected;
     });
   };
-  
 
   const handleSelectAllChange = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
 
-    const newSelected = new Set(globalSelectedInsuranceIds);
+    const newSelected = new Set(localSelectedInsuranceIds);
 
     if (newSelectAll) {
-      // Selecting all
-      data.forEach(insurance => {
-        newSelected.add(insurance.id);
-      });
+      data.forEach(insurance => newSelected.add(insurance.id));
     } else {
-      // Deselecting all
-      data.forEach(insurance => {
-        newSelected.delete(insurance.id);
-        onRemoveInsurance(insurance.id); 
-      });
+      data.forEach(insurance => newSelected.delete(insurance.id));
     }
-    setGlobalSelectedInsuranceIds(newSelected);
+
+    setLocalSelectedInsuranceIds(newSelected);
   };
 
   const handleApply = () => {
-    const selectedInsurancesData: Insurance[] = Array.from(globalSelectedInsuranceIds)
+    // Update global selected insurance IDs only when Save is clicked
+    setGlobalSelectedInsuranceIds(localSelectedInsuranceIds);
+    
+    // Prepare the selected insurances data to return
+    const selectedInsurancesData: Insurance[] = Array.from(localSelectedInsuranceIds)
       .map(insuranceId => data.find(insurance => insurance.id === insuranceId))
       .filter((ins): ins is Insurance => Boolean(ins));
-
 
     onClose();
     setTimeout(() => {
@@ -145,7 +148,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
                         type="checkbox"
-                        checked={globalSelectedInsuranceIds.has(insurance.id)}
+                        checked={localSelectedInsuranceIds.has(insurance.id)}
                         onChange={() => handleCheckboxChange(insurance.id)}
                         className="form-checkbox"
                       />
@@ -202,7 +205,6 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
           </button>
         </div>
 
-
         <div className="flex justify-center mt-4">
           <button
             type="button"
@@ -217,6 +219,5 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
     </div>
   );
 };
-
 
 export default InsuranceSelectionModal;

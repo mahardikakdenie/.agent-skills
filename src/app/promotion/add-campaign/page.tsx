@@ -118,6 +118,10 @@ const CreatePromotionPage = () => {
   }, [showInsPerPage]);  // Trigger only when the page size changes
 
   useEffect(() => {
+    console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
+  }, [globalSelectedInsuranceIds]);
+
+  useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
   }, [currentPageChannels, showChannelsPerPage]);
 
@@ -527,7 +531,7 @@ const CreatePromotionPage = () => {
     setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
 
     const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
-    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
+    fetchProductsByInsurances(Array.from(insuranceIdsToFetch), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
 
     setIsInsuranceModalOpen(false);
     setCurrentPageProd(1); // Reset the product modal page to 1 after changing insurances
@@ -1068,8 +1072,8 @@ const CreatePromotionPage = () => {
                 <button
                   type="button"
                   onClick={handleAddProduct}
-                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${isProductButtonDisabled ? 'bg-gray-500 text-white cursor-not-allowed' : ''}`}
-                  disabled={isProductButtonDisabled}
+                  className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                  disabled={promotion.embedded_discount_insurances.length === 0}
                 >
                   <FaPlus className="mr-2" />
                   Product
@@ -1110,7 +1114,7 @@ const CreatePromotionPage = () => {
                 <button
                   type="button"
                   onClick={handleAddPlan}
-                  className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? '' : 'bg-gray-500 text-white cursor-not-allowed'}`}
+                  className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
                   disabled={promotion.embedded_discount_products.length === 0}
                 >
                   <FaPlus className="mr-2" />
