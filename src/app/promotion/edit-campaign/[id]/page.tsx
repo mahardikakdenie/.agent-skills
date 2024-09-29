@@ -55,6 +55,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [channels, setChannels] = useState<ChannelResponseDTO | undefined>(undefined);
   const [channelsInitial, setChannelsInitial] = useState<ChannelResponseDTO | undefined>(undefined);
   const [insurances, setInsurances] = useState<InsuranceResponseDTO | undefined>(undefined);
+  const [insurancesInitial, setInsurancesInitial] = useState<InsuranceResponseDTO | undefined>(undefined);
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
@@ -108,14 +109,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     );
   };
 
-  // useEffect(() => {
-  //   console.log('Global Selected Channels:', Array.from(globalSelectedChannels));
-  // }, [globalSelectedChannels]);
-  
-  // useEffect(() => {
-  //   console.log('Channels Data:', channels?.data);
-  // }, [channels]);
-  
+  useEffect(() => {
+    console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
+  }, [globalSelectedInsuranceIds]);
+
+  useEffect(() => {
+    console.log('Insurances Data:', insurancesInitial?.data);
+  }, [insurancesInitial]);
+
+  useEffect(() => {
+    console.log('Global Selected Channel:', Array.from(globalSelectedChannels));
+  }, [globalSelectedChannels]);
+
+  useEffect(() => {
+    console.log('Channel Data:', channelsInitial?.data);
+  }, [channelsInitial]);
+
 
   useEffect(() => {
     if (promotion.embedded_discount_insurances.length > 0) {
@@ -142,12 +151,17 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           console.log('Fetched Promotion Data:', promotionData);
           setPromotion(promotionData);
           fetchChannelsInitial(1, 10);
+          fetchInsurancesInitial(1, 10);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
           fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
 
           // Populate selected channels
           const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
           setGlobalSelectedChannels(existingChannelIds);
+
+          // Populate selected insurances
+          const existingInsuranceIds = new Set(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
+          setGlobalSelectedInsuranceIds(existingInsuranceIds);
 
           setLoading(false);
         })
@@ -175,6 +189,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setGlobalSelectedChannels(existingChannelIds);
   }, [promotion.embedded_discount_channels]);
 
+  useEffect(() => {
+    const existingInsuranceIds = new Set(promotion.embedded_discount_insurances.map(ins => ins.insurance_id));
+
+    // Initialize selectedChannelIds and globalSelectedChannels with the selected channels from the database
+    setSelectedInsuranceIds(existingInsuranceIds);
+    setGlobalSelectedInsuranceIds(existingInsuranceIds);
+  }, [promotion.embedded_discount_insurances]);
 
 
   useEffect(() => {
@@ -209,6 +230,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
+
+  const fetchInsurancesInitial = async (page: number, limit: number) => {
+    console.log("Fetching insurances for page:", page, "with limit:", limit);
+    try {
+      const response = await insuranceService.getInsurances(page, limit);
+      setInsurancesInitial(response);
+      setTotalInsuranceItems(response.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch insurances:", error);
+      setInsurances(undefined);
+    }
+  };
 
   const fetchInsurances = async (page: number, limit: number) => {
     console.log("Fetching insurances for page:", page, "with limit:", limit);
@@ -475,6 +508,60 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
 
+  const handleAddInsurance = () => {
+    const selectedInsuranceIds = new Set(promotion.embedded_discount_insurances.map(ins => ins.insurance_id));
+    setGlobalSelectedInsuranceIds(selectedInsuranceIds);
+    setIsInsuranceModalOpen(true);
+  };
+
+
+  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
+    const existingInsurance = promotion.embedded_discount_insurances;
+
+    const updatedInsurances = [...existingInsurance];
+
+    selectedInsurances.forEach(insurance => {
+      const existingInsurance = updatedInsurances.find(c => c.insurance_id === insurance.id);
+      if (!existingInsurance) {
+        updatedInsurances.push({
+          insurance_id: insurance.id,
+          insurance_name: insurance.name
+        });
+      }
+    });
+
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: updatedInsurances
+    }));
+
+    // Store selected insurance objects (not just IDs)
+    setSelectedInsurances(prevSelected => {
+      const newSelected = [...prevSelected];
+      selectedInsurances.forEach(insurance => {
+        if (!newSelected.find(c => c.id === insurance.id)) {
+          newSelected.push(insurance); // Store the full insurance object
+        }
+      });
+      return newSelected;
+    });
+
+    // Update global selected insurance IDs
+    setGlobalSelectedInsuranceIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedInsurances.forEach(insurance => newSelected.add(insurance.id));
+      return newSelected;
+    });
+
+    const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
+    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
+
+    setIsInsuranceModalOpen(false);
+    setCurrentPageProd(1); // Reset the product modal page to 1 after changing insurances
+  };
+
+
+
   const handleSelectChannel = (selectedChannelsArray: Channel[]) => {
     const existingChannels = promotion.embedded_discount_channels;
 
@@ -513,43 +600,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     });
 
     setIsModalOpen(false);
-  };
-
-
-
-  const handleAddInsurance = () => {
-    setIsInsuranceModalOpen(true);
-  };
-
-
-  const handleSelectInsurance = (selectedInsurances: Insurance[]) => {
-    const existingInsurance = promotion.embedded_discount_insurances;
-
-    const updatedInsurances = [...existingInsurance];
-
-    selectedInsurances.forEach(insurance => {
-      const existingInsurance = updatedInsurances.find(c => c.insurance_id === insurance.id);
-      if (!existingInsurance) {
-        updatedInsurances.push({
-          insurance_id: insurance.id,
-          insurance_name: insurance.name
-        });
-      }
-    });
-
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_insurances: updatedInsurances
-    }));
-
-    const newSelectedIds = new Set<string>(selectedInsurances.map(ins => ins.id));
-    setSelectedInsuranceIds(new Set(selectedInsurances.map(ins => ins.id)));
-
-    const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
-    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
-
-    setIsInsuranceModalOpen(false);
-    setCurrentPageProd(1); // Reset the product modal page to 1 after changing insurances
   };
 
   const handlePageChangeProd = (page: number) => {
@@ -952,13 +1002,14 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
               <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_insurances.length > 0 ? (
-                  promotion.embedded_discount_insurances.map((insurance, index) => {
-                    const selectedInsurance = insurances?.data.find(ins => ins.id === insurance.insurance_id);
+                {Array.from(globalSelectedInsuranceIds).length > 0 ? (
+                  Array.from(globalSelectedInsuranceIds).map((insId, index) => {
+                    const insuranceDetail = insurancesInitial?.data.find(c => c.id === insId) ||
+                      selectedInsurances.find(c => c.id === insId);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
-                          {selectedInsurance ? selectedInsurance.name : 'Unknown Insurance'}
+                          {insuranceDetail ? insuranceDetail.name : 'Unknown Insurance'}
                         </span>
                         <button
                           type="button"
@@ -978,7 +1029,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             <div className="flex-shrink-0 flex justify-center items-center">
               <button
                 type="button"
-                onClick={handleAddInsurance}
+                onClick={() => {
+                  setSelectedInsuranceIds(globalSelectedInsuranceIds);
+                  setIsInsuranceModalOpen(true);
+                  handleAddInsurance(); // Call this function correctly
+                }}
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
               >
                 <FaPlus className="mr-2" />
