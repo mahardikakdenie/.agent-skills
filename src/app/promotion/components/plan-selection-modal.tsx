@@ -81,12 +81,11 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
   const [selectAll, setSelectAll] = useState(false);
   const [currentPagePlan, setCurrentPagePlan] = useState(pagePlan);
-  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
-  const [searchResults, setSearchResults] = useState<Plan[]>(plans?.data || []); // State for search results
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<Plan[]>(plans?.data || []);
+  const [localSelectedPlanIds, setLocalSelectedPlanIds] = useState<Set<string>>(new Set());
 
   const data = plans?.data || [];
-
-  // Calculate total pages
   const totalItems = plans?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / showPlansPerPage);
 
@@ -99,14 +98,30 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   }, [products]);
 
   useEffect(() => {
-    // Synchronizing select all state with the selected plans
-    setSelectAll(data.length > 0 && data.every(plan => globalSelectedPlanIds.has(plan.id)));
-  }, [data, globalSelectedPlanIds]);
+    if (isOpen) {
+      setLocalSelectedPlanIds(new Set(preSelectedPlanIds));
+    }
+  }, [isOpen, preSelectedPlanIds]);
 
   useEffect(() => {
-    // Reset search results whenever globalSelectedProdIds changes
-    setSearchResults([]);
-  }, [globalSelectedProdIds]); // Dependency on globalSelectedProdIds
+    const allSelected = data.length > 0 && data.every(plan => localSelectedPlanIds.has(plan.id));
+    setSelectAll(allSelected);
+  }, [data, localSelectedPlanIds]);
+
+  const handleSelectAllChange = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+
+    const newSelected = new Set(localSelectedPlanIds);
+
+    if (newSelectAll) {
+      data.forEach(plan => newSelected.add(plan.id));
+    } else {
+      data.forEach(plan => newSelected.delete(plan.id));
+    }
+
+    setLocalSelectedPlanIds(newSelected);
+  };
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -114,29 +129,8 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     }
   };
 
-  const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll;
-    setSelectAll(newSelectAll);
-
-    const newSelected = new Set(globalSelectedPlanIds);
-
-    if (newSelectAll) {
-      // Selecting all
-      data.forEach(plan => {
-        newSelected.add(plan.id);
-      });
-    } else {
-      // Deselecting all
-      data.forEach(plan => {
-        newSelected.delete(plan.id);
-        onRemovePlan(plan.id); 
-      });
-    }
-    setGlobalSelectedPlanIds(newSelected);
-  };
-
   const handleCheckboxChange = (planId: string) => {
-    setGlobalSelectedPlanIds(prevSelected => {
+    setLocalSelectedPlanIds(prevSelected => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(planId)) {
         newSelected.delete(planId);
@@ -149,10 +143,11 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   };
 
   const handleApply = () => {
-    const selectedPlansData: Plan[] = Array.from(globalSelectedPlanIds)
+    const selectedPlansData: Plan[] = Array.from(localSelectedPlanIds)
       .map(planId => data.find(plan => plan.id === planId))
       .filter((plan): plan is Plan => Boolean(plan));
 
+    setGlobalSelectedPlanIds(localSelectedPlanIds); // Update global selection
     onClose();
     setTimeout(() => {
       onSelect(selectedPlansData);
@@ -162,7 +157,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   const handleSearch = async () => {
     try {
       const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), searchQuery);
-      setSearchResults(response.data || []); // Update search results based on the fetched data
+      setSearchResults(response.data || []);
     } catch (error) {
       console.error('Error fetching plans:', error);
     }
@@ -200,7 +195,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
         {/* Plan List */}
         <div className="overflow-y-auto flex-grow mb-4">
-          {(searchResults.length > 0 ? searchResults : data).length > 0 ? ( // Use searchResults if available, else fallback to data
+          {(searchResults.length > 0 ? searchResults : data).length > 0 ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -217,12 +212,12 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {(searchResults.length > 0 ? searchResults : data).map(plan => ( // Map over searchResults or data
+                {(searchResults.length > 0 ? searchResults : data).map(plan => (
                   <tr key={plan.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
                         type="checkbox"
-                        checked={globalSelectedPlanIds.has(plan.id)}
+                        checked={localSelectedPlanIds.has(plan.id)}
                         onChange={() => handleCheckboxChange(plan.id)}
                         className="form-checkbox"
                       />

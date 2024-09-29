@@ -150,8 +150,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           const promotionData: PromotionDetails = res.data[0];
           console.log('Fetched Promotion Data:', promotionData);
           setPromotion(promotionData);
-          fetchChannelsInitial(1, 10);
-          fetchInsurancesInitial(1, 10);
+          fetchChannelsInitial(1, 50);
+          fetchInsurancesInitial(1, 50);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
           fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
 
@@ -1319,7 +1319,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             id: p.product_id,
             name: p.product_name,
           }))}
-          preSelectedPlanIds={new Set(selectedPlans.map(plan => plan.id))}
+          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
           onPageChangePlan={handlePageChangePlans}
           totalPlanItems={totalPlanItems}
