@@ -836,6 +836,7 @@ const CreatePromotionPage = () => {
           onPlansPerPageChange={handlePlansPerPageChange}
           globalSelectedPlanIds={globalSelectedPlanIds}
           setGlobalSelectedPlanIds={setGlobalSelectedPlanIds}
+          globalSelectedProdIds={globalSelectedProdIds}
           onRemovePlan={handleRemovePlans}
         />
 

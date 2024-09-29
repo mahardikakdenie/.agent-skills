@@ -1328,6 +1328,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onPlansPerPageChange={handlePlansPerPageChange}
           globalSelectedPlanIds={globalSelectedPlanIds}
           setGlobalSelectedPlanIds={setGlobalSelectedPlanIds}
+          globalSelectedProdIds={globalSelectedProdIds}
           onRemovePlan={handleRemovePlans}
         />
       )}

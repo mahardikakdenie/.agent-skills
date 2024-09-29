@@ -47,6 +47,24 @@ export class PlanService {
     return this.httpClientCookie.get(url);
   }
 
+  async getPlansNameByProductId(ids: string[], searchQuery: string): Promise<any> {
+
+    const params = new URLSearchParams();
+    
+    const page = 1;
+    const pageSize = 10;
+
+    ids.forEach(id => params.append('productIds[]', id));
+    
+    params.append('pageSize', pageSize.toString());
+    params.append('page', page.toString());
+    params.append('planName', searchQuery);
+  
+    const url = `/v1/plans?${params.toString()}`;
+    return this.httpClientCookie.get(url);
+
+  }
+
   async getPlanById(id: string): Promise<any> {
     return this.httpClientPlan.get('/plan/' + id);
   }

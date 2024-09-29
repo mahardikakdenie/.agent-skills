@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { PlanService } from '@/services/plan.services';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 
@@ -28,7 +29,7 @@ interface Plan {
   products: Product;
 }
 
-interface Product{
+interface Product {
   id: string;
   created_at: string;
   updated_at: string;
@@ -53,6 +54,7 @@ interface PlanSelectionModalProps {
   onPlansPerPageChange: (plansPerPage: number) => void;
   globalSelectedPlanIds: Set<string>;
   setGlobalSelectedPlanIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  globalSelectedProdIds: Set<string>;
   onRemovePlan: (planId: string) => void;
 }
 
@@ -71,19 +73,22 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   onPlansPerPageChange,
   globalSelectedPlanIds,
   setGlobalSelectedPlanIds,
+  globalSelectedProdIds,
   onRemovePlan,
 }) => {
+  const planService = new PlanService();
   const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set(preSelectedPlanIds));
   const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
   const [selectAll, setSelectAll] = useState(false);
   const [currentPagePlan, setCurrentPagePlan] = useState(pagePlan);
+  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
+  const [searchResults, setSearchResults] = useState<Plan[]>(plans?.data || []); // State for search results
 
   const data = plans?.data || [];
 
   // Calculate total pages
   const totalItems = plans?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / showPlansPerPage);
-
 
   useEffect(() => {
     const names: { [key: string]: string } = {};
@@ -93,11 +98,15 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     setProductNames(names);
   }, [products]);
 
-
   useEffect(() => {
     // Synchronizing select all state with the selected plans
     setSelectAll(data.length > 0 && data.every(plan => globalSelectedPlanIds.has(plan.id)));
   }, [data, globalSelectedPlanIds]);
+
+  useEffect(() => {
+    // Reset search results whenever globalSelectedProdIds changes
+    setSearchResults([]);
+  }, [globalSelectedProdIds]); // Dependency on globalSelectedProdIds
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -150,6 +159,14 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     }, 100);
   };
 
+  const handleSearch = async () => {
+    try {
+      const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), searchQuery);
+      setSearchResults(response.data || []); // Update search results based on the fetched data
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -163,9 +180,27 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
           <span className="text-[#016DA1]">Select Plans</span>
         </h2>
 
+        {/* Search Bar */}
+        <div className="mb-4 flex">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by plan name..."
+            className="flex-grow p-2 border rounded"
+          />
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="ml-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded px-4"
+          >
+            Search
+          </button>
+        </div>
+
         {/* Plan List */}
         <div className="overflow-y-auto flex-grow mb-4">
-          {data.length > 0 ? (
+          {(searchResults.length > 0 ? searchResults : data).length > 0 ? ( // Use searchResults if available, else fallback to data
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -182,7 +217,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {data.map(plan => (
+                {(searchResults.length > 0 ? searchResults : data).map(plan => ( // Map over searchResults or data
                   <tr key={plan.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
