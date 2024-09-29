@@ -199,12 +199,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
   useEffect(() => {
-    if (selectedInsurances.length > 0) {
-      fetchProductsByInsurances(selectedInsurances.map(ins => ins.id), currentPageIns, 10);
+    if (globalSelectedInsuranceIds.size > 0) {
+      fetchProductsByInsurances(selectedInsurances.map(ins => ins.id), 1, 10);
     } else {
       setProducts(undefined);
     }
-  }, [selectedInsurances]);
+  }, [globalSelectedInsuranceIds]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1) {
@@ -269,7 +269,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchProductsByInsurances = async (insuranceIds: string[], page: number, limit: number) => {
-    if (insuranceIds.length === 0) {
+    if (globalSelectedInsuranceIds.size === 0) {
       setProducts(undefined);
       setHasProducts(false);
       return;
