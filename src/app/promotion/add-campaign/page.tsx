@@ -553,7 +553,7 @@ const CreatePromotionPage = () => {
       });
 
       // Fetch plans based on the remaining global selected product IDs
-      // fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, 10);
+      fetchPlansByProducts(updatedProducts.map(prod => prod.product_id), 1, showPlansPerPage);
 
       return {
         ...prevState,

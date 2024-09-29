@@ -63,6 +63,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [localSelectedProductIds, setLocalSelectedProductIds] = useState<Set<string>>(new Set());
 
   const data = products?.data || [];
   const totalItems = products?.meta.total || 0;
@@ -77,11 +78,19 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
+  // Initialize local selection based on initial selected IDs when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setLocalSelectedProductIds(new Set(initialSelectedProductIds));
+    }
+  }, [isOpen, initialSelectedProductIds]);
+
   // Check if all products on the current page are selected
   useEffect(() => {
-    const allSelected = data.length > 0 && data.every((product) => globalSelectedProdIds.has(product.id));
+    const allSelected = data.length > 0 && data.every((product) => localSelectedProductIds.has(product.id));
     setSelectAll(allSelected);
-  }, [data, globalSelectedProdIds]);
+  }, [data, localSelectedProductIds]);
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -108,44 +117,42 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   }, []);
 
   const handleCheckboxChange = (productId: string) => {
-    setGlobalSelectedProdIds(prevSelected => {
+    setLocalSelectedProductIds((prevSelected) => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(productId)) {
-        newSelected.delete(productId);
-        onRemoveProd(productId); // Call to remove the product from main state
+        newSelected.delete(productId); // Unselect the product
       } else {
-        newSelected.add(productId);
+        newSelected.add(productId); // Select the product
       }
-      return newSelected;
+      return newSelected; // Update state
     });
   };
+
 
 
   const handleSelectAllChange = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
 
-    const newSelected = new Set(globalSelectedProdIds);
+    const newSelected = new Set(localSelectedProductIds);
 
     if (newSelectAll) {
-      // Selecting all
-      data.forEach(product => {
-        newSelected.add(product.id);
-      });
+      data.forEach(product => newSelected.add(product.id));
     } else {
-      // Deselecting all
-      data.forEach(product => {
-        newSelected.delete(product.id);
-        onRemoveProd(product.id);
-      });
+      data.forEach(product => newSelected.delete(product.id));
     }
-    setGlobalSelectedProdIds(newSelected);
+
+    setLocalSelectedProductIds(newSelected);
   };
 
   const handleApply = () => {
-    const selectedProductsData: Product[] = Array.from(globalSelectedProdIds)
-      .map((productId) => data.find((product) => product.id === productId))
-      .filter((product): product is Product => Boolean(product));
+    // Update global selected product IDs only when Save is clicked
+    setGlobalSelectedProdIds(localSelectedProductIds);
+
+    // Prepare the selected products data to return
+    const selectedProductsData: Product[] = Array.from(localSelectedProductIds)
+      .map(productId => data.find(product => product.id === productId))
+      .filter((prod): prod is Product => Boolean(prod));
 
     onClose();
     setTimeout(() => {
@@ -228,8 +235,8 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
                         type="checkbox"
-                        checked={globalSelectedProdIds.has(product.id)}
-                        onChange={() => handleCheckboxChange(product.id)}
+                        checked={localSelectedProductIds.has(product.id)} // Use localSelectedProductIds here
+                        onChange={() => handleCheckboxChange(product.id)} // Call the change handler
                         className="form-checkbox"
                       />
                     </td>
