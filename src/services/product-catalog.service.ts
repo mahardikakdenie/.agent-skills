@@ -1,10 +1,7 @@
-import { Insurance } from "./../app/promotion/dto/promotion.dto";
-// AuthService.ts
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "./../lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
 import qs from "qs";
-import axios from "axios";
 
 export interface PackageDto {
   premium: number;

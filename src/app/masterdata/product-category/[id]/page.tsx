@@ -34,7 +34,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drewer";
 
-const DetailPolicy = ({ params }: { params: { id: string } }) => {
+const DetailProductCategory = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [claim, setClaim] = useState<any>(null);
   const [tab, setTab] = useState("Summary");
@@ -469,11 +469,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             <Table className="table-claims">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap w-12">No.</TableHead>
+                  <TableHead className="whitespace-nowrap">No.</TableHead>
                   <TableHead>File Name</TableHead>
-                  <TableHead className="whitespace-nowrap w-36">
-                    Action
-                  </TableHead>
+                  <TableHead className="whitespace-nowrap">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -544,6 +542,6 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const DetailPolicyWithSidebar = (params: any) =>
-  WithSidebar(DetailPolicy)(params);
-export default DetailPolicyWithSidebar;
+const DetailProductCategoryWithSidebar = (params: any) =>
+  WithSidebar(DetailProductCategory)(params);
+export default DetailProductCategoryWithSidebar;
