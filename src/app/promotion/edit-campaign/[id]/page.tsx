@@ -12,7 +12,7 @@ import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import ProductSelectionModal from "../../components/product-selection-modal";
-import { Channel, ChannelResponseDTO, Insurance, InsuranceResponseDTO, Plan, Product, ProductResponseDTO } from "../../dto/promotion.dto";
+import { Channel, ChannelResponseDTO, Insurance, InsuranceResponseDTO, Plan, PlanResponseDTO, Product, ProductResponseDTO } from "../../dto/promotion.dto";
 import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
 import axios, { AxiosResponse } from "axios";
@@ -53,12 +53,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [channels, setChannels] = useState<ChannelResponseDTO | undefined>(undefined);
+  const [channelsInitial, setChannelsInitial] = useState<ChannelResponseDTO | undefined>(undefined);
   const [insurances, setInsurances] = useState<InsuranceResponseDTO | undefined>(undefined);
   const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<ProductResponseDTO | undefined>(undefined);
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plans, setPlans] = useState<PlanResponseDTO | undefined>(undefined);
   const [hasProducts, setHasProducts] = useState(false);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -85,6 +86,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [totalProductItems, setTotalProductItems] = useState(0);
   const [totalInsuranceItems, setTotalInsuranceItems] = useState(0);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
+  const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
+  const [globalSelectedPlanIds, setGlobalSelectedPlanIds] = useState<Set<string>>(new Set());
+  const [selectedChannels, setSelectedChannels] = useState<Channel[]>([]);
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -104,6 +108,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     );
   };
 
+  // useEffect(() => {
+  //   console.log('Global Selected Channels:', Array.from(globalSelectedChannels));
+  // }, [globalSelectedChannels]);
+  
+  // useEffect(() => {
+  //   console.log('Channels Data:', channels?.data);
+  // }, [channels]);
+  
+
   useEffect(() => {
     if (promotion.embedded_discount_insurances.length > 0) {
       setSelectedInsurances(
@@ -116,8 +129,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   }, [promotion.embedded_discount_insurances]);
 
   useEffect(() => {
-    if (promotion.embedded_discount_products.length > 0) {
-      fetchPlansByProducts(promotion.embedded_discount_products.map(p => p.product_id), currentPagePlan, showPlansPerPage);
+    if (globalSelectedProdIds.size > 0) {
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), currentPagePlan, showPlansPerPage);
     }
   }, [promotion.embedded_discount_products]);
 
@@ -128,28 +141,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           const promotionData: PromotionDetails = res.data[0];
           console.log('Fetched Promotion Data:', promotionData);
           setPromotion(promotionData);
-          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), currentPageIns, 10);
+          fetchChannelsInitial(1, 10);
+          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
+          fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
+
+          // Populate selected channels
+          const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
+          setGlobalSelectedChannels(existingChannelIds);
+
           setLoading(false);
-
-          // Fetch plans based on existing products
-          if (promotionData.embedded_discount_products.length > 0) {
-            fetchPlansByProducts(
-              promotionData.embedded_discount_products.map(p => p.product_id),
-              currentPagePlan,
-              showPlansPerPage
-            );
-
-          }
-
-          if (promotionData.type === "voucher") {
-            voucherService.getVoucherByCampaignId(promotionData.campaign_id)
-              .then(voucherRes => {
-                setVoucherDetails(voucherRes.data);
-              })
-              .catch(error => {
-                console.error("Failed to fetch voucher details:", error);
-              });
-          }
         })
         .catch(error => {
           console.error("Failed to fetch promotion details:", error);
@@ -164,8 +164,16 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   }, [currentPage]);
 
   useEffect(() => {
-    fetchChannels(currentPage, showChannelsPerPage);
-  }, [currentPage]);
+    fetchChannelsAfter(currentPageChannels, showChannelsPerPage);
+  }, [currentPageChannels, showChannelsPerPage]);
+
+  useEffect(() => {
+    const existingChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
+
+    // Initialize selectedChannelIds and globalSelectedChannels with the selected channels from the database
+    setSelectedChannelIds(existingChannelIds);
+    setGlobalSelectedChannels(existingChannelIds);
+  }, [promotion.embedded_discount_channels]);
 
 
 
@@ -183,9 +191,16 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const existingChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
+  const fetchChannelsInitial = async (page: number, limit: number) => {
+    try {
+      const response = await channelService.getChannels(page, limit);
+      setChannelsInitial(response);
+    } catch (error) {
+      console.error("Failed to fetch channels:", error);
+    }
+  };
 
-  const fetchChannels = async (page: number, limit: number) => {
+  const fetchChannelsAfter = async (page: number, limit: number) => {
     try {
       const response = await channelService.getChannels(page, limit);
       setChannels(response);
@@ -212,11 +227,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
-      setPlans(responses.data);
+      setPlans(responses);
       setTotalPlanItems(responses.meta.total);
     } catch (error) {
       console.error("Failed to fetch plans:", error);
-      setPlans([]);
+      setPlans(undefined);
     }
   };
 
@@ -320,21 +335,21 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   const handlePlansPerPageChange = async (newPlansPerPage: number) => {
     setShowPlansPerPage(newPlansPerPage);
-    setCurrentPagePlan(1);  // Reset to first page
-    fetchPlansByProducts(Array.from(selectedProductIds), 1, newPlansPerPage);
+    setCurrentPagePlan(1);
+    fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, newPlansPerPage);
   };
 
   const handlePageChangePlans = (page: number) => {
     if (page >= 1 && page !== currentPagePlan) {
       setCurrentPagePlan(page);
-      fetchPlansByProducts(Array.from(selectedProductIds), page, showPlansPerPage);
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), page, showPlansPerPage);
     }
   };
 
   const handleChannelsPerPageChange = async (newChannelsPerPage: number) => {
     setShowChannelsPerPage(newChannelsPerPage);
     setCurrentPageChannels(1);
-    fetchChannels(1, newChannelsPerPage);
+    fetchChannelsAfter(1, newChannelsPerPage);
   };
 
   const handlePageChangeIns = (page: number) => {
@@ -460,35 +475,46 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
 
-  const handleSelectChannel = (selectedChannels: Channel[]) => {
-
+  const handleSelectChannel = (selectedChannelsArray: Channel[]) => {
     const existingChannels = promotion.embedded_discount_channels;
 
     const updatedChannels = [...existingChannels];
 
-    selectedChannels.forEach(channel => {
+    selectedChannelsArray.forEach(channel => {
       const existingChannel = updatedChannels.find(c => c.channel_id === channel.id);
       if (!existingChannel) {
         updatedChannels.push({
           channel_id: channel.id,
-          channel_name: channel.name
+          channel_name: channel.name,
         });
       }
     });
 
     setPromotion(prevState => ({
       ...prevState,
-      embedded_discount_channels: updatedChannels
+      embedded_discount_channels: updatedChannels,
     }));
+
+    // Store selected channel objects (not just IDs)
+    setSelectedChannels(prevSelected => {
+      const newSelected = [...prevSelected];
+      selectedChannelsArray.forEach(channel => {
+        if (!newSelected.find(c => c.id === channel.id)) {
+          newSelected.push(channel);
+        }
+      });
+      return newSelected;
+    });
 
     setGlobalSelectedChannels(prevSelected => {
       const newSelected = new Set(prevSelected);
-      selectedChannels.forEach(channel => newSelected.add(channel.id));
+      selectedChannelsArray.forEach(channel => newSelected.add(channel.id));
       return newSelected;
     });
 
     setIsModalOpen(false);
   };
+
 
 
   const handleAddInsurance = () => {
@@ -545,6 +571,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setPromotion(prevState => ({
       ...prevState,
       embedded_discount_products: prevState.embedded_discount_products.filter(product => product.product_id !== prodId)
+    }));
+  };
+
+  const handleRemovePlans = (planId: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_plans: prevState.embedded_discount_plans.filter(plan => plan.plan_id !== planId)
     }));
   };
 
@@ -868,9 +901,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
               <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_channels.length > 0 ? (
-                  promotion.embedded_discount_channels.map((channel, index) => {
-                    const channelDetail = channels?.data.find(c => c.id === channel.channel_id);
+                {Array.from(globalSelectedChannels).length > 0 ? (
+                  Array.from(globalSelectedChannels).map((channelId, index) => {
+                    // Look for the channel in both channels?.data and selectedChannels
+                    const channelDetail = channelsInitial?.data.find(c => c.id === channelId) ||
+                      selectedChannels.find(c => c.id === channelId);
+
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
@@ -895,8 +931,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <button
                 type="button"
                 onClick={() => {
-                  setSelectedChannelIds(existingChannelIds); // Update the selectedChannelIds state
-                  setIsModalOpen(true); // Open the modal
+                  setSelectedChannelIds(globalSelectedChannels);
+                  setIsModalOpen(true);
+                  handleAddChannel(); // Call this function correctly
                 }}
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
               >
@@ -906,6 +943,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+
 
 
         {/* Insurances */}
@@ -1004,7 +1042,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <div className="flex flex-wrap p-2">
                 {promotion.embedded_discount_plans.length > 0 ? (
                   promotion.embedded_discount_plans.map((plan, index) => {
-                    const planDetail = plans.find(p => p.id === plan.plan_id);
+                    const planDetail = plans?.data.find(p => p.id === plan.plan_id);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
@@ -1174,7 +1212,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           onChannelsPerPageChange={handleChannelsPerPageChange}
           globalSelectedChannels={globalSelectedChannels}
           setGlobalSelectedChannels={setGlobalSelectedChannels}
-          onRemoveChannel={handleRemoveChannel}
+          onRemoveChannel={handleRemoveChannel}//
         />
       )}
 
@@ -1220,20 +1258,23 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       {isPlanModalOpen && (
         <PlanSelectionModal
           isOpen={isPlanModalOpen}
-          onClose={handleClosePlanModal}
+          onClose={() => setIsPlanModalOpen(false)}
           onSelect={handleSelectPlan}
           plans={plans}
           products={promotion.embedded_discount_products.map(p => ({
             id: p.product_id,
             name: p.product_name,
           }))}
-          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
+          preSelectedPlanIds={new Set(selectedPlans.map(plan => plan.id))}
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
           onPageChangePlan={handlePageChangePlans}
           totalPlanItems={totalPlanItems}
           pagePlan={currentPagePlan}
           showPlansPerPage={showPlansPerPage}
           onPlansPerPageChange={handlePlansPerPageChange}
+          globalSelectedPlanIds={globalSelectedPlanIds}
+          setGlobalSelectedPlanIds={setGlobalSelectedPlanIds}
+          onRemovePlan={handleRemovePlans}
         />
       )}
 
