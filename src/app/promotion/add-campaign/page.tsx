@@ -558,7 +558,7 @@ const CreatePromotionPage = () => {
       setGlobalSelectedProdIds(prevSelected => {
         const newSelected = new Set(prevSelected);
 
-        updatedProducts.forEach(prod => newSelected.add(prod.product_id)); 
+        updatedProducts.forEach(prod => newSelected.add(prod.product_id));
         newSelected.delete(removedProductId);
         return newSelected;
       });
@@ -619,16 +619,10 @@ const CreatePromotionPage = () => {
   };
 
   const handleRemovePlan = (index: number) => {
+    const removedPlanId = promotion.embedded_discount_plans[index].plan_id;
+
     setPromotion(prevState => {
-      // Identify the removed plan ID
-      const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
-
-      // Create a new array of updated plans by filtering out the removed plan
       const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
-
-      // Update the selected plan IDs by removing the removed plan ID
-      const updatedSelectedPlanIds = new Set(selectedPlanIds);
-      updatedSelectedPlanIds.delete(removedPlanId);
 
       return {
         ...prevState,
@@ -636,13 +630,11 @@ const CreatePromotionPage = () => {
       };
     });
 
-    // Update global selected channels
     setGlobalSelectedPlanIds(prevSelected => {
       const newSelected = new Set(prevSelected);
-      selectedPlans.forEach(plan => newSelected.add(plan.id));
+      newSelected.delete(removedPlanId);
       return newSelected;
     });
-
   };
 
   const handleRemovePlans = (planId: string) => {
@@ -838,7 +830,7 @@ const CreatePromotionPage = () => {
             id: p.product_id,
             name: p.product_name,
           }))}
-          preSelectedPlanIds={new Set(selectedPlans.map(plan => plan.id))}
+          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(p => p.plan_id))}
           selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
           onPageChangePlan={handlePageChangePlans}
           totalPlanItems={totalPlanItems}

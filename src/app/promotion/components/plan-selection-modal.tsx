@@ -148,7 +148,8 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
       .map(planId => data.find(plan => plan.id === planId))
       .filter((plan): plan is Plan => Boolean(plan));
 
-    setGlobalSelectedPlanIds(localSelectedPlanIds); // Update global selection
+    console.log("tomL: "+ data.map(plan => (localSelectedPlanIds.has(plan.id))));
+    setGlobalSelectedPlanIds(localSelectedPlanIds);
     onClose();
     setTimeout(() => {
       onSelect(selectedPlansData);
@@ -191,7 +192,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
         {/* Plan List */}
         <div className="overflow-y-auto flex-grow mb-4">
-        {data.length > 0 ? (
+          {data.length > 0 ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -208,7 +209,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-              {data.map(plan => (
+                {data.map(plan => (
                   <tr key={plan.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
