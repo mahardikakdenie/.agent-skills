@@ -630,6 +630,17 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }));
   };
 
+  const handleSearch = async (query: string) => {
+    try {
+      const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), query);
+      setPlans(response);
+      setTotalPlanItems(response.meta.total);
+      setCurrentPagePlan(1);
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
+  };
+
   const handlePageChangeInsurances = (page: number) => {
     if (page >= 1) {
       setCurrentPageIns(page);
@@ -1330,6 +1341,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setGlobalSelectedPlanIds={setGlobalSelectedPlanIds}
           globalSelectedProdIds={globalSelectedProdIds}
           onRemovePlan={handleRemovePlans}
+          onSearch={handleSearch}
         />
       )}
 

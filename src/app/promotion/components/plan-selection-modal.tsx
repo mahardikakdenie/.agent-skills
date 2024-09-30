@@ -56,6 +56,7 @@ interface PlanSelectionModalProps {
   setGlobalSelectedPlanIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   globalSelectedProdIds: Set<string>;
   onRemovePlan: (planId: string) => void;
+  onSearch: (query: string) => void;
 }
 
 const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
@@ -75,6 +76,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   setGlobalSelectedPlanIds,
   globalSelectedProdIds,
   onRemovePlan,
+  onSearch,
 }) => {
   const planService = new PlanService();
   const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set(preSelectedPlanIds));
@@ -82,12 +84,11 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   const [selectAll, setSelectAll] = useState(false);
   const [currentPagePlan, setCurrentPagePlan] = useState(pagePlan);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<Plan[]>(plans?.data || []);
   const [localSelectedPlanIds, setLocalSelectedPlanIds] = useState<Set<string>>(new Set());
 
   const data = plans?.data || [];
-  const totalItems = plans?.meta.total || 0;
-  const totalPages = Math.ceil(totalItems / showPlansPerPage);
+  let totalItems = plans?.meta.total || 0;
+  let totalPages = Math.ceil(totalItems / showPlansPerPage);
 
   useEffect(() => {
     const names: { [key: string]: string } = {};
@@ -155,12 +156,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   };
 
   const handleSearch = async () => {
-    try {
-      const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), searchQuery);
-      setSearchResults(response.data || []);
-    } catch (error) {
-      console.error('Error fetching plans:', error);
-    }
+    onSearch(searchQuery);
   };
 
   if (!isOpen) return null;
@@ -195,7 +191,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
         {/* Plan List */}
         <div className="overflow-y-auto flex-grow mb-4">
-          {(searchResults.length > 0 ? searchResults : data).length > 0 ? (
+        {data.length > 0 ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -212,7 +208,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {(searchResults.length > 0 ? searchResults : data).map(plan => (
+              {data.map(plan => (
                   <tr key={plan.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input

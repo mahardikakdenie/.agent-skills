@@ -170,6 +170,17 @@ const CreatePromotionPage = () => {
     }
   };
 
+  const handleSearch = async (query: string) => {
+    try {
+      const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), query);
+      setPlans(response);
+      setTotalPlanItems(response.meta.total);
+      setCurrentPagePlan(1);
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
+  };
+
 
   const fetchProductsByInsurances = async (insuranceIds: string[], page: number, limit: number) => {
     if (insuranceIds.length === 0) {
@@ -838,6 +849,7 @@ const CreatePromotionPage = () => {
           setGlobalSelectedPlanIds={setGlobalSelectedPlanIds}
           globalSelectedProdIds={globalSelectedProdIds}
           onRemovePlan={handleRemovePlans}
+          onSearch={handleSearch}
         />
 
 
