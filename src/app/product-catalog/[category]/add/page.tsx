@@ -26,11 +26,20 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Navigate } from "react-router-dom";
+import {
+  ProductCatalogDto,
+  ProductCatalogService,
+} from "@/services/product-catalog.service";
 
-const AddPlanPage = (params: { category: string }) => {
+const AddPlanPage = ({ params }: { params: { category: string } }) => {
   const router = useRouter();
+  const productCatalogService = new ProductCatalogService();
   const { category } = params;
   const [selectedInsurance, setSelectedInsurance] = useState<any>(null);
+  const [isInsuranceSelected, setIsInsuranceSelected] = useState(false);
+  const [product, setProducts] = useState<ProductCatalogDto[]>([]);
+  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const handleChangeInsurance = (e: any) => {
     setSelectedInsurance(e);
   };
@@ -41,11 +50,13 @@ const AddPlanPage = (params: { category: string }) => {
   };
 
   const [name, setName] = useState("");
+
   const handleChangeName = (e: any) => {
     setName(e.target.value);
   };
 
   const [currency, setCurrency] = useState("");
+
   const handleChangeCurrency = (e: any) => {
     setCurrency(e.target.value);
   };
@@ -90,9 +101,25 @@ const AddPlanPage = (params: { category: string }) => {
     if (watch("insuranceId"))
       fetchProducts({ insuranceId: watch("insuranceId") });
   }, [watch("insuranceId")]);
+
   const onSubmit = async (data: any) => {
-    await savePlan(data);
+    try {
+      await savePlan(data);
+      setSaveSuccess(true);
+    } catch (error) {
+      setSaveSuccess(false);
+    }
   };
+
+  useEffect(() => {
+    if (saveSuccess === true) {
+      alert("Data berhasil disimpan!");
+      router.push(`/product-catalog/${category}`);
+    } else if (saveSuccess === false) {
+      alert("Terjadi kesalahan saat menyimpan data.");
+    }
+    setSaveSuccess(null);
+  }, [saveSuccess, router, category]);
 
   return (
     <div className="flex flex-col w-full">
@@ -102,14 +129,17 @@ const AddPlanPage = (params: { category: string }) => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/product-catalog">
-                    Product Catalog
-                  </BreadcrumbLink>
+                  <BreadcrumbLink>Product Catalog</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/product-catalog/travel">
-                    Travel
+                  <BreadcrumbLink href={`/product-catalog/${category}`}>
+                    {category
+                      .split("-")
+                      .map(
+                        (item) =>
+                          item.charAt(0).toUpperCase() + item.slice(1) + " "
+                      )}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -138,25 +168,36 @@ const AddPlanPage = (params: { category: string }) => {
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 ">
           <div className="p-6 bg-white rounded-lg flex flex-col gap-4">
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="insuranceId"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Insurance
+                Insurer
               </label>
               <Controller
                 name="insuranceId"
                 control={control}
                 rules={{ required: "Insurance ID is required" }}
                 render={({ field }) => (
-                  <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    {...field}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setIsInsuranceSelected(!!value);
+                    }}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Insurance" />
+                      <SelectValue>
+                        {field.value
+                          ? insurances.find(
+                              (insurance) => insurance.id === field.value
+                            )?.name
+                          : "Choose Insurer"}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Products</SelectLabel>
                         {insurances.map((insurance: any) => (
                           <SelectItem key={insurance.id} value={insurance.id}>
                             {insurance.name}
@@ -173,7 +214,7 @@ const AddPlanPage = (params: { category: string }) => {
                 </p>
               )}
             </div>
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="productId"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -183,21 +224,46 @@ const AddPlanPage = (params: { category: string }) => {
               <Controller
                 name="productId"
                 control={control}
-                defaultValue=""
                 rules={{ required: "Product ID is required" }}
                 render={({ field }) => (
-                  <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    disabled={!isInsuranceSelected}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Product" />
+                      <SelectValue>
+                        {field.value
+                          ? products.find((p) => p.id === field.value)?.name
+                          : "Choose Product"}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Products</SelectLabel>
-                        {products.map((product: any) => (
-                          <SelectItem key={product.id} value={product.id}>
-                            {product.name}
-                          </SelectItem>
-                        ))}
+                        {products
+                          .filter((item) => {
+                            if (category == "airpaz") {
+                              return (
+                                item.category ==
+                                "38555c54-38f2-4251-9e81-c6332e0aaa44"
+                              );
+                            } else if (category == "travel") {
+                              return (
+                                item.category ==
+                                "efeb7f65-7807-40b5-8053-e45805711bef"
+                              );
+                            } else if (category == "personal-accident") {
+                              return (
+                                item.category ==
+                                "b140a15e-af58-43c9-9888-e83cbca816e4"
+                              );
+                            }
+                          })
+                          .map((product: any) => (
+                            <SelectItem key={product.id} value={product.id}>
+                              {product.name}
+                            </SelectItem>
+                          ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -209,7 +275,7 @@ const AddPlanPage = (params: { category: string }) => {
                 </p>
               )}
             </div>
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -225,7 +291,7 @@ const AddPlanPage = (params: { category: string }) => {
                   <Input
                     type="text"
                     id="name"
-                    placeholder="Plan Name"
+                    placeholder="Insert Plan Name"
                     {...field}
                     className={`mt-1 block w-full ${
                       errors.name ? "border-red-500" : "border-gray-300"
@@ -239,38 +305,7 @@ const AddPlanPage = (params: { category: string }) => {
                 </p>
               )}
             </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="currency"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Currency
-              </label>
-              <Controller
-                name="currency"
-                control={control}
-                defaultValue=""
-                rules={{ required: "Currency is required" }}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="currency"
-                    placeholder="Currency"
-                    {...field}
-                    className={`mt-1 block w-full ${
-                      errors.currency ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.currency && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.currency.message}
-                </p>
-              )}
-            </div>
-            <div className="mb-4">
+            <div>
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"

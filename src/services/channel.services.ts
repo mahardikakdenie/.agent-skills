@@ -28,14 +28,22 @@ export class ChannelService {
   
 
 
-  async getChannels(page: number): Promise<PromotionResponse> {
-    let limit = 10;
-    if (page > 0) {
-      return this.httpClientChannels.get('/channels?page=' + page + "&limit=" + limit);
-    } else {
+  // async getChannels(page: number): Promise<PromotionResponse> {
+  //   let limit = 10;
+  //   if (page > 0) {
+  //     return this.httpClientChannels.get('/channels?page=' + page + "&limit=" + limit);
+  //   } else {
+  //     page = 1;
+  //     return this.httpClientChannels.get('/channels?page=' + page + "&limit=" + limit);
+  //   }
+
+  // }
+
+  async getChannels(page: number, limit: number): Promise<PromotionResponse> {
+    if (page <= 0) {
       page = 1;
-      return this.httpClientChannels.get('/channels?page=' + page + "&limit=" + limit);
     }
+    return this.httpClientChannels.get(`/channels?page=${page}&limit=${limit}`);
 
   }
 

@@ -30,6 +30,9 @@ import {
 import { useProducts } from "../hooks";
 import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
 
+import noData from "/public/images/no-data.webp";
+import Image from "next/image";
+
 const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   useRequireAuth();
   const { category } = params;
@@ -44,6 +47,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   const [searchProduct, setSearchProduct] = useState("");
   const { fetchInsurances, insurances } = useProducts();
   const { fetchProducts, products } = useProducts();
+  const [plans, setPlans] = useState<any[]>([]);
 
   const router = useRouter();
 
@@ -53,6 +57,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
         const params = {
           page,
           pageSize: rowsPerPage,
+          category,
           ...(searchPlanName && { planName: searchPlanName }),
           ...(searchInsurer && { insuranceId: searchInsurer }),
           ...(searchProduct && { productId: searchProduct }),
@@ -100,10 +105,6 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
     router.push("/product-catalog/" + "/" + category + "/" + id);
   };
 
-  const handleDeletePlan = (id: string) => {
-    alert("delete");
-  };
-
   const handleSearchInsurerOnChange = (v: string) => {
     setSearchInsurer(v);
   };
@@ -127,6 +128,20 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   const isClearButtonVisible =
     searchPlanName !== "" || searchInsurer !== "" || searchProduct !== "";
 
+  const handleDeletePlan = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this campaign?")) {
+      try {
+        await productCatalogService.deletePlan(id);
+        setProducts((prevProducts) =>
+          prevProducts.filter((plan) => plan.id !== id)
+        );
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to delete plan:", error);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex gap-2">
@@ -146,13 +161,6 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
 
       <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
         <div className="flex space-x-4 items-center">
-          <Input
-            type="text"
-            placeholder="Search by Plan Name"
-            className="p-2 border rounded"
-            value={searchPlanName}
-            onChange={(e) => setSearchPlanName(e.target.value)}
-          />
           <Select
             value={searchInsurer}
             onValueChange={handleSearchInsurerOnChange}
@@ -171,7 +179,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select
+          {/* <Select
             value={searchProduct}
             onValueChange={handleSearchProductOnChange}
           >
@@ -188,11 +196,18 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
                 ))}
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
+          <Input
+            type="text"
+            placeholder="Search by Plan Name"
+            className="p-2 border rounded"
+            value={searchPlanName}
+            onChange={(e) => setSearchPlanName(e.target.value)}
+          />
           {isClearButtonVisible && (
             <Button
               onClick={handleClearFilters}
-              className="text-red-500 bg-transparent border border-red-500 hover:bg-gray-300 rounded"
+              className="text-red-500 bg-transparent border border-red-500 hover:bg-gray-300 rounded h-[56px]"
             >
               Clear
             </Button>
@@ -200,59 +215,73 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
         </div>
       </div>
 
-      <div className="w-full p-4 md:p-6 bg-white rounded-lg">
+      <div className="w-full p-4 bg-white rounded-lg">
         <Table className="table-product-catalog">
           <TableHeader>
             <TableRow>
-              <TableHead>No.</TableHead>
-              <TableHead>Insurer</TableHead>
+              <TableHead className="whitespace-nowrap">No.</TableHead>
+              <TableHead className="whitespace-nowrap">Insurer</TableHead>
               <TableHead>Plan Name</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead className="whitespace-nowrap">Product</TableHead>
+              <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {product.map((product, index) => (
-              <TableRow key={product.id}>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2 items-center">
-                    <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                      <img src={product.products.insurances.logo_url} alt="" />
+            {product.length > 0 ? (
+              product.map((product, index) => (
+                <TableRow key={product.id}>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2 items-center">
+                      <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
+                        <img
+                          src={product.products.insurances.logo_url}
+                          alt=""
+                        />
+                      </div>
+                      {product.products.insurances.name}
                     </div>
-                    {product.products.insurances.name}
+                  </TableCell>
+                  <TableCell>
+                    {product.name.split("|").map((item: any, i: any) => (
+                      <div key={i}>{item}</div>
+                    ))}
+                  </TableCell>
+                  <TableCell>{product.products.name}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-4 items-center">
+                      <Button
+                        variant="secondary"
+                        onClick={() => handleViewDetail(product.id)}
+                        className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
+                      >
+                        View
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleDeletePlan(product.id)}
+                        className="text-red-600 px-0"
+                      >
+                        <Trash />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="hover:!bg-white">
+                <TableCell colSpan={5}>
+                  <div className="flex flex-col gap-4 items-center justify-center py-14">
+                    <Image alt="no data" src={noData} width={200} /> No
+                    transaction data available
                   </div>
-                </TableCell>
-                <TableCell>
-                  {product.name.split("|").map((item: any, i: any) => (
-                    <div key={i}>{item}</div>
-                  ))}
-                </TableCell>
-                <TableCell>{product.products.name}</TableCell>
-                <TableCell>
-                  <div className="flex gap-4 items-center">
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleViewDetail(product.id)}
-                      className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                    >
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleDeletePlan(product.id)}
-                      className="text-red-600 px-0"
-                    >
-                      <Trash />
-                    </Button>
-                  </div>
-                </TableCell>
+                </TableCell>{" "}
               </TableRow>
-            ))}
+            )}
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={7}>
+              <TableCell colSpan={5}>
                 <div className="flex justify-center items-center gap-2 font-normal">
                   <label htmlFor="rowsPerPage">Showing:</label>
                   <select

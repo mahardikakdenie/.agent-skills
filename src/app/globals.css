@@ -152,6 +152,13 @@ main {
 .frame-body {
   height: calc(100vh - 85px);
   overflow: auto;
+  max-width: calc(100vw - 18rem);
+
+  -ms-word-break: break-all;
+  white-space: pre-wrap;
+}
+.td-search-params {
+  word-break: break-all;
 }
 button:disabled {
   opacity: 0.4;
@@ -175,4 +182,44 @@ button:disabled {
 }
 .table-transactions tr td:last-child {
   max-width: 100px;
+}
+.frame-body button[role="combobox"],
+.frame-body input {
+  height: 56px !important;
+}
+.table-search-params tr td:last-child {
+  max-width: 100px !important;
+}
+table tr td button {
+  white-space: nowrap;
+}
+nav[aria-label="breadcrumb"] nav span,
+nav[aria-label="breadcrumb"] nav a,
+nav[aria-label="breadcrumb"] li span,
+nav[aria-label="breadcrumb"] li a {
+  color: #03a89e !important;
+}
+.table-search-params tr:nth-child(even) {
+  background-color: #f8f8fa;
+}
+.table-search-params tr:hover {
+  background-color: #e3e3e3;
+}
+.table-search-params th {
+  background-color: #006ea7;
+  color: white;
+  font-weight: 500;
+}
+tfoot tr:hover {
+  background-color: white !important;
+}
+th {
+  font-weight: 600 !important;
+}
+.select-status option {
+  color: rgb(71, 71, 71);
+  padding: 15px;
+}
+.frame-body button[role="combobox"].h-10 {
+  height: 2.5rem !important;
 }

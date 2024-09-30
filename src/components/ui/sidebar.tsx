@@ -12,6 +12,7 @@ import iconMobil from "/public/images/mobil.webp";
 import iconMotor from "/public/images/motor.webp";
 import iconPolicy from "/public/images/icon-policy.png";
 import iconClaim from "/public/images/icon-claim.png";
+import logoAirpaz from "/public/images/logo-airpaz.webp";
 import { Menu } from "react-feather";
 import { Button } from "./button";
 
@@ -35,7 +36,7 @@ const Sidebar = () => {
         >
           <Menu className="text-white" />
         </Button>
-        <div className="w-full overflow-auto h-full flex flex-col items-center">
+        <div className="w-full overflow-auto h-full flex flex-col items-center pb-5">
           <div className="w-64">
             <Image
               src={logoImg}
@@ -48,7 +49,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <a
-                  href="/dashboard"
+                  href="/home"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
@@ -118,7 +119,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <a
-                  href="/mobil"
+                  href="/product-catalog/mobil"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconMobil} alt="Mobil" className="w-7 min-w-7" />
@@ -127,11 +128,24 @@ const Sidebar = () => {
               </li>
               <li>
                 <a
-                  href="/motor"
+                  href="/product-catalog/motor"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconMotor} alt="Motor" className="w-7 min-w-7" />
                   Motor
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/product-catalog/airpaz"
+                  className="hover:text-[#006EA7] flex text-sm items-center gap-2"
+                >
+                  <Image
+                    src={logoAirpaz}
+                    alt="Airpaz"
+                    className="w-7 min-w-7"
+                  />
+                  Airpaz
                 </a>
               </li>
               <li className="mt-2 text-sm">
@@ -164,6 +178,66 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Claim List
+                </a>
+              </li>
+              <li className="mt-2 text-sm">
+                <strong>Masterdata</strong>
+              </li>
+              <li>
+                <a
+                  href="/masterdata/product-category"
+                  className="hover:text-[#006EA7] flex text-sm items-center gap-2"
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Product Category"
+                    className="w-7 min-w-7"
+                  />
+                  Product Category
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/masterdata/insurance-and-product"
+                  className="hover:text-[#006EA7] flex text-sm items-center gap-2"
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Insurance and Product"
+                    className="w-7 min-w-7"
+                  />
+                  Insurance and Product
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/masterdata/user"
+                  className="hover:text-[#006EA7] flex text-sm items-center gap-2"
+                >
+                  <Image src={iconClaim} alt="User" className="w-7 min-w-7" />
+                  User
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/masterdata/roles"
+                  className="hover:text-[#006EA7] flex text-sm items-center gap-2"
+                >
+                  <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
+                  Roles
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/masterdata/currency"
+                  className="hover:text-[#006EA7] flex text-sm items-center gap-2"
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Currency"
+                    className="w-7 min-w-7"
+                  />
+                  Currency
                 </a>
               </li>
             </ul>

@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { PlanService } from '@/services/plan.services';
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'react-feather';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
-interface Product {
-  id: string;
-  name: string;
+interface PlanResponseDTO {
+  data: Plan[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
 }
 
 interface Plan {
@@ -19,16 +26,36 @@ interface Plan {
   premium_discount_type: string;
   premium_discount_value: string;
   premium_campaign_id: string;
+  products: Product;
+}
+
+interface Product {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  insurance: string;
+  category: string;
+  name: string;
+  instant_policy: boolean;
 }
 
 interface PlanSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (plans: Plan[]) => void;
-  plans: Plan[];
-  products: Product[];
+  plans?: PlanResponseDTO;
+  products: { id: string; name: string }[];
   preSelectedPlanIds: Set<string>;
   selectedProductIds: Set<string>;
+  onPageChangePlan: (page: number) => void;
+  totalPlanItems: number;
+  pagePlan: number;
+  showPlansPerPage: number;
+  onPlansPerPageChange: (plansPerPage: number) => void;
+  globalSelectedPlanIds: Set<string>;
+  setGlobalSelectedPlanIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  globalSelectedProdIds: Set<string>;
+  onRemovePlan: (planId: string) => void;
 }
 
 const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
@@ -39,89 +66,217 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   products,
   preSelectedPlanIds,
   selectedProductIds,
+  onPageChangePlan,
+  totalPlanItems,
+  pagePlan,
+  showPlansPerPage,
+  onPlansPerPageChange,
+  globalSelectedPlanIds,
+  setGlobalSelectedPlanIds,
+  globalSelectedProdIds,
+  onRemovePlan,
 }) => {
-  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
+  const planService = new PlanService();
+  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set(preSelectedPlanIds));
+  const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
+  const [selectAll, setSelectAll] = useState(false);
+  const [currentPagePlan, setCurrentPagePlan] = useState(pagePlan);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<Plan[]>(plans?.data || []);
+  const [localSelectedPlanIds, setLocalSelectedPlanIds] = useState<Set<string>>(new Set());
+
+  const data = plans?.data || [];
+  const totalItems = plans?.meta.total || 0;
+  const totalPages = Math.ceil(totalItems / showPlansPerPage);
 
   useEffect(() => {
-    setSelectedPlans(new Set(preSelectedPlanIds));
-  }, [preSelectedPlanIds]);
+    const names: { [key: string]: string } = {};
+    products.forEach(product => {
+      names[product.id] = product.name;
+    });
+    setProductNames(names);
+  }, [products]);
 
-  const filteredPlans = plans.filter(plan => selectedProductIds.has(plan.product));
+  useEffect(() => {
+    if (isOpen) {
+      setLocalSelectedPlanIds(new Set(preSelectedPlanIds));
+    }
+  }, [isOpen, preSelectedPlanIds]);
+
+  useEffect(() => {
+    const allSelected = data.length > 0 && data.every(plan => localSelectedPlanIds.has(plan.id));
+    setSelectAll(allSelected);
+  }, [data, localSelectedPlanIds]);
+
+  const handleSelectAllChange = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+
+    const newSelected = new Set(localSelectedPlanIds);
+
+    if (newSelectAll) {
+      data.forEach(plan => newSelected.add(plan.id));
+    } else {
+      data.forEach(plan => newSelected.delete(plan.id));
+    }
+
+    setLocalSelectedPlanIds(newSelected);
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      onPageChangePlan(page);
+    }
+  };
 
   const handleCheckboxChange = (planId: string) => {
-    setSelectedPlans(prevState => {
-      const newState = new Set(prevState);
-      if (newState.has(planId)) {
-        newState.delete(planId);
+    setLocalSelectedPlanIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(planId)) {
+        newSelected.delete(planId);
+        onRemovePlan(planId);
       } else {
-        newState.add(planId);
+        newSelected.add(planId);
       }
-      return newState;
+      return newSelected;
     });
   };
 
   const handleApply = () => {
-    const selectedPlansArray = filteredPlans.filter(plan => selectedPlans.has(plan.id));
-    onSelect(selectedPlansArray);
+    const selectedPlansData: Plan[] = Array.from(localSelectedPlanIds)
+      .map(planId => data.find(plan => plan.id === planId))
+      .filter((plan): plan is Plan => Boolean(plan));
+
+    setGlobalSelectedPlanIds(localSelectedPlanIds); // Update global selection
     onClose();
+    setTimeout(() => {
+      onSelect(selectedPlansData);
+    }, 100);
   };
 
-  const getProductNameById = (productId: string) => {
-    const product = products.find(p => p.id === productId);
-    return product ? product.name : 'Unknown Product';
+  const handleSearch = async () => {
+    try {
+      const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), searchQuery);
+      setSearchResults(response.data || []);
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-3/4 max-w-2xl h-auto">
-        <h2 className="text-2xl font-semibold mb-4">Select Plans</h2>
-        <div className="overflow-y-auto max-h-80">
-          {filteredPlans.length > 0 ? (
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-3xl h-[90vh] flex flex-col relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+          <FaTimes />
+        </button>
+        <h2 className="text-2xl font-semibold mb-4">
+          <span className="text-[#016DA1]">Select Plans</span>
+        </h2>
+
+        {/* Search Bar */}
+        <div className="mb-4 flex">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by plan name..."
+            className="flex-grow p-2 border rounded"
+          />
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="ml-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded px-4"
+          >
+            Search
+          </button>
+        </div>
+
+        {/* Plan List */}
+        <div className="overflow-y-auto flex-grow mb-4">
+          {(searchResults.length > 0 ? searchResults : data).length > 0 ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={handleSelectAllChange}
+                      className="form-checkbox"
+                    />
+                  </th>
+                  <th className="px-6 py-3">Name</th>
+                  <th className="px-6 py-3">Product</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredPlans.map(plan => (
+              <tbody>
+                {(searchResults.length > 0 ? searchResults : data).map(plan => (
                   <tr key={plan.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <input
                         type="checkbox"
-                        checked={selectedPlans.has(plan.id)}
+                        checked={localSelectedPlanIds.has(plan.id)}
                         onChange={() => handleCheckboxChange(plan.id)}
                         className="form-checkbox"
                       />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{plan.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getProductNameById(plan.product)}</td>
+                    <td className="px-6 py-4">{plan.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{plan.products.name}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p className="text-center text-sm text-gray-500">No plans available.</p>
+            <p>No plans available.</p>
           )}
         </div>
-        <div className="flex justify-between mt-4">
+
+        {/* Pagination Controls */}
+        <div className="flex justify-center items-center gap-2 font-normal mb-4">
+          <label htmlFor="rowsPerPage" className="mr-2">Showing:</label>
+          <select
+            id="rowsPerPage"
+            value={showPlansPerPage}
+            onChange={(e) => onPlansPerPageChange(Number(e.target.value))}
+            className="p-2 border rounded"
+          >
+            {[10, 20, 30, 50].map(option => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <span className="mr-2">of {totalPlanItems} items</span>
+
           <button
             type="button"
-            onClick={onClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
+            onClick={() => handlePageChange(pagePlan - 1)}
+            disabled={pagePlan === 1}
+            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
           >
-            Close
+            <ChevronLeft />
           </button>
+          <span>Page {pagePlan} of {totalPages}</span>
+          <button
+            type="button"
+            onClick={() => handlePageChange(pagePlan + 1)}
+            disabled={pagePlan === totalPages}
+            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
+          >
+            <ChevronRight />
+          </button>
+        </div>
+
+        <div className="flex justify-center mt-4">
           <button
             type="button"
             onClick={handleApply}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
           >
-            Apply
+            <FaCheck className="mr-2" />
+            Save
           </button>
         </div>
       </div>

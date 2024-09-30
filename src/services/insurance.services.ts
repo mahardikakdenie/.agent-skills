@@ -5,12 +5,21 @@ import Cookies from "universal-cookie";
 
 
 interface InsuranceResponse {
-  data: any;
-  limit: number;
-  page: number;
-  pageTotal: number;
-  total: number;
+  data: Insurance[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
 }
+
+export interface Insurance {
+  id: string;
+  name: string;
+  brand: string;
+  logo_url: string | null;
+}
+
 
 export class InsuranceService {
   private httpClientInsurance: IHttpClient;
@@ -27,9 +36,14 @@ export class InsuranceService {
   }
   
 
+  async getInsurances(page: number, limit: number): Promise<any> {
+    if (page > 0) {
+      return this.httpClientInsurance.get('/v1/insurances?page=' + page + "&pageSize=" + limit);
+    } else {
+      page = 1;
+      return this.httpClientInsurance.get('/v1/insurances?page=' + page + "&pageSize=" + limit);
+    }
 
-  async getInsurances(): Promise<any> {
-    return this.httpClientInsurance.get('/insurances');
   }
 
   

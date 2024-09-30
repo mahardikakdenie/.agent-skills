@@ -13,6 +13,7 @@ export interface Plan {
   premium_discount_type: string;
   premium_discount_value: string;
   premium_campaign_id: string;
+  products: Product;
 }
 
 export interface Channel {
@@ -40,6 +41,33 @@ export interface ChannelResponseDTO {
   page: number;
 }
 
+export interface ProductResponseDTO {
+  data: Product[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+}
+
+
+export interface InsuranceResponseDTO {
+  data: Insurance[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+}
+
+export interface PlanResponseDTO {
+  data: Plan[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+}
 
 export interface Insurance {
   id: string;
@@ -85,6 +113,7 @@ export interface EmbeddedDiscountInsurance {
 
 export interface EmbeddedDiscountPlan {
   plan_id: string;
+  name: string;
 }
 
 export interface EmbeddedDiscountChannel {

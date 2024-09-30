@@ -26,6 +26,16 @@ export const useProducts = () => {
     return response;
   };
 
+  const updatePlan = async (data: any, id: string) => {
+    const { data: response } = await productCatalogService.updatePlan(data, id);
+    return response;
+  };
+
+  const deletePlan = async (id: string) => {
+    const { data: response } = await productCatalogService.deletePlan(id);
+    return response;
+  };
+
   const fetchPlanById = async (id: string) => {
     const { data } = await productCatalogService.getPlanById(id);
     setPlan(data[0]);
@@ -45,8 +55,10 @@ export const useProducts = () => {
     fetchProducts,
     fetchInsurances,
     savePlan,
+    updatePlan,
     fetchPlanById,
     plan,
     uploadPackage,
+    deletePlan,
   };
 };

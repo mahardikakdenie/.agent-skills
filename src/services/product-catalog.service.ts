@@ -1,5 +1,3 @@
-import { Insurance } from "./../app/promotion/dto/promotion.dto";
-// AuthService.ts
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "./../lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
@@ -30,6 +28,7 @@ export interface ProductCatalogDto {
     };
   };
 }
+
 export interface ProductList {
   id: string;
   created_at: string;
@@ -69,7 +68,6 @@ export interface ProductcatalogResponse<T> {
   meta: {
     total: number;
     page: number;
-    limit: number;
   };
 }
 
@@ -77,7 +75,6 @@ export interface ProductCatalogRequest {
   insuranceId?: string;
   categoryId?: string;
   instantPolicy?: string;
-  limit?: number;
   page?: number;
 }
 
@@ -86,7 +83,6 @@ export interface GetPlansRequest {
   insuranceId?: string;
   category?: string;
   productId?: string;
-  limit?: number;
   page?: number;
 }
 
@@ -133,11 +129,17 @@ export class ProductCatalogService {
 
   async getPackagesByPlanId(
     id: string,
-    page: number
+    page: number,
+    rowsPerPage: number
   ): Promise<ProductcatalogResponse<PackageDto>> {
     try {
       return await this.httpClient.get<ProductcatalogResponse<PackageDto>>(
-        "/v1/packages?active=true&planId=" + id + "&page=" + page
+        "/v1/packages?active=true&planId=" +
+          id +
+          "&page=" +
+          page +
+          "&pageSize=" +
+          rowsPerPage
       );
     } catch (error) {
       console.error("Request failed:", error);
@@ -161,9 +163,14 @@ export class ProductCatalogService {
   async getProducts(params: ProductCatalogRequest): Promise<ProductList[]> {
     try {
       const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-      return await this.httpClient.get<ProductList[]>(
-        "/products?" + queryString
+      const response = await this.httpClient.get<any>(
+        "/v1/products?" + queryString
       );
+      if (response) {
+        return response.data;
+      } else {
+        return [];
+      }
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
@@ -187,6 +194,24 @@ export class ProductCatalogService {
   async savePlan(data: any): Promise<any> {
     try {
       return await this.httpClient.post("/v1/plans", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async updatePlan(data: any, id: string): Promise<any> {
+    try {
+      return await this.httpClient.put("/v1/plans/" + id, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async deletePlan(id: string): Promise<any> {
+    try {
+      return await this.httpClient.delete("/v1/plans/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

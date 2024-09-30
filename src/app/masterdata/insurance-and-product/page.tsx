@@ -5,7 +5,7 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import undercontractionPage from "/public/images/undercontraction.webp";
 import Image from "next/image";
 
-const HomePage = () => {
+const ProductCategory = () => {
   useRequireAuth();
 
   return (
@@ -21,5 +21,6 @@ const HomePage = () => {
     </div>
   );
 };
-const HomePageWithSidebar = (params: any) => WithSidebar(HomePage)(params);
-export default HomePageWithSidebar;
+const ProductCategoryWithSidebar = (params: any) =>
+  WithSidebar(ProductCategory)(params);
+export default ProductCategoryWithSidebar;
