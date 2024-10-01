@@ -12,12 +12,13 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { ClaimService } from "@/services/claim.service";
 import { useEffect, useState } from "react";
-import { formatMoney } from "@/lib/formatter";
+import { formatMoneyClaim } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
 import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Download,
   Search,
   X,
 } from "react-feather";
@@ -33,13 +34,14 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const PolicyPage = () => {
   useRequireAuth();
   const path = usePathname();
   const claimService = new ClaimService();
   const [claims, setClaims] = useState<any[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
+  const [filteredClaims, setFilteredClaims] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -59,18 +61,32 @@ const PolicyPage = () => {
   const [notes, setNotes] = useState("");
   const [amApprovedMsg, setAmApprovedMsg] = useState("");
   const [noteMsg, setNoteMsg] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currencyApp, setCurrencyApp] = useState(" ");
 
   useEffect(() => {
     claimService
       .getClaims(page, rowsPerPage, tab == "All" ? "" : tab)
       .then((res) => {
-        setFilteredTransactions(res.data);
+        setFilteredClaims(res.data);
         setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
         setTotalData(res.total);
       });
   }, [page, rowsPerPage, tab, claims]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = claims.filter((claim) =>
+        claim.number.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      console.log(filtered);
+      setFilteredClaims(filtered);
+    } else {
+      setFilteredClaims(claims);
+    }
+  }, [searchTerm, claims]);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -110,14 +126,13 @@ const PolicyPage = () => {
   };
 
   const handleChangeStatus = (claimId: string, newStatus: string) => {
-    console.log(newStatus);
     setSelectedClaimId(claimId);
     setPendingStatus(newStatus);
     setIsModalOpen(true);
     setNotes("");
-    setAmountApproved(0);
     setNoteMsg("");
-    const reqAmount = filteredTransactions
+
+    const reqAmount = filteredClaims
       .map((item) => {
         const matchingClaim = item.claim.find(
           (d: any) => d.type === "Number" && d.name === "claim"
@@ -129,7 +144,7 @@ const PolicyPage = () => {
           : null;
       })
       .filter(Boolean);
-    const numberId = filteredTransactions
+    const numberId = filteredClaims
       .map((item) => {
         const matchingClaim = item.number;
         return item.id === claimId
@@ -139,7 +154,7 @@ const PolicyPage = () => {
           : null;
       })
       .filter(Boolean);
-    const statusOld = filteredTransactions
+    const statusOld = filteredClaims
       .map((item) => {
         const matchingClaim = item.status;
         return item.id === claimId
@@ -149,9 +164,22 @@ const PolicyPage = () => {
           : null;
       })
       .filter(Boolean);
+    const currencyApp = filteredClaims
+      .map((item) => {
+        const matchingClaim =
+          item.policy_data?.declarations?.transaction_data?.insurance?.currency;
+        return item.id === claimId
+          ? matchingClaim
+            ? matchingClaim
+            : "-"
+          : null;
+      })
+      .filter(Boolean);
+
     setReqAmountApproved(reqAmount[0]);
     setNumberID(numberId[0]);
     setStatusOld(statusOld[0]);
+    setCurrencyApp(currencyApp[0]);
   };
 
   const updateStatus = (
@@ -179,12 +207,12 @@ const PolicyPage = () => {
   const confirmModal = () => {
     if (amountApproved > reqAmountApproved) {
       setAmApprovedMsg(
-        "Approved Amount tidak boleh lebih dari Requested Amount"
+        "Your approval amount limit cannot exceed the requested amount"
       );
       return;
     }
     if (amountApproved === 0 && pendingStatus === "Approved") {
-      setAmApprovedMsg("Approved Amount wajib diisi !");
+      setAmApprovedMsg("Approved Amount required!");
       console.log("masuk");
       return;
     }
@@ -192,7 +220,7 @@ const PolicyPage = () => {
       (notes === "" && pendingStatus === "Rejected") ||
       (notes === "" && pendingStatus === "Lack of Documents")
     ) {
-      setNoteMsg("Wajib diisi!");
+      setNoteMsg("Required!");
       return;
     }
 
@@ -215,9 +243,27 @@ const PolicyPage = () => {
     setPendingStatus(null);
   };
 
+  const downloadReport = () => {};
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    const numericValue = input.replace(/[^0-9]/g, "");
+    setAmountApproved(Number(numericValue));
+    setAmApprovedMsg("");
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <h1 className="text-black font-bold text-2xl mt-2 mb-4">Claim List</h1>
+      <div className="flex gap-4">
+        <h1 className="text-black font-bold text-2xl mt-2 mb-4">Claim List</h1>
+        <Button
+          className="rounded-full ml-auto bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
+          onClick={downloadReport}
+        >
+          <Download width={20} height={20} />
+          <span className="ml-1">Report</span>
+        </Button>
+      </div>
       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent>
@@ -239,27 +285,35 @@ const PolicyPage = () => {
                 <>
                   <div>
                     <p className="text-sm mb-2">Requested Amount</p>
-                    <Input
-                      type="number"
-                      value={reqAmountApproved}
-                      disabled
-                      className="bg-gray-50 h-12 !opacity-100"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                        {currencyApp}
+                      </span>
+                      <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
+                        {formatMoneyClaim(reqAmountApproved)}
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <p className="text-sm mb-2">
                       Approved Amount <span className="!text-red-500">*</span>
                     </p>
-                    <Input
-                      type="number"
-                      value={amountApproved === 0 ? "" : amountApproved}
-                      onChange={(e) => {
-                        setAmountApproved(Number(e.target.value));
-                        setAmApprovedMsg("");
-                      }}
-                      className="h-12"
-                      required
-                    />
+                    <div className="relative">
+                      <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                        {currencyApp}
+                      </span>
+                      <Input
+                        type="text"
+                        value={
+                          amountApproved === 0
+                            ? ""
+                            : formatMoneyClaim(amountApproved)
+                        }
+                        onChange={handleInputChange}
+                        className="h-12 pl-12"
+                        required
+                      />
+                    </div>
                     <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
                   </div>
                   <div className="w-full">
@@ -280,7 +334,9 @@ const PolicyPage = () => {
               {pendingStatus === "Rejected" && (
                 <>
                   <div className="w-full">
-                    <p className="text-sm mb-2">Reason (Opsional)</p>
+                    <p className="text-sm mb-2">
+                      Reason <span className="!text-red-500">*</span>
+                    </p>
                     <textarea
                       name=""
                       id=""
@@ -291,7 +347,7 @@ const PolicyPage = () => {
                         setNoteMsg("");
                       }}
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert reason (Opsional)"
+                      placeholder="Insert reason"
                       required
                     ></textarea>
                     <p className="text-xs text-red-500">{noteMsg}</p>
@@ -302,7 +358,9 @@ const PolicyPage = () => {
               {pendingStatus === "Lack of Documents" && (
                 <>
                   <div className="w-full">
-                    <p className="text-sm mb-2">Reason (Opsional)</p>
+                    <p className="text-sm mb-2">
+                      Reason <span className="!text-red-500">*</span>
+                    </p>
                     <textarea
                       name=""
                       id=""
@@ -313,7 +371,7 @@ const PolicyPage = () => {
                         setNoteMsg("");
                       }}
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert reason (Opsional)"
+                      placeholder="Insert reason "
                       required
                     ></textarea>
                     <p className="text-xs text-red-500">{noteMsg}</p>
@@ -376,7 +434,7 @@ const PolicyPage = () => {
               tab === "Application Sent" && "text-primary"
             }`}
           >
-            Application Sent
+            Receive Claim
           </button>
           <span
             className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
@@ -581,8 +639,8 @@ const PolicyPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTransactions.length > 0 ? (
-              filteredTransactions.map((claim, index) => (
+            {filteredClaims.length > 0 ? (
+              filteredClaims.map((claim, index) => (
                 <TableRow key={claim.id}>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>
@@ -606,13 +664,17 @@ const PolicyPage = () => {
                       ?.insurance?.currency || "-"}
                   </TableCell>
                   <TableCell>
-                    {claim.claim.find(
-                      (d: any) => d.type === "Number" && d.name === "claim"
-                    ).value || "-"}
+                    {formatMoneyClaim(
+                      claim.claim?.find(
+                        (d: any) => d.type === "Number" && d.name === "claim"
+                      )?.value ?? "-"
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2 items-center">
-                      {claim.amount_approved || "-"}
+                      {claim.amount_approved != null
+                        ? formatMoneyClaim(claim.amount_approved)
+                        : "-"}
                     </div>
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
@@ -631,14 +693,19 @@ const PolicyPage = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Application Sent">
-                          Application Sent
+                          Receive Claim
                         </SelectItem>
                         <SelectItem value="Processing">Processing</SelectItem>
                         <SelectItem value="Approved">Approved</SelectItem>
                         <SelectItem value="Payment Processing">
                           Payment Processing
                         </SelectItem>
-                        <SelectItem value="Paid">Paid</SelectItem>
+                        <SelectItem
+                          value="Paid"
+                          disabled={claim.status !== "Approved"}
+                        >
+                          Paid
+                        </SelectItem>
                         <SelectItem value="Closed">Closed</SelectItem>
                         <SelectItem value="Lack of Documents">
                           Lack of Documents
