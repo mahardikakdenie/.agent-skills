@@ -117,9 +117,9 @@ const CreatePromotionPage = () => {
     fetchInsurances(currentPageIns, showInsPerPage);
   }, [showInsPerPage]);  // Trigger only when the page size changes
 
-  useEffect(() => {
-    console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
-  }, [globalSelectedInsuranceIds]);
+  // useEffect(() => {
+  //   console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
+  // }, [globalSelectedInsuranceIds]);
 
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
@@ -128,6 +128,7 @@ const CreatePromotionPage = () => {
   useEffect(() => {
     if (globalSelectedProdIds.size > 0) {
       fetchPlansByProducts(Array.from(globalSelectedProdIds), currentPagePlan, showPlansPerPage);
+      setCurrentPagePlan(1);
     } else {
       setPlans(undefined);
       setSelectedPlanIds(new Set());
@@ -564,7 +565,8 @@ const CreatePromotionPage = () => {
       });
 
       // Fetch plans based on the remaining global selected product IDs
-      fetchPlansByProducts(updatedProducts.map(prod => prod.product_id), 1, showPlansPerPage);
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
+      setCurrentPagePlan(1);
 
       return {
         ...prevState,
@@ -706,11 +708,29 @@ const CreatePromotionPage = () => {
   };
 
   const handleRemoveInsurance = (insuranceId: string) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_insurances: prevState.embedded_discount_insurances.filter(insurance => insurance.insurance_id !== insuranceId)
-    }));
-  };
+    setPromotion(prevState => {
+      const updatedInsurances = prevState.embedded_discount_insurances.filter(
+        insurance => insurance.insurance_id !== insuranceId
+      );
+  
+      return {
+        ...prevState,
+        embedded_discount_insurances: updatedInsurances,
+        embedded_discount_products: [],  // Clear products
+        embedded_discount_plans: []      // Clear plans
+      };
+    });
+  
+    setGlobalSelectedInsuranceIds(prevIds => {
+      const newIds = new Set(prevIds);
+      newIds.delete(insuranceId);
+      return newIds;
+    });
+  
+    setSelectedProductIds(new Set());  // Reset selected product IDs
+    setSelectedPlanIds(new Set());     // Reset selected plan IDs
+    setCurrentPageProd(1);             // Reset pagination for products
+  };  
 
   const handleRemoveProd = (prodId: string) => {
     setPromotion(prevState => ({

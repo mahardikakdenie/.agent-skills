@@ -69,6 +69,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
       const newSelected = new Set(prevSelected);
       if (newSelected.has(insuranceId)) {
         newSelected.delete(insuranceId);
+        onRemoveInsurance(insuranceId); // Call to remove the ins from main state
       } else {
         newSelected.add(insuranceId);
       }
@@ -77,18 +78,25 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   };
 
   const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll;
+    const newSelectAll = !selectAll;  // Toggle selectAll state
     setSelectAll(newSelectAll);
 
-    const newSelected = new Set(localSelectedInsuranceIds);
+    const newSelected = new Set(globalSelectedInsuranceIds);  // Copy the current selected ins
 
     if (newSelectAll) {
-      data.forEach(insurance => newSelected.add(insurance.id));
+      // Selecting all ins
+      data.forEach(ins => {
+        newSelected.add(ins.id);
+      });
     } else {
-      data.forEach(insurance => newSelected.delete(insurance.id));
+      // Deselecting all ins
+      data.forEach(ins => {
+        newSelected.delete(ins.id);
+        onRemoveInsurance(ins.id); // Remove each ins from the main state
+      });
     }
 
-    setLocalSelectedInsuranceIds(newSelected);
+    setGlobalSelectedInsuranceIds(newSelected);  // Update the selected ins
   };
 
   const handleApply = () => {

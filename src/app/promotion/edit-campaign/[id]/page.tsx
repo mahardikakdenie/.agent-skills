@@ -488,6 +488,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         }
       });
 
+
+      setGlobalSelectedProdIds(prevSelected => {
+        const newSelected = new Set(prevSelected);
+
+        updatedProducts.forEach(prod => newSelected.add(prod.product_id));
+        newSelected.delete(removedProductId);
+        return newSelected;
+      });
+
+      // Fetch plans based on the remaining global selected product IDs
+      fetchPlansByProducts(updatedProducts.map(prod => prod.product_id), 1, showPlansPerPage);
+
       return {
         ...prevState,
         embedded_discount_products: updatedProducts,
@@ -495,13 +507,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       };
     });
 
-    // Update global selected channels
-    setGlobalSelectedProdIds(prevSelected => {
-      const newSelected = new Set(prevSelected);
-      selectedProducts.forEach(prod => newSelected.add(prod.id)); // Only add channel IDs
-      return newSelected;
-    });
-
+    // Check if there are still products available
     setHasProducts(products?.data?.length ? products.data.length > 0 : false);
   };
 
@@ -1119,10 +1125,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
               <div className="flex flex-wrap p-2">
-              {Array.from(globalSelectedProdIds).length > 0 ? (
+                {Array.from(globalSelectedProdIds).length > 0 ? (
                   Array.from(globalSelectedProdIds).map((product, index) => {
                     const productDetail = productsInitial?.data.find(p => p.id === product) ||
-                    selectedProducts.find(p => p.id === product);
+                      selectedProducts.find(p => p.id === product);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
@@ -1147,8 +1153,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <button
                 type="button"
                 onClick={handleAddProduct}
-                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${selectedInsurances.length > 0 ? 'bg-[#F5BA41]' : 'bg-gray-500'}`}
-                disabled={selectedInsurances.length === 0}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                disabled={promotion.embedded_discount_insurances.length === 0}
               >
                 <FaPlus className="mr-2" />
                 Product
@@ -1165,10 +1171,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
               <div className="flex flex-wrap p-2">
-              {Array.from(globalSelectedPlanIds).length > 0 ? (
+                {Array.from(globalSelectedPlanIds).length > 0 ? (
                   Array.from(globalSelectedPlanIds).map((plan, index) => {
                     const planDetail = plansInitial?.data.find(p => p.id === plan) ||
-                    selectedPlans.find(p => p.id === plan);
+                      selectedPlans.find(p => p.id === plan);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
@@ -1193,7 +1199,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <button
                 type="button"
                 onClick={handleAddPlan}
-                className={`bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40 ${promotion.embedded_discount_products.length > 0 ? 'bg-[#F5BA41]' : 'bg-gray-500'}`}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
                 disabled={promotion.embedded_discount_products.length === 0}
               >
                 <FaPlus className="mr-2" />

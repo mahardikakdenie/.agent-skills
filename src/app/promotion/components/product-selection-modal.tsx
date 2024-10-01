@@ -78,17 +78,16 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
-  // Initialize local selection based on initial selected IDs when modal opens
+  // Initialize local selection based on global selected IDs when modal opens
   useEffect(() => {
     if (isOpen) {
-      setLocalSelectedProductIds(new Set(initialSelectedProductIds));
+      setLocalSelectedProductIds(new Set(globalSelectedProdIds));
     }
-  }, [isOpen, initialSelectedProductIds]);
+  }, [isOpen, globalSelectedProdIds]);
 
   // Check if all products on the current page are selected
   useEffect(() => {
-    const allSelected = data.length > 0 && data.every((product) => localSelectedProductIds.has(product.id));
-    setSelectAll(allSelected);
+    setSelectAll(data.length > 0 && data.every(product => localSelectedProductIds.has(product.id)));
   }, [data, localSelectedProductIds]);
 
 
@@ -117,32 +116,38 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   }, []);
 
   const handleCheckboxChange = (productId: string) => {
-    setLocalSelectedProductIds((prevSelected) => {
+    setLocalSelectedProductIds(prevSelected => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(productId)) {
-        newSelected.delete(productId); // Unselect the product
+        newSelected.delete(productId);
+        onRemoveProd(productId); // Call to remove the productId from main state
       } else {
-        newSelected.add(productId); // Select the product
+        newSelected.add(productId);
       }
-      return newSelected; // Update state
+      return newSelected;
     });
   };
 
-
-
   const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll;
+    const newSelectAll = !selectAll;  // Toggle selectAll state
     setSelectAll(newSelectAll);
 
-    const newSelected = new Set(localSelectedProductIds);
+    const newSelected = new Set(globalSelectedProdIds);  // Copy the current selected prod
 
     if (newSelectAll) {
-      data.forEach(product => newSelected.add(product.id));
+      // Selecting all prod
+      data.forEach(prod => {
+        newSelected.add(prod.id);
+      });
     } else {
-      data.forEach(product => newSelected.delete(product.id));
+      // Deselecting all prod
+      data.forEach(prod => {
+        newSelected.delete(prod.id);
+        onRemoveProd(prod.id); // Remove each prod from the main state
+      });
     }
 
-    setLocalSelectedProductIds(newSelected);
+    setGlobalSelectedProdIds(newSelected);  // Update the selected prod
   };
 
   const handleApply = () => {
