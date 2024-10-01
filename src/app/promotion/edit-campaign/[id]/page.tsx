@@ -60,8 +60,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<ProductResponseDTO | undefined>(undefined);
+  const [productsInitial, setProductsInitial] = useState<ProductResponseDTO | undefined>(undefined);
   const [plans, setPlans] = useState<PlanResponseDTO | undefined>(undefined);
+  const [plansInitial, setPlansInitial] = useState<PlanResponseDTO | undefined>(undefined);
   const [hasProducts, setHasProducts] = useState(false);
+  const [hasProductsInitial, setHasProductsInitial] = useState(false);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -152,8 +155,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setPromotion(promotionData);
           fetchChannelsInitial(1, 50);
           fetchInsurancesInitial(1, 50);
-          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
-          fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
+          fetchProductsByInsurancesInitial(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 100);
+          fetchPlansByProductsInitial(promotionData.embedded_discount_products.map(p => p.product_id), 1, 100);
 
           // Populate selected channels
           const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
@@ -162,6 +165,14 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           // Populate selected insurances
           const existingInsuranceIds = new Set(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
           setGlobalSelectedInsuranceIds(existingInsuranceIds);
+
+          // Populate selected products
+          const existingProductIds = new Set(promotionData.embedded_discount_products.map(prod => prod.product_id));
+          setGlobalSelectedProdIds(existingProductIds);
+
+          // Populate selected plans
+          const existingPlanIds = new Set(promotionData.embedded_discount_plans.map(plans => plans.plan_id));
+          setGlobalSelectedPlanIds(existingPlanIds);
 
           setLoading(false);
         })
@@ -239,7 +250,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       setTotalInsuranceItems(response.meta.total);
     } catch (error) {
       console.error("Failed to fetch insurances:", error);
-      setInsurances(undefined);
+      setInsurancesInitial(undefined);
     }
   };
 
@@ -268,6 +279,19 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  const fetchPlansByProductsInitial = async (productIds: string[], page: number, limit: number) => {
+    console.log("Fetching plans for page:", page, "with limit:", limit);
+    try {
+      const responses = await planService.getPlansByProductId(productIds, limit, page);
+      setPlansInitial(responses);
+      setTotalPlanItems(responses.meta.total);
+      fetchPlansByProducts(productIds, 1, 10);
+    } catch (error) {
+      console.error("Failed to fetch plans:", error);
+      setPlansInitial(undefined);
+    }
+  };
+
   const fetchProductsByInsurances = async (insuranceIds: string[], page: number, limit: number) => {
     if (globalSelectedInsuranceIds.size === 0) {
       setProducts(undefined);
@@ -282,6 +306,19 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     } catch (error) {
       console.error("Failed to fetch products:", error);
       setProducts(undefined);
+      setHasProducts(false);
+    }
+  };
+
+  const fetchProductsByInsurancesInitial = async (insuranceIds: string[], page: number, limit: number) => {
+
+    try {
+      const allProducts = await productService.getProductByInsuranceId(insuranceIds, limit, page);
+      setProductsInitial(allProducts);
+      setTotalProductItems(allProducts.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      setProductsInitial(undefined);
       setHasProducts(false);
     }
   };
@@ -1062,7 +1099,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <div className="flex flex-wrap p-2">
                 {promotion.embedded_discount_products.length > 0 ? (
                   promotion.embedded_discount_products.map((product, index) => {
-                    const productDetail = products?.data.find(p => p.id === product.product_id);
+                    const productDetail = productsInitial?.data.find(p => p.id === product.product_id);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
@@ -1107,7 +1144,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               <div className="flex flex-wrap p-2">
                 {promotion.embedded_discount_plans.length > 0 ? (
                   promotion.embedded_discount_plans.map((plan, index) => {
-                    const planDetail = plans?.data.find(p => p.id === plan.plan_id);
+                    const planDetail = plansInitial?.data.find(p => p.id === plan.plan_id);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
