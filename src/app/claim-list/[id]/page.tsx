@@ -93,6 +93,29 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
     document.body.removeChild(link);
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Application Sent":
+        return "text-[#7B5D21]";
+      case "Proccessing":
+        return "text-[#00AB4F]";
+      case "Approved":
+        return "text-[#00AB4F]";
+      case "Payment Processing":
+        return "text-[#016DA1]";
+      case "Paid":
+        return "text-[#016DA1]";
+      case "Closed":
+        return "text-[#58585B]";
+      case "Lack of Documents":
+        return "text-[#FD0300]";
+      case "Rejected":
+        return "text-[#FD0300]";
+      default:
+        return "text-[#7B5D21]";
+    }
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="bg-white md:px-6 p-4 flex items-center">
@@ -171,15 +194,27 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     )}
                     <div className="ml-5">
                       <p className="text-sm font-semibold">
-                        {h?.name || "No Name"}
+                        <span className={getStatusColor(h?.status)}>
+                          {h?.status}
+                        </span>
                       </p>
                       <p className="text-xs">
                         {h?.created_at
-                          ? new Date(h.created_at).toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })
+                          ? `${new Date(h.created_at).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )} ${new Date(h.created_at).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                              }
+                            )}`
                           : "No Date"}
                       </p>
                     </div>
@@ -193,7 +228,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               <div className="bg-white rounded-md mb-3 py-5 px-7">
                 <p className="font-semibold mb-3">Detail Claim</p>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
+                  <p className="w-32 min-w-28 text-sm font-medium">
                     Claim Number
                   </p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -202,7 +237,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
+                  <p className="w-32 min-w-28 text-sm font-medium">
                     Customer Name
                   </p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -213,9 +248,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
-                    Plan Name
-                  </p>
+                  <p className="w-32 min-w-28 text-sm font-medium">Plan Name</p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
                     <p className="hidden md:block md:mr-2 text-sm">:</p>
                     <p className="text-sm">
@@ -226,9 +259,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
-                    Benefit
-                  </p>
+                  <p className="w-32 min-w-28 text-sm font-medium">Benefit</p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
                     <p className="hidden md:block md:mr-2 text-sm">:</p>
                     <p className="text-sm">
@@ -237,7 +268,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-full text-sm md:w-3/12 font-medium">Amount</p>
+                  <p className="w-32 min-w-28 text-sm font-medium">Amount</p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
                     <p className="hidden md:block md:mr-2 text-sm">:</p>
                     <p className="text-sm">
@@ -251,7 +282,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               <div className="bg-white rounded-md mb-3 py-5 px-7">
                 <p className="font-semibold mb-3">Informasi Pemegang Polis</p>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
+                  <p className="w-32 min-w-28 text-sm font-medium">
                     Customer Name
                   </p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -262,7 +293,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
+                  <p className="w-32 min-w-28 text-sm font-medium">
                     Phone Number
                   </p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -273,7 +304,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-full text-sm md:w-3/12 font-medium">Email</p>
+                  <p className="w-32 min-w-28 text-sm font-medium">Email</p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
                     <p className="hidden md:block md:mr-2 text-sm">:</p>
                     <p className="text-sm">
@@ -285,7 +316,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               <div className="bg-white rounded-md mb-3 py-5 px-7">
                 <p className="font-semibold mb-3">Informasi Tertanggung</p>
                 <div className="flex flex-col md:flex-row">
-                  <div className="md:w-1/3 mb-3 mr-4">
+                  <div className="min-w-60 w-60 mb-3 mr-4">
                     <img
                       src={claim?.general[0]?.value}
                       alt="passport-participant"
@@ -293,7 +324,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                   <div className="w-full">
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         No. Polis
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -304,7 +335,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         No. Peserta
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -315,7 +346,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         Nama Lengkap
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -326,7 +357,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         Gender
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -337,7 +368,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         Kode Negara
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -349,7 +380,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         No. Paspor
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -361,7 +392,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         Kewarganegaraan
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -373,7 +404,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         Tgl. Lahir
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -384,7 +415,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                      <p className="w-full text-sm md:w-3/12 font-medium">
+                      <p className="w-32 min-w-28 text-sm font-medium">
                         Tempat Lahir
                       </p>
                       <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -400,7 +431,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               <div className="bg-white rounded-md mb-3 py-5 px-7">
                 <p className="font-semibold mb-3">Informasi Pribadi</p>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
+                  <p className="w-32 min-w-28 text-sm font-medium">
                     Nomor Handpone
                   </p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -411,7 +442,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-full text-sm md:w-3/12 font-medium">Alamat</p>
+                  <p className="w-32 min-w-28 text-sm font-medium">Alamat</p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
                     <p className="hidden md:block md:mr-2 text-sm">:</p>
                     <p className="text-sm">
@@ -423,7 +454,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               <div className="bg-white rounded-md py-5 px-7">
                 <p className="font-semibold mb-3">Informasi Rekening</p>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">Nama</p>
+                  <p className="w-32 min-w-28 text-sm font-medium">Nama</p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
                     <p className="hidden md:block md:mr-2 text-sm">:</p>
                     <p className="text-sm">
@@ -432,16 +463,14 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
-                    Nama Bank
-                  </p>
+                  <p className="w-32 min-w-28 text-sm font-medium">Nama Bank</p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
                     <p className="hidden md:block md:mr-2 text-sm">:</p>
                     <p className="text-sm">{claim?.bank_info?.bank || "-"}</p>
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
+                  <p className="w-32 min-w-28 text-sm font-medium">
                     Cabang Bank
                   </p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
@@ -450,7 +479,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-full text-sm md:w-3/12 font-medium">
+                  <p className="w-32 min-w-28 text-sm font-medium">
                     No. Rekening
                   </p>
                   <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">

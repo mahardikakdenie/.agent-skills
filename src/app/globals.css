@@ -220,6 +220,7 @@ th {
   color: rgb(71, 71, 71);
   padding: 15px;
 }
+.frame-body input.h-10,
 .frame-body button[role="combobox"].h-10 {
   height: 2.5rem !important;
 }
