@@ -90,7 +90,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [totalProductItems, setTotalProductItems] = useState(0);
   const [totalInsuranceItems, setTotalInsuranceItems] = useState(0);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
-  const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
+  const [selectedPlans, setSelectedPlans] = useState<any[]>([]);
   const [globalSelectedPlanIds, setGlobalSelectedPlanIds] = useState<Set<string>>(new Set());
   const [selectedChannels, setSelectedChannels] = useState<Channel[]>([]);
 
@@ -112,21 +112,21 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     );
   };
 
-  useEffect(() => {
-    console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
-  }, [globalSelectedInsuranceIds]);
+  // useEffect(() => {
+  //   console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
+  // }, [globalSelectedInsuranceIds]);
 
   useEffect(() => {
-    console.log('Insurances Data:', insurancesInitial?.data);
-  }, [insurancesInitial]);
+    console.log('Plans Data:', plansInitial?.data);
+  }, [plansInitial]);
 
   useEffect(() => {
-    console.log('Global Selected Channel:', Array.from(globalSelectedChannels));
-  }, [globalSelectedChannels]);
+    console.log('Global Selected selectedPlans:', Array.from(globalSelectedPlanIds));
+  }, [globalSelectedPlanIds]);
 
-  useEffect(() => {
-    console.log('Channel Data:', channelsInitial?.data);
-  }, [channelsInitial]);
+  // useEffect(() => {
+  //   console.log('Channel Data:', channelsInitial?.data);
+  // }, [channelsInitial]);
 
 
   useEffect(() => {
@@ -139,6 +139,27 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       );
     }
   }, [promotion.embedded_discount_insurances]);
+
+  useEffect(() => {
+    if (promotion.embedded_discount_products.length > 0) {
+      setSelectedProducts(
+        promotion.embedded_discount_products.map(prod => ({
+          product_id: prod.product_id,
+          product_name: prod.product_name,
+        }))
+      );
+    }
+  }, [promotion.embedded_discount_insurances]);
+
+  useEffect(() => {
+    if (promotion.embedded_discount_plans.length > 0) {
+      setSelectedPlans(
+        promotion.embedded_discount_plans.map(plans => ({
+          plan_id: plans.plan_id
+        }))
+      );
+    }
+  }, [promotion.embedded_discount_plans]);
 
   useEffect(() => {
     if (globalSelectedProdIds.size > 0) {
@@ -155,8 +176,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setPromotion(promotionData);
           fetchChannelsInitial(1, 50);
           fetchInsurancesInitial(1, 50);
-          fetchProductsByInsurancesInitial(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 100);
-          fetchPlansByProductsInitial(promotionData.embedded_discount_products.map(p => p.product_id), 1, 100);
+          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
+          fetchProductsByInsurancesInitial([], 1, 100);
+          fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
+          fetchPlansByProductsInitial([], 1, 5000);
 
           // Populate selected channels
           const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
@@ -243,7 +266,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
   const fetchInsurancesInitial = async (page: number, limit: number) => {
-    console.log("Fetching insurances for page:", page, "with limit:", limit);
+    console.log("Ins initial:", page, "with limit:", limit);
     try {
       const response = await insuranceService.getInsurances(page, limit);
       setInsurancesInitial(response);
@@ -280,12 +303,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchPlansByProductsInitial = async (productIds: string[], page: number, limit: number) => {
-    console.log("Fetching plans for page:", page, "with limit:", limit);
+    console.log("Plans initial :", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlansInitial(responses);
       setTotalPlanItems(responses.meta.total);
-      fetchPlansByProducts(productIds, 1, 10);
     } catch (error) {
       console.error("Failed to fetch plans:", error);
       setPlansInitial(undefined);
@@ -311,7 +333,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchProductsByInsurancesInitial = async (insuranceIds: string[], page: number, limit: number) => {
-
+    console.log("Product initial :", page, "with limit:", limit);
     try {
       const allProducts = await productService.getProductByInsuranceId(insuranceIds, limit, page);
       setProductsInitial(allProducts);
@@ -1097,9 +1119,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
               <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_products.length > 0 ? (
-                  promotion.embedded_discount_products.map((product, index) => {
-                    const productDetail = productsInitial?.data.find(p => p.id === product.product_id);
+              {Array.from(globalSelectedProdIds).length > 0 ? (
+                  Array.from(globalSelectedProdIds).map((product, index) => {
+                    const productDetail = productsInitial?.data.find(p => p.id === product) ||
+                    selectedProducts.find(p => p.id === product);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
@@ -1142,9 +1165,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
               <div className="flex flex-wrap p-2">
-                {promotion.embedded_discount_plans.length > 0 ? (
-                  promotion.embedded_discount_plans.map((plan, index) => {
-                    const planDetail = plansInitial?.data.find(p => p.id === plan.plan_id);
+              {Array.from(globalSelectedPlanIds).length > 0 ? (
+                  Array.from(globalSelectedPlanIds).map((plan, index) => {
+                    const planDetail = plansInitial?.data.find(p => p.id === plan) ||
+                    selectedPlans.find(p => p.id === plan);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
                         <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
