@@ -194,8 +194,8 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     )}
                     <div className="ml-5">
                       <p className="text-sm font-semibold">
-                        <span className={getStatusColor(h?.data.status)}>
-                          {h?.data.status}
+                        <span className={getStatusColor(h?.status)}>
+                          {h?.status}
                         </span>
                       </p>
                       <p className="text-xs">
