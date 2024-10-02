@@ -68,6 +68,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
 
   const { fetchInsurances, insurances, products, fetchProducts, savePlan } =
     useProducts();
+
   const {
     handleSubmit,
     control,
@@ -97,7 +98,6 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
   }, []);
 
   useEffect(() => {
-    console.log(watch("insuranceId"));
     if (watch("insuranceId"))
       fetchProducts({ insuranceId: watch("insuranceId") });
   }, [watch("insuranceId")]);

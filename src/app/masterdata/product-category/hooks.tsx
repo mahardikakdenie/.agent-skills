@@ -4,7 +4,7 @@ import {
 } from "@/services/masterdata/product-category.service";
 import { useState } from "react";
 
-export const useMasterData = () => {
+export const useCategories = () => {
   const productCategoriesService = new ProductCategoriesService();
   const [productsCategories, setProductsCategories] = useState<
     ProductCategories[]
@@ -12,7 +12,7 @@ export const useMasterData = () => {
   const [categories, setCategories] = useState<any[]>([]);
 
   const fetchCategories = async (search: any) => {
-    const { data } = await productCategoriesService.getCategories(search);
+    const { data } = await productCategoriesService.getCategories();
     setCategories(data);
   };
 

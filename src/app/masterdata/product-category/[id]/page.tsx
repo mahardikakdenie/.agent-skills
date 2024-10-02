@@ -15,7 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
-import { useMasterData } from "../../hooks";
+import { useCategories } from "../hooks";
 
 const DetailProductCategory = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -31,7 +31,7 @@ const DetailProductCategory = ({ params }: { params: { id: string } }) => {
     updateCategories,
     deleteCategories,
     saveCategories,
-  } = useMasterData();
+  } = useCategories();
 
   const {
     handleSubmit,

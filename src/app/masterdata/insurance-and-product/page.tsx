@@ -18,7 +18,7 @@ import { Plus, Trash } from "react-feather";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import {
-  ProductInsuranceProduct,
+  ProductInsurance,
   ProductInsuranceProductService,
 } from "@/services/masterdata/insurance-product.service";
 
@@ -26,7 +26,7 @@ const InsuranceProduct = () => {
   useRequireAuth();
   const path = usePathname();
   const insuranceProductService = new ProductInsuranceProductService();
-  const [insurance, setInsurance] = useState<ProductInsuranceProduct[]>([]);
+  const [insurance, setInsurance] = useState<ProductInsurance[]>([]);
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
@@ -57,7 +57,19 @@ const InsuranceProduct = () => {
     router.push(`${path}/${id}`);
   };
 
-  const handleDeletePlan = async (id: string) => {};
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this campaign?")) {
+      try {
+        await insuranceProductService.deleteInsuranceProduct(id);
+        setInsurance((prevInsurance) =>
+          prevInsurance.filter((insurance) => insurance.id !== id)
+        );
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to delete insurance:", error);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
@@ -101,7 +113,7 @@ const InsuranceProduct = () => {
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => handleDeletePlan(insurance.id)}
+                        onClick={() => handleDelete(insurance.id)}
                         className="text-red-600 px-0"
                       >
                         <Trash />

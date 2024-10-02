@@ -15,7 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
-import { useMasterData } from "../../hooks";
+// import { useMasterData } from "../../product-category/hooks";
 
 const DetailProductCategory = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -25,13 +25,13 @@ const DetailProductCategory = ({ params }: { params: { id: string } }) => {
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();
 
-  const {
-    fetchCategories,
-    categories,
-    updateCategories,
-    deleteCategories,
-    saveCategories,
-  } = useMasterData();
+  // const {
+  //   fetchCategories,
+  //   categories,
+  //   updateCategories,
+  //   deleteCategories,
+  //   saveCategories,
+  // } = useMasterData();
 
   const {
     handleSubmit,
@@ -47,7 +47,7 @@ const DetailProductCategory = ({ params }: { params: { id: string } }) => {
   const onSubmit = async (data: any) => {
     try {
       const id = params.id;
-      await updateCategories(data, id);
+      // await updateCategories(data, id);
       setSaveSuccess(true);
     } catch (error) {
       setSaveSuccess(false);
@@ -57,7 +57,7 @@ const DetailProductCategory = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     if (id) {
       (async () => {
-        await fetchCategories({});
+        // await fetchCategories({});
       })();
     }
   }, [id]);

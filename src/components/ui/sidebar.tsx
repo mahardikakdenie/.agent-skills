@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link"; // Import Link from next/link
+import Link from "next/link";
 
 import logoImg from "/public/images/logo-friendsure-lsh.webp";
 import iconHome from "/public/images/icon-home.png";
