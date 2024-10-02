@@ -18,7 +18,7 @@ import { Plus, Trash } from "react-feather";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import {
-  ProductInsuranceProduct,
+  ProductInsurance,
   ProductInsuranceProductService,
 } from "@/services/masterdata/insurance-product.service";
 
@@ -26,7 +26,7 @@ const InsuranceProduct = () => {
   useRequireAuth();
   const path = usePathname();
   const insuranceProductService = new ProductInsuranceProductService();
-  const [insurance, setInsurance] = useState<ProductInsuranceProduct[]>([]);
+  const [insurance, setInsurance] = useState<ProductInsurance[]>([]);
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();

@@ -1,5 +1,5 @@
 import {
-  ProductInsuranceProduct,
+  ProductInsurance,
   ProductInsuranceProductService,
 } from "@/services/masterdata/insurance-product.service";
 import { useState } from "react";
@@ -7,7 +7,7 @@ import { useState } from "react";
 export const useInsurance = () => {
   const insuranceProductService = new ProductInsuranceProductService();
   const [productsInsurance, setProductsInsurance] = useState<
-    ProductInsuranceProduct[]
+    ProductInsurance[]
   >([]);
   const [insurance, setInsurance] = useState<any[]>([]);
 

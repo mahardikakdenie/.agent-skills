@@ -11,8 +11,8 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Check, ChevronLeft } from "react-feather";
+import { useState, useEffect, useRef } from "react";
+import { Check, ChevronLeft, Upload } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useInsurance } from "../hooks";
@@ -23,13 +23,13 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();
-
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [country, setCountry] = useState("");
   const [logo_url, setLogoUrl] = useState("");
-
   const { fetchInsurance, saveInsurance } = useInsurance();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [fileName, setFileName] = useState<string>("");
 
   const {
     handleSubmit,
@@ -77,6 +77,19 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
     }
     setSaveSuccess(null);
   }, [saveSuccess, router]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      setFileName(files[0].name);
+    } else {
+      setFileName("");
+    }
+  };
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -230,15 +243,29 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
                 defaultValue=""
                 rules={{ required: "Logo is required" }}
                 render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="name"
-                    placeholder="Upload logo for insurance display"
-                    {...field}
-                    className={`mt-1 block w-full ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
+                  <div className="flex items-center h-10 relative border border-gray-300 rounded-md">
+                    <Input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={(e) => {
+                        handleFileChange(e);
+                        field.onChange(e);
+                      }}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleClick}
+                      className="absolute right-0 bg-transparent text-[#015B86] hover:bg-transparent w-full px-3"
+                    >
+                      {fileName && (
+                        <span className="text-gray-700">
+                          {fileName || "Upload logo for insurance display"}
+                        </span>
+                      )}
+                      <Upload className="h-4 w-4 ml-auto" />
+                    </Button>
+                  </div>
                 )}
               />
               {errors.logo_url && (

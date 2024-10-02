@@ -2,7 +2,7 @@ import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "../../lib/http-client-interface";
 import Cookies from "universal-cookie";
 
-export interface ProductInsuranceProduct {
+export interface ProductInsurance {
   data: any;
   id: string;
   created_at: string;
@@ -29,7 +29,7 @@ export class ProductInsuranceProductService {
   async getInsuranceProduct(): Promise<any> {
     try {
       const response = await this.httpClient.get("v1/insurances");
-      return (response as { data: ProductInsuranceProduct[] }).data;
+      return (response as { data: ProductInsurance[] }).data;
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
