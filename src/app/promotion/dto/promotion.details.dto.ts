@@ -10,6 +10,7 @@ export interface EmbeddedDiscountInsurance {
 
 export interface EmbeddedDiscountPlan {
     plan_id: string;
+    name: string;
 }
 
 export interface EmbeddedDiscountChannel {

@@ -151,15 +151,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   }, [promotion.embedded_discount_insurances]);
 
-  useEffect(() => {
-    if (promotion.embedded_discount_plans.length > 0) {
-      setSelectedPlans(
-        promotion.embedded_discount_plans.map(plans => ({
-          plan_id: plans.plan_id
-        }))
-      );
-    }
-  }, [promotion.embedded_discount_plans]);
+  // useEffect(() => {
+  //   if (promotion.embedded_discount_plans.length > 0) {
+  //     setSelectedPlans(
+  //       promotion.embedded_discount_plans.map(plans => ({
+  //         plan_id: plans.plan_id
+  //       }))
+  //     );
+  //   }
+  // }, [promotion.embedded_discount_plans]);
 
   useEffect(() => {
     if (globalSelectedProdIds.size > 0) {
@@ -346,11 +346,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAddPlan = () => {
-    if (promotion.embedded_discount_products.length > 0) {
-      setIsPlanModalOpen(true);
-    } else {
-      alert('Please add at least one product before adding plans.');
-    }
+    const selectedPlanIds = new Set(promotion.embedded_discount_plans.map(plans => plans.plan_id));
+    setGlobalSelectedPlanIds(selectedPlanIds);
+    setIsPlanModalOpen(true);
   };
 
   const isCheckbox = (element: HTMLInputElement | HTMLSelectElement): element is HTMLInputElement => {
@@ -374,15 +372,21 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleSelectPlan = (selectedPlans: Plan[]) => {
-    const selectedPlanIds = new Set(selectedPlans.map(plan => plan.id));
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_plans: selectedPlans.map(plan => ({
-        plan_id: plan.id,
-      })),
+  const handleSelectPlan = (newSelectedPlans: Plan[]) => {
+    const updatedPlans = [...promotion.embedded_discount_plans];
+
+    newSelectedPlans.forEach(newPlan => {
+      const existingPlan = updatedPlans.find(plan => plan.plan_id === newPlan.id);
+      if (!existingPlan) {
+        updatedPlans.push({ plan_id: newPlan.id, name: newPlan.name }); // Add new plan if not already in the list
+      }
+    });
+
+    setPromotion(prev => ({
+      ...prev,
+      embedded_discount_plans: updatedPlans, // Update promotion with selected plans
     }));
-    setSelectedPlanIds(selectedPlanIds);
+
   };
 
 
@@ -401,6 +405,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), 1, showProdPerPage);
         fetchProductsByInsurancesInitial([], 1, 100);
+        setCurrentPageProd(1);
 
         return {
           ...prevState,
@@ -475,45 +480,46 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     });
   };
 
-  const handleRemoveProduct = (index: number) => {
+  const handleRemoveProduct = (arrayName: keyof PromotionDetails, index: number) => {
     setPromotion(prevState => {
-      const removedProductId = prevState.embedded_discount_products[index].product_id;
+      const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
-      const updatedProducts = prevState.embedded_discount_products.filter((_, i) => i !== index);
+      if (arrayName === 'embedded_discount_products') {
+        const removedProdId = prevState.embedded_discount_products[index].product_id;
 
-      const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
-        updatedProducts.some(product => product.product_id === plan.plan_id)
-      );
+        setGlobalSelectedProdIds(prevIds => {
+          const newIds = new Set(prevIds);
+          newIds.delete(removedProdId);
+          return newIds;
+        });
 
-      const updatedSelectedPlanIds = new Set(selectedPlanIds);
-      prevState.embedded_discount_plans.forEach(plan => {
-        if (!updatedPlans.some(p => p.plan_id === plan.plan_id)) {
-          updatedSelectedPlanIds.delete(plan.plan_id);
-        }
-      });
+        fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
+        fetchPlansByProductsInitial([], 1, 5000);
+        setCurrentPagePlan(1);
 
-
-      setGlobalSelectedProdIds(prevSelected => {
-        const newSelected = new Set(prevSelected);
-
-        updatedProducts.forEach(prod => newSelected.add(prod.product_id));
-        newSelected.delete(removedProductId);
-        return newSelected;
-      });
-
-      // Fetch plans based on the remaining global selected product IDs
-      fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
-      setCurrentPagePlan(1);
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_plans: []
+        };
+      }
 
       return {
         ...prevState,
-        embedded_discount_products: updatedProducts,
-        embedded_discount_plans: updatedPlans,
+        [arrayName]: updatedArray,
       };
     });
 
-    // Check if there are still products available
-    setHasProducts(products?.data?.length ? products.data.length > 0 : false);
+    if (arrayName === 'embedded_discount_products') {
+      setSelectedProducts(prevProduct =>
+        prevProduct.filter((_, i) => i !== index)
+      );
+
+      setSelectedPlanIds(new Set());     // Reset selected plan IDs
+      setGlobalSelectedPlanIds(new Set());
+      setPlansInitial(undefined);
+      setCurrentPageProd(1);             // Reset pagination for products
+    }
   };
 
   const handleAddVoucher = async (code: string, usageLimit: number) => {
@@ -545,16 +551,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleRemovePlan = (index: number) => {
+    const removedPlanId = promotion.embedded_discount_plans[index].plan_id;
+
     setPromotion(prevState => {
-      // Identify the removed plan ID
-      const removedPlanId = prevState.embedded_discount_plans[index].plan_id;
-
-      // Create a new array of updated plans by filtering out the removed plan
       const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
-
-      // Update the selected plan IDs by removing the removed plan ID
-      const updatedSelectedPlanIds = new Set(selectedPlanIds);
-      updatedSelectedPlanIds.delete(removedPlanId);
 
       return {
         ...prevState,
@@ -562,11 +562,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       };
     });
 
-    // Update the selected plan IDs state
-    setSelectedPlanIds(prevIds => {
-      const updatedIds = new Set(prevIds);
-      updatedIds.delete(promotion.embedded_discount_plans[index].plan_id);
-      return updatedIds;
+    setGlobalSelectedPlanIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      newSelected.delete(removedPlanId);
+      return newSelected;
     });
   };
 
@@ -701,7 +700,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const handleSearch = async (query: string) => {
     try {
       const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), query);
+      //here
       setPlans(response);
+      setGlobalSelectedPlanIds(globalSelectedProdIds);
       setTotalPlanItems(response.meta.total);
       setCurrentPagePlan(1);
     } catch (error) {
@@ -728,7 +729,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       const updatedInsurances = prevState.embedded_discount_insurances.filter(
         insurance => insurance.insurance_id !== insuranceId
       );
-  
+
       return {
         ...prevState,
         embedded_discount_insurances: updatedInsurances,
@@ -736,19 +737,19 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         embedded_discount_plans: []      // Clear plans
       };
     });
-  
+
     setGlobalSelectedInsuranceIds(prevIds => {
       const newIds = new Set(prevIds);
       newIds.delete(insuranceId);
       return newIds;
     });
-  
+
     setSelectedProductIds(new Set());  // Reset selected product IDs
     setGlobalSelectedProdIds(new Set());
     setSelectedPlanIds(new Set());     // Reset selected plan IDs
     setGlobalSelectedPlanIds(new Set());
     setCurrentPageProd(1);             // Reset pagination for products
-  };  
+  };
 
   const handleProdPerPageChange = async (newProdPerPage: number) => {
     setShowProdPerPage(newProdPerPage);
@@ -786,6 +787,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     const newSelectedIds = new Set<string>(selectedProducts.map(prod => prod.id));
     setSelectedProductIds(newSelectedIds);
 
+    setSelectedPlanIds(new Set());
+    setGlobalSelectedPlanIds(new Set());
     setGlobalSelectedProdIds(prevSelected => {
       const newSelected = new Set(prevSelected);
       selectedProducts.forEach(prod => newSelected.add(prod.id));
@@ -1186,7 +1189,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveProduct(index)}
+                          onClick={() => handleRemoveProduct('embedded_discount_products', index)}
                           className="text-red-500 ml-1"
                         >
                           X
@@ -1202,7 +1205,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             <div className="flex-shrink-0 flex justify-center items-center">
               <button
                 type="button"
-                onClick={handleAddProduct}
+                // onClick={handleAddProduct}
+                onClick={() => {
+                  setSelectedProductIds(globalSelectedProdIds);
+                  setIsProductModalOpen(true);
+                  handleAddProduct(); // Call this function correctly
+                }}
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
                 disabled={promotion.embedded_discount_insurances.length === 0}
               >
@@ -1248,7 +1256,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             <div className="flex-shrink-0 flex justify-center items-center">
               <button
                 type="button"
-                onClick={handleAddPlan}
+                // onClick={handleAddPlan}
+                onClick={() => {
+                  setSelectedPlanIds(globalSelectedPlanIds);
+                  setIsPlanModalOpen(true);
+                  handleAddPlan(); // Call this function correctly
+                }}
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
                 disabled={promotion.embedded_discount_products.length === 0}
               >
