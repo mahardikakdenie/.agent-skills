@@ -172,6 +172,36 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
             </div>
             <div>
               <label
+                htmlFor="logo_url"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Logo
+              </label>
+              <Controller
+                name="logo_url"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Logo is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="logo_url"
+                    placeholder="Insert Logo"
+                    {...field}
+                    className={`mt-1 block w-full ${
+                      errors.logo_url ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                  />
+                )}
+              />
+              {errors.logo_url && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.logo_url.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
                 htmlFor="brand"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
@@ -227,50 +257,6 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
               {errors.country && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.country.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="logo_url"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Logo
-              </label>
-              <Controller
-                name="logo_url"
-                control={control}
-                defaultValue=""
-                rules={{ required: "Logo is required" }}
-                render={({ field }) => (
-                  <div className="flex items-center h-10 relative border border-gray-300 rounded-md">
-                    <Input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={(e) => {
-                        handleFileChange(e);
-                        field.onChange(e);
-                      }}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleClick}
-                      className="absolute right-0 bg-transparent text-[#015B86] hover:bg-transparent w-full px-3"
-                    >
-                      {fileName && (
-                        <span className="text-gray-700">
-                          {fileName || "Upload logo for insurance display"}
-                        </span>
-                      )}
-                      <Upload className="h-4 w-4 ml-auto" />
-                    </Button>
-                  </div>
-                )}
-              />
-              {errors.logo_url && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.logo_url.message}
                 </p>
               )}
             </div>

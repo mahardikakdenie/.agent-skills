@@ -16,6 +16,11 @@ export const useInsurance = () => {
     setInsurance(data);
   };
 
+  const fetchInsuranceById = async (id: string) => {
+    const response = await insuranceProductService.getInsuranceById(id);
+    return response;
+  };
+
   const saveInsurance = async (data: any) => {
     const { data: response } =
       await insuranceProductService.saveInsuranceProduct(data);
@@ -42,5 +47,6 @@ export const useInsurance = () => {
     fetchInsurance,
     productsInsurance,
     setProductsInsurance,
+    fetchInsuranceById,
   };
 };
