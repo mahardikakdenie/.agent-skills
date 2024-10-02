@@ -127,127 +127,127 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
           {/* <div className="p-6 bg-white rounded-lg flex-col gap-4 grid grid-cols-2">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Insurance Name
-                </label>
-                <Controller
-                  name="name"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: "Insurance Name is required" }}
-                  render={({ field }) => (
-                    <Input
-                      type="text"
-                      id="name"
-                      placeholder="Insert Insurance Name"
-                      {...field}
-                      className={`mt-1 block w-full ${
-                        errors.name ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
-                    />
-                  )}
-                />
-                {errors.name && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.name.message}
-                  </p>
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Insurance Name
+              </label>
+              <Controller
+                name="name"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Insurance Name is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="name"
+                    placeholder="Insert Insurance Name"
+                    {...field}
+                    className={`mt-1 block w-full ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                  />
                 )}
-              </div>
-              <div>
-                <label
-                  htmlFor="logo_url"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Logo
-                </label>
-                <Controller
-                  name="logo_url"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: "Logo is required" }}
-                  render={({ field }) => (
-                    <Input
-                      type="text"
-                      id="logo_url"
-                      placeholder="Insert Logo"
-                      {...field}
-                      className={`mt-1 block w-full ${
-                        errors.logo_url ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
-                    />
-                  )}
-                />
-                {errors.logo_url && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.logo_url.message}
-                  </p>
+              />
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="logo_url"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Logo
+              </label>
+              <Controller
+                name="logo_url"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Logo is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="logo_url"
+                    placeholder="Insert Logo"
+                    {...field}
+                    className={`mt-1 block w-full ${
+                      errors.logo_url ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                  />
                 )}
-              </div>
-              <div>
-                <label
-                  htmlFor="brand"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Brand
-                </label>
-                <Controller
-                  name="brand"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: "Brand is required" }}
-                  render={({ field }) => (
-                    <Input
-                      type="text"
-                      id="brand"
-                      placeholder="Insert Brand"
-                      {...field}
-                      className={`mt-1 block w-full ${
-                        errors.brand ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
-                    />
-                  )}
-                />
-                {errors.brand && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.brand.message}
-                  </p>
+              />
+              {errors.logo_url && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.logo_url.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="brand"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Brand
+              </label>
+              <Controller
+                name="brand"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Brand is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="brand"
+                    placeholder="Insert Brand"
+                    {...field}
+                    className={`mt-1 block w-full ${
+                      errors.brand ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                  />
                 )}
-              </div>
-              <div>
-                <label
-                  htmlFor="country"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Country
-                </label>
-                <Controller
-                  name="country"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: "Country is required" }}
-                  render={({ field }) => (
-                    <Input
-                      type="text"
-                      id="country"
-                      placeholder="Insert Country"
-                      {...field}
-                      className={`mt-1 block w-full ${
-                        errors.country ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
-                    />
-                  )}
-                />
-                {errors.country && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.country.message}
-                  </p>
+              />
+              {errors.brand && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.brand.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="country"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Country
+              </label>
+              <Controller
+                name="country"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Country is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="country"
+                    placeholder="Insert Country"
+                    {...field}
+                    className={`mt-1 block w-full ${
+                      errors.country ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                  />
                 )}
-              </div>
-            </div> */}
+              />
+              {errors.country && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.country.message}
+                </p>
+              )}
+            </div>
+          </div> */}
         </div>
       </form>
     </div>

@@ -24,7 +24,6 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   const isActive = (href: string) => pathname === href;
-  console.log(isActive("/home"));
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
