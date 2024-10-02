@@ -42,63 +42,65 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-96 max-w-full">
-        <div className="px-6 pt-4 pb-6 bg-white rounded-lg shadow-lg">
-          <div className="px-16 mb-5">
-            <Image alt="Logo" src={logoImg} />
+    <main>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="w-96 max-w-full">
+          <div className="px-6 pt-4 pb-6 bg-white rounded-lg shadow-lg">
+            <div className="px-16 mb-5">
+              <Image alt="Logo" src={logoImg} />
+            </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem className="mb-4">
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="mb-4 relative">
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <div className="pt-3">
+                  <Button type="submit" className="w-full">
+                    Login
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </div>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="mb-4 relative">
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          {...field}
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <div className="pt-3">
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
-              </div>
-            </form>
-          </Form>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

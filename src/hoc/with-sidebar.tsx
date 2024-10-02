@@ -16,7 +16,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Loading from "@/components/ui/loading";
 import { useLoading } from "@/context/loading.context";
-import Sidebar from "@/components/ui/sidebar";
 import Header from "@/components/ui/header";
 
 export default function WithSidebar(Component: any) {
@@ -32,7 +31,6 @@ export default function WithSidebar(Component: any) {
       return (
         <div className="flex">
           {isLoading && <Loading />}
-          <Sidebar />
           <div className="w-full relative flex flex-col">
             <Header />
             <div className="flex frame-body min-w-full">
