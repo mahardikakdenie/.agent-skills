@@ -20,7 +20,7 @@ import Image from "next/image";
 import {
   ProductCategories,
   ProductCategoriesService,
-} from "@/services/product-category.service";
+} from "@/services/masterdata/product-category.service";
 
 const ProductCategory = () => {
   useRequireAuth();

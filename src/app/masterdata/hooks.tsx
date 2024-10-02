@@ -1,7 +1,7 @@
 import {
   ProductCategories,
   ProductCategoriesService,
-} from "@/services/product-category.service";
+} from "@/services/masterdata/product-category.service";
 import { useState } from "react";
 
 export const useMasterData = () => {

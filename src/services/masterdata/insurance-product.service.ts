@@ -1,8 +1,8 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { IHttpClient } from "./../lib/http-client-interface";
+import { IHttpClient } from "../../lib/http-client-interface";
 import Cookies from "universal-cookie";
 
-export interface ProductCategories {
+export interface ProductInsuranceProduct {
   data: any;
   id: string;
   created_at: string;
@@ -11,7 +11,7 @@ export interface ProductCategories {
   claim_config: string;
 }
 
-export class ProductCategoriesService {
+export class ProductInsuranceProductService {
   private httpClient: IHttpClient;
   then: any;
 
@@ -26,37 +26,37 @@ export class ProductCategoriesService {
     });
   }
 
-  async getCategories(): Promise<any> {
+  async getInsuranceProduct(): Promise<any> {
     try {
-      const response = await this.httpClient.get("/v1/categories");
-      return (response as { data: ProductCategories[] }).data;
+      const response = await this.httpClient.get("v1/insurances");
+      return (response as { data: ProductInsuranceProduct[] }).data;
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
     }
   }
 
-  async deleteCategories(id: string): Promise<any> {
+  async deleteInsuranceProduct(id: string): Promise<any> {
     try {
-      return await this.httpClient.delete("/v1/categories/" + id);
+      return await this.httpClient.delete("v1/insurances/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
     }
   }
 
-  async saveCategories(data: any): Promise<any> {
+  async saveInsuranceProduct(data: any): Promise<any> {
     try {
-      return await this.httpClient.post("/v1/categories/", data);
+      return await this.httpClient.post("v1/insurances/", data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
     }
   }
 
-  async updateCategories(data: any, id: string): Promise<any> {
+  async updateInsuranceProduct(data: any, id: string): Promise<any> {
     try {
-      return await this.httpClient.put("/v1/categories/" + id, data);
+      return await this.httpClient.put("v1/insurances/" + id, data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
