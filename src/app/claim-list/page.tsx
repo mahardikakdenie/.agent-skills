@@ -739,7 +739,7 @@ const PolicyPage = () => {
               ))
             ) : (
               <TableRow className="hover:!bg-white">
-                <TableCell colSpan={9}>
+                <TableCell colSpan={10}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
@@ -750,7 +750,7 @@ const PolicyPage = () => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={8}>
+              <TableCell colSpan={10}>
                 <div className="flex justify-center items-center gap-2 font-normal">
                   <label htmlFor="rowsPerPage">Showing:</label>
                   <select
