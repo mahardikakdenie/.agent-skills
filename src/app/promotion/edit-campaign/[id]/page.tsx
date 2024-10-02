@@ -400,6 +400,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         });
 
         fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), 1, showProdPerPage);
+        fetchProductsByInsurancesInitial([], 1, 100);
 
         return {
           ...prevState,
@@ -419,9 +420,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       setSelectedInsurances(prevInsurances =>
         prevInsurances.filter((_, i) => i !== index)
       );
-      setSelectedProductIds(new Set());
-      setSelectedPlanIds(new Set());
-      setCurrentPageProd(1);
+      setSelectedProductIds(new Set());  // Reset selected product IDs
+      setGlobalSelectedProdIds(new Set());
+      setProductsInitial(undefined);
+      setSelectedPlanIds(new Set());     // Reset selected plan IDs
+      setGlobalSelectedPlanIds(new Set());
+      setCurrentPageProd(1);             // Reset pagination for products
     }
   };
 
@@ -498,7 +502,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       });
 
       // Fetch plans based on the remaining global selected product IDs
-      fetchPlansByProducts(updatedProducts.map(prod => prod.product_id), 1, showPlansPerPage);
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
+      setCurrentPagePlan(1);
 
       return {
         ...prevState,
@@ -674,11 +679,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAddProduct = () => {
-    if (selectedInsurances.length > 0) {
-      setIsProductModalOpen(true);
-    } else {
-      alert('Please select at least one insurance before adding products.');
-    }
+    const selectedProdIds = new Set(promotion.embedded_discount_products.map(products => products.product_id));
+    setGlobalSelectedProdIds(selectedProdIds);
+    setIsProductModalOpen(true);
   };
 
   const handleRemoveProd = (prodId: string) => {
@@ -721,11 +724,31 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleRemoveInsurance = (insuranceId: string) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_insurances: prevState.embedded_discount_insurances.filter(insurance => insurance.insurance_id !== insuranceId)
-    }));
-  };
+    setPromotion(prevState => {
+      const updatedInsurances = prevState.embedded_discount_insurances.filter(
+        insurance => insurance.insurance_id !== insuranceId
+      );
+  
+      return {
+        ...prevState,
+        embedded_discount_insurances: updatedInsurances,
+        embedded_discount_products: [],  // Clear products
+        embedded_discount_plans: []      // Clear plans
+      };
+    });
+  
+    setGlobalSelectedInsuranceIds(prevIds => {
+      const newIds = new Set(prevIds);
+      newIds.delete(insuranceId);
+      return newIds;
+    });
+  
+    setSelectedProductIds(new Set());  // Reset selected product IDs
+    setGlobalSelectedProdIds(new Set());
+    setSelectedPlanIds(new Set());     // Reset selected plan IDs
+    setGlobalSelectedPlanIds(new Set());
+    setCurrentPageProd(1);             // Reset pagination for products
+  };  
 
   const handleProdPerPageChange = async (newProdPerPage: number) => {
     setShowProdPerPage(newProdPerPage);
@@ -734,14 +757,41 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleSelectProduct = (selectedProducts: Product[]) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_products: selectedProducts.map(product => ({
-        product_id: product.id,
-        product_name: product.name
-      }))
-    }));
-    setSelectedProductIds(new Set(selectedProducts.map(product => product.id)));
+    const existingProducts = promotion.embedded_discount_products;
+
+    const updatedProducts = [...existingProducts];
+
+    selectedProducts.forEach(product => {
+      const existingProduct = updatedProducts.find(p => p.product_id === product.id);
+      if (!existingProduct) {
+        updatedProducts.push({
+          product_id: product.id,
+          product_name: product.name
+        });
+      }
+    });
+
+    setPromotion(prevState => {
+      const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
+        updatedProducts.some(prod => prod.product_id === plan.plan_id)
+      );
+
+      return {
+        ...prevState,
+        embedded_discount_products: updatedProducts,
+        embedded_discount_plans: updatedPlans,
+      };
+    });
+
+    const newSelectedIds = new Set<string>(selectedProducts.map(prod => prod.id));
+    setSelectedProductIds(newSelectedIds);
+
+    setGlobalSelectedProdIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedProducts.forEach(prod => newSelected.add(prod.id));
+      return newSelected;
+    });
+
   };
 
 
