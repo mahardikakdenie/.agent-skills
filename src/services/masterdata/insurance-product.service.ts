@@ -32,8 +32,8 @@ export class ProductInsuranceProductService {
   }
 
   async getInsuranceProduct(
-    page: number,
-    rowsPerPage: number
+    page?: number,
+    rowsPerPage?: number
   ): Promise<ProductInsurance> {
     const params: any = {
       page: page,
