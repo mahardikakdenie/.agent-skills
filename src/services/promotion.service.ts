@@ -41,10 +41,10 @@ export class PromotionService {
     return this.httpClientPromotion.get('/api/campaign/' + id);
   }
 
-   async deleteDiscCampaignById(id: string): Promise<any> {
-    return this.httpClientPromotion.put('/api/campaign/delete/' + id, null);
+  async deleteDiscCampaignById(id: string): Promise<any> {
+    return this.httpClientPromotion.delete('/api/campaign/delete/' + id);
   }
-
+  
   async updatePromotionCampaign(id: string, data: any): Promise<any> {
     return this.httpClientPromotion.put('/api/campaign/update/' + id, data);
   }

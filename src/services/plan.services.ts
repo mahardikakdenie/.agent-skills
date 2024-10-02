@@ -54,8 +54,15 @@ export class PlanService {
     return this.httpClientCookie.get('/plan/' + id);
   }
 
-  async getSyncEmbeddedDiscount(): Promise<any> {
-    return this.httpClientCookie.post('/plan/sync/embedded-discounts', null);
+  async getSyncEmbeddedDiscount(): Promise<AxiosResponse<any>> {
+    const baseURL = process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL;
+
+    return axios.post(`${baseURL}/plan/sync/embedded-discounts`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer' + getCookie("token"),
+      }
+    });
   }
   
 }
