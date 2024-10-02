@@ -36,6 +36,10 @@ export class ProductInsuranceProductService {
     }
   }
 
+  async getInsuranceById(id: string): Promise<any> {
+    return this.httpClient.get("v1/insurances/" + id);
+  }
+
   async deleteInsuranceProduct(id: string): Promise<any> {
     try {
       return await this.httpClient.delete("v1/insurances/" + id);
