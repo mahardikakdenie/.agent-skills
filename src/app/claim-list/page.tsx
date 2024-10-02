@@ -32,9 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { DialogTitle } from "@radix-ui/react-dialog";
 
 const PolicyPage = () => {
   useRequireAuth();
@@ -104,6 +103,8 @@ const PolicyPage = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case "Draft":
+        return "text-gray-400 font-normal";
       case "Application Sent":
         return "text-[#7B5D21]";
       case "Proccessing":
@@ -648,11 +649,13 @@ const PolicyPage = () => {
                       {claim.number}
                     </div>
                   </TableCell>
-                  <TableCell>{claim.policy_data.account.name || "-"}</TableCell>
+                  <TableCell>
+                    {claim?.policy_data?.account?.name || "-"}
+                  </TableCell>
                   <TableCell>
                     {claim.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
                       .split("|")
-                      .join(" - ")}
+                      .join(" - ") || "-"}
                   </TableCell>
                   <TableCell>
                     {claim.policy_data?.declarations?.transaction_data
@@ -664,17 +667,25 @@ const PolicyPage = () => {
                       ?.insurance?.currency || "-"}
                   </TableCell>
                   <TableCell>
-                    {formatMoneyClaim(
-                      claim.claim?.find(
+                    {(() => {
+                      const claimValue = claim.claim?.find(
                         (d: any) => d.type === "Number" && d.name === "claim"
-                      )?.value ?? "-"
-                    )}
+                      )?.value;
+
+                      const numericValue = Number(claimValue);
+
+                      return !isNaN(numericValue)
+                        ? formatMoneyClaim(numericValue)
+                        : "-";
+                    })()}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2 items-center">
-                      {claim.amount_approved != null
-                        ? formatMoneyClaim(claim.amount_approved)
-                        : "-"}
+                      {formatMoneyClaim(
+                        claim.amount_approved != null
+                          ? claim.amount_approved
+                          : 0
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
@@ -689,7 +700,9 @@ const PolicyPage = () => {
                           claim.status
                         )}`}
                       >
-                        <SelectValue placeholder="Theme" />
+                        <SelectValue>
+                          {claim.status || "Select Status"}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Application Sent">
@@ -726,7 +739,7 @@ const PolicyPage = () => {
               ))
             ) : (
               <TableRow className="hover:!bg-white">
-                <TableCell colSpan={9}>
+                <TableCell colSpan={10}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
@@ -737,7 +750,7 @@ const PolicyPage = () => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={8}>
+              <TableCell colSpan={10}>
                 <div className="flex justify-center items-center gap-2 font-normal">
                   <label htmlFor="rowsPerPage">Showing:</label>
                   <select

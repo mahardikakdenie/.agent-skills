@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "react-feather";
 
@@ -19,27 +19,24 @@ import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import {
   ProductCategories,
-  ProductCategoryService,
-} from "@/services/product-category.service";
+  ProductCategoriesService,
+} from "@/services/masterdata/product-category.service";
 
-const ProductCategory = ({ params }: { params: { category: string } }) => {
+const ProductCategory = () => {
   useRequireAuth();
-  const productCategoryService = new ProductCategoryService();
-  const [page, setPage] = useState(1);
+  const path = usePathname();
+  const productCategoryService = new ProductCategoriesService();
   const [category, setCategory] = useState<ProductCategories[]>([]);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const result = await productCategoryService.getCategory();
+        const result = await productCategoryService.getCategories();
         setCategory(result);
       } catch (error) {
-        setError("Failed to fetch data");
         console.error(error);
       } finally {
         setLoading(false);
@@ -47,7 +44,7 @@ const ProductCategory = ({ params }: { params: { category: string } }) => {
     };
 
     fetchCategories();
-  }, [page, rowsPerPage]);
+  }, []);
   if (!category) {
     return (
       <div className="w-full h-full flex justify-center items-center">
@@ -57,7 +54,7 @@ const ProductCategory = ({ params }: { params: { category: string } }) => {
   }
 
   const handleEdit = (id: string) => {
-    router.push("/v1/categories/" + id);
+    router.push(`${path}/${id}`);
   };
 
   const handleDeletePlan = async (id: string) => {};
@@ -69,7 +66,7 @@ const ProductCategory = ({ params }: { params: { category: string } }) => {
           Product Category
         </h1>
         <Button
-          onClick={() => router.push(`/product-catalog/${category}/add`)}
+          onClick={() => router.push(`${path}/add`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Plus className="w-5 h-5 mr-1 " /> Add New
@@ -95,7 +92,7 @@ const ProductCategory = ({ params }: { params: { category: string } }) => {
                     <div className="flex gap-4 items-center">
                       <Button
                         variant="secondary"
-                        onClick={() => handleEdit(category.id)}
+                        // onClick={() => handleEdit(category.id)}
                         className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
                       >
                         Edit

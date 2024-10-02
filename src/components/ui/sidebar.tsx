@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link"; // Import Link from next/link
 
 import logoImg from "/public/images/logo-friendsure-lsh.webp";
 import iconHome from "/public/images/icon-home.png";
@@ -48,19 +49,19 @@ const Sidebar = () => {
                 <strong>Dashboard</strong>
               </li>
               <li>
-                <a
+                <Link
                   href="/home"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
                   Home
-                </a>
+                </Link>
               </li>
               <li className="mt-2 text-sm">
                 <strong>Transactions</strong>
               </li>
               <li>
-                <a
+                <Link
                   href="/transactions"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -70,13 +71,13 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Transactions List
-                </a>
+                </Link>
               </li>
               <li className="mt-2 text-sm">
                 <strong>Promotions</strong>
               </li>
               <li>
-                <a
+                <Link
                   href="/promotion"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -86,13 +87,13 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Campaigns
-                </a>
+                </Link>
               </li>
               <li className="mt-2 text-sm">
                 <strong>Product Category</strong>
               </li>
               <li>
-                <a
+                <Link
                   href="/product-catalog/travel"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -102,10 +103,10 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Travel
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/product-catalog/personal-accident"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -115,28 +116,28 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Personal Accident
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/product-catalog/mobil"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconMobil} alt="Mobil" className="w-7 min-w-7" />
                   Mobil
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/product-catalog/motor"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconMotor} alt="Motor" className="w-7 min-w-7" />
                   Motor
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/product-catalog/airpaz"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -146,13 +147,13 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Airpaz
-                </a>
+                </Link>
               </li>
               <li className="mt-2 text-sm">
                 <strong>Policy</strong>
               </li>
               <li>
-                <a
+                <Link
                   href="/policy-list"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -162,13 +163,13 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Policy List
-                </a>
+                </Link>
               </li>
               <li className="mt-2 text-sm">
                 <strong>Claim</strong>
               </li>
               <li>
-                <a
+                <Link
                   href="/claim-list"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -178,13 +179,13 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Claim List
-                </a>
+                </Link>
               </li>
               <li className="mt-2 text-sm">
                 <strong>Masterdata</strong>
               </li>
               <li>
-                <a
+                <Link
                   href="/masterdata/product-category"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -194,10 +195,10 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Product Category
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/masterdata/insurance-and-product"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -207,28 +208,28 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Insurance and Product
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/masterdata/user"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconClaim} alt="User" className="w-7 min-w-7" />
                   User
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/masterdata/roles"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
                   <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
                   Roles
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/masterdata/currency"
                   className="hover:text-[#006EA7] flex text-sm items-center gap-2"
                 >
@@ -238,7 +239,7 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Currency
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

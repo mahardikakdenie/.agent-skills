@@ -219,7 +219,8 @@ const PolicyPage = () => {
                   <TableCell>{rowNumber}</TableCell>
                   <TableCell>
                     <div className="flex gap-2 items-center">
-                      {policy.number}
+                      {policy?.declarations?.transaction_data?.customer?.name ||
+                        "-"}
                     </div>
                   </TableCell>
                   <TableCell>{policy.number}</TableCell>
