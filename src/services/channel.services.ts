@@ -1,6 +1,7 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
+import { getCookie } from "@/lib/utils";
 import Cookies from "universal-cookie";
 
 
@@ -20,24 +21,13 @@ export class ChannelService {
     this.httpClientChannels = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + process.env.NEXT_PUBLIC_AUTH_TOKEN,
-      }
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getCookie("token"),
+      },
     });
+    
   }
-  
 
-
-  // async getChannels(page: number): Promise<PromotionResponse> {
-  //   let limit = 10;
-  //   if (page > 0) {
-  //     return this.httpClientChannels.get('/channels?page=' + page + "&limit=" + limit);
-  //   } else {
-  //     page = 1;
-  //     return this.httpClientChannels.get('/channels?page=' + page + "&limit=" + limit);
-  //   }
-
-  // }
 
   async getChannels(page: number, limit: number): Promise<PromotionResponse> {
     if (page <= 0) {

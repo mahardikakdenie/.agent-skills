@@ -1,6 +1,7 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
+import { getCookie } from "@/lib/utils";
 import Cookies from "universal-cookie";
 
 
@@ -29,9 +30,9 @@ export class InsuranceService {
     this.httpClientInsurance = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + process.env.NEXT_PUBLIC_AUTH_TOKEN,
-      }
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getCookie("token"),
+      },
     });
   }
   

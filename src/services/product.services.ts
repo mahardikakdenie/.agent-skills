@@ -6,18 +6,10 @@ import axios, { AxiosResponse } from "axios";
 
 
 export class ProductService {
-  private httpClientProduct: IHttpClient;
+
   private httpClientCookie: IHttpClient;
 
   constructor() {
-
-    this.httpClientProduct = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + process.env.NEXT_PUBLIC_AUTH_TOKEN,
-      }
-    });
 
     this.httpClientCookie = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
@@ -51,7 +43,7 @@ export class ProductService {
   }
 
   async getSpecProdbyCatIdAndInsId(catId: string, insId: string): Promise<any> {
-    return this.httpClientProduct.get('/v1/products?categoryId=' + catId +"&insuranceId=" + insId);
+    return this.httpClientCookie.get('/v1/products?categoryId=' + catId +"&insuranceId=" + insId);
   }
 
 }

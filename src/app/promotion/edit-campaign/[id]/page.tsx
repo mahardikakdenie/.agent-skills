@@ -163,7 +163,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (globalSelectedProdIds.size > 0) {
-      fetchPlansByProducts(Array.from(globalSelectedProdIds), currentPagePlan, showPlansPerPage);
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
+      setCurrentPagePlan(1);
     }
   }, [promotion.embedded_discount_products]);
 

@@ -171,6 +171,8 @@ const PromotionPage = () => {
           setPromotions(
             promotions.filter((promotion) => promotion.campaign_id !== id)
           );
+        }).then(() => {
+          planService.getSyncEmbeddedDiscount();
         })
         .catch((error) => {
           console.error("Failed to delete promotion:", error);
