@@ -94,7 +94,7 @@ const InsuranceProduct = () => {
                     <div className="flex gap-4 items-center">
                       <Button
                         variant="secondary"
-                        onClick={() => handleEdit(insurance.id)}
+                        // onClick={() => handleEdit(insurance.id)}
                         className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
                       >
                         Edit

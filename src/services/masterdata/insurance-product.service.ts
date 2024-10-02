@@ -8,7 +8,7 @@ export interface ProductInsuranceProduct {
   created_at: string;
   updated_at: any;
   name: string;
-  claim_config: string;
+  logo_url: string;
 }
 
 export class ProductInsuranceProductService {
