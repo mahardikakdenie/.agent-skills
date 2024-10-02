@@ -57,7 +57,19 @@ const ProductCategory = () => {
     router.push(`${path}/${id}`);
   };
 
-  const handleDeletePlan = async (id: string) => {};
+  const handleDeletePlan = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this campaign?")) {
+      try {
+        await productCategoryService.deleteCategories(id);
+        setCategory((prevCategories) =>
+          prevCategories.filter((category) => category.id !== id)
+        );
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to delete category:", error);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
