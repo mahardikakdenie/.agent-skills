@@ -11,25 +11,34 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
-import { Check, ChevronLeft, Upload } from "react-feather";
+import { useState, useEffect } from "react";
+import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { useInsurance } from "../hooks";
+import { useUser } from "../hooks";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const AddInsurance = ({ params }: { params: { id: string } }) => {
+const AddUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();
+
   const [name, setName] = useState("");
-  const [brand, setBrand] = useState("");
-  const [country, setCountry] = useState("");
-  const [logo_url, setLogoUrl] = useState("");
-  const { fetchInsurance, saveInsurance } = useInsurance();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [fileName, setFileName] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [phone_number, setPhoneNumber] = useState("");
+  const [role, setRole] = useState("");
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState("");
+
+  const { fetchUser, saveUser } = useUser();
 
   const {
     handleSubmit,
@@ -39,21 +48,25 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
     shouldUnregister: false,
     defaultValues: {
       name,
-      brand,
-      country,
-      logo_url,
+      email,
+      phone_number,
+      role,
+      password,
+      status,
     },
     values: {
       name,
-      brand,
-      country,
-      logo_url,
+      email,
+      phone_number,
+      role,
+      password,
+      status,
     },
   });
 
   const onSubmit = async (data: any) => {
     try {
-      await saveInsurance(data);
+      await saveUser(data);
       setSaveSuccess(true);
     } catch (error) {
       setSaveSuccess(false);
@@ -63,7 +76,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     if (id) {
       (async () => {
-        await fetchInsurance({});
+        await fetchUser({});
       })();
     }
   }, [id]);
@@ -77,19 +90,6 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
     }
     setSaveSuccess(null);
   }, [saveSuccess, router]);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      setFileName(files[0].name);
-    } else {
-      setFileName("");
-    }
-  };
-
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
 
   return (
     <div className="flex flex-col w-full">
@@ -107,7 +107,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
                     className="cursor-pointer"
                     onClick={() => router.back()}
                   >
-                    Insurance and Product
+                    User
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -116,9 +116,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">
-              Add Insurance and Product
-            </h2>
+            <h2 className="text-black font-bold text-2xl mt-2">Add User</h2>
           </div>
 
           <div className="flex ml-auto">
@@ -139,24 +137,24 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="p-6 bg-white rounded-lg flex-col gap-4 grid grid-cols-2">
+          <div className="p-6 bg-white rounded-lg grid grid-cols-2 gap-4">
             <div>
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Insurance Name
+                Name
               </label>
               <Controller
                 name="name"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Insurance Name is required" }}
+                rules={{ required: "Name is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
                     id="name"
-                    placeholder="Insert Insurance Name"
+                    placeholder="Insert Name"
                     {...field}
                     className={`mt-1 block w-full h-12 ${
                       errors.name ? "border-red-500" : "border-gray-300"
@@ -172,91 +170,153 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
             </div>
             <div>
               <label
-                htmlFor="logo_url"
+                htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Logo
+                Email
               </label>
               <Controller
-                name="logo_url"
+                name="email"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Logo is required" }}
+                rules={{ required: "Email is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
-                    id="logo_url"
-                    placeholder="Insert Logo"
+                    id="email"
+                    placeholder="Insert Email"
                     {...field}
                     className={`mt-1 block w-full h-12 ${
-                      errors.logo_url ? "border-red-500" : "border-gray-300"
+                      errors.email ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
                 )}
               />
-              {errors.logo_url && (
+              {errors.email && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.logo_url.message}
+                  {errors.email.message}
                 </p>
               )}
             </div>
             <div>
               <label
-                htmlFor="brand"
+                htmlFor="phone_number"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Brand
+                Phone Number
               </label>
               <Controller
-                name="brand"
+                name="phone_number"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Brand is required" }}
+                // rules={{ required: "Phone Number is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
-                    id="brand"
-                    placeholder="Insert Brand"
+                    id="phone_number"
+                    placeholder="Insert Phone Number"
                     {...field}
                     className={`mt-1 block w-full h-12 ${
-                      errors.brand ? "border-red-500" : "border-gray-300"
+                      errors.phone_number ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
                 )}
               />
-              {errors.brand && (
+              {errors.phone_number && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.brand.message}
+                  {errors.phone_number.message}
                 </p>
               )}
             </div>
             <div>
               <label
-                htmlFor="country"
+                htmlFor="role"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Country
+                Role
               </label>
               <Controller
-                name="country"
+                name="role"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Country is required" }}
+                // rules={{ required: "Role is required" }}
+                render={({ field }) => (
+                  <Select>
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Admin">Admin</SelectItem>
+                      <SelectItem value="Partner">Partner</SelectItem>
+                      <SelectItem value="Insurer">Insurer</SelectItem>
+                      <SelectItem value="User">User</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.role && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.role.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
+              <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                // rules={{ required: "Password is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
-                    id="country"
-                    placeholder="Insert Country"
+                    id="password"
+                    placeholder="Insert Password"
                     {...field}
                     className={`mt-1 block w-full h-12 ${
-                      errors.country ? "border-red-500" : "border-gray-300"
+                      errors.password ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
                 )}
               />
-              {errors.country && (
+              {errors.password && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.country.message}
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Status
+              </label>
+              <Controller
+                name="status"
+                control={control}
+                defaultValue=""
+                // rules={{ required: "Status is required" }}
+                render={({ field }) => (
+                  <Select>
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.status && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.status.message}
                 </p>
               )}
             </div>
@@ -267,6 +327,5 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const AddInsuraceWithSidebar = (params: any) =>
-  WithSidebar(AddInsurance)(params);
-export default AddInsuraceWithSidebar;
+const AddUserWithSidebar = (params: any) => WithSidebar(AddUser)(params);
+export default AddUserWithSidebar;

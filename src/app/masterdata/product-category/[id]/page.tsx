@@ -145,7 +145,7 @@ const EditProductCategory = ({ params }: { params: { id: string } }) => {
                     id="name"
                     placeholder="Insert Category Name"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.name ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
