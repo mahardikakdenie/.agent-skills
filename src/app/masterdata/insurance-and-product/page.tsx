@@ -113,7 +113,7 @@ const InsuranceProduct = () => {
             {insurance.length > 0 ? (
               insurance.map((insurance, index) => (
                 <TableRow key={insurance.id}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{insurance.name}</TableCell>
                   <TableCell>{insurance.logo_url}</TableCell>
                   <TableCell>

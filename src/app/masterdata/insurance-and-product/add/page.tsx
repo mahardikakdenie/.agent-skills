@@ -158,7 +158,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
                     id="name"
                     placeholder="Insert Insurance Name"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.name ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -188,7 +188,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
                     id="logo_url"
                     placeholder="Insert Logo"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.logo_url ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -218,7 +218,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
                     id="brand"
                     placeholder="Insert Brand"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.brand ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -248,7 +248,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
                     id="country"
                     placeholder="Insert Country"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.country ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
