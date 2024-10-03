@@ -54,15 +54,13 @@ export class PlanService {
     return this.httpClientCookie.get('/plan/' + id);
   }
 
-  async getSyncEmbeddedDiscount(): Promise<AxiosResponse<any>> {
-    const baseURL = process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL;
-
-    return axios.post(`${baseURL}/plan/sync/embedded-discounts`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer' + getCookie("token"),
-      }
-    });
+  async getSyncEmbeddedDiscount(): Promise<any> {
+    try {
+      return await this.httpClientCookie.post("/v1/plans/sync/embedded-discounts", {});
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
   }
   
 }
