@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuLink,
-} from "@radix-ui/react-navigation-menu";
-import { AuthProvider } from "@/context/auth.context";
-import { LoadingProvider } from "@/context/loading.context";
-import Loading from "@/components/ui/loading";
+import ClientLayout from "@/components/ui/ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,15 +12,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <LoadingProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </LoadingProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

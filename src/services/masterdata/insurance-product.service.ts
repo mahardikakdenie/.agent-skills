@@ -1,14 +1,19 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "../../lib/http-client-interface";
 import Cookies from "universal-cookie";
+import qs from "qs";
 
 export interface ProductInsurance {
   data: any;
+  page: any;
+  total: any;
+  pageTotal: any;
   id: string;
   created_at: string;
   updated_at: any;
   name: string;
   logo_url: string;
+  meta: any;
 }
 
 export class ProductInsuranceProductService {
@@ -26,14 +31,21 @@ export class ProductInsuranceProductService {
     });
   }
 
-  async getInsuranceProduct(): Promise<any> {
-    try {
-      const response = await this.httpClient.get("v1/insurances");
-      return (response as { data: ProductInsurance[] }).data;
-    } catch (error) {
-      console.error("Request failed:", error);
-      throw error;
-    }
+  async getInsuranceProduct(
+    page?: number,
+    rowsPerPage?: number
+  ): Promise<ProductInsurance> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/v1/insurances/?${queryString}`);
+  }
+
+  async getInsuranceById(id: string): Promise<any> {
+    return this.httpClient.get("v1/insurances/" + id);
   }
 
   async deleteInsuranceProduct(id: string): Promise<any> {

@@ -10,36 +10,34 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
-import { ProductCategories } from "@/services/masterdata/product-category.service";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ChevronLeft } from "react-feather";
+import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import { useCategories } from "../hooks";
 
-const DetailProductCategory = ({ params }: { params: { id: string } }) => {
+const EditProductCategory = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
-  const [category, setCategory] = useState<ProductCategories[]>([]);
-  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
+  const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const path = usePathname();
 
-  const {
-    fetchCategories,
-    categories,
-    updateCategories,
-    deleteCategories,
-    saveCategories,
-  } = useCategories();
+  const [name, setName] = useState("");
+  const [categoryData, setCategoryData] = useState();
+
+  const { updateCategories, fetchCategoriesById } = useCategories();
 
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
+      id,
       name,
     },
   });
@@ -48,87 +46,104 @@ const DetailProductCategory = ({ params }: { params: { id: string } }) => {
     try {
       const id = params.id;
       await updateCategories(data, id);
-      setSaveSuccess(true);
+      setUpdateSuccess(true);
     } catch (error) {
-      setSaveSuccess(false);
+      setUpdateSuccess(false);
     }
   };
 
   useEffect(() => {
     if (id) {
       (async () => {
-        await fetchCategories({});
+        try {
+          const res = await fetchCategoriesById(id);
+          setName(res.name);
+          setCategoryData(res);
+          setValue("name", res.name);
+          console.log(res.name);
+        } catch (error) {
+          console.error("Error fetching category by ID:", error);
+        }
       })();
     }
-  }, [id]);
+  }, [id, setValue]);
 
   useEffect(() => {
-    if (saveSuccess === true) {
+    if (updateSuccess === true) {
       alert("Data berhasil disimpan!");
-      router.push(`${path}`);
-    } else if (saveSuccess === false) {
+      router.back();
+    } else if (updateSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }
-    setSaveSuccess(null);
-  }, [saveSuccess, router]);
+    setUpdateSuccess(null);
+  }, [updateSuccess, router]);
 
   return (
     <div className="flex flex-col w-full">
-      <div className="bg-white md:px-6 p-4 flex items-center">
-        <div>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink>Masterdata</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  className="cursor-pointer"
-                  onClick={() => router.back()}
-                >
-                  Product Category
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Detail</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <h2 className="text-black font-bold text-2xl mt-2">
-            Detail Product Category
-          </h2>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="bg-white md:px-6 p-4 flex items-center">
+          <div>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink>Masterdata</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink
+                    className="cursor-pointer"
+                    onClick={() => router.back()}
+                  >
+                    Product Category
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Add</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <h2 className="text-black font-bold text-2xl mt-2">
+              Add Product Category
+            </h2>
+          </div>
+
+          <div className="flex ml-auto">
+            <div
+              onClick={() => router.back()}
+              className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </div>
+            <Button
+              type="submit"
+              className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
+            >
+              <Check className="mr-2 w-4 h-4" />
+              Save
+            </Button>
+          </div>
         </div>
-        <div
-          onClick={() => router.back()}
-          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Kembali
-        </div>
-      </div>
-      <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-        <div className="p-6 bg-white rounded-lg flex flex-col gap-4">
-          <div className="font-bold text-base">Category Name</div>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col w-full p-4 md:p-6 gap-4">
+          <div className="p-6 bg-white rounded-lg flex flex-col gap-4">
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Plan Name
+                Category Name
               </label>
-              {/* <Controller
+              <Controller
                 name="name"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Plan Name is required" }}
+                rules={{ required: "Category Name is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
                     id="name"
-                    placeholder="Category Name"
+                    placeholder="Insert Category Name"
                     {...field}
                     className={`mt-1 block w-full ${
                       errors.name ? "border-red-500" : "border-gray-300"
@@ -140,15 +155,15 @@ const DetailProductCategory = ({ params }: { params: { id: string } }) => {
                 <p className="text-red-500 text-xs mt-1">
                   {errors.name.message}
                 </p>
-              )} */}
+              )}
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
 
-const DetailProductCategoryWithSidebar = (params: any) =>
-  WithSidebar(DetailProductCategory)(params);
-export default DetailProductCategoryWithSidebar;
+const EdiProductCategoryWithSidebar = (params: any) =>
+  WithSidebar(EditProductCategory)(params);
+export default EdiProductCategoryWithSidebar;

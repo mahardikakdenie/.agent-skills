@@ -6,6 +6,7 @@ import { useState } from "react";
 
 export const useCategories = () => {
   const productCategoriesService = new ProductCategoriesService();
+
   const [productsCategories, setProductsCategories] = useState<
     ProductCategories[]
   >([]);
@@ -14,6 +15,11 @@ export const useCategories = () => {
   const fetchCategories = async (search: any) => {
     const { data } = await productCategoriesService.getCategories();
     setCategories(data);
+  };
+
+  const fetchCategoriesById = async (id: string) => {
+    const response = await productCategoriesService.getCategoriesById(id);
+    return response;
   };
 
   const saveCategories = async (data: any) => {
@@ -44,6 +50,7 @@ export const useCategories = () => {
     updateCategories,
     deleteCategories,
     fetchCategories,
+    fetchCategoriesById,
     productsCategories,
     setProductsCategories,
   };

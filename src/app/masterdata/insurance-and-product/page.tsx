@@ -13,8 +13,7 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash } from "react-feather";
-
+import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import {
@@ -28,24 +27,35 @@ const InsuranceProduct = () => {
   const insuranceProductService = new ProductInsuranceProductService();
   const [insurance, setInsurance] = useState<ProductInsurance[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const router = useRouter();
 
   useEffect(() => {
     const fetchInsuranceProduct = async () => {
+      setLoading(true);
       try {
-        const result = await insuranceProductService.getInsuranceProduct();
-        setInsurance(result);
+        const result = await insuranceProductService.getInsuranceProduct(
+          page,
+          rowsPerPage
+        );
+        setInsurance(result.data);
+        setTotalPages(result.meta.pageTotal);
+        setTotalItems(result.meta.total);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching insurance products:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchInsuranceProduct();
-  }, []);
-  if (!insurance) {
+  }, [page, rowsPerPage]);
+
+  if (loading) {
     return (
       <div className="w-full h-full flex justify-center items-center">
         Loading...
@@ -64,18 +74,22 @@ const InsuranceProduct = () => {
         setInsurance((prevInsurance) =>
           prevInsurance.filter((insurance) => insurance.id !== id)
         );
-        window.location.reload();
       } catch (error) {
         console.error("Failed to delete insurance:", error);
       }
     }
   };
 
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number(e.target.value));
+    setPage(1);
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">
-          Product Category
+          Insurance and Product
         </h1>
         <Button
           onClick={() => router.push(`${path}/add`)}
@@ -106,7 +120,7 @@ const InsuranceProduct = () => {
                     <div className="flex gap-4 items-center">
                       <Button
                         variant="secondary"
-                        // onClick={() => handleEdit(insurance.id)}
+                        onClick={() => handleEdit(insurance.id)}
                         className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
                       >
                         Edit
@@ -129,10 +143,52 @@ const InsuranceProduct = () => {
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>
+                <div className="flex justify-center items-center gap-2 font-normal">
+                  <label htmlFor="rowsPerPage">Showing:</label>
+                  <select
+                    id="rowsPerPage"
+                    value={rowsPerPage}
+                    onChange={handleRowsPerPageChange}
+                    className="p-2 border rounded"
+                  >
+                    {[10, 20, 30, 50].map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mr-2">of {totalItems} items</span>
+                  <button
+                    onClick={() =>
+                      setPage((prevState) => Math.max(prevState - 1, 1))
+                    }
+                    disabled={page === 1}
+                    title="Prev"
+                  >
+                    <ChevronLeft />
+                  </button>
+                  <button
+                    onClick={() =>
+                      setPage((prevState) =>
+                        Math.min(prevState + 1, totalPages)
+                      )
+                    }
+                    disabled={page === totalPages}
+                    title="Next"
+                  >
+                    <ChevronRight />
+                  </button>
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
     </div>
