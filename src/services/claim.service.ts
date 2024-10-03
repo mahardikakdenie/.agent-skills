@@ -119,9 +119,24 @@ export class ClaimService {
       limit: rowsPerPage,
     };
 
-    if (status) {
+    if (status && status !== "Draft") {
       params["status"] = status;
     }
+
+    if (!status) {
+      params["status"] = [
+        "Application Sent",
+        "Sent to Insurance",
+        "Processing",
+        "Approved",
+        "Payment Processing",
+        "Paid",
+        "Closed",
+        "Lack of Documents",
+        "Rejected",
+      ];
+    }
+
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/claims?${queryString}`);
   }

@@ -106,7 +106,7 @@ const DetailTransaction = ({ params }: { params: { id: string } }) => {
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm"
         >
           <ChevronLeft className="w-4 h-4" />
-          Kembali
+          Back
         </Link>
       </div>
       <div className="flex flex-col w-full p-4 md:p-6 ">
