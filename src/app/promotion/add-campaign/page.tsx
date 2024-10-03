@@ -366,9 +366,9 @@ const CreatePromotionPage = () => {
         const { data } = response;
 
         if (promotion.type == "embedded") {
-
-          if (data.data.data != null) {
-            if (data.data.data.error.code === 409) {
+          console.log("data: " + data);
+          if (data != null) {
+            if (data.data?.error?.code === 409) {
               setErrorMessage("Unable to submit campaign, one or more plan has already been used by another embedded campaign.");
               setShowAlert(true);
               return;
@@ -380,12 +380,8 @@ const CreatePromotionPage = () => {
             }
 
           } else {
-            setErrorMessage("Promotion Campaign Submitted!");
+            setErrorMessage('Failed to create promotion. Please try again.');
             setShowAlert(true);
-            setTimeout(() => {
-              setShowAlert(false);
-              router.push("/promotion");
-            }, 2000);
           }
         }
         else {
@@ -712,7 +708,7 @@ const CreatePromotionPage = () => {
       const updatedInsurances = prevState.embedded_discount_insurances.filter(
         insurance => insurance.insurance_id !== insuranceId
       );
-  
+
       return {
         ...prevState,
         embedded_discount_insurances: updatedInsurances,
@@ -720,17 +716,17 @@ const CreatePromotionPage = () => {
         embedded_discount_plans: []      // Clear plans
       };
     });
-  
+
     setGlobalSelectedInsuranceIds(prevIds => {
       const newIds = new Set(prevIds);
       newIds.delete(insuranceId);
       return newIds;
     });
-  
+
     setSelectedProductIds(new Set());  // Reset selected product IDs
     setSelectedPlanIds(new Set());     // Reset selected plan IDs
     setCurrentPageProd(1);             // Reset pagination for products
-  };  
+  };
 
   const handleRemoveProd = (prodId: string) => {
     setPromotion(prevState => ({

@@ -886,8 +886,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       const { data } = response;
 
       if (promotion.type == "embedded") {
-        if (data.data != null) {
-          if (data.data.error.code === 409) {
+        if (data != null) {
+          if (data.data?.error?.code === 409) {
             setErrorMessage("The plan has already been used by another embedded campaign.");
           } else {
             setErrorMessage("Promotion updated successfully!");
@@ -898,6 +898,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             }, 2000);
           }
         } else {
+          planService.getSyncEmbeddedDiscount();
           setErrorMessage("Promotion updated successfully!");
           setShowAlert(true);
           setTimeout(() => {
