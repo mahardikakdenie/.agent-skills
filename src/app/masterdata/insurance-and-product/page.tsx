@@ -89,7 +89,7 @@ const InsuranceProduct = () => {
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">
-          Product Category
+          Insurance and Product
         </h1>
         <Button
           onClick={() => router.push(`${path}/add`)}
