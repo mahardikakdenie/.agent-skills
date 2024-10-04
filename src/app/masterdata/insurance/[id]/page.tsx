@@ -24,7 +24,10 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const path = usePathname();
 
-  const [name, setName] = useState("");
+  const [name] = useState("");
+  const [brand, setBrand] = useState("");
+  const [country, setCountry] = useState("");
+  const [logo_url, setLogoUrl] = useState("");
   const [insuranceData, setInsuranceData] = useState();
 
   const { updateInsurance, fetchInsuranceById } = useInsurance();
@@ -37,8 +40,16 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
-      id,
       name,
+      brand,
+      country,
+      logo_url,
+    },
+    values: {
+      name,
+      brand,
+      country,
+      logo_url,
     },
   });
 
@@ -57,10 +68,11 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
       (async () => {
         try {
           const res = await fetchInsuranceById(id);
-          setName(res.name);
           setInsuranceData(res);
-          setValue("name", res.name);
-          console.log(res.name);
+          setValue("name", res.data.name);
+          setValue("brand", res.data.brand);
+          setValue("logo_url", res.data.logo_url);
+          setValue("country", res.data.country);
         } catch (error) {
           console.error("Error fetching category by ID:", error);
         }
@@ -126,7 +138,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          {/* <div className="p-6 bg-white rounded-lg flex-col gap-4 grid grid-cols-2">
+          <div className="p-6 bg-white rounded-lg flex-col gap-4 grid grid-cols-2">
             <div>
               <label
                 htmlFor="name"
@@ -145,7 +157,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                     id="name"
                     placeholder="Insert Insurance Name"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.name ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -175,7 +187,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                     id="logo_url"
                     placeholder="Insert Logo"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.logo_url ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -205,7 +217,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                     id="brand"
                     placeholder="Insert Brand"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.brand ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -235,7 +247,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                     id="country"
                     placeholder="Insert Country"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-12 ${
                       errors.country ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -247,7 +259,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                 </p>
               )}
             </div>
-          </div> */}
+          </div>
         </div>
       </form>
     </div>

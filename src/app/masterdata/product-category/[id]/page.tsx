@@ -60,7 +60,6 @@ const EditProductCategory = ({ params }: { params: { id: string } }) => {
           setName(res.name);
           setCategoryData(res);
           setValue("name", res.name);
-          console.log(res.name);
         } catch (error) {
           console.error("Error fetching category by ID:", error);
         }
