@@ -19,7 +19,9 @@ import { useUser } from "../hooks";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -27,9 +29,9 @@ import {
 const AddUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();
+  const [selectedChannel, setSelectedSelectedChannel] = useState<any>(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,8 +39,9 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const [channel, setChannel] = useState("");
 
-  const { fetchUser, saveUser } = useUser();
+  const { saveUser, channels, fetchChannels } = useUser();
 
   const {
     handleSubmit,
@@ -53,14 +56,19 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       role,
       password,
       status,
+      channel,
+      channelId: selectedChannel,
+      permission: "",
     },
     values: {
+      permission: "",
       name,
       email,
       phone_number,
       role,
       password,
       status,
+      channel,
     },
   });
 
@@ -72,14 +80,9 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       setSaveSuccess(false);
     }
   };
-
   useEffect(() => {
-    if (id) {
-      (async () => {
-        await fetchUser({});
-      })();
-    }
-  }, [id]);
+    fetchChannels({});
+  }, []);
 
   useEffect(() => {
     if (saveSuccess === true) {
@@ -209,7 +212,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 name="phone_number"
                 control={control}
                 defaultValue=""
-                // rules={{ required: "Phone Number is required" }}
+                rules={{ required: "Phone Number is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
@@ -301,9 +304,9 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 name="status"
                 control={control}
                 defaultValue=""
-                // rules={{ required: "Status is required" }}
+                rules={{ required: "Status is required" }}
                 render={({ field }) => (
-                  <Select>
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                       <SelectValue placeholder="Select Status" />
                     </SelectTrigger>
@@ -317,6 +320,41 @@ const AddUser = ({ params }: { params: { id: string } }) => {
               {errors.status && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.status.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="channel"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Channel
+              </label>
+              <Controller
+                name="channel"
+                control={control}
+                rules={{ required: "Channel ID is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Channel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {channels.map((channel: any) => (
+                          <SelectItem key={channel.id} value={channel.id}>
+                            {channel.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.channel && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.channel.message?.toString()}
+                  error message
                 </p>
               )}
             </div>
