@@ -264,27 +264,38 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           <select
             id="rowsPerPage"
             className="p-2 border rounded"
-            value={showProdPerPage}
-            onChange={(e) => onProdPerPageChange(Number(e.target.value))}
+            value={showProdPerPage === totalItems ? 'All' : showProdPerPage}
+            onChange={(e) => {
+              const value = e.target.value === 'All' ? totalItems : Number(e.target.value);
+              onProdPerPageChange(value);
+            }}
           >
-            {[10, 20, 30, 50].map((option) => (
-              <option key={option} value={option}>
-                {option}
+            {[10, 20, 30, 50, 'All'].map((option) => (
+              <option key={option} value={option === 'All' ? 'All' : option}>
+                {option === 'All' ? 'Show All' : option}
               </option>
             ))}
           </select>
-          <span className="mr-2">of {totalItems} items</span>
+          <span className="mr-2">
+            {showProdPerPage === totalItems
+              ? `Showing all ${totalItems} items`
+              : `of ${totalItems} items`}
+          </span>
           <button
             onClick={() => handlePageChange(currentPageProd - 1)}
-            disabled={currentPageProd === 1}
+            disabled={currentPageProd === 1 || showProdPerPage === totalItems}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronLeft />
           </button>
-          <span>{`Page ${currentPageProd} of ${totalPages}`}</span>
+          <span>
+            {showProdPerPage === totalItems
+              ? `Showing all on a single page`
+              : `Page ${currentPageProd} of ${totalPages}`}
+          </span>
           <button
             onClick={() => handlePageChange(currentPageProd + 1)}
-            disabled={currentPageProd === totalPages}
+            disabled={currentPageProd === totalPages || showProdPerPage === totalItems}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronRight />
