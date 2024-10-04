@@ -1,4 +1,5 @@
 import { User, UserService } from "@/services/masterdata/user.service";
+import { channel } from "process";
 import { useState } from "react";
 
 export const useUser = () => {
@@ -6,15 +7,16 @@ export const useUser = () => {
 
   const [users, setUsers] = useState<User[]>([]);
   const [user, setUser] = useState<any[]>([]);
-
-  // const fetchUser = async (search: any) => {
-  //   const users = await userService.getUser();
-  //   return users;
-  // };
+  const [channels, setChannels] = useState<any[]>([]);
 
   const fetchUser = async (search: any) => {
     const { data } = await userService.getUser(search);
     setUsers(data);
+  };
+
+  const fetchChannels = async (search: any) => {
+    const { data } = await userService.getChannel(search);
+    setChannels(data);
   };
 
   const fetchUserById = async (id: string) => {
@@ -46,5 +48,8 @@ export const useUser = () => {
     fetchUserById,
     users,
     setUsers,
+    channel,
+    channels,
+    fetchChannels,
   };
 };

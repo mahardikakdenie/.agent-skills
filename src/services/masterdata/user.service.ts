@@ -14,18 +14,29 @@ export interface User {
   status: string;
   meta: any;
 }
+export interface Channel {
+  data: any;
+  id: string;
+  name: string;
+  type: string;
+}
 
 export class UserService {
-  private httpClient: IHttpClient;
+  private authHttpClient: IHttpClient;
+  private channelHttpClient: IHttpClient;
   then: any;
 
   constructor() {
-    this.httpClient = new AxiosHttpClient({
+    this.authHttpClient = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
       },
+    });
+
+    this.channelHttpClient = new AxiosHttpClient({
+      baseURL: process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL,
     });
   }
 
@@ -36,16 +47,27 @@ export class UserService {
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get(`/account/?${queryString}`);
+    return this.authHttpClient.get(`/account/?${queryString}`);
   }
 
+  async getChannel(search: any): Promise<Channel> {
+    try {
+      const queryString = new URLSearchParams({ ...search }).toString();
+      return await this.channelHttpClient.get<Channel>(
+        "/channels?" + queryString
+      );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
   async getUserById(id: string): Promise<any> {
-    return this.httpClient.get("/account/" + id);
+    return this.authHttpClient.get("/account/" + id);
   }
 
   async deleteUser(id: string): Promise<any> {
     try {
-      return await this.httpClient.delete("v1/insurances/" + id);
+      return await this.authHttpClient.delete("/account/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
@@ -54,7 +76,7 @@ export class UserService {
 
   async saveUser(data: any): Promise<any> {
     try {
-      return await this.httpClient.post("/account", data);
+      return await this.authHttpClient.post("/account", data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
@@ -63,7 +85,7 @@ export class UserService {
 
   async updateUser(data: any, id: string): Promise<any> {
     try {
-      return await this.httpClient.put("/account/" + id, data);
+      return await this.authHttpClient.put("/account/" + id, data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

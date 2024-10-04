@@ -248,19 +248,53 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/insurance-and-product"
+                  href="/masterdata/insurance"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/insurance-and-product")
+                    isActive("/masterdata/insurance")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
                 >
                   <Image
                     src={iconClaim}
-                    alt="Insurance and Product"
+                    alt="Insurance"
                     className="w-7 min-w-7"
                   />
-                  Insurance and Product
+                  Insurance
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/masterdata/product"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/masterdata/product")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Product"
+                    className="w-7 min-w-7"
+                  />
+                  Product
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/masterdata/currency"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/masterdata/currency")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Currency"
+                    className="w-7 min-w-7"
+                  />
+                  Currency
                 </Link>
               </li>
               <li>
@@ -287,23 +321,6 @@ const Sidebar = () => {
                 >
                   <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
                   Roles
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/masterdata/currency"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/currency")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
-                >
-                  <Image
-                    src={iconClaim}
-                    alt="Currency"
-                    className="w-7 min-w-7"
-                  />
-                  Currency
                 </Link>
               </li>
             </ul>
