@@ -703,7 +703,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       const response = await planService.getPlansNameByProductId(Array.from(globalSelectedProdIds), query);
       //here
       setPlans(response);
-      setGlobalSelectedPlanIds(globalSelectedProdIds);
+      setGlobalSelectedPlanIds(globalSelectedPlanIds);
       setTotalPlanItems(response.meta.total);
       setCurrentPagePlan(1);
     } catch (error) {
