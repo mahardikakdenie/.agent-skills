@@ -61,7 +61,6 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       permission: "",
     },
     values: {
-      permission: "",
       name,
       email,
       phone_number,
@@ -69,6 +68,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       password,
       status,
       channel,
+      permission: "",
     },
   });
 
