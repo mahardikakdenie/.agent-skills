@@ -67,7 +67,7 @@ export class UserService {
 
   async deleteUser(id: string): Promise<any> {
     try {
-      return await this.authHttpClient.delete("v1/insurances/" + id);
+      return await this.authHttpClient.delete("/account/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

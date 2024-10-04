@@ -265,7 +265,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/masterdata/product"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
                     isActive("/masterdata/product")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
