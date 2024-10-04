@@ -148,7 +148,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
       .map(planId => data.find(plan => plan.id === planId))
       .filter((plan): plan is Plan => Boolean(plan));
 
-    console.log("tomL: "+ data.map(plan => (localSelectedPlanIds.has(plan.id))));
+    console.log("tomL: " + data.map(plan => (localSelectedPlanIds.has(plan.id))));
     setGlobalSelectedPlanIds(localSelectedPlanIds);
     onClose();
     setTimeout(() => {
@@ -235,31 +235,41 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
           <label htmlFor="rowsPerPage" className="mr-2">Showing:</label>
           <select
             id="rowsPerPage"
-            value={showPlansPerPage}
-            onChange={(e) => onPlansPerPageChange(Number(e.target.value))}
+            value={showPlansPerPage === totalPlanItems ? 'All' : showPlansPerPage}
+            onChange={(e) => {
+              const value = e.target.value === 'All' ? totalPlanItems : Number(e.target.value);
+              onPlansPerPageChange(value);
+            }}
             className="p-2 border rounded"
           >
-            {[10, 20, 30, 50].map(option => (
-              <option key={option} value={option}>
-                {option}
+            {[10, 20, 30, 50, 'All'].map((option) => (
+              <option key={option} value={option === 'All' ? 'All' : option}>
+                {option === 'All' ? 'Show All' : option}
               </option>
             ))}
           </select>
-          <span className="mr-2">of {totalPlanItems} items</span>
-
+          <span className="mr-2">
+            {showPlansPerPage === totalPlanItems
+              ? `Showing all ${totalPlanItems} items`
+              : `of ${totalPlanItems} items`}
+          </span>
           <button
             type="button"
             onClick={() => handlePageChange(pagePlan - 1)}
-            disabled={pagePlan === 1}
+            disabled={pagePlan === 1 || showPlansPerPage === totalPlanItems}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
           >
             <ChevronLeft />
           </button>
-          <span>Page {pagePlan} of {totalPages}</span>
+          <span>
+            {showPlansPerPage === totalPlanItems
+              ? `Showing all on a single page`
+              : `Page ${pagePlan} of ${totalPages}`}
+          </span>
           <button
             type="button"
             onClick={() => handlePageChange(pagePlan + 1)}
-            disabled={pagePlan === totalPages}
+            disabled={pagePlan === totalPages || showPlansPerPage === totalPlanItems}
             className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
           >
             <ChevronRight />
