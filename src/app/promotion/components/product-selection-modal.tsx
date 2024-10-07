@@ -183,7 +183,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-3xl h-[90vh] flex flex-col relative">
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
           <FaTimes />
         </button>
@@ -221,7 +221,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -233,15 +233,15 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <tr key={product.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-2 py-1 text-center whitespace-nowrap text-xs font-medium">
                       <input
                         type="checkbox"
-                        checked={localSelectedProductIds.has(product.id)} // Use localSelectedProductIds here
-                        onChange={() => handleCheckboxChange(product.id)} // Call the change handler
+                        checked={localSelectedProductIds.has(product.id)}
+                        onChange={() => handleCheckboxChange(product.id)}
                         className="form-checkbox"
                       />
                     </td>

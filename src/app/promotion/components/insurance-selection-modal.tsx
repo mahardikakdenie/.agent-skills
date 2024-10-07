@@ -102,7 +102,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   const handleApply = () => {
     // Update global selected insurance IDs only when Save is clicked
     setGlobalSelectedInsuranceIds(localSelectedInsuranceIds);
-    
+
     // Prepare the selected insurances data to return
     const selectedInsurancesData: Insurance[] = Array.from(localSelectedInsuranceIds)
       .map(insuranceId => data.find(insurance => insurance.id === insuranceId))
@@ -124,7 +124,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-3xl h-[90vh] flex flex-col relative">
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
           <FaTimes />
         </button>
@@ -136,7 +136,7 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -149,11 +149,11 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {data.length > 0 ? (
                 data.map((insurance) => (
                   <tr key={insurance.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-2 py-1 text-center whitespace-nowrap text-xs font-medium">
                       <input
                         type="checkbox"
                         checked={localSelectedInsuranceIds.has(insurance.id)}

@@ -18,7 +18,7 @@ import { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
 import { isValid, parseISO } from 'date-fns';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
-import { ChevronLeft } from "react-feather";
+import { ChevronLeft, Trash } from "react-feather";
 
 const CURRENCIES = [
   { code: 'IDR', name: 'Indonesian Rupiah' },
@@ -137,7 +137,7 @@ const CreatePromotionPage = () => {
 
 
   const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
-    console.log("Fetching plans for page:", page, "with limit:", limit);
+    // console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlans(responses);
@@ -160,7 +160,7 @@ const CreatePromotionPage = () => {
   };
 
   const fetchInsurances = async (page: number, limit: number) => {
-    console.log("Fetching insurances for page:", page, "with limit:", limit);
+    // console.log("Fetching insurances for page:", page, "with limit:", limit);
     try {
       const response = await insuranceService.getInsurances(page, limit);
       setInsurances(response);
@@ -242,11 +242,34 @@ const CreatePromotionPage = () => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
+      if (arrayName === 'embedded_discount_channels') {
+        // Reset insurances, products, and plans when a channel is removed
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_insurances: [],
+          embedded_discount_products: [],
+          embedded_discount_plans: [],
+        };
+      }
+
       return {
         ...prevState,
         [arrayName]: updatedArray,
       };
     });
+
+    if (arrayName === 'embedded_discount_channels') {
+      // Reset global states or selections
+      setSelectedProductIds(new Set());
+      setSelectedPlanIds(new Set());
+      setGlobalSelectedProdIds(new Set());
+      setGlobalSelectedPlanIds(new Set());
+      setGlobalSelectedInsuranceIds(new Set());
+      setSelectedInsuranceIds(new Set());
+      setSelectedInsurances([]);
+      setCurrentPageProd(1);
+    }
   };
 
   const handleValueTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -366,7 +389,7 @@ const CreatePromotionPage = () => {
         const { data } = response;
 
         if (promotion.type == "embedded") {
-          console.log("data: " + data);
+          // console.log("data: " + data);
           if (data != null) {
             if (data.data?.error?.code === 409) {
               setErrorMessage("Unable to submit campaign, one or more plan has already been used by another embedded campaign.");
@@ -676,7 +699,7 @@ const CreatePromotionPage = () => {
   };
 
   const handleInsurancePerPageChange = async (newInsPerPage: number) => {
-    console.log("insPerPage: " + newInsPerPage);
+    // console.log("insPerPage: " + newInsPerPage);
     setShowInsPerPage(newInsPerPage);
     setCurrentPageIns(1);
     fetchInsurances(1, newInsPerPage);
@@ -697,10 +720,33 @@ const CreatePromotionPage = () => {
   };
 
   const handleRemoveChannel = (channelId: string) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_channels: prevState.embedded_discount_channels.filter(channel => channel.channel_id !== channelId)
-    }));
+    setPromotion(prevState => {
+      const updatedChannel = prevState.embedded_discount_channels.filter(
+        channel => channel.channel_id !== channelId
+      );
+
+      return {
+        ...prevState,
+        embedded_discount_channels: updatedChannel,
+        embedded_discount_insurances: [],  // Clear insurances
+        embedded_discount_products: [],  // Clear products
+        embedded_discount_plans: []      // Clear plans
+      };
+    });
+
+    setGlobalSelectedChannels(prevIds => {
+      const newIds = new Set(prevIds);
+      newIds.delete(channelId);
+      return newIds;
+    });
+
+    setSelectedInsuranceIds(new Set());
+    setGlobalSelectedInsuranceIds(new Set());
+    setSelectedProductIds(new Set());  // Reset selected product IDs
+    setGlobalSelectedProdIds(new Set());
+    setSelectedPlanIds(new Set());     // Reset selected plan IDs
+    setGlobalSelectedPlanIds(new Set());
+    setCurrentPageProd(1);             // Reset pagination for products
   };
 
   const handleRemoveInsurance = (insuranceId: string) => {
@@ -993,19 +1039,19 @@ const CreatePromotionPage = () => {
             <label className="font-normal">Channels</label>
             <div className="flex items-start mt-2">
               <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-                <div className="flex flex-wrap p-2">
+                <div className="flex flex-col p-2">
                   {promotion.embedded_discount_channels.length > 0 ? (
                     promotion.embedded_discount_channels.map((channel, index) => (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {channel.channel_name || 'Unknown Channel'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItemChan('embedded_discount_channels', index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     ))
@@ -1035,19 +1081,19 @@ const CreatePromotionPage = () => {
             <label className="font-normal">Insurances</label>
             <div className="flex items-start mt-2">
               <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-                <div className="flex flex-wrap p-2">
+                <div className="flex flex-col p-2">
                   {promotion.embedded_discount_insurances.length > 0 ? (
                     promotion.embedded_discount_insurances.map((insurance, index) => (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {insurance.insurance_name || 'Unknown Insurance'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItemIns('embedded_discount_insurances', index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     ))
@@ -1061,6 +1107,7 @@ const CreatePromotionPage = () => {
                   type="button"
                   onClick={handleAddIns}
                   className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                  disabled={promotion.embedded_discount_channels.length === 0}
                 >
                   <FaPlus className="mr-2" />
                   Insurance
@@ -1075,19 +1122,19 @@ const CreatePromotionPage = () => {
             <label className="font-normal">Products</label>
             <div className="flex items-start mt-2">
               <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-                <div className="flex flex-wrap p-2">
+                <div className="flex flex-col p-2">
                   {promotion.embedded_discount_products.length > 0 ? (
                     promotion.embedded_discount_products.map((product, index) => (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {product.product_name || 'Unknown Product'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveProduct(index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     ))
@@ -1116,19 +1163,19 @@ const CreatePromotionPage = () => {
             <label className="font-normal">Plans</label>
             <div className="flex items-start mt-2">
               <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-                <div className="flex flex-wrap p-2">
+                <div className="flex flex-col p-2">
                   {promotion.embedded_discount_plans.length > 0 ? (
                     promotion.embedded_discount_plans.map((plan, index) => (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {plan.name}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemovePlan(index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     ))

@@ -17,7 +17,7 @@ import { PlanService } from "@/services/plan.services";
 import PlanSelectionModal from "../../components/plan-selection-modal";
 import axios, { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
-import { ChevronLeft } from "react-feather";
+import { ChevronLeft, Trash } from "react-feather";
 import { FaCheck, FaPlus } from 'react-icons/fa';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
@@ -116,13 +116,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   //   console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
   // }, [globalSelectedInsuranceIds]);
 
-  useEffect(() => {
-    console.log('Plans Data:', plansInitial?.data);
-  }, [plansInitial]);
+  // useEffect(() => {
+  //   console.log('Plans Data:', plansInitial?.data);
+  // }, [plansInitial]);
 
-  useEffect(() => {
-    console.log('Global Selected selectedPlans:', Array.from(globalSelectedPlanIds));
-  }, [globalSelectedPlanIds]);
+  // useEffect(() => {
+  //   console.log('Global Selected selectedPlans:', Array.from(globalSelectedPlanIds));
+  // }, [globalSelectedPlanIds]);
 
   // useEffect(() => {
   //   console.log('Channel Data:', channelsInitial?.data);
@@ -173,7 +173,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       promotionService.getPromotionCampaignById(params.id as string)
         .then((res) => {
           const promotionData: PromotionDetails = res.data[0];
-          console.log('Fetched Promotion Data:', promotionData);
+          // console.log('Fetched Promotion Data:', promotionData);
           setPromotion(promotionData);
           fetchChannelsInitial(1, 50);
           fetchInsurancesInitial(1, 50);
@@ -267,7 +267,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
   const fetchInsurancesInitial = async (page: number, limit: number) => {
-    console.log("Ins initial:", page, "with limit:", limit);
+    // console.log("Ins initial:", page, "with limit:", limit);
     try {
       const response = await insuranceService.getInsurances(page, limit);
       setInsurancesInitial(response);
@@ -279,7 +279,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchInsurances = async (page: number, limit: number) => {
-    console.log("Fetching insurances for page:", page, "with limit:", limit);
+    // console.log("Fetching insurances for page:", page, "with limit:", limit);
     try {
       const response = await insuranceService.getInsurances(page, limit);
       setInsurances(response);
@@ -292,7 +292,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
   const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
-    console.log("Fetching plans for page:", page, "with limit:", limit);
+    // console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlans(responses);
@@ -304,7 +304,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchPlansByProductsInitial = async (productIds: string[], page: number, limit: number) => {
-    console.log("Plans initial :", page, "with limit:", limit);
+    // console.log("Plans initial :", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlansInitial(responses);
@@ -334,7 +334,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchProductsByInsurancesInitial = async (insuranceIds: string[], page: number, limit: number) => {
-    console.log("Product initial :", page, "with limit:", limit);
+    // console.log("Product initial :", page, "with limit:", limit);
     try {
       const allProducts = await productService.getProductByInsuranceId(insuranceIds, limit, page);
       setProductsInitial(allProducts);
@@ -474,11 +474,34 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setPromotion(prevState => {
       const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
 
+      if (arrayName === 'embedded_discount_channels') {
+        // Reset insurances, products, and plans when a channel is removed
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_insurances: [],
+          embedded_discount_products: [],
+          embedded_discount_plans: [],
+        };
+      }
+
       return {
         ...prevState,
         [arrayName]: updatedArray,
       };
     });
+
+    if (arrayName === 'embedded_discount_channels') {
+      // Reset global states or selections
+      setSelectedProductIds(new Set());
+      setSelectedPlanIds(new Set());
+      setGlobalSelectedProdIds(new Set());
+      setGlobalSelectedPlanIds(new Set());
+      setGlobalSelectedInsuranceIds(new Set());
+      setSelectedInsuranceIds(new Set());
+      setSelectedInsurances([]);
+      setCurrentPageProd(1);
+    }
   };
 
   const handleRemoveProduct = (arrayName: keyof PromotionDetails, index: number) => {
@@ -719,7 +742,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleInsurancePerPageChange = async (newInsPerPage: number) => {
-    console.log("insPerPage: " + newInsPerPage);
+    // console.log("insPerPage: " + newInsPerPage);
     setShowInsPerPage(newInsPerPage);
     setCurrentPageIns(1);
     fetchInsurances(1, newInsPerPage);
@@ -871,7 +894,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               usage_limit: voucher.usageLimit,
               campaign_id,
             };
-            console.log("test" + newVoucher.usage_limit);
+            // console.log("test" + newVoucher.usage_limit);
             await voucherService.createVoucher(newVoucher);
           } catch (voucherError) {
             console.error("Failed to create voucher:", voucherError);
@@ -921,10 +944,33 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleRemoveChannel = (channelId: string) => {
-    setPromotion(prevState => ({
-      ...prevState,
-      embedded_discount_channels: prevState.embedded_discount_channels.filter(channel => channel.channel_id !== channelId)
-    }));
+    setPromotion(prevState => {
+      const updatedChannel = prevState.embedded_discount_channels.filter(
+        channel => channel.channel_id !== channelId
+      );
+
+      return {
+        ...prevState,
+        embedded_discount_channels: updatedChannel,
+        embedded_discount_insurances: [],  // Clear insurances
+        embedded_discount_products: [],  // Clear products
+        embedded_discount_plans: []      // Clear plans
+      };
+    });
+
+    setGlobalSelectedChannels(prevIds => {
+      const newIds = new Set(prevIds);
+      newIds.delete(channelId);
+      return newIds;
+    });
+
+    setSelectedInsuranceIds(new Set());
+    setGlobalSelectedInsuranceIds(new Set());
+    setSelectedProductIds(new Set());  // Reset selected product IDs
+    setGlobalSelectedProdIds(new Set());
+    setSelectedPlanIds(new Set());     // Reset selected plan IDs
+    setGlobalSelectedPlanIds(new Set());
+    setCurrentPageProd(1);             // Reset pagination for products
   };
 
 
@@ -1080,7 +1126,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <label className="font-normal">Channels</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
+              <div className="flex flex-col p-2">
                 {Array.from(globalSelectedChannels).length > 0 ? (
                   Array.from(globalSelectedChannels).map((channelId, index) => {
                     // Look for the channel in both channels?.data and selectedChannels
@@ -1089,15 +1135,15 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {channelDetail ? channelDetail.name : 'Unknown Channel'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItemChan('embedded_discount_channels', index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     );
@@ -1131,22 +1177,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <label className="font-normal">Insurances</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
+              <div className="flex flex-col p-2">
                 {Array.from(globalSelectedInsuranceIds).length > 0 ? (
                   Array.from(globalSelectedInsuranceIds).map((insId, index) => {
                     const insuranceDetail = insurancesInitial?.data.find(c => c.id === insId) ||
                       selectedInsurances.find(c => c.id === insId);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {insuranceDetail ? insuranceDetail.name : 'Unknown Insurance'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItemIns('embedded_discount_insurances', index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     );
@@ -1165,6 +1211,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   handleAddInsurance(); // Call this function correctly
                 }}
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                disabled={promotion.embedded_discount_channels.length === 0}
               >
                 <FaPlus className="mr-2" />
                 Insurance
@@ -1179,22 +1226,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <label className="font-normal">Products</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
+              <div className="flex flex-col p-2">
                 {Array.from(globalSelectedProdIds).length > 0 ? (
                   Array.from(globalSelectedProdIds).map((product, index) => {
                     const productDetail = productsInitial?.data.find(p => p.id === product) ||
                       selectedProducts.find(p => p.id === product);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {productDetail ? productDetail.name : 'Unknown Product'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveProduct('embedded_discount_products', index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     );
@@ -1230,22 +1277,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           <label className="font-normal">Plans</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
-              <div className="flex flex-wrap p-2">
+              <div className="flex flex-col p-2">
                 {Array.from(globalSelectedPlanIds).length > 0 ? (
                   Array.from(globalSelectedPlanIds).map((plan, index) => {
                     const planDetail = plansInitial?.data.find(p => p.id === plan) ||
                       selectedPlans.find(p => p.id === plan);
                     return (
                       <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
-                        <span className="h-auto max-w-xs overflow-hidden text-ellipsis whitespace-normal">
+                        <span className="whitespace-normal">
                           {planDetail ? planDetail.name : 'Unknown Plan'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemovePlan(index)}
-                          className="text-red-500 ml-1"
+                          className="text-red-500 ml-auto"
                         >
-                          X
+                          <Trash />
                         </button>
                       </div>
                     );
