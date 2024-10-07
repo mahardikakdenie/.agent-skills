@@ -4,7 +4,6 @@ import { IHttpClient } from "@/lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
 import Cookies from "universal-cookie";
 
-
 interface InsuranceResponse {
   data: Insurance[];
   meta: {
@@ -19,14 +18,15 @@ export interface Insurance {
   name: string;
   brand: string;
   logo_url: string | null;
+  _count: {
+    products: string;
+  };
 }
-
 
 export class InsuranceService {
   private httpClientInsurance: IHttpClient;
 
   constructor() {
-
     this.httpClientInsurance = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
       headers: {
@@ -35,21 +35,21 @@ export class InsuranceService {
       },
     });
   }
-  
 
   async getInsurances(page: number, limit: number): Promise<any> {
     if (page > 0) {
-      return this.httpClientInsurance.get('/v1/insurances?page=' + page + "&pageSize=" + limit);
+      return this.httpClientInsurance.get(
+        "/v1/insurances?page=" + page + "&pageSize=" + limit
+      );
     } else {
       page = 1;
-      return this.httpClientInsurance.get('/v1/insurances?page=' + page + "&pageSize=" + limit);
+      return this.httpClientInsurance.get(
+        "/v1/insurances?page=" + page + "&pageSize=" + limit
+      );
     }
-
   }
 
-  
   async getInsuranceById(id: string): Promise<any> {
-    return this.httpClientInsurance.get('/insurances/' + id);
+    return this.httpClientInsurance.get("/insurances/" + id);
   }
-
 }

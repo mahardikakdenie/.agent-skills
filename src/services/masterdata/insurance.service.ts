@@ -4,6 +4,7 @@ import Cookies from "universal-cookie";
 import qs from "qs";
 
 export interface Insurance {
+  _count: any;
   data: any;
   page: any;
   total: any;
@@ -14,6 +15,11 @@ export interface Insurance {
   name: string;
   logo_url: string;
   meta: any;
+}
+export interface CategoriesResponse {
+  data: any;
+  id: string;
+  name: string;
 }
 
 export class InsuranceService {
@@ -30,11 +36,27 @@ export class InsuranceService {
       },
     });
   }
+  async getCategorie(search: any): Promise<CategoriesResponse> {
+    try {
+      const queryString = new URLSearchParams({ ...search }).toString();
+      return await this.httpClient.get<CategoriesResponse>(
+        "v1/categories/?" + queryString
+      );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 
-  async getInsurance(page?: number, rowsPerPage?: number): Promise<Insurance> {
+  async getInsurance(
+    page?: number,
+    rowsPerPage?: number,
+    categoryId?: string
+  ): Promise<Insurance> {
     const params: any = {
       page: page,
       pageSize: rowsPerPage,
+      categoryId: categoryId,
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
