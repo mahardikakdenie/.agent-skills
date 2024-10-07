@@ -99,7 +99,14 @@ const ProductCategory = () => {
               category.map((category, index) => (
                 <TableRow key={category.id}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{category.name}</TableCell>
+                  <TableCell>
+                    {category.name
+                      .split("-")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
                       <Button

@@ -180,7 +180,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                 name="logo_url"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Logo is required" }}
+                // rules={{ required: "Logo is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
@@ -210,7 +210,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                 name="brand"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Brand is required" }}
+                // rules={{ required: "Brand is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
@@ -240,7 +240,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                 name="country"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Country is required" }}
+                // rules={{ required: "Country is required" }}
                 render={({ field }) => (
                   <Input
                     type="text"
