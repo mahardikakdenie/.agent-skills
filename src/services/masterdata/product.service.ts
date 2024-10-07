@@ -50,7 +50,9 @@ export class MdProductService {
   async getProduct(
     page: number,
     rowsPerPage: number,
-    category: string
+    category: string,
+    categoryId: string,
+    insuranceId: string
   ): Promise<ProductResponse> {
     const params: any = {
       page: page,
@@ -59,6 +61,12 @@ export class MdProductService {
 
     if (category) {
       params["category"] = category;
+    }
+    if (categoryId) {
+      params["categoryId"] = categoryId;
+    }
+    if (insuranceId) {
+      params["insuranceId"] = insuranceId;
     }
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/products/?${queryString}`);

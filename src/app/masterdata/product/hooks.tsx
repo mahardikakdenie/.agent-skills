@@ -12,12 +12,24 @@ export const useProduct = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [insurances, setInsurances] = useState<any[]>([]);
 
-  const fetchProduct = async (search: any) => {
+  const fetchProduct = async (
+    search: any,
+    categories: string,
+    insurance: string
+  ) => {
     const page = 1;
     const rowsPerPage = 10;
     const category = search || "";
+    const insuranceId = insurance;
+    const categoryId = categories;
 
-    const { data } = await mdProduct.getProduct(page, rowsPerPage, category);
+    const { data } = await mdProduct.getProduct(
+      page,
+      rowsPerPage,
+      category,
+      categoryId,
+      insuranceId
+    );
     setProduct(data);
   };
 

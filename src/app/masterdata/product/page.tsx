@@ -90,7 +90,7 @@ const InsuranceProduct = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(`${path}/edit?category-id=${tab}&insurance-id=${id}`);
   };
 
   const handleDelete = async (id: string) => {
