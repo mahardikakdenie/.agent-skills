@@ -160,7 +160,7 @@ const InsuranceProduct = () => {
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
               <TableHead>Insurance Name</TableHead>
               <TableHead>Total Product</TableHead>
-              <TableHead className="whitespace-nowrap w-36">Action</TableHead>
+              <TableHead className="whitespace-nowrap w-12">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -179,13 +179,13 @@ const InsuranceProduct = () => {
                       >
                         Edit
                       </Button>
-                      <Button
+                      {/* <Button
                         variant="ghost"
                         onClick={() => handleDelete(insurance.name)}
                         className="text-red-600 px-0"
                       >
                         <Trash />
-                      </Button>
+                      </Button> */}
                     </div>
                   </TableCell>
                 </TableRow>

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Check, ChevronLeft, Trash2, Upload } from "react-feather";
+import { Check, ChevronLeft, Plus, Trash2, Upload } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useProduct } from "../hooks";
@@ -25,13 +25,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import React from "react";
+import {
+  MdProductService,
+  ProductResponse,
+} from "@/services/masterdata/product.service";
 
-const AddProduct = ({ params }: { params: { id: string } }) => {
+const EditProduct = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();
+  const productService = new MdProductService();
+  const [productData, setProductData] = useState<ProductResponse[]>([]);
   const [name, setName] = useState("");
   const [insurance, setInsurance] = useState("");
   const [category, setCategory] = useState("");
@@ -39,11 +45,15 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
   const [selectedInsurances, setSelectedInsurances] = useState<any>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedInsuranceId, setSelectedInsuranceId] = useState("");
+  const [productFields, setProductFields] = useState<any[]>([
+    { id: "", name: "" },
+  ]);
 
   const searchParam = useSearchParams();
 
   const {
     saveProduct,
+    updateProduct,
     categories = [],
     product = [],
     fetchCategories,
@@ -71,9 +81,27 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async () => {
     try {
-      await saveProduct(data);
+      console.log(productFields);
+      for (let i = 0; i < productFields.length; i++) {
+        if (productFields[i].id == "") {
+          await saveProduct({
+            category: selectedCategoryId,
+            insurance: selectedInsuranceId,
+            name: productFields[i].name,
+          });
+        } else {
+          await updateProduct(
+            {
+              category: selectedCategoryId,
+              insurance: selectedInsuranceId,
+              name: productFields[i].name,
+            },
+            productFields[i].id
+          );
+        }
+      }
       setSaveSuccess(true);
     } catch (error) {
       setSaveSuccess(false);
@@ -105,11 +133,41 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (product.length > 0) {
-      reset({
-        name: product[0].name,
-      });
+      const updateFormValue = product.map((item) => ({
+        id: item.id,
+        name: item.name,
+      }));
+      setProductFields(updateFormValue);
     }
   }, [product]);
+
+  const handleAddProduct = () => {
+    const updateFormValue = [...productFields];
+    updateFormValue.push({ id: "", name: "" });
+    setProductFields(updateFormValue);
+  };
+
+  const handleChangeProduct = (index: number, value: string) => {
+    const updateFormValue = [...productFields];
+    updateFormValue[index] = { ...updateFormValue[index], name: value };
+    setProductFields(updateFormValue);
+  };
+
+  const handleDeletePlan = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await productService.deleteProduct(id);
+        setProductFields((prevFields) =>
+          prevFields.filter((productField) => productField.id !== id)
+        );
+        setProductData((prevProducts) =>
+          prevProducts.filter((product) => product.id !== id)
+        );
+      } catch (error) {
+        console.error("Failed to delete product:", error);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -168,7 +226,7 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="category"
                 control={control}
-                rules={{ required: "Product Category is required" }}
+                // rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
                   <Select
                     value={selectedCategoryId}
@@ -199,7 +257,6 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
               {errors.category && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.category.message?.toString()}
-                  error message
                 </p>
               )}
             </div>
@@ -215,7 +272,7 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="insurance"
                 control={control}
-                rules={{ required: "Insurance Name is required" }}
+                // rules={{ required: "Insurance Name is required" }}
                 render={({ field }) => (
                   <Select
                     value={selectedInsuranceId}
@@ -240,40 +297,40 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
               {errors.insurance && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.insurance.message?.toString()}
-                  error message
                 </p>
               )}
             </div>
-            <div className="col-span-2">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Product Name <span className="text-red-500">*</span>
-              </label>
-              {product.length == 0 ? (
-                <React.Fragment>
+          </div>
+          <div className="p-6 bg-white rounded-lg gap-4">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Product Name <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-col gap-3">
+              {productFields.map((item, index) => (
+                <React.Fragment key={index}>
                   <div className="flex items-center">
-                    <Controller
-                      name="name"
-                      control={control}
-                      defaultValue=""
-                      rules={{ required: "Product Name is required" }}
-                      render={({ field }) => (
-                        <Input
-                          type="text"
-                          id="name"
-                          placeholder="Insert Product Name"
-                          {...field}
-                          className={`mt-1 block w-full h-12 ${
-                            errors.name ? "border-red-500" : "border-gray-300"
-                          } rounded-md shadow-sm`}
-                        />
-                      )}
+                    <Input
+                      type="text"
+                      id="name"
+                      placeholder="Insert Product Name"
+                      value={item.name}
+                      onChange={(e) => {
+                        handleChangeProduct(index, e.target.value);
+                      }}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
                     />
                     <Button
                       className="text-red-500 hover:bg-transparent"
                       variant="ghost"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeletePlan(item.id);
+                      }}
                     >
                       <Trash2 />
                     </Button>
@@ -284,46 +341,20 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
                     </p>
                   )}
                 </React.Fragment>
-              ) : (
-                product.map((item, index) => (
-                  <React.Fragment key={index}>
-                    <div className="flex items-center">
-                      <Controller
-                        name="name"
-                        control={control}
-                        defaultValue={item.name}
-                        rules={{ required: "Product Name is required" }}
-                        render={({ field }) => (
-                          <Input
-                            type="text"
-                            id="name"
-                            placeholder="Insert Product Name"
-                            {...field}
-                            className={`mt-1 block w-full h-12 ${
-                              errors.name ? "border-red-500" : "border-gray-300"
-                            } rounded-md shadow-sm`}
-                          />
-                        )}
-                      />
-                      <Button
-                        className="text-red-500 hover:bg-transparent"
-                        variant="ghost"
-                      >
-                        <Trash2 />
-                      </Button>
-                    </div>
-                    {errors.name && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.name.message}
-                      </p>
-                    )}
-                  </React.Fragment>
-                ))
-              )}
+              ))}
             </div>
-            {categories && categories.length > 0 && (
-              <div className="col-span-2">
-                <Button onClick={(e) => e.preventDefault()}>Add Product</Button>
+            {product && product.length > 0 && (
+              <div className="mt-4">
+                <Button
+                  className="bg-[#F5BA41] hover:bg-[#e6a92d] text-black rounded-full px-5"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAddProduct();
+                  }}
+                >
+                  <Plus className="mr-1" width={18} height={18} />
+                  Add Product
+                </Button>
               </div>
             )}
           </div>
@@ -333,5 +364,6 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const AddProductWithSidebar = (params: any) => WithSidebar(AddProduct)(params);
-export default AddProductWithSidebar;
+const EditProductWithSidebar = (params: any) =>
+  WithSidebar(EditProduct)(params);
+export default EditProductWithSidebar;

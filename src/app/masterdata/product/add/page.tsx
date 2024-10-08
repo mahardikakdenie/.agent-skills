@@ -10,9 +10,9 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Check, ChevronLeft, Upload } from "react-feather";
+import { Check, ChevronLeft, Plus, Trash2, Upload } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useProduct } from "../hooks";
@@ -24,6 +24,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import React from "react";
+import {
+  MdProductService,
+  ProductResponse,
+} from "@/services/masterdata/product.service";
 
 const AddProduct = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -31,18 +36,25 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();
+  const productService = new MdProductService();
+  const [productData, setProductData] = useState<ProductResponse[]>([]);
   const [name, setName] = useState("");
-  const [brand, setBrand] = useState("");
-  const [country, setCountry] = useState("");
-  const [logo_url, setLogoUrl] = useState("");
-  const [insurance, setInsurance] = useState("");
   const [category, setCategory] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<any>(null);
   const [selectedInsurances, setSelectedInsurances] = useState<any>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedInsuranceId, setSelectedInsuranceId] = useState("");
+  const [productFields, setProductFields] = useState<any[]>([
+    { id: "", name: "" },
+  ]);
+
+  const searchParam = useSearchParams();
 
   const {
     saveProduct,
+    updateProduct,
     categories = [],
+    product = [],
     fetchCategories,
     insurances = [],
     fetchInsurances,
@@ -51,6 +63,7 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
 
   const {
     handleSubmit,
+    reset,
     control,
     formState: { errors },
   } = useForm({
@@ -59,28 +72,53 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
       name,
       categories: selectedCategories,
       insurances: selectedInsurances,
+      category,
+      insurance: "",
     },
     values: {
       name,
       category,
-      insurance,
+      insurance: "",
     },
   });
 
   const onSubmit = async (data: any) => {
     try {
-      await saveProduct(data);
+      setSelectedCategoryId(data.category);
+      setSelectedInsuranceId(data.insurance);
+      for (let i = 0; i < productFields.length; i++) {
+        if (productFields[i].id == "") {
+          console.log(data.insurance);
+          await saveProduct({
+            category: data.category || selectedCategoryId,
+            insurance: data.insurance,
+            name: productFields[i].name,
+          });
+        } else {
+          await updateProduct(
+            {
+              category: data.category || selectedCategoryId,
+              insurance: data.insurance,
+              name: productFields[i].name,
+            },
+            productFields[i].id
+          );
+        }
+      }
       setSaveSuccess(true);
     } catch (error) {
+      console.error(error);
       setSaveSuccess(false);
     }
   };
 
   useEffect(() => {
     fetchCategories({});
-    fetchInsurances({});
-    fetchProduct({});
-  }, []);
+    fetchInsurances({
+      page: 1,
+      categoryId: selectedCategoryId,
+    });
+  }, [selectedCategoryId]);
 
   useEffect(() => {
     if (saveSuccess === true) {
@@ -91,6 +129,44 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
     }
     setSaveSuccess(null);
   }, [saveSuccess, router]);
+
+  useEffect(() => {
+    if (product.length > 0) {
+      const updateFormValue = product.map((item) => ({
+        id: item.id,
+        name: item.name,
+      }));
+      setProductFields(updateFormValue);
+    }
+  }, [product]);
+
+  const handleAddProduct = () => {
+    const updateFormValue = [...productFields];
+    updateFormValue.push({ id: "", name: "" });
+    setProductFields(updateFormValue);
+  };
+
+  const handleChangeProduct = (index: number, value: string) => {
+    const updateFormValue = [...productFields];
+    updateFormValue[index] = { ...updateFormValue[index], name: value };
+    setProductFields(updateFormValue);
+  };
+
+  const handleDeletePlan = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await productService.deleteProduct(id);
+        setProductFields((prevFields) =>
+          prevFields.filter((productField) => productField.id !== id)
+        );
+        setProductData((prevProducts) =>
+          prevProducts.filter((product) => product.id !== id)
+        );
+      } catch (error) {
+        console.error("Failed to delete product:", error);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -149,9 +225,16 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="category"
                 control={control}
+                defaultValue=""
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setSelectedCategoryId(value);
+                    }}
+                  >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                       <SelectValue placeholder="Select Categories" />
                     </SelectTrigger>
@@ -173,13 +256,14 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
+
               {errors.category && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.category.message?.toString()}
-                  error message
                 </p>
               )}
             </div>
+
             <div>
               <label
                 htmlFor="insurance"
@@ -187,12 +271,17 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
               >
                 Insurance Name
               </label>
+
               <Controller
                 name="insurance"
                 control={control}
                 rules={{ required: "Insurance Name is required" }}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={selectedCategoryId == ""}
+                  >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                       <SelectValue placeholder="Select Insurance " />
                     </SelectTrigger>
@@ -211,40 +300,63 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
               {errors.insurance && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.insurance.message?.toString()}
-                  error message
                 </p>
               )}
             </div>
-
-            <div className="col-span-2">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
+          </div>
+          <div className="p-6 bg-white rounded-lg gap-4">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Product Name <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-col gap-3">
+              {productFields.map((item, index) => (
+                <React.Fragment key={index}>
+                  <div className="flex items-center">
+                    <Input
+                      type="text"
+                      id="name"
+                      placeholder="Insert Product Name"
+                      value={item.name}
+                      onChange={(e) => {
+                        handleChangeProduct(index, e.target.value);
+                      }}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                    />
+                    <Button
+                      className="text-red-500 hover:bg-transparent"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeletePlan(item.id);
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </div>
+                  {errors.name && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+            <div className="mt-4">
+              <Button
+                className="bg-[#F5BA41] hover:bg-[#e6a92d] text-black rounded-full px-5"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAddProduct();
+                }}
               >
-                Product Name <span className="text-red-500">*</span>
-              </label>
-              <Controller
-                name="name"
-                control={control}
-                defaultValue=""
-                rules={{ required: "Product Name is required" }}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="name"
-                    placeholder="Insert Product Name"
-                    {...field}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.name && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.name.message}
-                </p>
-              )}
+                <Plus className="mr-1" width={18} height={18} />
+                Add Product
+              </Button>
             </div>
           </div>
         </div>
