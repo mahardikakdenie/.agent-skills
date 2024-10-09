@@ -48,8 +48,6 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
     { id: "", name: "" },
   ]);
 
-  const searchParam = useSearchParams();
-
   const {
     saveProduct,
     updateProduct,
