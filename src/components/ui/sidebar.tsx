@@ -323,6 +323,26 @@ const Sidebar = () => {
                   Roles
                 </Link>
               </li>
+              <li className="mt-2 text-sm">
+                <strong>Sanction List</strong>
+              </li>
+              <li>
+                <Link
+                  href="/sanction"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/sanction")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Sanction List"
+                    className="w-7 min-w-7"
+                  />
+                  Sanction List
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
