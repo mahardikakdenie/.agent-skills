@@ -43,6 +43,18 @@ export class SanctionService {
     return this.httpClientSanction.delete('/api/v1/blacklist/delete/' + id);
   }
 
+  async createSanction(data: any): Promise<any> {
+    return this.httpClientSanction.post('/api/v1/blacklist', data);
+  }
+
+  async getSources(): Promise<any> {
+    return this.httpClientSanction.get('/api/v1/sources');
+  }
+
+  async updateSanction(id: string, data: any): Promise<any> {
+    return this.httpClientSanction.put('/api/v1/blacklist/update/' + id, data);
+  }
+
   
 }
 
