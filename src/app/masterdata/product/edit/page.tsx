@@ -11,8 +11,8 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
-import { Check, ChevronLeft, Plus, Trash2, Upload } from "react-feather";
+import { useState, useEffect } from "react";
+import { Check, ChevronLeft, Plus, Trash2 } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useProduct } from "../hooks";
@@ -33,9 +33,7 @@ import {
 const EditProduct = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
   const productService = new MdProductService();
   const [productData, setProductData] = useState<ProductResponse[]>([]);
   const [name, setName] = useState("");
@@ -48,8 +46,6 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const [productFields, setProductFields] = useState<any[]>([
     { id: "", name: "" },
   ]);
-
-  const searchParam = useSearchParams();
 
   const {
     saveProduct,
@@ -109,6 +105,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   };
 
   useEffect(() => {
+    const searchParam = useSearchParams();
     const insuranceId = searchParam.get("insurance-id") ?? "";
     const categoryId = searchParam.get("category-id") ?? "";
     setSelectedCategoryId(categoryId);
@@ -190,11 +187,11 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Add</BreadcrumbPage>
+                  <BreadcrumbPage>Edit</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">Add Product</h2>
+            <h2 className="text-black font-bold text-2xl mt-2">Edit Product</h2>
           </div>
 
           <div className="flex ml-auto">
