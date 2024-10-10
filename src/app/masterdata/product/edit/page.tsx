@@ -104,7 +104,6 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  // const searchParam = useSearchParams();
   useEffect(() => {
     const searchParam = new URLSearchParams(window.location.search);
     const insuranceId = searchParam.get("insurance-id") ?? "";
