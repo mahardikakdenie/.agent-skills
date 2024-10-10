@@ -342,6 +342,21 @@ const Sidebar = () => {
                   />
                   Sanction List
                 </Link>
+                <Link
+                  href="/source"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/source")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Source List"
+                    className="w-7 min-w-7"
+                  />
+                  Source List
+                </Link>
               </li>
             </ul>
           </div>

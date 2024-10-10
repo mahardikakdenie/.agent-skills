@@ -25,42 +25,42 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Trash, X } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 
-const SanctionPage = () => {
+const SourcePage = () => {
     useRequireAuth();
-    const sanctionService = new SanctionService();
+    const sourceService = new SanctionService();
 
-    const [sanction, setSanction] = useState<any[]>([]);
+    const [source, setSource] = useState<any[]>([]);
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedSanction, setSelectedSanction] = useState<any>(null);
+    const [selectedSource, setSelectedSource] = useState<any>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const router = useRouter();
 
     useEffect(() => {
-        sanctionService
-            .getSanctionList(page, rowsPerPage)
+        sourceService
+            .getSourceList(page, rowsPerPage)
             .then((res) => {
-                setSanction(res.data);
+                setSource(res.data);
                 setTotalItems(res.total);
                 setTotalPages(res.pageTotal);
             })
             .catch((error) => {
-                console.error("Failed to fetch sanction:", error);
+                console.error("Failed to fetch sources:", error);
             });
     }, [page, rowsPerPage]);
 
-    const handleEditSanction = (id: string) => {
-        router.push("/sanction/edit-sanction/" + id);
+    const handleEditSource = (id: string) => {
+        router.push("/source/edit-source/" + id);
     };
 
     const handleViewDetail = async (id: string) => {
         try {
-            const response = await sanctionService.getSanctionById(id);
+            const response = await sourceService.getSourceById(id);
             const sanctionData = response.data[0];
-            setSelectedSanction(sanctionData);
+            setSelectedSource(sanctionData);
             setDrawerOpen(true);
 
         } catch (err) {
@@ -68,21 +68,21 @@ const SanctionPage = () => {
         }
     };
 
-    const addNewSanction = () => {
-        router.push("/sanction/add-sanction");
+    const addNewSource = () => {
+        router.push("/source/add-source");
     };
 
       const handleDelete = (id: string) => {
-        if (window.confirm("Are you sure you want to delete this sanction?")) {
-            sanctionService
-            .deleteDiscSanctionById(id)
+        if (window.confirm("Are you sure you want to delete this source?")) {
+            sourceService
+            .deleteDiscSourceById(id)
             .then(() => {
-              setSanction(
-                sanction.filter((sanction) => sanction.id !== id)
+              setSource(
+                source.filter((source) => source.id !== id)
               );
             })
             .catch((error) => {
-              console.error("Failed to delete sanction:", error);
+              console.error("Failed to delete source:", error);
             });
         }
       };
@@ -90,42 +90,40 @@ const SanctionPage = () => {
     return (
         <div className="container mx-auto p-6">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-semibold">Sanction List</h1>
+                <h1 className="text-2xl font-semibold">Source List</h1>
                 <Button
-                    onClick={() => addNewSanction()}
+                    onClick={() => addNewSource()}
                     className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                 >
-                    <Plus className="w-5 h-5 mr-1 " /> Add Sanction
+                    <Plus className="w-5 h-5 mr-1 " /> Add Source
                 </Button>
             </div>
 
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Phone Number</TableHead>
-                        <TableHead>Blacklist Reason</TableHead>
-                        <TableHead>Blacklisted Date</TableHead>
+                        <TableHead>Source Name</TableHead>
+                        <TableHead>Source Type</TableHead>
                         <TableHead>Country</TableHead>
+                        <TableHead>Source URL</TableHead>
+                        <TableHead>Insurance ID</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {sanction.map((sanction) => (
-                        <TableRow key={sanction.id}>
-                            <TableCell>{sanction.first_name} {sanction.middle_name} {sanction.last_name}</TableCell>
-                            <TableCell>{sanction.phone_number}</TableCell>
-                            <TableCell>{sanction.blacklist_reason}</TableCell>
-                            <TableCell>
-                                {format(new Date(sanction.date_blacklisted), "dd-MM-yyyy")}
-                            </TableCell>
-                            <TableCell>{sanction.country}</TableCell>
+                    {source.map((source) => (
+                        <TableRow key={source.id}>
+                            <TableCell>{source.source_name}</TableCell>
+                            <TableCell>{source.source_type}</TableCell>
+                            <TableCell>{source.country}</TableCell>
+                            <TableCell>{source.source_url}</TableCell>
+                            <TableCell>{source.insurance_id}</TableCell>
                             <TableCell>
                                 <div className="flex space-x-2">
 
                                     <Drawer direction="right">
                                         <DrawerTrigger
                                             className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
-                                            onClick={() => handleViewDetail(sanction.id)}
+                                            onClick={() => handleViewDetail(source.id)}
                                         >
                                             View
                                         </DrawerTrigger>
@@ -143,65 +141,54 @@ const SanctionPage = () => {
                                             <div className="flex flex-col w-full h-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl overflow-y-auto">
                                                 <div className="rounded-lg flex flex-col gap-4 text-black">
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Sanction ID</div>
+                                                        <div className="min-w-40 w-40">Source ID</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.id}</div>
+                                                        <div>{selectedSource?.id}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-bold text-[#016DA1]">
-                                                        <div className="min-w-40 w-40">Identity Details</div>
+                                                        <div className="min-w-40 w-40">Source Details</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Name</div>
+                                                        <div className="min-w-40 w-40">Source Name</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.first_name} {selectedSanction?.middle_name} {selectedSanction?.last_name}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-bold text-[#016DA1]">
-                                                        <div className="min-w-40 w-40">Personal Details</div>
+                                                        <div>{selectedSource?.source_name}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">ID Number</div>
+                                                        <div className="min-w-40 w-40">Type</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.id_number}</div>
+                                                        <div>{selectedSource?.source_type}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Phone Number</div>
+                                                        <div className="min-w-40 w-40">Country</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.phone_number}</div>
+                                                        <div>{selectedSource?.country}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Email</div>
+                                                        <div className="min-w-40 w-40">Source URL</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.email}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-bold text-[#016DA1]">
-                                                        <div className="min-w-40 w-40">Details</div>
+                                                        <div>{selectedSource?.source_url}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Blacklisted Date</div>
+                                                        <div className="min-w-40 w-40">Insurance ID</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.date_blacklisted ? format(new Date(selectedSanction.date_blacklisted), "dd-MM-yyyy") : 'N/A'}</div>
+                                                        <div>{selectedSource?.insurance_id}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Blacklisted Reason</div>
+                                                        <div className="min-w-40 w-40">Created Date</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.blacklist_reason}</div>
+                                                        <div>{selectedSource?.created_at ? format(new Date(selectedSource.created_at), "dd-MM-yyyy") : 'N/A'}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Created At</div>
+                                                        <div className="min-w-40 w-40">Updated Date</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.created_at ? format(new Date(selectedSanction.created_at), "dd-MM-yyyy") : 'N/A'}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Updated At</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSanction?.updated_at ? format(new Date(selectedSanction.updated_at), "dd-MM-yyyy") : 'N/A'}</div>
+                                                        <div>{selectedSource?.updated_at ? format(new Date(selectedSource.updated_at), "dd-MM-yyyy") : 'N/A'}</div>
                                                     </div>
 
                                                 </div>
 
                                                 <div className="flex justify-center mt-4">
                                                     <button
-                                                        onClick={() => handleEditSanction(sanction.id)}
+                                                        onClick={() => handleEditSource(source.id)}
                                                         className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                                                     >
                                                         Edit
@@ -213,7 +200,7 @@ const SanctionPage = () => {
 
                                     <Button
                                         variant="ghost"
-                                        onClick={() => handleDelete(sanction.id)}
+                                        onClick={() => handleDelete(source.id)}
                                         className="text-red-600 px-0"
                                     >
                                         <Trash />
@@ -276,6 +263,6 @@ const SanctionPage = () => {
     );
 };
 
-const SanctionWithSidebar = (params: any) =>
-    WithSidebar(SanctionPage)(params);
-export default SanctionWithSidebar;
+const SourceWithSidebar = (params: any) =>
+    WithSidebar(SourcePage)(params);
+export default SourceWithSidebar;
