@@ -49,6 +49,10 @@ export class InsuranceService {
     }
   }
 
+  async getAllInsurances(): Promise<any> {
+    return this.httpClientInsurance.get("/v1/insurances");
+}
+
   async getInsuranceById(id: string): Promise<any> {
     return this.httpClientInsurance.get("/insurances/" + id);
   }

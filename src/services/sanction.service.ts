@@ -63,6 +63,10 @@ export class SanctionService {
     return this.httpClientSanction.post('/api/v1/blacklist', data);
   }
 
+  async createSource(data: any): Promise<any> {
+    return this.httpClientSanction.post('/api/v1/sources', data);
+  }
+
   async getSources(): Promise<any> {
     return this.httpClientSanction.get('/api/v1/sources');
   }

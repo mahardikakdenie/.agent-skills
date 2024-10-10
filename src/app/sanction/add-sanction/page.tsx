@@ -132,7 +132,7 @@ const CreateSanctionPage = () => {
             if (data != null) {
                 setErrorMessage("Sanction Submitted!");
             } else {
-                setErrorMessage('Failed to sanction. Please try again.');
+                setErrorMessage('Failed to create sanction. Please try again.');
                 setShowAlert(true);
             }
 
