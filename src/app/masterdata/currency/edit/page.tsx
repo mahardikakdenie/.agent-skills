@@ -196,7 +196,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const handleDeleteCurrencies = async (idCurrency: string) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await currencyService.deleteCurrency(selectedInsuranceId, idCurrency); // Menggunakan selectedInsuranceId yang sudah ada
+        await currencyService.deleteCurrency(selectedInsuranceId, idCurrency);
         setCurrencyFields((prevFields) =>
           prevFields.filter((currencyField) => currencyField.id !== idCurrency)
         );
@@ -320,7 +320,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                     <TableCell>
                       <Controller
                         key={index}
-                        name={`currency_from.${index}` as const} // Menambahkan as const jika perlu
+                        name={`currency_from.${index}` as const}
                         control={control}
                         render={({ field }) => (
                           <Select
