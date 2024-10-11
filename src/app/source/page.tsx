@@ -106,7 +106,7 @@ const SourcePage = () => {
                         <TableHead>Source Type</TableHead>
                         <TableHead>Country</TableHead>
                         <TableHead>Source URL</TableHead>
-                        <TableHead>Insurance ID</TableHead>
+                        <TableHead>Insurance Name</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -116,7 +116,7 @@ const SourcePage = () => {
                             <TableCell>{source.source_type}</TableCell>
                             <TableCell>{source.country}</TableCell>
                             <TableCell>{source.source_url}</TableCell>
-                            <TableCell>{source.insurance_id}</TableCell>
+                            <TableCell>{source.insurance_name}</TableCell>
                             <TableCell>
                                 <div className="flex space-x-2">
 
@@ -169,9 +169,9 @@ const SourcePage = () => {
                                                         <div>{selectedSource?.source_url}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Insurance ID</div>
+                                                        <div className="min-w-40 w-40">Insurance Name</div>
                                                         <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.insurance_id}</div>
+                                                        <div>{selectedSource?.insurance_name}</div>
                                                     </div>
                                                     <div className="flex gap-2 text-sm font-medium">
                                                         <div className="min-w-40 w-40">Created Date</div>

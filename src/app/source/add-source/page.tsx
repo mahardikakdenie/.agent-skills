@@ -34,6 +34,7 @@ const CreateSourcePage = () => {
         source_type: "government",
         source_url: "",
         insurance_id: "",
+        insurance_name: "",
         country: 'IDN'
     });
 
@@ -122,10 +123,11 @@ const CreateSourcePage = () => {
         }));
     };
 
-    const handleChangeInsurance = (value: string) => {
-        setSource(prevState => ({
+    const handleChangeInsurance = (selectedInsurance: { insurance_id: string, insurance_name: string }) => {
+        setSource((prevState) => ({
             ...prevState,
-            insurance_id: value,
+            insurance_id: selectedInsurance.insurance_id,
+            insurance_name: selectedInsurance.insurance_name,
         }));
     };
 
@@ -170,6 +172,7 @@ const CreateSourcePage = () => {
             source_type: source.source_type,
             source_url: source.source_url,
             insurance_id: source.source_type === "insurance" ? source.insurance_id : null,
+            insurance_name: source.source_type === "insurance" ? source.insurance_name : null,
             country: source.country,
         };
 
@@ -389,10 +392,16 @@ const CreateSourcePage = () => {
                                     control={control}
                                     render={({ field }) => (
                                         <Select
-                                            value={field.value}
-                                            onValueChange={(value) => {
-                                                handleChangeInsurance(value);
-                                                field.onChange(value);
+                                            value={field.value || ""}
+                                            onValueChange={(insuranceId) => {
+                                                // Find the selected insurance object
+                                                const selectedInsurance = insurance.find((item) => item.id === insuranceId);
+
+                                                handleChangeInsurance({
+                                                    insurance_id: selectedInsurance?.id || "",
+                                                    insurance_name: selectedInsurance?.name || ""
+                                                });
+                                                field.onChange(insuranceId);
                                             }}
                                             required={source.source_type === "insurance"} // Only required if type is "insurance"
                                             disabled={false}
@@ -402,9 +411,9 @@ const CreateSourcePage = () => {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {insurance.map((insurance: any) => (
-                                                        <SelectItem key={insurance.id} value={insurance.id}>
-                                                            {insurance.name}
+                                                    {insurance.map((insuranceItem) => (
+                                                        <SelectItem key={insuranceItem.id} value={insuranceItem.id}>
+                                                            {insuranceItem.name}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>
