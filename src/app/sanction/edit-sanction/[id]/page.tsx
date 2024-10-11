@@ -121,6 +121,22 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
             return;
         }
 
+        // Validate phone number (must be numeric and within a specified length)
+        const phoneNumberPattern = /^\d{10,15}$/; // 10 to 15 digits
+        if (!phoneNumberPattern.test(sanction.phone_number)) {
+            setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
+            setShowAlert(true);
+            return;
+        }
+
+        // Validate email format (basic validation for '@' and a domain)
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(sanction.email)) {
+            setErrorMessage('Invalid email format. Please enter a valid email address.');
+            setShowAlert(true);
+            return;
+        }
+
 
         const payload = {
 
@@ -324,7 +340,6 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
                                 value={sanction.id_number}
                                 onChange={handleChange}
                                 className="p-2 border rounded w-full"
-                                pattern="\d{16}"
                                 required
                             />
                         </div>
@@ -340,7 +355,6 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
                                 value={sanction.phone_number}
                                 onChange={handleChange}
                                 className="p-2 border rounded w-full"
-                                pattern="^\d{10,15}$"  // Accepts 10 to 15 digits for phone numbers
                                 required
                             />
                         </div>
@@ -384,8 +398,8 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
                 </div>
 
 
-                 {/* Details Section */}
-                 <div className="mb-8">
+                {/* Details Section */}
+                <div className="mb-8">
                     <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Details</h3>
                     <div className="flex space-x-4 mb-4">
                         <div className="flex flex-col w-1/2">

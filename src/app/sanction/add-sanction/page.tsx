@@ -40,20 +40,20 @@ const CreateSanctionPage = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
-    const [source, setSource] = useState<Source[]>([]); 
+    const [source, setSource] = useState<Source[]>([]);
 
     useEffect(() => {
         fetchSources();
-    }, []); 
+    }, []);
 
     const fetchSources = async () => {
         try {
-          const response = await sanctionService.getSources();
-          setSource(response.data);
+            const response = await sanctionService.getSources();
+            setSource(response.data);
         } catch (error) {
-          console.error("Failed to fetch sources:", error);
+            console.error("Failed to fetch sources:", error);
         }
-      };
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const target = e.target;
@@ -101,6 +101,22 @@ const CreateSanctionPage = () => {
 
         if (!isValid(date_blacklisted)) {
             setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
+            setShowAlert(true);
+            return;
+        }
+
+        // Validate phone number (must be numeric and within a specified length)
+        const phoneNumberPattern = /^\d{10,15}$/; // 10 to 15 digits
+        if (!phoneNumberPattern.test(sanction.phone_number)) {
+            setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
+            setShowAlert(true);
+            return;
+        }
+
+        // Validate email format (basic validation for '@' and a domain)
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(sanction.email)) {
+            setErrorMessage('Invalid email format. Please enter a valid email address.');
             setShowAlert(true);
             return;
         }
@@ -293,7 +309,6 @@ const CreateSanctionPage = () => {
                                 value={sanction.id_number}
                                 onChange={handleChange}
                                 className="p-2 border rounded w-full"
-                                pattern="\d{16}"
                                 required
                             />
                         </div>
@@ -309,7 +324,6 @@ const CreateSanctionPage = () => {
                                 value={sanction.phone_number}
                                 onChange={handleChange}
                                 className="p-2 border rounded w-full"
-                                pattern="^\d{10,15}$"  // Accepts 10 to 15 digits for phone numbers
                                 required
                             />
                         </div>
@@ -329,7 +343,7 @@ const CreateSanctionPage = () => {
                 </div>
 
 
-                  {/* Source Section */}
+                {/* Source Section */}
                 <div className="mb-8">
                     <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Source</h3>
                     <div className="flex flex-col w-full mb-4">
