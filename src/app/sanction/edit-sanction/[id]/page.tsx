@@ -162,9 +162,9 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
             const { data } = response;
 
             if (data != null) {
-                setErrorMessage("Sanction Submitted!");
+                setErrorMessage("Sanction Saved!");
             } else {
-                setErrorMessage('Failed to sanction. Please try again.');
+                setErrorMessage('Failed to save sanction. Please try again.');
                 setShowAlert(true);
             }
 

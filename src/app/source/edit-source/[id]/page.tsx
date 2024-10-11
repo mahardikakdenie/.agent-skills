@@ -34,6 +34,7 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [error, setError] = useState('');
+    const [errorSourceName, setErrorSourceName] = useState('');
     const [insurance, setInsurance] = useState<Insurance[]>([]);
 
     const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
@@ -101,11 +102,11 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
         }
 
         // Regex to validate URLs that start with https://
-        const urlPattern = /^https:\/\/.+/;
+        const urlPattern = /^https:\/\/.+\..+/;
 
         // Validate the URL field
         if (!urlPattern.test(source.source_url)) {
-            setErrorMessage('Please enter a valid URL that starts with "https://".');
+            setErrorMessage('URL must start with "https://" and be a valid URL with at least one dot.');
             setShowAlert(true);
             return;
         }
@@ -154,17 +155,45 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
         }));
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+    const handleChangeSourceName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
 
-        // Regex to validate URLs that start with https://
-        const urlPattern = /^https:\/\/.+/;
+        if (name === 'source_name' && value == "") {
+            setErrorSourceName('Source name cannot be empty.');
+        } else {
+            setErrorSourceName('');
+        }
+
+        setSource(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeURL = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        const urlPattern = /^https:\/\/.+\..+/;
 
         if (name === 'source_url' && !urlPattern.test(value)) {
-            setError('URL must start with "https://" and be a valid URL');
-        } else {
+            setError('URL must start with "https://" and be a valid URL with at least one dot.');
+        }
+        else {
             setError('');
         }
+
+        setSource(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
 
         setSource(prevState => ({
             ...prevState,
@@ -187,16 +216,16 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink>Sanction List</BreadcrumbLink>
+                                    <BreadcrumbLink>Source List</BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Edit Sanction</BreadcrumbPage>
+                                    <BreadcrumbPage>Edit Source</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                         <h2 className="text-black font-bold text-2xl mt-2">
-                            Edit Sanction
+                            Edit Source
                         </h2>
                     </div>
                     <div className="flex space-x-4">
@@ -227,10 +256,11 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
                                 id="source_name"
                                 name="source_name"
                                 value={source.source_name}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeSourceName}
+                                className={`p-2 border rounded w-full ${errorSourceName ? 'border-red-500' : ''}`}
                                 required
                             />
+                            {errorSourceName && <span className="text-red-500">{errorSourceName}</span>}
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="source_url" className="font-normal">URL</label>
@@ -239,7 +269,7 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
                                 id="source_url"
                                 name="source_url"
                                 value={source.source_url}
-                                onChange={handleChange}
+                                onChange={handleChangeURL}
                                 className={`p-2 border rounded w-full ${error ? 'border-red-500' : ''}`}
                                 required
                             />

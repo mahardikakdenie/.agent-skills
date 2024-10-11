@@ -41,6 +41,7 @@ const CreateSanctionPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [source, setSource] = useState<Source[]>([]);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         fetchSources();
@@ -83,11 +84,13 @@ const CreateSanctionPage = () => {
 
 
 
-    const handleSave = async () => {
+    const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); // Prevent the default form submission behavior
+    
         setErrorMessage('');
         setAlertMessage('');
         setShowAlert(false);
-
+    
         if (!sanction.blacklist_reason || !sanction.country || !sanction.date_blacklisted || !sanction.email ||
             !sanction.first_name || !sanction.id_number || !sanction.last_name || !sanction.middle_name || !sanction.phone_number
             || !sanction.source_id) {
@@ -95,16 +98,15 @@ const CreateSanctionPage = () => {
             setShowAlert(true);
             return;
         }
-
-
+    
         const date_blacklisted = parseISO(sanction.date_blacklisted);
-
+    
         if (!isValid(date_blacklisted)) {
             setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
             setShowAlert(true);
             return;
         }
-
+    
         // Validate phone number (must be numeric and within a specified length)
         const phoneNumberPattern = /^\d{10,15}$/; // 10 to 15 digits
         if (!phoneNumberPattern.test(sanction.phone_number)) {
@@ -112,18 +114,16 @@ const CreateSanctionPage = () => {
             setShowAlert(true);
             return;
         }
-
+    
         // Validate email format (basic validation for '@' and a domain)
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
         if (!emailPattern.test(sanction.email)) {
             setErrorMessage('Invalid email format. Please enter a valid email address.');
             setShowAlert(true);
             return;
         }
-
-
+    
         const payload = {
-
             id_number: sanction.id_number,
             first_name: sanction.first_name,
             middle_name: sanction.middle_name,
@@ -134,25 +134,21 @@ const CreateSanctionPage = () => {
             source_id: sanction.source_id,
             country: sanction.country,
             date_blacklisted: sanction.date_blacklisted,
-
         };
-
+    
         setLoading(true);
-
+    
         try {
-
-
             const response: AxiosResponse<any> = await sanctionService.createSanction(payload);
             const { data } = response;
-
+    
             if (data != null) {
                 setErrorMessage("Sanction Submitted!");
             } else {
                 setErrorMessage('Failed to create sanction. Please try again.');
                 setShowAlert(true);
             }
-
-
+    
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
@@ -165,7 +161,7 @@ const CreateSanctionPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    };    
 
 
 
@@ -216,7 +212,7 @@ const CreateSanctionPage = () => {
                             Back
                         </div>
                         <button
-                            onClick={handleSave}
+                            type="submit"
                             disabled={loading}
                             className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
                         >
@@ -245,6 +241,7 @@ const CreateSanctionPage = () => {
                                 className="p-2 border rounded w-full"
                                 required
                             />
+                            {error && <span className="text-red-500">{error}</span>}
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="middle_name" className="font-normal">Middle Name</label>
@@ -256,6 +253,7 @@ const CreateSanctionPage = () => {
                                 onChange={handleChange}
                                 className="p-2 border rounded w-full"
                             />
+                            {error && <span className="text-red-500">{error}</span>}
                         </div>
                     </div>
 
@@ -271,6 +269,7 @@ const CreateSanctionPage = () => {
                                 className="p-2 border rounded w-full"
                                 required
                             />
+                            {error && <span className="text-red-500">{error}</span>}
                         </div>
                     </div>
                 </div>
@@ -326,6 +325,7 @@ const CreateSanctionPage = () => {
                                 className="p-2 border rounded w-full"
                                 required
                             />
+                            {error && <span className="text-red-500">{error}</span>}
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="email" className="font-normal">Email</label>
@@ -338,6 +338,7 @@ const CreateSanctionPage = () => {
                                 className="p-2 border rounded w-full"
                                 required
                             />
+                            {error && <span className="text-red-500">{error}</span>}
                         </div>
                     </div>
                 </div>

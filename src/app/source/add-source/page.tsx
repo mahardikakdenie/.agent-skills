@@ -27,12 +27,14 @@ const CreateSourcePage = () => {
         insurance_id: "",
         country: 'IDN'
     });
-    
+
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [showAlert, setShowAlert] = useState(false);
+    const [errorSourceName, setErrorSourceName] = useState('');
     const [error, setError] = useState('');
     const [insurance, setInsurance] = useState<Insurance[]>([]);
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         fetchInsurance();
@@ -47,18 +49,45 @@ const CreateSourcePage = () => {
         }
     };
 
+    const handleChangeSourceName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'source_name' && value == "") {
+            setErrorSourceName('Source name cannot be empty.');
+        } else {
+            setErrorSourceName('');
+        }
+
+        setSource(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeURL = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        const urlPattern = /^https:\/\/.+\..+/;
+
+        if (name === 'source_url' && !urlPattern.test(value)) {
+            setError('URL must start with "https://" and be a valid URL with at least one dot.');
+        }
+        else {
+            setError('');
+        }
+
+        setSource(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const target = e.target;
         const { name, value } = target;
 
-        // Regex to validate URLs that start with https://
-        const urlPattern = /^https:\/\/.+/;
-
-        if (name === 'source_url' && !urlPattern.test(value)) {
-            setError('URL must start with "https://" and be a valid URL');
-        } else {
-            setError('');
-        }
 
         setSource(prevState => ({
             ...prevState,
@@ -78,7 +107,7 @@ const CreateSourcePage = () => {
         e.preventDefault(); // Prevent form from submitting the traditional way
         setErrorMessage(''); // Clear previous error message
         setShowAlert(false); // Reset alert visibility
-    
+
         if (!source.source_name || !source.source_type || !source.source_url || !source.country) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
@@ -92,16 +121,16 @@ const CreateSourcePage = () => {
         }
 
         // Regex to validate URLs that start with https://
-        const urlPattern = /^https:\/\/.+/;
+        const urlPattern = /^https:\/\/.+\..+/;
 
         // Validate the URL field
         if (!urlPattern.test(source.source_url)) {
-            setErrorMessage('Please enter a valid URL that starts with "https://".');
+            setErrorMessage('URL must start with "https://" and be a valid URL with at least one dot.');
             setShowAlert(true);
             return;
         }
-    
-  
+
+
         const payload = {
             source_name: source.source_name,
             source_type: source.source_type,
@@ -109,20 +138,20 @@ const CreateSourcePage = () => {
             insurance_id: source.source_type === "insurance" ? source.insurance_id : null,
             country: source.country,
         };
-    
+
         setLoading(true); // Show loading spinner during the save operation
-    
+
         try {
             const response: AxiosResponse<any> = await sanctionService.createSource(payload);
             const { data } = response;
-    
+
             if (data != null) {
                 setErrorMessage("Source Submitted!");
             } else {
                 setErrorMessage('Failed to create source. Please try again.');
                 setShowAlert(true);
             }
-    
+
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
@@ -135,7 +164,7 @@ const CreateSourcePage = () => {
         } finally {
             setLoading(false); // Stop the loading spinner
         }
-    };    
+    };
 
     const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
         if (!isOpen) return null;
@@ -207,10 +236,11 @@ const CreateSourcePage = () => {
                                 id="source_name"
                                 name="source_name"
                                 value={source.source_name}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeSourceName}
+                                className={`p-2 border rounded w-full ${errorSourceName ? 'border-red-500' : ''}`}
                                 required
                             />
+                            {errorSourceName && <span className="text-red-500">{errorSourceName}</span>}
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="source_url" className="font-normal">URL</label>
@@ -219,7 +249,7 @@ const CreateSourcePage = () => {
                                 id="source_url"
                                 name="source_url"
                                 value={source.source_url}
-                                onChange={handleChange}
+                                onChange={handleChangeURL}
                                 className={`p-2 border rounded w-full ${error ? 'border-red-500' : ''}`}
                                 required
                             />
@@ -287,6 +317,14 @@ const CreateSourcePage = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Alert Modal */}
+                <ErrorModal
+                    isOpen={showAlert}
+                    message={alertMessage || errorMessage || "Error occurred"}
+                    onClose={() => setShowAlert(false)}
+                />
+
             </form>
         </div>
     );
