@@ -2,6 +2,7 @@ import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "../../lib/http-client-interface";
 import Cookies from "universal-cookie";
 import qs from "qs";
+import { promises } from "dns";
 
 export interface CurrencyResponse {
   data: any;
@@ -31,6 +32,15 @@ export interface InsurancesResponse {
   _count: {
     products: string;
   };
+}
+export interface TypeCurreciesResponse {
+  data: any;
+  id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  code: string;
+  type: string;
 }
 
 export class CurrenciesService {
@@ -98,6 +108,18 @@ export class CurrenciesService {
     }
   }
 
+  async getTypeCurrencies(search: any): Promise<TypeCurreciesResponse> {
+    try {
+      const queryString = new URLSearchParams({ ...search }).toString();
+      return await this.httpClient.get<TypeCurreciesResponse>(
+        "/v1/references/type/currencies?" + queryString
+      );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
   async getInsurance(search: any): Promise<InsurancesResponse> {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();
@@ -114,27 +136,48 @@ export class CurrenciesService {
     return this.httpClient.get("v1/products/" + id);
   }
 
-  async deleteCurrency(id: string): Promise<any> {
+  async deleteCurrency(idInsurance: string, idCurrency: string): Promise<any> {
     try {
-      return await this.httpClient.delete("v1/products/" + id);
+      return await this.httpClient.delete(
+        `/v1/insurances/${idInsurance}/currencies/${idCurrency}`
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
     }
   }
 
-  async saveCurrency(data: any): Promise<any> {
+  async saveCurrency(data: any, id: string): Promise<any> {
     try {
-      return await this.httpClient.post("v1/products/", data);
+      return await this.httpClient.post(
+        `/v1/insurances/${id}/currencies`,
+        data
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
     }
   }
 
-  async updateCurrency(data: any, id: string): Promise<any> {
+  // async saveCurrency(data: any): Promise<any> {
+  //   try {
+  //     return await this.httpClient.post("/v1/insurances/${insuranceId}/currencies", data);
+  //   } catch (error) {
+  //     console.error("Request failed:", error);
+  //     throw error;
+  //   }
+  // }
+
+  async updateCurrency(
+    data: any,
+    idInsurance: string,
+    idCurrency: string
+  ): Promise<any> {
     try {
-      return await this.httpClient.put("v1/products/" + id, data);
+      return await this.httpClient.put(
+        `/v1/insurances/${idInsurance}/currencies/${idCurrency}`,
+        data
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

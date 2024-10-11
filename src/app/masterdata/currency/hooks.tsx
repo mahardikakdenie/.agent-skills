@@ -11,6 +11,7 @@ export const useCurrency = () => {
   const [currencies, setCurrencies] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [insurances, setInsurances] = useState<any[]>([]);
+  const [typeCurrencies, setTypeCurrencies] = useState<any[]>([]);
 
   const fetchCurrency = async (
     search: any,
@@ -38,18 +39,29 @@ export const useCurrency = () => {
     return response;
   };
 
-  const saveCurrency = async (data: any) => {
-    const { data: response } = await mdCurrency.saveCurrency(data);
+  const saveCurrency = async (data: any, id: string) => {
+    const { data: response } = await mdCurrency.saveCurrency(data, id);
     return response;
   };
 
-  const updateCurrency = async (data: any, id: string) => {
-    const { data: response } = await mdCurrency.updateCurrency(data, id);
+  const updateCurrency = async (
+    data: any,
+    idInsurance: string,
+    idCurrency: string
+  ) => {
+    const { data: response } = await mdCurrency.updateCurrency(
+      data,
+      idInsurance,
+      idCurrency
+    );
     return response;
   };
 
-  const deleteCurrency = async (id: string) => {
-    const { data: response } = await mdCurrency.deleteCurrency(id);
+  const deleteCurrency = async (idInsurance: string, idCurrency: string) => {
+    const { data: response } = await mdCurrency.deleteCurrency(
+      idInsurance,
+      idCurrency
+    );
     return response;
   };
 
@@ -61,6 +73,11 @@ export const useCurrency = () => {
   const fetchInsurances = async (search: any) => {
     const { data } = await mdCurrency.getInsurance(search);
     setInsurances(data);
+  };
+
+  const fetchTypeCurrencies = async (search: any) => {
+    const { data } = await mdCurrency.getTypeCurrencies(search);
+    setTypeCurrencies(data);
   };
 
   return {
@@ -78,5 +95,7 @@ export const useCurrency = () => {
     fetchCategories,
     insurances,
     fetchInsurances,
+    typeCurrencies,
+    fetchTypeCurrencies,
   };
 };
