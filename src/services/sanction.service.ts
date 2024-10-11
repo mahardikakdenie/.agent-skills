@@ -75,6 +75,10 @@ export class SanctionService {
     return this.httpClientSanction.put('/api/v1/blacklist/update/' + id, data);
   }
 
+  async updateSource(id: string, data: any): Promise<any> {
+    return this.httpClientSanction.put('/api/v1/sources/update/' + id, data);
+  }
+
   
 }
 

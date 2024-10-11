@@ -1,9 +1,6 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
-import axios, { AxiosResponse } from "axios";
-
-
 
 export class ProductService {
 

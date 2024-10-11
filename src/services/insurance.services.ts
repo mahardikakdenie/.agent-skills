@@ -1,27 +1,7 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
-import Cookies from "universal-cookie";
 
-interface InsuranceResponse {
-  data: Insurance[];
-  meta: {
-    total: number;
-    page: number;
-    pageSize: number;
-  };
-}
-
-export interface Insurance {
-  id: string;
-  name: string;
-  brand: string;
-  logo_url: string | null;
-  _count: {
-    products: string;
-  };
-}
 
 export class InsuranceService {
   private httpClientInsurance: IHttpClient;
