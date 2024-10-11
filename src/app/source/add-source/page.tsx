@@ -9,6 +9,15 @@ import { ChevronLeft } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 import { NewSourceDTO } from "../dto/source.dto";
 import { InsuranceService } from "@/services/insurance.services";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Controller, useForm } from "react-hook-form";
 
 interface Insurance {
     id: string;
@@ -35,6 +44,28 @@ const CreateSourcePage = () => {
     const [error, setError] = useState('');
     const [insurance, setInsurance] = useState<Insurance[]>([]);
     const [alertMessage, setAlertMessage] = useState('');
+    const [source_type, setSource_type] = useState("");
+    const [country, setCountry] = useState("");
+    const [insurance_id, setInsurance_id] = useState("");
+
+    const {
+        handleSubmit,
+        reset,
+        control,
+        formState: { errors },
+    } = useForm({
+        shouldUnregister: false,
+        defaultValues: {
+            source_type,
+            country,
+            insurance_id
+        },
+        values: {
+            source_type,
+            country,
+            insurance_id
+        },
+    });
 
     useEffect(() => {
         fetchInsurance();
@@ -84,22 +115,25 @@ const CreateSourcePage = () => {
         }));
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-
+    const handleChangeCountry = (value: string) => {
         setSource(prevState => ({
             ...prevState,
-            [name]: value
+            country: value,
         }));
     };
 
-    const handleValueTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChangeInsurance = (value: string) => {
         setSource(prevState => ({
             ...prevState,
-            source_type: e.target.value,
-            insurance_id: e.target.value === "insurance" ? "" : prevState.insurance_id // Clear insurance_id if not insurance
+            insurance_id: value,
+        }));
+    };
+
+    const handleValueTypeChange = (value: string) => {
+        setSource(prevState => ({
+            ...prevState,
+            source_type: value,
+            insurance_id: value === "insurance" ? "" : prevState.insurance_id // Clear insurance_id if not insurance
         }));
     };
 
@@ -260,37 +294,89 @@ const CreateSourcePage = () => {
                     <div className="flex space-x-4 mb-4">
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="source_type" className="font-normal">Type</label>
-                            <select
-                                id="source_type"
+                            <Controller
                                 name="source_type"
-                                value={source.source_type}
-                                onChange={handleValueTypeChange}
-                                className="p-2 border rounded w-full"
-                            >
-                                <option value="government">Government</option>
-                                <option value="insurance">Insurance</option>
-                            </select>
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={(value) => {
+                                            handleValueTypeChange(value);
+                                            field.onChange(value);
+                                        }}
+                                        disabled={false}
+                                    >
+                                        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                            <SelectValue placeholder="Select Source Type " />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="government">
+                                                    Government
+                                                </SelectItem>
+                                                <SelectItem value="insurance">
+                                                    Insurance
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="country" className="font-normal">Country</label>
-                            <select
-                                id="country"
+                            <Controller
                                 name="country"
-                                value={source.country}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
-                            >
-                                <option value="BRN">Brunei</option>
-                                <option value="KHM">Cambodia</option>
-                                <option value="IDN">Indonesia</option>
-                                <option value="LAO">Laos</option>
-                                <option value="MYS">Malaysia</option>
-                                <option value="MMR">Myanmar</option>
-                                <option value="PHL">Philippines</option>
-                                <option value="SGP">Singapore</option>
-                                <option value="THA">Thailand</option>
-                                <option value="VNM">Vietnam</option>
-                            </select>
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={(value) => {
+                                            handleChangeCountry(value);
+                                            field.onChange(value);
+                                        }}
+                                        disabled={false}
+                                    >
+                                        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                            <SelectValue placeholder="Select a Country " />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="BRN">
+                                                    Brunei
+                                                </SelectItem>
+                                                <SelectItem value="KHM">
+                                                    Cambodia
+                                                </SelectItem>
+                                                <SelectItem value="IDN">
+                                                    Indonesia
+                                                </SelectItem>
+                                                <SelectItem value="LAO">
+                                                    Laos
+                                                </SelectItem>
+                                                <SelectItem value="MYS">
+                                                    Malaysia
+                                                </SelectItem>
+                                                <SelectItem value="MMR">
+                                                    Myanmar
+                                                </SelectItem>
+                                                <SelectItem value="PHL">
+                                                    Philippines
+                                                </SelectItem>
+                                                <SelectItem value="SGP">
+                                                    Singapore
+                                                </SelectItem>
+                                                <SelectItem value="THA">
+                                                    Thailand
+                                                </SelectItem>
+                                                <SelectItem value="VNM">
+                                                    Vietnam
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                         </div>
                     </div>
 
@@ -298,21 +384,34 @@ const CreateSourcePage = () => {
                         <div className="flex space-x-4 mb-4">
                             <div className="flex flex-col w-full mb-4">
                                 <label htmlFor="insurance_id" className="font-normal">Insurance ID</label>
-                                <select
-                                    id="insurance_id"
+                                <Controller
                                     name="insurance_id"
-                                    value={source.insurance_id}
-                                    onChange={handleChange}
-                                    className="p-2 border rounded w-full"
-                                    required={source.source_type === "insurance"} // Only required if type is "insurance"
-                                >
-                                    <option value="" disabled>Select an insurance</option>
-                                    {insurance.map((insuranceItem) => (
-                                        <option key={insuranceItem.id} value={insuranceItem.id}>
-                                            {insuranceItem.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={(value) => {
+                                                handleChangeInsurance(value);
+                                                field.onChange(value);
+                                            }}
+                                            required={source.source_type === "insurance"} // Only required if type is "insurance"
+                                            disabled={false}
+                                        >
+                                            <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                                <SelectValue placeholder="Select Insurance " />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {insurance.map((insurance: any) => (
+                                                        <SelectItem key={insurance.id} value={insurance.id}>
+                                                            {insurance.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
                             </div>
                         </div>
                     )}

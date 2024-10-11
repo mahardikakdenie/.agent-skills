@@ -9,6 +9,15 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbS
 import { ChevronLeft, Trash } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 import { NewBlackListDTO } from "../dto/sanction.dto";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Controller, useForm } from "react-hook-form";
 
 
 interface Source {
@@ -42,6 +51,30 @@ const CreateSanctionPage = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [source, setSource] = useState<Source[]>([]);
     const [error, setError] = useState('');
+    const [errorFName, setErrorFName] = useState('');
+    const [errorMName, setErrorMName] = useState('');
+    const [errorLName, setErrorLName] = useState('');
+    const [errorIDNumber, setErrorIDNumber] = useState('');
+    const [errorPNumber, setErrorPNumber] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
+    const [errorBDate, setErrorBDate] = useState('');
+    const [errorReason, setErrorReason] = useState('');
+    const [country, setCountry] = useState("");
+    const [source_id, setSource_id] = useState("");
+
+    const {
+        handleSubmit,
+        reset,
+        control,
+        formState: { errors },
+    } = useForm({
+        shouldUnregister: false,
+        defaultValues: {
+            country: 'IDN', // Set default country to Indonesia
+            source_id: source_id
+        },
+    });
+
 
     useEffect(() => {
         fetchSources();
@@ -56,41 +89,155 @@ const CreateSanctionPage = () => {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (target.type === 'checkbox') {
-            setSanction(prevState => ({
-                ...prevState,
-                [name]: target.checked
-            }));
-        } else {
-            setSanction(prevState => ({
-                ...prevState,
-                [name]: value
-            }));
-        }
-    };
-
-
-
-    const handleValueTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChangeCountry = (value: string) => {
         setSanction(prevState => ({
             ...prevState,
-            value_type: e.target.value
+            country: value,
         }));
     };
 
+    const handleChangeReason = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
 
+        if (name === 'blacklist_reason' && value == "") {
+            setErrorReason('Blacklisted reason date cannot be empty.');
+        } else {
+            setErrorReason('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeBDate = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'date_blacklisted' && value == "") {
+            setErrorBDate('Blacklisted date cannot be empty.');
+        } else {
+            setErrorBDate('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeSourceId = (value: string) => {
+        setSanction(prevState => ({
+            ...prevState,
+            source_id: value,
+        }));
+    };
+
+    const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'email' && value == "") {
+            setErrorEmail('Email cannot be empty.');
+        } else {
+            setErrorEmail('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangePNumber = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'phone_number' && value == "") {
+            setErrorPNumber('Phone number cannot be empty.');
+        } else {
+            setErrorPNumber('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeFName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'first_name' && value == "") {
+            setErrorFName('First name cannot be empty.');
+        } else {
+            setErrorFName('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeMName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'middle_name' && value == "") {
+            setErrorMName('Middle name cannot be empty.');
+        } else {
+            setErrorMName('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeLName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'last_name' && value == "") {
+            setErrorLName('Last name cannot be empty.');
+        } else {
+            setErrorLName('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleChangeIDNumber = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'id_number' && value == "") {
+            setErrorIDNumber('ID Number cannot be empty.');
+        } else {
+            setErrorIDNumber('');
+        }
+
+        setSanction(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // Prevent the default form submission behavior
-    
+
         setErrorMessage('');
         setAlertMessage('');
         setShowAlert(false);
-    
+
         if (!sanction.blacklist_reason || !sanction.country || !sanction.date_blacklisted || !sanction.email ||
             !sanction.first_name || !sanction.id_number || !sanction.last_name || !sanction.middle_name || !sanction.phone_number
             || !sanction.source_id) {
@@ -98,15 +245,15 @@ const CreateSanctionPage = () => {
             setShowAlert(true);
             return;
         }
-    
+
         const date_blacklisted = parseISO(sanction.date_blacklisted);
-    
+
         if (!isValid(date_blacklisted)) {
             setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
             setShowAlert(true);
             return;
         }
-    
+
         // Validate phone number (must be numeric and within a specified length)
         const phoneNumberPattern = /^\d{10,15}$/; // 10 to 15 digits
         if (!phoneNumberPattern.test(sanction.phone_number)) {
@@ -114,7 +261,7 @@ const CreateSanctionPage = () => {
             setShowAlert(true);
             return;
         }
-    
+
         // Validate email format (basic validation for '@' and a domain)
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
         if (!emailPattern.test(sanction.email)) {
@@ -122,7 +269,7 @@ const CreateSanctionPage = () => {
             setShowAlert(true);
             return;
         }
-    
+
         const payload = {
             id_number: sanction.id_number,
             first_name: sanction.first_name,
@@ -135,20 +282,20 @@ const CreateSanctionPage = () => {
             country: sanction.country,
             date_blacklisted: sanction.date_blacklisted,
         };
-    
+
         setLoading(true);
-    
+
         try {
             const response: AxiosResponse<any> = await sanctionService.createSanction(payload);
             const { data } = response;
-    
+
             if (data != null) {
                 setErrorMessage("Sanction Submitted!");
             } else {
                 setErrorMessage('Failed to create sanction. Please try again.');
                 setShowAlert(true);
             }
-    
+
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
@@ -161,7 +308,7 @@ const CreateSanctionPage = () => {
         } finally {
             setLoading(false);
         }
-    };    
+    };
 
 
 
@@ -237,11 +384,11 @@ const CreateSanctionPage = () => {
                                 id="first_name"
                                 name="first_name"
                                 value={sanction.first_name}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeFName}
+                                className={`p-2 border rounded w-full ${errorFName ? 'border-red-500' : ''}`}
                                 required
                             />
-                            {error && <span className="text-red-500">{error}</span>}
+                            {errorFName && <span className="text-red-500">{errorFName}</span>}
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="middle_name" className="font-normal">Middle Name</label>
@@ -250,10 +397,11 @@ const CreateSanctionPage = () => {
                                 id="middle_name"
                                 name="middle_name"
                                 value={sanction.middle_name}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeMName}
+                                className={`p-2 border rounded w-full ${errorMName ? 'border-red-500' : ''}`}
+                                required
                             />
-                            {error && <span className="text-red-500">{error}</span>}
+                            {errorMName && <span className="text-red-500">{errorMName}</span>}
                         </div>
                     </div>
 
@@ -265,11 +413,11 @@ const CreateSanctionPage = () => {
                                 id="last_name"
                                 name="last_name"
                                 value={sanction.last_name}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeLName}
+                                className={`p-2 border rounded w-full ${errorLName ? 'border-red-500' : ''}`}
                                 required
                             />
-                            {error && <span className="text-red-500">{error}</span>}
+                            {errorLName && <span className="text-red-500">{errorLName}</span>}
                         </div>
                     </div>
                 </div>
@@ -280,24 +428,58 @@ const CreateSanctionPage = () => {
                     <div className="flex space-x-4 mb-4">
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="country" className="font-normal">Country</label>
-                            <select
-                                id="country"
+                            <Controller
                                 name="country"
-                                value={sanction.country}
-                                onChange={handleValueTypeChange}
-                                className="p-2 border rounded w-full"
-                            >
-                                <option value="BRN">Brunei</option>
-                                <option value="KHM">Cambodia</option>
-                                <option value="IDN">Indonesia</option>
-                                <option value="LAO">Laos</option>
-                                <option value="MYS">Malaysia</option>
-                                <option value="MMR">Myanmar</option>
-                                <option value="PHL">Philippines</option>
-                                <option value="SGP">Singapore</option>
-                                <option value="THA">Thailand</option>
-                                <option value="VNM">Vietnam</option>
-                            </select>
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={(value) => {
+                                            handleChangeCountry(value);
+                                            field.onChange(value);
+                                        }}
+                                        disabled={false}
+                                    >
+                                        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                            <SelectValue placeholder="Select a Country " />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="BRN">
+                                                    Brunei
+                                                </SelectItem>
+                                                <SelectItem value="KHM">
+                                                    Cambodia
+                                                </SelectItem>
+                                                <SelectItem value="IDN">
+                                                    Indonesia
+                                                </SelectItem>
+                                                <SelectItem value="LAO">
+                                                    Laos
+                                                </SelectItem>
+                                                <SelectItem value="MYS">
+                                                    Malaysia
+                                                </SelectItem>
+                                                <SelectItem value="MMR">
+                                                    Myanmar
+                                                </SelectItem>
+                                                <SelectItem value="PHL">
+                                                    Philippines
+                                                </SelectItem>
+                                                <SelectItem value="SGP">
+                                                    Singapore
+                                                </SelectItem>
+                                                <SelectItem value="THA">
+                                                    Thailand
+                                                </SelectItem>
+                                                <SelectItem value="VNM">
+                                                    Vietnam
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="id_number" className="font-normal">ID Number</label>
@@ -306,10 +488,11 @@ const CreateSanctionPage = () => {
                                 id="id_number"
                                 name="id_number"
                                 value={sanction.id_number}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeIDNumber}
+                                className={`p-2 border rounded w-full ${errorIDNumber ? 'border-red-500' : ''}`}
                                 required
                             />
+                            {errorIDNumber && <span className="text-red-500">{errorIDNumber}</span>}
                         </div>
                     </div>
 
@@ -321,11 +504,11 @@ const CreateSanctionPage = () => {
                                 id="phone_number"
                                 name="phone_number"
                                 value={sanction.phone_number}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangePNumber}
+                                className={`p-2 border rounded w-full ${errorPNumber ? 'border-red-500' : ''}`}
                                 required
                             />
-                            {error && <span className="text-red-500">{error}</span>}
+                            {errorPNumber && <span className="text-red-500">{errorPNumber}</span>}
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="email" className="font-normal">Email</label>
@@ -334,11 +517,11 @@ const CreateSanctionPage = () => {
                                 id="email"
                                 name="email"
                                 value={sanction.email}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeEmail}
+                                className={`p-2 border rounded w-full ${errorEmail ? 'border-red-500' : ''}`}
                                 required
                             />
-                            {error && <span className="text-red-500">{error}</span>}
+                            {errorEmail && <span className="text-red-500">{errorEmail}</span>}
                         </div>
                     </div>
                 </div>
@@ -349,21 +532,33 @@ const CreateSanctionPage = () => {
                     <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Source</h3>
                     <div className="flex flex-col w-full mb-4">
                         <label htmlFor="source_id" className="font-normal">Source Name</label>
-                        <select
-                            id="source_id"
+                        <Controller
                             name="source_id"
-                            value={sanction.source_id}
-                            onChange={handleChange}
-                            className="p-2 border rounded w-full"
-                            required
-                        >
-                            <option value="" disabled>Select a source</option>
-                            {source.map((sourceItem) => (
-                                <option key={sourceItem.id} value={sourceItem.id}>
-                                    {sourceItem.source_name}
-                                </option>
-                            ))}
-                        </select>
+                            control={control}
+                            render={({ field }) => (
+                                <Select
+                                    value={field.value}
+                                    onValueChange={(value) => {
+                                        handleChangeSourceId(value);
+                                        field.onChange(value);
+                                    }}
+                                    disabled={false}
+                                >
+                                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                        <SelectValue placeholder="Select Source Type " />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {source.map((sourceItem) => (
+                                                <SelectItem key={sourceItem.id} value={sourceItem.id}>
+                                                    {sourceItem.source_name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                     </div>
                 </div>
 
@@ -379,10 +574,11 @@ const CreateSanctionPage = () => {
                                 id="date_blacklisted"
                                 name="date_blacklisted"
                                 value={sanction.date_blacklisted}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeBDate}
+                                className={`p-2 border rounded w-full ${errorBDate ? 'border-red-500' : ''}`}
                                 required
                             />
+                            {errorBDate && <span className="text-red-500">{errorBDate}</span>}
                         </div>
                         <div className="flex flex-col w-1/2">
                             <label htmlFor="blacklist_reason" className="font-normal">Blacklist Reason</label>
@@ -391,9 +587,11 @@ const CreateSanctionPage = () => {
                                 id="blacklist_reason"
                                 name="blacklist_reason"
                                 value={sanction.blacklist_reason}
-                                onChange={handleChange}
-                                className="p-2 border rounded w-full"
+                                onChange={handleChangeReason}
+                                className={`p-2 border rounded w-full ${errorReason ? 'border-red-500' : ''}`}
+                                required
                             />
+                            {errorReason && <span className="text-red-500">{errorReason}</span>}
                         </div>
                     </div>
                 </div>
