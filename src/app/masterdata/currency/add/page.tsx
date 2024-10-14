@@ -196,7 +196,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const handleDeleteCurrencies = async (idCurrency: string) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await currencyService.deleteCurrency(selectedInsuranceId, idCurrency);
+        await currencyService.deleteCurrency(selectedInsuranceId, idCurrency); // Menggunakan selectedInsuranceId yang sudah ada
         setCurrencyFields((prevFields) =>
           prevFields.filter((currencyField) => currencyField.id !== idCurrency)
         );
@@ -230,13 +230,11 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Edit</BreadcrumbPage>
+                  <BreadcrumbPage>Add</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">
-              Edit Currency
-            </h2>
+            <h2 className="text-black font-bold text-2xl mt-2">Add Currency</h2>
           </div>
 
           <div className="flex ml-auto">
@@ -269,12 +267,15 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="insurance"
                 control={control}
-                // rules={{ required: "Insurance Name is required" }}
+                defaultValue=""
+                rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
                   <Select
-                    value={selectedInsuranceId}
-                    onValueChange={field.onChange}
-                    disabled
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setSelectedInsuranceId(value);
+                    }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                       <SelectValue placeholder="Select Insurance " />
@@ -320,10 +321,11 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                     <TableCell>
                       <Controller
                         key={index}
-                        name={`currency_from.${index}` as const}
+                        name={`currency_from.${index}` as const} // Menambahkan as const jika perlu
                         control={control}
                         render={({ field }) => (
                           <Select
+                            required
                             value={field.value}
                             onValueChange={(value) => {
                               field.onChange(value);
@@ -359,6 +361,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                         control={control}
                         render={({ field }) => (
                           <Select
+                            required
                             value={field.value}
                             onValueChange={(value) => {
                               field.onChange(value);
@@ -393,6 +396,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                           type="text"
                           id="rate"
                           value={item.rate}
+                          required
                           onChange={(e) => {
                             handleChangeRate(index, e.target.value);
                           }}
