@@ -105,13 +105,13 @@ const PolicyPage = () => {
     switch (status) {
       case "Draft":
         return "text-gray-400 font-normal";
-      case "Application Sent":
+      case "Submitted":
         return "text-[#7B5D21]";
       case "Proccessing":
         return "text-[#00AB4F]";
       case "Approved":
         return "text-[#00AB4F]";
-      case "Payment Processing":
+      case "Document Review":
         return "text-[#016DA1]";
       case "Paid":
         return "text-[#016DA1]";
@@ -400,249 +400,288 @@ const PolicyPage = () => {
           </DialogContent>
         </Dialog>
       )}
-      <div className="flex items-center justify-start h-16 bg-white rounded-md mb-3">
-        <div
-          onClick={() => selectTab("All")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "All" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
-          >
-            All Claim
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "All" && "hidden"}`}
-          >
-            {totalData}
-            <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Application Sent")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Application Sent" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Application Sent" && "text-primary"
+      <div className="block bg-white rounded-md mb-3">
+        <div className="w-full flex items-center overflow-auto">
+          <div
+            onClick={() => selectTab("All")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "All" && "border-b-[3px] border-primary px-5"
             }`}
           >
-            Receive Claim
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Application Sent" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm mr-3 h-16 ${tab === "All" && "text-primary"}`}
+            >
+              All Claim
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Processing")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Processing" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Processing" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "All" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Submitted")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Submitted" && "border-b-[3px] border-primary px-5"
             }`}
           >
-            Processing
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Processing" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Submitted" && "text-primary"
+              }`}
+            >
+              Submitted
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Approved")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Approved" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Approved" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Submitted" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Acknowledged")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Acknowledged" && "border-b-[3px] border-primary px-5"
             }`}
           >
-            Approved
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Approved" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Acknowledged" && "text-primary"
+              }`}
+            >
+              Acknowledged
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Payment Processing")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Payment Processing" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Payment Processing" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Acknowledged" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Document Review")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Document Review" && "border-b-[3px] border-primary px-5"
             }`}
           >
-            Payment Processing
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Payment Processing" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Document Review" && "text-primary"
+              }`}
+            >
+              Document Review
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Paid")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Paid" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${tab === "Paid" && "text-primary"}`}
-          >
-            Paid
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Paid" && "hidden"}`}
-          >
-            {totalData}
-            <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Closed")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Closed" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Closed" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Document Review" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Lack of Documents")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Lack of Documents" &&
+              "border-b-[3px] border-primary px-5"
             }`}
           >
-            Closed
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Closed" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Lack of Documents" && "text-primary"
+              }`}
+            >
+              Lack of Documents
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Lack of Documents")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Lack of Documents" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Lack of Documents" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Lack of Documents" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Claim Assessment")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Claim Assessment" && "border-b-[3px] border-primary px-5"
             }`}
           >
-            Lack of Documents
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Lack of Documents" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Claim Assessment" && "text-primary"
+              }`}
+            >
+              Claim Assessment
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Rejected")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Rejected" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Rejected" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Claim Assessment" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Approved")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Approved" && "border-b-[3px] border-primary px-5"
             }`}
           >
-            Rejected
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Rejected" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Approved" && "text-primary"
+              }`}
+            >
+              Approved
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Approved" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Rejected")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Rejected" && "border-b-[3px] border-primary px-5"
+            }`}
+          >
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Rejected" && "text-primary"
+              }`}
+            >
+              Rejected
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Rejected" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Paid")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Paid" && "border-b-[3px] border-primary px-5"
+            }`}
+          >
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Paid" && "text-primary"
+              }`}
+            >
+              Paid
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Paid" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Closed")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Closed" && "border-b-[3px] border-primary px-5"
+            }`}
+          >
+            <button
+              className={`text-sm mr-3 h-16 ${
+                tab === "Closed" && "text-primary"
+              }`}
+            >
+              Closed
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Closed" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
         </div>
       </div>
-      <div className="w-full p-4 md:p-6 bg-white rounded-lg">
+      <div className="w-full bg-white rounded-lg">
         <Table className="table-claims">
           <TableHeader>
             <TableRow>
-              <TableHead className="whitespace-nowrap">No.</TableHead>
-              <TableHead>Claim ID</TableHead>
-              <TableHead>Customer Name</TableHead>
-              <TableHead>Plan Name</TableHead>
-              <TableHead className="whitespace-nowrap">Benefit</TableHead>
-              <TableHead className="whitespace-nowrap">Currency</TableHead>
-              <TableHead>Requested Amount</TableHead>
-              <TableHead>Approved Amount </TableHead>
-              <TableHead className="whitespace-nowrap">Status</TableHead>
-              <TableHead className="whitespace-nowrap">Action</TableHead>
+              <TableHead className="whitespace-nowrap py-2">No.</TableHead>
+              <TableHead className="py-2">Claim ID</TableHead>
+              <TableHead className="py-2">Customer Name</TableHead>
+              <TableHead className="py-2">Plan Name</TableHead>
+              <TableHead className="whitespace-nowrap py-2">Benefit</TableHead>
+              <TableHead className="whitespace-nowrap py-2">Currency</TableHead>
+              <TableHead className="py-2">Requested Amount</TableHead>
+              <TableHead className="py-2">Approved Amount </TableHead>
+              <TableHead className="whitespace-nowrap py-2">Status</TableHead>
+              <TableHead className="whitespace-nowrap py-2">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredClaims.length > 0 ? (
               filteredClaims.map((claim, index) => (
-                <TableRow key={claim.id}>
+                <TableRow
+                  key={claim.id}
+                  className={`${
+                    claim.sla_status === "Pending"
+                      ? "bg-[#FFFEE2]"
+                      : claim.sla_status === "Overdue"
+                      ? "bg-[#FFF5F5]"
+                      : ""
+                  }`}
+                >
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>
                     <div className="flex gap-2 items-center">
@@ -705,13 +744,50 @@ const PolicyPage = () => {
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Application Sent">
-                          Receive Claim
+                        <SelectItem
+                          value="Submitted"
+                          disabled={claim.status !== "Draft"}
+                        >
+                          Submitted
                         </SelectItem>
-                        <SelectItem value="Processing">Processing</SelectItem>
-                        <SelectItem value="Approved">Approved</SelectItem>
-                        <SelectItem value="Payment Processing">
-                          Payment Processing
+                        <SelectItem
+                          value="Acknowledged"
+                          disabled={claim.status !== "Submitted"}
+                        >
+                          Acknowledged
+                        </SelectItem>
+                        <SelectItem
+                          value="Document Review"
+                          disabled={
+                            claim.status !== "Acknowledged" &&
+                            claim.status !== "Lack of Documents"
+                          }
+                        >
+                          Document Review
+                        </SelectItem>
+                        <SelectItem
+                          value="Lack of Documents"
+                          disabled={claim.status !== "Document Review"}
+                        >
+                          Lack of Documents
+                        </SelectItem>
+                        <SelectItem
+                          value="Claim Assessment"
+                          disabled={claim.status !== "Document Review"}
+                        >
+                          Claim Assessment
+                        </SelectItem>
+                        <SelectItem
+                          value="Approved"
+                          disabled={claim.status !== "Claim Assessment"}
+                        >
+                          Approved
+                        </SelectItem>
+                        <SelectItem
+                          value="Rejected"
+                          disabled={claim.status !== "Claim Assessment"}
+                        >
+                          Rejected
                         </SelectItem>
                         <SelectItem
                           value="Paid"
@@ -719,11 +795,15 @@ const PolicyPage = () => {
                         >
                           Paid
                         </SelectItem>
-                        <SelectItem value="Closed">Closed</SelectItem>
-                        <SelectItem value="Lack of Documents">
-                          Lack of Documents
+                        <SelectItem
+                          value="Closed"
+                          disabled={
+                            claim.status !== "Paid" &&
+                            claim.status !== "Rejected"
+                          }
+                        >
+                          Closed
                         </SelectItem>
-                        <SelectItem value="Rejected">Rejected</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>

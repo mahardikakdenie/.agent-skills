@@ -125,15 +125,15 @@ export class ClaimService {
 
     if (!status) {
       params["status"] = [
-        "Application Sent",
-        "Sent to Insurance",
-        "Processing",
+        "Submitted",
+        "Acknowledged",
+        "Document Review",
+        "Lack of Documents",
+        "Claim Assessment",
         "Approved",
-        "Payment Processing",
+        "Rejected",
         "Paid",
         "Closed",
-        "Lack of Documents",
-        "Rejected",
       ];
     }
 
