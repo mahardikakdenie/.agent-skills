@@ -95,13 +95,15 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Application Sent":
+      case "Draft":
+        return "text-gray-400 font-normal";
+      case "Submitted":
         return "text-[#7B5D21]";
       case "Proccessing":
         return "text-[#00AB4F]";
       case "Approved":
         return "text-[#00AB4F]";
-      case "Payment Processing":
+      case "Document Review":
         return "text-[#016DA1]";
       case "Paid":
         return "text-[#016DA1]";

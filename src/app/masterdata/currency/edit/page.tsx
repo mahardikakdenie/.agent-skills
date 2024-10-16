@@ -165,14 +165,43 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (currencies.length > 0 && currencies[0].currencies.length > 0) {
-      const updateFormValue = currencies[0].currencies.map((item: any) => ({
-        id: item.id,
-        rate: item.value,
-        lastRate: item.value,
-        currency_from: item.currency_from,
-        currency_to: item.currency_to,
-      }));
-      setCurrencyFields(updateFormValue);
+      let groupExchangeRate: any = {};
+      currencies[0].currencies
+        .sort(
+          (a: any, b: any) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        )
+        .map((item: any) => {
+          if (
+            !groupExchangeRate.hasOwnProperty(
+              `${item.currency_from}_${item.currency_to}`
+            )
+          ) {
+            groupExchangeRate[`${item.currency_from}_${item.currency_to}`] = [];
+          }
+          groupExchangeRate[`${item.currency_from}_${item.currency_to}`].push(
+            item
+          );
+        });
+      setCurrencyFields(
+        Object.keys(groupExchangeRate).map((key: any) => {
+          const exchangeRateLog = groupExchangeRate[key];
+
+          const formValue = {
+            id: exchangeRateLog[0].id,
+            rate: exchangeRateLog[0].value,
+            lastRate: exchangeRateLog[0].value,
+            currency_from: exchangeRateLog[0].currency_from,
+            currency_to: exchangeRateLog[0].currency_to,
+            updated_at: exchangeRateLog[0].updated_at,
+          };
+          if (exchangeRateLog.length > 1) {
+            formValue.lastRate = exchangeRateLog[1].value;
+          }
+
+          return formValue;
+        })
+      );
     }
   }, [currencies]);
 
