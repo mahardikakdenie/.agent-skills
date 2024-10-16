@@ -93,9 +93,7 @@ const Users = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex gap-2">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">
-          Product Category
-        </h1>
+        <h1 className="text-black font-bold text-2xl mt-2 mb-4">User</h1>
         <Button
           onClick={() => router.push(`${path}/add`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
