@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Trash, X } from "react-feather";
+import { ChevronLeft, ChevronRight, Plus, Trash, X, Search } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 
 const SourcePage = () => {
@@ -36,6 +36,8 @@ const SourcePage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [selectedSource, setSelectedSource] = useState<any>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [filteredSource, setFilteredSource] = useState<any[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>(""); // State for search input
 
     const router = useRouter();
 
@@ -44,6 +46,7 @@ const SourcePage = () => {
             .getSourceList(page, rowsPerPage)
             .then((res) => {
                 setSource(res.data);
+                setFilteredSource(res.data); // Initialize with all sources
                 setTotalItems(res.total);
                 setTotalPages(res.pageTotal);
             })
@@ -87,6 +90,32 @@ const SourcePage = () => {
         }
       };
 
+      const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.toLowerCase();
+        setSearchTerm(value);
+
+        // Filter sanctions based on searchTerm
+        const filtered = source.filter((item) => {
+            const {
+                source_name,
+                source_type,
+                country,
+                source_url,
+                insurance_name,
+            } = item;
+
+            return (
+                source_name?.toLowerCase().includes(value) ||
+                source_type?.toLowerCase().includes(value) ||
+                country?.toLowerCase().includes(value) ||
+                source_url?.toLowerCase().includes(value) ||
+                insurance_name?.toLowerCase().includes(value)
+            );
+        });
+
+        setFilteredSource(filtered);
+    };
+
     return (
         <div className="container mx-auto p-6">
             <div className="flex justify-between items-center mb-4">
@@ -97,6 +126,18 @@ const SourcePage = () => {
                 >
                     <Plus className="w-5 h-5 mr-1 " /> Add Source
                 </Button>
+            </div>
+
+             {/* Search Bar */}
+             <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
+                <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    placeholder="Search"
+                    className="border p-3 rounded-md pr-10 w-full"
+                />
+                <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
             </div>
 
             <Table>
@@ -110,7 +151,7 @@ const SourcePage = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {source.map((source) => (
+                {filteredSource.map((source) => (
                         <TableRow key={source.id}>
                             <TableCell>{source.source_name}</TableCell>
                             <TableCell>{source.source_type}</TableCell>
