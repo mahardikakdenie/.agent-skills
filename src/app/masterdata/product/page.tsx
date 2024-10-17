@@ -128,18 +128,19 @@ const InsuranceProduct = () => {
         </Button>
       </div>
 
-      <div className="flex items-center justify-start h-16 bg-white rounded-md mb-3">
-        <div className="flex items-center justify-start h-16 bg-white rounded-md mb-3">
+      <div className="block bg-white rounded-md mb-3">
+        <div className="w-full flex items-center overflow-auto">
           {categories.map((category) => (
             <div
               key={category.id}
               onClick={() => selectTab(category.id)}
-              className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-                tab === category.id && "border-b-[3px] border-primary px-7"
+              className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+                tab === category.id &&
+                "border-b-[3px] border-primary sm:px-7 px-5"
               }`}
             >
               <button
-                className={`text-sm py-5 mr-3 ${
+                className={`text-sm py-5 ${
                   tab === category.id && "text-primary"
                 }`}
               >
@@ -158,7 +159,7 @@ const InsuranceProduct = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead>Insurance Name</TableHead>
+              <TableHead className="min-w-36">Insurance Name</TableHead>
               <TableHead>Total Product</TableHead>
               <TableHead className="whitespace-nowrap w-12">Action</TableHead>
             </TableRow>
