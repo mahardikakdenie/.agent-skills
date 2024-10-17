@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft, X } from "react-feather";
 import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
+import noImage from "/public/images/no-image.png";
 import {
   Table,
   TableBody,
@@ -40,6 +41,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const [tab, setTab] = useState("Summary");
   const [histories, setHistories] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
+  const imageUrl = claim?.general[0]?.value || noImage.src;
 
   const personalInfo = [
     claim?.personal_info?.address,
@@ -122,7 +124,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
     <div className="flex flex-col w-full">
       <div className="bg-white md:px-6 p-4 flex items-center">
         <div>
-          <Breadcrumb>
+          <Breadcrumb className="sm:block hidden">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink>Policy</BreadcrumbLink>
@@ -137,7 +139,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h2 className="text-black font-bold text-2xl mt-2">Detail Policy</h2>
+          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+            Detail Claim
+          </h2>
         </div>
         <div
           onClick={() => router.back()}
@@ -182,8 +186,8 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
         </div>
 
         {tab === "Summary" && (
-          <div className="md:flex">
-            <div className="md:w-1/3 bg-white rounded-md py-5 px-7 mb-3 md:mb-0 md:mr-3 h-fit max-h-full overflow-y-auto ">
+          <div className="sm:flex gap-4">
+            <div className="sm:w-1/3 bg-white rounded-md sm:p-6 p-4 mb-4 md:mb-0 h-fit max-h-full overflow-y-auto ">
               <p className="font-semibold mb-3">Status Claim</p>
               {histories && histories.length > 0 ? (
                 histories.map((h, historyIndex) => (
@@ -226,270 +230,213 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                 <p className="text-sm">No claim histories available</p>
               )}
             </div>
-            <div className="md:w-2/3">
-              <div className="bg-white rounded-md mb-3 py-5 px-7">
-                <p className="font-semibold mb-3">Detail Claim</p>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">
+            <div className="sm:w-2/3">
+              <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
+                <p className="font-semibold">Detail Claim</p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Claim Number
-                  </p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">{claim?.number || "-"}</p>
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.number || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Customer Name
-                  </p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.policy_data?.account?.name || "-"}
-                    </p>
+                  </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.policy_data?.account?.name || "-"}</div>
+                </div>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                    Plan Name
+                  </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>
+                    {claim.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
+                      .split("|")
+                      .join(" - ")}
                   </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">Plan Name</p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
-                        .split("|")
-                        .join(" - ")}
-                    </p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                    Benefit
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.benefit?.description_en || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">Benefit</p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.benefit?.description_en || "-"}
-                    </p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                    Amount
                   </div>
-                </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-32 min-w-28 text-sm font-medium">Amount</p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim.claim.find(
-                        (d: any) => d.type === "Number" && d.name === "claim"
-                      ).value || "-"}
-                    </p>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>
+                    {claim.claim.find(
+                      (d: any) => d.type === "Number" && d.name === "claim"
+                    ).value || "-"}
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-md mb-3 py-5 px-7">
-                <p className="font-semibold mb-3">Informasi Pemegang Polis</p>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">
+              <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
+                <p className="font-semibold">Informasi Pemegang Polis</p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Customer Name
-                  </p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.policy_data?.account?.name || "-"}
-                    </p>
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.policy_data?.account?.name || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Phone Number
-                  </p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.policy_data?.account?.phone || "-"}
-                    </p>
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.policy_data?.account?.phone || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-32 min-w-28 text-sm font-medium">Email</p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.policy_data?.account?.email || "-"}
-                    </p>
-                  </div>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.policy_data?.account?.email || "-"}</div>
                 </div>
               </div>
-              <div className="bg-white rounded-md mb-3 py-5 px-7">
-                <p className="font-semibold mb-3">Informasi Tertanggung</p>
-                <div className="flex flex-col md:flex-row">
-                  <div className="min-w-60 w-60 mb-3 mr-4">
-                    <img
-                      src={claim?.general[0]?.value}
-                      alt="passport-participant"
-                    />
+              <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
+                <p className="font-semibold">Informasi Tertanggung</p>
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <div className="lg:min-w-60 lg:w-60">
+                    <div className="w-full border rounded-lg overflow-hidden">
+                      <img src={imageUrl} alt="" className="w-full h-auto" />
+                    </div>
                   </div>
-                  <div className="w-full">
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                  <div className="w-full flex gap-3 flex-col">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         No. Polis
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.policy_data?.number || "-"}
-                        </p>
                       </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>{claim?.policy_data?.number || "-"}</div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         No. Peserta
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.reg_no || "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.reg_no || "-"}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         Nama Lengkap
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.name || "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.name || "-"}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         Gender
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.gender || "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.gender || "-"}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         Kode Negara
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.country_code ||
-                            "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.country_code ||
+                          "-"}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         No. Paspor
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.passport_no ||
-                            "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.passport_no ||
+                          "-"}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         Kewarganegaraan
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.nationality ||
-                            "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.nationality ||
+                          "-"}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         Tgl. Lahir
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.dob || "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.dob || "-"}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                      <p className="w-32 min-w-28 text-sm font-medium">
+                    <div className="flex gap-2 text-sm font-medium">
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                         Tempat Lahir
-                      </p>
-                      <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                        <p className="hidden md:block md:mr-2 text-sm">:</p>
-                        <p className="text-sm">
-                          {claim?.participant_data?.data?.data?.pob || "-"}
-                        </p>
+                      </div>
+                      <div className="max-w-1 w-1">:</div>
+                      <div>
+                        {claim?.participant_data?.data?.data?.pob || "-"}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-md mb-3 py-5 px-7">
-                <p className="font-semibold mb-3">Informasi Pribadi</p>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">
+              <div className="bg-white rounded-md flex flex-col gap-3 p-4 sm:p-6">
+                <p className="font-semibold">Informasi Pribadi</p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Nomor Handpone
-                  </p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.personal_info?.phone || "-"}
-                    </p>
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.personal_info?.phone || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-32 min-w-28 text-sm font-medium">Alamat</p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {personalInfo.filter(Boolean).join(" ") || "-"}
-                    </p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                    Alamat
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{personalInfo.filter(Boolean).join(" ") || "-"}</div>
                 </div>
               </div>
-              <div className="bg-white rounded-md py-5 px-7">
-                <p className="font-semibold mb-3">Informasi Rekening</p>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">Nama</p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.bank_info?.account_name || "-"}
-                    </p>
-                  </div>
+              <div className="bg-white rounded-md flex flex-col gap-3 p-4 sm:p-6">
+                <p className="font-semibold">Informasi Rekening</p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Nama</div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.bank_info?.account_name || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">Nama Bank</p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">{claim?.bank_info?.bank || "-"}</p>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                    Nama Bank
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.bank_info?.bank || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-3 md:mb-2">
-                  <p className="w-32 min-w-28 text-sm font-medium">
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Cabang Bank
-                  </p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">{claim?.bank_info?.branch || "-"}</p>
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.bank_info?.branch || "-"}</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                  <p className="w-32 min-w-28 text-sm font-medium">
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     No. Rekening
-                  </p>
-                  <div className="w-full md:w-9/12 flex flex-col md:flex-row md:items-center">
-                    <p className="hidden md:block md:mr-2 text-sm">:</p>
-                    <p className="text-sm">
-                      {claim?.bank_info?.account_number || "-"}
-                    </p>
                   </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>{claim?.bank_info?.account_number || "-"}</div>
                 </div>
               </div>
             </div>
@@ -500,9 +447,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             <Table className="table-claims">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap w-12">No.</TableHead>
+                  <TableHead className="whitespace-nowrap w-10">No.</TableHead>
                   <TableHead>File Name</TableHead>
-                  <TableHead className="whitespace-nowrap w-36">
+                  <TableHead className="whitespace-nowrap w-28">
                     Action
                   </TableHead>
                 </TableRow>
