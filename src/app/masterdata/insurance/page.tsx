@@ -84,8 +84,10 @@ const InsuranceProduct = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">Insurance</h1>
+      <div className="flex gap-2 pb-4 items-center">
+        <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
+          Insurance
+        </h1>
         <Button
           onClick={() => router.push(`${path}/add`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
@@ -99,7 +101,7 @@ const InsuranceProduct = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead>Category Name</TableHead>
+              <TableHead className="min-w-36">Category Name</TableHead>
               <TableHead>Logo File</TableHead>
               <TableHead className="whitespace-nowrap w-36">Action</TableHead>
             </TableRow>

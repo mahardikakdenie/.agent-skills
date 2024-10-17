@@ -95,7 +95,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
-            <Breadcrumb>
+            <Breadcrumb className="sm:block hidden">
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink>Masterdata</BreadcrumbLink>
@@ -115,7 +115,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">
+            <h2 className="text-black font-bold sn:text-2xl text-lg sm:mt-2">
               Detail Insurance
             </h2>
           </div>
@@ -138,7 +138,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="p-6 bg-white rounded-lg flex-col gap-4 grid grid-cols-2">
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4 grid sm:grid-cols-2">
             <div>
               <label
                 htmlFor="name"
