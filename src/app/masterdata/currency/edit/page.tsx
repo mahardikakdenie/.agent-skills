@@ -108,32 +108,17 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const onSubmit = async () => {
     try {
       for (let i = 0; i < currencyFields.length; i++) {
-        if (currencyFields[i].id == "") {
-          await saveCurrency(
-            {
-              insurance: "",
-              value: currencyFields[i].rate,
-              currency_from: currencyFields[i].currency_from,
-              currency_to: currencyFields[i].currency_to,
-              start_from: new Date(),
-              active: true,
-            },
-            selectedInsuranceId
-          );
-        } else {
-          await updateCurrency(
-            {
-              insurance: "",
-              value: currencyFields[i].rate,
-              currency_from: currencyFields[i].currency_from,
-              currency_to: currencyFields[i].currency_to,
-              start_from: new Date(),
-              active: true,
-            },
-            selectedInsuranceId,
-            currencyFields[i].id
-          );
-        }
+        await saveCurrency(
+          {
+            insurance: "",
+            value: currencyFields[i].rate,
+            currency_from: currencyFields[i].currency_from,
+            currency_to: currencyFields[i].currency_to,
+            start_from: new Date(),
+            active: true,
+          },
+          selectedInsuranceId
+        );
       }
       setSaveSuccess(true);
     } catch (error) {

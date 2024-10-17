@@ -82,7 +82,7 @@ export class CurrenciesService {
     }
     // const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(
-      `/v1/insurances/${insuranceId}/currencies?page=${page}&pageSize=${rowsPerPage}`
+      `/v1/insurances/${insuranceId}/currencies?page=${page}&pageSize=100`
     );
   }
 
@@ -174,8 +174,8 @@ export class CurrenciesService {
     idCurrency: string
   ): Promise<any> {
     try {
-      return await this.httpClient.put(
-        `/v1/insurances/${idInsurance}/currencies/${idCurrency}`,
+      return await this.httpClient.post(
+        `/v1/insurances/${idInsurance}/currencies`,
         data
       );
     } catch (error) {
