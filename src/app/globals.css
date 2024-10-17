@@ -225,3 +225,27 @@ th {
 .frame-body button[role="combobox"].h-10 {
   height: 2.5rem !important;
 }
+
+@media screen and (max-width: 1199px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+  }
+  .sidebar button,
+  .sidebar div {
+    z-index: 2;
+  }
+  .sidebar.w-64 .overlay {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    content: "";
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+  }
+  .sidebar button.ms-1 {
+    margin-left: 0;
+  }
+}

@@ -46,7 +46,7 @@ export default function LoginPage() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="w-96 max-w-full">
           <div className="px-6 pt-4 pb-6 bg-white rounded-lg shadow-lg">
-            <div className="px-16 mb-5">
+            <div className="sm:px-16 px-12 mb-5">
               <Image alt="Logo" src={logoImg} />
             </div>
             <Form {...form}>

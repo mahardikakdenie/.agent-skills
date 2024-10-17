@@ -29,8 +29,12 @@ const Header = () => {
                 S
               </span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem key="logout" onClick={handleLogout}>
+            <DropdownMenuContent className="w-44 p-3">
+              <DropdownMenuItem
+                key="logout"
+                onClick={handleLogout}
+                className="justify-center flex bg-warning focus:bg-warning py-2 rounded-full"
+              >
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

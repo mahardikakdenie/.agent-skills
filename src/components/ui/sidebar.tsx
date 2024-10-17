@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,25 +29,42 @@ const Sidebar = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleMenuClick = () => {
+    if (window.innerWidth <= 1199) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1199) {
+        setIsOpen(false);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
       <div
-        className={`sidebar relative h-screen bg-white ${
-          isOpen ? "min-w-72 w-72" : "min-w-0 w-0"
+        className={`sidebar relative z-30 h-screen bg-white ${
+          isOpen ? "sm:min-w-72 sm:w-72 min-w-64 w-64" : "min-w-0 w-0"
         }`}
       >
         <Button
-          className="absolute left-full top-0 z-10 h-[63px] p-0 min-w-unit-16 px-4 border-0 bg-transparent rounded-none ms-1"
+          className="absolute left-full top-0 z-10 h-[63px] p-0 min-w-unit-16 px-4 border-0 bg-transparent focus:bg-transparent rounded-none ms-1"
           onClick={toggleSidebar}
         >
           <Menu className="text-white" />
         </Button>
         <div className="w-full overflow-auto h-full flex flex-col items-center pb-5">
-          <div className="w-64">
+          <div className="sm:w-64 w-56">
             <Image
               src={logoImg}
               alt="Logo"
-              className="w-56 mx-auto mt-2 mb-4"
+              className="xl:w-56 w-48 mx-auto mt-2 mb-4"
             />
             <ul className="text-black flex flex-col gap-2">
               <li className="text-sm">
@@ -61,6 +78,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
                   Home
@@ -77,6 +95,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconTransaction}
@@ -97,6 +116,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconCampaigns}
@@ -117,6 +137,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconTravel}
@@ -134,6 +155,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconPA}
@@ -151,6 +173,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image src={iconMobil} alt="Mobil" className="w-7 min-w-7" />
                   Mobil
@@ -164,6 +187,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image src={iconMotor} alt="Motor" className="w-7 min-w-7" />
                   Motor
@@ -177,6 +201,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={logoAirpaz}
@@ -197,6 +222,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconPolicy}
@@ -217,6 +243,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconClaim}
@@ -237,6 +264,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconClaim}
@@ -254,6 +282,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconClaim}
@@ -271,6 +300,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconClaim}
@@ -288,6 +318,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconClaim}
@@ -305,6 +336,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="User" className="w-7 min-w-7" />
                   User
@@ -318,6 +350,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
                   Roles
@@ -334,6 +367,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconClaim}
@@ -349,6 +383,7 @@ const Sidebar = () => {
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
+                  onClick={handleMenuClick}
                 >
                   <Image
                     src={iconClaim}
@@ -361,6 +396,7 @@ const Sidebar = () => {
             </ul>
           </div>
         </div>
+        <div className="overlay" onClick={toggleSidebar}></div>
       </div>
     </>
   );
