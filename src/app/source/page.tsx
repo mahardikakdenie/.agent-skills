@@ -75,22 +75,22 @@ const SourcePage = () => {
         router.push("/source/add-source");
     };
 
-      const handleDelete = (id: string) => {
+    const handleDelete = (id: string) => {
         if (window.confirm("Are you sure you want to delete this source?")) {
             sourceService
-            .deleteDiscSourceById(id)
-            .then(() => {
-              setSource(
-                source.filter((source) => source.id !== id)
-              );
-            })
-            .catch((error) => {
-              console.error("Failed to delete source:", error);
-            });
+                .deleteDiscSourceById(id)
+                .then(() => {
+                    setSource(
+                        source.filter((source) => source.id !== id)
+                    );
+                })
+                .catch((error) => {
+                    console.error("Failed to delete source:", error);
+                });
         }
-      };
+    };
 
-      const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toLowerCase();
         setSearchTerm(value);
 
@@ -128,8 +128,8 @@ const SourcePage = () => {
                 </Button>
             </div>
 
-             {/* Search Bar */}
-             <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
+            {/* Search Bar */}
+            <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
                 <input
                     type="text"
                     value={searchTerm}
@@ -151,7 +151,7 @@ const SourcePage = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                {filteredSource.map((source) => (
+                    {filteredSource.map((source) => (
                         <TableRow key={source.id}>
                             <TableCell>{source.source_name}</TableCell>
                             <TableCell>{source.source_type}</TableCell>
@@ -259,16 +259,16 @@ const SourcePage = () => {
                                 <select
                                     id="rowsPerPage"
                                     className="p-2 border rounded"
-                                    value={rowsPerPage}
+                                    value={rowsPerPage === totalItems ? 'All' : rowsPerPage}
                                     onChange={(e) => {
-                                        const newRowsPerPage = Number(e.target.value);
+                                        const newRowsPerPage = e.target.value === 'All' ? totalItems : Number(e.target.value);
                                         setRowsPerPage(newRowsPerPage);
                                         setPage(1);
                                     }}
                                 >
-                                    {[10, 20, 30, 50].map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
+                                    {[10, 20, 30, 50, 'All'].map((option) => (
+                                        <option key={option} value={option === 'All' ? 'All' : option}>
+                                            {option === 'All' ? 'Show All' : option}
                                         </option>
                                     ))}
                                 </select>

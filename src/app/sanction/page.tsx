@@ -280,16 +280,16 @@ const SanctionPage = () => {
                                 <select
                                     id="rowsPerPage"
                                     className="p-2 border rounded"
-                                    value={rowsPerPage}
+                                    value={rowsPerPage === totalItems ? 'All' : rowsPerPage}
                                     onChange={(e) => {
-                                        const newRowsPerPage = Number(e.target.value);
+                                        const newRowsPerPage = e.target.value === 'All' ? totalItems : Number(e.target.value);
                                         setRowsPerPage(newRowsPerPage);
-                                        setPage(1);
+                                        setPage(1); // Reset to the first page whenever the rows per page change
                                     }}
                                 >
-                                    {[10, 20, 30, 50].map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
+                                    {[10, 20, 30, 50, 'All'].map((option) => (
+                                        <option key={option} value={option === 'All' ? 'All' : option}>
+                                            {option === 'All' ? 'Show All' : option}
                                         </option>
                                     ))}
                                 </select>
