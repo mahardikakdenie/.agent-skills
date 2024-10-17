@@ -73,8 +73,8 @@ const ProductCategory = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">
+      <div className="flex gap-2 sm:flex-row flex-col pb-4">
+        <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
           Product Category
         </h1>
         <Button
@@ -90,7 +90,7 @@ const ProductCategory = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead>Category Name</TableHead>
+              <TableHead className="min-w-36">Category Name</TableHead>
               <TableHead className="whitespace-nowrap w-36">Action</TableHead>
             </TableRow>
           </TableHeader>
