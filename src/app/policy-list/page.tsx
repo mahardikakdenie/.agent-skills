@@ -86,105 +86,110 @@ const PolicyPage = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <h1 className="text-black font-bold text-2xl mt-2 mb-4">Policy List</h1>
-      <div className="flex items-center justify-start h-16 bg-white rounded-md mb-3">
-        <div
-          onClick={() => selectTab("All")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "All" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
-          >
-            All Policy
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "All" && "hidden"}`}
-          >
-            {totalData}
-            <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("In Force")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "In Force" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "In Force" && "text-primary"
+      <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+        Policy List
+      </h1>
+      <div className="block bg-white rounded-md mb-3">
+        <div className="w-full flex items-center overflow-auto">
+          <div
+            onClick={() => selectTab("All")}
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "All" && "border-b-[3px] border-primary sm:px-7 px-5"
             }`}
           >
-            In Force
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "In Force" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
+            >
+              All Policy
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Grace Period")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Grace Period" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Grace Period" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "All" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("In Force")}
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "In Force" && "border-b-[3px] border-primary sm:px-7 px-5"
             }`}
           >
-            Grace Period
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Grace Period" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm py-5 mr-3 ${
+                tab === "In Force" && "text-primary"
+              }`}
+            >
+              In Force
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Expired")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Expired" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Expired" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "In Force" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Grace Period")}
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "Grace Period" &&
+              "border-b-[3px] border-primary sm:px-7 px-5"
             }`}
           >
-            Expired
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Expired" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm py-5 mr-3 ${
+                tab === "Grace Period" && "text-primary"
+              }`}
+            >
+              Grace Period
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Grace Period" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Expired")}
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "Expired" && "border-b-[3px] border-primary sm:px-7 px-5"
+            }`}
+          >
+            <button
+              className={`text-sm py-5 mr-3 ${
+                tab === "Expired" && "text-primary"
+              }`}
+            >
+              Expired
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Expired" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
         </div>
       </div>
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
@@ -204,7 +209,7 @@ const PolicyPage = () => {
               <TableHead className="whitespace-nowrap">No.</TableHead>
               <TableHead>Customer Name</TableHead>
               <TableHead>Policy Number</TableHead>
-              <TableHead>Plan Name</TableHead>
+              <TableHead className="min-w-44">Plan Name</TableHead>
               <TableHead className="whitespace-nowrap">Status</TableHead>
               {/* <TableHead>Issued Date</TableHead> */}
               <TableHead className="whitespace-nowrap">Action</TableHead>
