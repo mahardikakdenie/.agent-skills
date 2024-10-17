@@ -94,12 +94,12 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   return (
     <>
       {category == "personal-accident" ? (
-        <div className="w-full py-4 px-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
+        <div className="w-full py-4 px-6 bg-white rounded-lg overflow-aut mb-4 grid sm:grid-cols-2 gap-4">
           <>
             <select
               value={occupationClassFilter}
               onChange={(e) => setOcupationClassFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm capitalize"
+              className="border px-2 py-1 rounded h-16 text-sm capitalize"
             >
               <option value="">All Ocupation Class</option>
               {Array.from(
@@ -119,7 +119,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
             <select
               value={ageFilter}
               onChange={(e) => setAgeFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm capitalize"
+              className="border px-2 py-1 rounded h-16 text-sm capitalize"
             >
               <option value="">All Ages</option>
               {(() => {
@@ -150,7 +150,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
         </div>
       ) : (
         <>
-          <div className="w-full py-4 px-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
+          <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
             <select
               value={adultFilter}
               onChange={(e) => setAdultFilter(e.target.value)}

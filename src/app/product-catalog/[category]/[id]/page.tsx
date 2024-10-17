@@ -126,7 +126,7 @@ const DetaildPage = ({
       <div className="flex flex-col w-full">
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
-            <Breadcrumb>
+            <Breadcrumb className="sm:block hidden">
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink>Product Catalog</BreadcrumbLink>
@@ -148,7 +148,7 @@ const DetaildPage = ({
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
               Detail Product Catalog
             </h2>
           </div>
@@ -161,9 +161,9 @@ const DetaildPage = ({
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="p-6 bg-white rounded-lg flex flex-col gap-4">
+          <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="name"
@@ -182,7 +182,7 @@ const DetaildPage = ({
                         id="name"
                         placeholder="Plan Name"
                         {...field}
-                        className={`mt-1 block w-full ${
+                        className={`mt-1 block w-full h-16 ${
                           errors.name ? "border-red-500" : "border-gray-300"
                         } rounded-md shadow-sm`}
                       />
@@ -212,7 +212,7 @@ const DetaildPage = ({
                         id="slug"
                         placeholder="Slug"
                         {...field}
-                        className={`mt-1 block w-full ${
+                        className={`mt-1 block w-full h-16 ${
                           errors.name ? "border-red-500" : "border-gray-300"
                         } rounded-md shadow-sm`}
                       />
@@ -237,7 +237,7 @@ const DetaildPage = ({
                     rules={{ required: "Insurance ID is required" }}
                     render={({ field }) => (
                       <Select {...field}>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-16">
                           <SelectValue placeholder="Select Insurance" />
                         </SelectTrigger>
                         <SelectContent>
@@ -276,7 +276,7 @@ const DetaildPage = ({
                     rules={{ required: "Product ID is required" }}
                     render={({ field }) => (
                       <Select {...field} onValueChange={field.onChange}>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-16">
                           <SelectValue placeholder="Select Product" />
                         </SelectTrigger>
                         <SelectContent>

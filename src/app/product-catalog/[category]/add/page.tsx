@@ -126,7 +126,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
-            <Breadcrumb>
+            <Breadcrumb className="sm:block hidden">
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink>Product Catalog</BreadcrumbLink>
@@ -148,7 +148,9 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">Add Plan</h2>
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+              Add Plan
+            </h2>
           </div>
           <div className="flex ml-auto">
             <div
@@ -167,7 +169,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 ">
-          <div className="p-6 bg-white rounded-lg flex flex-col gap-4">
+          <div className="p-6 bg-white rounded-lg gap-4 grid sm:grid-cols-2">
             <div>
               <label
                 htmlFor="insuranceId"
@@ -187,7 +189,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                       setIsInsuranceSelected(!!value);
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-16">
                       <SelectValue>
                         {field.value
                           ? insurances.find(
@@ -231,7 +233,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                     onValueChange={field.onChange}
                     disabled={!isInsuranceSelected}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-16">
                       <SelectValue>
                         {field.value
                           ? products.find((p) => p.id === field.value)?.name
@@ -293,7 +295,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                     id="name"
                     placeholder="Insert Plan Name"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-16 ${
                       errors.name ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />
@@ -323,7 +325,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                     id="slug"
                     placeholder="Slug"
                     {...field}
-                    className={`mt-1 block w-full ${
+                    className={`mt-1 block w-full h-16 ${
                       errors.name ? "border-red-500" : "border-gray-300"
                     } rounded-md shadow-sm`}
                   />

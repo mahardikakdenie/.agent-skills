@@ -109,12 +109,14 @@ const TransactionsPage = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <h1 className="text-black font-bold text-2xl mt-2 mb-4">Transactions</h1>
+      <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+        Transactions
+      </h1>
       <div className="block bg-white rounded-md mb-3">
         <div className="w-full flex items-center overflow-auto">
           <div
             onClick={() => selectTab("All")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
               tab === "All" && "border-b-[3px] border-primary md:px-7 px-5"
             }`}
           >
@@ -137,7 +139,7 @@ const TransactionsPage = () => {
           </div>
           <div
             onClick={() => selectTab("Declaration")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
               tab === "Declaration" &&
               "border-b-[3px] border-primary md:px-7 px-5"
             }`}
@@ -163,7 +165,7 @@ const TransactionsPage = () => {
           </div>
           <div
             onClick={() => selectTab("Paid")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
               tab === "Paid" && "border-b-[3px] border-primary md:px-7 px-5"
             }`}
           >
@@ -188,7 +190,7 @@ const TransactionsPage = () => {
           </div>
           <div
             onClick={() => selectTab("Pending")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
               tab === "Pending" && "border-b-[3px] border-primary md:px-7 px-5"
             }`}
           >

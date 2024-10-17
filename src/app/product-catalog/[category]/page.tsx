@@ -125,8 +125,8 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
     setPage(1);
   };
 
-  const isClearButtonVisible =
-    searchPlanName !== "" || searchInsurer !== "" || searchProduct !== "";
+  // const isClearButtonVisible =
+  //   searchPlanName !== "" || searchInsurer !== "" || searchProduct !== "";
 
   const handleDeletePlan = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
@@ -144,8 +144,8 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">
+      <div className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
+        <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
           Product Catalog -{" "}
           {category
             .split("-")
@@ -160,12 +160,12 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
       </div>
 
       <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
-        <div className="flex space-x-4 items-center">
+        <div className="flex gap-4 items-center sm:flex-row flex-col">
           <Select
             value={searchInsurer}
             onValueChange={handleSearchInsurerOnChange}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-16">
               <SelectValue placeholder="Select Insurer" />
             </SelectTrigger>
             <SelectContent>
@@ -179,39 +179,21 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          {/* <Select
-            value={searchProduct}
-            onValueChange={handleSearchProductOnChange}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Product" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Products</SelectLabel>
-                {products?.map((item: any, index) => (
-                  <SelectItem key={item.id} value={item.id}>
-                    {item.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select> */}
           <Input
             type="text"
             placeholder="Search by Plan Name"
-            className="p-2 border rounded"
+            className="p-2 border rounded h-16"
             value={searchPlanName}
             onChange={(e) => setSearchPlanName(e.target.value)}
           />
-          {isClearButtonVisible && (
+          {/* {isClearButtonVisible && (
             <Button
               onClick={handleClearFilters}
               className="text-red-500 bg-transparent border border-red-500 hover:bg-gray-300 rounded h-[56px]"
             >
               Clear
             </Button>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -221,7 +203,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
             <TableRow>
               <TableHead className="whitespace-nowrap">No.</TableHead>
               <TableHead className="whitespace-nowrap">Insurer</TableHead>
-              <TableHead>Plan Name</TableHead>
+              <TableHead className="min-w-44">Plan Name</TableHead>
               <TableHead className="whitespace-nowrap">Product</TableHead>
               <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
