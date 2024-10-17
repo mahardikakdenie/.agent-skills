@@ -110,102 +110,107 @@ const TransactionsPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <h1 className="text-black font-bold text-2xl mt-2 mb-4">Transactions</h1>
-      <div className="flex items-center justify-start h-16 bg-white rounded-md mb-3">
-        <div
-          onClick={() => selectTab("All")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "All" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
-          >
-            All Transaction
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "All" && "hidden"}`}
-          >
-            {totalData}
-            <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Declaration")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Declaration" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Declaration" && "text-primary"
+      <div className="block bg-white rounded-md mb-3">
+        <div className="w-full flex items-center overflow-auto">
+          <div
+            onClick={() => selectTab("All")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+              tab === "All" && "border-b-[3px] border-primary md:px-7 px-5"
             }`}
           >
-            Declaration
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Declaration" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
+            >
+              All Transaction
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Paid")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Paid" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${tab === "Paid" && "text-primary"}`}
-          >
-            Paid
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Paid" && "hidden"}`}
-          >
-            {totalData}
-            <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
-        </div>
-        <div
-          onClick={() => selectTab("Pending")}
-          className={`cursor-pointer h-full flex items-center justify-center px-7 ${
-            tab === "Pending" && "border-b-[3px] border-primary px-7"
-          }`}
-        >
-          <button
-            className={`text-sm py-5 mr-3 ${
-              tab === "Pending" && "text-primary"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "All" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Declaration")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+              tab === "Declaration" &&
+              "border-b-[3px] border-primary md:px-7 px-5"
             }`}
           >
-            Pending
-          </button>
-          <span
-            className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-              totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-            } ${tab !== "Pending" && "hidden"}`}
-          >
-            {totalData}
+            <button
+              className={`text-sm py-5 mr-3 ${
+                tab === "Declaration" && "text-primary"
+              }`}
+            >
+              Declaration
+            </button>
             <span
-              className={`${totalData < 100 && "hidden"}`}
-              style={{ fontSize: "10px" }}
-            ></span>
-          </span>
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Declaration" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Paid")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+              tab === "Paid" && "border-b-[3px] border-primary md:px-7 px-5"
+            }`}
+          >
+            <button
+              className={`text-sm py-5 mr-3 ${
+                tab === "Paid" && "text-primary"
+              }`}
+            >
+              Paid
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Paid" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Pending")}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center md:px-7 px-5 ${
+              tab === "Pending" && "border-b-[3px] border-primary md:px-7 px-5"
+            }`}
+          >
+            <button
+              className={`text-sm py-5 mr-3 ${
+                tab === "Pending" && "text-primary"
+              }`}
+            >
+              Pending
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Pending" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
         </div>
       </div>
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
@@ -326,8 +331,8 @@ const TransactionsPage = () => {
                           <DrawerDescription>
                             <div className="flex flex-col w-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl">
                               <div className="rounded-lg flex flex-col gap-4 text-black">
-                                <div className="flex gap-2 text-sm font-medium">
-                                  <div className="min-w-40 w-40">
+                                <div className="flex gap-2 text-sm font-medium justify-start text-start">
+                                  <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
                                     Insurance Name
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
@@ -335,25 +340,31 @@ const TransactionsPage = () => {
                                     {transaction.insurance.insurance.id.name}
                                   </div>
                                 </div>
-                                <div className="flex gap-2 text-sm font-medium">
-                                  <div className="min-w-40 w-40">Plan Name</div>
+                                <div className="flex gap-2 text-sm font-medium justify-start text-start">
+                                  <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+                                    Plan Name
+                                  </div>
                                   <div className="max-w-1 w-1">:</div>
                                   <div>{transaction.insurance.plan.name}</div>
                                 </div>
-                                <div className="flex gap-2 text-sm font-medium">
-                                  <div className="min-w-40 w-40">
+                                <div className="flex gap-2 text-sm font-medium justify-start text-start">
+                                  <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
                                     Customer Name
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
                                   <div>{transaction.customer.name}</div>
                                 </div>
-                                <div className="flex gap-2 text-sm font-medium">
-                                  <div className="min-w-40 w-40">Amount</div>
+                                <div className="flex gap-2 text-sm font-medium justify-start text-start">
+                                  <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+                                    Amount
+                                  </div>
                                   <div className="max-w-1 w-1">:</div>
                                   <div>{formatMoney(totalPremium, "IDR")}</div>
                                 </div>
-                                <div className="flex gap-2 text-sm font-medium">
-                                  <div className="min-w-40 w-40">Status</div>
+                                <div className="flex gap-2 text-sm font-medium justify-start text-start">
+                                  <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+                                    Status
+                                  </div>
                                   <div className="max-w-1 w-1">:</div>
                                   <div className="text-warning font-semibold">
                                     <span
