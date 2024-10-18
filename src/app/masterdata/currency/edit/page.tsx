@@ -40,6 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatMoneyClaim } from "@/lib/formatter";
 
 const EditProduct = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -228,7 +229,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
-            <Breadcrumb>
+            <Breadcrumb className="sm:block hidden">
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink>Masterdata</BreadcrumbLink>
@@ -248,7 +249,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
               Edit Currency
             </h2>
           </div>
@@ -271,7 +272,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="p-6 bg-white rounded-lg">
+          <div className="p-4 sm:p-6 bg-white rounded-lg">
             <div>
               <label
                 htmlFor="insurance"
@@ -347,7 +348,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                               setCurrencyFields(updated);
                             }}
                           >
-                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl">
+                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
                               <SelectValue placeholder={item.currency_from} />
                             </SelectTrigger>
                             <SelectContent>
@@ -382,7 +383,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                               setCurrencyFields(updated);
                             }}
                           >
-                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl">
+                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
                               <SelectValue placeholder={item.currency_to} />
                             </SelectTrigger>
                             <SelectContent>
@@ -406,11 +407,14 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                         <Input
                           type="text"
                           id="rate"
-                          value={item.rate}
+                          value={new Intl.NumberFormat("en-US").format(
+                            item.rate
+                          )}
                           onChange={(e) => {
-                            handleChangeRate(index, e.target.value);
+                            const value = e.target.value.replace(/,/g, "");
+                            handleChangeRate(index, value);
                           }}
-                          className={`block w-full h-10 rounded-xl border-gray-300`}
+                          className={`block w-full h-10 rounded-xl border-gray-300 min-w-28`}
                         />
 
                         {errors.rate && (
@@ -421,10 +425,21 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                       </React.Fragment>
                     </TableCell>
                     <TableCell className="text-gray-400">
-                      {item.lastRate || "-"}
+                      {item.lastRate
+                        ? new Intl.NumberFormat("en-US").format(item.lastRate)
+                        : "-"}
                     </TableCell>
                     <TableCell className="text-gray-400">
-                      {item.updated_at || "-"}
+                      {item.updated_at
+                        ? `${new Date(item.updated_at).toLocaleDateString(
+                            "en-GB",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            }
+                          )}`
+                        : "No Date"}
                     </TableCell>
                     <TableCell className="text-gray-400">
                       {item.edit_by || "-"}

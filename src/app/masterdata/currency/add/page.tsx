@@ -40,8 +40,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatMoneyClaim } from "@/lib/formatter";
 
-const EditProduct = ({ params }: { params: { id: string } }) => {
+const AddProduct = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
@@ -108,32 +109,17 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const onSubmit = async () => {
     try {
       for (let i = 0; i < currencyFields.length; i++) {
-        if (currencyFields[i].id == "") {
-          await saveCurrency(
-            {
-              insurance: "",
-              value: currencyFields[i].rate,
-              currency_from: currencyFields[i].currency_from,
-              currency_to: currencyFields[i].currency_to,
-              start_from: new Date(),
-              active: true,
-            },
-            selectedInsuranceId
-          );
-        } else {
-          await updateCurrency(
-            {
-              insurance: "",
-              value: currencyFields[i].rate,
-              currency_from: currencyFields[i].currency_from,
-              currency_to: currencyFields[i].currency_to,
-              start_from: new Date(),
-              active: true,
-            },
-            selectedInsuranceId,
-            currencyFields[i].id
-          );
-        }
+        await saveCurrency(
+          {
+            insurance: "",
+            value: currencyFields[i].rate,
+            currency_from: currencyFields[i].currency_from,
+            currency_to: currencyFields[i].currency_to,
+            start_from: new Date(),
+            active: true,
+          },
+          selectedInsuranceId
+        );
       }
       setSaveSuccess(true);
     } catch (error) {
@@ -165,14 +151,43 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (currencies.length > 0 && currencies[0].currencies.length > 0) {
-      const updateFormValue = currencies[0].currencies.map((item: any) => ({
-        id: item.id,
-        rate: item.value,
-        lastRate: item.value,
-        currency_from: item.currency_from,
-        currency_to: item.currency_to,
-      }));
-      setCurrencyFields(updateFormValue);
+      let groupExchangeRate: any = {};
+      currencies[0].currencies
+        .sort(
+          (a: any, b: any) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        )
+        .map((item: any) => {
+          if (
+            !groupExchangeRate.hasOwnProperty(
+              `${item.currency_from}_${item.currency_to}`
+            )
+          ) {
+            groupExchangeRate[`${item.currency_from}_${item.currency_to}`] = [];
+          }
+          groupExchangeRate[`${item.currency_from}_${item.currency_to}`].push(
+            item
+          );
+        });
+      setCurrencyFields(
+        Object.keys(groupExchangeRate).map((key: any) => {
+          const exchangeRateLog = groupExchangeRate[key];
+
+          const formValue = {
+            id: exchangeRateLog[0].id,
+            rate: exchangeRateLog[0].value,
+            lastRate: exchangeRateLog[0].value,
+            currency_from: exchangeRateLog[0].currency_from,
+            currency_to: exchangeRateLog[0].currency_to,
+            updated_at: exchangeRateLog[0].updated_at,
+          };
+          if (exchangeRateLog.length > 1) {
+            formValue.lastRate = exchangeRateLog[1].value;
+          }
+
+          return formValue;
+        })
+      );
     }
   }, [currencies]);
 
@@ -196,7 +211,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const handleDeleteCurrencies = async (idCurrency: string) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await currencyService.deleteCurrency(selectedInsuranceId, idCurrency); // Menggunakan selectedInsuranceId yang sudah ada
+        await currencyService.deleteCurrency(selectedInsuranceId, idCurrency);
         setCurrencyFields((prevFields) =>
           prevFields.filter((currencyField) => currencyField.id !== idCurrency)
         );
@@ -214,7 +229,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
-            <Breadcrumb>
+            <Breadcrumb className="sm:block hidden">
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink>Masterdata</BreadcrumbLink>
@@ -234,7 +249,9 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">Add Currency</h2>
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+              Add Currency
+            </h2>
           </div>
 
           <div className="flex ml-auto">
@@ -255,7 +272,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="p-6 bg-white rounded-lg">
+          <div className="p-4 sm:p-6 bg-white rounded-lg">
             <div>
               <label
                 htmlFor="insurance"
@@ -321,11 +338,10 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                     <TableCell>
                       <Controller
                         key={index}
-                        name={`currency_from.${index}` as const} // Menambahkan as const jika perlu
+                        name={`currency_from.${index}` as const}
                         control={control}
                         render={({ field }) => (
                           <Select
-                            required
                             value={field.value}
                             onValueChange={(value) => {
                               field.onChange(value);
@@ -335,7 +351,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                               setCurrencyFields(updated);
                             }}
                           >
-                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl">
+                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
                               <SelectValue placeholder={item.currency_from} />
                             </SelectTrigger>
                             <SelectContent>
@@ -361,7 +377,6 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                         control={control}
                         render={({ field }) => (
                           <Select
-                            required
                             value={field.value}
                             onValueChange={(value) => {
                               field.onChange(value);
@@ -371,7 +386,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                               setCurrencyFields(updated);
                             }}
                           >
-                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl">
+                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
                               <SelectValue placeholder={item.currency_to} />
                             </SelectTrigger>
                             <SelectContent>
@@ -395,12 +410,14 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                         <Input
                           type="text"
                           id="rate"
-                          value={item.rate}
-                          required
+                          value={new Intl.NumberFormat("en-US").format(
+                            item.rate
+                          )}
                           onChange={(e) => {
-                            handleChangeRate(index, e.target.value);
+                            const value = e.target.value.replace(/,/g, "");
+                            handleChangeRate(index, value);
                           }}
-                          className={`block w-full h-10 rounded-xl border-gray-300`}
+                          className={`block w-full h-10 rounded-xl border-gray-300 min-w-28`}
                         />
 
                         {errors.rate && (
@@ -411,10 +428,21 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
                       </React.Fragment>
                     </TableCell>
                     <TableCell className="text-gray-400">
-                      {item.lastRate || "-"}
+                      {item.lastRate
+                        ? new Intl.NumberFormat("en-US").format(item.lastRate)
+                        : "-"}
                     </TableCell>
                     <TableCell className="text-gray-400">
-                      {item.updated_at || "-"}
+                      {item.updated_at
+                        ? `${new Date(item.updated_at).toLocaleDateString(
+                            "en-GB",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            }
+                          )}`
+                        : "No Date"}
                     </TableCell>
                     <TableCell className="text-gray-400">
                       {item.edit_by || "-"}
@@ -454,6 +482,5 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const EditProductWithSidebar = (params: any) =>
-  WithSidebar(EditProduct)(params);
-export default EditProductWithSidebar;
+const AddProductWithSidebar = (params: any) => WithSidebar(AddProduct)(params);
+export default AddProductWithSidebar;
