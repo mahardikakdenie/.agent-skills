@@ -124,7 +124,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
-            <Breadcrumb>
+            <Breadcrumb className="sm:block hidden">
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink>Masterdata</BreadcrumbLink>
@@ -144,7 +144,9 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">Detail User</h2>
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+              Detail User
+            </h2>
           </div>
 
           <div className="flex ml-auto">
@@ -165,7 +167,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="p-6 bg-white rounded-lg grid grid-cols-2 gap-4">
+          <div className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-4">
             <div>
               <label
                 htmlFor="name"
