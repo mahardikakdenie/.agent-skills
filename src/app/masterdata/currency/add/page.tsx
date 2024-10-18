@@ -71,12 +71,10 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
     updateCurrency,
     categories = [],
     currencies = [],
-    // fetchCategories,
     insurances = [],
     typeCurrencies = [],
     fetchInsurances,
     fetchCategories,
-    fetchCurrency,
     fetchTypeCurrencies,
   } = useCurrency();
 
@@ -136,7 +134,6 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
     fetchCategories({});
     fetchInsurances({});
     fetchTypeCurrencies({});
-    fetchCurrency("", categoryId, insuranceId);
   }, []);
 
   useEffect(() => {
