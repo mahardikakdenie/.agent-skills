@@ -1,7 +1,7 @@
-import { PlanService } from '@/services/plan.services';
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'react-feather';
-import { FaCheck, FaTimes } from 'react-icons/fa';
+import { PlanService } from "@/services/plan.services";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "react-feather";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
 interface PlanResponseDTO {
   data: Plan[];
@@ -79,12 +79,18 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   onSearch,
 }) => {
   const planService = new PlanService();
-  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set(preSelectedPlanIds));
-  const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
+  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(
+    new Set(preSelectedPlanIds)
+  );
+  const [productNames, setProductNames] = useState<{ [key: string]: string }>(
+    {}
+  );
   const [selectAll, setSelectAll] = useState(false);
   const [currentPagePlan, setCurrentPagePlan] = useState(pagePlan);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [localSelectedPlanIds, setLocalSelectedPlanIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [localSelectedPlanIds, setLocalSelectedPlanIds] = useState<Set<string>>(
+    new Set()
+  );
 
   const data = plans?.data || [];
   let totalItems = plans?.meta.total || 0;
@@ -92,7 +98,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
   useEffect(() => {
     const names: { [key: string]: string } = {};
-    products.forEach(product => {
+    products.forEach((product) => {
       names[product.id] = product.name;
     });
     setProductNames(names);
@@ -105,7 +111,9 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   }, [isOpen, preSelectedPlanIds]);
 
   useEffect(() => {
-    const allSelected = data.length > 0 && data.every(plan => localSelectedPlanIds.has(plan.id));
+    const allSelected =
+      data.length > 0 &&
+      data.every((plan) => localSelectedPlanIds.has(plan.id));
     setSelectAll(allSelected);
   }, [data, localSelectedPlanIds]);
 
@@ -116,9 +124,9 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     const newSelected = new Set(localSelectedPlanIds);
 
     if (newSelectAll) {
-      data.forEach(plan => newSelected.add(plan.id));
+      data.forEach((plan) => newSelected.add(plan.id));
     } else {
-      data.forEach(plan => newSelected.delete(plan.id));
+      data.forEach((plan) => newSelected.delete(plan.id));
     }
 
     setLocalSelectedPlanIds(newSelected);
@@ -131,7 +139,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   };
 
   const handleCheckboxChange = (planId: string) => {
-    setLocalSelectedPlanIds(prevSelected => {
+    setLocalSelectedPlanIds((prevSelected) => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(planId)) {
         newSelected.delete(planId);
@@ -145,10 +153,12 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
   const handleApply = () => {
     const selectedPlansData: Plan[] = Array.from(localSelectedPlanIds)
-      .map(planId => data.find(plan => plan.id === planId))
+      .map((planId) => data.find((plan) => plan.id === planId))
       .filter((plan): plan is Plan => Boolean(plan));
 
-    console.log("tomL: " + data.map(plan => (localSelectedPlanIds.has(plan.id))));
+    console.log(
+      "tomL: " + data.map((plan) => localSelectedPlanIds.has(plan.id))
+    );
     setGlobalSelectedPlanIds(localSelectedPlanIds);
     onClose();
     setTimeout(() => {
@@ -165,7 +175,10 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
           <FaTimes />
         </button>
         <h2 className="text-2xl font-semibold mb-4">
@@ -204,12 +217,16 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                       className="form-checkbox"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Product
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
-                {data.map(plan => (
+                {data.map((plan) => (
                   <tr key={plan.id}>
                     <td className="px-2 py-1 text-center whitespace-nowrap text-xs font-medium">
                       <input
@@ -220,7 +237,9 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                       />
                     </td>
                     <td className="px-6 py-4">{plan.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{plan.products.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {plan.products.name}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -232,19 +251,26 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
         {/* Pagination Controls */}
         <div className="flex justify-center items-center gap-2 font-normal mb-4">
-          <label htmlFor="rowsPerPage" className="mr-2">Showing:</label>
+          <label htmlFor="rowsPerPage" className="mr-2">
+            Showing:
+          </label>
           <select
             id="rowsPerPage"
-            value={showPlansPerPage === totalPlanItems ? 'All' : showPlansPerPage}
+            value={
+              showPlansPerPage === totalPlanItems ? "All" : showPlansPerPage
+            }
             onChange={(e) => {
-              const value = e.target.value === 'All' ? totalPlanItems : Number(e.target.value);
+              const value =
+                e.target.value === "All"
+                  ? totalPlanItems
+                  : Number(e.target.value);
               onPlansPerPageChange(value);
             }}
             className="p-2 border rounded"
           >
-            {[10, 20, 30, 50, 'All'].map((option) => (
-              <option key={option} value={option === 'All' ? 'All' : option}>
-                {option === 'All' ? 'Show All' : option}
+            {[10, 20, 30, 50, "All"].map((option) => (
+              <option key={option} value={option === "All" ? "All" : option}>
+                {option === "All" ? "Show All" : option}
               </option>
             ))}
           </select>
@@ -257,20 +283,22 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
             type="button"
             onClick={() => handlePageChange(pagePlan - 1)}
             disabled={pagePlan === 1 || showPlansPerPage === totalPlanItems}
-            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
+            className="py-1 rounded flex items-center"
           >
             <ChevronLeft />
           </button>
-          <span>
+          {/* <span>
             {showPlansPerPage === totalPlanItems
               ? `Showing all on a single page`
               : `Page ${pagePlan} of ${totalPages}`}
-          </span>
+          </span> */}
           <button
             type="button"
             onClick={() => handlePageChange(pagePlan + 1)}
-            disabled={pagePlan === totalPages || showPlansPerPage === totalPlanItems}
-            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center"
+            disabled={
+              pagePlan === totalPages || showPlansPerPage === totalPlanItems
+            }
+            className="py-1 rounded flex items-center"
           >
             <ChevronRight />
           </button>

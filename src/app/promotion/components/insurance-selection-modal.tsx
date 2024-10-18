@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'react-feather';
-import { FaCheck, FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "react-feather";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
 export interface InsuranceResponseDTO {
   data: Insurance[];
@@ -28,7 +28,9 @@ interface InsuranceSelectionModalProps {
   showInsPerPage: number;
   onInsurancePerPageChange: (insPerPage: number) => void;
   globalSelectedInsuranceIds: Set<string>;
-  setGlobalSelectedInsuranceIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  setGlobalSelectedInsuranceIds: React.Dispatch<
+    React.SetStateAction<Set<string>>
+  >;
   currentPageIns: number;
   onRemoveInsurance: (insuranceId: string) => void;
 }
@@ -48,7 +50,9 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   onRemoveInsurance,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
-  const [localSelectedInsuranceIds, setLocalSelectedInsuranceIds] = useState<Set<string>>(new Set());
+  const [localSelectedInsuranceIds, setLocalSelectedInsuranceIds] = useState<
+    Set<string>
+  >(new Set());
   const data = insurances?.data || [];
   const totalItems = insurances?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / showInsPerPage);
@@ -61,11 +65,14 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   }, [isOpen, globalSelectedInsuranceIds]);
 
   useEffect(() => {
-    setSelectAll(data.length > 0 && data.every(insurance => localSelectedInsuranceIds.has(insurance.id)));
+    setSelectAll(
+      data.length > 0 &&
+        data.every((insurance) => localSelectedInsuranceIds.has(insurance.id))
+    );
   }, [data, localSelectedInsuranceIds]);
 
   const handleCheckboxChange = (insuranceId: string) => {
-    setLocalSelectedInsuranceIds(prevSelected => {
+    setLocalSelectedInsuranceIds((prevSelected) => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(insuranceId)) {
         newSelected.delete(insuranceId);
@@ -78,25 +85,25 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   };
 
   const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll;  // Toggle selectAll state
+    const newSelectAll = !selectAll; // Toggle selectAll state
     setSelectAll(newSelectAll);
 
-    const newSelected = new Set(globalSelectedInsuranceIds);  // Copy the current selected ins
+    const newSelected = new Set(globalSelectedInsuranceIds); // Copy the current selected ins
 
     if (newSelectAll) {
       // Selecting all ins
-      data.forEach(ins => {
+      data.forEach((ins) => {
         newSelected.add(ins.id);
       });
     } else {
       // Deselecting all ins
-      data.forEach(ins => {
+      data.forEach((ins) => {
         newSelected.delete(ins.id);
         onRemoveInsurance(ins.id); // Remove each ins from the main state
       });
     }
 
-    setGlobalSelectedInsuranceIds(newSelected);  // Update the selected ins
+    setGlobalSelectedInsuranceIds(newSelected); // Update the selected ins
   };
 
   const handleApply = () => {
@@ -104,8 +111,12 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
     setGlobalSelectedInsuranceIds(localSelectedInsuranceIds);
 
     // Prepare the selected insurances data to return
-    const selectedInsurancesData: Insurance[] = Array.from(localSelectedInsuranceIds)
-      .map(insuranceId => data.find(insurance => insurance.id === insuranceId))
+    const selectedInsurancesData: Insurance[] = Array.from(
+      localSelectedInsuranceIds
+    )
+      .map((insuranceId) =>
+        data.find((insurance) => insurance.id === insuranceId)
+      )
       .filter((ins): ins is Insurance => Boolean(ins));
 
     onClose();
@@ -125,7 +136,10 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
           <FaTimes />
         </button>
 
@@ -144,9 +158,15 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                     className="form-checkbox"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Brand
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Logo
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
@@ -161,11 +181,19 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                         className="form-checkbox"
                       />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{insurance.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{insurance.brand}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {insurance.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {insurance.brand}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {insurance.logo_url ? (
-                        <img src={insurance.logo_url} alt={insurance.name} className="w-12 h-12 object-cover" />
+                        <img
+                          src={insurance.logo_url}
+                          alt={insurance.name}
+                          className="w-12 h-12 object-cover"
+                        />
                       ) : (
                         <span>No Logo</span>
                       )}
@@ -174,7 +202,12 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">No insurances available</td>
+                  <td
+                    colSpan={4}
+                    className="px-6 py-4 text-center text-sm text-gray-500"
+                  >
+                    No insurances available
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -199,15 +232,15 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
           <button
             onClick={() => handlePageChange(currentPageIns - 1)}
             disabled={currentPageIns === 1}
-            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+            className="py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronLeft />
           </button>
-          <span>{`Page ${currentPageIns} of ${totalPages}`}</span>
+          {/* <span>{`Page ${currentPageIns} of ${totalPages}`}</span> */}
           <button
             onClick={() => handlePageChange(currentPageIns + 1)}
             disabled={currentPageIns === totalPages}
-            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+            className="py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronRight />
           </button>

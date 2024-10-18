@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'react-feather';
-import { FaCheck, FaTimes } from 'react-icons/fa';
-import { ProductService } from '@/services/product.services';
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "react-feather";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import { ProductService } from "@/services/product.services";
 
 interface Product {
   id: string;
@@ -59,11 +59,13 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   onRemoveProd,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [localSelectedProductIds, setLocalSelectedProductIds] = useState<Set<string>>(new Set());
+  const [localSelectedProductIds, setLocalSelectedProductIds] = useState<
+    Set<string>
+  >(new Set());
 
   const data = products?.data || [];
   const totalItems = products?.meta.total || 0;
@@ -73,7 +75,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   const formatCategoryName = (name: string): string => {
     return name
-      .replace(/[-_]/g, ' ')
+      .replace(/[-_]/g, " ")
       .toLowerCase()
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
@@ -87,27 +89,31 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   // Check if all products on the current page are selected
   useEffect(() => {
-    setSelectAll(data.length > 0 && data.every(product => localSelectedProductIds.has(product.id)));
+    setSelectAll(
+      data.length > 0 &&
+        data.every((product) => localSelectedProductIds.has(product.id))
+    );
   }, [data, localSelectedProductIds]);
-
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await productService.getPromotionCategories();
         if (response.data && Array.isArray(response.data)) {
-          const categoryList = response.data.map((category: { id: string; name: string }) => ({
-            id: category.id,
-            name: formatCategoryName(category.name),
-          }));
-          setCategories([{ id: '', name: 'All Products' }, ...categoryList]);
+          const categoryList = response.data.map(
+            (category: { id: string; name: string }) => ({
+              id: category.id,
+              name: formatCategoryName(category.name),
+            })
+          );
+          setCategories([{ id: "", name: "All Products" }, ...categoryList]);
         } else {
-          throw new Error('Unexpected response structure');
+          throw new Error("Unexpected response structure");
         }
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching categories:', err);
-        setError('Failed to fetch categories');
+        console.error("Error fetching categories:", err);
+        setError("Failed to fetch categories");
         setLoading(false);
       }
     };
@@ -116,7 +122,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   }, []);
 
   const handleCheckboxChange = (productId: string) => {
-    setLocalSelectedProductIds(prevSelected => {
+    setLocalSelectedProductIds((prevSelected) => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(productId)) {
         newSelected.delete(productId);
@@ -129,25 +135,25 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   };
 
   const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll;  // Toggle selectAll state
+    const newSelectAll = !selectAll; // Toggle selectAll state
     setSelectAll(newSelectAll);
 
-    const newSelected = new Set(globalSelectedProdIds);  // Copy the current selected prod
+    const newSelected = new Set(globalSelectedProdIds); // Copy the current selected prod
 
     if (newSelectAll) {
       // Selecting all prod
-      data.forEach(prod => {
+      data.forEach((prod) => {
         newSelected.add(prod.id);
       });
     } else {
       // Deselecting all prod
-      data.forEach(prod => {
+      data.forEach((prod) => {
         newSelected.delete(prod.id);
         onRemoveProd(prod.id); // Remove each prod from the main state
       });
     }
 
-    setGlobalSelectedProdIds(newSelected);  // Update the selected prod
+    setGlobalSelectedProdIds(newSelected); // Update the selected prod
   };
 
   const handleApply = () => {
@@ -156,7 +162,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
     // Prepare the selected products data to return
     const selectedProductsData: Product[] = Array.from(localSelectedProductIds)
-      .map(productId => data.find(product => product.id === productId))
+      .map((productId) => data.find((product) => product.id === productId))
       .filter((prod): prod is Product => Boolean(prod));
 
     onClose();
@@ -171,12 +177,15 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     }
   };
 
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setSelectedCategoryId(event.target.value);
   };
 
   const filteredProducts = data.filter(
-    (product) => selectedCategoryId === '' || product.category === selectedCategoryId
+    (product) =>
+      selectedCategoryId === "" || product.category === selectedCategoryId
   );
 
   if (!isOpen) return null;
@@ -184,7 +193,10 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
           <FaTimes />
         </button>
         <h2 className="text-2xl font-semibold mb-4">
@@ -193,11 +205,16 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
         {/* Filter Dropdown */}
         <div className="mb-4">
-          <label htmlFor="category-filter" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="category-filter"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Filter by Category
           </label>
           {loading ? (
-            <p className="text-center text-sm text-gray-500">Loading categories...</p>
+            <p className="text-center text-sm text-gray-500">
+              Loading categories...
+            </p>
           ) : error ? (
             <p className="text-center text-sm text-red-500">{error}</p>
           ) : (
@@ -205,7 +222,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               id="category-filter"
               value={selectedCategoryId}
               onChange={handleCategoryChange}
-              className="block w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="h-14 px-3 block w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
@@ -229,8 +246,12 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     className="form-checkbox"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Product ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Product Name
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
@@ -245,13 +266,22 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                         className="form-checkbox"
                       />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {product.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {product.name}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No products available.</td>
+                  <td
+                    colSpan={3}
+                    className="px-6 py-4 text-center text-sm text-gray-500"
+                  >
+                    No products available.
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -264,15 +294,16 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           <select
             id="rowsPerPage"
             className="p-2 border rounded"
-            value={showProdPerPage === totalItems ? 'All' : showProdPerPage}
+            value={showProdPerPage === totalItems ? "All" : showProdPerPage}
             onChange={(e) => {
-              const value = e.target.value === 'All' ? totalItems : Number(e.target.value);
+              const value =
+                e.target.value === "All" ? totalItems : Number(e.target.value);
               onProdPerPageChange(value);
             }}
           >
-            {[10, 20, 30, 50, 'All'].map((option) => (
-              <option key={option} value={option === 'All' ? 'All' : option}>
-                {option === 'All' ? 'Show All' : option}
+            {[10, 20, 30, 50, "All"].map((option) => (
+              <option key={option} value={option === "All" ? "All" : option}>
+                {option === "All" ? "Show All" : option}
               </option>
             ))}
           </select>
@@ -284,19 +315,21 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           <button
             onClick={() => handlePageChange(currentPageProd - 1)}
             disabled={currentPageProd === 1 || showProdPerPage === totalItems}
-            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+            className="py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronLeft />
           </button>
-          <span>
+          {/* <span>
             {showProdPerPage === totalItems
               ? `Showing all on a single page`
               : `Page ${currentPageProd} of ${totalPages}`}
-          </span>
+          </span> */}
           <button
             onClick={() => handlePageChange(currentPageProd + 1)}
-            disabled={currentPageProd === totalPages || showProdPerPage === totalItems}
-            className="bg-gray-500 text-white px-2 py-1 rounded flex items-center disabled:opacity-50"
+            disabled={
+              currentPageProd === totalPages || showProdPerPage === totalItems
+            }
+            className="py-1 rounded flex items-center disabled:opacity-50"
           >
             <ChevronRight />
           </button>
@@ -319,4 +352,3 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 };
 
 export default ProductSelectionModal;
-

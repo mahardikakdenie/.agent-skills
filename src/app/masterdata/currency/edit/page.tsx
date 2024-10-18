@@ -63,7 +63,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const [typeCurrency, setTypeCurrency] = useState("");
   const [selectedTypeId, setSelectedTypeId] = useState<string[]>([]);
   const [currencyFields, setCurrencyFields] = useState<any[]>([
-    { id: "", rate: "", currency_from: "", currency_to: "" },
+    { id: "", rate: "", currency_from: "", currency_to: "", isEdited: true },
   ]);
 
   const {
@@ -109,17 +109,19 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
   const onSubmit = async () => {
     try {
       for (let i = 0; i < currencyFields.length; i++) {
-        await saveCurrency(
-          {
-            insurance: "",
-            value: currencyFields[i].rate,
-            currency_from: currencyFields[i].currency_from,
-            currency_to: currencyFields[i].currency_to,
-            start_from: new Date(),
-            active: true,
-          },
-          selectedInsuranceId
-        );
+        if (currencyFields[i].isEdited) {
+          await saveCurrency(
+            {
+              insurance: "",
+              value: currencyFields[i].rate,
+              currency_from: currencyFields[i].currency_from,
+              currency_to: currencyFields[i].currency_to,
+              start_from: new Date(),
+              active: true,
+            },
+            selectedInsuranceId
+          );
+        }
       }
       setSaveSuccess(true);
     } catch (error) {
@@ -180,6 +182,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
             currency_from: exchangeRateLog[0].currency_from,
             currency_to: exchangeRateLog[0].currency_to,
             updated_at: exchangeRateLog[0].updated_at,
+            isEdited: false,
           };
           if (exchangeRateLog.length > 1) {
             formValue.lastRate = exchangeRateLog[1].value;
@@ -198,13 +201,18 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
       rate: "",
       currency_from: "",
       currency_to: "",
+      isEdited: true,
     });
     setCurrencyFields(updateFormValue);
   };
 
   const handleChangeRate = (index: number, value: string) => {
     const updateFormValue = [...currencyFields];
-    updateFormValue[index] = { ...updateFormValue[index], rate: value };
+    updateFormValue[index] = {
+      ...updateFormValue[index],
+      rate: value,
+      isEdited: true,
+    };
     setCurrencyFields(updateFormValue);
   };
 
@@ -345,6 +353,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
 
                               const updated = [...currencyFields];
                               updated[index].currency_from = value;
+                              updated[index].isEdited = true;
                               setCurrencyFields(updated);
                             }}
                           >
@@ -380,6 +389,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
 
                               const updated = [...currencyFields];
                               updated[index].currency_to = value;
+                              updated[index].isEdited = true;
                               setCurrencyFields(updated);
                             }}
                           >
