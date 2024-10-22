@@ -13,6 +13,7 @@ interface Response {
 
 export class SanctionService {
   private httpClientSanction: IHttpClient;
+  private httpClientCountry: IHttpClient;
 
   constructor() {
     
@@ -24,8 +25,19 @@ export class SanctionService {
       },
     });
 
+    this.httpClientCountry = new AxiosHttpClient({
+      baseURL: process.env.NEXT_PUBLIC_COUNTRY_SERVICE_URL,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getCookie("token"),
+      },
+    });
+
   }
   
+  async getCountry(): Promise<Response> {
+    return this.httpClientCountry.get('/countries');
+  }
 
   async getSourceList(page: number, limit: number): Promise<Response> {
     if (page <= 0) {

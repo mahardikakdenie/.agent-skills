@@ -24,6 +24,11 @@ interface Insurance {
     name: string;
 }
 
+interface CountryAPI {
+    id: string;
+    name: string;
+}
+
 const CreateSourcePage = () => {
     const router = useRouter();
     const sanctionService = new SanctionService();
@@ -43,6 +48,7 @@ const CreateSourcePage = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [errorSourceName, setErrorSourceName] = useState('');
     const [error, setError] = useState('');
+    const [countryAPI, setCountryAPI] = useState<CountryAPI[]>([]);
     const [insurance, setInsurance] = useState<Insurance[]>([]);
     const [alertMessage, setAlertMessage] = useState('');
     const [source_type, setSource_type] = useState("");
@@ -71,6 +77,19 @@ const CreateSourcePage = () => {
     useEffect(() => {
         fetchInsurance();
     }, []);
+
+    useEffect(() => {
+        fetchCountry();
+    }, []);
+
+    const fetchCountry = async () => {
+        try {
+            const response = await sanctionService.getCountry();
+            setCountryAPI(response.data);
+        } catch (error) {
+            console.error("Failed to fetch country:", error);
+        }
+    };
 
     const fetchInsurance = async () => {
         try {
@@ -344,38 +363,13 @@ const CreateSourcePage = () => {
                                             <SelectValue placeholder="Select a Country " />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="BRN">
-                                                    Brunei
+                                        <SelectGroup>
+                                            {countryAPI.map((countryItem) => (
+                                                <SelectItem key={countryItem.id} value={countryItem.id}>
+                                                    {countryItem.name}
                                                 </SelectItem>
-                                                <SelectItem value="KHM">
-                                                    Cambodia
-                                                </SelectItem>
-                                                <SelectItem value="IDN">
-                                                    Indonesia
-                                                </SelectItem>
-                                                <SelectItem value="LAO">
-                                                    Laos
-                                                </SelectItem>
-                                                <SelectItem value="MYS">
-                                                    Malaysia
-                                                </SelectItem>
-                                                <SelectItem value="MMR">
-                                                    Myanmar
-                                                </SelectItem>
-                                                <SelectItem value="PHL">
-                                                    Philippines
-                                                </SelectItem>
-                                                <SelectItem value="SGP">
-                                                    Singapore
-                                                </SelectItem>
-                                                <SelectItem value="THA">
-                                                    Thailand
-                                                </SelectItem>
-                                                <SelectItem value="VNM">
-                                                    Vietnam
-                                                </SelectItem>
-                                            </SelectGroup>
+                                            ))}
+                                        </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                 )}
