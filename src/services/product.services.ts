@@ -43,4 +43,8 @@ export class ProductService {
     return this.httpClientCookie.get('/v1/products?categoryId=' + catId +"&insuranceId=" + insId);
   }
 
+  async getCurrency(): Promise<any> {
+    return this.httpClientCookie.get('/v1/references/type/currencies');
+  }
+
 }

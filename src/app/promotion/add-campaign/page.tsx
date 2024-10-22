@@ -29,6 +29,15 @@ import { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
 import { isValid, parseISO } from "date-fns";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Controller, useForm } from "react-hook-form";
+import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
@@ -61,6 +70,11 @@ interface ChannelResponseDTO {
   pageTotal: number;
 }
 
+interface Currency {
+  code: string;
+  name: string;
+}
+
 const CreatePromotionPage = () => {
   const router = useRouter();
   const promotionService = new PromotionService();
@@ -69,6 +83,21 @@ const CreatePromotionPage = () => {
   const productService = new ProductService();
   const planService = new PlanService();
   const voucherService = new VoucherService();
+  const [value_currency, setValue_currency] = useState("");
+  const [type, setType] = useState("");
+
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    shouldUnregister: false,
+    defaultValues: {
+      value_currency: 'IDR',
+      type
+    }
+  });
 
   const [products, setProducts] = useState<ProductResponseDTO | undefined>(
     undefined
@@ -82,7 +111,7 @@ const CreatePromotionPage = () => {
     end_date: "",
     value: 0,
     active: true,
-    value_currency: "IDR",
+    value_currency: 'IDR',
     value_type: "fixed",
     minimum_amount: 0,
     maximum_amount: 0,
@@ -96,6 +125,7 @@ const CreatePromotionPage = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currency, setCurrency] = useState<Currency[]>([]);
   const [channels, setChannels] = useState<ChannelResponseDTO | undefined>(
     undefined
   );
@@ -167,6 +197,10 @@ const CreatePromotionPage = () => {
   }, [currentPageChannels, showChannelsPerPage]);
 
   useEffect(() => {
+    fetchCurrency();
+  }, []);
+
+  useEffect(() => {
     if (globalSelectedProdIds.size > 0) {
       fetchPlansByProducts(
         Array.from(globalSelectedProdIds),
@@ -206,6 +240,15 @@ const CreatePromotionPage = () => {
       setChannels(response);
     } catch (error) {
       console.error("Failed to fetch channels:", error);
+    }
+  };
+
+  const fetchCurrency = async () => {
+    try {
+      const response = await productService.getCurrency();
+      setCurrency(response.data);
+    } catch (error) {
+      console.error("Failed to fetch currency:", error);
     }
   };
 
@@ -755,6 +798,21 @@ const CreatePromotionPage = () => {
     }
   };
 
+  const handleChangeInsurance = (selectedCurrency: { currencyName: string }) => {
+    setPromotion((prevState) => ({
+      ...prevState,
+      value_currency: selectedCurrency.currencyName,
+    }));
+  };
+
+
+  const handleChangeType = (value: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      type: value,
+    }));
+  };
+
   const handleRemovePlan = (index: number) => {
     const removedPlanId = promotion.embedded_discount_plans[index].plan_id;
 
@@ -1083,16 +1141,34 @@ const CreatePromotionPage = () => {
               <label htmlFor="type" className="font-normal">
                 Type
               </label>
-              <select
-                id="type"
+              <Controller
                 name="type"
-                value={promotion.type}
-                onChange={handleChange}
-                className="p-2 border rounded w-full h-14"
-              >
-                <option value="embedded">Embedded</option>
-                <option value="voucher">Voucher</option>
-              </select>
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      handleChangeType(value);
+                      field.onChange(value);
+                    }}
+                    disabled={false}
+                  >
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select a Type " />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="embedded">
+                          Embedded
+                        </SelectItem>
+                        <SelectItem value="voucher">
+                          Voucher
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
             <div className="">
               <label htmlFor="start_date" className="font-normal">
@@ -1182,19 +1258,42 @@ const CreatePromotionPage = () => {
                 <label htmlFor="value_currency" className="font-normal">
                   Currency
                 </label>
-                <select
-                  id="value_currency"
+                <Controller
                   name="value_currency"
-                  value={promotion.value_currency}
-                  onChange={handleChange}
-                  className="p-2 border rounded w-full h-14"
-                >
-                  {CURRENCIES.map((currency) => (
-                    <option key={currency.code} value={currency.code}>
-                      {currency.name}
-                    </option>
-                  ))}
-                </select>
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value || ""} // Sets the selected value in the dropdown
+                      onValueChange={(currencyCode) => {
+                        // Find the selected currency object based on the selected code
+                        const selectedCurrency = currency.find((item) => item.code === currencyCode);
+
+                        // Update form state and any related changes (e.g., insurance)
+                        handleChangeInsurance({
+                          currencyName: selectedCurrency?.name || "",
+                        });
+
+                        // Update the field's value to the selected currency code
+                        field.onChange(currencyCode);
+                      }}
+                      disabled={false}
+                    >
+                      <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                        <SelectValue placeholder="Select Currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {/* Map over the currency data payload */}
+                          {currency.map((currencyItem) => (
+                            <SelectItem key={currencyItem.code} value={currencyItem.code}>
+                              {currencyItem.name} {/* Display the currency name */}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
             </div>
 
