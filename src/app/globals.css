@@ -186,7 +186,7 @@ button:disabled {
 }
 .frame-body button[role="combobox"],
 .frame-body input {
-  height: 56px !important;
+  height: 42px !important;
 }
 .table-search-params tr td:last-child {
   max-width: 100px !important;

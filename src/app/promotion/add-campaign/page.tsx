@@ -96,10 +96,10 @@ const CreatePromotionPage = () => {
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
-      value_currency: 'IDR',
+      value_currency: "IDR",
       type,
-      name
-    }
+      name,
+    },
   });
 
   const [products, setProducts] = useState<ProductResponseDTO | undefined>(
@@ -114,7 +114,7 @@ const CreatePromotionPage = () => {
     end_date: "",
     value: 0,
     active: true,
-    value_currency: 'IDR',
+    value_currency: "IDR",
     value_type: "fixed",
     minimum_amount: 0,
     maximum_amount: 0,
@@ -803,16 +803,17 @@ const CreatePromotionPage = () => {
     }
   };
 
-  const handleChangeInsurance = (selectedCurrency: { currencyName: string }) => {
+  const handleChangeInsurance = (selectedCurrency: {
+    currencyName: string;
+  }) => {
     setPromotion((prevState) => ({
       ...prevState,
       value_currency: selectedCurrency.currencyName,
     }));
   };
 
-
   const handleChangeType = (value: string) => {
-    setPromotion(prevState => ({
+    setPromotion((prevState) => ({
       ...prevState,
       type: value,
     }));
@@ -1144,7 +1145,9 @@ const CreatePromotionPage = () => {
                     required
                     placeholder="Insert Campaign Name"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-16 ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
                   />
                 )}
               />
@@ -1166,7 +1169,9 @@ const CreatePromotionPage = () => {
                     disabled={false}
                     required
                   >
-                    <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mt-1"> {/* Match height and margin */}
+                    <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mt-1">
+                      {" "}
+                      {/* Match height and margin */}
                       <SelectValue placeholder="Select a Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1216,7 +1221,7 @@ const CreatePromotionPage = () => {
                 name="value_type"
                 value={promotion.value_type}
                 onChange={handleValueTypeChange}
-                className="p-2 border rounded w-full h-14"
+                className="p-2 border rounded w-full h-[42px]"
               >
                 <option value="fixed">Fixed</option>
                 <option value="percentage">Percentage</option>
@@ -1275,7 +1280,9 @@ const CreatePromotionPage = () => {
                       value={field.value || ""} // Sets the selected value in the dropdown
                       onValueChange={(currencyCode) => {
                         // Find the selected currency object based on the selected code
-                        const selectedCurrency = currency.find((item) => item.code === currencyCode);
+                        const selectedCurrency = currency.find(
+                          (item) => item.code === currencyCode
+                        );
 
                         // Update form state and any related changes (e.g., insurance)
                         handleChangeInsurance({
@@ -1294,8 +1301,12 @@ const CreatePromotionPage = () => {
                         <SelectGroup>
                           {/* Map over the currency data payload */}
                           {currency.map((currencyItem) => (
-                            <SelectItem key={currencyItem.code} value={currencyItem.code}>
-                              {currencyItem.name} {/* Display the currency name */}
+                            <SelectItem
+                              key={currencyItem.code}
+                              value={currencyItem.code}
+                            >
+                              {currencyItem.name}{" "}
+                              {/* Display the currency name */}
                             </SelectItem>
                           ))}
                         </SelectGroup>
