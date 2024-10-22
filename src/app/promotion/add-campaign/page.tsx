@@ -28,6 +28,7 @@ import PlanSelectionModal from "../components/plan-selection-modal";
 import { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
 import { isValid, parseISO } from "date-fns";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -85,6 +86,7 @@ const CreatePromotionPage = () => {
   const voucherService = new VoucherService();
   const [value_currency, setValue_currency] = useState("");
   const [type, setType] = useState("");
+  const [name, setName] = useState("");
 
   const {
     handleSubmit,
@@ -95,7 +97,8 @@ const CreatePromotionPage = () => {
     shouldUnregister: false,
     defaultValues: {
       value_currency: 'IDR',
-      type
+      type,
+      name
     }
   });
 
@@ -420,7 +423,9 @@ const CreatePromotionPage = () => {
     setVoucherUsageLimit(1);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     setErrorMessage("");
     setAlertMessage("");
     setShowAlert(false);
@@ -1029,7 +1034,7 @@ const CreatePromotionPage = () => {
               Back
             </div>
             <button
-              onClick={handleSave}
+              type="submit"
               disabled={loading}
               className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2"
             >
@@ -1123,21 +1128,28 @@ const CreatePromotionPage = () => {
         {/* Create New Campaign */}
         <div className="w-full flex flex-col p-4 sm:p-6">
           <div className="bg-white md:px-6 p-4 grid grid-cols-2 gap-4">
-            <div className="">
+            <div className="mb-4">
               <label htmlFor="name" className="font-normal">
                 Promotion Name
               </label>
-              <input
-                type="text"
-                id="name"
+              <Controller
                 name="name"
-                value={promotion.name}
-                onChange={handleChange}
-                className="p-2 border rounded w-full"
-                required
+                control={control}
+                defaultValue=""
+                rules={{ required: "Campaign Name is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="name"
+                    required
+                    placeholder="Insert Campaign Name"
+                    {...field}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm`}
+                  />
+                )}
               />
             </div>
-            <div className="">
+            <div className="mb-4">
               <label htmlFor="type" className="font-normal">
                 Type
               </label>
@@ -1152,18 +1164,15 @@ const CreatePromotionPage = () => {
                       field.onChange(value);
                     }}
                     disabled={false}
+                    required
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select a Type " />
+                    <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mt-1"> {/* Match height and margin */}
+                      <SelectValue placeholder="Select a Type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="embedded">
-                          Embedded
-                        </SelectItem>
-                        <SelectItem value="voucher">
-                          Voucher
-                        </SelectItem>
+                        <SelectItem value="embedded">Embedded</SelectItem>
+                        <SelectItem value="voucher">Voucher</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
