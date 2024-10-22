@@ -19,6 +19,15 @@ import axios, { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
 import { ChevronLeft, Trash } from "react-feather";
 import { FaCheck, FaPlus } from 'react-icons/fa';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Controller, useForm } from "react-hook-form";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const EditPromotionPage = ({ params }: { params: { id: string } }) => {
@@ -29,6 +38,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const productService = new ProductService();
   const planService = new PlanService();
   const voucherService = new VoucherService();
+  const [type, setType] = useState("");
+
+  const {
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    shouldUnregister: false,
+    defaultValues: {
+      type: type
+    }
+  });
 
   const [promotion, setPromotion] = useState<PromotionDetails>({
     campaign_id: "",
@@ -112,22 +133,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     );
   };
 
-  // useEffect(() => {
-  //   console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
-  // }, [globalSelectedInsuranceIds]);
-
-  // useEffect(() => {
-  //   console.log('Plans Data:', plansInitial?.data);
-  // }, [plansInitial]);
-
-  // useEffect(() => {
-  //   console.log('Global Selected selectedPlans:', Array.from(globalSelectedPlanIds));
-  // }, [globalSelectedPlanIds]);
-
-  // useEffect(() => {
-  //   console.log('Channel Data:', channelsInitial?.data);
-  // }, [channelsInitial]);
-
 
   useEffect(() => {
     if (promotion.embedded_discount_insurances.length > 0) {
@@ -175,6 +180,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           const promotionData: PromotionDetails = res.data[0];
           // console.log('Fetched Promotion Data:', promotionData);
           setPromotion(promotionData);
+          reset({
+            type: promotionData.type, // Update form with fetched data
+        });
           fetchChannelsInitial(1, 50);
           fetchInsurancesInitial(1, 50);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
@@ -973,6 +981,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     setCurrentPageProd(1);             // Reset pagination for products
   };
 
+  const handleChangeType = (value: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      type: value,
+    }));
+  };
 
   const handleCancel = () => {
     router.push("/promotion");
@@ -1040,7 +1054,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </div>
           <div className="flex flex-col w-1/2">
             <label htmlFor="type" className="font-normal">Type</label>
-            <select
+            {/* <select
               id="type"
               name="type"
               value={promotion.type}
@@ -1050,7 +1064,35 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             >
               <option value="embedded">Embedded</option>
               <option value="voucher">Voucher</option>
-            </select>
+            </select> */}
+            <Controller
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      handleChangeType(value);
+                      field.onChange(value);
+                    }}
+                    disabled={false}
+                  >
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select a Type " />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="embedded">
+                          Embedded
+                        </SelectItem>
+                        <SelectItem value="voucher">
+                          Voucher
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
           </div>
         </div>
 
