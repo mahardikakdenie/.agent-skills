@@ -110,20 +110,20 @@ const SanctionPage = () => {
         setFilteredSanction(filtered);
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (window.confirm("Are you sure you want to delete this sanction?")) {
-            sanctionService
-                .deleteDiscSanctionById(id)
-                .then(() => {
-                    setSanction(
-                        sanction.filter((sanction) => sanction.id !== id)
-                    );
-                })
-                .catch((error) => {
-                    console.error("Failed to delete sanction:", error);
-                });
+            try {
+                await sanctionService.deleteDiscSanctionById(id);
+                
+                // Remove the deleted sanction from the state
+                setSanction(sanction.filter((sanctionItem) => sanctionItem.id !== id));
+                setFilteredSanction(filteredSanction.filter((sanctionItem) => sanctionItem.id !== id));
+                
+            } catch (error) {
+                console.error("Failed to delete sanction:", error);
+            }
         }
-    };
+    };    
 
     return (
         <div className="container mx-auto p-6">

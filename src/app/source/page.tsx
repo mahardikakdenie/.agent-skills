@@ -75,20 +75,20 @@ const SourcePage = () => {
         router.push("/source/add-source");
     };
 
-      const handleDelete = (id: string) => {
+    const handleDelete = (id: string) => {
         if (window.confirm("Are you sure you want to delete this source?")) {
             sourceService
-            .deleteDiscSourceById(id)
-            .then(() => {
-              setSource(
-                source.filter((source) => source.id !== id)
-              );
-            })
-            .catch((error) => {
-              console.error("Failed to delete source:", error);
-            });
+                .deleteDiscSourceById(id)
+                .then(() => {
+                    const updatedSource = source.filter((item) => item.id !== id);
+                    setSource(updatedSource);
+                    setFilteredSource(updatedSource);
+                })
+                .catch((error) => {
+                    console.error("Failed to delete source:", error);
+                });
         }
-      };
+    };    
 
       const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toLowerCase();

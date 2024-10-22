@@ -38,8 +38,8 @@ export class PromotionService {
   }
 
   async getPromotionCampaignById(id: string): Promise<PromotionResponse> {
-    return this.httpClientPromotion.get('/api/campaign/' + id);
-  }
+    return this.httpClientPromotion.get(`/api/campaign/${id}?id=${id}`);
+}
 
   async deleteDiscCampaignById(id: string): Promise<any> {
     return this.httpClientPromotion.delete('/api/campaign/delete/' + id);
