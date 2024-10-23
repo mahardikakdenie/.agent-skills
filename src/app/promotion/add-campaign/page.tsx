@@ -48,15 +48,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ChevronLeft, Trash } from "react-feather";
 
-const CURRENCIES = [
-  { code: "IDR", name: "Indonesian Rupiah" },
-  { code: "MYR", name: "Malaysian Ringgit" },
-  { code: "PHP", name: "Philippine Peso" },
-  { code: "SGD", name: "Singapore Dollar" },
-  { code: "THB", name: "Thai Baht" },
-  { code: "VND", name: "Vietnamese Dong" },
-];
-
 interface Channel {
   id: string;
   name: string;
@@ -87,6 +78,12 @@ const CreatePromotionPage = () => {
   const [value_currency, setValue_currency] = useState("");
   const [type, setType] = useState("");
   const [name, setName] = useState("");
+  const [start_date, setStart_date] = useState("");
+  const [end_date, setEnd_date] = useState("");
+  const [value_type, setValue_type] = useState("");
+  const [value, setValue] = useState("");
+  const [minimum_amount, setMinimum_amount] = useState("");
+  const [maximum_amount, setMaximum_amount] = useState("");
 
   const {
     handleSubmit,
@@ -99,6 +96,12 @@ const CreatePromotionPage = () => {
       value_currency: "IDR",
       type,
       name,
+      start_date,
+      end_date,
+      value_type,
+      value,
+      minimum_amount,
+      maximum_amount,
     },
   });
 
@@ -190,10 +193,6 @@ const CreatePromotionPage = () => {
   useEffect(() => {
     fetchInsurances(currentPageIns, showInsPerPage);
   }, [showInsPerPage]); // Trigger only when the page size changes
-
-  // useEffect(() => {
-  //   console.log('Global Selected Insurances:', Array.from(globalSelectedInsuranceIds));
-  // }, [globalSelectedInsuranceIds]);
 
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
@@ -819,6 +818,14 @@ const CreatePromotionPage = () => {
     }));
   };
 
+
+  const handleChangeValueType = (value: string) => {
+    setPromotion((prevState) => ({
+      ...prevState,
+      value_type: value,
+    }));
+  };
+
   const handleRemovePlan = (index: number) => {
     const removedPlanId = promotion.embedded_discount_plans[index].plan_id;
 
@@ -1129,7 +1136,7 @@ const CreatePromotionPage = () => {
         {/* Create New Campaign */}
         <div className="w-full flex flex-col p-4 sm:p-6">
           <div className="bg-white md:px-6 p-4 grid grid-cols-2 gap-4">
-            <div className="mb-4">
+            <div className="">
               <label htmlFor="name" className="font-normal">
                 Promotion Name
               </label>
@@ -1145,14 +1152,13 @@ const CreatePromotionPage = () => {
                     required
                     placeholder="Insert Campaign Name"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
                   />
                 )}
               />
             </div>
-            <div className="mb-4">
+            <div className="">
               <label htmlFor="type" className="font-normal">
                 Type
               </label>
@@ -1188,83 +1194,140 @@ const CreatePromotionPage = () => {
               <label htmlFor="start_date" className="font-normal">
                 Start Date
               </label>
-              <input
-                type="date"
-                id="start_date"
+              <Controller
                 name="start_date"
-                value={promotion.start_date}
-                onChange={handleChange}
-                className="p-2 border rounded w-full"
-                required
+                control={control}
+                defaultValue=""
+                rules={{ required: "Start date is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="date"
+                    id="start_date"
+                    required
+                    placeholder="Insert start date"
+                    {...field}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                  />
+                )}
               />
             </div>
             <div className="">
               <label htmlFor="end_date" className="font-normal">
                 End Date
               </label>
-              <input
-                type="date"
-                id="end_date"
+              <Controller
                 name="end_date"
-                value={promotion.end_date}
-                onChange={handleChange}
-                className="p-2 border rounded w-full"
-                required
+                control={control}
+                defaultValue=""
+                rules={{ required: "End date is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="date"
+                    id="end_date"
+                    required
+                    placeholder="Insert end date"
+                    {...field}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                  />
+                )}
               />
             </div>
             <div className="">
               <label htmlFor="value_type" className="font-normal">
                 Value Type
               </label>
-              <select
-                id="value_type"
+              <Controller
                 name="value_type"
-                value={promotion.value_type}
-                onChange={handleValueTypeChange}
-                className="p-2 border rounded w-full h-[42px]"
-              >
-                <option value="fixed">Fixed</option>
-                <option value="percentage">Percentage</option>
-              </select>
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      handleChangeValueType(value);
+                      field.onChange(value);
+                    }}
+                    disabled={false}
+                    required
+                  >
+                    <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mt-1">
+                      {" "}
+                      {/* Match height and margin */}
+                      <SelectValue placeholder="Select Value Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="fixed">Fixed</SelectItem>
+                        <SelectItem value="percentage">Percentage</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
             <div className="">
               <label htmlFor="value" className="font-normal">
                 Value
               </label>
-              <input
-                type="number"
-                id="value"
+              <Controller
                 name="value"
-                value={promotion.value}
-                onChange={handleChange}
-                className="p-2 border rounded w-full"
-                required
+                control={control}
+                defaultValue=""
+                rules={{ required: "Value is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    id="value"
+                    required
+                    placeholder="Insert a value"
+                    {...field}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                  />
+                )}
               />
             </div>
             <div className="">
               <label htmlFor="minimum_amount" className="font-normal">
                 Minimum Amount
               </label>
-              <input
-                type="number"
-                id="minimum_amount"
+              <Controller
                 name="minimum_amount"
-                value={promotion.minimum_amount}
-                onChange={handleChange}
-                className="p-2 border rounded w-full"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    id="minimum_amount"
+                    required
+                    placeholder="Insert a minimum amount"
+                    {...field}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                  />
+                )}
               />
             </div>
             <div className="">
               <label htmlFor="maximum_amount" className="font-normal">
                 Maximum Amount
               </label>
-              <input
-                type="number"
-                id="maximum_amount"
+              <Controller
                 name="maximum_amount"
-                value={promotion.maximum_amount}
-                onChange={handleChange}
-                className="p-2 border rounded w-full"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    id="maximum_amount"
+                    required
+                    placeholder="Insert a maximum amount"
+                    {...field}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                  />
+                )}
               />
             </div>
             <div className="col-span-2">

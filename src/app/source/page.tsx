@@ -88,9 +88,9 @@ const SourcePage = () => {
                     console.error("Failed to delete source:", error);
                 });
         }
-    };    
+    };
 
-      const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toLowerCase();
         setSearchTerm(value);
 
@@ -128,8 +128,8 @@ const SourcePage = () => {
                 </Button>
             </div>
 
-             {/* Search Bar */}
-             <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
+            {/* Search Bar */}
+            <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
                 <input
                     type="text"
                     value={searchTerm}
@@ -140,166 +140,168 @@ const SourcePage = () => {
                 <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
             </div>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Source Name</TableHead>
-                        <TableHead>Source Type</TableHead>
-                        <TableHead>Country</TableHead>
-                        <TableHead>Source URL</TableHead>
-                        <TableHead>Insurance Name</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                {filteredSource.map((source) => (
-                        <TableRow key={source.id}>
-                            <TableCell>{source.source_name}</TableCell>
-                            <TableCell>{source.source_type}</TableCell>
-                            <TableCell>{source.country}</TableCell>
-                            <TableCell>{source.source_url}</TableCell>
-                            <TableCell>{source.insurance_name}</TableCell>
-                            <TableCell>
-                                <div className="flex space-x-2">
+            <div className="bg-white rounded-md p-4 sm:p-6">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Source Name</TableHead>
+                            <TableHead>Source Type</TableHead>
+                            <TableHead>Country</TableHead>
+                            <TableHead>Source URL</TableHead>
+                            <TableHead>Insurance Name</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredSource.map((source) => (
+                            <TableRow key={source.id}>
+                                <TableCell>{source.source_name}</TableCell>
+                                <TableCell>{source.source_type}</TableCell>
+                                <TableCell>{source.country}</TableCell>
+                                <TableCell>{source.source_url}</TableCell>
+                                <TableCell>{source.insurance_name}</TableCell>
+                                <TableCell>
+                                    <div className="flex space-x-2">
 
-                                    <Drawer direction="right">
-                                        <DrawerTrigger
-                                            className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
-                                            onClick={() => handleViewDetail(source.id)}
+                                        <Drawer direction="right">
+                                            <DrawerTrigger
+                                                className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
+                                                onClick={() => handleViewDetail(source.id)}
+                                            >
+                                                View
+                                            </DrawerTrigger>
+                                            <DrawerContent>
+                                                <DrawerHeader>
+                                                    <DrawerClose className="absolute right-2 top-2">
+                                                        <Button variant="ghost" onClick={() => setDrawerOpen(false)}>
+                                                            <X />
+                                                        </Button>
+                                                    </DrawerClose>
+                                                    <DrawerTitle className="text-black font-bold text-2xl">
+                                                        Details
+                                                    </DrawerTitle>
+                                                </DrawerHeader>
+                                                <div className="flex flex-col w-full h-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl overflow-y-auto">
+                                                    <div className="rounded-lg flex flex-col gap-4 text-black">
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Source ID</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.id}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-bold text-[#016DA1]">
+                                                            <div className="min-w-40 w-40">Source Details</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Source Name</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.source_name}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Type</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.source_type}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Country</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.country}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Source URL</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.source_url}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Insurance Name</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.insurance_name}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Created Date</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.created_at ? format(new Date(selectedSource.created_at), "dd-MM-yyyy") : 'N/A'}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 text-sm font-medium">
+                                                            <div className="min-w-40 w-40">Updated Date</div>
+                                                            <div className="max-w-1 w-1">:</div>
+                                                            <div>{selectedSource?.updated_at ? format(new Date(selectedSource.updated_at), "dd-MM-yyyy") : 'N/A'}</div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div className="flex justify-center mt-4">
+                                                        <button
+                                                            onClick={() => handleEditSource(source.id)}
+                                                            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </DrawerContent>
+                                        </Drawer>
+
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => handleDelete(source.id)}
+                                            className="text-red-600 px-0"
                                         >
-                                            View
-                                        </DrawerTrigger>
-                                        <DrawerContent>
-                                            <DrawerHeader>
-                                                <DrawerClose className="absolute right-2 top-2">
-                                                    <Button variant="ghost" onClick={() => setDrawerOpen(false)}>
-                                                        <X />
-                                                    </Button>
-                                                </DrawerClose>
-                                                <DrawerTitle className="text-black font-bold text-2xl">
-                                                    Details
-                                                </DrawerTitle>
-                                            </DrawerHeader>
-                                            <div className="flex flex-col w-full h-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl overflow-y-auto">
-                                                <div className="rounded-lg flex flex-col gap-4 text-black">
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Source ID</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.id}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-bold text-[#016DA1]">
-                                                        <div className="min-w-40 w-40">Source Details</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Source Name</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.source_name}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Type</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.source_type}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Country</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.country}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Source URL</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.source_url}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Insurance Name</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.insurance_name}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Created Date</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.created_at ? format(new Date(selectedSource.created_at), "dd-MM-yyyy") : 'N/A'}</div>
-                                                    </div>
-                                                    <div className="flex gap-2 text-sm font-medium">
-                                                        <div className="min-w-40 w-40">Updated Date</div>
-                                                        <div className="max-w-1 w-1">:</div>
-                                                        <div>{selectedSource?.updated_at ? format(new Date(selectedSource.updated_at), "dd-MM-yyyy") : 'N/A'}</div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div className="flex justify-center mt-4">
-                                                    <button
-                                                        onClick={() => handleEditSource(source.id)}
-                                                        className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </DrawerContent>
-                                    </Drawer>
-
-                                    <Button
-                                        variant="ghost"
-                                        onClick={() => handleDelete(source.id)}
-                                        className="text-red-600 px-0"
+                                            <Trash />
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableCell colSpan={8}>
+                                <div className="flex justify-center items-center gap-2 font-normal">
+                                    <label htmlFor="rowsPerPage">Showing:</label>
+                                    <select
+                                        id="rowsPerPage"
+                                        className="p-2 border rounded"
+                                        value={rowsPerPage}
+                                        onChange={(e) => {
+                                            const newRowsPerPage = Number(e.target.value);
+                                            setRowsPerPage(newRowsPerPage);
+                                            setPage(1);
+                                        }}
                                     >
-                                        <Trash />
-                                    </Button>
+                                        {[10, 20, 30, 50, 100].map((option) => (
+                                            <option key={option} value={option}>
+                                                {option}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <span className="mr-2">of {totalItems} items</span>
+                                    <button
+                                        onClick={() => {
+                                            if (page > 1) {
+                                                setPage(page - 1);
+                                            }
+                                        }}
+                                        disabled={page === 1}
+                                        title="Previous"
+                                    >
+                                        <ChevronLeft />
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            if (page < totalPages) {
+                                                setPage(page + 1);
+                                            }
+                                        }}
+                                        disabled={page === totalPages}
+                                        title="Next"
+                                    >
+                                        <ChevronRight />
+                                    </button>
                                 </div>
                             </TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={8}>
-                            <div className="flex justify-center items-center gap-2 font-normal">
-                                <label htmlFor="rowsPerPage">Showing:</label>
-                                <select
-                                    id="rowsPerPage"
-                                    className="p-2 border rounded"
-                                    value={rowsPerPage}
-                                    onChange={(e) => {
-                                        const newRowsPerPage = Number(e.target.value);
-                                        setRowsPerPage(newRowsPerPage);
-                                        setPage(1);
-                                    }}
-                                >
-                                    {[10, 20, 30, 50, 100].map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
-                                        </option>
-                                    ))}
-                                </select>
-                                <span className="mr-2">of {totalItems} items</span>
-                                <button
-                                    onClick={() => {
-                                        if (page > 1) {
-                                            setPage(page - 1);
-                                        }
-                                    }}
-                                    disabled={page === 1}
-                                    title="Previous"
-                                >
-                                    <ChevronLeft />
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        if (page < totalPages) {
-                                            setPage(page + 1);
-                                        }
-                                    }}
-                                    disabled={page === totalPages}
-                                    title="Next"
-                                >
-                                    <ChevronRight />
-                                </button>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
+                    </TableFooter>
+                </Table>
+            </div>
         </div>
     );
 };
