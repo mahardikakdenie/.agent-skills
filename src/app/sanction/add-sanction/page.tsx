@@ -9,6 +9,7 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbS
 import { ChevronLeft, Trash } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 import { NewBlackListDTO } from "../dto/sanction.dto";
+import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
@@ -56,17 +57,15 @@ const CreateSanctionPage = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [source, setSource] = useState<Source[]>([]);
     const [countryAPI, setCountryAPI] = useState<CountryAPI[]>([]);
-    const [error, setError] = useState('');
-    const [errorFName, setErrorFName] = useState('');
-    const [errorMName, setErrorMName] = useState('');
-    const [errorLName, setErrorLName] = useState('');
-    const [errorIDNumber, setErrorIDNumber] = useState('');
-    const [errorPNumber, setErrorPNumber] = useState('');
-    const [errorEmail, setErrorEmail] = useState('');
-    const [errorBDate, setErrorBDate] = useState('');
-    const [errorReason, setErrorReason] = useState('');
-    const [country, setCountry] = useState("");
     const [source_id, setSource_id] = useState("");
+    const [first_name, setFirst_name] = useState("");
+    const [middle_name, setMiddle_name] = useState("");
+    const [last_name, setLast_name] = useState("");
+    const [id_number, setId_number] = useState("");
+    const [phone_number, setPhone_number] = useState("");
+    const [email, setEmail] = useState("");
+    const [date_blacklisted, setDate_blacklisted] = useState("");
+    const [blacklist_reason, setBlacklist_reason] = useState("");
 
     const {
         handleSubmit,
@@ -77,7 +76,15 @@ const CreateSanctionPage = () => {
         shouldUnregister: false,
         defaultValues: {
             country: 'IDN', // Set default country to Indonesia
-            source_id: source_id
+            source_id: source_id,
+            first_name: first_name,
+            middle_name: middle_name,
+            last_name: last_name,
+            id_number: id_number,
+            phone_number: phone_number,
+            email: email,
+            date_blacklisted: date_blacklisted,
+            blacklist_reason: blacklist_reason
         },
     });
 
@@ -115,38 +122,6 @@ const CreateSanctionPage = () => {
         }));
     };
 
-    const handleChangeReason = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'blacklist_reason' && value == "") {
-            setErrorReason('Blacklisted reason date cannot be empty.');
-        } else {
-            setErrorReason('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleChangeBDate = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'date_blacklisted' && value == "") {
-            setErrorBDate('Blacklisted date cannot be empty.');
-        } else {
-            setErrorBDate('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
     const handleChangeSourceId = (value: string) => {
         setSanction(prevState => ({
             ...prevState,
@@ -154,118 +129,21 @@ const CreateSanctionPage = () => {
         }));
     };
 
-    const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'email' && value == "") {
-            setErrorEmail('Email cannot be empty.');
-        } else {
-            setErrorEmail('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleChangePNumber = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'phone_number' && value == "") {
-            setErrorPNumber('Phone number cannot be empty.');
-        } else {
-            setErrorPNumber('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleChangeFName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'first_name' && value == "") {
-            setErrorFName('First name cannot be empty.');
-        } else {
-            setErrorFName('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleChangeMName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'middle_name' && value == "") {
-            setErrorMName('Middle name cannot be empty.');
-        } else {
-            setErrorMName('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleChangeLName = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'last_name' && value == "") {
-            setErrorLName('Last name cannot be empty.');
-        } else {
-            setErrorLName('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleChangeIDNumber = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const { name, value } = target;
-
-        if (name === 'id_number' && value == "") {
-            setErrorIDNumber('ID Number cannot be empty.');
-        } else {
-            setErrorIDNumber('');
-        }
-
-        setSanction(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // Prevent the default form submission behavior
-
+    const handleSave = async (formData: any) => {
         setErrorMessage('');
         setAlertMessage('');
         setShowAlert(false);
 
-        if (!sanction.blacklist_reason || !sanction.country || !sanction.date_blacklisted || !sanction.email ||
-            !sanction.first_name || !sanction.id_number || !sanction.last_name || !sanction.middle_name || !sanction.phone_number
-            || !sanction.source_id) {
+        // Check for required fields
+        if (!formData.blacklist_reason || !formData.country || !formData.date_blacklisted || !formData.email ||
+            !formData.first_name || !formData.id_number || !formData.last_name || !formData.middle_name || !formData.phone_number
+            || !formData.source_id) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
             return;
         }
 
-        const date_blacklisted = parseISO(sanction.date_blacklisted);
+        const date_blacklisted = parseISO(formData.date_blacklisted);
 
         if (!isValid(date_blacklisted)) {
             setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
@@ -273,33 +151,34 @@ const CreateSanctionPage = () => {
             return;
         }
 
-        // Validate phone number (must be numeric and within a specified length)
-        const phoneNumberPattern = /^\d{10,15}$/; // 10 to 15 digits
-        if (!phoneNumberPattern.test(sanction.phone_number)) {
+        // Validate phone number format
+        const phoneNumberPattern = /^\d{10,15}$/;
+        if (!phoneNumberPattern.test(formData.phone_number)) {
             setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
             setShowAlert(true);
             return;
         }
 
-        // Validate email format (basic validation for '@' and a domain)
+        // Validate email format
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
-        if (!emailPattern.test(sanction.email)) {
+        if (!emailPattern.test(formData.email)) {
             setErrorMessage('Invalid email format. Please enter a valid email address.');
             setShowAlert(true);
             return;
         }
 
+        // Prepare the payload for submission
         const payload = {
-            id_number: sanction.id_number,
-            first_name: sanction.first_name,
-            middle_name: sanction.middle_name,
-            last_name: sanction.last_name,
-            phone_number: sanction.phone_number,
-            email: sanction.email,
-            blacklist_reason: sanction.blacklist_reason,
-            source_id: sanction.source_id,
-            country: sanction.country,
-            date_blacklisted: sanction.date_blacklisted,
+            id_number: formData.id_number,
+            first_name: formData.first_name,
+            middle_name: formData.middle_name,
+            last_name: formData.last_name,
+            phone_number: formData.phone_number,
+            email: formData.email,
+            blacklist_reason: formData.blacklist_reason,
+            source_id: formData.source_id,
+            country: formData.country,
+            date_blacklisted: formData.date_blacklisted,
         };
 
         setLoading(true);
@@ -331,6 +210,7 @@ const CreateSanctionPage = () => {
 
 
 
+
     const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
         if (!isOpen) return null;
 
@@ -350,9 +230,9 @@ const CreateSanctionPage = () => {
     };
 
     return (
-        <div className="container mx-auto p-6">
-            <form onSubmit={handleSave}>
-                <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col w-full gap-4">
+            <form onSubmit={handleSubmit(handleSave)}>
+                <div className="bg-white md:px-6 p-4 flex items-center">
                     <div>
                         <Breadcrumb>
                             <BreadcrumbList>
@@ -365,11 +245,11 @@ const CreateSanctionPage = () => {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-                        <h2 className="text-black font-bold text-2xl mt-2">
+                        <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
                             Add New
                         </h2>
                     </div>
-                    <div className="flex space-x-4">
+                    <div className="flex space-x-4 ml-auto">
                         <div
                             onClick={() => router.push('/sanction')}
                             className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
@@ -380,7 +260,7 @@ const CreateSanctionPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+                            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2"
                         >
                             {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
                             Submit
@@ -392,200 +272,260 @@ const CreateSanctionPage = () => {
                 )}
 
 
-                {/* Identity Details Section */}
-                <div className="mb-8">
-                    <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Identity Details</h3>
-                    <div className="flex space-x-4 mb-4">
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="first_name" className="font-normal">First Name</label>
-                            <input
-                                type="text"
-                                id="first_name"
-                                name="first_name"
-                                value={sanction.first_name}
-                                onChange={handleChangeFName}
-                                className={`p-2 border rounded w-full ${errorFName ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorFName && <span className="text-red-500">{errorFName}</span>}
-                        </div>
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="middle_name" className="font-normal">Middle Name</label>
-                            <input
-                                type="text"
-                                id="middle_name"
-                                name="middle_name"
-                                value={sanction.middle_name}
-                                onChange={handleChangeMName}
-                                className={`p-2 border rounded w-full ${errorMName ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorMName && <span className="text-red-500">{errorMName}</span>}
-                        </div>
-                    </div>
+                <div className="w-full flex flex-col p-4 sm:p-6">
+                    <div className="bg-white md:px-6 p-4">
+                        {/* Identity Details Section */}
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Identity Details</h3>
+                            <div className="flex space-x-4 mb-4">
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="first_name" className="font-normal">First Name</label>
+                                    <Controller
+                                        name="first_name"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "First name is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="text"
+                                                id="first_name"
+                                                required
+                                                placeholder="Insert First Name"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.first_name ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="middle_name" className="font-normal">Middle Name</label>
+                                    <Controller
+                                        name="middle_name"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Middle name is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="text"
+                                                id="middle_name"
+                                                required
+                                                placeholder="Insert Middle Name"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.middle_name ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="flex space-x-4 mb-4">
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="last_name" className="font-normal">Last Name</label>
-                            <input
-                                type="text"
-                                id="last_name"
-                                name="last_name"
-                                value={sanction.last_name}
-                                onChange={handleChangeLName}
-                                className={`p-2 border rounded w-full ${errorLName ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorLName && <span className="text-red-500">{errorLName}</span>}
+                            <div className="flex space-x-4 mb-4">
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="last_name" className="font-normal">Last Name</label>
+                                    <Controller
+                                        name="last_name"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Last name is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="text"
+                                                id="last_name"
+                                                required
+                                                placeholder="Insert Last Name"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.last_name ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Personal Data Section */}
-                <div className="mb-8">
-                    <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Personal Data</h3>
-                    <div className="flex space-x-4 mb-4">
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="country" className="font-normal">Country</label>
-                            <Controller
-                                name="country"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select
-                                        value={field.value}
-                                        onValueChange={(value) => {
-                                            handleChangeCountry(value);
-                                            field.onChange(value);
-                                        }}
-                                        disabled={false}
-                                    >
-                                        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                                            <SelectValue placeholder="Select a Country " />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                        <SelectGroup>
-                                            {countryAPI.map((countryItem) => (
-                                                <SelectItem key={countryItem.id} value={countryItem.id}>
-                                                    {countryItem.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
+                        {/* Personal Data Section */}
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Personal Data</h3>
+                            <div className="flex space-x-4 mb-4">
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="country" className="font-normal">Country</label>
+                                    <Controller
+                                        name="country"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select
+                                                value={field.value}
+                                                onValueChange={(value) => {
+                                                    handleChangeCountry(value);
+                                                    field.onChange(value);
+                                                }}
+                                                disabled={false}
+                                            >
+                                                <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-3 mt-1">
+                                                    <SelectValue placeholder="Select a Country " />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {countryAPI.map((countryItem) => (
+                                                            <SelectItem key={countryItem.id} value={countryItem.id}>
+                                                                {countryItem.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="id_number" className="font-normal">ID Number</label>
+                                    <Controller
+                                        name="id_number"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "ID number is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="text"
+                                                id="id_number"
+                                                required
+                                                placeholder="Insert ID Number"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.id_number ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex space-x-4 mb-4">
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="phone_number" className="font-normal">Phone Number</label>
+                                    <Controller
+                                        name="phone_number"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Phone number is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="tel"
+                                                id="phone_number"
+                                                required
+                                                placeholder="Insert phone Number"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.phone_number ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="email" className="font-normal">Email</label>
+                                    <Controller
+                                        name="email"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Email is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="email"
+                                                id="email"
+                                                required
+                                                placeholder="Insert email"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.email ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="id_number" className="font-normal">ID Number</label>
-                            <input
-                                type="text"
-                                id="id_number"
-                                name="id_number"
-                                value={sanction.id_number}
-                                onChange={handleChangeIDNumber}
-                                className={`p-2 border rounded w-full ${errorIDNumber ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorIDNumber && <span className="text-red-500">{errorIDNumber}</span>}
+
+                        {/* Source Section */}
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Source</h3>
+                            <div className="flex flex-col w-full mb-4">
+                                <label htmlFor="source_id" className="font-normal">Source Name</label>
+                                <Controller
+                                    name="source_id"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={(value) => {
+                                                handleChangeSourceId(value);
+                                                field.onChange(value);
+                                            }}
+                                            disabled={false}
+                                        >
+                                            <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                                <SelectValue placeholder="Select Source Type " />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {source.map((sourceItem) => (
+                                                        <SelectItem key={sourceItem.id} value={sourceItem.id}>
+                                                            {sourceItem.source_name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex space-x-4 mb-4">
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="phone_number" className="font-normal">Phone Number</label>
-                            <input
-                                type="tel"
-                                id="phone_number"
-                                name="phone_number"
-                                value={sanction.phone_number}
-                                onChange={handleChangePNumber}
-                                className={`p-2 border rounded w-full ${errorPNumber ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorPNumber && <span className="text-red-500">{errorPNumber}</span>}
-                        </div>
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="email" className="font-normal">Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={sanction.email}
-                                onChange={handleChangeEmail}
-                                className={`p-2 border rounded w-full ${errorEmail ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorEmail && <span className="text-red-500">{errorEmail}</span>}
-                        </div>
-                    </div>
-                </div>
+                        {/* Details Section */}
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Details</h3>
+                            <div className="flex space-x-4 mb-4">
+                                {/* Blacklist Date Field */}
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="date_blacklisted" className="font-normal">Blacklist Date</label>
+                                    <Controller
+                                        name="date_blacklisted"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Blacklisted Date is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="date"
+                                                id="date_blacklisted"
+                                                required
+                                                placeholder="Insert blacklisted date"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.date_blacklisted ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
 
-
-                {/* Source Section */}
-                <div className="mb-8">
-                    <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Source</h3>
-                    <div className="flex flex-col w-full mb-4">
-                        <label htmlFor="source_id" className="font-normal">Source Name</label>
-                        <Controller
-                            name="source_id"
-                            control={control}
-                            render={({ field }) => (
-                                <Select
-                                    value={field.value}
-                                    onValueChange={(value) => {
-                                        handleChangeSourceId(value);
-                                        field.onChange(value);
-                                    }}
-                                    disabled={false}
-                                >
-                                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                                        <SelectValue placeholder="Select Source Type " />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {source.map((sourceItem) => (
-                                                <SelectItem key={sourceItem.id} value={sourceItem.id}>
-                                                    {sourceItem.source_name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        />
-                    </div>
-                </div>
-
-
-                {/* Details Section */}
-                <div className="mb-8">
-                    <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Details</h3>
-                    <div className="flex space-x-4 mb-4">
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="date_blacklisted" className="font-normal">Blacklist Date</label>
-                            <input
-                                type="date"
-                                id="date_blacklisted"
-                                name="date_blacklisted"
-                                value={sanction.date_blacklisted}
-                                onChange={handleChangeBDate}
-                                className={`p-2 border rounded w-full ${errorBDate ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorBDate && <span className="text-red-500">{errorBDate}</span>}
-                        </div>
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="blacklist_reason" className="font-normal">Blacklist Reason</label>
-                            <input
-                                type="text"
-                                id="blacklist_reason"
-                                name="blacklist_reason"
-                                value={sanction.blacklist_reason}
-                                onChange={handleChangeReason}
-                                className={`p-2 border rounded w-full ${errorReason ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorReason && <span className="text-red-500">{errorReason}</span>}
+                                {/* Blacklist Reason Field */}
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="blacklist_reason" className="font-normal">Blacklist Reason</label>
+                                    <Controller
+                                        name="blacklist_reason"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Blacklist Reason is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="text"
+                                                id="blacklist_reason"
+                                                required
+                                                placeholder="Insert blacklist reason"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.blacklist_reason ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

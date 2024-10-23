@@ -1138,7 +1138,7 @@ const CreatePromotionPage = () => {
           <div className="bg-white md:px-6 p-4 grid grid-cols-2 gap-4">
             <div className="">
               <label htmlFor="name" className="font-normal">
-                Promotion Name
+                Campaign Name
               </label>
               <Controller
                 name="name"

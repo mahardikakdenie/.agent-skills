@@ -182,7 +182,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           const promotionData: PromotionDetails = res.data[0];
           const formattedStartDate = promotionData.start_date ? formatDate(promotionData.start_date) : "";
           const formattedEndDate = promotionData.end_date ? formatDate(promotionData.end_date) : "";
-  
+
           setPromotion(promotionData);
           reset({
             type: promotionData.type,
@@ -192,26 +192,26 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             start_date: formattedStartDate,
             end_date: formattedEndDate
           });
-  
+
           fetchChannelsInitial(1, 50);
           fetchInsurancesInitial(1, 50);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
           fetchProductsByInsurancesInitial([], 1, 100);
           fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
           fetchPlansByProductsInitial([], 1, 5000);
-  
+
           const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
           setGlobalSelectedChannels(existingChannelIds);
-  
+
           const existingInsuranceIds = new Set(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
           setGlobalSelectedInsuranceIds(existingInsuranceIds);
-  
+
           const existingProductIds = new Set(promotionData.embedded_discount_products.map(prod => prod.product_id));
           setGlobalSelectedProdIds(existingProductIds);
-  
+
           const existingPlanIds = new Set(promotionData.embedded_discount_plans.map(plans => plans.plan_id));
           setGlobalSelectedPlanIds(existingPlanIds);
-  
+
           setLoading(false);
         })
         .catch(error => {
@@ -219,7 +219,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setLoading(false);
         });
     }
-  }, [params.id, reset]);  
+  }, [params.id, reset]);
 
 
   useEffect(() => {
@@ -1007,9 +1007,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="container mx-auto p-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex justify-between items-center mb-8">
+    <div className="flex flex-col w-full gap-4">
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
             <Breadcrumb>
               <BreadcrumbList>
@@ -1022,11 +1022,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-black font-bold text-2xl mt-2">
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
               Edit Campaign
             </h2>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 ml-auto">
             <div
               onClick={handleCancel}
               className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
@@ -1036,7 +1036,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             </div>
             <button
               type="submit"
-              className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+              className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2"
             >
               <FaCheck className="mr-2" />
               Save
@@ -1044,9 +1044,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
 
+        <div className="w-full flex flex-col p-4 sm:p-6">
+        <div className="bg-white md:px-6 p-4 grid grid-cols-2 gap-4">
         {/* Campaign Name and Promotion Type */}
-        <div className="flex space-x-4">
-          <div className="flex flex-col w-1/2">
+          <div className="">
             <label htmlFor="name" className="font-normal">Campaign Name</label>
             <Controller
               name="name"
@@ -1060,13 +1061,13 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   required
                   placeholder="Insert Campaign Name"
                   {...field}
-                  className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
+                  className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm`}
                 />
               )}
             />
           </div>
-          <div className="flex flex-col w-1/2">
+
+          <div className="">
             <label htmlFor="type" className="font-normal">Type</label>
             <Controller
               name="type"
@@ -1080,28 +1081,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
                   }}
                   disabled={false}
                 >
-                  <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                    <SelectValue placeholder="Select a Type " />
+                  <SelectTrigger className="w-full h-16 border-gray-300 bg-transparent hover:cursor-pointer py-3 mt-1">
+                    <SelectValue placeholder="Select a Type" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="embedded">
-                        Embedded
-                      </SelectItem>
-                      <SelectItem value="voucher">
-                        Voucher
-                      </SelectItem>
+                      <SelectItem value="embedded">Embedded</SelectItem>
+                      <SelectItem value="voucher">Voucher</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               )}
             />
           </div>
-        </div>
 
         {/* Currency and Value */}
-        <div className="flex space-x-4">
-          <div className="flex flex-col w-1/2">
+          <div className="">
             <label htmlFor="value_currency" className="font-normal">Currency</label>
             <Controller
               name="value_currency"
@@ -1119,7 +1114,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               )}
             />
           </div>
-          <div className="flex flex-col w-1/2">
+          <div className="">
             <label htmlFor="value" className="font-normal">Value</label>
             <Controller
               name="value"
@@ -1137,11 +1132,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               )}
             />
           </div>
-        </div>
 
         {/* Start Date and End Date */}
-        <div className="flex space-x-4">
-          <div className="flex flex-col w-1/2">
+          <div className="">
             <label htmlFor="start_date" className="font-normal">Start Date</label>
             <Controller
               name="start_date"
@@ -1162,7 +1155,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               )}
             />
           </div>
-          <div className="flex flex-col w-1/2">
+          <div className="">
             <label htmlFor="end_date" className="font-normal">End Date</label>
             <Controller
               name="end_date"
@@ -1183,7 +1176,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               )}
             />
           </div>
-        </div>
 
         <div className="flex flex-col">
           <label className="font-normal">Status</label>
@@ -1196,7 +1188,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         </div>
 
         {/* Channels */}
-        <div>
+        <div className="col-span-2">
           <label className="font-normal">Channels</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
@@ -1247,7 +1239,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
         {/* Insurances */}
-        <div>
+        <div className="col-span-2">
           <label className="font-normal">Insurances</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
@@ -1296,7 +1288,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
         {/* Products */}
-        <div>
+        <div className="col-span-2">
           <label className="font-normal">Products</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
@@ -1347,7 +1339,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
         {/* Plans */}
-        <div>
+        <div className="col-span-2">
           <label className="font-normal">Plans</label>
           <div className="flex items-start mt-2">
             <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
@@ -1396,8 +1388,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         </div>
 
         {/* Vouchers */}
-        <div className="my-4" />
-        <div>
+        {/* <div className="my-4" /> */}
+        <div className="col-span-2">
           {promotion.type === 'voucher' && (
             <div>
               <label className="font-normal">Vouchers</label>
@@ -1499,7 +1491,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             )}
           </div>
         )}
+        </div>
+        </div>
       </form>
+      
 
       {/* Alert Popup */}
       {showAlert && (

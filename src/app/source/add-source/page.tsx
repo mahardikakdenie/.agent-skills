@@ -9,6 +9,7 @@ import { ChevronLeft } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 import { NewSourceDTO } from "../dto/source.dto";
 import { InsuranceService } from "@/services/insurance.services";
+import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
@@ -54,6 +55,8 @@ const CreateSourcePage = () => {
     const [source_type, setSource_type] = useState("");
     const [country, setCountry] = useState("");
     const [insurance_id, setInsurance_id] = useState("");
+    const [source_name, setSource_name] = useState("");
+    const [source_url, setSource_url] = useState("");
 
     const {
         handleSubmit,
@@ -65,12 +68,9 @@ const CreateSourcePage = () => {
         defaultValues: {
             source_type,
             country,
-            insurance_id
-        },
-        values: {
-            source_type,
-            country,
-            insurance_id
+            insurance_id,
+            source_name,
+            source_url
         },
     });
 
@@ -241,9 +241,9 @@ const CreateSourcePage = () => {
     };
 
     return (
-        <div className="container mx-auto p-6">
+        <div className="flex flex-col w-full gap-4">
             <form onSubmit={handleSave}>
-                <div className="flex justify-between items-center mb-8">
+                <div className="bg-white md:px-6 p-4 flex items-center">
                     <div>
                         <Breadcrumb>
                             <BreadcrumbList>
@@ -256,11 +256,11 @@ const CreateSourcePage = () => {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-                        <h2 className="text-black font-bold text-2xl mt-2">
+                        <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
                             Add New Source
                         </h2>
                     </div>
-                    <div className="flex space-x-4">
+                    <div className="flex space-x-4 ml-auto">
                         <div
                             onClick={() => router.push('/source')}
                             className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
@@ -271,7 +271,7 @@ const CreateSourcePage = () => {
                         <button
                             onClick={handleSave}
                             disabled={loading}
-                            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+                            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2"
                         >
                             {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
                             Submit
@@ -282,142 +282,160 @@ const CreateSourcePage = () => {
                     <ErrorModal isOpen={showAlert} message={errorMessage!} onClose={() => setShowAlert(false)} />
                 )}
 
-                <div className="mb-8">
-                    <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Source Details</h3>
-                    <div className="flex space-x-4 mb-4">
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="source_name" className="font-normal">Source Name</label>
-                            <input
-                                type="text"
-                                id="source_name"
-                                name="source_name"
-                                value={source.source_name}
-                                onChange={handleChangeSourceName}
-                                className={`p-2 border rounded w-full ${errorSourceName ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {errorSourceName && <span className="text-red-500">{errorSourceName}</span>}
-                        </div>
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="source_url" className="font-normal">URL</label>
-                            <input
-                                type="text"
-                                id="source_url"
-                                name="source_url"
-                                value={source.source_url}
-                                onChange={handleChangeURL}
-                                className={`p-2 border rounded w-full ${error ? 'border-red-500' : ''}`}
-                                required
-                            />
-                            {error && <span className="text-red-500">{error}</span>}
-                        </div>
-                    </div>
-
-                    <div className="flex space-x-4 mb-4">
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="source_type" className="font-normal">Type</label>
-                            <Controller
-                                name="source_type"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select
-                                        value={field.value}
-                                        onValueChange={(value) => {
-                                            handleValueTypeChange(value);
-                                            field.onChange(value);
-                                        }}
-                                        disabled={false}
-                                    >
-                                        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                                            <SelectValue placeholder="Select Source Type " />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="government">
-                                                    Government
-                                                </SelectItem>
-                                                <SelectItem value="insurance">
-                                                    Insurance
-                                                </SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
-                        <div className="flex flex-col w-1/2">
-                            <label htmlFor="country" className="font-normal">Country</label>
-                            <Controller
-                                name="country"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select
-                                        value={field.value}
-                                        onValueChange={(value) => {
-                                            handleChangeCountry(value);
-                                            field.onChange(value);
-                                        }}
-                                        disabled={false}
-                                    >
-                                        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                                            <SelectValue placeholder="Select a Country " />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                        <SelectGroup>
-                                            {countryAPI.map((countryItem) => (
-                                                <SelectItem key={countryItem.id} value={countryItem.id}>
-                                                    {countryItem.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
-                    </div>
-
-                    {source.source_type === "insurance" && (
-                        <div className="flex space-x-4 mb-4">
-                            <div className="flex flex-col w-full mb-4">
-                                <label htmlFor="insurance_id" className="font-normal">Insurance ID</label>
-                                <Controller
-                                    name="insurance_id"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            value={field.value || ""}
-                                            onValueChange={(insuranceId) => {
-                                                // Find the selected insurance object
-                                                const selectedInsurance = insurance.find((item) => item.id === insuranceId);
-
-                                                handleChangeInsurance({
-                                                    insurance_id: selectedInsurance?.id || "",
-                                                    insurance_name: selectedInsurance?.name || ""
-                                                });
-                                                field.onChange(insuranceId);
-                                            }}
-                                            required={source.source_type === "insurance"} // Only required if type is "insurance"
-                                            disabled={false}
-                                        >
-                                            <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                                                <SelectValue placeholder="Select Insurance " />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {insurance.map((insuranceItem) => (
-                                                        <SelectItem key={insuranceItem.id} value={insuranceItem.id}>
-                                                            {insuranceItem.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
+                <div className="w-full flex flex-col p-4 sm:p-6">
+                    <div className="bg-white md:px-6 p-4">
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Source Details</h3>
+                            <div className="flex space-x-4 mb-4">
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="source_name" className="font-normal">Source Name</label>
+                                    <Controller
+                                        name="source_name"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Source name is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="text"
+                                                id="source_name"
+                                                required
+                                                placeholder="Insert Source Name"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.source_name ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="source_url" className="font-normal">URL</label>
+                                    <Controller
+                                        name="source_url"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Source URL is required" }}
+                                        render={({ field }) => (
+                                            <Input
+                                                type="text"
+                                                id="source_url"
+                                                required
+                                                placeholder="Insert Source URL"
+                                                {...field}
+                                                className={`mt-1 block w-full h-16 ${errors.source_url ? "border-red-500" : "border-gray-300"
+                                                    } rounded-md shadow-sm`}
+                                            />
+                                        )}
+                                    />
+                                </div>
                             </div>
+
+                            <div className="flex space-x-4 mb-4">
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="source_type" className="font-normal">Type</label>
+                                    <Controller
+                                        name="source_type"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select
+                                                value={field.value}
+                                                onValueChange={(value) => {
+                                                    handleValueTypeChange(value);
+                                                    field.onChange(value);
+                                                }}
+                                                disabled={false}
+                                            >
+                                                <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                                    <SelectValue placeholder="Select Source Type " />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectItem value="government">
+                                                            Government
+                                                        </SelectItem>
+                                                        <SelectItem value="insurance">
+                                                            Insurance
+                                                        </SelectItem>
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                </div>
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="country" className="font-normal">Country</label>
+                                    <Controller
+                                        name="country"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select
+                                                value={field.value}
+                                                onValueChange={(value) => {
+                                                    handleChangeCountry(value);
+                                                    field.onChange(value);
+                                                }}
+                                                disabled={false}
+                                            >
+                                                <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                                    <SelectValue placeholder="Select a Country " />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {countryAPI.map((countryItem) => (
+                                                            <SelectItem key={countryItem.id} value={countryItem.id}>
+                                                                {countryItem.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                </div>
+                            </div>
+
+                            {source.source_type === "insurance" && (
+                                <div className="flex space-x-4 mb-4">
+                                    <div className="flex flex-col w-full mb-4">
+                                        <label htmlFor="insurance_id" className="font-normal">Insurance ID</label>
+                                        <Controller
+                                            name="insurance_id"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    value={field.value || ""}
+                                                    onValueChange={(insuranceId) => {
+                                                        // Find the selected insurance object
+                                                        const selectedInsurance = insurance.find((item) => item.id === insuranceId);
+
+                                                        handleChangeInsurance({
+                                                            insurance_id: selectedInsurance?.id || "",
+                                                            insurance_name: selectedInsurance?.name || ""
+                                                        });
+                                                        field.onChange(insuranceId);
+                                                    }}
+                                                    required={source.source_type === "insurance"} // Only required if type is "insurance"
+                                                    disabled={false}
+                                                >
+                                                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                                                        <SelectValue placeholder="Select Insurance " />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            {insurance.map((insuranceItem) => (
+                                                                <SelectItem key={insuranceItem.id} value={insuranceItem.id}>
+                                                                    {insuranceItem.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
 
                 {/* Alert Modal */}
@@ -427,8 +445,8 @@ const CreateSourcePage = () => {
                     onClose={() => setShowAlert(false)}
                 />
 
-            </form>
-        </div>
+            </form >
+        </div >
     );
 };
 
