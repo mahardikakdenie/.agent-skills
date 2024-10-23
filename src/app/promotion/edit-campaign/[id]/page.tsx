@@ -19,6 +19,7 @@ import axios, { AxiosResponse } from "axios";
 import { VoucherService } from "@/services/voucher.services";
 import { ChevronLeft, Trash } from "react-feather";
 import { FaCheck, FaPlus } from 'react-icons/fa';
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const planService = new PlanService();
   const voucherService = new VoucherService();
   const [type, setType] = useState("");
+  const [name, setName] = useState("");
+  const [value_currency, setValue_currency] = useState("");
+  const [value, setValue] = useState(0);
+  const [start_date, setStart_date] = useState("");
+  const [end_date, setEnd_date] = useState("");
 
   const {
     reset,
@@ -47,7 +53,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
-      type: type
+      type: type,
+      name: name,
+      value_currency: value_currency,
+      value: value,
+      start_date: start_date,
+      end_date: end_date
     }
   });
 
@@ -156,15 +167,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
   }, [promotion.embedded_discount_insurances]);
 
-  // useEffect(() => {
-  //   if (promotion.embedded_discount_plans.length > 0) {
-  //     setSelectedPlans(
-  //       promotion.embedded_discount_plans.map(plans => ({
-  //         plan_id: plans.plan_id
-  //       }))
-  //     );
-  //   }
-  // }, [promotion.embedded_discount_plans]);
 
   useEffect(() => {
     if (globalSelectedProdIds.size > 0) {
@@ -178,34 +180,38 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       promotionService.getPromotionCampaignById(params.id as string)
         .then((res) => {
           const promotionData: PromotionDetails = res.data[0];
-          // console.log('Fetched Promotion Data:', promotionData);
+          const formattedStartDate = promotionData.start_date ? formatDate(promotionData.start_date) : "";
+          const formattedEndDate = promotionData.end_date ? formatDate(promotionData.end_date) : "";
+  
           setPromotion(promotionData);
           reset({
-            type: promotionData.type, // Update form with fetched data
-        });
+            type: promotionData.type,
+            name: promotionData.name,
+            value_currency: promotionData.value_currency,
+            value: promotionData.value,
+            start_date: formattedStartDate,
+            end_date: formattedEndDate
+          });
+  
           fetchChannelsInitial(1, 50);
           fetchInsurancesInitial(1, 50);
           fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
           fetchProductsByInsurancesInitial([], 1, 100);
           fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
           fetchPlansByProductsInitial([], 1, 5000);
-
-          // Populate selected channels
+  
           const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
           setGlobalSelectedChannels(existingChannelIds);
-
-          // Populate selected insurances
+  
           const existingInsuranceIds = new Set(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
           setGlobalSelectedInsuranceIds(existingInsuranceIds);
-
-          // Populate selected products
+  
           const existingProductIds = new Set(promotionData.embedded_discount_products.map(prod => prod.product_id));
           setGlobalSelectedProdIds(existingProductIds);
-
-          // Populate selected plans
+  
           const existingPlanIds = new Set(promotionData.embedded_discount_plans.map(plans => plans.plan_id));
           setGlobalSelectedPlanIds(existingPlanIds);
-
+  
           setLoading(false);
         })
         .catch(error => {
@@ -213,7 +219,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setLoading(false);
         });
     }
-  }, [params.id]);
+  }, [params.id, reset]);  
 
 
   useEffect(() => {
@@ -1042,57 +1048,54 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         <div className="flex space-x-4">
           <div className="flex flex-col w-1/2">
             <label htmlFor="name" className="font-normal">Campaign Name</label>
-            <input
-              id="name"
+            <Controller
               name="name"
-              type="text"
-              value={promotion.name}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
+              control={control}
+              defaultValue=""
+              rules={{ required: "Campaign Name is required" }}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="name"
+                  required
+                  placeholder="Insert Campaign Name"
+                  {...field}
+                  className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
             />
           </div>
           <div className="flex flex-col w-1/2">
             <label htmlFor="type" className="font-normal">Type</label>
-            {/* <select
-              id="type"
-              name="type"
-              value={promotion.type}
-              onChange={handleChange}
-              className="p-2 border border-gray-300 rounded-md"
-              disabled={promotion.active}
-            >
-              <option value="embedded">Embedded</option>
-              <option value="voucher">Voucher</option>
-            </select> */}
             <Controller
-                name="type"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(value) => {
-                      handleChangeType(value);
-                      field.onChange(value);
-                    }}
-                    disabled={false}
-                  >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select a Type " />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="embedded">
-                          Embedded
-                        </SelectItem>
-                        <SelectItem value="voucher">
-                          Voucher
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    handleChangeType(value);
+                    field.onChange(value);
+                  }}
+                  disabled={false}
+                >
+                  <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectValue placeholder="Select a Type " />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="embedded">
+                        Embedded
+                      </SelectItem>
+                      <SelectItem value="voucher">
+                        Voucher
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
         </div>
 
@@ -1100,27 +1103,38 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         <div className="flex space-x-4">
           <div className="flex flex-col w-1/2">
             <label htmlFor="value_currency" className="font-normal">Currency</label>
-            <input
-              id="value_currency"
+            <Controller
               name="value_currency"
-              type="text"
-              value={promotion.value_currency}
-              onChange={handleChange}
-              className={`p-2 rounded ${promotion.active ? 'border-none bg-gray-100' : 'border border-gray-300'}`}
-              required
-              disabled
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="value_currency"
+                  required
+                  disabled
+                  {...field}
+                  className={`mt-1 block w-full h-16 ${errors.value_currency ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
             />
           </div>
           <div className="flex flex-col w-1/2">
             <label htmlFor="value" className="font-normal">Value</label>
-            <input
-              id="value"
+            <Controller
               name="value"
-              type="number"
-              value={promotion.value}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="number"
+                  id="value"
+                  required
+                  disabled
+                  {...field}
+                  className={`mt-1 block w-full h-16 ${errors.value ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
             />
           </div>
         </div>
@@ -1129,26 +1143,44 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         <div className="flex space-x-4">
           <div className="flex flex-col w-1/2">
             <label htmlFor="start_date" className="font-normal">Start Date</label>
-            <input
-              id="start_date"
+            <Controller
               name="start_date"
-              type="date"
-              value={formatDate(promotion.start_date)}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
+              control={control}
+              defaultValue={promotion.start_date ? formatDate(promotion.start_date) : ""}
+              rules={{ required: "Start date is required" }}
+              render={({ field }) => (
+                <Input
+                  type="date"
+                  id="start_date"
+                  required
+                  placeholder="Insert start date"
+                  {...field}
+                  value={field.value || ""}
+                  className={`mt-1 block w-full h-16 ${errors.start_date ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
             />
           </div>
           <div className="flex flex-col w-1/2">
             <label htmlFor="end_date" className="font-normal">End Date</label>
-            <input
-              id="end_date"
+            <Controller
               name="end_date"
-              type="date"
-              value={formatDate(promotion.end_date)}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
+              control={control}
+              defaultValue={promotion.end_date ? formatDate(promotion.end_date) : ""}
+              rules={{ required: "End date is required" }}
+              render={({ field }) => (
+                <Input
+                  type="date"
+                  id="end_date"
+                  required
+                  placeholder="Insert end date"
+                  {...field}
+                  value={field.value || ""}
+                  className={`mt-1 block w-full h-16 ${errors.end_date ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
             />
           </div>
         </div>

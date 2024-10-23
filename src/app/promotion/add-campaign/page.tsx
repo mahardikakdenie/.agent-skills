@@ -1206,7 +1206,7 @@ const CreatePromotionPage = () => {
                     required
                     placeholder="Insert start date"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                    className={`mt-1 block w-full h-16 ${errors.start_date ? "border-red-500" : "border-gray-300"
                       } rounded-md shadow-sm`}
                   />
                 )}
@@ -1228,7 +1228,7 @@ const CreatePromotionPage = () => {
                     required
                     placeholder="Insert end date"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                    className={`mt-1 block w-full h-16 ${errors.end_date ? "border-red-500" : "border-gray-300"
                       } rounded-md shadow-sm`}
                   />
                 )}
@@ -1282,7 +1282,7 @@ const CreatePromotionPage = () => {
                     required
                     placeholder="Insert a value"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                    className={`mt-1 block w-full h-16 ${errors.value ? "border-red-500" : "border-gray-300"
                       } rounded-md shadow-sm`}
                   />
                 )}
@@ -1303,7 +1303,7 @@ const CreatePromotionPage = () => {
                     required
                     placeholder="Insert a minimum amount"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                    className={`mt-1 block w-full h-16 ${errors.minimum_amount ? "border-red-500" : "border-gray-300"
                       } rounded-md shadow-sm`}
                   />
                 )}
@@ -1324,7 +1324,7 @@ const CreatePromotionPage = () => {
                     required
                     placeholder="Insert a maximum amount"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                    className={`mt-1 block w-full h-16 ${errors.maximum_amount ? "border-red-500" : "border-gray-300"
                       } rounded-md shadow-sm`}
                   />
                 )}
