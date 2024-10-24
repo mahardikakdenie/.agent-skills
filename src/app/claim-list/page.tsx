@@ -16,10 +16,13 @@ import { formatMoneyClaim } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
 import {
   AlertCircle,
+  Check,
   ChevronLeft,
   ChevronRight,
   Download,
+  Plus,
   Search,
+  Trash2,
   X,
 } from "react-feather";
 import { Button } from "@/components/ui/button";
@@ -32,7 +35,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 const PolicyPage = () => {
@@ -51,6 +63,7 @@ const PolicyPage = () => {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenDocuments, setIsModalOpenDocuments] = useState(false);
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null);
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [amountApproved, setAmountApproved] = useState(0);
@@ -58,29 +71,44 @@ const PolicyPage = () => {
   const [numberId, setNumberID] = useState("-");
   const [statusOld, setStatusOld] = useState("-");
   const [notes, setNotes] = useState("");
+  const [lackOfDocuments, setLackOfDocuments] = useState("");
   const [amApprovedMsg, setAmApprovedMsg] = useState("");
   const [noteMsg, setNoteMsg] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currencyApp, setCurrencyApp] = useState(" ");
+  const [dataDocument, setDataDocument] = useState<any[]>([]);
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+  const [finalSelectedDocuments, setFinalSelectedDocuments] = useState<any[]>(
+    []
+  );
+  const [successUpdate, setSuccessUpdate] = useState(false);
 
   useEffect(() => {
-    claimService
-      .getClaims(page, rowsPerPage, tab == "All" ? "" : tab)
-      .then((res) => {
+    const fetchData = async () => {
+      try {
+        const res = await claimService.getClaims(
+          page,
+          rowsPerPage,
+          tab === "All" ? "" : tab
+        );
         setFilteredClaims(res.data);
         setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
         setTotalData(res.total);
-      });
-  }, [page, rowsPerPage, tab, claims]);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchData();
+  }, [page, rowsPerPage, tab, successUpdate]);
 
   useEffect(() => {
     if (searchTerm) {
       const filtered = claims.filter((claim) =>
         claim.number.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      console.log(filtered);
       setFilteredClaims(filtered);
     } else {
       setFilteredClaims(claims);
@@ -99,6 +127,12 @@ const PolicyPage = () => {
 
   const goToDetail = (claimId: string) => {
     router.push(`${path}/${claimId}`);
+  };
+
+  const selectChannel = (id: string) => {
+    claimService.getClaimChannel(id).then((res) => {
+      setDataDocument(res.data);
+    });
   };
 
   const getStatusColor = (status: string) => {
@@ -132,6 +166,8 @@ const PolicyPage = () => {
     setIsModalOpen(true);
     setNotes("");
     setNoteMsg("");
+    setLackOfDocuments("");
+    setSuccessUpdate(false);
 
     const reqAmount = filteredClaims
       .map((item) => {
@@ -187,10 +223,17 @@ const PolicyPage = () => {
     claimId: string,
     newStatus: string,
     amount_approved?: number,
-    note?: string
+    note?: string,
+    lack_of_documents?: string[]
   ) => {
     claimService
-      .updateClaimStatus(claimId, newStatus, amount_approved, note)
+      .updateClaimStatus(
+        claimId,
+        newStatus,
+        amount_approved,
+        note,
+        lack_of_documents
+      )
       .then(() => {
         setClaims((prevClaims) =>
           prevClaims.map((claim) =>
@@ -214,7 +257,6 @@ const PolicyPage = () => {
     }
     if (amountApproved === 0 && pendingStatus === "Approved") {
       setAmApprovedMsg("Approved Amount required!");
-      console.log("masuk");
       return;
     }
     if (
@@ -226,7 +268,13 @@ const PolicyPage = () => {
     }
 
     if (selectedClaimId && pendingStatus) {
-      updateStatus(selectedClaimId, pendingStatus, amountApproved, notes);
+      updateStatus(
+        selectedClaimId,
+        pendingStatus,
+        amountApproved,
+        notes,
+        finalSelectedDocuments.map((item) => item.name)
+      );
       setClaims((prevClaims) =>
         prevClaims.map((claim) =>
           claim.id === selectedClaimId
@@ -235,6 +283,7 @@ const PolicyPage = () => {
         )
       );
       setIsModalOpen(false);
+      setSuccessUpdate(true);
     }
   };
 
@@ -253,6 +302,28 @@ const PolicyPage = () => {
     setAmApprovedMsg("");
   };
 
+  const handleCheckboxChange = (id: string) => {
+    setSelectedDocuments((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((docId) => docId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleAddSelectedDocuments = () => {
+    const selected = dataDocument.filter((doc) =>
+      selectedDocuments.includes(doc.id)
+    );
+    setFinalSelectedDocuments(selected);
+  };
+
+  const handleDeleteSelectedDocument = (id: string) => {
+    setFinalSelectedDocuments((prev) => prev.filter((doc) => doc.id !== id));
+    setSelectedDocuments((prev) => prev.filter((docId) => docId !== id));
+  };
+
+  const isDocumentSelected = (id: string) => selectedDocuments.includes(id);
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4">
@@ -267,7 +338,7 @@ const PolicyPage = () => {
       </div>
       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent>
+          <DialogContent className="min-w-96 w-auto max-w-full">
             <p className="text-center">
               <AlertCircle
                 width={88}
@@ -318,7 +389,7 @@ const PolicyPage = () => {
                     <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
                   </div>
                   <div className="w-full">
-                    <p className="text-sm mb-2">Reason (Opsional)</p>
+                    <p className="text-sm mb-2">Reason</p>
                     <textarea
                       name=""
                       id=""
@@ -326,7 +397,7 @@ const PolicyPage = () => {
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert reason (Opsional)"
+                      placeholder="Insert Reason"
                     ></textarea>
                   </div>
                 </>
@@ -348,7 +419,7 @@ const PolicyPage = () => {
                         setNoteMsg("");
                       }}
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert reason"
+                      placeholder="Insert Reason"
                       required
                     ></textarea>
                     <p className="text-xs text-red-500">{noteMsg}</p>
@@ -358,7 +429,7 @@ const PolicyPage = () => {
 
               {pendingStatus === "Lack of Documents" && (
                 <>
-                  <div className="w-full">
+                  <div className="w-[600px]">
                     <p className="text-sm mb-2">
                       Reason <span className="!text-red-500">*</span>
                     </p>
@@ -372,10 +443,146 @@ const PolicyPage = () => {
                         setNoteMsg("");
                       }}
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert reason "
+                      placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
                       required
                     ></textarea>
                     <p className="text-xs text-red-500">{noteMsg}</p>
+                  </div>
+                  <div className="w-full">
+                    <p className="text-sm mb-3">
+                      Documents Requested{" "}
+                      <span className="!text-red-500">*</span>
+                    </p>
+                    {finalSelectedDocuments.length > 0 && (
+                      <ul className="mb-4">
+                        {finalSelectedDocuments.map((doc) => (
+                          <li
+                            key={doc.id}
+                            className="flex justify-between items-center mb-2 gap-2"
+                          >
+                            <Input
+                              name="lack_of_documents"
+                              value={doc?.label?.en}
+                              className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
+                            />
+                            <Button
+                              className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                              onClick={() =>
+                                handleDeleteSelectedDocument(doc.id)
+                              }
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <Dialog>
+                      {filteredClaims.slice(0, 1).map((document) => (
+                        <DialogTrigger asChild key={document.id}>
+                          <Button
+                            color="warning"
+                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto"
+                            onClick={() => selectChannel(document.channel)}
+                          >
+                            <Plus className="w-4 h-4 mr-2" /> Add Document
+                          </Button>
+                        </DialogTrigger>
+                      ))}
+                      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
+                        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                            Select Document
+                            <DialogClose className="ml-auto">
+                              <Button
+                                type="button"
+                                className="bg-transparent hover:bg-transparent text-black p-0"
+                              >
+                                <X className="w-5 h-5" />
+                              </Button>
+                            </DialogClose>
+                          </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="p-4">
+                          <Table className="table-claims">
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="whitespace-nowrap py-2 w-10">
+                                  Select
+                                </TableHead>
+                                <TableHead className="py-2">Name</TableHead>
+                                <TableHead className="py-2">Type</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {dataDocument.length > 0 ? (
+                                dataDocument
+                                  .filter(
+                                    (document) =>
+                                      document.type === "File" ||
+                                      document.type === "File Multiple"
+                                  )
+                                  .map((document) => (
+                                    <TableRow
+                                      key={document.id}
+                                      className="cursor-pointer"
+                                      onClick={() =>
+                                        handleCheckboxChange(document.id)
+                                      }
+                                    >
+                                      <TableCell align="center">
+                                        <Input
+                                          type="checkbox"
+                                          checked={isDocumentSelected(
+                                            document.id
+                                          )}
+                                          onChange={() =>
+                                            handleCheckboxChange(document.id)
+                                          }
+                                          className="w-4 h-4"
+                                        />
+                                      </TableCell>
+                                      <TableCell>
+                                        {document?.label?.en || "-"}
+                                      </TableCell>
+                                      <TableCell className="w-36">
+                                        {document.type || "-"}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))
+                              ) : (
+                                <TableRow className="hover:!bg-white">
+                                  <TableCell colSpan={10}>
+                                    <div className="flex flex-col gap-4 items-center justify-center py-14">
+                                      <Image
+                                        alt="no data"
+                                        src={noData}
+                                        width={200}
+                                      />
+                                      No transaction data available
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+
+                        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                          <DialogClose asChild>
+                            <Button
+                              type="button"
+                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                              onClick={handleAddSelectedDocuments}
+                            >
+                              <Check className="w-4 h-4 mr-2" /> Add selected
+                              document
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </>
               )}
@@ -400,6 +607,7 @@ const PolicyPage = () => {
           </DialogContent>
         </Dialog>
       )}
+
       <div className="block bg-white rounded-md mb-3">
         <div className="w-full flex items-center overflow-auto">
           <div

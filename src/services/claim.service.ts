@@ -94,6 +94,24 @@ export interface ListClaimRequest {
   claim?: string;
   status?: string[];
 }
+export interface ClaimCategory {
+  id: string;
+  category: string;
+  name: string;
+  label: {};
+  type: string;
+  required: true;
+  form: string;
+}
+export interface ClaimChannel {
+  id: string;
+  channel: string;
+  name: string;
+  label: {};
+  type: string;
+  required: true;
+  form: string;
+}
 
 export class ClaimService {
   private httpClient: IHttpClient;
@@ -153,16 +171,26 @@ export class ClaimService {
     id: string,
     data: any,
     amount_approved?: number,
-    note?: string
+    note?: string,
+    lack_of_documents?: string[]
   ): Promise<any> {
     try {
       return await this.httpClient.put("/claims/update-status/" + id, {
         status: data,
         note: note,
         amount_approved: amount_approved,
+        lack_of_documents: lack_of_documents,
       });
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }
+  }
+
+  async getClaimCategory(id: string): Promise<any> {
+    return this.httpClient.get("/claim-category-forms/all/" + id);
+  }
+
+  async getClaimChannel(id: string): Promise<any> {
+    return this.httpClient.get("/claim-channel-forms/all/" + id);
   }
 }
