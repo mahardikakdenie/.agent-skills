@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Trash, X, Search } from "react-feather";
+import { ChevronLeft, ChevronRight, Plus, Trash, X, Search, Upload } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 
 const SanctionPage = () => {
@@ -73,6 +73,10 @@ const SanctionPage = () => {
 
     const addNewSanction = () => {
         router.push("/sanction/add-sanction");
+    };
+
+    const uploadSanction = () => {
+        router.push("/sanction/upload-sanction");
     };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,12 +133,21 @@ const SanctionPage = () => {
         <div className="container mx-auto p-6">
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-semibold">Sanction List</h1>
-                <Button
-                    onClick={() => addNewSanction()}
-                    className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
-                >
-                    <Plus className="w-5 h-5 mr-1 " /> Add Sanction
-                </Button>
+                <div className="flex space-x-2">
+                    <Button
+                        onClick={() => addNewSanction()}
+                        className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
+                    >
+                        <Plus className="w-5 h-5 mr-1 " /> Add Sanction
+                    </Button>
+                    <Button
+                        className="rounded-full ml-auto bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
+                        onClick={() => uploadSanction()}
+                    >
+                        <Upload width={20} height={20} />
+                        <span className="ml-1">Upload Sanction</span>
+                    </Button>
+                </div>
             </div>
 
             {/* Search Bar */}

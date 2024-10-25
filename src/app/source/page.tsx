@@ -141,6 +141,7 @@ const SourcePage = () => {
             </div>
 
             <div className="bg-white rounded-md p-4 sm:p-6">
+            <div className="overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -158,7 +159,7 @@ const SourcePage = () => {
                                 <TableCell>{source.source_type}</TableCell>
                                 <TableCell>{source.country}</TableCell>
                                 <TableCell>{source.source_url}</TableCell>
-                                <TableCell>{source.insurance_name}</TableCell>
+                                <TableCell className="whitespace-nowrap">{source.insurance_name}</TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
 
@@ -301,6 +302,7 @@ const SourcePage = () => {
                         </TableRow>
                     </TableFooter>
                 </Table>
+                </div>
             </div>
         </div>
     );
