@@ -82,6 +82,7 @@ const PolicyPage = () => {
     []
   );
   const [successUpdate, setSuccessUpdate] = useState(false);
+  const [selectedClaim, setSelectedClaim] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,6 +92,7 @@ const PolicyPage = () => {
           rowsPerPage,
           tab === "All" ? "" : tab
         );
+
         setFilteredClaims(res.data);
         setPage(res.page);
         setTotalPages(res.pageTotal);
@@ -103,6 +105,7 @@ const PolicyPage = () => {
 
     fetchData();
   }, [page, rowsPerPage, tab, successUpdate]);
+  console.log("filteredClaims", filteredClaims);
 
   useEffect(() => {
     if (searchTerm) {
@@ -135,6 +138,22 @@ const PolicyPage = () => {
     });
   };
 
+  const selectCategory = (id: string) => {
+    claimService.getClaimCategory(id).then((res) => {
+      setDataDocument(res.data);
+    });
+  };
+
+  const handleSelectDocument = () => {
+    if (selectedClaim) {
+      if (selectedClaim.policy) {
+        selectCategory(selectedClaim.policy_data.category);
+      } else {
+        selectChannel(selectedClaim.channel);
+      }
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Draft":
@@ -160,7 +179,9 @@ const PolicyPage = () => {
     }
   };
 
-  const handleChangeStatus = (claimId: string, newStatus: string) => {
+  const handleChangeStatus = (data: any, newStatus: string) => {
+    const claimId = data.id;
+    setSelectedClaim(data);
     setSelectedClaimId(claimId);
     setPendingStatus(newStatus);
     setIsModalOpen(true);
@@ -235,12 +256,7 @@ const PolicyPage = () => {
         lack_of_documents
       )
       .then(() => {
-        setClaims((prevClaims) =>
-          prevClaims.map((claim) =>
-            claim.id === claimId ? { ...claim, status: newStatus } : claim
-          )
-        );
-        router.refresh();
+        setSuccessUpdate(true);
       })
       .catch((error) => {
         console.error("Error updating status:", error);
@@ -483,7 +499,7 @@ const PolicyPage = () => {
                           <Button
                             color="warning"
                             className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto"
-                            onClick={() => selectChannel(document.channel)}
+                            onClick={() => handleSelectDocument()}
                           >
                             <Plus className="w-4 h-4 mr-2" /> Add Document
                           </Button>
@@ -938,9 +954,9 @@ const PolicyPage = () => {
                   <TableCell className="font-semibold whitespace-nowrap">
                     <Select
                       value={claim.status}
-                      onValueChange={(value) =>
-                        handleChangeStatus(claim.id, value)
-                      }
+                      onValueChange={(value) => {
+                        handleChangeStatus(claim, value);
+                      }}
                     >
                       <SelectTrigger
                         className={`w-[180px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
