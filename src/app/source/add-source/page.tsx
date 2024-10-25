@@ -55,6 +55,7 @@ const CreateSourcePage = () => {
     const [source_type, setSource_type] = useState("");
     const [country, setCountry] = useState("");
     const [insurance_id, setInsurance_id] = useState("");
+    const [insurance_name, setInsurance_name] = useState("");
     const [source_name, setSource_name] = useState("");
     const [source_url, setSource_url] = useState("");
 
@@ -69,6 +70,7 @@ const CreateSourcePage = () => {
             source_type,
             country,
             insurance_id,
+            insurance_name,
             source_name,
             source_url
         },
@@ -158,18 +160,19 @@ const CreateSourcePage = () => {
         }));
     };
 
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault(); // Prevent form from submitting the traditional way
+    const handleSave = handleSubmit(async (data) => {
         setErrorMessage(''); // Clear previous error message
         setShowAlert(false); // Reset alert visibility
 
-        if (!source.source_name || !source.source_type || !source.source_url || !source.country) {
+        console.log("test: " + data.insurance_name);
+
+        if (!data.source_name || !data.source_type || !data.source_url || !data.country) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
             return;
         }
 
-        if (source.source_type === "insurance" && !source.insurance_id) {
+        if (data.source_type === "insurance" && !data.insurance_id) {
             setErrorMessage('Please select an insurance.');
             setShowAlert(true);
             return;
@@ -179,7 +182,7 @@ const CreateSourcePage = () => {
         const urlPattern = /^https:\/\/.+\..+/;
 
         // Validate the URL field
-        if (!urlPattern.test(source.source_url)) {
+        if (!urlPattern.test(data.source_url)) {
             setErrorMessage('URL must start with "https://" and be a valid URL with at least one dot.');
             setShowAlert(true);
             return;
@@ -187,15 +190,16 @@ const CreateSourcePage = () => {
 
 
         const payload = {
-            source_name: source.source_name,
-            source_type: source.source_type,
-            source_url: source.source_url,
-            insurance_id: source.source_type === "insurance" ? source.insurance_id : null,
+            source_name: data.source_name,
+            source_type: data.source_type,
+            source_url: data.source_url,
+            insurance_id: data.source_type === "insurance" ? data.insurance_id : null,
             insurance_name: source.source_type === "insurance" ? source.insurance_name : null,
-            country: source.country,
+            country: data.country,
         };
 
         setLoading(true); // Show loading spinner during the save operation
+        
 
         try {
             const response: AxiosResponse<any> = await sanctionService.createSource(payload);
@@ -220,7 +224,7 @@ const CreateSourcePage = () => {
         } finally {
             setLoading(false); // Stop the loading spinner
         }
-    };
+    });
 
     const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
         if (!isOpen) return null;
