@@ -46,7 +46,7 @@ export class PromotionService {
   }
   
   async updatePromotionCampaign(id: string, data: any): Promise<any> {
-    return this.httpClientPromotion.put('/api/campaign/update/' + id, data);
+    return this.httpClientPromotion.put(`/api/campaign/update/${id}?id=${id}`, data);
   }
 
 

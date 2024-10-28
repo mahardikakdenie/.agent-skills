@@ -527,7 +527,7 @@ const CreatePromotionPage = () => {
           await promotionService.createPromotion(payload);
         const { data } = response;
 
-        if (promotion.type == "embedded") {
+        if (formData.type == "embedded") {
           // console.log("data: " + data);
           if (data != null) {
             if (data.data?.error?.code === 409) {

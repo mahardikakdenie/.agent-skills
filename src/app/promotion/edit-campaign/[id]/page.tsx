@@ -47,6 +47,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [end_date, setEnd_date] = useState("");
 
   const {
+    handleSubmit,
     reset,
     control,
     formState: { errors },
@@ -836,15 +837,14 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSave = async (formData: any) => {
     // Reset alert messages before validation
     setErrorMessage('');
     setAlertMessage('');
     setShowAlert(false);
 
-    if (!promotion.type || !promotion.value || !promotion.value_currency ||
-      !promotion.start_date || !promotion.end_date || !promotion.name) {
+    if (!formData.type || !formData.value || !formData.value_currency ||
+      !formData.start_date || !formData.end_date || !formData.name) {
       setErrorMessage('Please fill in all required fields.');
       return;
     }
@@ -858,8 +858,8 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
 
 
-    const startDate = parseISO(promotion.start_date);
-    const endDate = parseISO(promotion.end_date);
+    const startDate = parseISO(formData.start_date);
+    const endDate = parseISO(formData.end_date);
 
     if (!isValid(startDate) || !isValid(endDate)) {
       setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
@@ -874,11 +874,11 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     }
 
     const payload = {
-      type: promotion.type,
-      value: promotion.value,
-      start_date: promotion.start_date,
-      end_date: promotion.end_date,
-      name: promotion.name,
+      type: formData.type,
+      value: formData.value,
+      start_date: formData.start_date,
+      end_date: formData.end_date,
+      name: formData.name,
       products: promotion.embedded_discount_products.map(product => ({
         product_id: product.product_id,
       })),
@@ -898,7 +898,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     };
 
     try {
-      if (promotion.type === "voucher" && !promotion.active && vouchers.length > 0) {
+      if (formData.type === "voucher" && !formData.active && vouchers.length > 0) {
         const campaign_id = params.id;
 
         for (const voucher of vouchers) {
@@ -922,7 +922,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       const response: AxiosResponse<any> = await promotionService.updatePromotionCampaign(params.id, payload);
       const { data } = response;
 
-      if (promotion.type == "embedded") {
+      if (formData.type == "embedded") {
         if (data != null) {
           if (data.data?.error?.code === 409) {
             setErrorMessage("The plan has already been used by another embedded campaign.");
@@ -1008,7 +1008,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="flex flex-col w-full gap-4">
-      <form onSubmit={handleSubmit} className="w-full">
+      <form onSubmit={handleSubmit(handleSave)} className="w-full">
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
             <Breadcrumb>
