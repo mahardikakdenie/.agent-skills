@@ -422,21 +422,21 @@ const CreatePromotionPage = () => {
     setVoucherUsageLimit(1);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (formData: any) => {
+    // e.preventDefault();
 
     setErrorMessage("");
     setAlertMessage("");
     setShowAlert(false);
 
     if (
-      !promotion.type ||
-      !promotion.value ||
-      !promotion.value_type ||
-      !promotion.value_currency ||
-      !promotion.start_date ||
-      !promotion.end_date ||
-      !promotion.name
+      !formData.type ||
+      !formData.value ||
+      !formData.value_type ||
+      !formData.value_currency ||
+      !formData.start_date ||
+      !formData.end_date ||
+      !formData.name
     ) {
       setErrorMessage("Please fill in all required fields.");
       setShowAlert(true);
@@ -456,8 +456,8 @@ const CreatePromotionPage = () => {
       return;
     }
 
-    const startDate = parseISO(promotion.start_date);
-    const endDate = parseISO(promotion.end_date);
+    const startDate = parseISO(formData.start_date);
+    const endDate = parseISO(formData.end_date);
 
     if (!isValid(startDate) || !isValid(endDate)) {
       setErrorMessage("Invalid date format. Please use DD-MM-YYYY format.");
@@ -472,15 +472,15 @@ const CreatePromotionPage = () => {
     }
 
     const payload = {
-      type: promotion.type,
-      value: promotion.value,
-      value_type: promotion.value_type,
-      value_currency: promotion.value_currency,
-      start_date: promotion.start_date,
-      end_date: promotion.end_date,
-      name: promotion.name,
-      minimum_amount: promotion.minimum_amount,
-      maximum_amount: promotion.maximum_amount,
+      type: formData.type,
+      value: formData.value,
+      value_type: formData.value_type,
+      value_currency: formData.value_currency,
+      start_date: formData.start_date,
+      end_date: formData.end_date,
+      name: formData.name,
+      minimum_amount: formData.minimum_amount,
+      maximum_amount: formData.maximum_amount,
       products: promotion.embedded_discount_products.map((product) => ({
         product_id: product.product_id,
       })),
@@ -1015,7 +1015,7 @@ const CreatePromotionPage = () => {
 
   return (
     <div className="flex flex-col w-full gap-4">
-      <form onSubmit={handleSave} className="w-full">
+      <form onSubmit={handleSubmit(handleSave)} className="w-full">
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
             <Breadcrumb className="sm:block hidden">
