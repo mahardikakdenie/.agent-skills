@@ -356,6 +356,20 @@ const Sidebar = () => {
                   Roles
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/masterdata/group"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/masterdata/group")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image src={iconClaim} alt="Group" className="w-7 min-w-7" />
+                  Group
+                </Link>
+              </li>
               <li className="mt-2 text-sm">
                 <strong>Sanction List</strong>
               </li>
