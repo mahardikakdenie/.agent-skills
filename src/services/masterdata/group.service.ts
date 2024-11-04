@@ -46,12 +46,15 @@ export interface UserResponse {
 
 export interface AccountGroup {
   id: string;
-  name: string;
-  email: string;
-  phone_number: string;
-  role: string;
-  channel: string;
-  updated_at: string;
+  accounts: {
+    id: string;
+    name: string;
+    email: string;
+    phone_number: string;
+    role: string;
+    channel: string;
+    updated_at: string;
+  };
 }
 
 export class GroupService {
@@ -157,7 +160,7 @@ export class GroupService {
 
   async removeGroupAccount(id: string): Promise<any> {
     try {
-      return await this.httpClient.delete("v1/account-groups" + id);
+      return await this.httpClient.delete("v1/account-groups/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Search,
   Trash2,
   X,
 } from "react-feather";
@@ -145,13 +146,11 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
           setSelectedUser(
             res.data?.account_groups.map((item: any) => item.accounts.id)
           );
-          setGroupUser(
-            res.data?.account_groups.map((item: any) => item.accounts)
-          );
+          setGroupUser(res.data?.account_groups.map((item: any) => item));
           setSelectedRoles(
             res.data?.group_roles.map((item: any) => item.roles.id)
           );
-          setGroupRoles(res.data?.group_roles.map((item: any) => item.roles));
+          setGroupRoles(res.data?.group_roles.map((item: any) => item));
           setValue("name", res.data.name);
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -182,11 +181,32 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     selectRoles();
   };
 
-  const handleAddSelectedRoles = () => {
-    const selected = dataRoles.filter((role) =>
-      selectedRoles.includes(role.id)
-    );
-    setGroupRoles(selected);
+  const handleAddSelectedRoles = async () => {
+    const addedIds = groupRoles.map((item) => item);
+    console.log(addedIds);
+    const selectedIds = [];
+    for (let i = 0; i < selectedRoles.length; i++) {
+      if (!addedIds.includes(selectedRoles[i])) {
+        const response = await addGroupRole({
+          account: id,
+          role: selectedRoles[i],
+        });
+
+        if (response) {
+          const accountId = response.id;
+          const userData = dataRoles.find(
+            (item) => item.id == selectedRoles[i]
+          );
+          selectedIds.push(response.id);
+          groupRoles.push({
+            id: accountId,
+            accounts: userData,
+          });
+        }
+      }
+    }
+    setGroupRoles(groupRoles);
+    setSelectedRoles(selectedIds);
   };
 
   const handleDeleteSelectedRole = (id: string) => {
@@ -242,19 +262,27 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAddSelectedUser = async () => {
-    const selected = dataUser.filter((user) => selectedUser.includes(user.id));
+    const addedIds = groupUser.map((item) => item.accounts.id);
     const selectedIds = [];
-    for (let i = 0; i < selected.length; i++) {
-      const response = await addGroupAccount({
-        account: selected[i].id,
-        group: id,
-      });
+    for (let i = 0; i < selectedUser.length; i++) {
+      if (!addedIds.includes(selectedUser[i])) {
+        const response = await addGroupAccount({
+          account: selectedUser[i],
+          group: id,
+        });
 
-      if (response) {
-        selectedIds.push(response.id);
+        if (response) {
+          const accountId = response.id;
+          const userData = dataUser.find((item) => item.id == selectedUser[i]);
+          selectedIds.push(response.id);
+          groupUser.push({
+            id: accountId,
+            accounts: userData,
+          });
+        }
       }
     }
-    setGroupUser(selected);
+    setGroupUser(groupUser);
     setSelectedUser(selectedIds);
   };
 
@@ -284,6 +312,8 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
   });
 
   const handleCheckboxChangeUser = (id: string) => {
+    console.log(id);
+
     setSelectedUser((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((userId) => userId !== id)
@@ -438,14 +468,16 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                           </option>
                         ))}
                       </select>
-
-                      <Input
-                        type="text"
-                        placeholder="Search Roles Name"
-                        value={rolesFilter}
-                        onChange={(e) => setRolesFilter(e.target.value)}
-                        className="px-4 text-sm border rounded-lg h-11"
-                      />
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          placeholder="Search Roles Name"
+                          value={rolesFilter}
+                          onChange={(e) => setRolesFilter(e.target.value)}
+                          className="px-4 text-sm border rounded-lg h-11"
+                        />
+                        <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
+                      </div>
                     </div>
 
                     <Table className="table-claims">
@@ -582,10 +614,10 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                     {groupRoles.map((role) => (
                       <TableRow key={role.id}>
                         <TableCell className="py-1">
-                          {role?.description || "-"}
+                          {role?.roles.description || "-"}
                         </TableCell>
                         <TableCell className="py-1">
-                          {role?.name || "-"}
+                          {role?.roles.name || "-"}
                         </TableCell>
                         <TableCell className="py-1 text-center">
                           <Button
@@ -619,7 +651,6 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                 open={isModalOpenUser}
                 onOpenChange={(open) => {
                   setIsModalOpenUser(open);
-                  // if (open) handleSelectUser(id);
                 }}
               >
                 <DialogTrigger asChild>
@@ -654,13 +685,16 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                     style={{ maxHeight: "calc(100vh - 180px)" }}
                   >
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                      <Input
-                        type="text"
-                        placeholder="Search Users Name"
-                        value={userFilter}
-                        onChange={(e) => setUserFilter(e.target.value)}
-                        className="px-4 text-sm border rounded-lg h-11"
-                      />
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          placeholder="Search Users Name"
+                          value={userFilter}
+                          onChange={(e) => setUserFilter(e.target.value)}
+                          className="px-4 text-sm border rounded-lg h-11"
+                        />
+                        <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
+                      </div>
                     </div>
 
                     <Table className="table-claims">
@@ -675,7 +709,8 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                             />
                           </TableHead>
                           <TableHead className="py-2">Name</TableHead>
-                          <TableHead>Last Activity</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Phone Number</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -698,9 +733,8 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                                 />
                               </TableCell>
                               <TableCell>{user?.name || "-"}</TableCell>
-                              <TableCell className="w-36">
-                                {user?.description || "-"}
-                              </TableCell>
+                              <TableCell>{user?.email || "-"}</TableCell>
+                              <TableCell>{user?.phone_number || "-"}</TableCell>
                             </TableRow>
                           ))
                         ) : (
@@ -784,7 +818,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="py-2">Name</TableHead>
-                      <TableHead className="py-2">Last Activity</TableHead>
+                      <TableHead className="py-2 w-52">Last Activity</TableHead>
                       <TableHead className="py-2 w-10">Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -792,17 +826,23 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                     {groupUser.map((user) => (
                       <TableRow key={user.id}>
                         <TableCell className="py-1">
-                          {user?.name || "-"}
+                          {user?.accounts?.name || "-"}
                         </TableCell>
                         <TableCell className="py-1">
-                          {user?.updated_at
-                            ? format(new Date(user?.updated_at), "dd-MM-yyyy")
-                            : "N/A"}
+                          {user?.accounts?.updated_at
+                            ? format(
+                                new Date(user.accounts.updated_at),
+                                "dd-MM-yyyy"
+                              )
+                            : format(new Date(), "dd-MM-yyyy")}
                         </TableCell>
                         <TableCell className="py-1 text-center">
                           <Button
                             className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                            onClick={() => handleDeleteSelectedUser(user.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteSelectedUser(user.id);
+                            }}
                           >
                             <Trash2 className="w-5 h-5" />
                           </Button>
