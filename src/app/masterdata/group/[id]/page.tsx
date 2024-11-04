@@ -243,19 +243,19 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
 
   const handleAddSelectedUser = async () => {
     const selected = dataUser.filter((user) => selectedUser.includes(user.id));
-    // const selectedIds = [];
+    const selectedIds = [];
     for (let i = 0; i < selected.length; i++) {
       const response = await addGroupAccount({
         account: selected[i].id,
         group: id,
       });
 
-      // if (response) {
-      //   selectedIds.push(response.id);
-      // }
+      if (response) {
+        selectedIds.push(response.id);
+      }
     }
     setGroupUser(selected);
-    // setSelectedUser(selectedIds);
+    setSelectedUser(selectedIds);
   };
 
   const handleDeleteSelectedUser = async (id: string) => {
