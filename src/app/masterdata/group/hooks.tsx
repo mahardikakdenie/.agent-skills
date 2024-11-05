@@ -17,18 +17,8 @@ export const useGroup = () => {
     setGroups(data);
   };
 
-  //   const fetchChannels = async (search: any) => {
-  //     const { data } = await groupService.getChannel(search);
-  //     setChannels(data);
-  //   };
-
   const fetchGroupById = async (id: string) => {
     const response = await groupService.getGroupById(id);
-    return response;
-  };
-
-  const saveUser = async (data: any) => {
-    const { data: response } = await groupService.saveUser(data);
     return response;
   };
 
@@ -37,8 +27,8 @@ export const useGroup = () => {
     return response;
   };
 
-  const deleteUser = async (id: string) => {
-    const { data: response } = await groupService.deleteUser(id);
+  const deleteGroup = async (id: string) => {
+    const { data: response } = await groupService.deleteGroup(id);
     return response;
   };
 
@@ -64,9 +54,8 @@ export const useGroup = () => {
 
   return {
     group,
-    saveUser,
     updateGroup,
-    deleteUser,
+    deleteGroup,
     fetchGroup,
     fetchGroupById,
     groups,
@@ -77,6 +66,5 @@ export const useGroup = () => {
     removeGroupRole,
     addGroupAccount,
     removeGroupAccount,
-    // fetchChannels,
   };
 };

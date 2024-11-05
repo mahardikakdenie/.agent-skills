@@ -84,18 +84,9 @@ export class GroupService {
     return this.httpClient.get("/v1/group/" + id);
   }
 
-  async deleteUser(id: string): Promise<any> {
+  async deleteGroup(id: string): Promise<any> {
     try {
-      return await this.httpClient.delete("/account/" + id);
-    } catch (error) {
-      console.error("Request failed:", error);
-      throw error;
-    }
-  }
-
-  async saveUser(data: any): Promise<any> {
-    try {
-      return await this.httpClient.post("/account", data);
+      return await this.httpClient.delete("/v1/group/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
@@ -142,7 +133,7 @@ export class GroupService {
 
   async removeGroupRole(id: string): Promise<any> {
     try {
-      return await this.httpClient.delete("v1/group-roles" + id);
+      return await this.httpClient.delete("v1/group-roles/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

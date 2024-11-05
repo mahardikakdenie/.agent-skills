@@ -66,10 +66,10 @@ const Group = () => {
     router.push(`${path}/${id}`);
   };
 
-  const handleDeletePlan = async (id: string) => {
+  const handleDeleteGroup = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
       try {
-        await groupService.deleteUser(id);
+        await groupService.deleteGroup(id);
         setGroup((prevUser) => prevUser.filter((group) => group.id !== id));
         window.location.reload();
       } catch (error) {
@@ -135,7 +135,7 @@ const Group = () => {
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => handleDeletePlan(group.id)}
+                        onClick={() => handleDeleteGroup(group.id)}
                         className="text-red-600 px-0"
                       >
                         <Trash />

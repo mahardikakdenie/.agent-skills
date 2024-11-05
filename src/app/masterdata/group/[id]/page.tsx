@@ -54,6 +54,7 @@ import {
   AccountGroup,
   GroupResponse,
   GroupService,
+  RoleResponse,
   UserResponse,
 } from "@/services/masterdata/group.service";
 import Image from "next/image";
@@ -82,14 +83,20 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
   } = useGroup();
   const [dataRoles, setDataRoles] = useState<any[]>([]);
   const [group, setGroup] = useState<GroupResponse[]>([]);
+  const [role, setRole] = useState<RoleResponse[]>([]);
+  const [account, setAccount] = useState<UserResponse[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [groupRoles, setGroupRoles] = useState<any[]>([]);
   const [platformFilter, setPlatformFilter] = useState("");
   const [rolesFilter, setRolesFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [pageRoles, setPageRoles] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [totalItemsRoles, setTotalItemsRoles] = useState(0);
+  const [totalItemsUser, setTotalItemsUser] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPageRoles, setRowsPerPageRoles] = useState(10);
   const [loading, setLoading] = useState(true);
   const [dataUser, setDataUser] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string[]>([]);
@@ -171,9 +178,38 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     setUpdateSuccess(null);
   }, [updateSuccess, router]);
 
+  useEffect(() => {
+    const fetchRole = async () => {
+      setLoading(true);
+      try {
+        const result = await groupService.getRoles(pageRoles, rowsPerPageRoles);
+        const filteredRoles = result.data.filter((role: any) => {
+          const matchesPlatform = platformFilter
+            ? role.description === platformFilter
+            : true;
+          const matchesRoles = rolesFilter
+            ? role.name?.toLowerCase().includes(rolesFilter.toLowerCase())
+            : true;
+          return matchesPlatform && matchesRoles;
+        });
+
+        setRole(filteredRoles);
+        setTotalPages(result.meta.pageTotal);
+        setTotalItems(result.meta.total);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRole();
+  }, [pageRoles, rowsPerPageRoles, platformFilter, rolesFilter]);
+
   const selectRoles = () => {
     groupService.getRoles(page, rowsPerPage).then((res) => {
       setDataRoles(res.data);
+      setTotalItemsRoles(res.meta.total);
     });
   };
 
@@ -183,23 +219,22 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
 
   const handleAddSelectedRoles = async () => {
     const addedIds = groupRoles.map((item) => item);
-    console.log(addedIds);
     const selectedIds = [];
     for (let i = 0; i < selectedRoles.length; i++) {
       if (!addedIds.includes(selectedRoles[i])) {
         const response = await addGroupRole({
-          account: id,
+          group: id,
           role: selectedRoles[i],
         });
 
         if (response) {
-          const accountId = response.id;
+          const groupId = response.id;
           const userData = dataRoles.find(
             (item) => item.id == selectedRoles[i]
           );
           selectedIds.push(response.id);
           groupRoles.push({
-            id: accountId,
+            id: groupId,
             accounts: userData,
           });
         }
@@ -209,12 +244,16 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     setSelectedRoles(selectedIds);
   };
 
-  const handleDeleteSelectedRole = (id: string) => {
-    setGroupRoles((prev) => prev.filter((role) => role.id !== id));
-    setSelectedRoles((prev) => prev.filter((roleId) => roleId !== id));
+  const handleDeleteSelectedRole = async (id: string) => {
+    const response = await removeGroupRole(id);
+    if (response) {
+      setGroupRoles((prev) => prev.filter((role) => role.id !== id));
+      setSelectedRoles((prev) => prev.filter((roleId) => roleId !== id));
+    }
   };
 
   const handleCheckboxChange = (id: string) => {
+    console.log(id);
     setSelectedRoles((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((roleId) => roleId !== id)
@@ -232,29 +271,52 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
 
   const isRolesSelected = (id: string) => selectedRoles.includes(id);
 
-  const filteredRoles = dataRoles.filter((role) => {
-    const matchesPlatform = platformFilter
-      ? role.description === platformFilter
-      : true;
-    const matchesRoles = rolesFilter
-      ? role.name?.toLowerCase().includes(rolesFilter.toLowerCase())
-      : true;
-    return matchesPlatform && matchesRoles;
-  });
-
   const uniquePlatforms = Array.from(
     new Set(dataRoles.map((role) => role.description))
   );
 
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
+  const handleRowsPerPageChangeRoles = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setRowsPerPageRoles(Number(e.target.value));
+    setPageRoles(1);
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const result = await groupService.getUser(page, rowsPerPage);
+        const filteredUser = result.data.filter((user: any) => {
+          const matchesUser = userFilter
+            ? user.name?.toLowerCase().includes(userFilter.toLowerCase())
+            : true;
+          return matchesUser;
+        });
+
+        setAccount(filteredUser);
+        setTotalPages(result.meta.pageTotal);
+        setTotalItems(result.meta.total);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [page, rowsPerPage, platformFilter, rolesFilter]);
 
   const selectUser = () => {
     groupService.getUser(page, rowsPerPage).then((res) => {
       setDataUser(res.data);
+      setTotalItemsUser(res.meta.total);
     });
+  };
+
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number(e.target.value));
+    setPage(1);
   };
 
   const handleSelectUser = (id: string) => {
@@ -272,11 +334,11 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
         });
 
         if (response) {
-          const accountId = response.id;
+          const groupId = response.id;
           const userData = dataUser.find((item) => item.id == selectedUser[i]);
           selectedIds.push(response.id);
           groupUser.push({
-            id: accountId,
+            id: groupId,
             accounts: userData,
           });
         }
@@ -304,16 +366,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
 
   const isUserSelected = (id: string) => selectedUser.includes(id);
 
-  const filteredUser = dataUser.filter((user) => {
-    const matchesUser = userFilter
-      ? user.name?.toLowerCase().includes(userFilter.toLowerCase())
-      : true;
-    return matchesUser;
-  });
-
   const handleCheckboxChangeUser = (id: string) => {
-    console.log(id);
-
     setSelectedUser((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((userId) => userId !== id)
@@ -496,8 +549,8 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredRoles.length > 0 ? (
-                          filteredRoles.map((role) => (
+                        {role.length > 0 ? (
+                          role.map((role) => (
                             <TableRow
                               key={role.id}
                               className="cursor-pointer"
@@ -536,11 +589,11 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                         <TableRow>
                           <TableCell colSpan={8}>
                             <div className="flex justify-center items-center gap-2 font-normal">
-                              <label htmlFor="rowsPerPage">Showing:</label>
+                              <label htmlFor="rowsPerPageRoles">Showing:</label>
                               <select
-                                id="rowsPerPage"
-                                value={rowsPerPage}
-                                onChange={handleRowsPerPageChange}
+                                id="rowsPerPageRoles"
+                                value={rowsPerPageRoles}
+                                onChange={handleRowsPerPageChangeRoles}
                                 className="p-2 border rounded"
                               >
                                 {[10, 20, 30, 50].map((option) => (
@@ -550,11 +603,11 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                                 ))}
                               </select>
                               <span className="mr-2">
-                                of {totalItems} items
+                                of {totalItemsRoles} items
                               </span>
                               <button
                                 onClick={() =>
-                                  setPage((prevState) =>
+                                  setPageRoles((prevState) =>
                                     Math.max(prevState - 1, 1)
                                   )
                                 }
@@ -565,7 +618,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                               </button>
                               <button
                                 onClick={() =>
-                                  setPage((prevState) =>
+                                  setPageRoles((prevState) =>
                                     Math.min(prevState + 1, totalPages)
                                   )
                                 }
@@ -614,15 +667,18 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                     {groupRoles.map((role) => (
                       <TableRow key={role.id}>
                         <TableCell className="py-1">
-                          {role?.roles.description || "-"}
+                          {role?.roles?.name || "-"}
                         </TableCell>
                         <TableCell className="py-1">
-                          {role?.roles.name || "-"}
+                          {role?.roles?.description || "-"}
                         </TableCell>
                         <TableCell className="py-1 text-center">
                           <Button
                             className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                            onClick={() => handleDeleteSelectedRole(role.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteSelectedRole(role.id);
+                            }}
                           >
                             <Trash2 className="w-5 h-5" />
                           </Button>
@@ -714,8 +770,8 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredUser.length > 0 ? (
-                          filteredUser.map((user) => (
+                        {account.length > 0 ? (
+                          account.map((user) => (
                             <TableRow
                               key={user.id}
                               className="cursor-pointer"
@@ -739,7 +795,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                           ))
                         ) : (
                           <TableRow className="hover:!bg-white">
-                            <TableCell colSpan={10}>
+                            <TableCell colSpan={4}>
                               <div className="flex flex-col gap-4 items-center justify-center py-14">
                                 <Image alt="no data" src={noData} width={200} />
                                 No transaction data available
@@ -767,7 +823,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
                                 ))}
                               </select>
                               <span className="mr-2">
-                                of {totalItems} items
+                                of {totalItemsUser} items
                               </span>
                               <button
                                 onClick={() =>
