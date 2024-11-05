@@ -102,6 +102,15 @@ export class GroupService {
     }
   }
 
+  async addGroup(data: any, id: string): Promise<any> {
+    try {
+      return await this.httpClient.post("v1/group/", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
   async getRoles(page?: number, rowsPerPage?: number): Promise<RoleResponse> {
     const params: any = {
       page: page,

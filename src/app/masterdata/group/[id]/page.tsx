@@ -419,13 +419,13 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
           </div>
 
           <div className="flex ml-auto">
-            <div
-              onClick={() => router.back()}
+            <a
+              href="/masterdata/group"
               className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               Back
-            </div>
+            </a>
             <Button
               type="submit"
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
@@ -930,5 +930,5 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const EdiGroupWithSidebar = (params: any) => WithSidebar(EditGroup)(params);
-export default EdiGroupWithSidebar;
+const EditGroupWithSidebar = (params: any) => WithSidebar(EditGroup)(params);
+export default EditGroupWithSidebar;

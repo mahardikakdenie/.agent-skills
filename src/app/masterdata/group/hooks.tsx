@@ -22,6 +22,11 @@ export const useGroup = () => {
     return response;
   };
 
+  const addGroup = async (data: any, id: string) => {
+    const { data: response } = await groupService.addGroup(data, id);
+    return response;
+  };
+
   const updateGroup = async (data: any, id: string) => {
     const { data: response } = await groupService.updateGroup(data, id);
     return response;
@@ -54,6 +59,7 @@ export const useGroup = () => {
 
   return {
     group,
+    addGroup,
     updateGroup,
     deleteGroup,
     fetchGroup,

@@ -88,7 +88,7 @@ const Group = () => {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Group</h1>
         <Button
-          // onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(`${path}/add`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Plus className="w-5 h-5 mr-1 " /> Add New
