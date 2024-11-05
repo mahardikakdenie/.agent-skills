@@ -218,8 +218,8 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAddSelectedRoles = async () => {
-    const addedIds = groupRoles.map((item) => item);
-    const selectedIds = [];
+    const addedIds = groupRoles.map((item) => item.roles.id);
+    const updatedGroupRoles = [...groupRoles];
     for (let i = 0; i < selectedRoles.length; i++) {
       if (!addedIds.includes(selectedRoles[i])) {
         const response = await addGroupRole({
@@ -232,28 +232,34 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
           const userData = dataRoles.find(
             (item) => item.id == selectedRoles[i]
           );
-          selectedIds.push(response.id);
-          groupRoles.push({
+          updatedGroupRoles.push({
             id: groupId,
-            accounts: userData,
+            roles: userData,
           });
         }
       }
     }
-    setGroupRoles(groupRoles);
-    setSelectedRoles(selectedIds);
+    setGroupRoles(updatedGroupRoles);
   };
 
   const handleDeleteSelectedRole = async (id: string) => {
     const response = await removeGroupRole(id);
     if (response) {
-      setGroupRoles((prev) => prev.filter((role) => role.id !== id));
-      setSelectedRoles((prev) => prev.filter((roleId) => roleId !== id));
+      const selectedIds: string[] = [];
+      const updatedGroupRoles: AccountGroup[] = [];
+      groupRoles.map((group) => {
+        if (group.id != id) {
+          selectedIds.push(group.roles.id);
+          updatedGroupRoles.push(group);
+        }
+      });
+
+      setGroupRoles(updatedGroupRoles);
+      setSelectedRoles(selectedIds);
     }
   };
 
   const handleCheckboxChange = (id: string) => {
-    console.log(id);
     setSelectedRoles((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((roleId) => roleId !== id)
@@ -325,7 +331,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
 
   const handleAddSelectedUser = async () => {
     const addedIds = groupUser.map((item) => item.accounts.id);
-    const selectedIds = [];
+    const updatedGroupUser = [...groupUser];
     for (let i = 0; i < selectedUser.length; i++) {
       if (!addedIds.includes(selectedUser[i])) {
         const response = await addGroupAccount({
@@ -336,23 +342,31 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
         if (response) {
           const groupId = response.id;
           const userData = dataUser.find((item) => item.id == selectedUser[i]);
-          selectedIds.push(response.id);
-          groupUser.push({
+          updatedGroupUser.push({
             id: groupId,
             accounts: userData,
           });
         }
       }
     }
-    setGroupUser(groupUser);
-    setSelectedUser(selectedIds);
+
+    setGroupUser(updatedGroupUser);
   };
 
   const handleDeleteSelectedUser = async (id: string) => {
     const response = await removeGroupAccount(id);
     if (response) {
-      setGroupUser((prev) => prev.filter((user) => user.id !== id));
-      setSelectedUser((prev) => prev.filter((userId) => userId !== id));
+      const selectedIds: string[] = [];
+      const updatedGroupUser: AccountGroup[] = [];
+      groupUser.map((user) => {
+        if (user.id != id) {
+          selectedIds.push(user.accounts.id);
+          updatedGroupUser.push(user);
+        }
+      });
+
+      setGroupUser(updatedGroupUser);
+      setSelectedUser(selectedIds);
     }
   };
 
