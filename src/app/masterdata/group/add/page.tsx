@@ -10,107 +10,27 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  Search,
-  Trash2,
-  X,
-} from "react-feather";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useGroup } from "../hooks";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  AccountGroup,
-  GroupResponse,
-  GroupService,
-  RoleResponse,
-  UserResponse,
-} from "@/services/masterdata/group.service";
-import Image from "next/image";
-import noData from "/public/images/no-data.webp";
-import { format } from "date-fns";
 
 const AddGroupPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
-  const groupService = new GroupService();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalOpenUser, setIsModalOpenUser] = useState(false);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const {
-    addGroup,
-    fetchGroupById,
-    addGroupRole,
-    removeGroupRole,
-    addGroupAccount,
-    removeGroupAccount,
-  } = useGroup();
-  const [dataRoles, setDataRoles] = useState<any[]>([]);
-  const [group, setGroup] = useState<GroupResponse[]>([]);
-  const [role, setRole] = useState<RoleResponse[]>([]);
-  const [account, setAccount] = useState<UserResponse[]>([]);
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [groupRoles, setGroupRoles] = useState<any[]>([]);
-  const [platformFilter, setPlatformFilter] = useState("");
-  const [rolesFilter, setRolesFilter] = useState("");
-  const [page, setPage] = useState(1);
-  const [pageRoles, setPageRoles] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalItemsRoles, setTotalItemsRoles] = useState(0);
-  const [totalItemsUser, setTotalItemsUser] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [rowsPerPageRoles, setRowsPerPageRoles] = useState(10);
-  const [loading, setLoading] = useState(true);
-  const [dataUser, setDataUser] = useState<any[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string[]>([]);
-  const [groupUser, setGroupUser] = useState<AccountGroup[]>([]);
-  const [userFilter, setUserFilter] = useState("");
-
-  const isAllSelected = selectedRoles.length === dataRoles.length;
-  const isAllSelectedUser = selectedUser.length === dataUser.length;
+  const { addGroup } = useGroup();
 
   const {
     handleSubmit,
     control,
-    setValue,
     formState: { errors },
   } = useForm({
     shouldUnregister: false,
@@ -124,10 +44,8 @@ const AddGroupPage = ({ params }: { params: { id: string } }) => {
   const onSubmit = async (data: any) => {
     try {
       const response = await addGroup(data, id);
-      console.log(response.id);
       if (response.id != null) {
         const id = response.id;
-        console.log("berhasil");
         router.push(`/masterdata/group/${id}`);
       }
       console.log("selesai");
@@ -135,21 +53,6 @@ const AddGroupPage = ({ params }: { params: { id: string } }) => {
       setUpdateSuccess(false);
     }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (id) {
-        try {
-          const res = await fetchGroupById(id);
-          setValue("name", res.data.name);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    };
-
-    fetchData();
-  }, [id, setValue]);
 
   return (
     <div className="flex flex-col w-full">

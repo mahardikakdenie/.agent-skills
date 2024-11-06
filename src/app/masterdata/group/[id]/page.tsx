@@ -25,17 +25,9 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useGroup } from "../hooks";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
