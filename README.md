@@ -1,6 +1,6 @@
 ## Description
 
-### The internal portal is a platform used to manage various data within our system. It features fine-grained role management, allowing precise control over access to specific resources or actions. The data managed within the portal includes:
+The internal portal is a platform used to manage various data within our system. It features fine-grained role management, allowing precise control over access to specific resources or actions. The data managed within the portal includes:
 
 - **Transaction Management**
 - **Product Catalog Management**
