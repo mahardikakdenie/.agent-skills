@@ -6,6 +6,8 @@ export const useRole = () => {
 
   const [roles, setRoles] = useState<RoleResponse[]>([]);
   const [role, setRole] = useState<any[]>([]);
+  const [menu, setMenu] = useState<any[]>([]);
+  const [permission, setPermission] = useState<any[]>([]);
 
   const fetchRole = async (search: any) => {
     const { data } = await roleService.getRole(search);
@@ -32,6 +34,16 @@ export const useRole = () => {
     return response;
   };
 
+  const fetchMenu = async (search: any) => {
+    const { data } = await roleService.getMenu(search);
+    setMenu(data);
+  };
+
+  const fetchPermission = async (search: any) => {
+    const { data } = await roleService.getPermission(search);
+    setPermission(data);
+  };
+
   return {
     role,
     addRole,
@@ -41,5 +53,8 @@ export const useRole = () => {
     fetchRoleById,
     roles,
     setRoles,
+    menu,
+    fetchMenu,
+    fetchPermission,
   };
 };

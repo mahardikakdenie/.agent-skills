@@ -14,6 +14,22 @@ export interface RoleResponse {
   meta: any;
 }
 
+export interface MenuResponse {
+  id: string;
+  name: string;
+  updated_at: string;
+  created_at: string;
+  data: any;
+}
+export interface PermissionResponse {
+  id: string;
+  name: string;
+  updated_at: string;
+  created_at: string;
+  page: string;
+  data: any;
+}
+
 export class RoleService {
   private authHttpClient: IHttpClient;
 
@@ -66,5 +82,36 @@ export class RoleService {
       console.error("Request failed:", error);
       throw error;
     }
+  }
+
+  async deletePermission(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("/v1/permission/" + id);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getMenu(page?: number, rowsPerPage?: number): Promise<MenuResponse> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(`/pages/?${queryString}`);
+  }
+  async getPermission(
+    page?: number,
+    rowsPerPage?: number
+  ): Promise<PermissionResponse> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(`/v1/permission/?${queryString}`);
   }
 }
