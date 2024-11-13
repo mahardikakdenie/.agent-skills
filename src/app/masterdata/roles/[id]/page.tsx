@@ -11,8 +11,8 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Check, ChevronLeft, Plus, Trash2, X } from "react-feather";
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronLeft, Edit, Plus, Trash2, X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useRole } from "../hooks";
@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import React from "react";
 
 const EditRolesPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -50,17 +51,20 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
   const [menuPage, setMenuPage] = useState<MenuResponse[]>([]);
   const [permission, setPermission] = useState<PermissionResponse[]>([]);
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pages, setPages] = useState<any[]>([]);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
   const [rolePermission, setRolePermission] = useState<any[]>([]);
   const [permissions, setPermissions] = useState<any[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<string[]>([]);
   const roleService = new RoleService();
-  const [selectedMenu, setSelectedMenu] = useState<string[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [selectPage, setSelectPage] = useState("");
   const [permissionFields, setPermissionFields] = useState<any[]>([
-    { id: "", group: "", permission: "", isEdited: true },
+    { id: "", menu: "", permission: "", isEdited: true },
   ]);
 
-  const { updateRole, fetchRoleById, menu = [] } = useRole();
+  const { updateRole, fetchRoleById, addPermissionRole } = useRole();
 
   const {
     handleSubmit,
@@ -73,15 +77,15 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
       id,
       name,
       description,
-      menu: selectedMenu,
+      menu: selectPage,
       permission: selectedPermission,
     },
     values: {
       id,
-      name,
-      description,
-      menu,
-      permission,
+      name: "",
+      description: "",
+      menu: "",
+      permission: "",
     },
   });
 
@@ -93,9 +97,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
           setSelectedPermission(
             res.data?.role_permissions.map((item: any) => item.permissions.id)
           );
-          setRolePermission(
-            res.data?.role_permissions.map((item: any) => item)
-          );
+          setRolePermission(res.data?.role_permissions);
           setValue("name", res.data.name);
           setValue("description", res.data.description);
         } catch (error) {
@@ -105,14 +107,14 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     };
 
     fetchData();
-  }, [id, setValue]);
+  }, [id]);
 
   const groupedPermissions = rolePermission.reduce((acc: any, role: any) => {
     const menuName = role?.permissions?.pages?.name || "-";
     if (!acc[menuName]) {
       acc[menuName] = [];
     }
-    acc[menuName].push(role.permissions);
+    acc[menuName].push(role);
     return acc;
   }, {});
 
@@ -137,40 +139,43 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     const fetchMenu = async () => {
-      setLoading(true);
       try {
         const result = await roleService.getMenu(page, rowsPerPage);
-        setMenuPage(result.data);
+        setPages(result.data || []);
+        if (!selectPage && result.data?.length > 0) {
+        }
       } catch (error) {
-        console.error("Error fetching insurance products:", error);
+        console.error("Error fetching menu:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchMenu();
-  }, [page, rowsPerPage]);
-  useEffect(() => {
-    const fetchMenu = async () => {
-      setLoading(true);
-      try {
-        const result = await roleService.getMenu(page, rowsPerPage);
-        setMenuPage(result.data);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  }, []);
 
-    fetchMenu();
-  }, [page, rowsPerPage]);
+  const selectMenu = async (value: string, field: any) => {
+    field.onChange(value);
+    try {
+      const selectedPage = pages.find((page: any) => page.name === value);
+      if (selectedPage) {
+        const result = await roleService.getPermission(
+          page,
+          rowsPerPage,
+          selectedPage.id
+        );
+        setPermission(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching permissions:", error);
+    }
+  };
 
   const handleAddPermission = () => {
     const updateFormValue = [...permissionFields];
     updateFormValue.push({
       id: "",
-      group: "",
+      menu: "",
       permission: "",
       isEdited: true,
     });
@@ -188,6 +193,21 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
       } catch (error) {
         console.error("Failed to delete perm:", error);
       }
+    }
+  };
+
+  const handleAddPermissionRole = async (id: any) => {
+    try {
+      const roleId = await fetchRoleById(id);
+      const data = {
+        role: "",
+        permission: "",
+      };
+
+      await addPermissionRole(data, id);
+      console.log("Permission role added successfully:", data);
+    } catch (error) {
+      console.error("Failed to add permission role:", error);
     }
   };
 
@@ -329,59 +349,70 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
               <Plus className="w-4 h-4 mr-2" /> Add Menu
             </Button>
           </div>
-          {Object.keys(groupedPermissions).length > 0 && (
-            <div className="w-full bg-white rounded-lg overflow-auto">
-              <Table className="table-search-params">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="whitespace-nowrap py-2">
-                      Menu
-                    </TableHead>
-                    <TableHead className="py-2">Permission</TableHead>
-                    <TableHead className="py-2 w-10 text-center"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Object.entries(groupedPermissions).map(
-                    ([menu, permissions]: [string, any]) => (
+          <div className="w-full bg-white rounded-lg overflow-auto">
+            <Table className="table-search-params">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="whitespace-nowrap py-2">Menu</TableHead>
+                  <TableHead className="py-2">Permission</TableHead>
+                  <TableHead className="py-2 w-10 text-center"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Object.entries(groupedPermissions).map(
+                  ([menu, rolePermission]: [string, any]) => (
+                    console.log(rolePermission),
+                    (
                       <TableRow key={menu}>
                         <TableCell className="py-1">{menu}</TableCell>
                         <TableCell className="py-3">
-                          {permissions.map((perm: any) => (
-                            <span
-                              key={perm.id}
-                              className="inline-flex items-center gap-2 mr-2 rounded-full bg-[#F0F1F5] border borer-[#E2E7EB] py-2 px-4"
-                            >
-                              {perm.name}
-                              <Button
-                                className="text-default-300 bg-transparent hover:bg-transparent p-0 h-[20px]"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleDeletePermission(perm.id);
-                                }}
+                          <div className="flex flex-wrap gap-2">
+                            {rolePermission.map((perm: any) => (
+                              <span
+                                key={perm.id}
+                                className="inline-flex items-center gap-2 rounded-full bg-[#F0F1F5] border borer-[#E2E7EB] py-2 px-4"
                               >
-                                <X className="w-5 h-5" />
-                              </Button>
-                            </span>
-                          ))}
+                                {perm.permissions.name}
+                                <Button
+                                  className="text-default-300 bg-transparent hover:bg-transparent p-0 h-[20px]"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDeletePermission(perm.id);
+                                  }}
+                                >
+                                  <X className="w-5 h-5" />
+                                </Button>
+                              </span>
+                            ))}
+                          </div>
                         </TableCell>
                         <TableCell className="py-1 text-center">
-                          <Button
-                            className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              // handleDeleteSelectedRole(role.id);
-                            }}
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              className="text-black/50 hover:text-black bg-transparent hover:bg-transparent p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                              }}
+                            >
+                              <Edit className="w-5 h-5" />
+                            </Button>
+                            <Button
+                              className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                              }}
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     )
-                  )}
-
-                  <TableRow>
-                    <TableCell>
+                  )
+                )}
+                {permissionFields.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="min-w-48 w-80">
                       <Controller
                         name="menu"
                         control={control}
@@ -392,16 +423,16 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                                 ? field.value[0] || ""
                                 : field.value || ""
                             }
-                            onValueChange={(value: string) => {
-                              field.onChange(value);
-                            }}
+                            onValueChange={(value: string) =>
+                              selectMenu(value, field)
+                            }
                           >
                             <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
                               <SelectValue placeholder="Select Menu" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                {menuPage.map((menu: any) => (
+                                {pages.map((menu: any) => (
                                   <SelectItem key={menu.id} value={menu.name}>
                                     {menu?.name}
                                   </SelectItem>
@@ -418,55 +449,54 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                         name="permission"
                         control={control}
                         render={({ field }) => (
-                          <Select
-                            value={field.value.join(", ")} // Convert array to string for display
-                            // onValueChange={(value: string) => {
-                            //   // Toggle selection
-                            //   const newValue = field.value.includes(value)
-                            //     ? field.value.filter(
-                            //         (item: string) => item !== value
-                            //       ) // Remove if exists
-                            //     : [...field.value, value]; // Add if not exists
-
-                            //   field.onChange(newValue); // Update the field value
-                            // }}
-                          >
-                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
-                              <SelectValue placeholder="Select Permission" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {permission.map((prmission: any) => (
-                                  <SelectItem
-                                    key={prmission.id}
-                                    value={prmission.name}
-                                  >
-                                    {prmission?.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
+                          <div className="flex flex-wrap gap-5 bg-white border px-4 py-2 min-h-11 rounded-lg">
+                            {permission.map((perm: any) => (
+                              <label
+                                key={perm.id}
+                                className="flex items-center"
+                              >
+                                <Input
+                                  type="checkbox"
+                                  value={perm.id}
+                                  onChange={(event) => {
+                                    event.stopPropagation();
+                                  }}
+                                  className="w-4 h-4 max-h-4"
+                                />
+                                <span className="ml-2">{perm.name}</span>
+                              </label>
+                            ))}
+                          </div>
                         )}
                       />
                     </TableCell>
 
                     <TableCell className="py-1 text-center">
-                      <Button
-                        className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          // handleDeleteSelectedRole(role.id);
-                        }}
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          className="text-black/50 hover:text-black bg-transparent hover:bg-transparent p-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAddPermissionRole(permission[0]?.id);
+                          }}
+                        >
+                          <Check className="w-5 h-5" />
+                        </Button>
+                        <Button
+                          className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                          }}
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </form>
     </div>

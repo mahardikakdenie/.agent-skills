@@ -44,6 +44,11 @@ export const useRole = () => {
     setPermission(data);
   };
 
+  const addPermissionRole = async (data: any, id: string) => {
+    const { data: response } = await roleService.savePermissionRole(data, id);
+    return response;
+  };
+
   return {
     role,
     addRole,
@@ -56,5 +61,6 @@ export const useRole = () => {
     menu,
     fetchMenu,
     fetchPermission,
+    addPermissionRole,
   };
 };
