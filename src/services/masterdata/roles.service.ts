@@ -120,9 +120,18 @@ export class RoleService {
     );
   }
 
-  async savePermissionRole(data: any, id: string): Promise<any> {
+  async createPermissionRole(data: any): Promise<any> {
     try {
       return await this.authHttpClient.post("v1/role-permission/", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async deletePermissionRole(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("v1/role-permission/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

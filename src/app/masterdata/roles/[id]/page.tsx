@@ -49,22 +49,20 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [menuPage, setMenuPage] = useState<MenuResponse[]>([]);
-  const [permission, setPermission] = useState<PermissionResponse[]>([]);
+  const [permissionOptions, setPermissionOptions] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pages, setPages] = useState<any[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(100);
-  const [rolePermission, setRolePermission] = useState<any[]>([]);
-  const [permissions, setPermissions] = useState<any[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<string[]>([]);
   const roleService = new RoleService();
   const [totalItems, setTotalItems] = useState(0);
-  const [selectPage, setSelectPage] = useState("");
   const [permissionFields, setPermissionFields] = useState<any[]>([
-    { id: "", menu: "", permission: "", isEdited: true },
+    { menu: "", menuId: "", permission: [], isEditable: true },
   ]);
-
-  const { updateRole, fetchRoleById, addPermissionRole } = useRole();
+  const { updateRole, fetchRoleById, addPermissionRole, deletePermissionRole } =
+    useRole();
+  const [deletedIdTemp, setDeletedIdTemp] = useState<string[]>([]);
 
   const {
     handleSubmit,
@@ -77,8 +75,8 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
       id,
       name,
       description,
-      menu: selectPage,
-      permission: selectedPermission,
+      menu: permissionFields.map((item) => item.menuId),
+      permission: permissionFields.map((item) => item.permission),
     },
     values: {
       id,
@@ -94,10 +92,49 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
       if (id) {
         try {
           const res = await fetchRoleById(id);
-          setSelectedPermission(
-            res.data?.role_permissions.map((item: any) => item.permissions.id)
+          const groupedPermissions = res.data?.role_permissions.reduce(
+            (acc: any, role: any) => {
+              const menuName = role?.permissions?.pages?.name || "-";
+              if (!acc[menuName]) {
+                acc[menuName] = {
+                  id: role.permissions.pages.id,
+                  permissions: [],
+                };
+              }
+              acc[menuName].permissions.push(role);
+              return acc;
+            },
+            {}
           );
-          setRolePermission(res.data?.role_permissions);
+
+          const updatedPermissionOpt: any = [];
+          const updatedPermissionFields = Object.keys(groupedPermissions).map(
+            (key) => {
+              const permissions: string[] = [];
+              const rolePermissionOpt: any[] = [];
+              groupedPermissions[key].permissions.map((item: any) => {
+                permissions.push(item.permissions.id);
+                rolePermissionOpt.push({
+                  id: item.id,
+                  permissions: {
+                    id: item.permissions.id,
+                    name: item.permissions.name,
+                  },
+                });
+              });
+
+              updatedPermissionOpt.push(rolePermissionOpt);
+              return {
+                menu: key,
+                menuId: groupedPermissions[key].id,
+                permission: permissions,
+                isEditable: false,
+              };
+            }
+          );
+
+          setPermissionOptions(updatedPermissionOpt);
+          setPermissionFields(updatedPermissionFields);
           setValue("name", res.data.name);
           setValue("description", res.data.description);
         } catch (error) {
@@ -108,15 +145,6 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
 
     fetchData();
   }, [id]);
-
-  const groupedPermissions = rolePermission.reduce((acc: any, role: any) => {
-    const menuName = role?.permissions?.pages?.name || "-";
-    if (!acc[menuName]) {
-      acc[menuName] = [];
-    }
-    acc[menuName].push(role);
-    return acc;
-  }, {});
 
   const onSubmit = async (data: any) => {
     try {
@@ -142,8 +170,6 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
       try {
         const result = await roleService.getMenu(page, rowsPerPage);
         setPages(result.data || []);
-        if (!selectPage && result.data?.length > 0) {
-        }
       } catch (error) {
         console.error("Error fetching menu:", error);
       } finally {
@@ -154,20 +180,64 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     fetchMenu();
   }, []);
 
-  const selectMenu = async (value: string, field: any) => {
+  const selectMenu = async (value: string, field: any, index: number) => {
+    const updateFormValue = [...permissionFields];
+    updateFormValue[index].menu = pages.find((item) => item.id == value)?.name;
+    updateFormValue[index].menuId = value;
+    setPermissionFields(updateFormValue);
     field.onChange(value);
+
     try {
-      const selectedPage = pages.find((page: any) => page.name === value);
-      if (selectedPage) {
-        const result = await roleService.getPermission(
-          page,
-          rowsPerPage,
-          selectedPage.id
-        );
-        setPermission(result.data);
+      const result = await roleService.getPermission(page, rowsPerPage, value);
+
+      const updatedPermissionOpt = [...permissionOptions];
+      const permissionOption = result.data.map((item: any) => ({
+        id: "",
+        permissions: {
+          id: item.id,
+          name: item.name,
+        },
+      }));
+      if (updatedPermissionOpt[index]) {
+        updatedPermissionOpt[index] = permissionOption;
+      } else {
+        updatedPermissionOpt.push(permissionOption);
       }
+      setPermissionOptions(updatedPermissionOpt);
     } catch (error) {
       console.error("Error fetching permissions:", error);
+    }
+  };
+
+  const handleTickPermission = (
+    isChecked: boolean,
+    permissionId: string,
+    index: number
+  ) => {
+    const updatedPermission = [...permissionFields];
+    if (permissionFields[index]) {
+      const currentPermission = permissionFields[index].permission;
+
+      if (isChecked) {
+        currentPermission.push(permissionId);
+
+        const key = deletedIdTemp.indexOf(permissionId);
+        if (key > -1) {
+          deletedIdTemp.splice(key, 1);
+          setDeletedIdTemp(deletedIdTemp);
+        }
+      } else {
+        const key = currentPermission.indexOf(permissionId);
+        if (key > -1) {
+          currentPermission.splice(key, 1);
+
+          deletedIdTemp.push(permissionId);
+          setDeletedIdTemp(deletedIdTemp);
+        }
+      }
+
+      updatedPermission[index].permission = currentPermission;
+      setPermissionFields(updatedPermission);
     }
   };
 
@@ -176,8 +246,8 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     updateFormValue.push({
       id: "",
       menu: "",
-      permission: "",
-      isEdited: true,
+      permission: [],
+      isEditable: true,
     });
     setPermissionFields(updateFormValue);
   };
@@ -186,7 +256,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
       try {
         await roleService.deletePermission(id);
-        setPermissions((prevPermissions) =>
+        setPermissionFields((prevPermissions) =>
           prevPermissions.filter((perm) => perm.id !== id)
         );
         window.location.reload();
@@ -196,18 +266,104 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleAddPermissionRole = async (id: any) => {
+  const handleSaveRolePermission = async (index: any) => {
     try {
-      const roleId = await fetchRoleById(id);
-      const data = {
-        role: "",
-        permission: "",
-      };
+      if (permissionFields[index]) {
+        const formValue = permissionFields[index];
 
-      await addPermissionRole(data, id);
-      console.log("Permission role added successfully:", data);
+        const updatedPermissionOpt = [...permissionOptions];
+        updatedPermissionOpt[index] = permissionOptions[index].filter(
+          (item: any) => {
+            return formValue.permission.indexOf(item.permissions.id) > -1;
+          }
+        );
+
+        for (let i = 0; i < formValue.permission.length; i++) {
+          const permissionId = formValue.permission[i];
+          const data = {
+            role: id,
+            permission: permissionId,
+          };
+
+          await addPermissionRole(data);
+        }
+
+        setPermissionOptions(updatedPermissionOpt);
+      }
+
+      bulkDeleteRolePermission(index);
+
+      const updateFormValue = [...permissionFields];
+      updateFormValue[index].isEditable = false;
+      setPermissionFields(updateFormValue);
     } catch (error) {
       console.error("Failed to add permission role:", error);
+    }
+  };
+
+  const handleBulkEditPermission = async (index: number) => {
+    try {
+      const result = await roleService.getPermission(
+        page,
+        rowsPerPage,
+        permissionFields[index].menuId
+      );
+
+      const menuPermissionOpt = result.data.map((item: any) => {
+        const authPermission = permissionOptions[index].find(
+          (currentPermission: any) =>
+            currentPermission.permissions.id == item.id
+        );
+
+        return {
+          id: authPermission ? authPermission.id : "",
+          permissions: {
+            id: item.id,
+            name: item.name,
+          },
+        };
+      });
+      const updatedPermissionOpt = [...permissionOptions];
+      updatedPermissionOpt[index] = menuPermissionOpt;
+      setPermissionOptions(updatedPermissionOpt);
+
+      const updateFormValue = [...permissionFields];
+      updateFormValue[index].isEditable = true;
+      setPermissionFields(updateFormValue);
+
+      setValue(`menu.${index}`, updateFormValue[index].menuId);
+      setValue(`permission.${index}`, updateFormValue[index].permission);
+    } catch (error) {
+      console.error("Failed to delete permission role:", error);
+    }
+  };
+
+  const handleBulkDeleteRolePermission = async (index: number) => {
+    try {
+      console.log(permissionFields);
+      // if (permissionFields[index]) {
+      //   for (let i = 0; i < deletedIdTemp.length; i++) {
+      //     const permissionId = deletedIdTemp[i];
+      //     await deletePermissionRole(permissionId);
+      //   }
+      //   setDeletedIdTemp([]);
+      // }
+    } catch (error) {
+      console.error("Failed to delete permission role:", error);
+    }
+  };
+
+  const bulkDeleteRolePermission = async (index: any) => {
+    try {
+      if (permissionFields[index]) {
+        for (let i = 0; i < deletedIdTemp.length; i++) {
+          const permissionId = deletedIdTemp[i];
+          await deletePermissionRole(permissionId);
+        }
+        setDeletedIdTemp([]);
+      }
+    } catch (error) {
+      console.error("Failed to delete permission role:", error);
     }
   };
 
@@ -359,15 +515,103 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {Object.entries(groupedPermissions).map(
-                  ([menu, rolePermission]: [string, any]) => (
-                    console.log(rolePermission),
-                    (
-                      <TableRow key={menu}>
-                        <TableCell className="py-1">{menu}</TableCell>
+                {permissionFields.map((item, indexPage) => (
+                  <TableRow key={indexPage}>
+                    {item.isEditable ? (
+                      <>
+                        <TableCell className="min-w-48 w-80">
+                          <Controller
+                            name={`menu.${indexPage}` as const}
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                value={field.value}
+                                onValueChange={(value: string) => {
+                                  selectMenu(value, field, indexPage);
+                                }}
+                              >
+                                <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
+                                  <SelectValue placeholder="Select Menu" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    {pages.map((menu: any) => (
+                                      <SelectItem key={menu.id} value={menu.id}>
+                                        {menu?.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                        </TableCell>
+
+                        <TableCell className="py-3">
+                          <Controller
+                            name={`permission.${indexPage}` as const}
+                            control={control}
+                            render={({ field }) => (
+                              <div className="flex flex-wrap gap-5 bg-white border px-4 py-2 min-h-11 rounded-lg">
+                                {permissionOptions[indexPage]?.map(
+                                  (perm: any, index: number) => (
+                                    <label
+                                      key={index}
+                                      className="flex items-center"
+                                    >
+                                      <Input
+                                        type="checkbox"
+                                        value={perm.permissions.id}
+                                        onChange={(event) => {
+                                          event.stopPropagation();
+                                          handleTickPermission(
+                                            event.target.checked,
+                                            perm.permissions.id,
+                                            indexPage
+                                          );
+                                        }}
+                                        className="w-4 h-4 max-h-4"
+                                      />
+                                      <span className="ml-2">
+                                        {perm.permissions.name}
+                                      </span>
+                                    </label>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          />
+                        </TableCell>
+
+                        <TableCell className="py-1 text-center">
+                          <div className="flex gap-2">
+                            <Button
+                              className="text-black/50 hover:text-black bg-transparent hover:bg-transparent p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleSaveRolePermission(indexPage);
+                              }}
+                            >
+                              <Check className="w-5 h-5" />
+                            </Button>
+                            <Button
+                              className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleBulkDeleteRolePermission(indexPage);
+                              }}
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </>
+                    ) : (
+                      <>
+                        <TableCell className="py-1">{item.menu}</TableCell>
                         <TableCell className="py-3">
                           <div className="flex flex-wrap gap-2">
-                            {rolePermission.map((perm: any) => (
+                            {permissionOptions[indexPage]?.map((perm: any) => (
                               <span
                                 key={perm.id}
                                 className="inline-flex items-center gap-2 rounded-full bg-[#F0F1F5] border borer-[#E2E7EB] py-2 px-4"
@@ -392,6 +636,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                               className="text-black/50 hover:text-black bg-transparent hover:bg-transparent p-0"
                               onClick={(e) => {
                                 e.preventDefault();
+                                handleBulkEditPermission(indexPage);
                               }}
                             >
                               <Edit className="w-5 h-5" />
@@ -400,98 +645,15 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                               className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
                               onClick={(e) => {
                                 e.preventDefault();
+                                handleBulkDeleteRolePermission(indexPage);
                               }}
                             >
                               <Trash2 className="w-5 h-5" />
                             </Button>
                           </div>
                         </TableCell>
-                      </TableRow>
-                    )
-                  )
-                )}
-                {permissionFields.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="min-w-48 w-80">
-                      <Controller
-                        name="menu"
-                        control={control}
-                        render={({ field }) => (
-                          <Select
-                            value={
-                              Array.isArray(field.value)
-                                ? field.value[0] || ""
-                                : field.value || ""
-                            }
-                            onValueChange={(value: string) =>
-                              selectMenu(value, field)
-                            }
-                          >
-                            <SelectTrigger className="w-full h-10 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 rounded-xl min-w-28">
-                              <SelectValue placeholder="Select Menu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {pages.map((menu: any) => (
-                                  <SelectItem key={menu.id} value={menu.name}>
-                                    {menu?.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                    </TableCell>
-
-                    <TableCell className="py-3">
-                      <Controller
-                        name="permission"
-                        control={control}
-                        render={({ field }) => (
-                          <div className="flex flex-wrap gap-5 bg-white border px-4 py-2 min-h-11 rounded-lg">
-                            {permission.map((perm: any) => (
-                              <label
-                                key={perm.id}
-                                className="flex items-center"
-                              >
-                                <Input
-                                  type="checkbox"
-                                  value={perm.id}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                  }}
-                                  className="w-4 h-4 max-h-4"
-                                />
-                                <span className="ml-2">{perm.name}</span>
-                              </label>
-                            ))}
-                          </div>
-                        )}
-                      />
-                    </TableCell>
-
-                    <TableCell className="py-1 text-center">
-                      <div className="flex gap-2">
-                        <Button
-                          className="text-black/50 hover:text-black bg-transparent hover:bg-transparent p-0"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleAddPermissionRole(permission[0]?.id);
-                          }}
-                        >
-                          <Check className="w-5 h-5" />
-                        </Button>
-                        <Button
-                          className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                          onClick={(e) => {
-                            e.preventDefault();
-                          }}
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                      </>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
