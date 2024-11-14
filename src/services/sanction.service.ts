@@ -54,6 +54,13 @@ export class SanctionService {
     return this.httpClientSanction.get(`api/v1/blacklist/search/query?query=${query}&page=${page}&limit=${limit}`);
   }
 
+  async getSourceSearchQuery(query: string, page: number, limit: number): Promise<Response> {
+    if (page <= 0) {
+      page = 1;
+    }
+    return this.httpClientSanction.get(`api/v1/sources/search/query?query=${query}&page=${page}&limit=${limit}`);
+  }
+
   async getSanctionList(page: number, limit: number): Promise<Response> {
     if (page <= 0) {
       page = 1;
