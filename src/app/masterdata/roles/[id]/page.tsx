@@ -40,26 +40,42 @@ import {
 } from "@/components/ui/select";
 import React from "react";
 
+interface Permission {
+  id: string;
+  name: string;
+}
+
+interface MenuPermissionOption {
+  id: string;
+  permissions: Permission;
+  isSelected?: false;
+}
+
+interface MenuPermissionForm {
+  menuId: string;
+  menu: string;
+  permission: string[];
+  isEditable: boolean;
+}
+
 const EditRolesPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
-  const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+
+  const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
-  const [menuPage, setMenuPage] = useState<MenuResponse[]>([]);
-  const [permissionOptions, setPermissionOptions] = useState<any[]>([]);
+  const [permissionOptions, setPermissionOptions] = useState<any>({});
+  const [menus, setMenus] = useState<any[]>([]);
+
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pages, setPages] = useState<any[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(100);
-  const [selectedPermission, setSelectedPermission] = useState<string[]>([]);
   const roleService = new RoleService();
-  const [totalItems, setTotalItems] = useState(0);
-  const [permissionFields, setPermissionFields] = useState<any[]>([
-    { menu: "", menuId: "", permission: [], isEditable: true },
-  ]);
+  const [permissionFields, setPermissionFields] = useState<
+    MenuPermissionForm[]
+  >([]);
   const { updateRole, fetchRoleById, addPermissionRole, deletePermissionRole } =
     useRole();
   const [deletedIdTemp, setDeletedIdTemp] = useState<string[]>([]);
@@ -71,19 +87,12 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm({
     shouldUnregister: false,
-    defaultValues: {
+    values: {
       id,
       name,
       description,
       menu: permissionFields.map((item) => item.menuId),
       permission: permissionFields.map((item) => item.permission),
-    },
-    values: {
-      id,
-      name: "",
-      description: "",
-      menu: "",
-      permission: "",
     },
   });
 
@@ -107,13 +116,13 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
             {}
           );
 
-          const updatedPermissionOpt: any = [];
+          const updatedPermissionOpt: any = {};
           const updatedPermissionFields = Object.keys(groupedPermissions).map(
             (key) => {
-              const permissions: string[] = [];
-              const rolePermissionOpt: any[] = [];
+              const acquiredPermissions: string[] = [];
+              const rolePermissionOpt: MenuPermissionOption[] = [];
               groupedPermissions[key].permissions.map((item: any) => {
-                permissions.push(item.permissions.id);
+                acquiredPermissions.push(item.permissions.id);
                 rolePermissionOpt.push({
                   id: item.id,
                   permissions: {
@@ -123,20 +132,26 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                 });
               });
 
-              updatedPermissionOpt.push(rolePermissionOpt);
+              const menuId = groupedPermissions[key].id;
+              if (!updatedPermissionOpt[menuId]) {
+                updatedPermissionOpt[menuId] = [];
+              }
+
+              updatedPermissionOpt[menuId] = rolePermissionOpt;
               return {
                 menu: key,
                 menuId: groupedPermissions[key].id,
-                permission: permissions,
+                permission: acquiredPermissions,
                 isEditable: false,
               };
             }
           );
-
           setPermissionOptions(updatedPermissionOpt);
           setPermissionFields(updatedPermissionFields);
           setValue("name", res.data.name);
           setValue("description", res.data.description);
+          setName(res.data.name);
+          setDescription(res.data.description);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -169,7 +184,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     const fetchMenu = async () => {
       try {
         const result = await roleService.getMenu(page, rowsPerPage);
-        setPages(result.data || []);
+        setMenus(result.data || []);
       } catch (error) {
         console.error("Error fetching menu:", error);
       } finally {
@@ -182,34 +197,35 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
 
   const selectMenu = async (value: string, field: any, index: number) => {
     const updateFormValue = [...permissionFields];
-    updateFormValue[index].menu = pages.find((item) => item.id == value)?.name;
+    updateFormValue[index].menu = menus.find((item) => item.id == value)?.name;
     updateFormValue[index].menuId = value;
     setPermissionFields(updateFormValue);
     field.onChange(value);
 
     try {
-      const result = await roleService.getPermission(page, rowsPerPage, value);
-
-      const updatedPermissionOpt = [...permissionOptions];
-      const permissionOption = result.data.map((item: any) => ({
-        id: "",
-        permissions: {
-          id: item.id,
-          name: item.name,
-        },
-      }));
-      if (updatedPermissionOpt[index]) {
-        updatedPermissionOpt[index] = permissionOption;
-      } else {
-        updatedPermissionOpt.push(permissionOption);
-      }
+      const result: PermissionResponse = await roleService.getPermission(
+        page,
+        rowsPerPage,
+        value
+      );
+      const updatedPermissionOpt: any = { ...permissionOptions };
+      const permissionOption: MenuPermissionOption[] = result.data.map(
+        (item: any) => ({
+          id: "",
+          permissions: {
+            id: item.id,
+            name: item.name,
+          },
+        })
+      );
+      updatedPermissionOpt[value] = permissionOption;
       setPermissionOptions(updatedPermissionOpt);
     } catch (error) {
       console.error("Error fetching permissions:", error);
     }
   };
 
-  const handleTickPermission = (
+  const handleTickPermission = async (
     isChecked: boolean,
     permissionId: string,
     index: number
@@ -217,24 +233,50 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     const updatedPermission = [...permissionFields];
     if (permissionFields[index]) {
       const currentPermission = permissionFields[index].permission;
+      const menuId = permissionFields[index].menuId;
+      const currentMenuPermission = permissionOptions[menuId];
+      const updatedPermissionOptions = { ...permissionOptions };
 
       if (isChecked) {
         currentPermission.push(permissionId);
 
-        const key = deletedIdTemp.indexOf(permissionId);
-        if (key > -1) {
-          deletedIdTemp.splice(key, 1);
-          setDeletedIdTemp(deletedIdTemp);
-        }
-      } else {
-        const key = currentPermission.indexOf(permissionId);
-        if (key > -1) {
-          currentPermission.splice(key, 1);
+        const response = await addPermissionRole({
+          role: id,
+          permission: permissionId,
+        });
+        currentMenuPermission.map((item: MenuPermissionOption) => {
+          let updatedData = item;
+          if (item.permissions.id == permissionId) {
+            updatedData.id = response.id;
+          }
 
-          deletedIdTemp.push(permissionId);
-          setDeletedIdTemp(deletedIdTemp);
+          return updatedData;
+        });
+      } else {
+        const trxPermissionId = currentMenuPermission.find(
+          (item: MenuPermissionOption) => item.permissions.id == permissionId
+        )?.id;
+        if (trxPermissionId) {
+          await deletePermissionRole(trxPermissionId);
+          currentMenuPermission.map((item: MenuPermissionOption) => {
+            let updatedData = item;
+            if (item.permissions.id == permissionId) {
+              updatedData.id = "";
+            }
+
+            return updatedData;
+          });
+
+          const key = currentPermission.indexOf(permissionId);
+          if (key > -1) {
+            currentPermission.splice(key, 1);
+          }
         }
       }
+
+      updatedPermissionOptions[permissionFields[index].menuId] =
+        currentMenuPermission;
+      setPermissionOptions(updatedPermissionOptions);
 
       updatedPermission[index].permission = currentPermission;
       setPermissionFields(updatedPermission);
@@ -244,8 +286,8 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
   const handleAddPermission = () => {
     const updateFormValue = [...permissionFields];
     updateFormValue.push({
-      id: "",
       menu: "",
+      menuId: "",
       permission: [],
       isEditable: true,
     });
@@ -253,12 +295,12 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleDeletePermission = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
+    if (window.confirm("Are you sure you want to delete this permission?")) {
       try {
         await roleService.deletePermission(id);
-        setPermissionFields((prevPermissions) =>
-          prevPermissions.filter((perm) => perm.id !== id)
-        );
+        // setPermissionFields((prevPermissions) =>
+        //   prevPermissions.filter((perm) => perm.menuId !== id)
+        // );
         window.location.reload();
       } catch (error) {
         console.error("Failed to delete perm:", error);
@@ -268,31 +310,6 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
 
   const handleSaveRolePermission = async (index: any) => {
     try {
-      if (permissionFields[index]) {
-        const formValue = permissionFields[index];
-
-        const updatedPermissionOpt = [...permissionOptions];
-        updatedPermissionOpt[index] = permissionOptions[index].filter(
-          (item: any) => {
-            return formValue.permission.indexOf(item.permissions.id) > -1;
-          }
-        );
-
-        for (let i = 0; i < formValue.permission.length; i++) {
-          const permissionId = formValue.permission[i];
-          const data = {
-            role: id,
-            permission: permissionId,
-          };
-
-          await addPermissionRole(data);
-        }
-
-        setPermissionOptions(updatedPermissionOpt);
-      }
-
-      bulkDeleteRolePermission(index);
-
       const updateFormValue = [...permissionFields];
       updateFormValue[index].isEditable = false;
       setPermissionFields(updateFormValue);
@@ -309,8 +326,9 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
         permissionFields[index].menuId
       );
 
+      const menuId = permissionFields[index].menuId;
       const menuPermissionOpt = result.data.map((item: any) => {
-        const authPermission = permissionOptions[index].find(
+        const authPermission = permissionOptions[menuId].find(
           (currentPermission: any) =>
             currentPermission.permissions.id == item.id
         );
@@ -323,8 +341,8 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
           },
         };
       });
-      const updatedPermissionOpt = [...permissionOptions];
-      updatedPermissionOpt[index] = menuPermissionOpt;
+      const updatedPermissionOpt = { ...permissionOptions };
+      updatedPermissionOpt[menuId] = menuPermissionOpt;
       setPermissionOptions(updatedPermissionOpt);
 
       const updateFormValue = [...permissionFields];
@@ -339,31 +357,24 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleBulkDeleteRolePermission = async (index: number) => {
-    try {
-      console.log(permissionFields);
-      // if (permissionFields[index]) {
-      //   for (let i = 0; i < deletedIdTemp.length; i++) {
-      //     const permissionId = deletedIdTemp[i];
-      //     await deletePermissionRole(permissionId);
-      //   }
-      //   setDeletedIdTemp([]);
-      // }
-    } catch (error) {
-      console.error("Failed to delete permission role:", error);
-    }
-  };
+    if (
+      window.confirm("Are you sure you want to delete this menu permission?")
+    ) {
+      try {
+        const { menuId } = permissionFields[index];
+        if (menuId) {
+          for (let i = 0; i < permissionOptions[menuId].length; i++) {
+            const trxPermissionId = permissionOptions[menuId][i].id;
+            await deletePermissionRole(trxPermissionId);
+          }
 
-  const bulkDeleteRolePermission = async (index: any) => {
-    try {
-      if (permissionFields[index]) {
-        for (let i = 0; i < deletedIdTemp.length; i++) {
-          const permissionId = deletedIdTemp[i];
-          await deletePermissionRole(permissionId);
+          const updatedPermissionFields = [...permissionFields];
+          updatedPermissionFields.splice(index, 1);
+          setPermissionFields(updatedPermissionFields);
         }
-        setDeletedIdTemp([]);
+      } catch (error) {
+        console.error("Failed to permission role:", error);
       }
-    } catch (error) {
-      console.error("Failed to delete permission role:", error);
     }
   };
 
@@ -535,7 +546,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
-                                    {pages.map((menu: any) => (
+                                    {menus.map((menu: any) => (
                                       <SelectItem key={menu.id} value={menu.id}>
                                         {menu?.name}
                                       </SelectItem>
@@ -553,8 +564,11 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                             control={control}
                             render={({ field }) => (
                               <div className="flex flex-wrap gap-5 bg-white border px-4 py-2 min-h-11 rounded-lg">
-                                {permissionOptions[indexPage]?.map(
-                                  (perm: any, index: number) => (
+                                {permissionOptions[item.menuId]?.map(
+                                  (
+                                    perm: MenuPermissionOption,
+                                    index: number
+                                  ) => (
                                     <label
                                       key={index}
                                       className="flex items-center"
@@ -562,6 +576,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                                       <Input
                                         type="checkbox"
                                         value={perm.permissions.id}
+                                        checked={perm.id ? true : false}
                                         onChange={(event) => {
                                           event.stopPropagation();
                                           handleTickPermission(
@@ -611,23 +626,31 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
                         <TableCell className="py-1">{item.menu}</TableCell>
                         <TableCell className="py-3">
                           <div className="flex flex-wrap gap-2">
-                            {permissionOptions[indexPage]?.map((perm: any) => (
-                              <span
-                                key={perm.id}
-                                className="inline-flex items-center gap-2 rounded-full bg-[#F0F1F5] border borer-[#E2E7EB] py-2 px-4"
-                              >
-                                {perm.permissions.name}
-                                <Button
-                                  className="text-default-300 bg-transparent hover:bg-transparent p-0 h-[20px]"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDeletePermission(perm.id);
-                                  }}
-                                >
-                                  <X className="w-5 h-5" />
-                                </Button>
-                              </span>
-                            ))}
+                            {permissionOptions[item.menuId]?.map(
+                              (perm: MenuPermissionOption) => {
+                                if (perm.id) {
+                                  return (
+                                    <span
+                                      key={perm.id}
+                                      className="inline-flex items-center gap-2 rounded-full bg-[#F0F1F5] border borer-[#E2E7EB] py-2 px-4"
+                                    >
+                                      {perm.permissions.name}
+                                      <Button
+                                        className="text-default-300 bg-transparent hover:bg-transparent p-0 h-[20px]"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleDeletePermission(perm.id);
+                                        }}
+                                      >
+                                        <X className="w-5 h-5" />
+                                      </Button>
+                                    </span>
+                                  );
+                                } else {
+                                  return null;
+                                }
+                              }
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="py-1 text-center">
