@@ -1,18 +1,19 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import {CookieService} from "@/services/masterdata/cookie.service";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const cookieService = new CookieService();
 
-export function getCookie(name: string): string | null {
-  if (typeof document !== 'undefined') {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+export async function getCookie(name: string): Promise<string | null> {
+  try {
+    const value = cookieService.getCookieByKey(name);
+    if (!!value) return await value;
     return null;
-  } else {
+  } catch (error) {
     return null;
   }
 }

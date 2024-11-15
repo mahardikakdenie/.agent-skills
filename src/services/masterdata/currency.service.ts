@@ -1,8 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { IHttpClient } from "../../lib/http-client-interface";
-import Cookies from "universal-cookie";
-import qs from "qs";
-import { promises } from "dns";
+import { IHttpClient } from "@/lib/http-client-interface";
 
 export interface CurrencyResponse {
   data: any;
@@ -48,12 +45,10 @@ export class CurrenciesService {
   then: any;
 
   constructor() {
-    const cookies = new Cookies();
     this.httpClient = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + cookies.get("token"),
       },
     });
   }

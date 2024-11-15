@@ -1,6 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { IHttpClient } from "../../lib/http-client-interface";
-import Cookies from "universal-cookie";
+import { IHttpClient } from "@/lib/http-client-interface";
 import qs from "qs";
 
 export interface User {
@@ -33,11 +32,11 @@ export class UserService {
         "Content-Type": "application/json",
         Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
       },
-    });
+    }, true);
 
     this.channelHttpClient = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL,
-    });
+    }, true);
   }
 
   async getUser(page?: number, rowsPerPage?: number): Promise<User> {
