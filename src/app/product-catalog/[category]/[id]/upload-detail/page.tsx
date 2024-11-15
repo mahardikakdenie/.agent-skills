@@ -14,17 +14,25 @@ import {
   Table,
 } from "@/components/ui/table";
 import { useLoading } from "@/context/loading.context";
-import { Router } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 
-const UploadPackage = ({
+const UploadPlanDetail = ({
   params,
 }: {
   params: { id: string; category: string };
 }) => {
-  const { plan, fetchPlanById, uploadPackage } = useProducts();
+  const { plan, fetchPlanById, uploadPlanDetails } = useProducts();
   const [csvData, setCsvData] = useState<any[]>([]);
   const { isLoading, setLoading } = useLoading();
+  const [type, setType] = useState<string>("tnc");
   useEffect(() => {
     if (params.id) {
       fetchPlanById(params.id);
@@ -54,7 +62,7 @@ const UploadPackage = ({
   const handleUpload = async () => {
     setLoading(true);
     try {
-      await uploadPackage(params.category, params.id, csvData);
+      await uploadPlanDetails(params.id, type, csvData);
       alert("Package uploaded successfully");
       router.push(`/product-catalog/${params.category}/${params.id}`);
     } catch (error) {
@@ -65,7 +73,7 @@ const UploadPackage = ({
   };
   return (
     <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-      <h1>Upload Package</h1>
+      <h1>Upload Plan Details</h1>
       <h1 className="text-primary font-bold mb-4">
         {plan?.name.split("|").map((item: any, i: any) => {
           return (
@@ -76,6 +84,19 @@ const UploadPackage = ({
           );
         })}
       </h1>
+      <Select value={type} onValueChange={setType}>
+        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mb-5">
+          <SelectValue content="Detail Type" />
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="tnc">Terms and Conditions</SelectItem>
+              <SelectItem value="how-to-claim">Cara Klaim</SelectItem>
+              <SelectItem value="exception">Pengecualian</SelectItem>
+              <SelectItem value="persentase">Persentase</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </SelectTrigger>
+      </Select>
       <Input type="file" onChange={handleChooseFile} />
       <Button
         disabled={!!!file || csvData.length > 0}
@@ -119,6 +140,6 @@ const UploadPackage = ({
 };
 
 const WithSidebarUploadPackage = (params: any) =>
-  WithSidebar(UploadPackage)(params);
+  WithSidebar(UploadPlanDetail)(params);
 
 export default WithSidebarUploadPackage;

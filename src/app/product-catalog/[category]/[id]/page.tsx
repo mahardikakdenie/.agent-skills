@@ -30,6 +30,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ChevronLeft } from "react-feather";
+import ProductDetatilTab from "./product-detail-tab";
 
 const DetaildPage = ({
   params,
@@ -309,7 +310,7 @@ const DetaildPage = ({
             </form>
           </div>
           <div className="w-full overflow-auto">
-            <PackageList id={id} />
+            <ProductDetatilTab id={id} />
           </div>
         </div>
       </div>

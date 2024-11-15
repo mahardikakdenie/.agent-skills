@@ -14,15 +14,14 @@ import {
   Table,
 } from "@/components/ui/table";
 import { useLoading } from "@/context/loading.context";
-import { Router } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const UploadPackage = ({
+const UploadPlanBenefit = ({
   params,
 }: {
   params: { id: string; category: string };
 }) => {
-  const { plan, fetchPlanById, uploadPackage } = useProducts();
+  const { plan, fetchPlanById, uploadPlanBenefits } = useProducts();
   const [csvData, setCsvData] = useState<any[]>([]);
   const { isLoading, setLoading } = useLoading();
   useEffect(() => {
@@ -54,7 +53,7 @@ const UploadPackage = ({
   const handleUpload = async () => {
     setLoading(true);
     try {
-      await uploadPackage(params.category, params.id, csvData);
+      await uploadPlanBenefits(params.id, csvData);
       alert("Package uploaded successfully");
       router.push(`/product-catalog/${params.category}/${params.id}`);
     } catch (error) {
@@ -65,7 +64,7 @@ const UploadPackage = ({
   };
   return (
     <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-      <h1>Upload Package</h1>
+      <h1>Upload Plan Benefits</h1>
       <h1 className="text-primary font-bold mb-4">
         {plan?.name.split("|").map((item: any, i: any) => {
           return (
@@ -119,6 +118,6 @@ const UploadPackage = ({
 };
 
 const WithSidebarUploadPackage = (params: any) =>
-  WithSidebar(UploadPackage)(params);
+  WithSidebar(UploadPlanBenefit)(params);
 
 export default WithSidebarUploadPackage;

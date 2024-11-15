@@ -135,11 +135,11 @@ export class ProductCatalogService {
     try {
       return await this.httpClient.get<ProductcatalogResponse<PackageDto>>(
         "/v1/packages?active=true&planId=" +
-          id +
-          "&page=" +
-          page +
-          "&pageSize=" +
-          rowsPerPage
+        id +
+        "&page=" +
+        page +
+        "&pageSize=" +
+        rowsPerPage
       );
     } catch (error) {
       console.error("Request failed:", error);
@@ -224,6 +224,82 @@ export class ProductCatalogService {
         "packages/" + category + "/bulk-create/" + id,
         data
       );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async uploadPlanBenefits(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/plan-benefit/bulk-create/" + id, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+  async getPlanBenefits(id: string): Promise<any> {
+    try {
+      return await this.httpClient.get("/v1/plans/" + id + "/benefits");
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getPlanDetails(id: string, type: string): Promise<any> {
+    try {
+      return await this.httpClient.get("/v1/plans/" + id + "/details/" + type);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async uploadPlanDetails(id: string, type: string, data: any[]): Promise<any> {
+    try {
+      return await this.httpClient.post(
+        "/v1/plans/bulk-create/" + id + "/" + type,
+        data
+      );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async assignPlans(planId: string, channelId: string, channelName: string): Promise<any> {
+    try {
+      return await this.httpClient.post(
+        "/v1/channel-packages/assign-plans", {
+        channel: channelId,
+        plans: [planId],
+        channelName
+      }
+      );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async unAssignPlans(planId: string, channelId: string): Promise<any> {
+    try {
+      return await this.httpClient.post(
+        "/v1/channel-packages/unassign-plans", {
+        channel: channelId,
+        plans: [planId]
+      }
+      );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getChannelPlans(planId: string): Promise<any> {
+    try {
+      return await this.httpClient.get("/v1/plans/" + planId + "/channels");
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

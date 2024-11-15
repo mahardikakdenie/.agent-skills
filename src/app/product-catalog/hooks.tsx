@@ -1,3 +1,4 @@
+import { ChannelService } from "@/services/channel.services";
 import {
   ProductCatalogRequest,
   ProductcatalogResponse,
@@ -10,8 +11,10 @@ export const useProducts = () => {
   const [products, setProducts] = useState<ProductList[]>([]);
   const [insurances, setInsurances] = useState<any[]>([]);
   const [plan, setPlan] = useState<any | null>(null);
+  const [benefits, setBenefits] = useState<any[]>([]);
+  const [details, setDetails] = useState<any[]>([]);
   const productCatalogService = new ProductCatalogService();
-
+  const channelService = new ChannelService();
   const fetchProducts = async (params: ProductCatalogRequest) => {
     const data = await productCatalogService.getProducts(params);
     setProducts(data);
@@ -49,6 +52,97 @@ export const useProducts = () => {
     );
     return response;
   };
+
+  const uploadPlanBenefits = async (id: string, data: any) => {
+    const { data: response } = await productCatalogService.uploadPlanBenefits(
+      id,
+      data
+    );
+    return response;
+  };
+
+  const uploadPlanDetails = async (id: string, type: string, data: any) => {
+    const { data: response } = await productCatalogService.uploadPlanDetails(
+      id,
+      type,
+      data
+    );
+    return response;
+  };
+  const flattenTree = (
+    node: any,
+    parent_id: string | null = null,
+    level: number = 0
+  ) => {
+    let flatArray: any[] = [];
+    const { children, ...rest } = node;
+    flatArray.push({
+      ...rest,
+      parent_id,
+      name:
+        " - ".repeat(level) + rest.benefits.description_id ||
+        rest.benefits.description_en ||
+        rest.benefits.description_multilanguage,
+    });
+
+    if (children && children.length > 0) {
+      children.forEach((child: any) => {
+        flatArray = flatArray.concat(flattenTree(child, node.id, level + 1));
+      });
+    }
+
+    return flatArray;
+  };
+
+  const getPlanBenefits = async (id: string) => {
+    const { data } = await productCatalogService.getPlanBenefits(id);
+    const reformatTreeToFlatArray = data.flatMap((item: any) =>
+      flattenTree(item)
+    );
+    setBenefits(reformatTreeToFlatArray);
+    return reformatTreeToFlatArray;
+  };
+
+  const getPlanDetails = async (id: string, type: string) => {
+    const { data } = await productCatalogService.getPlanDetails(id, type);
+    setDetails(data);
+    return data;
+  };
+
+  const assignPlans = async (planId: string, channel: string) => {
+    const extractChannel = channel.split("|");
+    const { data } = await productCatalogService.assignPlans(
+      planId,
+      extractChannel[0],
+      extractChannel[1]
+    );
+    await getChannelPlans(planId);
+
+    return data;
+  };
+
+  const unAssignPlans = async (planId: string, channelId: string) => {
+    const { data } = await productCatalogService.unAssignPlans(
+      planId,
+      channelId
+    );
+    await getChannelPlans(planId);
+    return data;
+  };
+
+  const [channels, setChannels] = useState<any[]>([]);
+  const getChannels = async () => {
+    const { data } = await channelService.getChannels();
+    setChannels(data);
+    return data;
+  };
+
+  const [channelPlans, setChannelPlans] = useState<any[]>([]);
+  const getChannelPlans = async (planId: string) => {
+    const { data } = await productCatalogService.getChannelPlans(planId);
+    setChannelPlans(data);
+    return data;
+  };
   return {
     products,
     insurances,
@@ -60,5 +154,17 @@ export const useProducts = () => {
     plan,
     uploadPackage,
     deletePlan,
+    getPlanBenefits,
+    benefits,
+    uploadPlanBenefits,
+    getPlanDetails,
+    details,
+    uploadPlanDetails,
+    assignPlans,
+    unAssignPlans,
+    channels,
+    getChannels,
+    getChannelPlans,
+    channelPlans,
   };
 };
