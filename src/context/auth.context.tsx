@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useReducer, useContext, useEffect } from "react";
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
+import {CookieService} from "@/services/masterdata/cookie.service";
 
 interface AuthState {
   isAuthenticated: boolean | null;
@@ -14,30 +13,27 @@ interface AuthContextType {
   checkLogin: () => void;
 }
 
-const initialState: AuthState = {
-  isAuthenticated: null,
-};
+const cookieService = new CookieService();
 
 type AuthAction =
   | { type: "LOGIN"; token: string }
   | { type: "LOGOUT" }
-  | { type: "CHECK_LOGIN" }
+  | { type: "CHECK_LOGIN"; isAuthenticated: boolean }
   | { type: "LOAD_STATE"; isAuthenticated: boolean };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  const token = cookies.get("token");
   switch (action.type) {
     case "LOGIN":
-      cookies.set("token", action.token);
+      cookieService.saveCookie({name: "token", value: action.token}).then();
       localStorage.setItem("isAuthenticated", "true");
       return { isAuthenticated: true };
     case "LOGOUT":
-      cookies.remove("token");
+      cookieService.deleteCookieByKey("token").then();
       localStorage.setItem("isAuthenticated", "false");
       return { isAuthenticated: false };
     case "CHECK_LOGIN":
-      localStorage.setItem("isAuthenticated", (!!token).toString());
-      return { isAuthenticated: !!token };
+      localStorage.setItem("isAuthenticated", action.isAuthenticated.toString());
+      return { isAuthenticated: action.isAuthenticated };
     case "LOAD_STATE":
       return { isAuthenticated: action.isAuthenticated };
     default:
@@ -64,12 +60,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     dispatch({ type: "LOGOUT" });
   };
 
-  const checkLogin = () => {
-    dispatch({ type: "CHECK_LOGIN" });
+  const checkLogin = async () => {
+    const token = await cookieService.getCookieByKey("token");
+    dispatch({ type: "CHECK_LOGIN", isAuthenticated: !!token });
   };
 
   useEffect(() => {
-    checkLogin();
+    checkLogin().then();
   }, []);
 
   return (

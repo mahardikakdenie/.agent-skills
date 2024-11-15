@@ -1,6 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import { getCookie } from "@/lib/utils";
 
 
 export class InsuranceService {
@@ -11,7 +10,6 @@ export class InsuranceService {
       baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("token"),
       },
     });
   }

@@ -1,6 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import Cookies from "universal-cookie";
 import qs from "qs";
 
 interface ClaimResponse {
@@ -117,12 +116,10 @@ export class ClaimService {
   private httpClient: IHttpClient;
 
   constructor() {
-    const cookies = new Cookies();
     this.httpClient = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + cookies.get("token"),
       },
     });
   }
