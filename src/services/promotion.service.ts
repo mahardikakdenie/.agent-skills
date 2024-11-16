@@ -54,6 +54,13 @@ export class PromotionService {
     return this.httpClientPromotion.post('/api/campaign', data);
   }
 
+  async getPromotionSearchQuery(query: string, page: number, limit: number): Promise<PromotionResponse> {
+    if (page <= 0) {
+      page = 1;
+    }
+    return this.httpClientPromotion.get(`api/campaign/search/query?query=${query}&page=${page}&limit=${limit}`);
+  }
+
 }
 
 
