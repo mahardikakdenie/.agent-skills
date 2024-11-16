@@ -25,19 +25,24 @@ export class ChannelService {
         Authorization: "Bearer " + getCookie("token"),
       },
     });
-    
+
   }
 
 
-  async getChannels(page: number, limit: number): Promise<PromotionResponse> {
-    if (page <= 0) {
+  async getChannels(page?: number, limit?: number): Promise<PromotionResponse> {
+    let query = "";
+    if (page && page <= 0) {
       page = 1;
     }
-    return this.httpClientChannels.get(`/channels?page=${page}&limit=${limit}`);
+
+    if (page && limit) {
+      query = `?page=${page}&limit=${limit}`;
+    }
+    return this.httpClientChannels.get(`/channels${query}`);
 
   }
 
-  
+
   async getChannelById(id: string): Promise<any> {
     return this.httpClientChannels.get('/channels/' + id);
   }

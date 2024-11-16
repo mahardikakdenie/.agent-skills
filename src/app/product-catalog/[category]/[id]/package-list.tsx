@@ -14,12 +14,14 @@ import {
   ProductCatalogService,
 } from "@/services/product-catalog.service";
 import { formatMoney } from "@/lib/formatter";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { ChevronLeft, ChevronRight } from "react-feather";
+import { Button } from "@/components/ui/button";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
+  const path = usePathname();
   const [packages, setPackages] = useState<PackageDto[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<PackageDto[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(180);
@@ -90,11 +92,19 @@ export default function PackageList(props: Readonly<{ id: string }>) {
     setRowsPerPage(Number(e.target.value));
     setPage(1);
   };
+  const router = useRouter();
 
   return (
     <>
+      <Button
+        className="btn btn-primary"
+        onClick={() => router.push(`${path}/upload`)}
+      >
+        Upload Packages
+      </Button>
+
       {category == "personal-accident" ? (
-        <div className="w-full py-4 px-6 bg-white rounded-lg overflow-aut mb-4 grid sm:grid-cols-2 gap-4">
+        <div className="w-full py-4 bg-white rounded-lg overflow-aut mb-4 grid sm:grid-cols-2 gap-4">
           <>
             <select
               value={occupationClassFilter}
