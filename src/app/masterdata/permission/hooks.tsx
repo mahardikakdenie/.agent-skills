@@ -1,14 +1,14 @@
+import { GroupResponse } from "@/services/masterdata/group.service";
 import {
   PermissionResponse,
   PermissionService,
 } from "@/services/masterdata/permission.service";
-import { root } from "postcss";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export const usePermission = () => {
-  const permissionService = new PermissionService();
+  const permissionService = useMemo(() => new PermissionService(), []);
   const [permission, setPermission] = useState<PermissionResponse[]>([]);
-  const [groups, setGroups] = useState<any[]>([]);
+  const [groups, setGroups] = useState<GroupResponse[]>([]);
 
   const fetchPermission = async (search: any) => {
     const { data } = await permissionService.getPermission(search);
@@ -44,7 +44,6 @@ export const usePermission = () => {
   };
 
   return {
-    root,
     savePermission,
     updatePermission,
     deletePermission,

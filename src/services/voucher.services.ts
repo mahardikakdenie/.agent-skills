@@ -1,8 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import { getCookie } from "@/lib/utils";
-import axios, { AxiosResponse } from "axios";
 
 export class VoucherService {
   private httpClientCookie: IHttpClient;
@@ -12,7 +9,6 @@ export class VoucherService {
       baseURL: process.env.NEXT_PUBLIC_PROMOTION_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("token"),
       },
     });
 

@@ -1,6 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import Cookies from "universal-cookie";
 import qs from "qs";
 
 interface TransactionResponse {
@@ -14,12 +13,10 @@ export class TransactionService {
   private httpClient: IHttpClient;
 
   constructor() {
-    const cookies = new Cookies();
     this.httpClient = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_TRANSACTION_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + cookies.get("token"),
       },
     });
   }

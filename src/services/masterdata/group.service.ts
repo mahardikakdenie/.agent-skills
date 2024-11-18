@@ -1,6 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { IHttpClient } from "../../lib/http-client-interface";
-import Cookies from "universal-cookie";
+import { IHttpClient } from "@/lib/http-client-interface";
 import qs from "qs";
 
 export interface GroupResponse {
@@ -67,7 +66,7 @@ export class GroupService {
         "Content-Type": "application/json",
         Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
       },
-    });
+    }, true);
   }
 
   async getGroup(page?: number, rowsPerPage?: number): Promise<GroupResponse> {
