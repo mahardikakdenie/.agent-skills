@@ -26,13 +26,16 @@ export class PermissionService {
   private authHttpClient: IHttpClient;
 
   constructor() {
-    this.authHttpClient = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+    this.authHttpClient = new AxiosHttpClient(
+      {
+        baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+        },
       },
-    });
+      true
+    );
   }
 
   async getPages(page?: number, rowsPerPage?: number): Promise<any> {

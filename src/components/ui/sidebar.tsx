@@ -344,20 +344,6 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/roles"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/roles")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
-                  Roles
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/masterdata/permission"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
                     isActive("/masterdata/permission")
@@ -372,6 +358,20 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Permission
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/masterdata/roles"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/masterdata/roles")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
+                  Roles
                 </Link>
               </li>
               <li>

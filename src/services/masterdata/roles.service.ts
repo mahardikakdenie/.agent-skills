@@ -13,6 +13,23 @@ export interface RoleResponse {
   meta: any;
 }
 
+export interface MenuResponse {
+  id: string;
+  name: string;
+  updated_at: string;
+  created_at: string;
+  data: any;
+}
+export interface PermissionResponse {
+  id: string;
+  name: string;
+  updated_at: string;
+  created_at: string;
+  page: string;
+  data: any;
+  meta: any;
+}
+
 export class RoleService {
   private authHttpClient: IHttpClient;
 
@@ -61,6 +78,59 @@ export class RoleService {
   async updateRole(data: any, id: string): Promise<any> {
     try {
       return await this.authHttpClient.put("/role/" + id, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async deletePermission(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("/v1/role-permission/" + id);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getMenu(page?: number, rowsPerPage?: number): Promise<any> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(`/pages/?${queryString}`);
+  }
+
+  async getPermission(
+    page?: number,
+    rowsPerPage?: number,
+    pagesId?: string
+  ): Promise<PermissionResponse> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(
+      `/v1/permission/page/${pagesId}?${queryString}`
+    );
+  }
+
+  async createPermissionRole(data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.post("v1/role-permission/", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async deletePermissionRole(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("v1/role-permission/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
