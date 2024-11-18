@@ -30,12 +30,15 @@ import {
 } from "@/services/masterdata/permission.service";
 import { usePermission } from "../hooks";
 
+interface PermissionField {
+  id: string;
+  name: string;
+}
+
 const AddPermission = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
-  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
   const permissionService = new PermissionService();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -45,19 +48,16 @@ const AddPermission = ({ params }: { params: { id: string } }) => {
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [totalItems, setTotalItems] = useState(0);
   const [name, setName] = useState("");
-  const [group, setGroup] = useState("");
   const [permission, setPermission] = useState<PermissionResponse[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<any>(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  const [permissionFields, setPermissionFields] = useState<any[]>([
+  const [permissionFields, setPermissionFields] = useState<PermissionField[]>([
     { id: "", name: "" },
   ]);
 
-  const { updatePermission, savePermission } = usePermission();
+  const { savePermission } = usePermission();
 
   const {
     handleSubmit,
-    reset,
     control,
     setValue,
     formState: { errors },
@@ -75,8 +75,6 @@ const AddPermission = ({ params }: { params: { id: string } }) => {
   });
 
   useEffect(() => {
-    console.log(selectPage);
-
     if (selectPage) {
       const fetchPermission = async () => {
         setLoading(true);
@@ -106,8 +104,6 @@ const AddPermission = ({ params }: { params: { id: string } }) => {
       try {
         const result = await permissionService.getPages(page, rowsPerPage);
         setPages(result.data || []);
-        if (!selectPage && result.data?.length > 0) {
-        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -123,7 +119,7 @@ const AddPermission = ({ params }: { params: { id: string } }) => {
     setPage(1);
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async () => {
     try {
       const existingPermissions = permission.map((perm) => perm.name);
 
@@ -141,22 +137,13 @@ const AddPermission = ({ params }: { params: { id: string } }) => {
         }
       }
 
-      setSaveSuccess(true);
-    } catch (error) {
-      console.error("Failed to save permissions:", error);
-      setSaveSuccess(false);
-    }
-  };
-
-  useEffect(() => {
-    if (saveSuccess === true) {
       alert("Data berhasil disimpan!");
       router.back();
-    } else if (saveSuccess === false) {
+    } catch (error) {
+      console.error("Failed to save permissions:", error);
       alert("Terjadi kesalahan saat menyimpan data.");
     }
-    setSaveSuccess(null);
-  }, [saveSuccess, router]);
+  };
 
   useEffect(() => {
     if (permission.length > 0) {
@@ -255,7 +242,7 @@ const AddPermission = ({ params }: { params: { id: string } }) => {
                 name="page"
                 control={control}
                 rules={{ required: "Page is required" }}
-                render={({ field }) => (
+                render={() => (
                   <Select
                     onValueChange={(value) => {
                       const pageValue = Number(value);
