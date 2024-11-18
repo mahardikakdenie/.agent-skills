@@ -78,7 +78,6 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
   >([]);
   const { updateRole, fetchRoleById, addPermissionRole, deletePermissionRole } =
     useRole();
-  const [deletedIdTemp, setDeletedIdTemp] = useState<string[]>([]);
 
   const {
     handleSubmit,
