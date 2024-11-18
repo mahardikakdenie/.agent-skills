@@ -47,7 +47,6 @@ const AddRolesPage = ({ params }: { params: { id: string } }) => {
       if (id) {
         try {
           const res = await fetchRoleById(id);
-          console.log(res);
           setValue("name", res.data.name);
           setValue("description", res.data.description);
         } catch (error) {
@@ -66,7 +65,6 @@ const AddRolesPage = ({ params }: { params: { id: string } }) => {
         const id = response.id;
         router.push(`/masterdata/roles/${id}`);
       }
-      console.log("selesai");
     } catch (error) {
       setUpdateSuccess(false);
     }
