@@ -19,11 +19,11 @@ export class VoucherService {
   }
 
   async getVoucherByCampaignId(id: string): Promise<any> {
-    return this.httpClientCookie.get('/api/voucher/' + id);
+    return this.httpClientCookie.get('/v1/voucher/' + id);
   }
 
   async getVoucherByCode(code: string): Promise<any> {
-    return this.httpClientCookie.get('/api/voucher/code/' + code);
+    return this.httpClientCookie.get('/v1/voucher/code/' + code);
   }
 
   async createVoucher(voucherData: { code: string; campaign_id: string }): Promise<any> {
