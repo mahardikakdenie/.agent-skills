@@ -1,8 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import { getCookie } from "@/lib/utils";
-import Cookies from "universal-cookie";
 
 
 interface PromotionResponse {
@@ -22,7 +19,6 @@ export class ChannelService {
       baseURL: process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("token"),
       },
     });
 

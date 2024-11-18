@@ -1,6 +1,6 @@
 // AuthService.ts
 import { AxiosHttpClient } from '@/lib/axios-http-client';
-import { IHttpClient } from './../lib/http-client-interface';
+import { IHttpClient } from '@/lib/http-client-interface';
 
 interface LoginCredentials {
   username: string;
@@ -21,7 +21,7 @@ export class AuthService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + process.env.NEXT_PUBLIC_AUTH_TOKEN,
       }
-    });
+    }, true);
   }
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {

@@ -1,6 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { IHttpClient } from "../../lib/http-client-interface";
-import Cookies from "universal-cookie";
+import { IHttpClient } from "@/lib/http-client-interface";
 import qs from "qs";
 
 export interface RoleResponse {
@@ -24,7 +23,7 @@ export class RoleService {
         "Content-Type": "application/json",
         Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
       },
-    });
+    }, true);
   }
 
   async getRole(page?: number, rowsPerPage?: number): Promise<RoleResponse> {

@@ -1,6 +1,5 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import { getCookie } from "@/lib/utils";
 
 
 interface Response {
@@ -21,7 +20,6 @@ export class SanctionService {
       baseURL: process.env.NEXT_PUBLIC_SANCTION_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("token"),
       },
     });
 
@@ -29,7 +27,6 @@ export class SanctionService {
       baseURL: process.env.NEXT_PUBLIC_COUNTRY_SERVICE_URL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("token"),
       },
     });
 

@@ -1,12 +1,23 @@
 // AxiosHttpClient.ts
-import axios, { AxiosInstance, CreateAxiosDefaults } from "axios";
+import axios, { AxiosInstance, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
 import { IHttpClient } from "./http-client-interface";
+import { getCookie } from "@/lib/utils";
+
+const defaultConfig: CreateAxiosDefaults = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 
 export class AxiosHttpClient implements IHttpClient {
   private apiClient: AxiosInstance;
+  private requestConfig: AxiosRequestConfig | undefined;
+  private isCustomAuthValue: boolean;
 
-  constructor(config: CreateAxiosDefaults) {
-    this.apiClient = axios.create(config);
+  constructor(requestConfig?: AxiosRequestConfig, isCustomAuthValue: boolean = false) {
+    this.requestConfig = requestConfig;
+    this.isCustomAuthValue = isCustomAuthValue;
+    this.apiClient = axios.create(defaultConfig);
 
     // Add a response interceptor
     this.apiClient.interceptors.response.use(
@@ -20,23 +31,45 @@ export class AxiosHttpClient implements IHttpClient {
     );
   }
 
+  private async getAuthorizationToken(): Promise<string | null> {
+    const token = await getCookie("token");
+    return token ? `Bearer ${token}` : null;
+  }
+
+  private async getRequestConfig(): Promise<AxiosRequestConfig> {
+    if (!!this.requestConfig && this.isCustomAuthValue) return this.requestConfig;
+
+    const authToken = await this.getAuthorizationToken();
+    return {
+      ...this.requestConfig,
+      headers: {
+        ...this.requestConfig?.headers,
+        Authorization: authToken || "",
+      },
+    };
+  }
+
   async post<T>(url: string, data: any): Promise<T> {
-    const response = await this.apiClient.post<T>(url, data);
+    const finalConfig = await this.getRequestConfig();
+    const response = await this.apiClient.post<T>(url, data, finalConfig);
     return response.data;
   }
 
   async get<T>(url: string): Promise<T> {
-    const response = await this.apiClient.get<T>(url);
+    const finalConfig = await this.getRequestConfig();
+    const response = await this.apiClient.get<T>(url, finalConfig);
     return response.data;
   }
 
   async put<T>(url: string, data: any): Promise<T> {
-    const response = await this.apiClient.put<T>(url, data);
+    const finalConfig = await this.getRequestConfig();
+    const response = await this.apiClient.put<T>(url, data, finalConfig);
     return response.data;
   }
 
   async delete<T>(url: string): Promise<T> {
-    const response = await this.apiClient.delete<T>(url);
+    const finalConfig = await this.getRequestConfig();
+    const response = await this.apiClient.delete<T>(url, finalConfig);
     return response.data;
   }
 
