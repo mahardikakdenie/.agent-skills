@@ -29,25 +29,32 @@ export class PromotionService {
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientPromotion.get(`/api/campaign?page=${page}&limit=${limit}`);
+    return this.httpClientPromotion.get(`/v1/campaign?page=${page}&limit=${limit}`);
 
   }
 
   async getPromotionCampaignById(id: string): Promise<PromotionResponse> {
-    return this.httpClientPromotion.get(`/api/campaign/${id}?id=${id}`);
+    return this.httpClientPromotion.get(`/v1/campaign/${id}?id=${id}`);
 }
 
   async deleteDiscCampaignById(id: string): Promise<any> {
-    return this.httpClientPromotion.delete('/api/campaign/delete/' + id);
+    return this.httpClientPromotion.delete('/v1/campaign/delete/' + id);
   }
   
   async updatePromotionCampaign(id: string, data: any): Promise<any> {
-    return this.httpClientPromotion.put(`/api/campaign/update/${id}?id=${id}`, data);
+    return this.httpClientPromotion.put(`/v1/campaign/update/${id}?id=${id}`, data);
   }
 
 
   async createPromotion(data: any): Promise<any> {
-    return this.httpClientPromotion.post('/api/campaign', data);
+    return this.httpClientPromotion.post('/v1/campaign', data);
+  }
+
+  async getPromotionSearchQuery(query: string, page: number, limit: number): Promise<PromotionResponse> {
+    if (page <= 0) {
+      page = 1;
+    }
+    return this.httpClientPromotion.get(`/v1/campaign/search/query?query=${query}&page=${page}&limit=${limit}`);
   }
 
 }

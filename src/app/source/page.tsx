@@ -90,30 +90,22 @@ const SourcePage = () => {
         }
     };
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.toLowerCase();
+    const handleSearch = async () => {
+        const value = searchTerm.toLowerCase();
         setSearchTerm(value);
+        setPage(1); // Reset to the first page on a new search
 
-        // Filter sanctions based on searchTerm
-        const filtered = source.filter((item) => {
-            const {
-                source_name,
-                source_type,
-                country,
-                source_url,
-                insurance_name,
-            } = item;
+        sourceService
+            .getSourceSearchQuery(searchTerm, page, rowsPerPage)
+            .then((res) => {
+                setFilteredSource(res.data);
+                setTotalItems(res.total);
+                setTotalPages(res.pageTotal);
+            })
+            .catch((error) => {
+                console.error("Failed to query source:", error);
+            });
 
-            return (
-                source_name?.toLowerCase().includes(value) ||
-                source_type?.toLowerCase().includes(value) ||
-                country?.toLowerCase().includes(value) ||
-                source_url?.toLowerCase().includes(value) ||
-                insurance_name?.toLowerCase().includes(value)
-            );
-        });
-
-        setFilteredSource(filtered);
     };
 
     return (
@@ -133,11 +125,22 @@ const SourcePage = () => {
                 <input
                     type="text"
                     value={searchTerm}
-                    onChange={handleSearch}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch();
+                        }
+                    }}
                     placeholder="Search"
                     className="border p-3 rounded-md pr-10 w-full"
                 />
-                <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+                <button
+                    onClick={handleSearch}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]"
+                    type="button"
+                >
+                    <Search />
+                </button>
             </div>
 
             <div className="bg-white rounded-md p-4 sm:p-6">
