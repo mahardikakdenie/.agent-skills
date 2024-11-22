@@ -167,9 +167,9 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/mobil"
+                  href="/product-catalog/motor-vehicle"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/mobil")
+                    isActive("/product-catalog/motor-vehicle")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -181,9 +181,9 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/motor"
+                  href="/product-catalog/motor-cycle"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/motor")
+                    isActive("/product-catalog/motor-cycle")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
