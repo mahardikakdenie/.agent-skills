@@ -27,7 +27,7 @@ import {
   PagesResponse,
   PermissionResponse,
   PermissionService,
-} from "@/services/role-management/permission.service";
+} from "@/services/masterdata/permission.service";
 import { SourceTextModule } from "vm";
 import {
   Dialog,

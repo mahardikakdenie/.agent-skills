@@ -20,7 +20,7 @@ import Image from "next/image";
 import {
   GroupResponse,
   GroupService,
-} from "@/services/role-management/group.service";
+} from "@/services/masterdata/group.service";
 import { format } from "date-fns";
 
 const Group = () => {

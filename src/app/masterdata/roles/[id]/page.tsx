@@ -29,7 +29,7 @@ import {
   MenuResponse,
   PermissionResponse,
   RoleService,
-} from "@/services/role-management/roles.service";
+} from "@/services/masterdata/roles.service";
 import {
   Select,
   SelectContent,
