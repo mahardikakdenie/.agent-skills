@@ -1,7 +1,7 @@
 import {
   GroupResponse,
   GroupService,
-} from "@/services/masterdata/group.service";
+} from "@/services/role-management/group.service";
 import { channel } from "process";
 import { useState } from "react";
 

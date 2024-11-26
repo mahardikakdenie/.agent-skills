@@ -16,7 +16,7 @@ import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
-import { UserService } from "@/services/masterdata/user.service";
+import { UserService } from "@/services/role-management/user.service";
 import {
   Select,
   SelectContent,
