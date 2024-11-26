@@ -1,4 +1,4 @@
-import { User, UserService } from "@/services/masterdata/user.service";
+import { User, UserService } from "@/services/role-management/user.service";
 import { channel } from "process";
 import { useState } from "react";
 

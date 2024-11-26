@@ -48,7 +48,7 @@ import {
   GroupService,
   RoleResponse,
   UserResponse,
-} from "@/services/masterdata/group.service";
+} from "@/services/role-management/group.service";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { format } from "date-fns";

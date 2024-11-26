@@ -1,4 +1,7 @@
-import { RoleResponse, RoleService } from "@/services/masterdata/roles.service";
+import {
+  RoleResponse,
+  RoleService,
+} from "@/services/role-management/roles.service";
 import { useState } from "react";
 
 export const useRole = () => {

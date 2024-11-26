@@ -328,11 +328,14 @@ const Sidebar = () => {
                   Currency
                 </Link>
               </li>
+              <li className="mt-2 text-sm">
+                <strong>Role Management</strong>
+              </li>
               <li>
                 <Link
-                  href="/masterdata/user"
+                  href="/role-management/user"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/user")
+                    isActive("/role-management/user")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -344,9 +347,37 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/permission"
+                  href="/role-management/group"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/permission")
+                    isActive("/role-management/group")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image src={iconClaim} alt="Group" className="w-7 min-w-7" />
+                  Group
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/role-management/roles"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/role-management/roles")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
+                  Roles
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/role-management/permission"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/role-management/permission")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -362,30 +393,16 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/roles"
+                  href="/role-management/page"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/roles")
+                    isActive("/role-management/page")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
                   onClick={handleMenuClick}
                 >
-                  <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
-                  Roles
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/masterdata/group"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/group")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image src={iconClaim} alt="Group" className="w-7 min-w-7" />
-                  Group
+                  <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
+                  Page
                 </Link>
               </li>
               <li className="mt-2 text-sm">

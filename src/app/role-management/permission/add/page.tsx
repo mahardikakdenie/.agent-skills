@@ -27,7 +27,7 @@ import React from "react";
 import {
   PermissionResponse,
   PermissionService,
-} from "@/services/masterdata/permission.service";
+} from "@/services/role-management/permission.service";
 import { usePermission } from "../hooks";
 
 interface PermissionField {
