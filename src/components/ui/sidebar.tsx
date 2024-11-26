@@ -328,14 +328,11 @@ const Sidebar = () => {
                   Currency
                 </Link>
               </li>
-              <li className="mt-2 text-sm">
-                <strong>Role Management</strong>
-              </li>
               <li>
                 <Link
-                  href="/role-management/user"
+                  href="/masterdata/user"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/role-management/user")
+                    isActive("/masterdata/user")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -347,9 +344,9 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/role-management/group"
+                  href="/masterdata/group"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/role-management/group")
+                    isActive("/masterdata/group")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -361,9 +358,9 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/role-management/roles"
+                  href="/masterdata/roles"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/role-management/roles")
+                    isActive("/masterdata/roles")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -375,9 +372,9 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/role-management/permission"
+                  href="/masterdata/permission"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/role-management/permission")
+                    isActive("/masterdata/permission")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -389,20 +386,6 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Permission
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/role-management/page"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/role-management/page")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
-                  Page
                 </Link>
               </li>
               <li className="mt-2 text-sm">

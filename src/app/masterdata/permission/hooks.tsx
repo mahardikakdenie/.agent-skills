@@ -1,8 +1,8 @@
-import { GroupResponse } from "@/services/role-management/group.service";
+import { GroupResponse } from "@/services/masterdata/group.service";
 import {
   PermissionResponse,
   PermissionService,
-} from "@/services/role-management/permission.service";
+} from "@/services/masterdata/permission.service";
 import { useMemo, useState } from "react";
 
 export const usePermission = () => {

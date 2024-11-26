@@ -17,17 +17,13 @@ import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
 
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
-import {
-  RoleResponse,
-  RoleService,
-} from "@/services/role-management/roles.service";
-import { format } from "date-fns";
+import { User, UserService } from "@/services/masterdata/user.service";
 
-const Roles = () => {
+const Users = () => {
   useRequireAuth();
   const path = usePathname();
-  const roleService = new RoleService();
-  const [role, setRole] = useState<RoleResponse[]>([]);
+  const userService = new UserService();
+  const [user, setUser] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -37,11 +33,11 @@ const Roles = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchRoles = async () => {
+    const fetchInsuranceProduct = async () => {
       setLoading(true);
       try {
-        const result = await roleService.getRole(page, rowsPerPage);
-        setRole(result.data);
+        const result = await userService.getUser(page, rowsPerPage);
+        setUser(result.data);
         setTotalPages(result.meta.pageTotal);
         setTotalItems(result.meta.total);
       } catch (error) {
@@ -51,7 +47,7 @@ const Roles = () => {
       }
     };
 
-    fetchRoles();
+    fetchInsuranceProduct();
   }, [page, rowsPerPage]);
 
   if (loading) {
@@ -66,14 +62,14 @@ const Roles = () => {
     router.push(`${path}/${id}`);
   };
 
-  const handleDeleteRole = async (id: string) => {
+  const handleDeletePlan = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
       try {
-        await roleService.deleteRole(id);
-        setRole((prevRole) => prevRole.filter((role) => role.id !== id));
+        await userService.deleteUser(id);
+        setUser((prevUser) => prevUser.filter((user) => user.id !== id));
         window.location.reload();
       } catch (error) {
-        console.error("Failed to delete role:", error);
+        console.error("Failed to delete user:", error);
       }
     }
   };
@@ -83,10 +79,23 @@ const Roles = () => {
     setPage(1);
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Inactive":
+        return "text-gray-400 font-normal";
+      case "Active":
+        return "text-[#00AB4F]";
+      default:
+        return "text-[#7B5D21]";
+    }
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">Roles</h1>
+      <div className="flex gap-2 pb-4 items-center">
+        <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
+          User
+        </h1>
         <Button
           onClick={() => router.push(`${path}/add`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
@@ -100,34 +109,44 @@ const Roles = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead>Roles</TableHead>
-              <TableHead>Last Activity</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Phone Number</TableHead>
+              <TableHead>Platform Access</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="whitespace-nowrap w-36">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {role.length > 0 ? (
-              role.map((role, index) => (
-                <TableRow key={role.id}>
+            {user.length > 0 ? (
+              user.map((user, index) => (
+                <TableRow key={user.id}>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>{role.name || "-"}</TableCell>
-                  <TableCell className="w-52">
-                    {role.updated_at
-                      ? format(new Date(role.updated_at), "dd-MM-yyyy")
-                      : "N/A"}
+                  <TableCell className="whitespace-nowrap">
+                    {user.name || "-"}
+                  </TableCell>
+                  <TableCell>{user.email || "-"}</TableCell>
+                  <TableCell>{user.phone_number || "-"}</TableCell>
+                  <TableCell>{user.permission || "-"}</TableCell>
+                  <TableCell>{user.role || "-"}</TableCell>
+                  <TableCell className="font-semibold whitespace-nowrap">
+                    <span className={getStatusColor(user.status)}>
+                      {user.status || "-"}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
                       <Button
                         variant="secondary"
-                        onClick={() => handleEdit(role.id)}
+                        onClick={() => handleEdit(user.id)}
                         className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
                       >
                         Edit
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => handleDeleteRole(role.id)}
+                        onClick={() => handleDeletePlan(user.id)}
                         className="text-red-600 px-0"
                       >
                         <Trash />
@@ -196,5 +215,5 @@ const Roles = () => {
   );
 };
 
-const RolessWithSidebar = (params: any) => WithSidebar(Roles)(params);
-export default RolessWithSidebar;
+const UsersWithSidebar = (params: any) => WithSidebar(Users)(params);
+export default UsersWithSidebar;
