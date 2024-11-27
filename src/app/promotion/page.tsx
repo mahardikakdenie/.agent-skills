@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Edit, Plus, Search, Trash, X } from "react-feather";
 import { VoucherService } from "@/services/voucher.services";
+import withPermission from "@/context/permission";
 
 const PromotionPage = () => {
   useRequireAuth();
@@ -585,6 +586,14 @@ const PromotionPage = () => {
   );
 };
 
-const PromotionWithSidebar = (params: any) =>
-  WithSidebar(PromotionPage)(params);
-export default PromotionWithSidebar;
+// const PromotionWithSidebar = (params: any) =>
+//   WithSidebar(PromotionPage)(params);
+// export default PromotionWithSidebar;
+
+
+const PromotionPageWithPermissionAndSidebar = withPermission(
+  WithSidebar(PromotionPage),
+  "Promotions.Read"
+);
+
+export default PromotionPageWithPermissionAndSidebar;
