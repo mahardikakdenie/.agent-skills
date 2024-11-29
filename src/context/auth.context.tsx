@@ -1,17 +1,10 @@
 "use client";
 import React, { createContext, useReducer, useContext, useEffect } from "react";
-import { CookieService } from "@/services/masterdata/cookie.service";
-import { ClaimToken } from "@/context/token.dto";
-import { jwtDecode } from "jwt-decode"; // Import for decoding the token
-import { NextRequest, NextResponse } from "next/server";
-
-interface JwtPayload {
-  exp?: number;
-}
+import {CookieService} from "@/services/masterdata/cookie.service";
+import {jwtDecode} from "jwt-decode";
 
 interface AuthState {
   isAuthenticated: boolean | null;
-  claims: ClaimToken | null;
 }
 
 interface AuthContextType {
@@ -19,7 +12,18 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   checkLogin: () => void;
-  claims: ClaimToken | null;
+}
+
+interface JwtPayload {
+  email: string;
+  phone_number: string;
+  sub: string;
+  name: string;
+  role: string;
+  channel: string;
+  permission_list: string[];
+  iat: number;
+  exp: number;
 }
 
 const cookieService = new CookieService();
@@ -27,26 +31,24 @@ const cookieService = new CookieService();
 type AuthAction =
   | { type: "LOGIN"; token: string }
   | { type: "LOGOUT" }
-  | { type: "CHECK_LOGIN"; isAuthenticated: boolean; claims: ClaimToken | null }
+  | { type: "CHECK_LOGIN"; isAuthenticated: boolean }
   | { type: "LOAD_STATE"; isAuthenticated: boolean };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case "LOGIN": {
-      cookieService.saveCookie({ name: "token", value: action.token }).then();
+    case "LOGIN":
+      cookieService.saveCookie({name: "token", value: action.token}).then();
       localStorage.setItem("isAuthenticated", "true");
-      const decoded = jwtDecode<ClaimToken>(action.token);
-      return { isAuthenticated: true, claims: decoded };
-    }
+      return { isAuthenticated: true };
     case "LOGOUT":
       cookieService.deleteCookieByKey("token").then();
       localStorage.setItem("isAuthenticated", "false");
-      return { isAuthenticated: false, claims: null };
+      return { isAuthenticated: false };
     case "CHECK_LOGIN":
       localStorage.setItem("isAuthenticated", action.isAuthenticated.toString());
-      return { isAuthenticated: action.isAuthenticated, claims: action.claims };
+      return { isAuthenticated: action.isAuthenticated };
     case "LOAD_STATE":
-      return { isAuthenticated: action.isAuthenticated, claims: null };
+      return { isAuthenticated: action.isAuthenticated };
     default:
       return state;
   }
@@ -61,7 +63,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     isAuthenticated:
       typeof window !== "undefined" &&
       localStorage.getItem("isAuthenticated") === "true",
-    claims: null,
   });
 
   const login = (token: string) => {
@@ -74,17 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const checkLogin = async () => {
     const token = await cookieService.getCookieByKey("token");
-    if (token) {
-      const decoded = jwtDecode<JwtPayload>(token);
-      if (decoded.exp && decoded.exp * 1000 >= Date.now()) {
-        const claims = jwtDecode<ClaimToken>(token);
-        dispatch({ type: "CHECK_LOGIN", isAuthenticated: true, claims });
-      } else {
-        dispatch({ type: "CHECK_LOGIN", isAuthenticated: false, claims: null });
-      }
-    } else {
-      dispatch({ type: "CHECK_LOGIN", isAuthenticated: false, claims: null });
-    }
+    dispatch({ type: "CHECK_LOGIN", isAuthenticated: !!token });
   };
 
   useEffect(() => {
@@ -98,7 +89,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         login,
         logout,
         checkLogin,
-        claims: state.claims,
       }}
     >
       {children}
@@ -114,9 +104,43 @@ export const useAuth = () => {
   return context;
 };
 
-export const hasPermission = (
-  claims: ClaimToken | null,
-  permission: string
-): boolean => {
-  return claims?.permission_list?.includes(permission) ?? false;
+export const setToken = (token: string) => {
+  localStorage.setItem("authToken", token);
+};
+
+export const getClaims = async (): Promise<JwtPayload | null> => {
+  const token = await cookieService.getCookieByKey("token");
+  if (!token) return null;
+
+  try {
+    return jwtDecode<JwtPayload>(token);
+  } catch (error) {
+    console.error("Invalid token:", error);
+    return null;
+  }
+};
+
+export const isTokenExpired = async (): Promise<boolean> => {
+  const claims = await getClaims();
+  if (!claims) {
+    console.error("Token is missing or invalid.");
+    return true;
+  }
+
+  if (!claims.exp) {
+    console.error("Token does not contain an 'exp' field.");
+    return true;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  return now >= claims.exp;
+};
+
+export const clearToken = () => {
+  localStorage.removeItem("authToken");
+};
+
+export const hasPermission = async (requiredPermission: string): Promise<boolean> => {
+  const claims = await getClaims();
+  return claims?.permission_list?.includes(requiredPermission) || false;
 };
