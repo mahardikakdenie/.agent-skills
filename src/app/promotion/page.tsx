@@ -82,7 +82,7 @@ const PromotionPage = () => {
       setCanEdit(editBtn)
       setHasAccess(access);
       if (!access) {
-        router.push("/403");
+        router.push("/forbidden");
       }
     };
 
