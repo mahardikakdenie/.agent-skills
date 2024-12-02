@@ -2,7 +2,7 @@
 import WithSidebar from "@/hoc/with-sidebar";
 import useRequireAuth from "@/hooks/useRequireAuth";
 
-import undercontractionPage from "/public/images/undercontraction.webp";
+import undercontractionPage from "/public/images/undercontraction.svg";
 import Image from "next/image";
 
 const HomePage = () => {
