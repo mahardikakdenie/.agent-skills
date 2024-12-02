@@ -53,7 +53,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = await hasPermission("Promotions.Test");
+      const access = await hasPermission("Promotions.Update");
       setHasAccess(access);
       if (!access) {
         router.push("/forbidden");
