@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { hasPermission } from "@/context/auth.context";
 
 const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -45,6 +46,22 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [value, setValue] = useState(0);
   const [start_date, setStart_date] = useState("");
   const [end_date, setEnd_date] = useState("");
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [canDelete, setCanDelete] = useState<boolean>(false);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Promotions.Test");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,

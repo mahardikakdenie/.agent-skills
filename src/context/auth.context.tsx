@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useReducer, useContext, useEffect } from "react";
 import {CookieService} from "@/services/masterdata/cookie.service";
+import {jwtDecode} from "jwt-decode";
 
 interface AuthState {
   isAuthenticated: boolean | null;
@@ -11,6 +12,18 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   checkLogin: () => void;
+}
+
+interface JwtPayload {
+  email: string;
+  phone_number: string;
+  sub: string;
+  name: string;
+  role: string;
+  channel: string;
+  permission_list: string[];
+  iat: number;
+  exp: number;
 }
 
 const cookieService = new CookieService();
@@ -89,4 +102,45 @@ export const useAuth = () => {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+};
+
+export const setToken = (token: string) => {
+  localStorage.setItem("authToken", token);
+};
+
+export const getClaims = async (): Promise<JwtPayload | null> => {
+  const token = await cookieService.getCookieByKey("token");
+  if (!token) return null;
+
+  try {
+    return jwtDecode<JwtPayload>(token);
+  } catch (error) {
+    console.error("Invalid token:", error);
+    return null;
+  }
+};
+
+export const isTokenExpired = async (): Promise<boolean> => {
+  const claims = await getClaims();
+  if (!claims) {
+    console.error("Token is missing or invalid.");
+    return true;
+  }
+
+  if (!claims.exp) {
+    console.error("Token does not contain an 'exp' field.");
+    return true;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  return now >= claims.exp;
+};
+
+export const clearToken = () => {
+  localStorage.removeItem("authToken");
+};
+
+export const hasPermission = async (requiredPermission: string): Promise<boolean> => {
+  const claims = await getClaims();
+  return claims?.permission_list?.includes(requiredPermission) || false;
 };
