@@ -184,7 +184,13 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 name="email"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Email is required" }}
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Please enter a valid email address",
+                  },
+                }}
                 render={({ field }) => (
                   <Input
                     type="text"
@@ -214,24 +220,49 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 name="phone_number"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Phone Number is required" }}
+                rules={{
+                  required: "Phone Number is required",
+                  pattern: {
+                    value: /^\+?[0-9]{10,15}$/,
+                    message:
+                      "Phone Number must contain 10-15 digits and may start with '+'",
+                  },
+                  minLength: {
+                    value: 10,
+                    message: "Phone Number must be at least 10 digits",
+                  },
+                  maxLength: {
+                    value: 15,
+                    message: "Phone Number cannot exceed 15 digits",
+                  },
+                }}
                 render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="phone_number"
-                    placeholder="Insert Phone Number"
-                    {...field}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.phone_number ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
+                  <div>
+                    <Input
+                      type="text"
+                      id="phone_number"
+                      placeholder="Insert Phone Number"
+                      {...field}
+                      onInput={(e) => {
+                        e.currentTarget.value = e.currentTarget.value
+                          .replace(/[^0-9+]/g, "")
+                          .replace(/(?!^)\+/g, "");
+                        field.onChange(e);
+                      }}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.phone_number
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                    />
+                    {errors.phone_number && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.phone_number.message}
+                      </p>
+                    )}
+                  </div>
                 )}
               />
-              {errors.phone_number && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.phone_number.message}
-                </p>
-              )}
             </div>
             <div>
               <label
