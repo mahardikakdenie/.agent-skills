@@ -16,6 +16,7 @@ import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "../hooks";
+import { hasPermission } from "@/context/auth.context";
 
 const EditProductCategory = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -28,6 +29,21 @@ const EditProductCategory = ({ params }: { params: { id: string } }) => {
   const [categoryData, setCategoryData] = useState();
 
   const { updateCategories, fetchCategoriesById } = useCategories();
+
+  
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,

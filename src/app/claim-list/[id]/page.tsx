@@ -34,9 +34,23 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drewer";
+import { hasPermission } from "@/context/auth.context";
 
 const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Claim.Read");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
   const [claim, setClaim] = useState<any>(null);
   const [tab, setTab] = useState("Summary");
   const [histories, setHistories] = useState<any[]>([]);

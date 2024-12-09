@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ChevronLeft } from "react-feather";
 import ProductDetatilTab from "./product-detail-tab";
+import { hasPermission } from "@/context/auth.context";
 
 const DetaildPage = ({
   params,
@@ -49,6 +50,30 @@ const DetaildPage = ({
   const [currency, setCurrency] = useState("");
 
   const [slug, setSlug] = useState("");
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [canCreate, setCanCreate] = useState<boolean>(false);
+  const [canDelete, setCanDelete] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Product Category.Read");
+      const editBtn = await hasPermission("Product Category.Update");
+      const deleteBtn = await hasPermission("Product Category.Delete");
+      const createBtn = await hasPermission("Product Category.Create");
+
+      setCanEdit(editBtn)
+      setCanDelete(deleteBtn);
+      setHasAccess(access);
+      setCanCreate(createBtn);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     fetchInsurances,
@@ -181,11 +206,11 @@ const DetaildPage = ({
                       <Input
                         type="text"
                         id="name"
+                        disabled={!canEdit}
                         placeholder="Plan Name"
                         {...field}
-                        className={`mt-1 block w-full h-16 ${
-                          errors.name ? "border-red-500" : "border-gray-300"
-                        } rounded-md shadow-sm`}
+                        className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                          } rounded-md shadow-sm`}
                       />
                     )}
                   />
@@ -211,11 +236,11 @@ const DetaildPage = ({
                       <Input
                         type="text"
                         id="slug"
+                        disabled={!canEdit}
                         placeholder="Slug"
                         {...field}
-                        className={`mt-1 block w-full h-16 ${
-                          errors.name ? "border-red-500" : "border-gray-300"
-                        } rounded-md shadow-sm`}
+                        className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                          } rounded-md shadow-sm`}
                       />
                     )}
                   />
@@ -234,6 +259,7 @@ const DetaildPage = ({
                   </label>
                   <Controller
                     name="insuranceId"
+                    disabled={!canEdit}
                     control={control}
                     rules={{ required: "Insurance ID is required" }}
                     render={({ field }) => (
@@ -272,6 +298,7 @@ const DetaildPage = ({
                   </label>
                   <Controller
                     name="productId"
+                    disabled={!canEdit}
                     control={control}
                     defaultValue=""
                     rules={{ required: "Product ID is required" }}
@@ -303,6 +330,7 @@ const DetaildPage = ({
 
               <button
                 type="submit"
+                disabled={!canEdit}
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
               >
                 Submit

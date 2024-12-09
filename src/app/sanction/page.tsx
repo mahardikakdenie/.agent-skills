@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Trash, X, Search, Upload } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
+import { hasPermission } from "@/context/auth.context";
 
 const SanctionPage = () => {
     useRequireAuth();
@@ -40,6 +41,30 @@ const SanctionPage = () => {
     const [searchTerm, setSearchTerm] = useState<string>(""); // State for search input
 
     const router = useRouter();
+
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+    const [canEdit, setCanEdit] = useState<boolean>(false);
+    const [canCreate, setCanCreate] = useState<boolean>(false);
+    const [canDelete, setCanDelete] = useState<boolean>(false);
+  
+    useEffect(() => {
+      const checkAccess = async () => {
+        const access = await hasPermission("Sanction.Read");
+        const editBtn = await hasPermission("Sanction.Update");
+        const deleteBtn = await hasPermission("Sanction.Delete");
+        const createBtn = await hasPermission("Sanction.Create");
+  
+        setCanEdit(editBtn)
+        setCanDelete(deleteBtn);
+        setHasAccess(access);
+        setCanCreate(createBtn);
+        if (!access) {
+          router.push("/forbidden");
+        }
+      };
+  
+      checkAccess();
+    }, [router]);
 
     useEffect(() => {
         sanctionService
@@ -119,6 +144,7 @@ const SanctionPage = () => {
                 <div className="flex space-x-2">
                     <Button
                         onClick={() => addNewSanction()}
+                        disabled={!canCreate}
                         className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                     >
                         <Plus className="w-5 h-5 mr-1 " /> Add Sanction
@@ -126,6 +152,7 @@ const SanctionPage = () => {
                     <Button
                         className="rounded-full ml-auto bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
                         onClick={() => uploadSanction()}
+                        disabled={!canCreate}
                     >
                         <Upload width={20} height={20} />
                         <span className="ml-1">Upload Sanction</span>
@@ -259,6 +286,7 @@ const SanctionPage = () => {
                                                         <div className="flex justify-center mt-4">
                                                             <button
                                                                 onClick={() => handleEditSanction(sanction.id)}
+                                                                disabled={!canEdit}
                                                                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                                                             >
                                                                 Edit
@@ -270,6 +298,7 @@ const SanctionPage = () => {
                                         </Drawer>
                                         <Button
                                             variant="ghost"
+                                            disabled={!canDelete}
                                             onClick={() => handleDelete(sanction.id)}
                                             className="text-red-600 px-0"
                                         >

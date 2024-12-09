@@ -19,6 +19,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
+import { hasPermission } from "@/context/auth.context";
 
 interface Insurance {
     id: string;
@@ -32,6 +33,19 @@ interface CountryAPI {
 
 const CreateSourcePage = () => {
     const router = useRouter();
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+    useEffect(() => {
+      const checkAccess = async () => {
+        const access = await hasPermission("Sanction.Create");
+        setHasAccess(access);
+        if (!access) {
+          router.push("/forbidden");
+        }
+      };
+  
+      checkAccess();
+    }, [router]);
     const sanctionService = new SanctionService();
     const insuranceService = new InsuranceService();
 

@@ -16,10 +16,24 @@ import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { usePages } from "../hooks";
+import { hasPermission } from "@/context/auth.context";
 
 const AddPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Create");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
   const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();

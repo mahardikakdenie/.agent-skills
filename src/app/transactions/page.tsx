@@ -25,6 +25,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drewer";
+import { hasPermission } from "@/context/auth.context";
 
 const TransactionsPage = () => {
   useRequireAuth();
@@ -40,6 +41,27 @@ const TransactionsPage = () => {
   const [totalData, setTotalData] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [transaction, setTransaction] = useState<any>(null);
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Transactions.Read");
+      const editBtn = await hasPermission("Transactions.Update");
+
+      console.log("access: " + access);
+      console.log("edit: " + editBtn);
+
+      setCanEdit(editBtn)
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   useEffect(() => {
     transactionService
@@ -385,6 +407,7 @@ const TransactionsPage = () => {
                                       onClick={() =>
                                         handleUpdateToPaid(transaction.id)
                                       }
+                                      disabled={!canEdit}
                                       className="bg-primary text-white px-4 py-2 rounded-full"
                                     >
                                       Update to Paid
