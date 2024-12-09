@@ -319,7 +319,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     };
 
     fetchUser();
-  }, [page, rowsPerPage, platformFilter, rolesFilter]);
+  }, [page, rowsPerPage, platformFilter, userFilter]);
 
   const selectUser = () => {
     groupService.getUser(page, rowsPerPage).then((res) => {
