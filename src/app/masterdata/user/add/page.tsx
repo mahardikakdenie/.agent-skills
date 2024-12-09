@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { hasPermission } from "@/context/auth.context";
 
 const AddUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -42,6 +43,20 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   const [channel, setChannel] = useState("");
 
   const { saveUser, channels, fetchChannels } = useUser();
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Create");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,

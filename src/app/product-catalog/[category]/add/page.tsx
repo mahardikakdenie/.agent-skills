@@ -31,6 +31,7 @@ import {
   ProductCatalogDto,
   ProductCatalogService,
 } from "@/services/product-catalog.service";
+import { hasPermission } from "@/context/auth.context";
 
 const AddPlanPage = ({ params }: { params: { category: string } }) => {
   const router = useRouter();
@@ -40,6 +41,21 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
   const [isInsuranceSelected, setIsInsuranceSelected] = useState(false);
   const [product, setProducts] = useState<ProductCatalogDto[]>([]);
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
+  
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Create");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
+
   const handleChangeInsurance = (e: any) => {
     setSelectedInsurance(e);
   };

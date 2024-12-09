@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
 import Papa from "papaparse";
+import { hasPermission } from "@/context/auth.context";
 
 
 interface CountryAPI {
@@ -41,6 +42,19 @@ interface Source {
 
 const UploadSanctionPage = () => {
     const router = useRouter();
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+    useEffect(() => {
+      const checkAccess = async () => {
+        const access = await hasPermission("Sanction.Create");
+        setHasAccess(access);
+        if (!access) {
+          router.push("/forbidden");
+        }
+      };
+  
+      checkAccess();
+    }, [router]);
     const sanctionService = new SanctionService();
     const insuranceService = new InsuranceService();
 

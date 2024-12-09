@@ -39,6 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import React from "react";
+import { hasPermission } from "@/context/auth.context";
 
 interface Permission {
   id: string;
@@ -61,6 +62,21 @@ interface MenuPermissionForm {
 const EditRolesPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
+
   const { id } = params;
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");

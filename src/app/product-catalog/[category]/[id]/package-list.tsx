@@ -19,6 +19,7 @@ import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { Button } from "@/components/ui/button";
+import { hasPermission } from "@/context/auth.context";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const path = usePathname();
@@ -34,6 +35,32 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   const { id } = props;
   const productCatalogService = new ProductCatalogService();
   const { category } = useParams();
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [canCreate, setCanCreate] = useState<boolean>(false);
+  const [canDelete, setCanDelete] = useState<boolean>(false);
+  const routerN = useRouter();
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Product Category.Read");
+      const editBtn = await hasPermission("Product Category.Update");
+      const deleteBtn = await hasPermission("Product Category.Delete");
+      const createBtn = await hasPermission("Product Category.Create");
+
+      setCanEdit(editBtn)
+      setCanDelete(deleteBtn);
+      setHasAccess(access);
+      setCanCreate(createBtn);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [routerN]);
+
 
   useEffect(() => {
     productCatalogService
@@ -98,6 +125,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
     <>
       <Button
         className="btn btn-primary"
+        disabled={!canEdit}
         onClick={() => router.push(`${path}/upload`)}
       >
         Upload Packages

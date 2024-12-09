@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { hasPermission } from "@/context/auth.context";
 
 const EditUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -40,6 +41,20 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   const [status, setStatus] = useState("");
 
   const { updateUser, fetchUserById } = useUser();
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,

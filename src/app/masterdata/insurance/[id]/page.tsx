@@ -16,6 +16,7 @@ import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useInsurance } from "../hooks";
+import { hasPermission } from "@/context/auth.context";
 
 const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -31,6 +32,20 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
   const [insuranceData, setInsuranceData] = useState();
 
   const { updateInsurance, fetchInsuranceById } = useInsurance();
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,

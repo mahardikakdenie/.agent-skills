@@ -16,6 +16,7 @@ import { Check, ChevronLeft, Upload } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useInsurance } from "../hooks";
+import { hasPermission } from "@/context/auth.context";
 
 const AddInsurance = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -30,6 +31,20 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
   const { fetchInsurance, saveInsurance } = useInsurance();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [fileName, setFileName] = useState<string>("");
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Create");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,

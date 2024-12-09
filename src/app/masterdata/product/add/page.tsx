@@ -29,6 +29,7 @@ import {
   MdProductService,
   ProductResponse,
 } from "@/services/masterdata/product.service";
+import { hasPermission } from "@/context/auth.context";
 
 const AddProduct = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -47,6 +48,22 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
   const [productFields, setProductFields] = useState<any[]>([
     { id: "", name: "" },
   ]);
+
+
+  
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Create");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     saveProduct,
