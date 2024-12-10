@@ -30,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { hasPermission } from "@/context/auth.context";
 
 interface PermissionField {
   id: string;
@@ -39,6 +40,19 @@ interface PermissionField {
 const EditPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
   const router = useRouter();
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
   const { id } = params;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const path = usePathname();

@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Trash, X, Search } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
+import { hasPermission } from "@/context/auth.context";
 
 const SourcePage = () => {
     useRequireAuth();
@@ -37,9 +38,33 @@ const SourcePage = () => {
     const [selectedSource, setSelectedSource] = useState<any>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [filteredSource, setFilteredSource] = useState<any[]>([]);
-    const [searchTerm, setSearchTerm] = useState<string>(""); // State for search input
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     const router = useRouter();
+
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+    const [canEdit, setCanEdit] = useState<boolean>(false);
+    const [canCreate, setCanCreate] = useState<boolean>(false);
+    const [canDelete, setCanDelete] = useState<boolean>(false);
+  
+    useEffect(() => {
+      const checkAccess = async () => {
+        const access = await hasPermission("Sanction.Read");
+        const editBtn = await hasPermission("Sanction.Update");
+        const deleteBtn = await hasPermission("Sanction.Delete");
+        const createBtn = await hasPermission("Sanction.Create");
+  
+        setCanEdit(editBtn)
+        setCanDelete(deleteBtn);
+        setHasAccess(access);
+        setCanCreate(createBtn);
+        if (!access) {
+          router.push("/forbidden");
+        }
+      };
+  
+      checkAccess();
+    }, [router]);
 
     useEffect(() => {
         sourceService
@@ -90,30 +115,22 @@ const SourcePage = () => {
         }
     };
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.toLowerCase();
+    const handleSearch = async () => {
+        const value = searchTerm.toLowerCase();
         setSearchTerm(value);
+        setPage(1); // Reset to the first page on a new search
 
-        // Filter sanctions based on searchTerm
-        const filtered = source.filter((item) => {
-            const {
-                source_name,
-                source_type,
-                country,
-                source_url,
-                insurance_name,
-            } = item;
+        sourceService
+            .getSourceSearchQuery(searchTerm, page, rowsPerPage)
+            .then((res) => {
+                setFilteredSource(res.data);
+                setTotalItems(res.total);
+                setTotalPages(res.pageTotal);
+            })
+            .catch((error) => {
+                console.error("Failed to query source:", error);
+            });
 
-            return (
-                source_name?.toLowerCase().includes(value) ||
-                source_type?.toLowerCase().includes(value) ||
-                country?.toLowerCase().includes(value) ||
-                source_url?.toLowerCase().includes(value) ||
-                insurance_name?.toLowerCase().includes(value)
-            );
-        });
-
-        setFilteredSource(filtered);
     };
 
     return (
@@ -122,6 +139,7 @@ const SourcePage = () => {
                 <h1 className="text-2xl font-semibold">Source List</h1>
                 <Button
                     onClick={() => addNewSource()}
+                    disabled={!canCreate}
                     className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                 >
                     <Plus className="w-5 h-5 mr-1 " /> Add Source
@@ -133,11 +151,22 @@ const SourcePage = () => {
                 <input
                     type="text"
                     value={searchTerm}
-                    onChange={handleSearch}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch();
+                        }
+                    }}
                     placeholder="Search"
                     className="border p-3 rounded-md pr-10 w-full"
                 />
-                <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+                <button
+                    onClick={handleSearch}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]"
+                    type="button"
+                >
+                    <Search />
+                </button>
             </div>
 
             <div className="bg-white rounded-md p-4 sm:p-6">
@@ -232,6 +261,7 @@ const SourcePage = () => {
                                                     <div className="flex justify-center mt-4">
                                                         <button
                                                             onClick={() => handleEditSource(source.id)}
+                                                            disabled={!canEdit}
                                                             className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                                                         >
                                                             Edit
@@ -243,6 +273,7 @@ const SourcePage = () => {
 
                                         <Button
                                             variant="ghost"
+                                            disabled={!canDelete}
                                             onClick={() => handleDelete(source.id)}
                                             className="text-red-600 px-0"
                                         >

@@ -27,8 +27,9 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Edit, Plus, Trash, X } from "react-feather";
+import { ChevronLeft, ChevronRight, Edit, Plus, Search, Trash, X } from "react-feather";
 import { VoucherService } from "@/services/voucher.services";
+import { clearToken, hasPermission, isTokenExpired } from "@/context/auth.context";
 
 const PromotionPage = () => {
   useRequireAuth();
@@ -46,6 +47,8 @@ const PromotionPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [filteredPromotion, setFilteredPromotion] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>(""); // State for search input
   const [channelNames, setChannelNames] = useState<Map<string, string>>(
     new Map()
   );
@@ -64,20 +67,46 @@ const PromotionPage = () => {
     }[]
   >([]);
 
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [canDelete, setCanDelete] = useState<boolean>(false);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    promotionService
-      .getPromotionCampaign(page, rowsPerPage)
-      .then((res) => {
-        setPromotions(res.data);
-        setTotalItems(res.total);
-        setTotalPages(res.pageTotal);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch promotions:", error);
-      });
-  }, [page, rowsPerPage]);
+    const checkAccess = async () => {
+      const access = await hasPermission("Promotions.Read");
+      const deleteBtn = await hasPermission("Promotions.Delete");
+      const editBtn = await hasPermission("Promotions.Update");
+
+      setCanDelete(deleteBtn);
+      setCanEdit(editBtn)
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
+
+  useEffect(() => {
+    if (hasAccess) {
+      promotionService
+        .getPromotionCampaign(page, rowsPerPage)
+        .then((res) => {
+          setPromotions(res.data);
+          setTotalItems(res.total);
+          setTotalPages(res.pageTotal);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch promotions:", error);
+        });
+    }
+  }, [hasAccess, page, rowsPerPage]);
+
+  if (hasAccess === null) {
+    return <div>Loading...</div>;
+  }
 
   const getStatusColor = (status: Boolean) => {
     switch (status) {
@@ -185,6 +214,25 @@ const PromotionPage = () => {
     }
   };
 
+
+  const handleSearch = async () => {
+    const value = searchTerm.toLowerCase();
+    setSearchTerm(value);
+    setPage(1); // Reset to the first page on a new search
+
+    promotionService
+      .getPromotionSearchQuery(searchTerm, page, rowsPerPage)
+      .then((res) => {
+        setPromotions(res.data); // Initialize with all sanctions
+        setTotalItems(res.total);
+        setTotalPages(res.pageTotal);
+      })
+      .catch((error) => {
+        console.error("Failed to query sanction:", error);
+      });
+
+  };
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-4">
@@ -198,6 +246,30 @@ const PromotionPage = () => {
           <Plus className="w-5 h-5 mr-1 " /> Add Campaign
         </Button>
       </div>
+
+      {/* Search Bar */}
+      <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch();
+            }
+          }}
+          placeholder="Search"
+          className="border p-3 rounded-md pr-10 w-full"
+        />
+        <button
+          onClick={handleSearch}
+          className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]"
+          type="button"
+        >
+          <Search />
+        </button>
+      </div>
+
       <div className="bg-white rounded-md p-4 sm:p-6">
         <Table>
           <TableHeader>
@@ -275,9 +347,9 @@ const PromotionPage = () => {
                               <div>
                                 {selectedPromotion?.start_date
                                   ? format(
-                                      new Date(selectedPromotion.start_date),
-                                      "dd-MM-yyyy"
-                                    )
+                                    new Date(selectedPromotion.start_date),
+                                    "dd-MM-yyyy"
+                                  )
                                   : "N/A"}
                               </div>
                             </div>
@@ -289,9 +361,9 @@ const PromotionPage = () => {
                               <div>
                                 {selectedPromotion?.end_date
                                   ? format(
-                                      new Date(selectedPromotion.end_date),
-                                      "dd-MM-yyyy"
-                                    )
+                                    new Date(selectedPromotion.end_date),
+                                    "dd-MM-yyyy"
+                                  )
                                   : "N/A"}
                               </div>
                             </div>
@@ -465,6 +537,7 @@ const PromotionPage = () => {
                               onClick={() =>
                                 handleEditCampaign(promotion.campaign_id)
                               }
+                              disabled={!canEdit}
                               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2 flex items-center justify-center"
                             >
                               <Edit className="w-4 h-4 mr-2" /> Edit
@@ -477,6 +550,7 @@ const PromotionPage = () => {
                     <Button
                       variant="ghost"
                       onClick={() => handleDelete(promotion.campaign_id)}
+                      disabled={!canDelete}
                       className="text-red-600 px-0"
                     >
                       <Trash />

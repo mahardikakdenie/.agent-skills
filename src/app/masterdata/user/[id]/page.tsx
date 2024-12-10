@@ -60,12 +60,7 @@ import {
   AccountGroup,
   GroupResponse,
   GroupService,
-  RoleResponse,
-  UserResponse,
 } from "@/services/masterdata/group.service";
-import { useGroup } from "../../group/hooks";
-import { format } from "date-fns";
-import { channel } from "diagnostics_channel";
 
 const EditUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -86,7 +81,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   const [page, setPage] = useState(1);
   const [pageRoles, setPageRoles] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [totalItemsRoles, setTotalItemsRoles] = useState(0);
   const [totalItemsUser, setTotalItemsUser] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);

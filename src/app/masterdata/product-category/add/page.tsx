@@ -16,6 +16,7 @@ import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "../hooks";
+import { hasPermission } from "@/context/auth.context";
 
 const AddProductCategory = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -27,6 +28,21 @@ const AddProductCategory = ({ params }: { params: { id: string } }) => {
   const [name, setName] = useState("");
 
   const { fetchCategories, saveCategories } = useCategories();
+
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Create");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,

@@ -19,6 +19,7 @@ import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import { RoleResponse, RoleService } from "@/services/masterdata/roles.service";
 import { format } from "date-fns";
+import { hasPermission } from "@/context/auth.context";
 
 const Roles = () => {
   useRequireAuth();
@@ -32,6 +33,31 @@ const Roles = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const router = useRouter();
+
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [canCreate, setCanCreate] = useState<boolean>(false);
+  const [canDelete, setCanDelete] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Read");
+      const editBtn = await hasPermission("Masterdata.Update");
+      const deleteBtn = await hasPermission("Masterdata.Delete");
+      const createBtn = await hasPermission("Masterdata.Create");
+
+      setCanEdit(editBtn)
+      setCanDelete(deleteBtn);
+      setHasAccess(access);
+      setCanCreate(createBtn);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -86,6 +112,7 @@ const Roles = () => {
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Roles</h1>
         <Button
           onClick={() => router.push(`${path}/add`)}
+          disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Plus className="w-5 h-5 mr-1 " /> Add New
@@ -117,6 +144,7 @@ const Roles = () => {
                     <div className="flex gap-4 items-center">
                       <Button
                         variant="secondary"
+                        disabled={!canEdit}
                         onClick={() => handleEdit(role.id)}
                         className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
                       >
@@ -124,6 +152,7 @@ const Roles = () => {
                       </Button>
                       <Button
                         variant="ghost"
+                        disabled={!canDelete}
                         onClick={() => handleDeleteRole(role.id)}
                         className="text-red-600 px-0"
                       >

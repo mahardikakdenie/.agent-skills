@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Trash, X, Search, Upload } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
+import { hasPermission } from "@/context/auth.context";
 
 const SanctionPage = () => {
     useRequireAuth();
@@ -40,6 +41,30 @@ const SanctionPage = () => {
     const [searchTerm, setSearchTerm] = useState<string>(""); // State for search input
 
     const router = useRouter();
+
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+    const [canEdit, setCanEdit] = useState<boolean>(false);
+    const [canCreate, setCanCreate] = useState<boolean>(false);
+    const [canDelete, setCanDelete] = useState<boolean>(false);
+  
+    useEffect(() => {
+      const checkAccess = async () => {
+        const access = await hasPermission("Sanction.Read");
+        const editBtn = await hasPermission("Sanction.Update");
+        const deleteBtn = await hasPermission("Sanction.Delete");
+        const createBtn = await hasPermission("Sanction.Create");
+  
+        setCanEdit(editBtn)
+        setCanDelete(deleteBtn);
+        setHasAccess(access);
+        setCanCreate(createBtn);
+        if (!access) {
+          router.push("/forbidden");
+        }
+      };
+  
+      checkAccess();
+    }, [router]);
 
     useEffect(() => {
         sanctionService
@@ -79,39 +104,22 @@ const SanctionPage = () => {
         router.push("/sanction/upload-sanction");
     };
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.toLowerCase();
+    const handleSearch = async () => {
+        const value = searchTerm.toLowerCase();
         setSearchTerm(value);
+        setPage(1); // Reset to the first page on a new search
 
-        // Filter sanctions based on searchTerm
-        const filtered = sanction.filter((item) => {
-            const {
-                first_name,
-                middle_name,
-                last_name,
-                date_blacklisted,
-                phone_number,
-                email,
-                country,
-                blacklist_reason,
-            } = item;
+        sanctionService
+            .getSanctionSearchQuery(searchTerm, page, rowsPerPage)
+            .then((res) => {
+                setFilteredSanction(res.data); // Initialize with all sanctions
+                setTotalItems(res.total);
+                setTotalPages(res.pageTotal);
+            })
+            .catch((error) => {
+                console.error("Failed to query sanction:", error);
+            });
 
-            // Format the date_blacklisted to "dd-MM-yyyy"
-            const formattedDate = date_blacklisted ? format(new Date(date_blacklisted), "dd-MM-yyyy") : "";
-
-            return (
-                first_name?.toLowerCase().includes(value) ||
-                middle_name?.toLowerCase().includes(value) ||
-                last_name?.toLowerCase().includes(value) ||
-                formattedDate.includes(value) || // Search date using formatted date
-                phone_number?.toLowerCase().includes(value) ||
-                email?.toLowerCase().includes(value) ||
-                country?.toLowerCase().includes(value) ||
-                blacklist_reason?.toLowerCase().includes(value)
-            );
-        });
-
-        setFilteredSanction(filtered);
     };
 
     const handleDelete = async (id: string) => {
@@ -136,6 +144,7 @@ const SanctionPage = () => {
                 <div className="flex space-x-2">
                     <Button
                         onClick={() => addNewSanction()}
+                        disabled={!canCreate}
                         className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                     >
                         <Plus className="w-5 h-5 mr-1 " /> Add Sanction
@@ -143,6 +152,7 @@ const SanctionPage = () => {
                     <Button
                         className="rounded-full ml-auto bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
                         onClick={() => uploadSanction()}
+                        disabled={!canCreate}
                     >
                         <Upload width={20} height={20} />
                         <span className="ml-1">Upload Sanction</span>
@@ -155,11 +165,22 @@ const SanctionPage = () => {
                 <input
                     type="text"
                     value={searchTerm}
-                    onChange={handleSearch}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch();
+                        }
+                    }}
                     placeholder="Search"
                     className="border p-3 rounded-md pr-10 w-full"
                 />
-                <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+                <button
+                    onClick={handleSearch}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]"
+                    type="button"
+                >
+                    <Search />
+                </button>
             </div>
 
             <div className="bg-white rounded-md p-4 sm:p-6">
@@ -265,6 +286,7 @@ const SanctionPage = () => {
                                                         <div className="flex justify-center mt-4">
                                                             <button
                                                                 onClick={() => handleEditSanction(sanction.id)}
+                                                                disabled={!canEdit}
                                                                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
                                                             >
                                                                 Edit
@@ -276,6 +298,7 @@ const SanctionPage = () => {
                                         </Drawer>
                                         <Button
                                             variant="ghost"
+                                            disabled={!canDelete}
                                             onClick={() => handleDelete(sanction.id)}
                                             className="text-red-600 px-0"
                                         >

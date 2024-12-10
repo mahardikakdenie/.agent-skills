@@ -19,6 +19,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
+import { hasPermission } from "@/context/auth.context";
 
 
 interface Source {
@@ -36,6 +37,19 @@ interface CountryAPI {
 
 const EditSanctionPage = ({ params }: { params: { id: string } }) => {
     const router = useRouter();
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+    useEffect(() => {
+      const checkAccess = async () => {
+        const access = await hasPermission("Sanction.Update");
+        setHasAccess(access);
+        if (!access) {
+          router.push("/forbidden");
+        }
+      };
+  
+      checkAccess();
+    }, [router]);
     const sanctionService = new SanctionService();
     const [source, setSource] = useState<Source[]>([]);
     const [countryAPI, setCountryAPI] = useState<CountryAPI[]>([]);

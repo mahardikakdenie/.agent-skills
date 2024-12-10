@@ -17,6 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useRole } from "../hooks";
 import { Textarea } from "@/components/ui/textarea";
+import { hasPermission } from "@/context/auth.context";
 
 const AddRolesPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -27,6 +28,20 @@ const AddRolesPage = ({ params }: { params: { id: string } }) => {
   const [description, setDescription] = useState("");
 
   const { addRole, fetchRoleById } = useRole();
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Create");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   const {
     handleSubmit,
