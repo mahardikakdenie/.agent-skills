@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Check, ChevronLeft } from "react-feather";
+import { Check, ChevronLeft, Plus } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useRole } from "../hooks";
@@ -185,6 +185,26 @@ const AddRolesPage = ({ params }: { params: { id: string } }) => {
                   />
                 )}
               />
+            </div>
+          </div>
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex gap-4 items-center">
+              <div>
+                <div className="text-primary font-bold mb-2">Permissions</div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    Permission is a type of menu access assigned to a specific
+                    role
+                  </i>
+                </p>
+              </div>
+              <Button
+                color="warning"
+                disabled
+                className="bg-gray-300 text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add Menu
+              </Button>
             </div>
           </div>
         </div>

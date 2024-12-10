@@ -109,10 +109,10 @@ const Users = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
+              {/* <TableHead>User ID</TableHead> */}
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Phone Number</TableHead>
-              <TableHead>Platform Access</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="whitespace-nowrap w-36">Action</TableHead>
@@ -128,7 +128,6 @@ const Users = () => {
                   </TableCell>
                   <TableCell>{user.email || "-"}</TableCell>
                   <TableCell>{user.phone_number || "-"}</TableCell>
-                  <TableCell>{user.permission || "-"}</TableCell>
                   <TableCell>{user.role || "-"}</TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(user.status)}>

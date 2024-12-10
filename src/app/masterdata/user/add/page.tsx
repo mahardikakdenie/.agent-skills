@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Check, ChevronLeft } from "react-feather";
+import { Check, ChevronLeft, Plus } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
@@ -25,23 +25,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const AddUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
+  const { id } = params;
   const router = useRouter();
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const path = usePathname();
-  const [selectedChannel, setSelectedSelectedChannel] = useState<any>(null);
+  const [selectedChannel, setSelectedChannel] = useState<any>(null);
+  const [selectedRole, setSelectedRole] = useState<any>(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone_number, setPhoneNumber] = useState("");
-  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const [role, setRole] = useState("");
   const [channel, setChannel] = useState("");
 
-  const { saveUser, channels, fetchChannels } = useUser();
+  const { saveUser, channels, roles, fetchChannels, fetchRole } = useUser();
 
   const {
     handleSubmit,
@@ -50,49 +53,48 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
+      id,
       name,
       email,
       phone_number,
-      role,
-      password,
+      password: "Yes",
       status,
+      permission: "",
+      role,
+      roleId: selectedRole,
       channel,
       channelId: selectedChannel,
-      permission: "",
     },
     values: {
+      id,
       name,
       email,
       phone_number,
-      role,
-      password,
+      password: "Yes",
       status,
-      channel,
       permission: "",
+      role,
+      channel,
     },
   });
 
+  useEffect(() => {
+    fetchChannels({});
+    fetchRole({});
+  }, []);
+
   const onSubmit = async (data: any) => {
     try {
-      await saveUser(data);
-      setSaveSuccess(true);
+      const response = await saveUser(data, id);
+      console.log(response);
+      if (response.id != null) {
+        const id = response.id;
+        router.push(`/masterdata/user/${id}`);
+      }
     } catch (error) {
       setSaveSuccess(false);
     }
   };
-  useEffect(() => {
-    fetchChannels({});
-  }, []);
-
-  useEffect(() => {
-    if (saveSuccess === true) {
-      alert("Data berhasil disimpan!");
-      router.back();
-    } else if (saveSuccess === false) {
-      alert("Terjadi kesalahan saat menyimpan data.");
-    }
-    setSaveSuccess(null);
-  }, [saveSuccess, router]);
 
   return (
     <div className="flex flex-col w-full">
@@ -145,10 +147,33 @@ const AddUser = ({ params }: { params: { id: string } }) => {
           <div className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-4">
             <div>
               <label
+                htmlFor="id"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                User ID
+              </label>
+              <Controller
+                name="id"
+                control={control}
+                defaultValue=""
+                disabled
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="id"
+                    placeholder="-"
+                    {...field}
+                    className={`mt-1 block w-full h-12 bg-gray-200 text-gray-700 rounded-md shadow-sm`}
+                  />
+                )}
+              />
+            </div>
+            <div>
+              <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Name
+                Name<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="name"
@@ -178,7 +203,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Email
+                Email<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="email"
@@ -214,7 +239,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 htmlFor="phone_number"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Phone Number
+                Phone Number<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="phone_number"
@@ -266,72 +291,10 @@ const AddUser = ({ params }: { params: { id: string } }) => {
             </div>
             <div>
               <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Role
-              </label>
-              <Controller
-                name="role"
-                control={control}
-                defaultValue=""
-                // rules={{ required: "Role is required" }}
-                render={({ field }) => (
-                  <Select>
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Admin">Admin</SelectItem>
-                      <SelectItem value="Partner">Partner</SelectItem>
-                      <SelectItem value="Insurer">Insurer</SelectItem>
-                      <SelectItem value="User">User</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.role && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.role.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Password
-              </label>
-              <Controller
-                name="password"
-                control={control}
-                defaultValue=""
-                // rules={{ required: "Password is required" }}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="password"
-                    placeholder="Insert Password"
-                    {...field}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
                 htmlFor="status"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Status
+                Status<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="status"
@@ -358,6 +321,44 @@ const AddUser = ({ params }: { params: { id: string } }) => {
             </div>
             <div>
               <label
+                htmlFor="role"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Role
+              </label>
+              <Controller
+                name="role"
+                control={control}
+                rules={{ required: "Role ID is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {roles.map((role: any) => (
+                          <SelectItem key={role.id} value={role.name}>
+                            {role.name
+                              .replace(/-/g, " ")
+                              .replace(/\b\w/g, (char: any) =>
+                                char.toUpperCase()
+                              )}{" "}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.role && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.role.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
                 htmlFor="channel"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
@@ -376,7 +377,11 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                       <SelectGroup>
                         {channels.map((channel: any) => (
                           <SelectItem key={channel.id} value={channel.id}>
-                            {channel.name}
+                            {channel.name
+                              .replace(/-/g, " ")
+                              .replace(/\b\w/g, (char: any) =>
+                                char.toUpperCase()
+                              )}{" "}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -387,9 +392,73 @@ const AddUser = ({ params }: { params: { id: string } }) => {
               {errors.channel && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.channel.message?.toString()}
-                  error message
                 </p>
               )}
+            </div>
+            <div className="flex gap-5 items-center pt-2 sm:pt-5 sm:mb-0 mb-3">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="password"
+                    checked={field.value === "Yes"} // Periksa apakah nilai "Yes"
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked ? "Yes" : "No")
+                    }
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex gap-4 items-center">
+              <div>
+                <div className="text-primary font-bold mb-2">User's Group</div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    All the users in the group will have permissions that are
+                    defined in the selected group roles
+                  </i>
+                </p>
+              </div>
+              <Button
+                color="warning"
+                disabled
+                className="bg-gray-300 text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+              >
+                <Plus className="w-4 h-4 mr-2" /> Assign Group
+              </Button>
+            </div>
+          </div>
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex gap-4 items-center">
+              <div>
+                <div className="text-primary font-bold mb-2">
+                  Additional Role
+                </div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    Assigned users to specific roles. If you are unable to find
+                    the one you require, please request the superadmin to create
+                    a new role
+                  </i>
+                </p>
+              </div>
+              <Button
+                color="warning"
+                disabled
+                className="bg-gray-300 text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add Role
+              </Button>
             </div>
           </div>
         </div>

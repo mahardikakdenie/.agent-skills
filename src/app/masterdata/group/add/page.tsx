@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Check, ChevronLeft } from "react-feather";
+import { Check, ChevronLeft, Plus } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useGroup } from "../hooks";
@@ -48,7 +48,6 @@ const AddGroupPage = ({ params }: { params: { id: string } }) => {
         const id = response.id;
         router.push(`/masterdata/group/${id}`);
       }
-      console.log("selesai");
     } catch (error) {
       setUpdateSuccess(false);
     }
@@ -122,7 +121,7 @@ const AddGroupPage = ({ params }: { params: { id: string } }) => {
                   <Input
                     type="text"
                     id="name"
-                    placeholder="Insert Category Name"
+                    placeholder="Insert Group Name"
                     {...field}
                     onChange={(e) =>
                       field.onChange(e.target.value.replace(/\s+/g, "-"))
@@ -138,6 +137,46 @@ const AddGroupPage = ({ params }: { params: { id: string } }) => {
                   {errors.name.message}
                 </p>
               )}
+            </div>
+          </div>
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex gap-4 items-center">
+              <div>
+                <div className="text-primary font-bold mb-2">Group Role</div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    The group will have permissions that are defined in the
+                    selected roles
+                  </i>
+                </p>
+              </div>
+              <Button
+                color="warning"
+                disabled
+                className="bg-gray-300 text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add Roles
+              </Button>
+            </div>
+          </div>
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex gap-4 items-center">
+              <div>
+                <div className="text-primary font-bold mb-2">Group Users</div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    All the users in the group will have permissions that are
+                    defined in the selected group roles
+                  </i>
+                </p>
+              </div>
+              <Button
+                color="warning"
+                disabled
+                className="bg-gray-300 text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add User
+              </Button>
             </div>
           </div>
         </div>
