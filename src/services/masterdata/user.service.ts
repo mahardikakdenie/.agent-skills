@@ -19,6 +19,12 @@ export interface Channel {
   name: string;
   type: string;
 }
+export interface Role {
+  data: any;
+  id: string;
+  name: string;
+  description: string;
+}
 
 export class UserService {
   private authHttpClient: IHttpClient;
@@ -26,17 +32,23 @@ export class UserService {
   then: any;
 
   constructor() {
-    this.authHttpClient = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+    this.authHttpClient = new AxiosHttpClient(
+      {
+        baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+        },
       },
-    }, true);
+      true
+    );
 
-    this.channelHttpClient = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL,
-    }, true);
+    this.channelHttpClient = new AxiosHttpClient(
+      {
+        baseURL: process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL,
+      },
+      true
+    );
   }
 
   async getUser(page?: number, rowsPerPage?: number): Promise<User> {
@@ -60,6 +72,17 @@ export class UserService {
       throw error;
     }
   }
+
+  async getRole(search: any): Promise<Role> {
+    try {
+      const queryString = new URLSearchParams({ ...search }).toString();
+      return await this.authHttpClient.get<Role>("/role?" + queryString);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
   async getUserById(id: string): Promise<any> {
     return this.authHttpClient.get("/account/" + id);
   }
@@ -73,9 +96,9 @@ export class UserService {
     }
   }
 
-  async saveUser(data: any): Promise<any> {
+  async saveUser(data: any, id: string): Promise<any> {
     try {
-      return await this.authHttpClient.post("/account", data);
+      return await this.authHttpClient.post("/account/", data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
@@ -85,6 +108,41 @@ export class UserService {
   async updateUser(data: any, id: string): Promise<any> {
     try {
       return await this.authHttpClient.put("/account/" + id, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async addAccountGroups(data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.post("v1/account-groups", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async removeAccountGroups(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("v1/account-groups/" + id);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+  async addAccountRoles(data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.post("v1/account-roles", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async removeAccountRoles(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("v1/account-roles/" + id);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

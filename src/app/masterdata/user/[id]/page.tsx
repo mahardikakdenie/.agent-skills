@@ -7,12 +7,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import Image from "next/image";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Check, ChevronLeft } from "react-feather";
+import {
+  AlertCircle,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Search,
+  Trash2,
+  X,
+} from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
@@ -20,11 +30,37 @@ import { UserService } from "@/services/masterdata/user.service";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { hasPermission } from "@/context/auth.context";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import noData from "/public/images/no-data.webp";
+import {
+  AccountGroup,
+  GroupResponse,
+  GroupService,
+} from "@/services/masterdata/group.service";
 
 const EditUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -32,29 +68,53 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const path = usePathname();
+  const groupService = new GroupService();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenUser, setIsModalOpenUser] = useState(false);
+
+  const [dataGroup, setDataGroup] = useState<any[]>([]);
+  const [group, setGroup] = useState<GroupResponse[]>([]);
+  const [selectedGroup, setSelectedRoles] = useState<string[]>([]);
+  const [userGroup, setUserGroup] = useState<any[]>([]);
+  const [groupFilter, setGroupFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageRoles, setPageRoles] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItemsRoles, setTotalItemsRoles] = useState(0);
+  const [totalItemsUser, setTotalItemsUser] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPageGroup, setRowsPerPageRoles] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [dataRole, setDataRole] = useState<any[]>([]);
+  const [selectedRole, setSelectedRole] = useState<string[]>([]);
+  const [groupRole, setGroupRole] = useState<any[]>([]);
+  const [userFilter, setUserFilter] = useState("");
+  const [accoutndId, setAccountId] = useState("");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone_number, setPhoneNumber] = useState("");
-  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const [role, setRole] = useState("");
+  const [channel, setChannel] = useState("");
 
-  const { updateUser, fetchUserById } = useUser();
+  const isAllSelected = selectedGroup.length === dataGroup.length;
+  const isAllSelectedRole = selectedRole.length === dataRole.length;
 
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = await hasPermission("Masterdata.Update");
-      setHasAccess(access);
-      if (!access) {
-        router.push("/forbidden");
-      }
-    };
-
-    checkAccess();
-  }, [router]);
+  const {
+    updateUser,
+    fetchUserById,
+    addAccountGroups,
+    removeAccountGroups,
+    addAccountRoles,
+    removeAccountRoles,
+    fetchChannels,
+    fetchRole,
+    roles,
+    channels,
+  } = useUser();
 
   const {
     handleSubmit,
@@ -64,12 +124,14 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
+      id,
       name,
       email,
       phone_number,
-      role,
-      password,
+      password: "Yes",
       status,
+      role,
+      channel,
     },
   });
 
@@ -82,11 +144,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleChangeRole = (value: string) => {
-    setRole(value);
-    setValue("role", value);
-  };
-
   const handleChangeStatus = (value: string) => {
     setStatus(value);
     setValue("status", value);
@@ -97,14 +154,18 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       if (id) {
         try {
           const res = await fetchUserById(id);
+          setValue("id", res.id);
           setValue("name", res.name);
           setValue("email", res.email);
           setValue("phone_number", res.phone_number);
-          setValue("role", res.role);
           setValue("password", res.password);
           setValue("status", res.status);
-          setRole(res.role);
+          setValue("role", res.role);
+          setValue("channel", res.channel);
           setStatus(res.status);
+          setAccountId(res.id);
+          setUserGroup(res.account_groups.map((item: any) => item));
+          setGroupRole(res.account_roles.map((item: any) => item));
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -115,9 +176,14 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   }, [id, setValue]);
 
   useEffect(() => {
+    fetchChannels({});
+    fetchRole({});
+  }, []);
+
+  useEffect(() => {
     if (updateSuccess === true) {
       alert("Data berhasil disimpan!");
-      router.back();
+      router.push(`/masterdata/user`);
     } else if (updateSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }
@@ -132,6 +198,162 @@ const EditUser = ({ params }: { params: { id: string } }) => {
         return "text-[#00AB4F]";
       default:
         return "text-[#7B5D21]";
+    }
+  };
+
+  const selectGroup = () => {
+    groupService.getGroup(page, rowsPerPage).then((res) => {
+      setDataGroup(res.data);
+      setGroup(res.data);
+      setTotalItemsRoles(res.meta.total);
+    });
+  };
+
+  const handleSelectGroup = (id: string) => {
+    selectGroup();
+  };
+
+  const selectRole = () => {
+    groupService.getRoles(page, rowsPerPage).then((res) => {
+      setDataRole(res.data);
+      setTotalItemsUser(res.meta.total);
+    });
+  };
+
+  const handleSelectRole = (id: string) => {
+    selectRole();
+  };
+
+  const handleSelectAllChange = () => {
+    if (isAllSelected) {
+      setSelectedRoles([]);
+    } else {
+      setSelectedRoles(dataGroup.map((role) => role.id));
+    }
+  };
+
+  const handleCheckboxChange = (id: string) => {
+    setSelectedRoles((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((roleId) => roleId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleCheckboxChangeRole = (id: string) => {
+    setSelectedRole((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((userId) => userId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const isGroupSelected = (id: string) => selectedGroup.includes(id);
+
+  const handleRowsPerPageChangeGroup = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setRowsPerPageRoles(Number(e.target.value));
+    setPageRoles(1);
+  };
+
+  const handleAddSelectedGroups = async () => {
+    const addedIds = userGroup.map((item) => item.id);
+    const updatedUserGroup = [...userGroup];
+    for (let i = 0; i < selectedGroup.length; i++) {
+      if (!addedIds.includes(selectedGroup[i])) {
+        const response = await addAccountGroups({
+          account: accoutndId,
+          group: selectedGroup[i],
+        });
+
+        if (response) {
+          const accountId = response.id;
+          const userData = dataGroup.find(
+            (item) => item.id == selectedGroup[i]
+          );
+          updatedUserGroup.push({
+            id: accountId,
+            roles: userData,
+          });
+        }
+      }
+    }
+    window.location.reload();
+    setUserGroup(updatedUserGroup);
+  };
+
+  const handleDeleteSelectedGroup = async (id: string) => {
+    const response = await removeAccountGroups(id);
+    if (response) {
+      const selectedIds: string[] = [];
+      const updatedUserGroup: AccountGroup[] = [];
+      userGroup.map((group) => {
+        if (group.id != id) {
+          selectedIds.push(group.id);
+          updatedUserGroup.push(group);
+        }
+      });
+
+      setUserGroup(updatedUserGroup);
+      setSelectedRoles(selectedIds);
+    }
+  };
+
+  const handleSelectAllChangeRole = () => {
+    if (isAllSelectedRole) {
+      setSelectedRole([]);
+    } else {
+      setSelectedRole(dataRole.map((role) => role.id));
+    }
+  };
+
+  const isUserSelected = (id: string) => selectedRole.includes(id);
+
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number(e.target.value));
+    setPage(1);
+  };
+
+  const handleAddSelectedRole = async () => {
+    const addedIds = groupRole.map((item) => item.id);
+    const updatedGroupRole = [...groupRole];
+    for (let i = 0; i < selectedRole.length; i++) {
+      if (!addedIds.includes(selectedRole[i])) {
+        const response = await addAccountRoles({
+          account: accoutndId,
+          role: selectedRole[i],
+        });
+
+        if (response) {
+          const groupId = response.id;
+          const userData = dataRole.find((item) => item.id == selectedRole[i]);
+          updatedGroupRole.push({
+            id: groupId,
+            accounts: userData,
+          });
+        }
+      }
+    }
+
+    window.location.reload();
+    setGroupRole(updatedGroupRole);
+  };
+
+  const handleDeleteSelectedRole = async (id: string) => {
+    const response = await removeAccountRoles(id);
+    if (response) {
+      const selectedIds: string[] = [];
+      const updatedGroupRole: AccountGroup[] = [];
+      groupRole.map((role) => {
+        if (role.id != id) {
+          selectedIds.push(role.id);
+          updatedGroupRole.push(role);
+        }
+      });
+
+      setGroupRole(updatedGroupRole);
+      setSelectedRole(selectedIds);
     }
   };
 
@@ -186,10 +408,39 @@ const EditUser = ({ params }: { params: { id: string } }) => {
           <div className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-4">
             <div>
               <label
+                htmlFor="id"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                User ID
+              </label>
+              <Controller
+                name="id"
+                control={control}
+                defaultValue=""
+                disabled
+                rules={{ required: "Name is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="id"
+                    placeholder="Insert Name"
+                    {...field}
+                    className={`mt-1 block w-full h-12 bg-gray-200 text-gray-700 ${
+                      errors.id ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                  />
+                )}
+              />
+              {errors.id && (
+                <p className="text-red-500 text-xs mt-1">{errors.id.message}</p>
+              )}
+            </div>
+            <div>
+              <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Name
+                Name<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="name"
@@ -219,7 +470,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Email
+                Email<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="email"
@@ -255,7 +506,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 htmlFor="phone_number"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Phone Number
+                Phone Number<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="phone_number"
@@ -307,86 +558,16 @@ const EditUser = ({ params }: { params: { id: string } }) => {
             </div>
             <div>
               <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Role
-              </label>
-              <Controller
-                name="role"
-                control={control}
-                defaultValue=""
-                // rules={{ required: "Role is required" }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    value={role}
-                    onValueChange={handleChangeRole}
-                  >
-                    <SelectTrigger
-                      className={`w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 ${role}`}
-                    >
-                      <SelectValue placeholder="Select Role">
-                        {role}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Admin">Admin</SelectItem>
-                      <SelectItem value="Partner">Partner</SelectItem>
-                      <SelectItem value="Insurer">Insurer</SelectItem>
-                      <SelectItem value="User">User</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.role && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.role.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Password
-              </label>
-              <Controller
-                name="password"
-                control={control}
-                defaultValue=""
-                // rules={{ required: "Password is required" }}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="password"
-                    placeholder="Insert Password"
-                    {...field}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
                 htmlFor="status"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Status
+                Status<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="status"
                 control={control}
                 defaultValue=""
-                // rules={{ required: "Status is required" }}
+                rules={{ required: "Status is required" }}
                 render={({ field }) => (
                   <Select
                     {...field}
@@ -415,6 +596,547 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 </p>
               )}
             </div>
+            <div>
+              <label
+                htmlFor="role"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Role
+              </label>
+              <Controller
+                name="role"
+                control={control}
+                rules={{ required: "Role ID is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {roles.map((role: any) => (
+                          <SelectItem key={role.id} value={role.name}>
+                            {role.name
+                              .replace(/-/g, " ")
+                              .replace(/\b\w/g, (char: any) =>
+                                char.toUpperCase()
+                              )}{" "}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.role && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.role.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="channel"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Channel
+              </label>
+              <Controller
+                name="channel"
+                control={control}
+                rules={{ required: "Channel ID is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Channel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {channels.map((channel: any) => (
+                          <SelectItem key={channel.id} value={channel.id}>
+                            {channel.name
+                              .replace(/-/g, " ")
+                              .replace(/\b\w/g, (char: any) =>
+                                char.toUpperCase()
+                              )}{" "}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.channel && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.channel.message?.toString()}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-5 items-center pt-2 sm:pt-5 sm:mb-0 mb-3">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="password"
+                    checked={field.value === "Yes"} // Periksa apakah nilai "Yes"
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked ? "Yes" : "No")
+                    }
+                  />
+                )}
+              />
+            </div>
+          </div>
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex gap-4 items-center">
+              <div>
+                <div className="text-primary font-bold mb-2">
+                  User's Group ({userGroup.length})
+                </div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    All the users in the group will have permissions that are
+                    defined in the selected group roles
+                  </i>
+                </p>
+              </div>
+              <Dialog
+                open={isModalOpen}
+                onOpenChange={(open) => {
+                  setIsModalOpen(open);
+                  if (open) handleSelectGroup(id);
+                }}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    color="warning"
+                    className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+                    onClick={() => handleSelectGroup(id)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" /> Assign Group
+                  </Button>
+                </DialogTrigger>
+                <DialogContent
+                  style={{ zIndex: 100 }}
+                  className="p-0 w-[1000px] max-w-full overflow-hidden"
+                >
+                  <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                    <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                      Select Group
+                      <DialogClose className="ml-auto">
+                        <Button
+                          type="button"
+                          className="bg-transparent hover:bg-transparent text-black p-0"
+                        >
+                          <X className="w-5 h-5" />
+                        </Button>
+                      </DialogClose>
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  <div className="p-4">
+                    <div className="grid gap-4 mb-4">
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          placeholder="Search"
+                          value={groupFilter}
+                          onChange={(e) => setGroupFilter(e.target.value)}
+                          className="px-4 text-sm border rounded-lg h-11"
+                        />
+                        <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
+                      </div>
+                    </div>
+
+                    <Table className="table-claims">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="whitespace-nowrap py-2 w-14">
+                            <Input
+                              type="checkbox"
+                              checked={isAllSelected}
+                              onChange={handleSelectAllChange}
+                              className="w-4 h-4 mx-auto"
+                            />
+                          </TableHead>
+                          <TableHead className="py-2">Group Name</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {group.length > 0 ? (
+                          group.map((group) => (
+                            <TableRow
+                              key={group.id}
+                              className="cursor-pointer"
+                              onClick={() => handleCheckboxChange(group.id)}
+                            >
+                              <TableCell align="center">
+                                <Input
+                                  type="checkbox"
+                                  checked={isGroupSelected(group.id)}
+                                  onChange={(event) => {
+                                    event.stopPropagation();
+                                    handleCheckboxChange(group.id);
+                                  }}
+                                  className="w-4 h-4"
+                                />
+                              </TableCell>
+                              <TableCell>{group?.name || "-"}</TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow className="hover:!bg-white">
+                            <TableCell colSpan={10}>
+                              <div className="flex flex-col gap-4 items-center justify-center py-14">
+                                <Image alt="no data" src={noData} width={200} />
+                                No transaction data available
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell colSpan={8}>
+                            <div className="flex justify-center items-center gap-2 font-normal">
+                              <label htmlFor="rowsPerPageGroup">Showing:</label>
+                              <select
+                                id="rowsPerPageGroup"
+                                value={rowsPerPageGroup}
+                                onChange={handleRowsPerPageChangeGroup}
+                                className="p-2 border rounded"
+                              >
+                                {[10, 20, 30, 50].map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                              <span className="mr-2">
+                                of {totalItemsRoles} items
+                              </span>
+                              <button
+                                onClick={() =>
+                                  setPageRoles((prevState) =>
+                                    Math.max(prevState - 1, 1)
+                                  )
+                                }
+                                disabled={page === 1}
+                                title="Prev"
+                              >
+                                <ChevronLeft />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setPageRoles((prevState) =>
+                                    Math.min(prevState + 1, totalPages)
+                                  )
+                                }
+                                disabled={page === totalPages}
+                                title="Next"
+                              >
+                                <ChevronRight />
+                              </button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </TableFooter>
+                    </Table>
+                  </div>
+
+                  <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                    <DialogClose asChild>
+                      <Button
+                        type="button"
+                        className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                        onClick={handleAddSelectedGroups}
+                      >
+                        <Check className="w-4 h-4 mr-2" /> Save
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {userGroup.length > 0 && (
+              <div className="w-full bg-white rounded-lg overflow-auto mt-5">
+                <Table className="table-search-params">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap py-2 w-52">
+                        Group
+                      </TableHead>
+                      <TableHead className="py-2">Role</TableHead>
+                      <TableHead className="py-2"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {userGroup.map((group) => (
+                      <TableRow key={group.id}>
+                        <TableCell className="py-1">
+                          {group?.groups?.name || "-"}
+                        </TableCell>
+                        <TableCell className="py-1">
+                          <div className="flex flex-wrap gap-2">
+                            {group?.groups?.group_roles?.length > 0
+                              ? group.groups.group_roles.map(
+                                  (groupRole: any) => (
+                                    <span
+                                      key={groupRole.roles?.id}
+                                      className="border border-gray-300 bg-gray-100 rounded py-1 px-2"
+                                    >
+                                      {groupRole.roles?.name || "-"}
+                                    </span>
+                                  )
+                                )
+                              : "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-1 text-center">
+                          <Button
+                            className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteSelectedGroup(group.id);
+                            }}
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex gap-4 items-center">
+              <div>
+                <div className="text-primary font-bold mb-2">
+                  Additional Role ({groupRole.length})
+                </div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    Assigned users to specific roles. If you are unable to find
+                    the one you require, please request the superadmin to create
+                    a new role
+                  </i>
+                </p>
+              </div>
+              <Dialog
+                open={isModalOpenUser}
+                onOpenChange={(open) => {
+                  setIsModalOpenUser(open);
+                }}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    color="warning"
+                    className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+                    onClick={() => handleSelectRole(id)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" /> Add Role
+                  </Button>
+                </DialogTrigger>
+                <DialogContent
+                  style={{ zIndex: 100 }}
+                  className="p-0 w-[1000px] max-w-full overflow-hidden"
+                >
+                  <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                    <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                      Select Role
+                      <DialogClose className="ml-auto">
+                        <Button
+                          type="button"
+                          className="bg-transparent hover:bg-transparent text-black p-0"
+                        >
+                          <X className="w-5 h-5" />
+                        </Button>
+                      </DialogClose>
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  <div
+                    className="p-4 overflow-auto"
+                    style={{ maxHeight: "calc(100vh - 180px)" }}
+                  >
+                    <div className="grid grid-cols-1 gap-4 mb-4">
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          placeholder="Search"
+                          value={userFilter}
+                          onChange={(e) => setUserFilter(e.target.value)}
+                          className="px-4 text-sm border rounded-lg h-11"
+                        />
+                        <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
+                      </div>
+                      <div className="flex gap-4 italic text-xs items-center font-light bg-white shadow rounded py-2 px-4">
+                        <AlertCircle
+                          className="text-blue-600"
+                          width="35"
+                          height="35"
+                        />
+                        Assigned users to specific roles. If you are unable to
+                        find the one you require, please request the superadmin
+                        to create a new role
+                      </div>
+                    </div>
+
+                    <Table className="table-claims">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="whitespace-nowrap py-2 w-14">
+                            <Input
+                              type="checkbox"
+                              checked={isAllSelectedRole}
+                              onChange={handleSelectAllChangeRole}
+                              className="w-4 h-4 mx-auto"
+                            />
+                          </TableHead>
+                          <TableHead className="py-2">Role Name</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {dataRole.length > 0 ? (
+                          dataRole.map((role) => (
+                            <TableRow
+                              key={role.id}
+                              className="cursor-pointer"
+                              onClick={() => handleCheckboxChangeRole(role.id)}
+                            >
+                              <TableCell align="center">
+                                <Input
+                                  type="checkbox"
+                                  checked={isUserSelected(role.id)}
+                                  onChange={(event) => {
+                                    event.stopPropagation();
+                                    handleCheckboxChangeRole(role.id);
+                                  }}
+                                  className="w-4 h-4"
+                                />
+                              </TableCell>
+                              <TableCell>{role?.name || "-"}</TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow className="hover:!bg-white">
+                            <TableCell colSpan={4}>
+                              <div className="flex flex-col gap-4 items-center justify-center py-14">
+                                <Image alt="no data" src={noData} width={200} />
+                                No transaction data available
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell colSpan={8}>
+                            <div className="flex justify-center items-center gap-2 font-normal">
+                              <label htmlFor="rowsPerPage">Showing:</label>
+                              <select
+                                id="rowsPerPage"
+                                value={rowsPerPage}
+                                onChange={handleRowsPerPageChange}
+                                className="p-2 border rounded"
+                              >
+                                {[10, 20, 30, 50].map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                              <span className="mr-2">
+                                of {totalItemsUser} items
+                              </span>
+                              <button
+                                onClick={() =>
+                                  setPage((prevState) =>
+                                    Math.max(prevState - 1, 1)
+                                  )
+                                }
+                                disabled={page === 1}
+                                title="Prev"
+                              >
+                                <ChevronLeft />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setPage((prevState) =>
+                                    Math.min(prevState + 1, totalPages)
+                                  )
+                                }
+                                disabled={page === totalPages}
+                                title="Next"
+                              >
+                                <ChevronRight />
+                              </button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </TableFooter>
+                    </Table>
+                  </div>
+
+                  <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                    <DialogClose asChild>
+                      <Button
+                        type="button"
+                        className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                        onClick={handleAddSelectedRole}
+                      >
+                        <Check className="w-4 h-4 mr-2" /> Save
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+            {groupRole.length > 0 && (
+              <div className="w-full bg-white rounded-lg overflow-auto mt-5">
+                <Table className="table-search-params">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="py-2">Name</TableHead>
+                      {/* <TableHead className="py-2 w-52">Last Activity</TableHead> */}
+                      <TableHead className="py-2 w-10">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {groupRole.map((role) => (
+                      <TableRow key={role.id}>
+                        <TableCell className="py-1">
+                          {role?.roles?.name || "-"}
+                        </TableCell>
+                        <TableCell className="py-1 text-center">
+                          <Button
+                            className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteSelectedRole(role.id);
+                            }}
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </div>
         </div>
       </form>
@@ -422,6 +1144,5 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const EdiProductCategoryWithSidebar = (params: any) =>
-  WithSidebar(EditUser)(params);
-export default EdiProductCategoryWithSidebar;
+const EditUserWithSidebar = (params: any) => WithSidebar(EditUser)(params);
+export default EditUserWithSidebar;
