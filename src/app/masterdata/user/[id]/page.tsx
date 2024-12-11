@@ -590,7 +590,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                               .replace(/-/g, " ")
                               .replace(/\b\w/g, (char: any) =>
                                 char.toUpperCase()
-                              )}{" "}
+                              ) || "-"}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -628,7 +628,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                               .replace(/-/g, " ")
                               .replace(/\b\w/g, (char: any) =>
                                 char.toUpperCase()
-                              )}{" "}
+                              ) || "-"}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -655,7 +655,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Checkbox
                     id="password"
-                    checked={field.value === "Yes"} // Periksa apakah nilai "Yes"
+                    checked={field.value === "Yes"}
                     onCheckedChange={(checked) =>
                       field.onChange(checked ? "Yes" : "No")
                     }
@@ -668,7 +668,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
             <div className="flex gap-4 items-center">
               <div>
                 <div className="text-primary font-bold mb-2">
-                  User's Group ({userGroup.length})
+                  User&apos;s Group ({userGroup.length})
                 </div>
                 <p className="text-sm text-black/60">
                   <i>
@@ -1086,7 +1086,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="py-2">Name</TableHead>
-                      {/* <TableHead className="py-2 w-52">Last Activity</TableHead> */}
                       <TableHead className="py-2 w-10">Action</TableHead>
                     </TableRow>
                   </TableHeader>
