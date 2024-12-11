@@ -397,7 +397,9 @@ const AddUser = ({ params }: { params: { id: string } }) => {
           <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
             <div className="flex gap-4 items-center">
               <div>
-                <div className="text-primary font-bold mb-2">User's Group</div>
+                <div className="text-primary font-bold mb-2">
+                  User&apos;s Group
+                </div>
                 <p className="text-sm text-black/60">
                   <i>
                     All the users in the group will have permissions that are
