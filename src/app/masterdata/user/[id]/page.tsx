@@ -154,7 +154,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       if (id) {
         try {
           const res = await fetchUserById(id);
-          setValue("id", res.id);
           setValue("name", res.name);
           setValue("email", res.email);
           setValue("phone_number", res.phone_number);
@@ -406,35 +405,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
           <div className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="id"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                User ID
-              </label>
-              <Controller
-                name="id"
-                control={control}
-                defaultValue=""
-                disabled
-                rules={{ required: "Name is required" }}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="id"
-                    placeholder="Insert Name"
-                    {...field}
-                    className={`mt-1 block w-full h-12 bg-gray-200 text-gray-700 ${
-                      errors.id ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.id && (
-                <p className="text-red-500 text-xs mt-1">{errors.id.message}</p>
-              )}
-            </div>
             <div>
               <label
                 htmlFor="name"
@@ -1026,7 +996,13 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                   className="w-4 h-4"
                                 />
                               </TableCell>
-                              <TableCell>{role?.name || "-"}</TableCell>
+                              <TableCell>
+                                {role.name
+                                  .replace(/-/g, " ")
+                                  .replace(/\b\w/g, (char: any) =>
+                                    char.toUpperCase()
+                                  ) || "-"}
+                              </TableCell>
                             </TableRow>
                           ))
                         ) : (
@@ -1118,7 +1094,11 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                     {groupRole.map((role) => (
                       <TableRow key={role.id}>
                         <TableCell className="py-1">
-                          {role?.roles?.name || "-"}
+                          {role?.roles?.name
+                            .replace(/-/g, " ")
+                            .replace(/\b\w/g, (char: any) =>
+                              char.toUpperCase()
+                            ) || "-"}
                         </TableCell>
                         <TableCell className="py-1 text-center">
                           <Button
