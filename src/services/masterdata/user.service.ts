@@ -51,10 +51,15 @@ export class UserService {
     );
   }
 
-  async getUser(page?: number, rowsPerPage?: number): Promise<User> {
+  async getUser(
+    page?: number,
+    rowsPerPage?: number,
+    searchData?: string
+  ): Promise<User> {
     const params: any = {
       page: page,
       pageSize: rowsPerPage,
+      search: searchData,
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
@@ -65,7 +70,7 @@ export class UserService {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();
       return await this.channelHttpClient.get<Channel>(
-        "/channels?" + queryString
+        "v1/channels?" + queryString
       );
     } catch (error) {
       console.error("Request failed:", error);

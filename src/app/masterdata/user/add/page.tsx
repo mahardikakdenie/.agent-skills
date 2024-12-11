@@ -146,29 +146,6 @@ const AddUser = ({ params }: { params: { id: string } }) => {
           <div className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-4">
             <div>
               <label
-                htmlFor="id"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                User ID
-              </label>
-              <Controller
-                name="id"
-                control={control}
-                defaultValue=""
-                disabled
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="id"
-                    placeholder="-"
-                    {...field}
-                    className={`mt-1 block w-full h-12 bg-gray-200 text-gray-700 rounded-md shadow-sm`}
-                  />
-                )}
-              />
-            </div>
-            <div>
-              <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >

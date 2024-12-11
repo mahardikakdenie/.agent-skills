@@ -13,26 +13,31 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
+import { ChevronLeft, ChevronRight, Plus, Search, Trash } from "react-feather";
 
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import { User, UserService } from "@/services/masterdata/user.service";
 import { hasPermission } from "@/context/auth.context";
+import { Input } from "@/components/ui/input";
+import _ from "lodash";
 
 const Users = () => {
   useRequireAuth();
   const path = usePathname();
   const userService = new UserService();
   const [user, setUser] = useState<User[]>([]);
+  const [filteredUser, setFilteredUser] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchData, setSearchData] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
-
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -46,7 +51,7 @@ const Users = () => {
       const deleteBtn = await hasPermission("Masterdata.Delete");
       const createBtn = await hasPermission("Masterdata.Create");
 
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
@@ -58,25 +63,27 @@ const Users = () => {
     checkAccess();
   }, [router]);
 
-
-
   useEffect(() => {
-    const fetchInsuranceProduct = async () => {
-      setLoading(true);
+    const fetchUser = async () => {
       try {
-        const result = await userService.getUser(page, rowsPerPage);
+        const result = await userService.getUser(page, rowsPerPage, searchData);
         setUser(result.data);
+        setFilteredUser(result.data);
         setTotalPages(result.meta.pageTotal);
         setTotalItems(result.meta.total);
       } catch (error) {
-        console.error("Error fetching insurance products:", error);
+        console.error("Error fetching page:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInsuranceProduct();
-  }, [page, rowsPerPage]);
+    fetchUser();
+  }, [page, rowsPerPage, searchData]);
+
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+  }, 100);
 
   if (loading) {
     return (
@@ -95,7 +102,6 @@ const Users = () => {
       try {
         await userService.deleteUser(id);
         setUser((prevUser) => prevUser.filter((user) => user.id !== id));
-        window.location.reload();
       } catch (error) {
         console.error("Failed to delete user:", error);
       }
@@ -120,14 +126,23 @@ const Users = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2 pb-4 items-center">
+      <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
           User
         </h1>
+        <div className="relative max-w-sm w-full ml-auto shadow-sm">
+          <Input
+            type="text"
+            placeholder="Search by Name or Email"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-3 rounded-md pr-10 w-full"
+          />
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Button
           onClick={() => router.push(`${path}/add`)}
           disabled={!canCreate}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Plus className="w-5 h-5 mr-1 " /> Add New
         </Button>
@@ -138,7 +153,6 @@ const Users = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              {/* <TableHead>User ID</TableHead> */}
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Phone Number</TableHead>
@@ -148,8 +162,8 @@ const Users = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {user.length > 0 ? (
-              user.map((user, index) => (
+            {filteredUser.length > 0 ? (
+              filteredUser.map((user, index) => (
                 <TableRow key={user.id}>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell className="whitespace-nowrap">
@@ -157,7 +171,12 @@ const Users = () => {
                   </TableCell>
                   <TableCell>{user.email || "-"}</TableCell>
                   <TableCell>{user.phone_number || "-"}</TableCell>
-                  <TableCell>{user.role || "-"}</TableCell>
+                  <TableCell>
+                    {user.role
+                      .replace(/-/g, " ")
+                      .replace(/\b\w/g, (char: any) => char.toUpperCase()) ||
+                      "-"}
+                  </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(user.status)}>
                       {user.status || "-"}
@@ -187,12 +206,12 @@ const Users = () => {
               ))
             ) : (
               <TableRow className="hover:!bg-white">
-                <TableCell colSpan={5}>
+                <TableCell colSpan={7}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
