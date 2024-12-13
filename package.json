@@ -33,6 +33,7 @@
     "papaparse": "^5.4.1",
     "qs": "^6.13.0",
     "react": "^18",
+    "react-day-picker": "^9.4.3",
     "react-dom": "^18",
     "react-feather": "^2.0.10",
     "react-hook-form": "^7.52.2",

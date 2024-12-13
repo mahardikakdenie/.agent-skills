@@ -253,6 +253,24 @@ const Sidebar = () => {
                   Policy List
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/endorsement"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/endorsement")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Endorsement"
+                    className="w-7 min-w-7"
+                  />
+                  Endorsement
+                </Link>
+              </li>
               <li className="mt-2 text-sm">
                 <strong>Claim</strong>
               </li>

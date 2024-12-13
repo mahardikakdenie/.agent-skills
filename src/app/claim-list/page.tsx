@@ -39,7 +39,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -47,6 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { hasPermission } from "@/context/auth.context";
+import _ from "lodash";
 
 const PolicyPage = () => {
   useRequireAuth();
@@ -64,7 +64,6 @@ const PolicyPage = () => {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalOpenDocuments, setIsModalOpenDocuments] = useState(false);
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null);
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [amountApproved, setAmountApproved] = useState(0);
@@ -84,7 +83,7 @@ const PolicyPage = () => {
   );
   const [successUpdate, setSuccessUpdate] = useState(false);
   const [selectedClaim, setSelectedClaim] = useState<any>(null);
-
+  const [searchData, setSearchData] = useState("");
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -98,7 +97,7 @@ const PolicyPage = () => {
       const deleteBtn = await hasPermission("Claim.Delete");
       const createBtn = await hasPermission("Claim.Create");
 
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
@@ -110,14 +109,14 @@ const PolicyPage = () => {
     checkAccess();
   }, [router]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await claimService.getClaims(
           page,
           rowsPerPage,
-          tab === "All" ? "" : tab
+          tab === "All" ? "" : tab,
+          searchData
         );
 
         setFilteredClaims(res.data);
@@ -131,7 +130,7 @@ const PolicyPage = () => {
     };
 
     fetchData();
-  }, [page, rowsPerPage, tab, successUpdate]);
+  }, [page, rowsPerPage, tab, successUpdate, searchData]);
   console.log("filteredClaims", filteredClaims);
 
   useEffect(() => {
@@ -154,6 +153,10 @@ const PolicyPage = () => {
     setTab(tab);
     setPage(1);
   };
+
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+  }, 100);
 
   const goToDetail = (claimId: string) => {
     router.push(`${path}/${claimId}`);
@@ -336,7 +339,7 @@ const PolicyPage = () => {
     setPendingStatus(null);
   };
 
-  const downloadReport = () => { };
+  const downloadReport = () => {};
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -369,11 +372,22 @@ const PolicyPage = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <div className="flex gap-4">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">Claim List</h1>
+      <div className="flex gap-4 pb-4 items-center">
+        <h1 className="text-black font-bold text-2xl mt-2">Claim List</h1>
+
+        <div className="relative max-w-sm w-full ml-auto shadow-sm">
+          <Input
+            type="text"
+            placeholder="Search by Claim ID"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-3 rounded-md pr-10 w-full"
+          />
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Button
-          className="rounded-full ml-auto bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
+          className="rounded-full bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
           onClick={downloadReport}
+          disabled
         >
           <Download width={20} height={20} />
           <span className="ml-1">Report</span>
@@ -656,8 +670,9 @@ const PolicyPage = () => {
         <div className="w-full flex items-center overflow-auto">
           <div
             onClick={() => selectTab("All")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "All" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "All" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
               className={`text-sm mr-3 h-16 ${tab === "All" && "text-primary"}`}
@@ -665,8 +680,9 @@ const PolicyPage = () => {
               All Claim
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "All" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "All" && "hidden"}`}
             >
               {totalData}
               <span
@@ -677,18 +693,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Submitted")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Submitted" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Submitted" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Submitted" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Submitted" && "text-primary"
+              }`}
             >
               Submitted
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Submitted" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Submitted" && "hidden"}`}
             >
               {totalData}
               <span
@@ -699,18 +718,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Acknowledged")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Acknowledged" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Acknowledged" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Acknowledged" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Acknowledged" && "text-primary"
+              }`}
             >
               Acknowledged
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Acknowledged" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Acknowledged" && "hidden"}`}
             >
               {totalData}
               <span
@@ -721,18 +743,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Document Review")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Document Review" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Document Review" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Document Review" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Document Review" && "text-primary"
+              }`}
             >
               Document Review
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Document Review" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Document Review" && "hidden"}`}
             >
               {totalData}
               <span
@@ -743,19 +768,22 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Lack of Documents")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Lack of Documents" &&
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Lack of Documents" &&
               "border-b-[3px] border-primary px-5"
-              }`}
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Lack of Documents" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Lack of Documents" && "text-primary"
+              }`}
             >
               Lack of Documents
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Lack of Documents" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Lack of Documents" && "hidden"}`}
             >
               {totalData}
               <span
@@ -766,18 +794,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Claim Assessment")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Claim Assessment" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Claim Assessment" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Claim Assessment" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Claim Assessment" && "text-primary"
+              }`}
             >
               Claim Assessment
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Claim Assessment" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Claim Assessment" && "hidden"}`}
             >
               {totalData}
               <span
@@ -788,18 +819,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Approved")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Approved" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Approved" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Approved" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Approved" && "text-primary"
+              }`}
             >
               Approved
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Approved" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Approved" && "hidden"}`}
             >
               {totalData}
               <span
@@ -810,18 +844,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Rejected")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Rejected" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Rejected" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Rejected" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Rejected" && "text-primary"
+              }`}
             >
               Rejected
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Rejected" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Rejected" && "hidden"}`}
             >
               {totalData}
               <span
@@ -832,18 +869,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Paid")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Paid" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Paid" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Paid" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Paid" && "text-primary"
+              }`}
             >
               Paid
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Paid" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Paid" && "hidden"}`}
             >
               {totalData}
               <span
@@ -854,18 +894,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Closed")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "Closed" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+              tab === "Closed" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "Closed" && "text-primary"
-                }`}
+              className={`text-sm mr-3 h-16 ${
+                tab === "Closed" && "text-primary"
+              }`}
             >
               Closed
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Closed" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Closed" && "hidden"}`}
             >
               {totalData}
               <span
@@ -897,12 +940,13 @@ const PolicyPage = () => {
               filteredClaims.map((claim, index) => (
                 <TableRow
                   key={claim.id}
-                  className={`${claim.sla_status === "Pending"
+                  className={`${
+                    claim.sla_status === "Pending"
                       ? "bg-[#FFFEE2]"
                       : claim.sla_status === "Overdue"
-                        ? "bg-[#FFF5F5]"
-                        : ""
-                    }`}
+                      ? "bg-[#FFF5F5]"
+                      : ""
+                  }`}
                 >
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>
