@@ -49,4 +49,17 @@ export class TransactionService {
       throw new Error(error.response.data.message);
     }
   }
+
+  async searchTransactions(search: any): Promise<any> {
+    let qs = "";
+    if (search) {
+      qs = `?${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`;
+    }
+    try {
+      return await this.httpClient.get(`/v1/transactions${qs}`);
+
+    } catch (error: any) {
+      throw new Error(error.response.data.message);
+    }
+  }
 }
