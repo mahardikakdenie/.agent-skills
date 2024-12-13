@@ -115,7 +115,15 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
-        <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto">
+        <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative">
+          <div className="absolute lg:right-6 right-4 top-3 text-xs text-gray-500">
+            <i>
+              Last Update{" "}
+              {policy?.updated_at
+                ? new Date(policy.updated_at).toLocaleDateString("en-GB")
+                : "-"}
+            </i>
+          </div>
           <div className="font-bold text-base">Insured Person</div>
           <div className="flex gap-2 text-sm font-medium">
             <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">

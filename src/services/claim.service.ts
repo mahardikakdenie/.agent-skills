@@ -127,11 +127,13 @@ export class ClaimService {
   async getClaims(
     page: number,
     rowsPerPage: number,
-    status: string
+    status: string,
+    searchData?: string
   ): Promise<ClaimResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
+      keyword: searchData,
     };
 
     if (status && status !== "Draft") {
