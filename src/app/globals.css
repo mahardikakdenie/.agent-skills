@@ -200,9 +200,11 @@ nav[aria-label="breadcrumb"] li span,
 nav[aria-label="breadcrumb"] li a {
   color: #03a89e !important;
 }
+.table-flip tr:nth-child(even),
 .table-search-params tr:nth-child(even) {
   background-color: #f8f8fa;
 }
+.table-flip tr:hover,
 .table-search-params tr:hover {
   background-color: #e3e3e3;
 }
