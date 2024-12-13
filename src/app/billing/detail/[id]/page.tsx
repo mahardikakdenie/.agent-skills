@@ -1,17 +1,8 @@
 "use client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import WithSidebar from "@/hoc/with-sidebar";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
-import { useBilling, useChannel, useTransaction } from "../../hook";
-import { useProduct } from "../../../masterdata/product/hooks";
-import { useLoading } from "@/context/loading.context";
+import { useBilling } from "../../hook";
 import {
   Table,
   TableBody,
@@ -21,77 +12,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { channel } from "diagnostics_channel";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { formatMoney } from "@/lib/formatter";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { useLoading } from "@/context/loading.context";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const DetailBillingPage = () => {
   useRequireAuth();
 
-  const { getBillingById, billing } = useBilling();
+  const { getBillingById, billing, updateBilling } = useBilling();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const totalPages = Math.ceil(totalItems / rowsPerPage);
-
+  const { setLoading } = useLoading();
+  const [openCancel, setOpenCancel] = useState(false);
+  const [openUpdateToPaid, setOpenUpdateToPaid] = useState(false);
   const handleRowsPerPageChange = (e: any) => {
     setRowsPerPage(e.target.value);
   };
 
   const { id } = useParams();
-  const months = [
-    {
-      value: "1",
-      name: "January",
-    },
-    {
-      value: "2",
-      name: "February",
-    },
-    {
-      value: "3",
-      name: "March",
-    },
-    {
-      value: "4",
-      name: "April",
-    },
-    {
-      value: "5",
-      name: "May",
-    },
-    {
-      value: "6",
-      name: "June",
-    },
-    {
-      value: "7",
-      name: "July",
-    },
-    {
-      value: "8",
-      name: "August",
-    },
-    {
-      value: "9",
-      name: "September",
-    },
-    {
-      value: "10",
-      name: "October",
-    },
-    {
-      value: "11",
-      name: "November",
-    },
-    {
-      value: "12",
-      name: "December",
-    },
-  ];
 
   const handlePaging = (page: number) => {
     setPage(page);
@@ -108,42 +63,122 @@ const DetailBillingPage = () => {
   useEffect(() => {
     getBillingById(id as string, 1, rowsPerPage);
   }, [id]);
+
+  const router = useRouter();
+  const handleBack = () => {
+    router.push("/billing");
+  };
+
+  const handleUpdateToPaid = async () => {
+    try {
+      setLoading(true);
+      await updateBilling(id as string, { status: "paid" });
+      setLoading(false);
+      alert("Billing updated to paid");
+      router.push("/billing");
+    } catch (error) {
+      setLoading(false);
+      console.error("Request failed:", error);
+      alert("Failed to update billing");
+    }
+  };
+
+  const handleCancel = () => {
+    try {
+      setLoading(true);
+
+      updateBilling(id as string, {
+        status: "cancelled",
+        deleted_at: new Date(),
+      });
+      alert("Billing cancelled");
+      setLoading(false);
+      router.push("/billing");
+    } catch (error) {
+      setLoading(false);
+      console.error("Request failed:", error);
+      alert("Failed to cancel billing");
+    }
+  };
   return (
     billing.data && (
-      <div className="flex flex-col w-full p-4 md:p-6 ">
-        <div className="flex justify-between items-center">
-          <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-            Billing Detail
-          </h1>
-        </div>
-
-        <div className="pt-5">
-          <div className="p-4 md:p-6 bg-white rounded-lg overflow-x-auto">
-            <div>Billing No. {billing.data[0].billings.billing_no}</div>
-            <div>
-              Total Amount: {formatMoney(billing.data[0].billings.amount)}
+      <div className="flex flex-col w-full">
+        <div className="bg-white md:px-6 p-4 flex items-center">
+          <div>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink>Billing</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Billing Detail</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
+              Billing Detail
+            </h2>
+          </div>
+          <div className="flex space-x-4 ml-auto">
+            <div
+              onClick={handleBack}
+              className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back
             </div>
-            <div>
-              Billing Created Date:{" "}
-              {new Date(billing.data[0].billings.created_at).toDateString()}
-            </div>
-            <div>
-              Status:{" "}
-              {billing.data[0].billings.status
-                .split("-")
-                .map(
-                  (word: any) =>
-                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                )
-                .join(" ")}
-            </div>
-
-            <div className="pt-5 grid grid-cols-2"></div>
           </div>
         </div>
 
-        <div className="pt-5">
-          <div className="p-4 md:p-6 bg-white rounded-lg overflow-x-auto">
+        <div className="pt-5 md:px-6 p-4 m-5 bg-white">
+          <div className="pt-5">
+            <div>
+              <div>Billing No. {billing.data[0].billings.billing_no}</div>
+              <div>
+                Total Amount: {formatMoney(billing.data[0].billings.amount)}
+              </div>
+              <div>
+                Billing Created Date:{" "}
+                {new Date(billing.data[0].billings.created_at).toDateString()}
+              </div>
+              <div>
+                Status:{" "}
+                {billing.data[0].billings.status
+                  .split("-")
+                  .map(
+                    (word: any) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")}
+              </div>
+              <div>Type: {billing.data[0].billings.type}</div>
+              <div>Company Name: {billing.data[0].billings.company_name}</div>
+              <div>Period: {billing.data[0].billings.transaction_period}</div>
+
+              {billing.data[0].billings.status === "waiting-for-payment" && (
+                <div className="pt-5 flex flex-row gap-3">
+                  <div>
+                    <Button onClick={() => setOpenUpdateToPaid(true)}>
+                      Update to Paid
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      onClick={() => setOpenCancel(true)}
+                      variant={"destructive"}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-5 md:px-6 p-4 m-5 bg-white">
+          <div>
             <Table className="table-claims w-full">
               <TableHeader>
                 <TableRow>
@@ -165,9 +200,9 @@ const DetailBillingPage = () => {
                         <TableCell>
                           {data.details?.plan_name.split("|").join("\n")}
                         </TableCell>
-                        <TableCell>{data.details.insurance_name}</TableCell>
+                        <TableCell>{data.details?.insurance_name}</TableCell>
                         <TableCell>{formatMoney(data.amount)}</TableCell>
-                        <TableCell>{data.details.transaction_date}</TableCell>
+                        <TableCell>{data.details?.transaction_date}</TableCell>
                         <TableCell>{data.commission_percentage ?? 0}</TableCell>
                         <TableCell>
                           {formatMoney(data.commission_amount ?? 0)}
@@ -194,7 +229,7 @@ const DetailBillingPage = () => {
                         ))}
                       </select>
                       <span className="mr-2">
-                        of {billing.data.total} items
+                        of {billing.meta?.total} items
                       </span>
                       <button
                         onClick={() => handlePaging(page - 1)}
@@ -205,7 +240,7 @@ const DetailBillingPage = () => {
                       </button>
                       <button
                         onClick={() => handlePaging(page + 1)}
-                        disabled={page === totalPages}
+                        disabled={page === billing.meta?.pageTotal}
                         title="Next"
                       >
                         <ChevronRight />
@@ -215,6 +250,63 @@ const DetailBillingPage = () => {
                 </TableRow>
               </TableFooter>
             </Table>
+            <Dialog open={openUpdateToPaid} onOpenChange={setOpenUpdateToPaid}>
+              <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
+                <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                  <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                    Update to Paid
+                    <DialogClose className="ml-auto">
+                      <Button
+                        type="button"
+                        className="bg-transparent hover:bg-transparent text-black p-0"
+                      >
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </DialogClose>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="p-4">
+                  <p>Are you sure you want to update to paid?</p>
+                  <div className="flex justify-end mt-5">
+                    <Button
+                      className="btn btn-primary"
+                      onClick={handleUpdateToPaid}
+                    >
+                      Paid
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={openCancel} onOpenChange={setOpenCancel}>
+              <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
+                <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                  <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                    Cancel Billing
+                    <DialogClose className="ml-auto">
+                      <Button
+                        type="button"
+                        className="bg-transparent hover:bg-transparent text-black p-0"
+                      >
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </DialogClose>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="p-4">
+                  <p>Are you sure you want to cancel this billing?</p>
+                  <div className="flex justify-end mt-5">
+                    <Button
+                      className="btn btn-primary"
+                      variant={"destructive"}
+                      onClick={handleCancel}
+                    >
+                      Cancel Billing
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
