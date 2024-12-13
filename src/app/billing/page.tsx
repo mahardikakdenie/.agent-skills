@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { formatMoney } from "@/lib/formatter";
 
 const BillingPage = () => {
   const { billingList, getBilling } = useBilling();
@@ -47,7 +48,7 @@ const BillingPage = () => {
       <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
         Billing List
       </h1>
-      <div>
+      <div className="pb-5">
         <Button
           className="btn btn-primary"
           onClick={() => router.push("/billing/add")}
@@ -62,8 +63,10 @@ const BillingPage = () => {
               <TableHead className="whitespace-nowrap">No.</TableHead>
               <TableHead>Billing No.</TableHead>
               <TableHead>Billing Date</TableHead>
+              <TableHead>Transaction Period</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Company Name</TableHead>
+              <TableHead>Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
@@ -74,9 +77,20 @@ const BillingPage = () => {
                 <TableCell className="whitespace-nowrap">{index + 1}</TableCell>
                 <TableCell>{billing.billing_no}</TableCell>
                 <TableCell>{billing.created_at}</TableCell>
+                <TableCell>{billing.transaction_period}</TableCell>
                 <TableCell>{billing.type}</TableCell>
                 <TableCell>{billing.company_name}</TableCell>
-                <TableCell>{billing.status}</TableCell>
+                <TableCell>{formatMoney(billing.amount)}</TableCell>
+                <TableCell>
+                  {billing.status
+                    .split("-")
+                    .map(
+                      (word: string) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    )
+                    .join(" ")}
+                </TableCell>
                 <TableCell>
                   <Button
                     className="btn btn-primary"

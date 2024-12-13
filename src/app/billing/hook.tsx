@@ -22,7 +22,8 @@ export const useBilling = () => {
   const getBilling = async (page?: number, pageSize?: number) => {
     const billings = await billingService.getBillings(
       page ?? 1,
-      pageSize ?? 10
+      pageSize ?? 10,
+      {}
     );
     setBillingList(billings);
   };
@@ -31,6 +32,9 @@ export const useBilling = () => {
     await billingService.createBilling(data);
   };
   const getFees = async (insuranceId: string) => {
+    if (!insuranceId) {
+      return;
+    }
     const feesResponse = await billingService.getFees(insuranceId);
 
     if (feesResponse.data[0]) {
@@ -71,7 +75,26 @@ export const useBilling = () => {
     const billing = await billingService.getBillingById(id, page, pageSize);
     setBilling(billing);
   };
+
+  const checkDuplicateBilling = async (
+    type: string,
+    company: string,
+    period: string
+  ) => {
+    const result = await billingService.getBillings(1, 10, {
+      type,
+      company,
+      transaction_period: period,
+    });
+    return result;
+  };
+
+  const updateBilling = async (id: string, data: any) => {
+    await billingService.updateBilling(id, data);
+  };
   return {
+    updateBilling,
+    checkDuplicateBilling,
     getBillingById,
     getBilling,
     billing,
@@ -93,5 +116,6 @@ export const useTransaction = () => {
   return {
     getTransactions,
     transactionList,
+    setTransactionList,
   };
 };
