@@ -432,7 +432,6 @@ const CreateBillingPage = () => {
         </div>
         <div className="pt-5">
           <Alert hidden={billingNotExist} variant={"destructive"}>
-            <Terminal className="h-4 w-4" />
             <AlertDescription>
               Billing already exist, click here to view detail{" "}
               <Button
