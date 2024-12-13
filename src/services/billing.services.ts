@@ -18,8 +18,11 @@ export class BillingService {
 
   }
 
-  async getBillings(page: number, pageSize: number): Promise<any> {
-    const qs = `?page=${page}&pageSize=${pageSize}`;
+  async getBillings(page: number, pageSize: number, query: any): Promise<any> {
+
+    // extract object to querystring
+    let qs = `?page=${page}&pageSize=${pageSize}`;
+    if (Object.keys(query).length > 0) qs += `&${Object.keys(query).map(key => `${key}=${query[key]}`).join('&')}`;
     return this.httpClientCookie.get('/v1/billings' + qs);
   }
 
@@ -48,5 +51,9 @@ export class BillingService {
     const qs = `?page=${page}&pageSize=${pageSize}`;
 
     return this.httpClientCookie.get('/v1/billings/' + id + qs);
+  }
+
+  async updateBilling(id: string, data: any) {
+    return this.httpClientCookie.put('/v1/billings/' + id, data);
   }
 }

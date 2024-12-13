@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { channel } from "diagnostics_channel";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Terminal } from "lucide-react";
 import { formatMoney } from "@/lib/formatter";
 import { useRouter } from "next/navigation";
 import {
@@ -35,26 +34,27 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CreateBillingPage = () => {
   useRequireAuth();
 
   const { channelList, getChannel } = useChannel();
   const { fetchInsurances, insurances } = useProduct();
-  const { transactionList, getTransactions } = useTransaction();
-  const { getFees, fees, createBilling } = useBilling();
+  const { transactionList, getTransactions, setTransactionList } =
+    useTransaction();
+  const { getFees, fees, createBilling, checkDuplicateBilling } = useBilling();
   const [type, setType] = useState<string>("");
   const [company, setCompany] = useState<string>("");
+  const [companyName, setCompanyName] = useState<string>("");
   const [list, setList] = useState<any[]>([]);
   const { setLoading } = useLoading();
   const [month, setMonth] = useState<any>(null);
   const [year, setYear] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const totalPages = Math.ceil(totalItems / rowsPerPage);
-  const [totalAmount, setTotalAmount] = useState(0);
-
+  const [billingNotExist, setBillingNotExist] = useState(true);
+  const [existingBillingId, setExistingBillingId] = useState<string>("");
   const processedTransactionList = useMemo(() => {
     if (!transactionList.data) {
       return [];
@@ -63,8 +63,8 @@ const CreateBillingPage = () => {
       const premium = parseFloat(data.insurance.premium);
       const currency = data.insurance.currency;
       let newPremium = premium;
-      if (!fees[data.insurance.insurance.id.id]) {
-        getFees(data.insurance.insurance.id.id);
+      if (!fees[data.insurance?.insurance?.id?.id]) {
+        getFees(data.insurance?.insurance?.id?.id);
       }
 
       if (currency !== "IDR" && data.insurance.insurance.currencies) {
@@ -74,10 +74,6 @@ const CreateBillingPage = () => {
 
         newPremium = premium * currencyData.value;
       }
-
-      setTotalAmount((prev) => {
-        return prev + newPremium;
-      });
 
       return {
         ...data,
@@ -173,9 +169,28 @@ const CreateBillingPage = () => {
     setYear(e.target.value);
   };
 
-  const handleGetTransaction = () => {
+  const handleGetTransaction = async () => {
+    setTransactionList({});
     if (!month && !year && !company && !type) {
       alert("Please fill all fields");
+      return;
+    }
+
+    try {
+      const billing = await checkDuplicateBilling(
+        type,
+        company,
+        `${year}-${month}`
+      );
+      if (billing.data.length) {
+        setBillingNotExist(false);
+        setExistingBillingId(billing.data[0].id);
+        return;
+      }
+      setBillingNotExist(true);
+      setExistingBillingId("");
+    } catch (error: any) {
+      alert(error.message);
       return;
     }
     const search = {
@@ -195,12 +210,19 @@ const CreateBillingPage = () => {
         ...search,
       };
     }
-    getTransactions({
-      ...companySearch,
-      from: `${year}-${month}-01`,
-      to: `${year}-${month}-31`,
-      page: 1,
-    });
+    try {
+      setLoading(true);
+      await getTransactions({
+        ...companySearch,
+        from: `${year}-${month}-01`,
+        to: `${year}-${month}-31`,
+        limit: 100000000,
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
 
   const handlePaging = (page: number) => {
@@ -232,43 +254,56 @@ const CreateBillingPage = () => {
     })();
   };
 
-  useEffect(() => {
-    if (transactionList.data) {
-      setTotalItems(transactionList.total);
-    }
-  }, [transactionList]);
-
   const router = useRouter();
   const handleCreateBilling = async () => {
     if (!processedTransactionList.length) {
       alert("No transaction to create billing");
       return;
     }
+    const search = {
+      status: "Declaration",
+      limit: 10000000000,
+    };
+
+    const detail = [];
+    let totalCommission = 0;
+    for (let data of processedTransactionList) {
+      const commission =
+        ((fees[data.insurance?.insurance?.id?.id]?.fee ?? 0) / 100) *
+        data.newPremium;
+      detail.push({
+        transaction: data.id,
+        invoice_no: data.invoice ?? "",
+        transaction_no: data.invoice ?? "",
+        product: data.insurance.product.id,
+        plan: data.insurance.plan.id,
+        amount: data.newPremium,
+        commission_percentage:
+          type === "insurer" ? fees[data.insurance.insurance.id.name]?.fee : 0,
+        commission_amount: type === "insurer" ? commission : 0,
+        details: {
+          plan_name: data.insurance.plan.name,
+          transaction_date: data.created_at,
+          insurance_name: data.insurance.insurance.id.name,
+        },
+      });
+      if (type === "insurer") {
+        totalCommission += commission;
+      } else if (type === "partner") {
+        totalCommission += data.newPremium;
+      }
+    }
     try {
       setLoading(true);
       await createBilling({
         currency: "IDR",
-        billing_details: processedTransactionList.map((data: any) => {
-          return {
-            transaction: data.id,
-            invoice_no: data.invoice ?? "",
-            transaction_no: data.invoice ?? "",
-            product: data.insurance.product.id,
-            plan: data.insurance.plan.id,
-            amount: data.newPremium,
-            commission_percentage: fees[data.insurance.insurance.id.id]?.fee,
-            commission_amount:
-              ((fees[data.insurance?.insurance?.id?.id]?.fee ?? 0) / 100) *
-              data.newPremium,
-            details: {
-              plan_name: data.insurance.plan.name,
-              transaction_date: data.created_at,
-              insurance_name: data.insurance.insurance.id.name,
-            },
-          };
-        }),
+        billing_details: detail,
         status: "waiting-for-payment",
-        amount: totalAmount,
+        amount: totalCommission,
+        type,
+        company,
+        company_name: companyName,
+        transaction_period: `${year}-${month}`,
       });
       router.push("/billing");
       setLoading(false);
@@ -337,7 +372,14 @@ const CreateBillingPage = () => {
           </Select>
         </div>
         <div className="pt-5">
-          <Select value={company} onValueChange={setCompany}>
+          <Select
+            value={company}
+            onValueChange={(value) => {
+              const selectedCompany = list.find((item) => item.id === value);
+              setCompany(value);
+              setCompanyName(selectedCompany?.name || "");
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Choose Company" />
             </SelectTrigger>
@@ -345,11 +387,7 @@ const CreateBillingPage = () => {
               {list &&
                 list.map((data) => {
                   return (
-                    <SelectItem
-                      key={data.id}
-                      onSelect={() => setCompany(data.name)}
-                      value={data.id}
-                    >
+                    <SelectItem key={data.id} value={data.id}>
                       {data.name}
                     </SelectItem>
                   );
@@ -368,11 +406,7 @@ const CreateBillingPage = () => {
                 {months &&
                   months.map((data) => {
                     return (
-                      <SelectItem
-                        key={data.value}
-                        onSelect={() => setCompany(data.name)}
-                        value={data.value}
-                      >
+                      <SelectItem key={data.value} value={data.value}>
                         {data.name}
                       </SelectItem>
                     );
@@ -396,6 +430,21 @@ const CreateBillingPage = () => {
             Get Transactions
           </Button>
         </div>
+        <div className="pt-5">
+          <Alert hidden={billingNotExist} variant={"destructive"}>
+            <Terminal className="h-4 w-4" />
+            <AlertDescription>
+              Billing already exist, click here to view detail{" "}
+              <Button
+                onClick={() =>
+                  router.push("/billing/detail/" + existingBillingId)
+                }
+              >
+                Link
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </div>
       </div>
       <div>
         <div className="p-4 md:p-6 m-5 bg-white rounded-lg overflow-x-auto">
@@ -414,6 +463,13 @@ const CreateBillingPage = () => {
             <TableBody>
               {processedTransactionList &&
                 processedTransactionList.map((data: any) => {
+                  const fee =
+                    fees[data.insurance?.insurance?.id?.id]?.fee &&
+                    formatMoney(
+                      ((fees[data.insurance?.insurance?.id?.id]?.fee ?? 0) /
+                        100) *
+                        data.newPremium
+                    );
                   return (
                     <TableRow key={data.id}>
                       <TableCell>{data.invoice}</TableCell>
@@ -426,17 +482,12 @@ const CreateBillingPage = () => {
                       <TableCell>{formatMoney(data.newPremium)}</TableCell>
                       <TableCell>{data.created_at}</TableCell>
                       <TableCell>
-                        {fees[data.insurance?.insurance?.id?.id]?.fee ?? 0}
+                        {type === "insurer" &&
+                        fees[data.insurance?.insurance?.id?.id]?.fee
+                          ? fees[data.insurance?.insurance?.id?.id]?.fee ?? 0
+                          : 0}
                       </TableCell>
-                      <TableCell>
-                        {fees[data.insurance?.insurance?.id?.id]?.fee &&
-                          formatMoney(
-                            ((fees[data.insurance?.insurance?.id?.id]?.fee ??
-                              0) /
-                              100) *
-                              data.newPremium
-                          )}
-                      </TableCell>
+                      <TableCell>{type === "insurer" ? fee : 0}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -470,7 +521,7 @@ const CreateBillingPage = () => {
                     </button>
                     <button
                       onClick={() => handlePaging(page + 1)}
-                      disabled={page === totalPages}
+                      disabled={page === transactionList.pageTotal}
                       title="Next"
                     >
                       <ChevronRight />
