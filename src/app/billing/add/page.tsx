@@ -279,7 +279,7 @@ const CreateBillingPage = () => {
         plan: data.insurance.plan.id,
         amount: data.newPremium,
         commission_percentage:
-          type === "insurer" ? fees[data.insurance.insurance.id.name]?.fee : 0,
+          type === "insurer" ? fees[data.insurance.insurance.id.id]?.fee : 0,
         commission_amount: type === "insurer" ? commission : 0,
         details: {
           plan_name: data.insurance.plan.name,
