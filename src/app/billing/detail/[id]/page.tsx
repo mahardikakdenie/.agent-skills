@@ -27,8 +27,8 @@ import { Button } from "@/components/ui/button";
 import { useLoading } from "@/context/loading.context";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -255,14 +255,14 @@ const DetailBillingPage = () => {
                 <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
                   <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
                     Update to Paid
-                    <DialogClose className="ml-auto">
+                    <DialogFooter className="ml-auto">
                       <Button
                         type="button"
                         className="bg-transparent hover:bg-transparent text-black p-0"
                       >
                         <X className="w-5 h-5" />
                       </Button>
-                    </DialogClose>
+                    </DialogFooter>
                   </DialogTitle>
                 </DialogHeader>
                 <div className="p-4">
@@ -283,14 +283,14 @@ const DetailBillingPage = () => {
                 <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
                   <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
                     Cancel Billing
-                    <DialogClose className="ml-auto">
+                    <DialogFooter className="ml-auto">
                       <Button
                         type="button"
                         className="bg-transparent hover:bg-transparent text-black p-0"
                       >
                         <X className="w-5 h-5" />
                       </Button>
-                    </DialogClose>
+                    </DialogFooter>
                   </DialogTitle>
                 </DialogHeader>
                 <div className="p-4">

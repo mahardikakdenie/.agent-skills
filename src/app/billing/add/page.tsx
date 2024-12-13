@@ -72,7 +72,7 @@ const CreateBillingPage = () => {
           (c: any) => c.currency_from === currency && c.currency_to === "IDR"
         );
 
-        newPremium = premium * currencyData.value;
+        newPremium = premium * (currencyData.value ?? 1);
       }
 
       return {
