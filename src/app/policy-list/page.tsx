@@ -13,7 +13,7 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { PolicyService } from "@/services/policy.service";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Search, X } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Search, X } from "react-feather";
 import { Button } from "@/components/ui/button";
 
 const PolicyPage = () => {
@@ -86,9 +86,15 @@ const PolicyPage = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-        Policy List
-      </h1>
+      <div className="flex gap-4 pb-4 items-center">
+        <h1 className="text-black font-bold text-2xl mt-2">Policy List</h1>
+        <Button
+          onClick={() => router.push(`${path}/export`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+        >
+          <Download className="w-5 h-5 mr-1 " /> Export
+        </Button>
+      </div>
       <div className="block bg-white rounded-md mb-3">
         <div className="w-full flex items-center overflow-auto">
           <div

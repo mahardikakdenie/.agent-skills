@@ -1,6 +1,5 @@
 "use client";
 import useRequireAuth from "@/hooks/useRequireAuth";
-import { EndorsementService } from "@/services/endorsement.service";
 import { useEffect, useRef, useState } from "react";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
@@ -9,11 +8,13 @@ import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
 import { Button } from "@/components/ui/button";
+import { ClaimService } from "@/services/claim.service";
+import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 import Spinner from "@/components/ui/spinner";
 
 const ExportPage = () => {
   useRequireAuth();
-  const endorsementService = new EndorsementService();
+  const itemService = new ClaimService();
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [totalData, setTotalData] = useState(1);
@@ -25,12 +26,8 @@ const ExportPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await endorsementService.getEndorsementExport(
-          page,
-          rowsPerPage
-        );
+        const res = await itemService.getClaimsExport(page, rowsPerPage);
         setData(res.data);
-        setTotalData(res.total);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -57,7 +54,7 @@ const ExportPage = () => {
     doc.setFont("Inter-Regular", "normal");
     doc.html(reportTemplateRef.current, {
       async callback(doc) {
-        await doc.save("Endorsement.pdf");
+        await doc.save("ClaimsList.pdf");
       },
       x: 30,
       y: 30,
@@ -70,30 +67,40 @@ const ExportPage = () => {
       return;
     }
 
-    const sheetData = data.map((endorsement, index) => ({
+    const sheetData = data.map((item, index) => ({
       No: (page - 1) * rowsPerPage + index + 1,
-      "Request ID": endorsement.number || "-",
-      "Insured Name":
-        endorsement?.participants?.full_name ||
-        endorsement?.participants?.name ||
-        endorsement?.participants?.first_name ||
-        endorsement?.participants?.last_name ||
+      "Claim ID": item.number || "-",
+      "Customer Name": item.policy_data?.account?.name || "-",
+      "Plan Name":
+        item?.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
+          .split("|")
+          .join(" - ") || "-",
+      Benefit:
+        item.policy_data?.declarations?.transaction_data?.insurance
+          ?.package_data?.benefits[0]?.benefits?.description_en || "-",
+      Currency:
+        item.policy_data?.declarations?.transaction_data?.insurance?.currency ||
         "-",
-      "Policy Number": endorsement.policies?.number || "-",
-      "Request Date": endorsement?.created_at
-        ? new Date(endorsement.created_at).toLocaleDateString("en-GB")
-        : "No Date",
-      "Approve Date": endorsement?.updated_at
-        ? new Date(endorsement.updated_at).toLocaleDateString("en-GB")
-        : "No Date",
-      Status: endorsement.status || "-",
+      "Requested Amount": (() => {
+        const claimValue = item.claim?.find(
+          (d: any) => d.type === "Number" && d.name === "claim"
+        )?.value;
+
+        const numericValue = Number(claimValue);
+
+        return !isNaN(numericValue) ? formatMoneyClaim(numericValue) : "-";
+      })(),
+      "Approved Amount": formatMoneyClaim(
+        item.amount_approved != null ? item.amount_approved : 0
+      ),
+      Status: item.status || "-",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(sheetData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Endorsements");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "ClaimsList");
 
-    XLSX.writeFile(workbook, "Endorsements.xlsx");
+    XLSX.writeFile(workbook, "ClaimsList.xlsx");
   };
 
   const styles = {
@@ -157,67 +164,86 @@ const ExportPage = () => {
                 No.
               </td>
               <td style={styles.th} valign="middle">
-                Request ID
+                Claim ID
               </td>
               <td style={styles.th} valign="middle">
-                Insured Name
+                Customer Name
               </td>
               <td style={styles.th} valign="middle">
-                Policy Number
+                Plan Name
               </td>
               <td style={styles.th} valign="middle">
-                Request Date
+                Benefit
               </td>
               <td style={styles.th} valign="middle">
-                Approve Date
+                Currency
+              </td>
+              <td style={styles.th} valign="middle">
+                Requested Amount
+              </td>
+              <td style={styles.th} valign="middle">
+                Approved Amount{" "}
               </td>
               <td style={styles.th} valign="middle">
                 Status
               </td>
             </tr>
             {data.length > 0 ? (
-              data.map((endorsement, index) => (
-                <tr key={endorsement.id}>
+              data.map((item, index) => (
+                <tr key={item.id}>
                   <td style={styles.td} valign="middle">
                     {(page - 1) * rowsPerPage + index + 1}
                   </td>
                   <td style={styles.td} valign="middle">
                     <div className="flex gap-2 items-center">
-                      {endorsement.number}
+                      {item.number || "-"}
                     </div>
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement?.participants?.full_name ||
-                      endorsement?.participants?.name ||
-                      endorsement?.participants?.first_name ||
-                      endorsement?.participants?.last_name ||
+                    {item?.policy_data?.account?.name || "-"}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item?.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
+                      .split("|")
+                      .join(" - ") || "-"}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item.policy_data?.declarations?.transaction_data?.insurance
+                      ?.package_data?.benefits[0]?.benefits?.description_en ||
                       "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement.policies?.number || "-"}
+                    {item.policy_data?.declarations?.transaction_data?.insurance
+                      ?.currency || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement?.created_at
-                      ? new Date(endorsement.created_at).toLocaleDateString(
-                          "en-GB"
-                        )
-                      : "No Date"}
+                    {(() => {
+                      const claimValue = item.claim?.find(
+                        (d: any) => d.type === "Number" && d.name === "claim"
+                      )?.value;
+
+                      const numericValue = Number(claimValue);
+
+                      return !isNaN(numericValue)
+                        ? formatMoneyClaim(numericValue)
+                        : "-";
+                    })()}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement?.updated_at
-                      ? new Date(endorsement.updated_at).toLocaleDateString(
-                          "en-GB"
-                        )
-                      : "No Date"}
+                    <div className="flex gap-2 items-center">
+                      {formatMoneyClaim(
+                        item.amount_approved != null ? item.amount_approved : 0
+                      )}
+                    </div>
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement.status}
+                    {item.status}
                   </td>
                 </tr>
               ))
             ) : (
               <tr className="hover:!bg-white">
-                <td colSpan={7}>
+                <td colSpan={9}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
