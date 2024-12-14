@@ -53,6 +53,16 @@ export class PolicyService {
     return this.httpClient.get(`/policies?${queryString}`);
   }
 
+  async getPolicyExport(page: number): Promise<PolicyResponse> {
+    const params: any = {
+      page: page,
+      limit: 100,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/policies?${queryString}`);
+  }
+
   async getPolicyDetail(id: string): Promise<any> {
     return this.httpClient.get("/policies/" + id);
   }

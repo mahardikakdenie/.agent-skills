@@ -104,13 +104,13 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
             Detail Endorsement
           </h2>
         </div>
-        <div
-          onClick={() => router.back()}
+        <a
+          href="/endorsement"
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
           Back
-        </div>
+        </a>
       </div>
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="bg-white grid lg:grid-cols-2 lg:gap-3 gap-5 rounded-md sm:p-6 p-4 overflow-auto">
@@ -121,12 +121,12 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 Insurance Name
               </div>
               <div className="max-w-1 w-1">:</div>
-              <div>{endorsement?.policies.number || "-"}</div>
+              <div>{endorsement?.insurance?.name || "-"}</div>
             </div>
             <div className="flex gap-2 text-sm font-medium">
               <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Plan Name</div>
               <div className="max-w-1 w-1">:</div>
-              <div>{endorsement?.number || "-"}</div>
+              <div>{endorsement?.insurance?.plan || "-"}</div>
             </div>
           </div>
           <div className="flex flex-col gap-3">
@@ -136,19 +136,19 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 Customer Name
               </div>
               <div className="max-w-1 w-1">:</div>
-              <div>{endorsement?.participants.full_name || "-"}</div>
+              <div>{endorsement?.account.name || "-"}</div>
             </div>
             <div className="flex gap-2 text-sm font-medium">
               <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                 Phone Number
               </div>
               <div className="max-w-1 w-1">:</div>
-              <div>{endorsement?.participants?.mobile_number || "-"}</div>
+              <div>{endorsement?.account?.phone || "-"}</div>
             </div>
             <div className="flex gap-2 text-sm font-medium">
               <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
               <div className="max-w-1 w-1">:</div>
-              <div>{endorsement?.participants?.email || "-"}</div>
+              <div>{endorsement?.account?.email || "-"}</div>
             </div>
           </div>
         </div>
@@ -274,9 +274,13 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                     <TableRow>
                       <TableCell>Nama Lengkap</TableCell>
                       <TableCell>
-                        {endorsement?.participants?.full_name}
+                        {endorsement?.participants?.full_name ||
+                          endorsement?.participants?.name}
                       </TableCell>
-                      <TableCell>{endorsement?.data?.full_name}</TableCell>
+                      <TableCell>
+                        {endorsement?.data?.full_name ||
+                          endorsement?.data?.name}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Jenis Kelamin</TableCell>

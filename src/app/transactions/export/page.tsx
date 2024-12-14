@@ -8,29 +8,32 @@ import { ChevronLeft, Download } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { TransactionService } from "@/services/transaction.service";
 import { formatMoney } from "@/lib/formatter";
+import Spinner from "@/components/ui/spinner";
 
 const ExportPage = () => {
   useRequireAuth();
   const dataService = new TransactionService();
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [totalData, setTotalData] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(totalData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const res = await dataService.getTransactionsExport(page, rowsPerPage);
         setData(res.data);
-        setTotalData(res.pageTotal);
       } catch (error) {
         console.error("Error fetching data: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [page, rowsPerPage]);
 
   const reportTemplateRef = useRef(null);
 
@@ -168,99 +171,111 @@ const ExportPage = () => {
         </Button>
       </div>
       <div className="w-full bg-white rounded-lg">
-        <table style={styles.table} ref={reportTemplateRef}>
-          <tr>
-            <td style={styles.th} valign="middle">
-              No.
-            </td>
-            <td style={styles.th} valign="middle">
-              Insurance Name
-            </td>
-            <td style={styles.th} valign="middle">
-              Plan Name
-            </td>
-            <td style={styles.th} valign="middle">
-              Customer Name
-            </td>
-            <td style={styles.th} valign="middle">
-              Currency
-            </td>
-            <td style={styles.th} valign="middle">
-              Amount
-            </td>
-            <td style={styles.th} valign="middle">
-              Status
-            </td>
-          </tr>
-          {data.map((item, index) => {
-            const rowNumber = (page - 1) * rowsPerPage + index + 1;
+        {isLoading ? (
+          <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
+            <Spinner />
+            Loading...
+          </div>
+        ) : (
+          <table style={styles.table} ref={reportTemplateRef}>
+            <tr>
+              <td style={styles.th} valign="middle">
+                No.
+              </td>
+              <td style={styles.th} valign="middle">
+                Insurance Name
+              </td>
+              <td style={styles.th} valign="middle">
+                Plan Name
+              </td>
+              <td style={styles.th} valign="middle">
+                Customer Name
+              </td>
+              <td style={styles.th} valign="middle">
+                Currency
+              </td>
+              <td style={styles.th} valign="middle">
+                Amount
+              </td>
+              <td style={styles.th} valign="middle">
+                Status
+              </td>
+            </tr>
+            {data.map((item, index) => {
+              const rowNumber = (page - 1) * rowsPerPage + index + 1;
 
-            const currencies = item.insurance.insurance.currencies;
-            const currency = currencies.find(
-              (currency: any) =>
-                currency.currency_from === item.insurance.currency &&
-                currency.currency_to === "IDR"
-            );
+              const currencies = item.insurance.insurance.currencies;
+              const currency = currencies.find(
+                (currency: any) =>
+                  currency.currency_from === item.insurance.currency &&
+                  currency.currency_to === "IDR"
+              );
 
-            const convertedPremium =
-              (currency?.value ?? 1) * item.insurance.premium;
+              const convertedPremium =
+                (currency?.value ?? 1) * item.insurance.premium;
 
-            const premiumWithEmbeddedDiscount =
-              item.insurance.plan.premium_discount_type === "percentage"
-                ? convertedPremium -
-                  (item.insurance.plan.premium_discount_value / 100) *
-                    convertedPremium
-                : convertedPremium - item.insurance.plan.premium_discount_value;
+              const premiumWithEmbeddedDiscount =
+                item.insurance.plan.premium_discount_type === "percentage"
+                  ? convertedPremium -
+                    (item.insurance.plan.premium_discount_value / 100) *
+                      convertedPremium
+                  : convertedPremium -
+                    item.insurance.plan.premium_discount_value;
 
-            let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
-            if (item.voucher_info) {
-              premiumWithVoucherDiscount =
-                item.voucher_info?.data.value_type === "percentage"
-                  ? premiumWithEmbeddedDiscount -
-                    (item.voucher_info?.data.value / 100) *
-                      premiumWithEmbeddedDiscount
-                  : premiumWithEmbeddedDiscount - item.voucher_info?.data.value;
-            }
+              let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
+              if (item.voucher_info) {
+                premiumWithVoucherDiscount =
+                  item.voucher_info?.data.value_type === "percentage"
+                    ? premiumWithEmbeddedDiscount -
+                      (item.voucher_info?.data.value / 100) *
+                        premiumWithEmbeddedDiscount
+                    : premiumWithEmbeddedDiscount -
+                      item.voucher_info?.data.value;
+              }
 
-            let totalPremium = premiumWithVoucherDiscount;
+              let totalPremium = premiumWithVoucherDiscount;
 
-            if (item.fees) {
-              totalPremium =
-                premiumWithVoucherDiscount +
-                item.fees
-                  .map((v: any) => v.value)
-                  .reduce((a: any, b: any) => {
-                    return a + b;
-                  }, 0);
-            }
+              if (item.fees) {
+                totalPremium =
+                  premiumWithVoucherDiscount +
+                  item.fees
+                    .map((v: any) => v.value)
+                    .reduce((a: any, b: any) => {
+                      return a + b;
+                    }, 0);
+              }
 
-            return (
-              <tr key={item.id}>
-                <td style={styles.td} valign="middle">
-                  {rowNumber}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {item.insurance.insurance.id.name}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {item.insurance.plan.name.split("|").splice(0, 2).join(" - ")}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {item.customer.name}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {item.insurance.currency}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {formatMoney(totalPremium, "IDR")}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {item.status}
-                </td>
-              </tr>
-            );
-          })}
-        </table>
+              return (
+                <tr key={item.id}>
+                  <td style={styles.td} valign="middle">
+                    {rowNumber}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item.insurance.insurance.id.name}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item.insurance.plan.name
+                      .split("|")
+                      .splice(0, 2)
+                      .join(" - ")}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item.customer.name}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item.insurance.currency}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {formatMoney(totalPremium, "IDR")}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item.status}
+                  </td>
+                </tr>
+              );
+            })}
+          </table>
+        )}
       </div>
     </div>
   );

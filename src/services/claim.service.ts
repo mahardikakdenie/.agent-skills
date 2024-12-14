@@ -158,6 +158,19 @@ export class ClaimService {
     return this.httpClient.get(`/claims?${queryString}`);
   }
 
+  async getClaimsExport(
+    page: number,
+    rowsPerPage: number
+  ): Promise<ClaimResponse> {
+    const params: any = {
+      page: page,
+      limit: 100,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/claims?${queryString}`);
+  }
+
   async getClaimsDetail(id: string): Promise<any> {
     return this.httpClient.get("/claims/" + id);
   }
