@@ -15,14 +15,19 @@ const ExportPage = () => {
   const endorsementService = new EndorsementService();
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(100000);
+  const [totalData, setTotalData] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(totalData);
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await endorsementService.getEndorsementExport(page);
+        const res = await endorsementService.getEndorsementExport(
+          page,
+          rowsPerPage
+        );
         setData(res.data);
+        setTotalData(res.pageTotal);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }

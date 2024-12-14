@@ -38,6 +38,23 @@ export class TransactionService {
     return this.httpClient.get(`/transactions?${queryString}`);
   }
 
+  async getTransactionsExport(
+    page: number,
+    rowsPerPage: number
+  ): Promise<TransactionResponse> {
+    const response: TransactionResponse = await this.httpClient.get(
+      `/transactions?page=${page}&limit=${rowsPerPage}`
+    );
+    const pageTotal = response.pageTotal || rowsPerPage;
+    const params: any = {
+      page: page,
+      limit: pageTotal,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/transactions?${queryString}`);
+  }
+
   async getTransaction(id: string): Promise<any> {
     return this.httpClient.get("/transactions/" + id);
   }
