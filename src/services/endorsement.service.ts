@@ -51,6 +51,19 @@ export class EndorsementService {
     return this.httpClient.get(`/v1/endorsements?${queryString}`);
   }
 
+  async getEndorsementExport(
+    page: number,
+    rowsPerPage: number
+  ): Promise<EndorsementResponse> {
+    const params: any = {
+      page: page,
+      limit: 100,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/v1/endorsements?${queryString}`);
+  }
+
   async updateStatus(id: string, data: any): Promise<any> {
     try {
       return await this.httpClient.put(
