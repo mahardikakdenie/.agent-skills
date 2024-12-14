@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Terminal } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatMoney } from "@/lib/formatter";
 import { useRouter } from "next/navigation";
 import {
@@ -260,10 +260,6 @@ const CreateBillingPage = () => {
       alert("No transaction to create billing");
       return;
     }
-    const search = {
-      status: "Declaration",
-      limit: 10000000000,
-    };
 
     const detail = [];
     let totalCommission = 0;

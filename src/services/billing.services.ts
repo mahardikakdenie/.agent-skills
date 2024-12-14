@@ -47,9 +47,11 @@ export class BillingService {
     return this.httpClientCookie.post('/v1/billings', data);
   }
 
-  async getBillingById(id: string, page: number, pageSize: number) {
-    const qs = `?page=${page}&pageSize=${pageSize}`;
-
+  async getBillingById(id: string, page?: number, pageSize?: number) {
+    let qs = '';
+    if (page && pageSize) {
+      qs = `?page=${page}&pageSize=${pageSize}`;
+    }
     return this.httpClientCookie.get('/v1/billings/' + id + qs);
   }
 

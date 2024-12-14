@@ -71,7 +71,11 @@ export const useBilling = () => {
     }
   };
 
-  const getBillingById = async (id: string, page: number, pageSize: number) => {
+  const getBillingById = async (
+    id: string,
+    page?: number,
+    pageSize?: number
+  ) => {
     const billing = await billingService.getBillingById(id, page, pageSize);
     setBilling(billing);
   };

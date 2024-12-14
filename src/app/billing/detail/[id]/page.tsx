@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, X } from "lucide-react";
 import { formatMoney } from "@/lib/formatter";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -128,6 +128,12 @@ const DetailBillingPage = () => {
               <ChevronLeft className="w-4 h-4" />
               Back
             </div>
+            <Button
+              onClick={() => router.push(`/billing/detail/${id}/export`)}
+              className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+            >
+              <Download className="w-5 h-5 mr-1 " /> Export
+            </Button>
           </div>
         </div>
 
@@ -196,7 +202,7 @@ const DetailBillingPage = () => {
                   billing.data?.map((data: any) => {
                     return (
                       <TableRow key={data.id}>
-                        <TableCell>{data.invoice}</TableCell>
+                        <TableCell>{data.invoice_no}</TableCell>
                         <TableCell>
                           {data.details?.plan_name.split("|").join("\n")}
                         </TableCell>
