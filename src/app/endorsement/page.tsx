@@ -11,16 +11,18 @@ import {
 } from "@/components/ui/table";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { EndorsementService } from "@/services/endorsement.service";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Search } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Search } from "react-feather";
 import { Button } from "@/components/ui/button";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import _ from "lodash";
 import { Input } from "@/components/ui/input";
+import jsPDF from "jspdf";
+import ExportPage from "./export/page";
 
-const PolicyPage = () => {
+const EndorsementPage = () => {
   useRequireAuth();
   const path = usePathname();
   const endorsementService = new EndorsementService();
@@ -87,11 +89,16 @@ const PolicyPage = () => {
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
   }, 100);
-
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Endorsement List</h1>
+        <Button
+          onClick={() => router.push(`${path}/export`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+        >
+          <Download className="w-5 h-5 mr-1 " /> Export
+        </Button>
       </div>
 
       <div className="block bg-white rounded-md mb-3">
@@ -321,5 +328,6 @@ const PolicyPage = () => {
   );
 };
 
-const TransactionWithSidebar = (params: any) => WithSidebar(PolicyPage)(params);
+const TransactionWithSidebar = (params: any) =>
+  WithSidebar(EndorsementPage)(params);
 export default TransactionWithSidebar;
