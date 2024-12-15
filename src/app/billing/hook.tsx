@@ -1,4 +1,4 @@
-import { BillingService } from "@/services/billing.services";
+import { FinanceService } from "@/services/finance.services";
 import { ChannelService } from "@/services/channel.services";
 import { TransactionService } from "@/services/transaction.service";
 import { useState } from "react";
@@ -18,7 +18,7 @@ export const useBilling = () => {
   const [billing, setBilling] = useState<any>({});
   const [billingList, setBillingList] = useState<any>({});
   const [fees, setFees] = useState<any>([]);
-  const billingService = new BillingService();
+  const billingService = new FinanceService();
   const getBilling = async (page?: number, pageSize?: number) => {
     const billings = await billingService.getBillings(
       page ?? 1,
@@ -31,26 +31,35 @@ export const useBilling = () => {
   const createBilling = async (data: any) => {
     await billingService.createBilling(data);
   };
-  const getFees = async (insuranceId: string) => {
+  const getFees = async (
+    insuranceId: string,
+    productId?: string,
+    planId?: string
+  ) => {
     if (!insuranceId) {
       return;
     }
-    const feesResponse = await billingService.getFees(insuranceId);
+    const feesResponse = await billingService.getFees({
+      insuranceId,
+      productId,
+      planId,
+    });
 
-    if (feesResponse.data[0]) {
+    if (feesResponse && feesResponse.data.length > 0) {
       // check if fee exist i fees state
       let checkFeesExist: { [key: string]: any } = {};
-      checkFeesExist[feesResponse.data[0]?.insurance] = {
+      checkFeesExist[
+        `${feesResponse.data[0]?.insurance}-${productId}-${planId}`
+      ] = {
         insurance: feesResponse.data[0].insurance,
         fee: feesResponse.data[0].fee,
         fee_type: feesResponse.data[0].fee_type,
       };
-
       // update fees state
       setFees((fee: any) => {
         return {
           ...fee,
-          [feesResponse.data[0]?.insurance]: {
+          [`${feesResponse.data[0]?.insurance}-${productId}-${planId}`]: {
             insurance: feesResponse.data[0].insurance,
             fee: feesResponse.data[0].fee,
             fee_type: feesResponse.data[0].fee_type,
@@ -61,7 +70,7 @@ export const useBilling = () => {
       setFees((fee: any) => {
         return {
           ...fee,
-          [feesResponse.data[0]?.insurance]: {
+          [`${insuranceId}-${productId}-${planId}`]: {
             insurance: "",
             fee: 0,
             fee_type: "",

@@ -1,10 +1,8 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { HttpClient } from "@/lib/http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 import { getCookie } from "@/lib/utils";
-import axios, { AxiosResponse } from "axios";
 
-export class BillingService {
+export class FinanceService {
   private httpClientCookie: IHttpClient;
 
   constructor() {
@@ -39,8 +37,20 @@ export class BillingService {
     }
   }
 
-  async getFees(insuranceId: string): Promise<any> {
-    return this.httpClientCookie.get('/v1/fees/broker/insurance/' + insuranceId);
+  async getFees(param: { insuranceId: string, productId?: string, planId?: string; }): Promise<any> {
+    const { insuranceId, productId, planId } = param;
+
+    let qs = '?insuranceId=' + insuranceId;
+    if (productId) {
+      qs += `&productId=${productId}`;
+    }
+
+    if (planId) {
+      qs += `&planId=${planId}`;
+    }
+
+
+    return this.httpClientCookie.get('/v1/fees/broker-filter/' + qs);
   }
 
   async createBilling(data: any) {
@@ -58,4 +68,29 @@ export class BillingService {
   async updateBilling(id: string, data: any) {
     return this.httpClientCookie.put('/v1/billings/' + id, data);
   }
+
+  async getBrokerFee(where?: any, page?: number, pageSize?: number): Promise<any> {
+    let qs = '';
+    if (page && pageSize) {
+      qs = `?page=${page}&pageSize=${pageSize}`;
+    }
+
+    if (Object.keys(where).length > 0) {
+      qs += (qs === '' ? '?' : '&') + `${Object.keys(where).map(key => `${key}=${where[key]}`).join('&')}`;
+    }
+    return this.httpClientCookie.get('/v1/fees/broker' + qs);
+  }
+
+  async createBrokerFee(data: any) {
+    return this.httpClientCookie.post('/v1/fees/broker', data);
+  }
+
+  async updateBrokerFee(id: string, data: any) {
+    return this.httpClientCookie.put('/v1/fees/broker/' + id, data);
+  }
+
+  async deleteBrokerFee(id: string) {
+    return this.httpClientCookie.delete('/v1/fees/broker/' + id);
+  }
+
 }
