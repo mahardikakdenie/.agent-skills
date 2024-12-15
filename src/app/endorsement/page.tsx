@@ -251,14 +251,17 @@ const EndorsementPage = () => {
                       ? new Date(endorsement.created_at).toLocaleDateString(
                           "en-GB"
                         )
-                      : "No Date"}
+                      : "-"}
                   </TableCell>
                   <TableCell>
-                    {endorsement?.updated_at
+                    {endorsement?.status === "Approved" &&
+                    endorsement?.updated_at
                       ? new Date(endorsement.updated_at).toLocaleDateString(
                           "en-GB"
                         )
-                      : "No Date"}
+                      : endorsement?.status === "Approved"
+                      ? "-"
+                      : null}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(endorsement.status)}>
