@@ -108,27 +108,93 @@ const ExportDetailBillingPage = () => {
       y: 30,
     });
   };
+
   const handleGenerateXlsx = () => {
     if (billing.data.length === 0) {
       console.error("No data to export.");
       return;
     }
 
-    const sheetData = billing.data.map((item: any, index: number) => {
-      return {
-        "Transaction Number": item.invoice,
-        "Plan Name": item.details?.plan_name,
-        "Insurance Company Name": item.details?.insurance_name,
-        Amount: formatMoney(item.amount),
-        "Transaction Date": item.details?.transaction_date,
-        "Commision Percentage": item.commission_percentage ?? 0,
-        "Commision Amount": formatMoney(item.commission_amount ?? 0),
-      };
-    });
+    const headerBilling = [
+      ["Billing No.", billing.data[0].billings.billing_no],
+      ["Total Amount", formatMoney(billing.data[0].billings.amount)],
+      [
+        "Billing Created Date",
+        new Date(billing.data[0].billings.created_at).toDateString(),
+      ],
+      [
+        "Status",
+        billing.data[0].billings.status
+          .split("-")
+          .map(
+            (word: any) =>
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          )
+          .join(" "),
+      ],
+      ["Type", billing.data[0]?.billings?.type],
+      ["Company Name", billing.data[0].billings.company_name],
+      ["Period", billing.data[0].billings.transaction_period],
+      [],
+      [],
+    ];
 
-    const ws = XLSX.utils.json_to_sheet(sheetData);
+    const tableHeader = [
+      [
+        "Transaction Number",
+        "Plan Name",
+        "Insurance Company Name",
+        "Amount",
+        "Transaction Date",
+        "Commission Percentage",
+        "Commission Amount",
+      ],
+    ];
+    const tableData = billing.data.map((item: any) => [
+      item.invoice,
+      item.details?.plan_name,
+      item.details?.insurance_name,
+      formatMoney(item.amount),
+      item.details?.transaction_date,
+      item.commission_percentage ?? 0,
+      formatMoney(item.commission_amount ?? 0),
+    ]);
+
+    const sheetData = [...headerBilling, ...tableHeader, ...tableData];
+
+    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+    const headerRange = XLSX.utils.decode_range(`A1:B${headerBilling.length}`);
+    for (let R = headerRange.s.r; R <= headerRange.e.r; ++R) {
+      const cellAddress1 = XLSX.utils.encode_cell({ c: 0, r: R }); // First column
+      const cellAddress2 = XLSX.utils.encode_cell({ c: 1, r: R }); // Second column
+
+      if (ws[cellAddress1]) {
+        ws[cellAddress1].s = {
+          fill: {
+            fgColor: { rgb: "FF0000" }, // Yellow background
+          },
+          font: {
+            bold: true,
+          },
+        };
+      }
+
+      if (ws[cellAddress2]) {
+        ws[cellAddress2].s = {
+          fill: {
+            fgColor: { rgb: "CCCCCC" }, // Light yellow background
+          },
+          font: {
+            bold: false,
+          },
+        };
+      }
+    }
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Billing Detail");
+
     XLSX.writeFile(wb, "Billing Detail.xlsx");
   };
 
@@ -201,90 +267,104 @@ const ExportDetailBillingPage = () => {
         </div>
 
         <div className="pt-5 md:px-6 p-4 m-5 bg-white" ref={refTemplate}>
-          <div className="pt-5 w-1/3">
-            <div className="flex flex-row">
-              <div className="flex-1">Billing No.</div>
-              <div className="flex-1">
-                {billing.data[0].billings.billing_no}
-              </div>
-            </div>
-            <div className="flex flex-row">
-              <div className="flex-1">Total Amount</div>
-              <div className="flex-1">
-                {formatMoney(billing.data[0].billings.amount)}
-              </div>
-            </div>
-            <div className="flex flex-row">
-              <div className="flex-1">Billing Created Date</div>
-              <div className="flex-1">
-                {new Date(billing.data[0].billings.created_at).toDateString()}
-              </div>
-            </div>
-            <div className="flex flex-row">
-              <div className="flex-1">Status</div>
-              <div className="flex-1">
-                {billing.data[0].billings.status
-                  .split("-")
-                  .map(
-                    (word: any) =>
-                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                  )
-                  .join(" ")}
-              </div>
-            </div>
-            <div className="flex flex-row">
-              <div className="flex-1">Type</div>
-              <div className="flex-1">{billing.data[0]?.billings?.type}</div>
-            </div>
-            <div className="flex flex-row">
-              <div className="flex-1">Company Name</div>
-              <div className="flex-1">
-                {billing.data[0].billings.company_name}
-              </div>
-            </div>
-            <div className="flex flex-row">
-              <div className="flex-1">Period</div>
-              <div className="flex-1">
-                {billing.data[0].billings.transaction_period}
-              </div>
-            </div>
-          </div>
-          <div className="mt-10">
-            <table style={styles.table}>
-              <tr>
-                <td style={styles.th}>Transaction Number</td>
-                <td style={styles.th}>Plan Name</td>
-                <td style={styles.th}>Insurance Company Name</td>
-                <td style={styles.th}>Amount</td>
-                <td style={styles.th}>Transaction Date</td>
-                <td style={styles.th}>Commision Percentage</td>
-                <td style={styles.th}>Commision Amount</td>
-              </tr>
+          <table className="w-full">
+            <tr>
+              <td className="pb-5 text-sm">
+                <table width={500} cellPadding={3} className="table-header">
+                  <tr>
+                    <td className="pr-5" width={155}>
+                      Billing No.
+                    </td>
+                    <td>:</td>
+                    <td>{billing.data[0].billings.billing_no}</td>
+                  </tr>
+                  <tr>
+                    <td className="pr-5">Total Amount</td>
+                    <td>:</td>
+                    <td>{formatMoney(billing.data[0].billings.amount)}</td>
+                  </tr>
+                  <tr>
+                    <td className="pr-5">Billing Created Date</td>
+                    <td>:</td>
+                    <td>
+                      {new Date(
+                        billing.data[0].billings.created_at
+                      ).toDateString()}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="pr-5">Status</td>
+                    <td>:</td>
+                    <td>
+                      {billing.data[0].billings.status
+                        .split("-")
+                        .map(
+                          (word: any) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(" ")}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="pr-5">Type</td>
+                    <td>:</td>
+                    <td>{billing.data[0]?.billings?.type}</td>
+                  </tr>
+                  <tr>
+                    <td className="pr-5">Company Name</td>
+                    <td>:</td>
+                    <td>{billing.data[0].billings.company_name}</td>
+                  </tr>
+                  <tr>
+                    <td className="pr-5">Period</td>
+                    <td>:</td>
+                    <td>{billing.data[0].billings.transaction_period}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <table style={styles.table}>
+                  <tr>
+                    <td style={styles.th}>Transaction Number</td>
+                    <td style={styles.th}>Plan Name</td>
+                    <td style={styles.th}>Insurance Company Name</td>
+                    <td style={styles.th}>Amount</td>
+                    <td style={styles.th}>Transaction Date</td>
+                    <td style={styles.th}>Commision Percentage</td>
+                    <td style={styles.th}>Commision Amount</td>
+                  </tr>
 
-              {billing &&
-                billing.data?.map((data: any) => {
-                  return (
-                    <tr key={data.id}>
-                      <td style={styles.td}>{data.invoice}</td>
-                      <td style={styles.td}>
-                        {data.details?.plan_name.split("|").join("\n")}
-                      </td>
-                      <td style={styles.td}>{data.details?.insurance_name}</td>
-                      <td style={styles.td}>{formatMoney(data.amount)}</td>
-                      <td style={styles.td}>
-                        {data.details?.transaction_date}
-                      </td>
-                      <td style={styles.td}>
-                        {data.commission_percentage ?? 0}
-                      </td>
-                      <td style={styles.td}>
-                        {formatMoney(data.commission_amount ?? 0)}
-                      </td>
-                    </tr>
-                  );
-                })}
-            </table>
-          </div>
+                  {billing &&
+                    billing.data?.map((data: any) => {
+                      return (
+                        <tr key={data.id}>
+                          <td style={styles.td}>{data.invoice}</td>
+                          <td style={styles.td}>
+                            {data.details?.plan_name.split("|").join("\n")}
+                          </td>
+                          <td style={styles.td}>
+                            {data.details?.insurance_name}
+                          </td>
+                          <td style={styles.td}>{formatMoney(data.amount)}</td>
+                          <td style={styles.td}>
+                            {data.details?.transaction_date}
+                          </td>
+                          <td style={styles.td}>
+                            {data.commission_percentage ?? 0}
+                          </td>
+                          <td style={styles.td}>
+                            {formatMoney(data.commission_amount ?? 0)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </table>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     )
