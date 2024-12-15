@@ -63,8 +63,16 @@ const CreateBillingPage = () => {
       const premium = parseFloat(data.insurance.premium);
       const currency = data.insurance.currency;
       let newPremium = premium;
-      if (!fees[data.insurance?.insurance?.id?.id]) {
-        getFees(data.insurance?.insurance?.id?.id);
+      if (
+        !fees[
+          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+        ]
+      ) {
+        getFees(
+          data.insurance?.insurance?.id?.id,
+          data.insurance?.product?.id,
+          data.insurance?.plan?.id
+        );
       }
 
       if (currency !== "IDR" && data.insurance.insurance.currencies) {
@@ -265,7 +273,10 @@ const CreateBillingPage = () => {
     let totalCommission = 0;
     for (let data of processedTransactionList) {
       const commission =
-        ((fees[data.insurance?.insurance?.id?.id]?.fee ?? 0) / 100) *
+        ((fees[
+          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+        ]?.fee ?? 0) /
+          100) *
         data.newPremium;
       detail.push({
         transaction: data.id,
@@ -275,7 +286,11 @@ const CreateBillingPage = () => {
         plan: data.insurance.plan.id,
         amount: data.newPremium,
         commission_percentage:
-          type === "insurer" ? fees[data.insurance.insurance.id.id]?.fee : 0,
+          type === "insurer"
+            ? fees[
+                `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+              ]?.fee
+            : 0,
         commission_amount: type === "insurer" ? commission : 0,
         details: {
           plan_name: data.insurance.plan.name,
@@ -459,9 +474,13 @@ const CreateBillingPage = () => {
               {processedTransactionList &&
                 processedTransactionList.map((data: any) => {
                   const fee =
-                    fees[data.insurance?.insurance?.id?.id]?.fee &&
+                    fees[
+                      `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                    ]?.fee &&
                     formatMoney(
-                      ((fees[data.insurance?.insurance?.id?.id]?.fee ?? 0) /
+                      ((fees[
+                        `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                      ]?.fee ?? 0) /
                         100) *
                         data.newPremium
                     );
@@ -478,8 +497,12 @@ const CreateBillingPage = () => {
                       <TableCell>{data.created_at}</TableCell>
                       <TableCell>
                         {type === "insurer" &&
-                        fees[data.insurance?.insurance?.id?.id]?.fee
-                          ? fees[data.insurance?.insurance?.id?.id]?.fee ?? 0
+                        fees[
+                          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        ]?.fee
+                          ? fees[
+                              `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                            ]?.fee ?? 0
                           : 0}
                       </TableCell>
                       <TableCell>{type === "insurer" ? fee : 0}</TableCell>

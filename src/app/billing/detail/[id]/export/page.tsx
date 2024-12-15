@@ -151,7 +151,7 @@ const ExportDetailBillingPage = () => {
       ],
     ];
     const tableData = billing.data.map((item: any) => [
-      item.invoice,
+      item.invoice_no,
       item.details?.plan_name,
       item.details?.insurance_name,
       formatMoney(item.amount),
@@ -341,7 +341,7 @@ const ExportDetailBillingPage = () => {
                     billing.data?.map((data: any) => {
                       return (
                         <tr key={data.id}>
-                          <td style={styles.td}>{data.invoice}</td>
+                          <td style={styles.td}>{data.invoice_no}</td>
                           <td style={styles.td}>
                             {data.details?.plan_name.split("|").join("\n")}
                           </td>

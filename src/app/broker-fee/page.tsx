@@ -1,102 +1,119 @@
 "use client";
 import {
   Table,
+  TableHead,
+  TableRow,
+  TableHeader,
   TableBody,
   TableCell,
   TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 import WithSidebar from "@/hoc/with-sidebar";
-import { Search } from "react-feather";
-import { useBilling } from "./hook";
+import useBrokerFee from "./hook";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { formatMoney } from "@/lib/formatter";
+import { useLoading } from "@/context/loading.context";
 
-const BillingPage = () => {
-  const { billingList, getBilling } = useBilling();
+const BrokerFeePage = () => {
+  const { getBrokerFees, brokerFees, deleteBrokerFee } = useBrokerFee();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
+  const { setLoading } = useLoading();
   const [totalItems, setTotalItems] = useState(0);
   const totalPages = Math.ceil(totalItems / rowsPerPage);
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        await getBrokerFees({}, page, rowsPerPage);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [page, rowsPerPage]);
+  const router = useRouter();
 
   const handleRowsPerPageChange = (e: any) => {
     setRowsPerPage(e.target.value);
+    setPage(1); // Reset to first page when rows per page changes
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this broker fee?")) {
+      try {
+        setLoading(true);
+        await deleteBrokerFee(id);
+        await getBrokerFees({});
+      } catch (error) {
+        console.error(error);
+        alert("Failed to delete broker fee");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   useEffect(() => {
-    getBilling();
-  }, []);
-
-  useEffect(() => {
-    if (billingList && billingList.data) {
-      setTotalItems(billingList.meta.total);
-    }
-  }, [billingList]);
-
-  useEffect(() => {
-    getBilling(page, rowsPerPage);
+    getBrokerFees({}, page, rowsPerPage);
   }, [page, rowsPerPage]);
 
-  const router = useRouter();
+  useEffect(() => {
+    if (brokerFees && brokerFees.data) {
+      setTotalItems(brokerFees.meta.total);
+    }
+  }, [brokerFees]);
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-        Billing List
+        Broker Fees
       </h1>
       <div className="pb-5">
         <Button
           className="btn btn-primary"
-          onClick={() => router.push("/billing/add")}
+          onClick={() => router.push("/broker-fee/add")}
         >
-          Create Billing
+          Create Broker Fee
         </Button>
       </div>
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
         <Table className="table-transactions">
           <TableHeader>
             <TableRow>
-              <TableHead className="whitespace-nowrap">No.</TableHead>
-              <TableHead>Billing No.</TableHead>
-              <TableHead>Billing Date</TableHead>
-              <TableHead>Transaction Period</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Company Name</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>No</TableHead>
+              <TableHead>Insurance Company Name</TableHead>
+              <TableHead>Product Name</TableHead>
+              <TableHead>Plan Name</TableHead>
+              <TableHead>Fee Type</TableHead>
+              <TableHead>Fee</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {billingList.data?.map((billing: any, index: number) => (
-              <TableRow key={index}>
-                <TableCell className="whitespace-nowrap">{index + 1}</TableCell>
-                <TableCell>{billing.billing_no}</TableCell>
-                <TableCell>{billing.created_at}</TableCell>
-                <TableCell>{billing.transaction_period}</TableCell>
-                <TableCell>{billing.type}</TableCell>
-                <TableCell>{billing.company_name}</TableCell>
-                <TableCell>{formatMoney(billing.amount)}</TableCell>
-                <TableCell>
-                  {billing.status
-                    .split("-")
-                    .map(
-                      (word: string) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")}
-                </TableCell>
-                <TableCell>
+            {brokerFees?.data?.map((item: any, index: any) => (
+              <TableRow key={item.id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{item.insurance_name}</TableCell>
+                <TableCell>{item.product_name}</TableCell>
+                <TableCell>{item.plan_name}</TableCell>
+                <TableCell>{item.fee_type}</TableCell>
+                <TableCell>{item.fee}</TableCell>
+                <TableCell className="flex gap-2">
                   <Button
                     className="btn btn-primary"
-                    onClick={() => router.push(`billing/detail/${billing.id}`)}
+                    onClick={() => router.push(`/broker-fee/edit/${item.id}`)}
                   >
-                    Detail
+                    Edit
+                  </Button>
+                  <Button
+                    className="btn btn-danger"
+                    variant={"destructive"}
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    Delete
                   </Button>
                 </TableCell>
               </TableRow>
@@ -144,6 +161,6 @@ const BillingPage = () => {
   );
 };
 
-const BillingPageWithSidebar = (params: any) =>
-  WithSidebar(BillingPage)(params);
-export default BillingPageWithSidebar;
+const BrokerFeeWithSidebar = (params: any) =>
+  WithSidebar(BrokerFeePage)(params);
+export default BrokerFeeWithSidebar;
