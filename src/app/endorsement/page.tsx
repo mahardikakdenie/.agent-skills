@@ -248,7 +248,11 @@ const EndorsementPage = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {endorsement?.participants?.full_name || "-"}
+                    {endorsement?.participants?.full_name ||
+                      endorsement?.participants?.name ||
+                      endorsement?.participants?.first_name ||
+                      endorsement?.participants?.last_name ||
+                      "-"}
                   </TableCell>
                   <TableCell>{endorsement.policies?.number || "-"}</TableCell>
                   <TableCell>
