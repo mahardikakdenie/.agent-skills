@@ -1,8 +1,10 @@
-export default function Loading() {
+import React from "react";
+
+export const Spinner = () => {
   return (
-    <div className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-50 z-5000">
+    <div className="flex items-center justify-center">
       <svg
-        className="animate-spin h-5 w-5 text-primary"
+        className="animate-spin h-10 w-10 text-blue-500"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -13,14 +15,16 @@ export default function Loading() {
           cy="12"
           r="10"
           stroke="currentColor"
-          strokeWidth="4"
+          strokeWidth="2"
         ></circle>
         <path
           className="opacity-75"
           fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8 8 0 0012 20v-4.291L6.709 17.5z"
+          d="M4 12a8 8 0 018-8v8H4z"
         ></path>
       </svg>
     </div>
   );
-}
+};
+
+export default Spinner;

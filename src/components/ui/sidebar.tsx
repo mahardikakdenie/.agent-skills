@@ -106,6 +106,45 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="mt-2 text-sm">
+                <strong>Finance</strong>
+              </li>
+              <li>
+                <Link
+                  href="/billing"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/billing")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Billing"
+                    className="w-7 min-w-7"
+                  />
+                  Billing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/broker-fee"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/broker-fee")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Broker Fee"
+                    className="w-7 min-w-7"
+                  />
+                  Broker Fee
+                </Link>
+              </li>
+              <li className="mt-2 text-sm">
                 <strong>Promotions</strong>
               </li>
               <li>

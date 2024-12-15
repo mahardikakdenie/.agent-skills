@@ -1,37 +1,31 @@
 "use client";
 import useRequireAuth from "@/hooks/useRequireAuth";
-import { EndorsementService } from "@/services/endorsement.service";
 import { useEffect, useRef, useState } from "react";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
 import { Button } from "@/components/ui/button";
+import { PolicyService } from "@/services/policy.service";
 import Spinner from "@/components/ui/spinner";
 
 const ExportPage = () => {
   useRequireAuth();
-  const endorsementService = new EndorsementService();
+  const itemService = new PolicyService();
   const [data, setData] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalData, setTotalData] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(totalData);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await endorsementService.getEndorsementExport(
-          page,
-          rowsPerPage
-        );
+        const res = await itemService.getPolicyExport(page);
         setData(res.data);
-        setTotalData(res.total);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -40,7 +34,7 @@ const ExportPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [page]);
 
   const reportTemplateRef = useRef(null);
 
@@ -58,7 +52,7 @@ const ExportPage = () => {
     doc.setFont("Inter-Regular", "normal");
     doc.html(reportTemplateRef.current, {
       async callback(doc) {
-        await doc.save("Endorsement.pdf");
+        await doc.save("PolicyList.pdf");
       },
       x: 30,
       y: 30,
@@ -71,30 +65,22 @@ const ExportPage = () => {
       return;
     }
 
-    const sheetData = data.map((endorsement, index) => ({
+    const sheetData = data.map((item, index) => ({
       No: (page - 1) * rowsPerPage + index + 1,
-      "Request ID": endorsement.number || "-",
-      "Insured Name":
-        endorsement?.participants?.full_name ||
-        endorsement?.participants?.name ||
-        endorsement?.participants?.first_name ||
-        endorsement?.participants?.last_name ||
-        "-",
-      "Policy Number": endorsement.policies?.number || "-",
-      "Request Date": endorsement?.created_at
-        ? new Date(endorsement.created_at).toLocaleDateString("en-GB")
-        : "No Date",
-      "Approve Date": endorsement?.updated_at
-        ? new Date(endorsement.updated_at).toLocaleDateString("en-GB")
-        : "No Date",
-      Status: endorsement.status || "-",
+      "Customer Name":
+        item.declarations?.transaction_data?.customer?.name || "-",
+      "Policy Number": item.number || "-",
+      "Plan Name": item?.declarations.transaction_data.insurance.plan.name
+        .split("|")
+        .join(" - "),
+      Status: item.status || "-",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(sheetData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Endorsements");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "PolicyList");
 
-    XLSX.writeFile(workbook, "Endorsements.xlsx");
+    XLSX.writeFile(workbook, "PolicyList.xlsx");
   };
 
   const styles = {
@@ -123,7 +109,7 @@ const ExportPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
       <div className="flex gap-4 mb-5">
-        <h1 className="text-black font-bold text-2xl mt-2">Endorsement List</h1>
+        <h1 className="text-black font-bold text-2xl mt-2">Policy List</h1>
         <div
           onClick={() => router.back()}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
@@ -159,67 +145,46 @@ const ExportPage = () => {
                 No.
               </td>
               <td style={styles.th} valign="middle">
-                Request ID
-              </td>
-              <td style={styles.th} valign="middle">
-                Insured Name
+                Customer Name
               </td>
               <td style={styles.th} valign="middle">
                 Policy Number
               </td>
               <td style={styles.th} valign="middle">
-                Request Date
-              </td>
-              <td style={styles.th} valign="middle">
-                Approve Date
+                Plan Name
               </td>
               <td style={styles.th} valign="middle">
                 Status
               </td>
             </tr>
             {data.length > 0 ? (
-              data.map((endorsement, index) => (
-                <tr key={endorsement.id}>
+              data.map((item, index) => (
+                <tr key={item.id}>
                   <td style={styles.td} valign="middle">
                     {(page - 1) * rowsPerPage + index + 1}
                   </td>
                   <td style={styles.td} valign="middle">
                     <div className="flex gap-2 items-center">
-                      {endorsement.number}
+                      {item.declarations?.transaction_data?.customer?.name ||
+                        "-"}
                     </div>
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement?.participants?.full_name ||
-                      endorsement?.participants?.name ||
-                      endorsement?.participants?.first_name ||
-                      endorsement?.participants?.last_name ||
-                      "-"}
+                    {item?.number || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement.policies?.number || "-"}
+                    {item?.declarations.transaction_data.insurance.plan.name
+                      .split("|")
+                      .join(" - ")}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement?.created_at
-                      ? new Date(endorsement.created_at).toLocaleDateString(
-                          "en-GB"
-                        )
-                      : "No Date"}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {endorsement?.updated_at
-                      ? new Date(endorsement.updated_at).toLocaleDateString(
-                          "en-GB"
-                        )
-                      : "No Date"}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {endorsement.status}
+                    {item.status}
                   </td>
                 </tr>
               ))
             ) : (
               <tr className="hover:!bg-white">
-                <td colSpan={7}>
+                <td colSpan={5}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available

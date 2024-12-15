@@ -384,13 +384,19 @@ const PolicyPage = () => {
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
-        <Button
+        {/* <Button
           className="rounded-full bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
           onClick={downloadReport}
           disabled
         >
           <Download width={20} height={20} />
           <span className="ml-1">Report</span>
+        </Button> */}
+        <Button
+          onClick={() => router.push(`${path}/export`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+        >
+          <Download className="w-5 h-5 mr-1 " /> Export
         </Button>
       </div>
       {isModalOpen && (
