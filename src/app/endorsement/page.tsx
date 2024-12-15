@@ -46,6 +46,11 @@ const EndorsementPage = () => {
           searchData
         );
 
+        const sortedData = res.data.sort(
+          (a: any, b: any) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
         setFilteredEndorsement(res.data);
         setPage(res.page);
         setTotalPages(res.pageTotal);
