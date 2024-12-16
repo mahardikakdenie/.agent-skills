@@ -113,18 +113,16 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
         </a>
       </div>
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-        <div className="bg-white grid lg:grid-cols-2 lg:gap-3 gap-5 rounded-md sm:p-6 p-4 overflow-auto">
-          <div className="flex flex-col gap-3">
+        <div className="bg-white grid lg:grid-cols-2 lg:gap-3 gap-6 rounded-md sm:p-6 p-4 overflow-auto">
+          <div className="flex flex-col gap-3 lg:pr-5">
             <p className="font-semibold">Insurance Detail</p>
             <div className="flex gap-2 text-sm font-medium">
-              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                Insurance Name
-              </div>
+              <div className="min-w-32 w-32">Insurance Name</div>
               <div className="max-w-1 w-1">:</div>
               <div>{endorsement?.insurance?.name || "-"}</div>
             </div>
             <div className="flex gap-2 text-sm font-medium">
-              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Plan Name</div>
+              <div className="min-w-32 w-32">Plan Name</div>
               <div className="max-w-1 w-1">:</div>
               <div>{endorsement?.insurance?.plan || "-"}</div>
             </div>
@@ -132,21 +130,17 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
           <div className="flex flex-col gap-3">
             <p className="font-semibold">Policy Holder Information</p>
             <div className="flex gap-2 text-sm font-medium">
-              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                Customer Name
-              </div>
+              <div className="min-w-32 w-32">Customer Name</div>
               <div className="max-w-1 w-1">:</div>
               <div>{endorsement?.account.name || "-"}</div>
             </div>
             <div className="flex gap-2 text-sm font-medium">
-              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                Phone Number
-              </div>
+              <div className="min-w-32 w-32">Phone Number</div>
               <div className="max-w-1 w-1">:</div>
               <div>{endorsement?.account?.phone || "-"}</div>
             </div>
             <div className="flex gap-2 text-sm font-medium">
-              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
+              <div className="min-w-32 w-32">Email</div>
               <div className="max-w-1 w-1">:</div>
               <div>{endorsement?.account?.email || "-"}</div>
             </div>
@@ -160,16 +154,12 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 <img src={imageUrl} alt="" className="w-full h-auto" />
               </div>
               <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                  No. Polis
-                </div>
+                <div className="min-w-24 w-24">No. Polis</div>
                 <div className="max-w-1 w-1">:</div>
                 <div>{endorsement?.policies.number || "-"}</div>
               </div>
               <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                  No. Peserta
-                </div>
+                <div className="min-w-24 w-24">No. Peserta</div>
                 <div className="max-w-1 w-1">:</div>
                 <div>{endorsement?.number || "-"}</div>
               </div>
@@ -179,7 +169,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
             <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
               <p className="font-semibold">Update Verification</p>
               <div className="flex gap-2 text-sm font-medium items-center">
-                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Status</div>
+                <div className="min-w-24 w-24">Status</div>
                 <div className="max-w-1 w-1">:</div>
                 <div className="pl-2 flex items-center gap-3">
                   {endorsement?.status !== "Pending" && (
@@ -251,7 +241,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 </div>
               </div>
               <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Reason</div>
+                <div className="min-w-24 w-24">Reason</div>
                 <div className="max-w-1 w-1">:</div>
                 <div className="pl-2">{endorsement?.note || "-"}</div>
               </div>
@@ -282,39 +272,101 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                           endorsement?.data?.name}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell>Jenis Kelamin</TableCell>
-                      <TableCell>{endorsement?.participants?.gender}</TableCell>
+                    {(endorsement?.participants?.gender ||
+                      endorsement.data.gender) && (
+                      <TableRow>
+                        <TableCell>Jenis Kelamin</TableCell>
+                        <TableCell>
+                          {endorsement?.participants?.gender}
+                        </TableCell>
 
-                      <TableCell>{endorsement?.data?.gender}</TableCell>
-                    </TableRow>
+                        <TableCell>{endorsement?.data?.gender}</TableCell>
+                      </TableRow>
+                    )}
                     <TableRow>
-                      <TableCell>Phone Number</TableCell>
                       <TableCell>
-                        {endorsement?.participants?.mobile_number}
+                        {endorsement?.participants?.passport_no
+                          ? "No. Passport"
+                          : endorsement?.participants?.nik
+                          ? "NIK"
+                          : endorsement?.participants?.identification_number
+                          ? "No. Identitas"
+                          : ""}
+                      </TableCell>
+                      <TableCell>
+                        {endorsement?.participants?.passport_no ||
+                          endorsement.participants.nik ||
+                          endorsement.participants.identification_number}
                       </TableCell>
 
-                      <TableCell>{endorsement?.data?.mobile_number}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Email</TableCell>
-                      <TableCell>{endorsement?.participants?.email}</TableCell>
-
-                      <TableCell>{endorsement?.data?.email}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Alamat</TableCell>
                       <TableCell>
-                        {endorsement?.participants?.address1}
-                        {endorsement?.participants?.city}
-                        {endorsement?.participants?.country}
-                      </TableCell>
-
-                      <TableCell>
-                        {endorsement?.data?.address1} {endorsement?.data?.city}
-                        {endorsement?.data?.country}
+                        {endorsement?.data?.passport_no ||
+                          endorsement.data.nik ||
+                          endorsement.data.identification_number}
                       </TableCell>
                     </TableRow>
+                    {(endorsement?.participants?.nationality ||
+                      endorsement.participants.country ||
+                      endorsement?.data?.nationality ||
+                      endorsement.data.country) && (
+                      <TableRow>
+                        <TableCell>Kewarganegaraan</TableCell>
+                        <TableCell>
+                          {endorsement?.participants?.nationality ||
+                            endorsement.participants.country}
+                        </TableCell>
+
+                        <TableCell>
+                          {endorsement?.data?.nationality ||
+                            endorsement.data.country}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {(endorsement?.participants?.pob ||
+                      endorsement.participants.country_of_birth ||
+                      endorsement?.data?.pob ||
+                      endorsement.data.country_of_birth) && (
+                      <TableRow>
+                        <TableCell>Tempat Lahir</TableCell>
+                        <TableCell>
+                          {endorsement?.participants?.pob ||
+                            endorsement.participants.country_of_birth}
+                        </TableCell>
+
+                        <TableCell>
+                          {endorsement?.data?.pob ||
+                            endorsement.data.country_of_birth}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {(endorsement?.participants?.dob ||
+                      endorsement?.data?.dob) && (
+                      <TableRow>
+                        <TableCell>Tanggal Lahir</TableCell>
+                        <TableCell>{endorsement?.participants?.dob}</TableCell>
+
+                        <TableCell>{endorsement?.data?.dob}</TableCell>
+                      </TableRow>
+                    )}
+                    {(endorsement?.participants?.address ||
+                      endorsement?.data?.address) && (
+                      <TableRow>
+                        <TableCell>Alamat</TableCell>
+                        <TableCell>
+                          {endorsement?.participants?.address}
+                        </TableCell>
+
+                        <TableCell>{endorsement?.data?.address}</TableCell>
+                      </TableRow>
+                    )}
+                    {(endorsement?.participants?.job ||
+                      endorsement?.data?.job) && (
+                      <TableRow>
+                        <TableCell>Pekerjaan</TableCell>
+                        <TableCell>{endorsement?.participants?.job}</TableCell>
+                        <TableCell>{endorsement?.data?.job}</TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </div>
