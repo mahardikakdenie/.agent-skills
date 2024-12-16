@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { TransactionService } from "@/services/transaction.service";
 import { formatMoney } from "@/lib/formatter";
 import Spinner from "@/components/ui/spinner";
+import WithSidebar from "@/hoc/with-sidebar";
 
 const ExportPage = () => {
   useRequireAuth();
@@ -282,4 +283,5 @@ const ExportPage = () => {
   );
 };
 
-export default ExportPage;
+const ExportWithSidebar = (params: any) => WithSidebar(ExportPage)(params);
+export default ExportWithSidebar;
