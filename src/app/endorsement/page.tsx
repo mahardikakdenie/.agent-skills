@@ -19,8 +19,6 @@ import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import _ from "lodash";
 import { Input } from "@/components/ui/input";
-import jsPDF from "jspdf";
-import ExportPage from "./export/page";
 
 const EndorsementPage = () => {
   useRequireAuth();

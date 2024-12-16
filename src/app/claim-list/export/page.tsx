@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ClaimService } from "@/services/claim.service";
 import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 import Spinner from "@/components/ui/spinner";
+import WithSidebar from "@/hoc/with-sidebar";
 
 const ExportPage = () => {
   useRequireAuth();
@@ -259,4 +260,5 @@ const ExportPage = () => {
   );
 };
 
-export default ExportPage;
+const ExportWithSidebar = (params: any) => WithSidebar(ExportPage)(params);
+export default ExportWithSidebar;
