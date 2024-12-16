@@ -231,7 +231,7 @@ const EndorsementPage = () => {
                 Request Date
               </TableHead>
               <TableHead className="whitespace-nowrap py-2">
-                Approve Date
+                Approve/Rejected Date
               </TableHead>
               <TableHead className="whitespace-nowrap py-2">Status</TableHead>
               <TableHead className="whitespace-nowrap py-2">Action</TableHead>
@@ -263,14 +263,11 @@ const EndorsementPage = () => {
                       : "-"}
                   </TableCell>
                   <TableCell>
-                    {endorsement?.status === "Approved" &&
-                    endorsement?.updated_at
-                      ? new Date(endorsement.updated_at).toLocaleDateString(
-                          "en-GB"
-                        )
-                      : endorsement?.status === "Approved"
-                      ? "-"
-                      : null}
+                    {endorsement?.status !== "Pending" &&
+                      endorsement?.updated_at &&
+                      new Date(endorsement.updated_at).toLocaleDateString(
+                        "en-GB"
+                      )}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(endorsement.status)}>
