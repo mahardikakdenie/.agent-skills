@@ -7,6 +7,10 @@ interface AuthState {
   isAuthenticated: boolean | null;
 }
 
+interface Insurers {
+  insurance: string;
+}
+
 interface AuthContextType {
   state: AuthState;
   login: (token: string) => void;
@@ -22,6 +26,7 @@ interface JwtPayload {
   role: string;
   channel: string;
   permission_list: string[];
+  account_insurers: Insurers[];
   iat: number;
   exp: number;
 }
@@ -143,4 +148,9 @@ export const clearToken = () => {
 export const hasPermission = async (requiredPermission: string): Promise<boolean> => {
   const claims = await getClaims();
   return claims?.permission_list?.includes(requiredPermission) || false;
+};
+
+export const hasInsurers = async (): Promise<any> => {
+  const claims = await getClaims();
+  return claims?.account_insurers || false;
 };

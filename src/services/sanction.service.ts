@@ -1,3 +1,4 @@
+import { hasInsurers } from "@/context/auth.context";
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 
@@ -8,6 +9,10 @@ interface Response {
   page: number;
   pageTotal: number;
   total: number;
+}
+
+interface Insurer {
+  insurance: string;
 }
 
 export class SanctionService {
@@ -37,33 +42,45 @@ export class SanctionService {
   }
 
   async getSourceList(page: number, limit: number): Promise<Response> {
+    const insurers: Insurer[] = await hasInsurers();
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientSanction.get(`/v1/sources/paging?page=${page}&limit=${limit}`);
+    const insurerIds = insurers.map((insurer: Insurer) => insurer.insurance).join(',');
+    return this.httpClientSanction.get(`/v1/sources/paging?page=${page}&limit=${limit}&insurers=${insurerIds}`);
 
   }
 
   async getSanctionSearchQuery(query: string, page: number, limit: number): Promise<Response> {
+    const insurers: Insurer[] = await hasInsurers();
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientSanction.get(`/v1/blacklist/search/query?query=${query}&page=${page}&limit=${limit}`);
+    const insurerIds = insurers.map((insurer: Insurer) => insurer.insurance).join(',');
+    return this.httpClientSanction.get(
+      `/v1/blacklist/search/query?query=${query}&page=${page}&limit=${limit}&insurers=${insurerIds}`);
   }
 
   async getSourceSearchQuery(query: string, page: number, limit: number): Promise<Response> {
+    const insurers: Insurer[] = await hasInsurers();
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientSanction.get(`/v1/sources/search/query?query=${query}&page=${page}&limit=${limit}`);
+    const insurerIds = insurers.map((insurer: Insurer) => insurer.insurance).join(',');
+    return this.httpClientSanction.get(
+      `/v1/sources/search/query?query=${query}&page=${page}&limit=${limit}&insurers=${insurerIds}`);
   }
 
   async getSanctionList(page: number, limit: number): Promise<Response> {
+    const insurers: Insurer[] = await hasInsurers();
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientSanction.get(`/v1/blacklist?page=${page}&limit=${limit}`);
-
+  
+    const insurerIds = insurers.map((insurer: Insurer) => insurer.insurance).join(',');
+    return this.httpClientSanction.get(
+      `/v1/blacklist?page=${page}&limit=${limit}&insurers=${insurerIds}`
+    );
   }
 
   async getSanctionById(id: string): Promise<Response> {
