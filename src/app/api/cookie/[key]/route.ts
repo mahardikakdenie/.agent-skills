@@ -1,10 +1,10 @@
-import {NextResponse} from "next/server";
-import {cookies} from "next/headers";
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export async function GET(_req: Request, { params }: any) {
     const key = params.key;
     const allCookies = cookies();
-    const value = allCookies.get(key);
+    const value = (await allCookies).get(key);
 
     if (!key) return NextResponse.json({ message: "Key cookie not found" }, { status: 404 });
     if (!value) return NextResponse.json({ message: "Cookie not found" }, { status: 404 });

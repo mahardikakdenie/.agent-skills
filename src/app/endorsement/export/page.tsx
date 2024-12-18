@@ -5,11 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/spinner";
+import WithSidebar from "@/hoc/with-sidebar";
 
 const ExportPage = () => {
   useRequireAuth();
@@ -122,6 +124,7 @@ const ExportPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
       <div className="flex gap-4 mb-5">
+        <h1 className="text-black font-bold text-2xl mt-2">Endorsement List</h1>
         <div
           onClick={() => router.back()}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
@@ -232,4 +235,5 @@ const ExportPage = () => {
   );
 };
 
-export default ExportPage;
+const ExportWithSidebar = (params: any) => WithSidebar(ExportPage)(params);
+export default ExportWithSidebar;

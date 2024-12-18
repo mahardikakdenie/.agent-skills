@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { TransactionService } from "@/services/transaction.service";
 import { formatMoney } from "@/lib/formatter";
 import Spinner from "@/components/ui/spinner";
+import WithSidebar from "@/hoc/with-sidebar";
 
 const ExportPage = () => {
   useRequireAuth();
@@ -148,6 +149,7 @@ const ExportPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
       <div className="flex gap-4 mb-5">
+        <h1 className="text-black font-bold text-2xl mt-2">Transactions</h1>
         <div
           onClick={() => router.back()}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
@@ -281,4 +283,5 @@ const ExportPage = () => {
   );
 };
 
-export default ExportPage;
+const ExportWithSidebar = (params: any) => WithSidebar(ExportPage)(params);
+export default ExportWithSidebar;
