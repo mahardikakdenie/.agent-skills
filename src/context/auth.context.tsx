@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useReducer, useContext, useEffect } from "react";
-import {CookieService} from "@/services/masterdata/cookie.service";
-import {jwtDecode} from "jwt-decode";
+import { CookieService } from "@/services/masterdata/cookie.service";
+import { jwtDecode } from "jwt-decode";
 
 interface AuthState {
   isAuthenticated: boolean | null;
@@ -37,15 +37,16 @@ type AuthAction =
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case "LOGIN":
-      cookieService.saveCookie({name: "token", value: action.token}).then();
       localStorage.setItem("isAuthenticated", "true");
       return { isAuthenticated: true };
     case "LOGOUT":
-      cookieService.deleteCookieByKey("token").then();
       localStorage.setItem("isAuthenticated", "false");
       return { isAuthenticated: false };
     case "CHECK_LOGIN":
-      localStorage.setItem("isAuthenticated", action.isAuthenticated.toString());
+      localStorage.setItem(
+        "isAuthenticated",
+        action.isAuthenticated.toString()
+      );
       return { isAuthenticated: action.isAuthenticated };
     case "LOAD_STATE":
       return { isAuthenticated: action.isAuthenticated };
@@ -65,17 +66,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.getItem("isAuthenticated") === "true",
   });
 
-  const login = (token: string) => {
+  const login = async (token: string) => {
+    await cookieService
+      .saveCookie({ name: "token", value: token, days: 1 })
+      .then();
     dispatch({ type: "LOGIN", token });
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await cookieService.deleteCookieByKey("token").then();
     dispatch({ type: "LOGOUT" });
   };
 
   const checkLogin = async () => {
-    const token = await cookieService.getCookieByKey("token");
-    dispatch({ type: "CHECK_LOGIN", isAuthenticated: !!token });
+    try {
+      const token = await cookieService.getCookieByKey("token");
+      dispatch({ type: "CHECK_LOGIN", isAuthenticated: !!token });
+    } catch (e) {
+      dispatch({ type: "CHECK_LOGIN", isAuthenticated: false });
+    }
   };
 
   useEffect(() => {
@@ -140,7 +149,9 @@ export const clearToken = () => {
   localStorage.removeItem("authToken");
 };
 
-export const hasPermission = async (requiredPermission: string): Promise<boolean> => {
+export const hasPermission = async (
+  requiredPermission: string
+): Promise<boolean> => {
   const claims = await getClaims();
   return claims?.permission_list?.includes(requiredPermission) || false;
 };

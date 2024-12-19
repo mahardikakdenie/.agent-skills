@@ -23,7 +23,7 @@ const Sidebar = () => {
 
   const pathname = usePathname();
 
-  const isActive = (href: string) => pathname === href;
+  // const isActive = (href: string) => pathname === href;
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -45,6 +45,12 @@ const Sidebar = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  function isActive(path: string): boolean {
+    return (
+      typeof window !== "undefined" && window.location.pathname.startsWith(path)
+    );
+  }
 
   return (
     <>
