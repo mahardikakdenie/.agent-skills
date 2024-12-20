@@ -49,7 +49,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
       const deleteBtn = await hasPermission("Product Category.Delete");
       const createBtn = await hasPermission("Product Category.Create");
 
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
@@ -60,7 +60,6 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
     checkAccess();
   }, [routerN]);
-
 
   useEffect(() => {
     productCatalogService
@@ -186,6 +185,10 @@ export default function PackageList(props: Readonly<{ id: string }>) {
             </select>
           </>
         </div>
+      ) : category == "gadget" ? (
+        <>
+          <div className="py-2"></div>
+        </>
       ) : (
         <>
           <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
@@ -236,11 +239,13 @@ export default function PackageList(props: Readonly<{ id: string }>) {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap">No.</TableHead>
-              {category == "personal-accident" ? (
+              {category === "personal-accident" ? (
                 <>
                   <TableHead>Occupation Class</TableHead>
                   <TableHead>Ages</TableHead>
                 </>
+              ) : category === "gadget" ? (
+                <></>
               ) : (
                 <>
                   <TableHead>Type</TableHead>
@@ -271,6 +276,8 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                         }`}
                       </TableCell>
                     </>
+                  ) : category === "gadget" ? (
+                    <></>
                   ) : (
                     <>
                       <TableCell className="capitalize">
