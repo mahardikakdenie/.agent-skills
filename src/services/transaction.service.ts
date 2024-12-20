@@ -72,13 +72,26 @@ export class TransactionService {
   async searchTransactions(search: any): Promise<any> {
     let qs = "";
     if (search) {
-      qs = `?${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`;
+      qs = `?${Object.keys(search)
+        .map((key) => `${key}=${search[key]}`)
+        .join("&")}`;
     }
     try {
       return await this.httpClient.get(`/v1/transactions${qs}`);
-
     } catch (error: any) {
       throw new Error(error.response.data.message);
+    }
+  }
+
+  async uploadTransactions(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.post(
+        "/v1/transactions/bulk-create/" + id,
+        data
+      );
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
     }
   }
 }

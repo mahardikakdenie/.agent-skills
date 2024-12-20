@@ -14,7 +14,14 @@ import { TransactionService } from "@/services/transaction.service";
 import { useEffect, useState } from "react";
 import { formatMoney } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, Search, X } from "react-feather";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Search,
+  Upload,
+  X,
+} from "react-feather";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -135,8 +142,14 @@ const TransactionsPage = () => {
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Transactions</h1>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={() => router.push(`${path}/import`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1 " /> Transactions List
+        </Button>
+        <Button
+          onClick={() => router.push(`${path}/export`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export
         </Button>
