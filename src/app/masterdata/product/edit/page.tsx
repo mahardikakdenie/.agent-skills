@@ -48,7 +48,6 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
     { id: "", name: "" },
   ]);
 
-  
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -95,7 +94,6 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
 
   const onSubmit = async () => {
     try {
-      console.log(productFields);
       for (let i = 0; i < productFields.length; i++) {
         if (productFields[i].id == "") {
           await saveProduct({

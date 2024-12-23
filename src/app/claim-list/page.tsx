@@ -131,7 +131,6 @@ const PolicyPage = () => {
 
     fetchData();
   }, [page, rowsPerPage, tab, successUpdate, searchData]);
-  console.log("filteredClaims", filteredClaims);
 
   useEffect(() => {
     if (searchTerm) {

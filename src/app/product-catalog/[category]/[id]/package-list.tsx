@@ -17,7 +17,7 @@ import { formatMoney } from "@/lib/formatter";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
-import { ChevronLeft, ChevronRight } from "react-feather";
+import { ChevronLeft, ChevronRight, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
 
@@ -95,7 +95,6 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
     // PA
     if (occupationClassFilter) {
-      console.log(occupationClassFilter.split(","));
       filtered = filtered.filter(
         (pkg) =>
           JSON.stringify(pkg.search_params.occupation_class) ==
@@ -127,7 +126,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
         disabled={!canEdit}
         onClick={() => router.push(`${path}/upload`)}
       >
-        Upload Packages
+        <Upload className="w-5 h-5 mr-2" /> Upload Packages
       </Button>
 
       {category == "personal-accident" ? (
