@@ -9,6 +9,7 @@ import {
 import { useProducts } from "../../hooks";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { Upload } from "react-feather";
 
 export default function BenefitList(props: { id: string }) {
   const { id } = props;
@@ -25,6 +26,7 @@ export default function BenefitList(props: { id: string }) {
         className="mb-5"
         onClick={() => router.push(`${path}/upload-benefit`)}
       >
+        <Upload className="w-5 h-5 mr-2" />
         Upload Benefits
       </Button>
       <Table className="table-search-params">

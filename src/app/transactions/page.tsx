@@ -58,9 +58,6 @@ const TransactionsPage = () => {
       const access = await hasPermission("Transactions.Read");
       const editBtn = await hasPermission("Transactions.Update");
 
-      console.log("access: " + access);
-      console.log("edit: " + editBtn);
-
       setCanEdit(editBtn);
       setHasAccess(access);
       if (!access) {
