@@ -23,15 +23,15 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "text-sm font-medium text-center block",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
-        nav_button_previous: "absolute left-1",
+        nav_button_previous: "absolute left-1 top-0",
         nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
+        table: "w-full border-collapse space-y-1 hidden",
         head_row: "flex",
         head_cell:
           "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
@@ -61,7 +61,7 @@ function Calendar({
       }}
       components={{
         Nav: ({ onPreviousClick, onNextClick }) => (
-          <div className="nav space-x-1 flex items-center">
+          <div className="flex items-center absolute left-3 right-3">
             <button
               onClick={onPreviousClick}
               className={cn(
@@ -76,7 +76,7 @@ function Calendar({
               onClick={onNextClick}
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 ml-auto"
               )}
               aria-label="Next month"
             >

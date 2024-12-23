@@ -31,7 +31,9 @@ import Image from "next/image";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -47,11 +49,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { hasPermission } from "@/context/auth.context";
 import _ from "lodash";
+import {
+  ChannelsResponse,
+  ChannelsService,
+} from "@/services/masterdata/channels.service";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { addDays, format } from "date-fns";
+import React from "react";
+import { DateRange } from "react-day-picker";
 
-const PolicyPage = () => {
+export function ClaimsPage({
+  className,
+}: React.HTMLAttributes<HTMLDivElement>) {
   useRequireAuth();
   const path = usePathname();
   const claimService = new ClaimService();
+  const channelsService = new ChannelsService();
   const [claims, setClaims] = useState<any[]>([]);
   const [filteredClaims, setFilteredClaims] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -90,6 +110,10 @@ const PolicyPage = () => {
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
 
+  const [searchChannel, setSearchChannel] = useState("");
+  const [searchSlaStatus, setSearchSlaStatus] = useState("");
+  const [channel, setChannel] = useState<ChannelsResponse[]>([]);
+
   useEffect(() => {
     const checkAccess = async () => {
       const access = await hasPermission("Claim.Read");
@@ -116,22 +140,30 @@ const PolicyPage = () => {
           page,
           rowsPerPage,
           tab === "All" ? "" : tab,
-          searchData
+          searchData,
+          searchChannel === "All" ? "" : searchChannel,
+          searchSlaStatus === "All" ? "" : searchSlaStatus
         );
-
-        setFilteredClaims(res.data);
-        setPage(res.page);
-        setTotalPages(res.pageTotal);
-        setTotalItems(res.total);
-        setTotalData(res.total);
+        setFilteredClaims(res?.data);
+        setPage(res?.page);
+        setTotalPages(res?.pageTotal);
+        setTotalItems(res?.total);
+        setTotalData(res?.total);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
 
     fetchData();
-  }, [page, rowsPerPage, tab, successUpdate, searchData]);
-  console.log("filteredClaims", filteredClaims);
+  }, [
+    page,
+    rowsPerPage,
+    tab,
+    successUpdate,
+    searchData,
+    searchChannel,
+    searchSlaStatus,
+  ]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -157,6 +189,31 @@ const PolicyPage = () => {
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
   }, 100);
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const response = await channelsService.getChannels(page, rowsPerPage);
+        setChannel(response.data);
+        setTotalPages(response.pageTotal);
+        setTotalItems(response.total);
+      } catch (error) {
+        console.error("Error fetching insurance products:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchChannels();
+  }, [page, rowsPerPage]);
+
+  const handleSearchChannelOnChange = (v: string) => {
+    setSearchChannel(v);
+  };
+
+  const handleSearchSlaStatusChange = (v: string) => {
+    setSearchSlaStatus(v);
+  };
 
   const goToDetail = (claimId: string) => {
     router.push(`${path}/${claimId}`);
@@ -339,8 +396,6 @@ const PolicyPage = () => {
     setPendingStatus(null);
   };
 
-  const downloadReport = () => {};
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     const numericValue = input.replace(/[^0-9]/g, "");
@@ -370,6 +425,15 @@ const PolicyPage = () => {
 
   const isDocumentSelected = (id: string) => selectedDocuments.includes(id);
 
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(2022, 0, 20),
+    to: addDays(new Date(2022, 0, 20), 20),
+  });
+
+  const handleDateRangeChange = (date: DateRange) => {
+    setDate(date);
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
@@ -384,14 +448,85 @@ const PolicyPage = () => {
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
-        {/* <Button
-          className="rounded-full bg-[#F5BA41] hover:bg-[#e4ab3a] text-black"
-          onClick={downloadReport}
-          disabled
-        >
-          <Download width={20} height={20} />
-          <span className="ml-1">Report</span>
-        </Button> */}
+        <div className="">
+          <div className={cn("grid gap-2", className)}>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant={"outline"}
+                  className={cn(
+                    "w-[260px] justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="w-5 h-5 mr-2" />
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {format(date.from, "LLL dd, y")} -{" "}
+                        {format(date.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(date.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        <div className="w-36">
+          <Select
+            value={searchChannel}
+            onValueChange={handleSearchChannelOnChange}
+          >
+            <SelectTrigger className="h-16">
+              <SelectValue placeholder="Channels" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="All">All Channel</SelectItem>
+                {channel.map((channel: any) => (
+                  <SelectItem key={channel.id} value={channel.id}>
+                    {channel.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-36">
+          <Select
+            value={searchSlaStatus}
+            onValueChange={handleSearchSlaStatusChange}
+          >
+            <SelectTrigger className="h-16">
+              <SelectValue placeholder="SLA Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="All">All Priority</SelectItem>
+                <SelectItem value="On Track">On Track</SelectItem>
+                <SelectItem value="Pending">Due Date</SelectItem>
+                <SelectItem value="Overdue">Overdue</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <Button
           onClick={() => router.push(`${path}/export`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
@@ -1141,7 +1276,7 @@ const PolicyPage = () => {
       </div>
     </div>
   );
-};
+}
 
-const TransactionWithSidebar = (params: any) => WithSidebar(PolicyPage)(params);
-export default TransactionWithSidebar;
+const ClaimsWithSidebar = (params: any) => WithSidebar(ClaimsPage)(params);
+export default ClaimsWithSidebar;

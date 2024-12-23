@@ -1,6 +1,7 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 import qs from "qs";
+import { DateRange } from "react-day-picker";
 
 interface ClaimResponse {
   data: any;
@@ -128,7 +129,9 @@ export class ClaimService {
     page: number,
     rowsPerPage: number,
     status: string,
-    searchData?: string
+    searchData?: string,
+    searchChannel?: string,
+    searchSlaStatus?: any
   ): Promise<ClaimResponse> {
     const params: any = {
       page: page,
@@ -136,11 +139,19 @@ export class ClaimService {
       keyword: searchData,
     };
 
-    if (status && status !== "Draft") {
-      params["status"] = status;
+    if (searchChannel) {
+      params["channel"] = searchChannel;
     }
 
-    if (!status) {
+    if (searchSlaStatus) {
+      params["sla_status"] = searchSlaStatus;
+    }
+
+    if (status) {
+      if (status !== "Draft") {
+        params["status"] = status;
+      }
+    } else {
       params["status"] = [
         "Submitted",
         "Acknowledged",
