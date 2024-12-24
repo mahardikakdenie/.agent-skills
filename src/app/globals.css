@@ -256,6 +256,9 @@ th {
   background-color: #f4f4f5;
   border-radius: 0;
 }
+.table-claims.not-hover tr.hover\:bg-muted\/50:hover {
+  background-color: auto;
+}
 @media screen and (max-width: 1199px) {
   .sidebar {
     position: fixed;

@@ -65,9 +65,7 @@ import { addDays, format } from "date-fns";
 import React from "react";
 import { DateRange } from "react-day-picker";
 
-export function ClaimsPage({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+const ClaimsPage = () => {
   useRequireAuth();
   const path = usePathname();
   const claimService = new ClaimService();
@@ -113,6 +111,7 @@ export function ClaimsPage({
   const [searchChannel, setSearchChannel] = useState("");
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
   const [channel, setChannel] = useState<ChannelsResponse[]>([]);
+  const [date, setDate] = useState<DateRange | undefined>(undefined);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -142,7 +141,9 @@ export function ClaimsPage({
           tab === "All" ? "" : tab,
           searchData,
           searchChannel === "All" ? "" : searchChannel,
-          searchSlaStatus === "All" ? "" : searchSlaStatus
+          searchSlaStatus === "All" ? "" : searchSlaStatus,
+          date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
+          date?.to ? format(date.to, "yyyy-MM-dd") : undefined
         );
         setFilteredClaims(res?.data);
         setPage(res?.page);
@@ -163,6 +164,7 @@ export function ClaimsPage({
     searchData,
     searchChannel,
     searchSlaStatus,
+    date,
   ]);
 
   useEffect(() => {
@@ -425,21 +427,18 @@ export function ClaimsPage({
 
   const isDocumentSelected = (id: string) => selectedDocuments.includes(id);
 
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  });
-
-  const handleDateRangeChange = (date: DateRange) => {
-    setDate(date);
+  const handleClear = () => {
+    setDate(undefined);
   };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <div className="flex gap-4 pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2">Claim List</h1>
+      <div className="flex flex-wrap justify-end gap-4 pb-4 items-center">
+        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">
+          Claim List
+        </h1>
 
-        <div className="relative max-w-sm w-full ml-auto shadow-sm">
+        <div className="relative sm:max-w-sm sm:min-w-48 min-w-full ml-auto shadow-sm">
           <Input
             type="text"
             placeholder="Search by Claim ID"
@@ -448,48 +447,56 @@ export function ClaimsPage({
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
-        <div className="">
-          <div className={cn("grid gap-2", className)}>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={"outline"}
-                  className={cn(
-                    "w-[260px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="w-5 h-5 mr-2" />
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, "LLL dd, y")} -{" "}
-                        {format(date.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      format(date.from, "LLL dd, y")
-                    )
+        <div className="flex gap-2 sm:w-auto w-full relative">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={cn(
+                  "sm:w-[280px] w-full justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="w-4 h-4 mr-2" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.to, "LLL dd, y")}
+                    </>
                   ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+                    format(date.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                defaultMonth={new Date()}
+                selected={date}
+                onSelect={(range) => setDate(range)}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+          <Button
+            onClick={handleClear}
+            disabled={!date}
+            className={cn(
+              "font-semibold bg-transparent hover:bg-transparent p-0 text-red-700 text-sm cursor-pointer absolute right-2",
+              !date && "text-gray-500 cursor-not-allowed"
+            )}
+            title="Clear"
+          >
+            <X className="w-4 h-4" />
+          </Button>
         </div>
 
-        <div className="w-36">
+        <div className="min-w-32">
           <Select
             value={searchChannel}
             onValueChange={handleSearchChannelOnChange}
@@ -509,7 +516,7 @@ export function ClaimsPage({
             </SelectContent>
           </Select>
         </div>
-        <div className="w-36">
+        <div className="min-w-32">
           <Select
             value={searchSlaStatus}
             onValueChange={handleSearchSlaStatusChange}
@@ -1276,7 +1283,7 @@ export function ClaimsPage({
       </div>
     </div>
   );
-}
+};
 
 const ClaimsWithSidebar = (params: any) => WithSidebar(ClaimsPage)(params);
 export default ClaimsWithSidebar;

@@ -124,20 +124,24 @@ export class ClaimService {
       },
     });
   }
-
   async getClaims(
     page: number,
     rowsPerPage: number,
     status: string,
     searchData?: string,
     searchChannel?: string,
-    searchSlaStatus?: any
+    searchSlaStatus?: any,
+    date_from?: string,
+    date_to?: string
   ): Promise<ClaimResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
-      keyword: searchData,
     };
+
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
 
     if (searchChannel) {
       params["channel"] = searchChannel;
@@ -163,6 +167,14 @@ export class ClaimService {
         "Paid",
         "Closed",
       ];
+    }
+
+    if (date_from) {
+      params["date_from"] = date_from;
+    }
+
+    if (date_to) {
+      params["date_to"] = date_to;
     }
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
