@@ -142,7 +142,10 @@ const DetailBillingPage = () => {
             <div>
               <div>Billing No. {billing.data[0].billings.billing_no}</div>
               <div>
-                Total Amount: {formatMoney(billing.data[0].billings.amount)}
+                Total Transaction Amount: {formatMoney(billing.data[0].billings.total)}
+              </div>
+              <div>
+                Total Commission Amount: {formatMoney(billing.data[0].billings.amount)}
               </div>
               <div>
                 Billing Created Date:{" "}

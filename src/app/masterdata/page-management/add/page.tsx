@@ -65,7 +65,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
         const id = response.id;
         router.push(`/masterdata/page-management/${id}`);
       }
-      console.log("selesai");
     } catch (error) {
       setUpdateSuccess(false);
     }

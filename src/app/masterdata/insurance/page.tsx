@@ -35,7 +35,6 @@ const InsuranceProduct = () => {
 
   const router = useRouter();
 
-
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [canCreate, setCanCreate] = useState<boolean>(false);
@@ -48,7 +47,7 @@ const InsuranceProduct = () => {
       const deleteBtn = await hasPermission("Masterdata.Delete");
       const createBtn = await hasPermission("Masterdata.Create");
 
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
@@ -59,8 +58,6 @@ const InsuranceProduct = () => {
 
     checkAccess();
   }, [router]);
-
-
 
   useEffect(() => {
     const fetchInsurance = async () => {
@@ -141,7 +138,15 @@ const InsuranceProduct = () => {
                 <TableRow key={insurance.id}>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{insurance.name}</TableCell>
-                  <TableCell>{insurance.logo_url}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-3">
+                      <img
+                        src={insurance.logo_url}
+                        alt=""
+                        className="max-w-20 w-auto h-auto max-h-12"
+                      />
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
                       <Button

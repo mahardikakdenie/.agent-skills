@@ -85,7 +85,6 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   const onSubmit = async (data: any) => {
     try {
       const response = await saveUser(data, id);
-      console.log(response);
       if (response.id != null) {
         const id = response.id;
         router.push(`/masterdata/user/${id}`);

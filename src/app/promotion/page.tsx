@@ -291,7 +291,9 @@ const PromotionPage = () => {
                 <TableCell>{promotion.type}</TableCell>
                 <TableCell>{promotion.value_currency}</TableCell>
                 <TableCell>
-                  {promotion.value_currency} {promotion.value}
+                  {promotion.value_type === "percentage"
+                    ? `${promotion.value}%`
+                    : `${promotion.value_currency} ${promotion.value}`}
                 </TableCell>
                 <TableCell>
                   {format(new Date(promotion.start_date), "dd-MM-yyyy")}
@@ -373,8 +375,9 @@ const PromotionPage = () => {
                               </div>
                               <div className="max-w-1 w-1">:</div>
                               <div>
-                                {selectedPromotion?.value_currency}{" "}
-                                {selectedPromotion?.value}
+                                {selectedPromotion?.value_type === "percentage"
+                                  ? `${selectedPromotion?.value}%`
+                                  : `${selectedPromotion?.value_currency} ${selectedPromotion?.value}`}
                               </div>
                             </div>
                             <div className="flex gap-2 text-sm font-medium">
