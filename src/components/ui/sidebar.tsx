@@ -512,6 +512,27 @@ const Sidebar = () => {
                   Source List
                 </Link>
               </li>
+              <li className="mt-2 text-sm">
+                <strong>Report</strong>
+              </li>
+              <li>
+                <Link
+                  href="/report/campaign"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/report/campaign/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Campaign Report"
+                    className="w-7 min-w-7"
+                  />
+                  Campaign Report
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
