@@ -19,8 +19,6 @@ import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import _ from "lodash";
 import { Input } from "@/components/ui/input";
-import jsPDF from "jspdf";
-import ExportPage from "./export/page";
 
 const EndorsementPage = () => {
   useRequireAuth();
@@ -44,6 +42,11 @@ const EndorsementPage = () => {
           rowsPerPage,
           tab === "All" ? "" : tab,
           searchData
+        );
+
+        const sortedData = res.data.sort(
+          (a: any, b: any) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
 
         setFilteredEndorsement(res.data);
@@ -226,7 +229,7 @@ const EndorsementPage = () => {
                 Request Date
               </TableHead>
               <TableHead className="whitespace-nowrap py-2">
-                Approve Date
+                Approve/Rejected Date
               </TableHead>
               <TableHead className="whitespace-nowrap py-2">Status</TableHead>
               <TableHead className="whitespace-nowrap py-2">Action</TableHead>
@@ -243,7 +246,11 @@ const EndorsementPage = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {endorsement?.participants?.full_name || "-"}
+                    {endorsement?.participants?.full_name ||
+                      endorsement?.participants?.name ||
+                      endorsement?.participants?.first_name ||
+                      endorsement?.participants?.last_name ||
+                      "-"}
                   </TableCell>
                   <TableCell>{endorsement.policies?.number || "-"}</TableCell>
                   <TableCell>
@@ -251,14 +258,14 @@ const EndorsementPage = () => {
                       ? new Date(endorsement.created_at).toLocaleDateString(
                           "en-GB"
                         )
-                      : "No Date"}
+                      : "-"}
                   </TableCell>
                   <TableCell>
-                    {endorsement?.updated_at
-                      ? new Date(endorsement.updated_at).toLocaleDateString(
-                          "en-GB"
-                        )
-                      : "No Date"}
+                    {endorsement?.status !== "Pending" &&
+                      endorsement?.updated_at &&
+                      new Date(endorsement.updated_at).toLocaleDateString(
+                        "en-GB"
+                      )}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(endorsement.status)}>

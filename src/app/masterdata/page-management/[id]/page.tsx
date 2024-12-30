@@ -127,7 +127,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
           setName(res.data.name);
           setPageData(res);
           setPageId(res.data.id);
-          console.log(res.data.id);
           setValue("name", res.data.name);
         } catch (error) {
           console.error("Error fetching category by ID:", error);

@@ -50,10 +50,20 @@ export class PolicyService {
       params["status"] = status;
     }
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get(`/policies?${queryString}`);
+    return this.httpClient.get(`/v1/policies?${queryString}`);
+  }
+
+  async getPolicyExport(page: number): Promise<PolicyResponse> {
+    const params: any = {
+      page: page,
+      limit: 100,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/v1/policies?${queryString}`);
   }
 
   async getPolicyDetail(id: string): Promise<any> {
-    return this.httpClient.get("/policies/" + id);
+    return this.httpClient.get("/v1/policies/" + id);
   }
 }

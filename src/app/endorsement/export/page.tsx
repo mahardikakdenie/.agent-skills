@@ -5,10 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
 import { Button } from "@/components/ui/button";
+import Spinner from "@/components/ui/spinner";
+import WithSidebar from "@/hoc/with-sidebar";
 
 const ExportPage = () => {
   useRequireAuth();
@@ -17,19 +20,23 @@ const ExportPage = () => {
   const [page, setPage] = useState(1);
   const [totalData, setTotalData] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(totalData);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const res = await endorsementService.getEndorsementExport(
           page,
           rowsPerPage
         );
         setData(res.data);
-        setTotalData(res.pageTotal);
+        setTotalData(res.total);
       } catch (error) {
         console.error("Error fetching data: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -68,7 +75,12 @@ const ExportPage = () => {
     const sheetData = data.map((endorsement, index) => ({
       No: (page - 1) * rowsPerPage + index + 1,
       "Request ID": endorsement.number || "-",
-      "Insured Name": endorsement?.participants?.full_name || "-",
+      "Insured Name":
+        endorsement?.participants?.full_name ||
+        endorsement?.participants?.name ||
+        endorsement?.participants?.first_name ||
+        endorsement?.participants?.last_name ||
+        "-",
       "Policy Number": endorsement.policies?.number || "-",
       "Request Date": endorsement?.created_at
         ? new Date(endorsement.created_at).toLocaleDateString("en-GB")
@@ -112,6 +124,7 @@ const ExportPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
       <div className="flex gap-4 mb-5">
+        <h1 className="text-black font-bold text-2xl mt-2">Endorsement List</h1>
         <div
           onClick={() => router.back()}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
@@ -135,80 +148,92 @@ const ExportPage = () => {
         </Button>
       </div>
       <div className="w-full bg-white rounded-lg">
-        <table style={styles.table} ref={reportTemplateRef} border={1}>
-          <tr>
-            <td style={styles.th} valign="middle">
-              No.
-            </td>
-            <td style={styles.th} valign="middle">
-              Request ID
-            </td>
-            <td style={styles.th} valign="middle">
-              Insured Name
-            </td>
-            <td style={styles.th} valign="middle">
-              Policy Number
-            </td>
-            <td style={styles.th} valign="middle">
-              Request Date
-            </td>
-            <td style={styles.th} valign="middle">
-              Approve Date
-            </td>
-            <td style={styles.th} valign="middle">
-              Status
-            </td>
-          </tr>
-          {data.length > 0 ? (
-            data.map((endorsement, index) => (
-              <tr key={endorsement.id}>
-                <td style={styles.td} valign="middle">
-                  {(page - 1) * rowsPerPage + index + 1}
-                </td>
-                <td style={styles.td} valign="middle">
-                  <div className="flex gap-2 items-center">
-                    {endorsement.number}
-                  </div>
-                </td>
-                <td style={styles.td} valign="middle">
-                  {endorsement?.participants?.full_name || "-"}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {endorsement.policies?.number || "-"}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {endorsement?.created_at
-                    ? new Date(endorsement.created_at).toLocaleDateString(
-                        "en-GB"
-                      )
-                    : "No Date"}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {endorsement?.updated_at
-                    ? new Date(endorsement.updated_at).toLocaleDateString(
-                        "en-GB"
-                      )
-                    : "No Date"}
-                </td>
-                <td style={styles.td} valign="middle">
-                  {endorsement.status}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr className="hover:!bg-white">
-              <td colSpan={7}>
-                <div className="flex flex-col gap-4 items-center justify-center py-14">
-                  <Image alt="no data" src={noData} width={200} /> No
-                  transaction data available
-                </div>
-              </td>{" "}
+        {isLoading ? (
+          <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
+            <Spinner />
+            Loading...
+          </div>
+        ) : (
+          <table style={styles.table} ref={reportTemplateRef} border={1}>
+            <tr>
+              <td style={styles.th} valign="middle">
+                No.
+              </td>
+              <td style={styles.th} valign="middle">
+                Request ID
+              </td>
+              <td style={styles.th} valign="middle">
+                Insured Name
+              </td>
+              <td style={styles.th} valign="middle">
+                Policy Number
+              </td>
+              <td style={styles.th} valign="middle">
+                Request Date
+              </td>
+              <td style={styles.th} valign="middle">
+                Approve Date
+              </td>
+              <td style={styles.th} valign="middle">
+                Status
+              </td>
             </tr>
-          )}
-        </table>
+            {data.length > 0 ? (
+              data.map((endorsement, index) => (
+                <tr key={endorsement.id}>
+                  <td style={styles.td} valign="middle">
+                    {(page - 1) * rowsPerPage + index + 1}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    <div className="flex gap-2 items-center">
+                      {endorsement.number}
+                    </div>
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {endorsement?.participants?.full_name ||
+                      endorsement?.participants?.name ||
+                      endorsement?.participants?.first_name ||
+                      endorsement?.participants?.last_name ||
+                      "-"}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {endorsement.policies?.number || "-"}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {endorsement?.created_at
+                      ? new Date(endorsement.created_at).toLocaleDateString(
+                          "en-GB"
+                        )
+                      : "No Date"}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {endorsement?.updated_at
+                      ? new Date(endorsement.updated_at).toLocaleDateString(
+                          "en-GB"
+                        )
+                      : "No Date"}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {endorsement.status}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr className="hover:!bg-white">
+                <td colSpan={7}>
+                  <div className="flex flex-col gap-4 items-center justify-center py-14">
+                    <Image alt="no data" src={noData} width={200} /> No
+                    transaction data available
+                  </div>
+                </td>{" "}
+              </tr>
+            )}
+          </table>
+        )}
       </div>
     </div>
   );
 };
 
-export default ExportPage;
+const ExportWithSidebar = (params: any) => WithSidebar(ExportPage)(params);
+export default ExportWithSidebar;

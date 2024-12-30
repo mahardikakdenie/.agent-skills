@@ -227,7 +227,38 @@ th {
 .frame-body button[role="combobox"].h-10 {
   height: 2.5rem !important;
 }
+.rdp-month_grid {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+  border-collapse: collapse;
+  width: 100%;
+}
 
+.rdp-weekdays {
+  display: flex;
+}
+.rdp-weekday {
+  color: hsl(var(--muted-foreground));
+  font-weight: 400;
+  font-size: 0.8rem;
+  border-radius: calc(var(--radius) - 2px);
+  width: 2rem;
+}
+.rdp-range_start,
+.rdp-range_start:hover,
+.rdp-range_end,
+.rdp-range_end:hover {
+  background: #18181b !important;
+  color: white !important;
+}
+.rdp-range_middle {
+  background-color: #f4f4f5;
+  border-radius: 0;
+}
+.table-claims.not-hover tr.hover\:bg-muted\/50:hover {
+  background-color: auto;
+}
 @media screen and (max-width: 1199px) {
   .sidebar {
     position: fixed;

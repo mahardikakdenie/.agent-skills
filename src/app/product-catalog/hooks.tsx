@@ -1,5 +1,6 @@
 import { ChannelService } from "@/services/channel.services";
 import {
+  GetPlansRequest,
   ProductCatalogRequest,
   ProductcatalogResponse,
   ProductCatalogService,
@@ -11,6 +12,7 @@ export const useProducts = () => {
   const [products, setProducts] = useState<ProductList[]>([]);
   const [insurances, setInsurances] = useState<any[]>([]);
   const [plan, setPlan] = useState<any | null>(null);
+  const [plans, setPlans] = useState<any[] | null>(null);
   const [benefits, setBenefits] = useState<any[]>([]);
   const [details, setDetails] = useState<any[]>([]);
   const productCatalogService = new ProductCatalogService();
@@ -143,9 +145,16 @@ export const useProducts = () => {
     setChannelPlans(data);
     return data;
   };
+
+  const fetchPlans = async (params: GetPlansRequest) => {
+    const { data } = await productCatalogService.getPlans(params);
+    setPlans(data);
+  };
   return {
+    fetchPlans,
     products,
     insurances,
+    plans,
     fetchProducts,
     fetchInsurances,
     savePlan,

@@ -35,6 +35,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
+import { formatMoneyClaim } from "@/lib/formatter";
 
 const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -281,13 +282,32 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Amount
+                    Requested Amount
                   </div>
                   <div className="max-w-1 w-1">:</div>
                   <div>
-                    {claim.claim.find(
-                      (d: any) => d.type === "Number" && d.name === "claim"
-                    ).value || "-"}
+                    {(() => {
+                      const claimValue = claim.claim?.find(
+                        (d: any) => d.type === "Number" && d.name === "claim"
+                      )?.value;
+
+                      const numericValue = Number(claimValue);
+
+                      return !isNaN(numericValue)
+                        ? formatMoneyClaim(numericValue)
+                        : "-";
+                    })()}
+                  </div>
+                </div>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                    Approved Amount
+                  </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>
+                    {formatMoneyClaim(
+                      claim.amount_approved != null ? claim.amount_approved : 0
+                    )}
                   </div>
                 </div>
               </div>
@@ -335,7 +355,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.reg_no || "-"}
+                        {claim?.participant_data?.data?.data?.reg_no ||
+                          claim?.participant_data?.data?.reg_no ||
+                          "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
@@ -344,7 +366,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.name || "-"}
+                        {claim?.participant_data?.data?.data?.name ||
+                          claim?.participant_data?.data?.name ||
+                          "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
@@ -353,7 +377,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.gender || "-"}
+                        {claim?.participant_data?.data?.data?.gender ||
+                          claim?.participant_data?.data?.gender ||
+                          "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
@@ -363,16 +389,27 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       <div className="max-w-1 w-1">:</div>
                       <div>
                         {claim?.participant_data?.data?.data?.country_code ||
+                          claim?.participant_data?.data?.country_code ||
                           "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        No. Paspor
+                        {claim?.participant_data?.data?.data?.passport_no
+                          ? "No. Passport"
+                          : claim?.participant_data?.data?.passport_no
+                          ? "No. Passport"
+                          : claim?.participant_data?.data?.nik
+                          ? "NIK"
+                          : claim?.participant_data?.data?.identification_number
+                          ? "No. Identitas"
+                          : ""}
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
                         {claim?.participant_data?.data?.data?.passport_no ||
+                          claim?.participant_data?.data?.passport_no ||
+                          claim?.participant_data?.data?.nik ||
                           "-"}
                       </div>
                     </div>
@@ -383,6 +420,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       <div className="max-w-1 w-1">:</div>
                       <div>
                         {claim?.participant_data?.data?.data?.nationality ||
+                          claim?.participant_data?.data?.nationality ||
                           "-"}
                       </div>
                     </div>
@@ -392,7 +430,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.dob || "-"}
+                        {claim?.participant_data?.data?.data?.dob ||
+                          claim?.participant_data?.data?.dob ||
+                          "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
@@ -401,7 +441,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.pob || "-"}
+                        {claim?.participant_data?.data?.data?.pob ||
+                          claim?.participant_data?.data?.pob ||
+                          "-"}
                       </div>
                     </div>
                   </div>

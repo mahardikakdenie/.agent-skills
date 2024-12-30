@@ -55,13 +55,9 @@ export class EndorsementService {
     page: number,
     rowsPerPage: number
   ): Promise<EndorsementResponse> {
-    const response: EndorsementResponse = await this.httpClient.get(
-      `/v1/endorsements?page=${page}&limit=${rowsPerPage}`
-    );
-    const pageTotal = response.pageTotal || rowsPerPage;
     const params: any = {
       page: page,
-      limit: pageTotal,
+      limit: 100,
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
