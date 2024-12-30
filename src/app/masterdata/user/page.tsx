@@ -171,7 +171,7 @@ const Users = () => {
                   </TableCell>
                   <TableCell>{user.email || "-"}</TableCell>
                   <TableCell>{user.phone_number || "-"}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.role || "-"}</TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(user.status)}>
                       {user.status || "-"}
