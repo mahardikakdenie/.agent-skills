@@ -13,8 +13,15 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { TransactionService } from "@/services/transaction.service";
 import { useEffect, useState } from "react";
 import { formatMoney } from "@/lib/formatter";
-import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Search, X } from "react-feather";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Search,
+  Upload,
+  X,
+} from "react-feather";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -29,6 +36,7 @@ import { hasPermission } from "@/context/auth.context";
 
 const TransactionsPage = () => {
   useRequireAuth();
+  const path = usePathname();
   const transactionService = new TransactionService();
   const [transactions, setTransactions] = useState<any[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
@@ -50,10 +58,7 @@ const TransactionsPage = () => {
       const access = await hasPermission("Transactions.Read");
       const editBtn = await hasPermission("Transactions.Update");
 
-      console.log("access: " + access);
-      console.log("edit: " + editBtn);
-
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setHasAccess(access);
       if (!access) {
         router.push("/forbidden");
@@ -131,9 +136,21 @@ const TransactionsPage = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-        Transactions
-      </h1>
+      <div className="flex gap-4 pb-4 items-center">
+        <h1 className="text-black font-bold text-2xl mt-2">Transactions</h1>
+        <Button
+          onClick={() => router.push(`${path}/import`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1 " /> Transactions List
+        </Button>
+        <Button
+          onClick={() => router.push(`${path}/export`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+        >
+          <Download className="w-5 h-5 mr-1 " /> Export
+        </Button>
+      </div>
       <div className="block bg-white rounded-md mb-3">
         <div className="w-full flex items-center overflow-auto">
           <div
