@@ -35,7 +35,7 @@ export class TransactionService {
       params["status"] = status;
     }
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get(`/transactions?${queryString}`);
+    return this.httpClient.get(`/v1/transactions?${queryString}`);
   }
 
   async getTransactionsExport(
@@ -43,7 +43,7 @@ export class TransactionService {
     rowsPerPage: number
   ): Promise<TransactionResponse> {
     const response: TransactionResponse = await this.httpClient.get(
-      `/transactions?page=${page}&limit=${rowsPerPage}`
+      `/v1/transactions?page=${page}&limit=${rowsPerPage}`
     );
     const pageTotal = response.pageTotal || rowsPerPage;
     const params: any = {
@@ -52,16 +52,16 @@ export class TransactionService {
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get(`/transactions?${queryString}`);
+    return this.httpClient.get(`/v1/transactions?${queryString}`);
   }
 
   async getTransaction(id: string): Promise<any> {
-    return this.httpClient.get("/transactions/" + id);
+    return this.httpClient.get("/v1/transactions/" + id);
   }
 
   async updatePaymentTransaction(id: string, data: any): Promise<any> {
     try {
-      return await this.httpClient.put("/transactions/payment/" + id, data);
+      return await this.httpClient.put("/v1/transactions/payment/" + id, data);
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }
