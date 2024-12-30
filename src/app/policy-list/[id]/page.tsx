@@ -86,7 +86,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             </div>
             <div className="max-w-1 w-1">:</div>
             <div>
-              {policy.declarations.transaction_data.customer.name || "-"}
+              {policy?.declarations?.transaction_data?.customer?.name || "-"}
             </div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
@@ -95,14 +95,14 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             </div>
             <div className="max-w-1 w-1">:</div>
             <div>
-              {policy.declarations.transaction_data.customer.phone || "-"}
+              {policy?.declarations?.transaction_data?.customer?.phone || "-"}
             </div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
             <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Email</div>
             <div className="max-w-1 w-1">:</div>
             <div>
-              {policy.declarations.transaction_data.customer.email || "-"}
+              {policy?.declarations?.transaction_data?.customer?.email || "-"}
             </div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
@@ -110,7 +110,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             <div className="max-w-1 w-1">:</div>
             <div className="font-semibold">
               <span className={getStatusColor(policy.status)}>
-                {policy.status}
+                {policy?.status}
               </span>
             </div>
           </div>
@@ -130,7 +130,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               Policy Number
             </div>
             <div className="max-w-1 w-1">:</div>
-            <div>{policy.number || "-"}</div>
+            <div>{policy?.number || "-"}</div>
           </div>
 
           <div className="flex gap-2 text-sm font-medium">
