@@ -442,10 +442,17 @@ const ClaimsPage = () => {
     setFinalSelectedDocuments(selected);
   };
 
-  const handleDeleteSelectedDocument = (id: string) => {
-    setFinalSelectedDocuments((prev) => prev.filter((doc) => doc.id !== id));
-    setSelectedDocuments((prev) => prev.filter((docId) => docId !== id));
-  };
+  // const handleDeleteSelectedDocument = (id: string) => {
+  //   setFinalSelectedDocuments((prev) => {
+  //     const updatedDocs = prev.filter((doc) => doc.id !== id);
+  //     return updatedDocs;
+  //   });
+
+  //   setSelectedDocuments((prev) => {
+  //     const updatedSelectedDocs = prev.filter((docId) => docId !== id);
+  //     return updatedSelectedDocs;
+  //   });
+  // };
 
   const isDocumentSelected = (id: string) => selectedDocuments.includes(id);
 
@@ -712,7 +719,7 @@ const ClaimsPage = () => {
                               }
                               className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
                             />
-                            <Button
+                            {/* <Button
                               disabled={!canDelete}
                               className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
                               onClick={() =>
@@ -720,7 +727,7 @@ const ClaimsPage = () => {
                               }
                             >
                               <Trash2 className="w-5 h-5" />
-                            </Button>
+                            </Button> */}
                           </li>
                         ))}
                       </ul>
@@ -787,9 +794,6 @@ const ClaimsPage = () => {
                                           checked={isDocumentSelected(
                                             document.name
                                           )}
-                                          onChange={() =>
-                                            handleCheckboxChange(document.name)
-                                          }
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
@@ -878,7 +882,7 @@ const ClaimsPage = () => {
                               }
                               className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
                             />
-                            <Button
+                            {/* <Button
                               disabled={!canDelete}
                               className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
                               onClick={() =>
@@ -886,7 +890,7 @@ const ClaimsPage = () => {
                               }
                             >
                               <Trash2 className="w-5 h-5" />
-                            </Button>
+                            </Button> */}
                           </li>
                         ))}
                       </ul>
@@ -953,9 +957,6 @@ const ClaimsPage = () => {
                                           checked={isDocumentSelected(
                                             document.name
                                           )}
-                                          onChange={() =>
-                                            handleCheckboxChange(document.name)
-                                          }
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
