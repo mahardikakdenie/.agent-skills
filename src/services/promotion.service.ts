@@ -33,6 +33,21 @@ export class PromotionService {
 
   }
 
+  
+  async getPromotionCampaignReport(page: number, limit: number, sortBy: string, filterBy: string): Promise<any> {
+    if (page <= 0) {
+      page = 1;
+    }
+    return this.httpClientPromotion.get(`/v1/campaign/report?page=${page}&limit=${limit}&sort=${sortBy}&filter=${filterBy}`);
+
+  }
+
+  async getPromotionCampaignExportReport(sortBy: string, filterBy: string): Promise<any> {
+
+    return this.httpClientPromotion.get(`/v1/campaign/report/export?sort=${sortBy}&filter=${filterBy}`);
+
+  }
+
   async getPromotionCampaignById(id: string): Promise<PromotionResponse> {
     return this.httpClientPromotion.get(`/v1/campaign/${id}?id=${id}`);
 }

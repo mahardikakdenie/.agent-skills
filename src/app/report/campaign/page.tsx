@@ -1,5 +1,6 @@
 "use client";
 import WithSidebar from "@/hoc/with-sidebar";
+import * as XLSX from "xlsx";
 import {
   Table,
   TableBody,
@@ -11,12 +12,22 @@ import {
 } from "@/components/ui/table";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { PromotionService } from "@/services/promotion.service";
-
+import { Controller, useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Download, Upload } from "react-feather";
 import { hasPermission } from "@/context/auth.context";
 import { Button } from "@/components/ui/button";
+import { NewPromotionCampaign } from "@/app/promotion/dto/promotion.dto";
+import { AxiosResponse } from "axios";
 
 const ReportCampaignPage = () => {
   useRequireAuth();
@@ -30,14 +41,47 @@ const ReportCampaignPage = () => {
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("date");
-  const [filterBy, setFilterBy] = useState<string>("all"); // New filter state
+  const [filterBy, setFilterBy] = useState<string>("all");
+  const [promotion, setPromotion] = useState<NewPromotionCampaign>({
+    campaign_id: "",
+    name: "",
+    type: "embedded",
+    start_date: "",
+    end_date: "",
+    value: 0,
+    active: true,
+    value_currency: "IDR",
+    value_type: "fixed",
+    minimum_amount: 0,
+    maximum_amount: 0,
+    embedded_discount_channels: [],
+    embedded_discount_insurances: [],
+    embedded_discount_plans: [],
+    embedded_discount_products: [],
+    vouchers: [],
+  });
   const router = useRouter();
+
+  
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    shouldUnregister: false,
+    defaultValues: {
+      filter: "all",
+      sort: "date"
+    },
+  });
+
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = await hasPermission("Promotions.Read");
-      const deleteBtn = await hasPermission("Promotions.Delete");
-      const editBtn = await hasPermission("Promotions.Update");
+      const access = await hasPermission("Report.Read");
+      const deleteBtn = await hasPermission("Report.Delete");
+      const editBtn = await hasPermission("Report.Update");
 
       setCanDelete(deleteBtn);
       setCanEdit(editBtn);
@@ -51,19 +95,83 @@ const ReportCampaignPage = () => {
   }, [router]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      // Fetch data using promotionService and apply filters here
-      console.log(`Fetching data with sortBy: ${sortBy}, filterBy: ${filterBy}`);
-    };
-    fetchData();
-  }, [sortBy, filterBy, page, rowsPerPage]);
+    setPage(1);
+  }, [filterBy, sortBy]);
+
+
+  useEffect(() => {
+    setPromotions([]);
+    setTotalItems(0);
+    setTotalPages(1);
+  
+    if (hasAccess) {
+      promotionService
+        .getPromotionCampaignReport(page, rowsPerPage, sortBy, filterBy)
+        .then((res) => {
+          setPromotions(res.data);
+          setTotalItems(res.total);
+          setTotalPages(res.pageTotal);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch promotion reports:", error);
+        });
+    }
+  }, [hasAccess, page, rowsPerPage, sortBy, filterBy]);
+  
 
   if (hasAccess === null) {
     return <div>Loading...</div>;
   }
 
-  const handleDownloadReport = () => {
-    console.log(`Downloading report sorted by ${sortBy} and filtered by ${filterBy}`);
+  const handleDownloadReport = async () => {
+    try {
+      console.log(`Downloading report sorted by ${sortBy} and filtered by ${filterBy}`);
+      
+      const response: AxiosResponse<any> = await promotionService.getPromotionCampaignExportReport(
+        sortBy,
+        filterBy
+      );
+      const { data } = response;
+  
+      // Transform data for Excel
+      const reportData = data.map((promotion: any) => ({
+        "Campaign Name": promotion.campaign_name || "",
+        "Type": promotion.type || "",
+        "Insurance Company Name": promotion.insurance_name || "N/A",
+        "Plan Name": promotion.plan_name || "N/A",
+        "Transaction Amount": promotion.total_transaction_amount || 0,
+        "Discount Amount": promotion.total_discount_amount || 0,
+      }));
+  
+      // Create a new workbook and add data
+      const worksheet = XLSX.utils.json_to_sheet(reportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Campaign Report");
+  
+      // Generate Excel file
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  
+      const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Campaign_Report.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+  
+      console.log("Report downloaded successfully.");
+    } catch (error) {
+      console.error("Failed to download the report:", error);
+    }
+  };
+
+  const handleChangeFilter = (value: string) => {
+    setFilterBy(value);
+  };
+
+  const handleChangeSort = (value: string) => {
+    setSortBy(value);
   };
 
   return (
@@ -77,30 +185,66 @@ const ReportCampaignPage = () => {
             <label htmlFor="sortBy" className="text-sm font-medium mb-1">
               Sort by:
             </label>
-            <select
-              id="sortBy"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="p-2 border rounded bg-white text-black focus:ring focus:ring-yellow-400"
-            >
-              <option value="date">Date</option>
-              <option value="insurance">Insurance</option>
-            </select>
+            <Controller
+              name="sort"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    handleChangeSort(value);
+                    field.onChange(value);
+                  }}
+                  disabled={false}
+                  required
+                >
+                  <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mt-1">
+                    {" "}
+                    {/* Match height and margin */}
+                    <SelectValue placeholder="Select a Sort" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="date">Date</SelectItem>
+                      <SelectItem value="insurance">Insurance</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
           <div className="flex flex-col items-start">
             <label htmlFor="filterBy" className="text-sm font-medium mb-1">
               Filter by:
             </label>
-            <select
-              id="filterBy"
-              value={filterBy}
-              onChange={(e) => setFilterBy(e.target.value)}
-              className="p-2 border rounded bg-white text-black focus:ring focus:ring-yellow-400"
-            >
-              <option value="all">All</option>
-              <option value="voucher">Voucher</option>
-              <option value="embedded">Embedded</option>
-            </select>
+            <Controller
+              name="filter"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    handleChangeFilter(value);
+                    field.onChange(value);
+                  }}
+                  disabled={false}
+                  required
+                >
+                  <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mt-1">
+                    {" "}
+                    {/* Match height and margin */}
+                    <SelectValue placeholder="Select a Filter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="embedded">Embedded</SelectItem>
+                      <SelectItem value="voucher">Voucher</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
           <Button
             onClick={handleDownloadReport}
@@ -123,7 +267,18 @@ const ReportCampaignPage = () => {
               <TableHead>Discount Amount</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>{/* Table content */}</TableBody>
+          <TableBody>
+          {promotions.map((promotion) => (
+              <TableRow key={promotion.campaign_id}>
+                <TableCell>{promotion.campaign_name}</TableCell>
+                <TableCell>{promotion.type}</TableCell>
+                <TableCell>{promotion.insurance_name}</TableCell>
+                <TableCell>{promotion.plan_name}</TableCell>
+                <TableCell>{promotion.total_transaction_amount}</TableCell>
+                <TableCell>{promotion.total_discount_amount}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
           <TableFooter>
             <TableRow>
               <TableCell colSpan={8}>
