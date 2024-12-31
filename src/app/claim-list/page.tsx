@@ -958,7 +958,7 @@ const ClaimsPage = () => {
                       }}
                     >
                       <SelectTrigger
-                        className={`w-[180px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
+                        className={`w-[240px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
                           claim.status
                         )}`}
                       >
