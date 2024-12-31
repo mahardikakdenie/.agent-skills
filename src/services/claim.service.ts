@@ -153,14 +153,16 @@ export class ClaimService {
 
     if (status) {
       if (status !== "Draft") {
-        params["status"] = status;
+        params["status"] = [status];
       }
     } else {
       params["status"] = [
         "Submitted",
         "Acknowledged",
-        "Document Review",
-        "Lack of Documents",
+        "Document Review Operator",
+        "Lack of Documents Operator",
+        "Document Review Insurance",
+        "Lack of Documents Insurance",
         "Claim Assessment",
         "Approved",
         "Rejected",
@@ -178,7 +180,7 @@ export class ClaimService {
     }
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get(`/claims?${queryString}`);
+    return this.httpClient.get(`/v1/claims?${queryString}`);
   }
 
   async getClaimsExport(
@@ -191,15 +193,15 @@ export class ClaimService {
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get(`/claims?${queryString}`);
+    return this.httpClient.get(`/v1/claims?${queryString}`);
   }
 
   async getClaimsDetail(id: string): Promise<any> {
-    return this.httpClient.get("/claims/" + id);
+    return this.httpClient.get("/v1/claims/" + id);
   }
 
   async getClaimsHistories(id: string): Promise<any> {
-    return this.httpClient.get(`/claim-histories?claim=${id}`);
+    return this.httpClient.get(`/v1/claim-histories?claim=${id}`);
   }
 
   async updateClaimStatus(
@@ -210,7 +212,7 @@ export class ClaimService {
     lack_of_documents?: string[]
   ): Promise<any> {
     try {
-      return await this.httpClient.put("/claims/update-status/" + id, {
+      return await this.httpClient.put("/v1/claims/update-status/" + id, {
         status: data,
         note: note,
         amount_approved: amount_approved,
@@ -222,10 +224,14 @@ export class ClaimService {
   }
 
   async getClaimCategory(id: string): Promise<any> {
-    return this.httpClient.get("/claim-category-forms/all/" + id);
+    return this.httpClient.get("/v1/claim-category-forms/all/" + id);
   }
 
   async getClaimChannel(id: string): Promise<any> {
-    return this.httpClient.get("/claim-channel-forms/all/" + id);
+    return this.httpClient.get("/v1/claim-channel-forms/all/" + id);
+  }
+
+  async getClaimsStatus(): Promise<any> {
+    return this.httpClient.get(`/v1/claims/configurations`);
   }
 }
