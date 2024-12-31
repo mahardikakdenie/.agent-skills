@@ -920,7 +920,7 @@ const ClaimsPage = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {claim?.policy_data?.account?.name || "-"}
+                    {claim?.policy_data?.policy_holder?.name || "-"}
                   </TableCell>
                   <TableCell>
                     {claim.package?.plan?.name.split("|").join(" - ") || "-"}
