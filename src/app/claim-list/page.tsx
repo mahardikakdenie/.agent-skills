@@ -409,6 +409,7 @@ const ClaimsPage = () => {
         )
       );
       setIsModalOpen(false);
+      setFinalSelectedDocuments([]);
       setSuccessUpdate(true);
     }
   };
