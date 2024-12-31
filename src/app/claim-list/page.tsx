@@ -89,9 +89,11 @@ const ClaimsPage = () => {
   const [numberId, setNumberID] = useState("-");
   const [statusOld, setStatusOld] = useState("-");
   const [notes, setNotes] = useState("");
+  const [docs, setDocs] = useState("");
   const [lackOfDocuments, setLackOfDocuments] = useState("");
   const [amApprovedMsg, setAmApprovedMsg] = useState("");
   const [noteMsg, setNoteMsg] = useState("");
+  const [docsMsg, setDocsMsg] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currencyApp, setCurrencyApp] = useState(" ");
   const [dataDocument, setDataDocument] = useState<any[]>([]);
@@ -230,14 +232,24 @@ const ClaimsPage = () => {
 
   const selectCategory = (id: string) => {
     claimService.getClaimCategory(id).then((res) => {
-      setDataDocument(res.data);
+      const label = filteredClaims[0]?.claim_config;
+
+      const updatedDataDocument = res.data.map((document: any) => ({
+        ...document,
+        label: {
+          ...document.label,
+          en: document.label?.en || label,
+        },
+      }));
+
+      setDataDocument([...updatedDataDocument, ...label]);
     });
   };
 
   const handleSelectDocument = () => {
     if (selectedClaim) {
       if (selectedClaim.policy) {
-        selectCategory(selectedClaim.policy_data.category);
+        selectCategory(selectedClaim.category);
       } else {
         selectChannel(selectedClaim.channel);
       }
@@ -366,11 +378,20 @@ const ClaimsPage = () => {
     }
     if (
       (notes === "" && pendingStatus === "Rejected") ||
-      (notes === "" && pendingStatus === "Lack of Documents")
+      (notes === "" && pendingStatus === "Lack of Documents Operator") ||
+      (notes === "" && pendingStatus === "Lack of Documents Insurance")
     ) {
       setNoteMsg("Required!");
       return;
     }
+
+    // if (
+    //   (docs === "" && pendingStatus === "Lack of Documents Operator") ||
+    //   (docs === "" && pendingStatus === "Lack of Documents Insurance")
+    // ) {
+    //   setDocsMsg("Required!");
+    //   return;
+    // }
 
     if (selectedClaimId && pendingStatus) {
       updateStatus(
@@ -415,7 +436,7 @@ const ClaimsPage = () => {
 
   const handleAddSelectedDocuments = () => {
     const selected = dataDocument.filter((doc) =>
-      selectedDocuments.includes(doc.id)
+      selectedDocuments.includes(doc.name)
     );
     setFinalSelectedDocuments(selected);
   };
@@ -685,7 +706,9 @@ const ClaimsPage = () => {
                           >
                             <Input
                               name="lack_of_documents"
-                              value={doc?.label?.en}
+                              value={
+                                doc?.label?.en || doc?.label_multilanguage?.en
+                              }
                               className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
                             />
                             <Button
@@ -701,6 +724,8 @@ const ClaimsPage = () => {
                         ))}
                       </ul>
                     )}
+                    {/* <p className="text-xs text-red-500">{docsMsg}</p> */}
+
                     <Dialog>
                       {filteredClaims.slice(0, 1).map((document) => (
                         <DialogTrigger asChild key={document.id}>
@@ -744,31 +769,33 @@ const ClaimsPage = () => {
                                 dataDocument
                                   .filter(
                                     (document) =>
-                                      document.type === "File" ||
-                                      document.type === "File Multiple"
+                                      document.type === "file" ||
+                                      document.type === "file multiple"
                                   )
                                   .map((document) => (
                                     <TableRow
                                       key={document.id}
                                       className="cursor-pointer"
                                       onClick={() =>
-                                        handleCheckboxChange(document.id)
+                                        handleCheckboxChange(document.name)
                                       }
                                     >
                                       <TableCell align="center">
                                         <Input
                                           type="checkbox"
                                           checked={isDocumentSelected(
-                                            document.id
+                                            document.name
                                           )}
                                           onChange={() =>
-                                            handleCheckboxChange(document.id)
+                                            handleCheckboxChange(document.name)
                                           }
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
                                       <TableCell>
-                                        {document?.label?.en || "-"}
+                                        {document?.label?.en ||
+                                          document?.label_multilanguage?.en ||
+                                          "-"}
                                       </TableCell>
                                       <TableCell className="w-36">
                                         {document.type || "-"}
@@ -777,7 +804,7 @@ const ClaimsPage = () => {
                                   ))
                               ) : (
                                 <TableRow className="hover:!bg-white">
-                                  <TableCell colSpan={10}>
+                                  <TableCell colSpan={3}>
                                     <div className="flex flex-col gap-4 items-center justify-center py-14">
                                       <Image
                                         alt="no data"
@@ -845,7 +872,9 @@ const ClaimsPage = () => {
                           >
                             <Input
                               name="lack_of_documents"
-                              value={doc?.label?.en}
+                              value={
+                                doc?.label?.en || doc?.label_multilanguage?.en
+                              }
                               className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
                             />
                             <Button
@@ -861,6 +890,8 @@ const ClaimsPage = () => {
                         ))}
                       </ul>
                     )}
+                    {/* <p className="text-xs text-red-500">{docsMsg}</p> */}
+
                     <Dialog>
                       {filteredClaims.slice(0, 1).map((document) => (
                         <DialogTrigger asChild key={document.id}>
@@ -904,31 +935,33 @@ const ClaimsPage = () => {
                                 dataDocument
                                   .filter(
                                     (document) =>
-                                      document.type === "File" ||
-                                      document.type === "File Multiple"
+                                      document.type === "file" ||
+                                      document.type === "file multiple"
                                   )
                                   .map((document) => (
                                     <TableRow
                                       key={document.id}
                                       className="cursor-pointer"
                                       onClick={() =>
-                                        handleCheckboxChange(document.id)
+                                        handleCheckboxChange(document.name)
                                       }
                                     >
                                       <TableCell align="center">
                                         <Input
                                           type="checkbox"
                                           checked={isDocumentSelected(
-                                            document.id
+                                            document.name
                                           )}
                                           onChange={() =>
-                                            handleCheckboxChange(document.id)
+                                            handleCheckboxChange(document.name)
                                           }
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
                                       <TableCell>
-                                        {document?.label?.en || "-"}
+                                        {document?.label?.en ||
+                                          document?.label_multilanguage?.en ||
+                                          "-"}
                                       </TableCell>
                                       <TableCell className="w-36">
                                         {document.type || "-"}
@@ -937,7 +970,7 @@ const ClaimsPage = () => {
                                   ))
                               ) : (
                                 <TableRow className="hover:!bg-white">
-                                  <TableCell colSpan={10}>
+                                  <TableCell colSpan={3}>
                                     <div className="flex flex-col gap-4 items-center justify-center py-14">
                                       <Image
                                         alt="no data"
