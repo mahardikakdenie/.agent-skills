@@ -37,7 +37,7 @@ import {
 import { hasPermission } from "@/context/auth.context";
 import { formatMoneyClaim } from "@/lib/formatter";
 
-const DetailPolicy = ({ params }: { params: { id: string } }) => {
+const DetailClaim = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
@@ -56,7 +56,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const [tab, setTab] = useState("Summary");
   const [histories, setHistories] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
-  const imageUrl = claim?.general[0]?.value || noImage.src;
+  const imageUrl = claim?.policy_data[0]?.value || noImage.src;
 
   const personalInfo = [
     claim?.personal_info?.address,
@@ -260,18 +260,14 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     Customer Name
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.name || "-"}</div>
+                  <div>{claim?.policy_data?.policy_holder?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Plan Name
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>
-                    {claim.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
-                      .split("|")
-                      .join(" - ")}
-                  </div>
+                  <div>{claim?.package?.plan?.name.split("|").join(" - ")}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -318,19 +314,19 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     Customer Name
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.name || "-"}</div>
+                  <div>{claim?.participant_data?.data?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Phone Number
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.phone || "-"}</div>
+                  <div>{claim?.participant_data?.data?.phone || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.email || "-"}</div>
+                  <div>{claim?.participant_data?.data?.email || "-"}</div>
                 </div>
               </div>
               <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
@@ -354,11 +350,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                         No. Peserta
                       </div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.reg_no ||
-                          claim?.participant_data?.data?.reg_no ||
-                          "-"}
-                      </div>
+                      <div>{claim?.participant_data?.number || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -376,11 +368,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                         Gender
                       </div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.gender ||
-                          claim?.participant_data?.data?.gender ||
-                          "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.gender || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -388,9 +376,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.country_code ||
-                          claim?.participant_data?.data?.country_code ||
-                          "-"}
+                        {claim?.participant_data?.data?.country_code || "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
@@ -440,11 +426,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                         Tempat Lahir
                       </div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.pob ||
-                          claim?.participant_data?.data?.pob ||
-                          "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.pob || "-"}</div>
                     </div>
                   </div>
                 </div>
@@ -478,7 +460,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     Nama Bank
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.bank_info?.bank || "-"}</div>
+                  <div>{claim?.bank_info?.bank?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -578,6 +560,6 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const DetailPolicyWithSidebar = (params: any) =>
-  WithSidebar(DetailPolicy)(params);
-export default DetailPolicyWithSidebar;
+const DetailClaimWithSidebar = (params: any) =>
+  WithSidebar(DetailClaim)(params);
+export default DetailClaimWithSidebar;
