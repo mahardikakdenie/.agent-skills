@@ -112,6 +112,7 @@ const ClaimsPage = () => {
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
   const [channel, setChannel] = useState<ChannelsResponse[]>([]);
   const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -313,8 +314,7 @@ const ClaimsPage = () => {
       .filter(Boolean);
     const currencyApp = filteredClaims
       .map((item) => {
-        const matchingClaim =
-          item.policy_data?.declarations?.transaction_data?.insurance?.currency;
+        const matchingClaim = item?.currency;
         return item.id === claimId
           ? matchingClaim
             ? matchingClaim
@@ -431,6 +431,24 @@ const ClaimsPage = () => {
     setDate(undefined);
   };
 
+  useEffect(() => {
+    const fetchClaimsStatus = async () => {
+      try {
+        const response = await claimService.getClaimsStatus();
+        const filteredStatus = response.filter(
+          (cs: any) => cs.status !== "Draft"
+        );
+        setClaimStatusOptions(filteredStatus);
+      } catch (error) {
+        console.error("Error fetching insurance products:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchClaimsStatus();
+  }, []);
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex flex-wrap justify-end gap-4 pb-4 items-center">
@@ -496,7 +514,7 @@ const ClaimsPage = () => {
           </Button>
         </div>
 
-        <div className="min-w-32">
+        {/* <div className="min-w-32">
           <Select
             value={searchChannel}
             onValueChange={handleSearchChannelOnChange}
@@ -507,15 +525,15 @@ const ClaimsPage = () => {
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="All">All Channel</SelectItem>
-                {channel.map((channel: any) => (
-                  <SelectItem key={channel.id} value={channel.id}>
-                    {channel.name}
+                {channel.map((channels) => (
+                  <SelectItem key={channels.id} value={channels.id}>
+                    {channels.name}
                   </SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
         <div className="min-w-32">
           <Select
             value={searchSlaStatus}
@@ -593,7 +611,7 @@ const ClaimsPage = () => {
                     </div>
                     <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
                   </div>
-                  <div className="w-full">
+                  {/* <div className="w-full">
                     <p className="text-sm mb-2">Reason</p>
                     <textarea
                       name=""
@@ -604,7 +622,7 @@ const ClaimsPage = () => {
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
                       placeholder="Insert Reason"
                     ></textarea>
-                  </div>
+                  </div> */}
                 </>
               )}
 
@@ -632,166 +650,167 @@ const ClaimsPage = () => {
                 </>
               )}
 
-              {pendingStatus === "Lack of Documents" && (
-                <>
-                  <div className="w-[600px]">
-                    <p className="text-sm mb-2">
-                      Reason <span className="!text-red-500">*</span>
-                    </p>
-                    <textarea
-                      name=""
-                      id=""
-                      rows={4}
-                      value={notes}
-                      onChange={(e) => {
-                        setNotes(e.target.value);
-                        setNoteMsg("");
-                      }}
-                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
-                      required
-                    ></textarea>
-                    <p className="text-xs text-red-500">{noteMsg}</p>
-                  </div>
-                  <div className="w-full">
-                    <p className="text-sm mb-3">
-                      Documents Requested{" "}
-                      <span className="!text-red-500">*</span>
-                    </p>
-                    {finalSelectedDocuments.length > 0 && (
-                      <ul className="mb-4">
-                        {finalSelectedDocuments.map((doc) => (
-                          <li
-                            key={doc.id}
-                            className="flex justify-between items-center mb-2 gap-2"
-                          >
-                            <Input
-                              name="lack_of_documents"
-                              value={doc?.label?.en}
-                              className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
-                            />
-                            <Button
-                              disabled={!canDelete}
-                              className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                              onClick={() =>
-                                handleDeleteSelectedDocument(doc.id)
-                              }
+              {pendingStatus === "Lack of Documents Operator" ||
+                (pendingStatus === "Lack of Documents Insurance" && (
+                  <>
+                    <div className="w-[600px]">
+                      <p className="text-sm mb-2">
+                        Reason <span className="!text-red-500">*</span>
+                      </p>
+                      <textarea
+                        name=""
+                        id=""
+                        rows={4}
+                        value={notes}
+                        onChange={(e) => {
+                          setNotes(e.target.value);
+                          setNoteMsg("");
+                        }}
+                        className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                        placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
+                        required
+                      ></textarea>
+                      <p className="text-xs text-red-500">{noteMsg}</p>
+                    </div>
+                    <div className="w-full">
+                      <p className="text-sm mb-3">
+                        Documents Requested{" "}
+                        <span className="!text-red-500">*</span>
+                      </p>
+                      {finalSelectedDocuments.length > 0 && (
+                        <ul className="mb-4">
+                          {finalSelectedDocuments.map((doc) => (
+                            <li
+                              key={doc.id}
+                              className="flex justify-between items-center mb-2 gap-2"
                             >
-                              <Trash2 className="w-5 h-5" />
+                              <Input
+                                name="lack_of_documents"
+                                value={doc?.label?.en}
+                                className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
+                              />
+                              <Button
+                                disabled={!canDelete}
+                                className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                                onClick={() =>
+                                  handleDeleteSelectedDocument(doc.id)
+                                }
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <Dialog>
+                        {filteredClaims.slice(0, 1).map((document) => (
+                          <DialogTrigger asChild key={document.id}>
+                            <Button
+                              color="warning"
+                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto"
+                              onClick={() => handleSelectDocument()}
+                            >
+                              <Plus className="w-4 h-4 mr-2" /> Add Document
                             </Button>
-                          </li>
+                          </DialogTrigger>
                         ))}
-                      </ul>
-                    )}
-                    <Dialog>
-                      {filteredClaims.slice(0, 1).map((document) => (
-                        <DialogTrigger asChild key={document.id}>
-                          <Button
-                            color="warning"
-                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto"
-                            onClick={() => handleSelectDocument()}
-                          >
-                            <Plus className="w-4 h-4 mr-2" /> Add Document
-                          </Button>
-                        </DialogTrigger>
-                      ))}
-                      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
-                        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
-                          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
-                            Select Document
-                            <DialogClose className="ml-auto">
+                        <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
+                          <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                            <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                              Select Document
+                              <DialogClose className="ml-auto">
+                                <Button
+                                  type="button"
+                                  className="bg-transparent hover:bg-transparent text-black p-0"
+                                >
+                                  <X className="w-5 h-5" />
+                                </Button>
+                              </DialogClose>
+                            </DialogTitle>
+                          </DialogHeader>
+
+                          <div className="p-4">
+                            <Table className="table-claims">
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="whitespace-nowrap py-2 w-10">
+                                    Select
+                                  </TableHead>
+                                  <TableHead className="py-2">Name</TableHead>
+                                  <TableHead className="py-2">Type</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {dataDocument.length > 0 ? (
+                                  dataDocument
+                                    .filter(
+                                      (document) =>
+                                        document.type === "File" ||
+                                        document.type === "File Multiple"
+                                    )
+                                    .map((document) => (
+                                      <TableRow
+                                        key={document.id}
+                                        className="cursor-pointer"
+                                        onClick={() =>
+                                          handleCheckboxChange(document.id)
+                                        }
+                                      >
+                                        <TableCell align="center">
+                                          <Input
+                                            type="checkbox"
+                                            checked={isDocumentSelected(
+                                              document.id
+                                            )}
+                                            onChange={() =>
+                                              handleCheckboxChange(document.id)
+                                            }
+                                            className="w-4 h-4"
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          {document?.label?.en || "-"}
+                                        </TableCell>
+                                        <TableCell className="w-36">
+                                          {document.type || "-"}
+                                        </TableCell>
+                                      </TableRow>
+                                    ))
+                                ) : (
+                                  <TableRow className="hover:!bg-white">
+                                    <TableCell colSpan={10}>
+                                      <div className="flex flex-col gap-4 items-center justify-center py-14">
+                                        <Image
+                                          alt="no data"
+                                          src={noData}
+                                          width={200}
+                                        />
+                                        No transaction data available
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+
+                          <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                            <DialogClose asChild>
                               <Button
                                 type="button"
-                                className="bg-transparent hover:bg-transparent text-black p-0"
+                                className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                                onClick={handleAddSelectedDocuments}
                               >
-                                <X className="w-5 h-5" />
+                                <Check className="w-4 h-4 mr-2" /> Add selected
+                                document
                               </Button>
                             </DialogClose>
-                          </DialogTitle>
-                        </DialogHeader>
-
-                        <div className="p-4">
-                          <Table className="table-claims">
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="whitespace-nowrap py-2 w-10">
-                                  Select
-                                </TableHead>
-                                <TableHead className="py-2">Name</TableHead>
-                                <TableHead className="py-2">Type</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {dataDocument.length > 0 ? (
-                                dataDocument
-                                  .filter(
-                                    (document) =>
-                                      document.type === "File" ||
-                                      document.type === "File Multiple"
-                                  )
-                                  .map((document) => (
-                                    <TableRow
-                                      key={document.id}
-                                      className="cursor-pointer"
-                                      onClick={() =>
-                                        handleCheckboxChange(document.id)
-                                      }
-                                    >
-                                      <TableCell align="center">
-                                        <Input
-                                          type="checkbox"
-                                          checked={isDocumentSelected(
-                                            document.id
-                                          )}
-                                          onChange={() =>
-                                            handleCheckboxChange(document.id)
-                                          }
-                                          className="w-4 h-4"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        {document?.label?.en || "-"}
-                                      </TableCell>
-                                      <TableCell className="w-36">
-                                        {document.type || "-"}
-                                      </TableCell>
-                                    </TableRow>
-                                  ))
-                              ) : (
-                                <TableRow className="hover:!bg-white">
-                                  <TableCell colSpan={10}>
-                                    <div className="flex flex-col gap-4 items-center justify-center py-14">
-                                      <Image
-                                        alt="no data"
-                                        src={noData}
-                                        width={200}
-                                      />
-                                      No transaction data available
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
-
-                        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
-                          <DialogClose asChild>
-                            <Button
-                              type="button"
-                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-                              onClick={handleAddSelectedDocuments}
-                            >
-                              <Check className="w-4 h-4 mr-2" /> Add selected
-                              document
-                            </Button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </>
-              )}
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </>
+                ))}
 
               <div className="flex gap-4 justify-center">
                 <Button
@@ -828,243 +847,41 @@ const ClaimsPage = () => {
               All Claim
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${
                 totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
               } ${tab !== "All" && "hidden"}`}
             >
               {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
             </span>
           </div>
-          <div
-            onClick={() => selectTab("Submitted")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Submitted" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Submitted" && "text-primary"
+          {claimStatusOptions.map((status) => (
+            <div
+              key={status.id}
+              onClick={() => selectTab(status.status)}
+              className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
+                tab === status.status && "border-b-[3px] border-primary px-5"
               }`}
             >
-              Submitted
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Submitted" && "hidden"}`}
-            >
-              {totalData}
+              <button
+                className={`text-sm mr-3 h-16 ${
+                  tab === status.status && "text-primary"
+                }`}
+              >
+                {status.status}
+              </button>
               <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Acknowledged")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Acknowledged" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Acknowledged" && "text-primary"
-              }`}
-            >
-              Acknowledged
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Acknowledged" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Document Review")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Document Review" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Document Review" && "text-primary"
-              }`}
-            >
-              Document Review
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Document Review" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Lack of Documents")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Lack of Documents" &&
-              "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Lack of Documents" && "text-primary"
-              }`}
-            >
-              Lack of Documents
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Lack of Documents" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Claim Assessment")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Claim Assessment" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Claim Assessment" && "text-primary"
-              }`}
-            >
-              Claim Assessment
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Claim Assessment" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Approved")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Approved" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Approved" && "text-primary"
-              }`}
-            >
-              Approved
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Approved" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Rejected")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Rejected" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Rejected" && "text-primary"
-              }`}
-            >
-              Rejected
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Rejected" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Paid")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Paid" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Paid" && "text-primary"
-              }`}
-            >
-              Paid
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Paid" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
-          <div
-            onClick={() => selectTab("Closed")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "Closed" && "border-b-[3px] border-primary px-5"
-            }`}
-          >
-            <button
-              className={`text-sm mr-3 h-16 ${
-                tab === "Closed" && "text-primary"
-              }`}
-            >
-              Closed
-            </button>
-            <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Closed" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
-            </span>
-          </div>
+                className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${
+                  status.count > 9
+                    ? "px-1.5"
+                    : status.count > 99
+                    ? "px-0.5"
+                    : "px-2"
+                } ${tab !== status.status && "hidden"}`}
+              >
+                {totalData}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
       <div className="w-full bg-white rounded-lg">
@@ -1092,7 +909,7 @@ const ClaimsPage = () => {
                     claim.sla_status === "Pending"
                       ? "bg-[#FFFEE2]"
                       : claim.sla_status === "Overdue"
-                      ? "bg-[#FFF5F5]"
+                      ? "bg-[#fadede]"
                       : ""
                   }`}
                 >
@@ -1106,19 +923,10 @@ const ClaimsPage = () => {
                     {claim?.policy_data?.account?.name || "-"}
                   </TableCell>
                   <TableCell>
-                    {claim.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
-                      .split("|")
-                      .join(" - ") || "-"}
+                    {claim.package?.plan?.name.split("|").join(" - ") || "-"}
                   </TableCell>
-                  <TableCell>
-                    {claim.policy_data?.declarations?.transaction_data
-                      ?.insurance?.package_data?.benefits[0]?.benefits
-                      ?.description_en || "-"}
-                  </TableCell>
-                  <TableCell>
-                    {claim.policy_data?.declarations?.transaction_data
-                      ?.insurance?.currency || "-"}
-                  </TableCell>
+                  <TableCell>{claim?.benefit?.description_en || "-"}</TableCell>
+                  <TableCell>{claim?.currency || "-"}</TableCell>
                   <TableCell>
                     {(() => {
                       const claimValue = claim.claim?.find(
@@ -1172,23 +980,43 @@ const ClaimsPage = () => {
                           Acknowledged
                         </SelectItem>
                         <SelectItem
-                          value="Document Review"
+                          value="Document Review Operator"
                           disabled={
                             claim.status !== "Acknowledged" &&
-                            claim.status !== "Lack of Documents"
+                            claim.status !== "Lack of Documents Operator"
                           }
                         >
-                          Document Review
+                          Document Review Operator
                         </SelectItem>
                         <SelectItem
-                          value="Lack of Documents"
-                          disabled={claim.status !== "Document Review"}
+                          value="Lack of Documents Operator"
+                          disabled={claim.status !== "Document Review Operator"}
                         >
-                          Lack of Documents
+                          Lack of Documents Operator
+                        </SelectItem>
+                        <SelectItem
+                          value="Document Review Insurance"
+                          disabled={
+                            claim.status !== "Document Review Operator" &&
+                            claim.status !== "Lack of Documents Insurance"
+                          }
+                        >
+                          Document Review Insurance
+                        </SelectItem>
+                        <SelectItem
+                          value="Lack of Documents Insurance"
+                          disabled={
+                            claim.status !== "Document Review Insurance"
+                          }
+                        >
+                          Lack of Documents Insurance
                         </SelectItem>
                         <SelectItem
                           value="Claim Assessment"
-                          disabled={claim.status !== "Document Review"}
+                          disabled={
+                            claim.status !== "Document Review" &&
+                            claim.status !== "Document Review Insurance"
+                          }
                         >
                           Claim Assessment
                         </SelectItem>
