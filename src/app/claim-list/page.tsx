@@ -385,13 +385,15 @@ const ClaimsPage = () => {
       return;
     }
 
-    // if (
-    //   (docs === "" && pendingStatus === "Lack of Documents Operator") ||
-    //   (docs === "" && pendingStatus === "Lack of Documents Insurance")
-    // ) {
-    //   setDocsMsg("Required!");
-    //   return;
-    // }
+    if (
+      (finalSelectedDocuments.length < 1 &&
+        pendingStatus === "Lack of Documents Operator") ||
+      (finalSelectedDocuments.length < 1 &&
+        pendingStatus === "Lack of Documents Insurance")
+    ) {
+      setDocsMsg("Required!");
+      return;
+    }
 
     if (selectedClaimId && pendingStatus) {
       updateStatus(
@@ -694,12 +696,12 @@ const ClaimsPage = () => {
                     <p className="text-xs text-red-500">{noteMsg}</p>
                   </div>
                   <div className="w-full">
-                    <p className="text-sm mb-3">
+                    <p className="text-sm">
                       Documents Requested{" "}
                       <span className="!text-red-500">*</span>
                     </p>
                     {finalSelectedDocuments.length > 0 && (
-                      <ul className="mb-4">
+                      <ul className="mt-3">
                         {finalSelectedDocuments.map((doc) => (
                           <li
                             key={doc.id}
@@ -725,14 +727,14 @@ const ClaimsPage = () => {
                         ))}
                       </ul>
                     )}
-                    {/* <p className="text-xs text-red-500">{docsMsg}</p> */}
+                    <p className="text-xs text-red-500">{docsMsg}</p>
 
                     <Dialog>
                       {filteredClaims.slice(0, 1).map((document) => (
                         <DialogTrigger asChild key={document.id}>
                           <Button
                             color="warning"
-                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto"
+                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
                             onClick={() => handleSelectDocument()}
                           >
                             <Plus className="w-4 h-4 mr-2" /> Add Document
@@ -857,12 +859,12 @@ const ClaimsPage = () => {
                     <p className="text-xs text-red-500">{noteMsg}</p>
                   </div>
                   <div className="w-full">
-                    <p className="text-sm mb-3">
+                    <p className="text-sm">
                       Documents Requested{" "}
                       <span className="!text-red-500">*</span>
                     </p>
                     {finalSelectedDocuments.length > 0 && (
-                      <ul className="mb-4">
+                      <ul className="mt-3">
                         {finalSelectedDocuments.map((doc) => (
                           <li
                             key={doc.id}
@@ -888,14 +890,14 @@ const ClaimsPage = () => {
                         ))}
                       </ul>
                     )}
-                    {/* <p className="text-xs text-red-500">{docsMsg}</p> */}
+                    <p className="text-xs text-red-500">{docsMsg}</p>
 
                     <Dialog>
                       {filteredClaims.slice(0, 1).map((document) => (
                         <DialogTrigger asChild key={document.id}>
                           <Button
                             color="warning"
-                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto"
+                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
                             onClick={() => handleSelectDocument()}
                           >
                             <Plus className="w-4 h-4 mr-2" /> Add Document
