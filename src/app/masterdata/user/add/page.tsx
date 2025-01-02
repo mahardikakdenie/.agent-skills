@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Check, ChevronLeft, Plus } from "react-feather";
+import { Check, ChevronLeft, Eye, EyeOff, Plus } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
@@ -42,12 +42,14 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   const [status, setStatus] = useState("");
   const [role, setRole] = useState("");
   const [channel, setChannel] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const { saveUser, channels, roles, fetchChannels, fetchRole } = useUser();
 
   const {
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm({
     shouldUnregister: false,
@@ -56,7 +58,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       name,
       email,
       phone_number,
-      password: "Yes",
+      password,
       status,
       permission: "",
       role,
@@ -69,13 +71,15 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       name,
       email,
       phone_number,
-      password: "Yes",
+      password,
       status,
       permission: "",
       role,
       channel,
     },
   });
+
+  const selectRole = watch("role");
 
   useEffect(() => {
     fetchChannels({});
@@ -370,35 +374,62 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 </p>
               )}
             </div>
-            <div className="flex gap-5 items-center pt-2 sm:pt-5 sm:mb-0 mb-3">
+            <div className="relative">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Password
+                {watch("role") === "admin" && (
+                  <span className="text-red-500">*</span>
+                )}
               </label>
               <Controller
                 name="password"
                 control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    id="password"
-                    checked={field.value === "Yes"} // Periksa apakah nilai "Yes"
-                    onCheckedChange={(checked) =>
-                      field.onChange(checked ? "Yes" : "No")
+                defaultValue=""
+                rules={{
+                  validate: (value) => {
+                    const selectedRole = watch("role");
+                    if (selectedRole === "admin" && !value) {
+                      return "Password is required for Admin role";
                     }
-                  />
+                    return true;
+                  },
+                }}
+                render={({ field }) => (
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      placeholder="Insert Password"
+                      {...field}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.password ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-3 flex items-center"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 )}
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
             <div className="flex gap-4 items-center">
               <div>
-                <div className="text-primary font-bold mb-2">
-                  User&apos;s Group
-                </div>
+                <div className="text-primary font-bold mb-2">User's Group</div>
                 <p className="text-sm text-black/60">
                   <i>
                     All the users in the group will have permissions that are
