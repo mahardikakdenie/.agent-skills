@@ -42,14 +42,32 @@ export class PromotionService {
 
   }
 
+  async getPromotionCampaignReportInsurance(page: number, limit: number, sortBy: string, insurance: string): Promise<any> {
+    if (page <= 0) {
+      page = 1;
+    }
+    return this.httpClientPromotion.get(`/v1/campaign/report/insurance?page=${page}&limit=${limit}&sort=${sortBy}&insurance=${insurance}`);
+
+  }
+
   async getPromotionCampaignExportReport(sortBy: string, filterBy: string): Promise<any> {
 
     return this.httpClientPromotion.get(`/v1/campaign/report/export?sort=${sortBy}&filter=${filterBy}`);
 
   }
 
+  async getPromotionCampaignExportReportInsurance(sortBy: string, insurance: string): Promise<any> {
+
+    return this.httpClientPromotion.get(`/v1/campaign/report/export/insurance?sort=${sortBy}&insurance=${insurance}`);
+
+  }
+
   async getPromotionCampaignById(id: string): Promise<PromotionResponse> {
     return this.httpClientPromotion.get(`/v1/campaign/${id}?id=${id}`);
+}
+
+async getPromotionCampaignByIdEmbedded(id: string): Promise<PromotionResponse> {
+  return this.httpClientPromotion.get(`/v1/campaign/embedded/history/${id}?id=${id}`);
 }
 
   async deleteDiscCampaignById(id: string): Promise<any> {
