@@ -132,7 +132,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       name,
       email,
       phone_number,
-      password: "Yes",
+      password,
       status,
       role,
       channel,
