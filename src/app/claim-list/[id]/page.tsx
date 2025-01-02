@@ -35,11 +35,23 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
-import { formatMoneyClaim } from "@/lib/formatter";
+import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import ImageOrDefault from "@/components/ui/image-or-default";
 
 const DetailClaim = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [docToOpen, setDocToOpen] = useState<any>(null);
+  const [isViewDocument, setIsViewDocument] = useState(false);
+  const [claimCurrency, setClaimCurrency] = useState<string | undefined>();
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -135,6 +147,29 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  const processUrl = (url: string, id: string) => {
+    const urlArr = url.split(".") || "";
+    const mimeType =
+      urlArr[urlArr.length - 1].toLowerCase() !== "pdf"
+        ? `image/${urlArr[urlArr.length - 1].toLowerCase()}`
+        : "application/pdf";
+    fetch(url, {})
+      .then((res) => res.blob())
+      .then((blob) => {
+        const file = new Blob([blob], { type: mimeType });
+        let fileURL = URL.createObjectURL(file);
+        let element = document.getElementById(id);
+        element?.setAttribute("src", fileURL);
+      });
+  };
+
+  const viewDocument = (documentObject: any) => {
+    if (documentObject.type.toLowerCase() === "file" && documentObject.value)
+      processUrl(documentObject.value, "pdfFrame");
+    setDocToOpen(documentObject);
+    setIsViewDocument(true);
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="bg-white md:px-6 p-4 flex items-center">
@@ -146,7 +181,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/policy-list">List</BreadcrumbLink>
+                <BreadcrumbLink href="/claim-list">List</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -503,7 +538,81 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Drawer direction="right">
+                        <Dialog>
+                          <DialogTrigger>
+                            <Button
+                              className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
+                              onClick={() => viewDocument(document)}
+                            >
+                              View
+                            </Button>
+                          </DialogTrigger>
+                          {isViewDocument && (
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle className=" text-sm sm:text-base flex items-center">
+                                  {document?.label.en}
+                                  <DialogClose className="ml-auto">
+                                    <Button
+                                      type="button"
+                                      className="bg-transparent hover:bg-transparent text-black p-0"
+                                    >
+                                      <X className="w-5 h-5" />
+                                    </Button>
+                                  </DialogClose>
+                                </DialogTitle>
+                              </DialogHeader>
+
+                              {docToOpen.type.toLowerCase() === "file" ? (
+                                <div>
+                                  {docToOpen?.value?.split(".").at(-1) ===
+                                  "pdf" ? (
+                                    <div className="w-[calc(90vh)] h-[calc(50vh)]">
+                                      <iframe
+                                        id="pdfFrame"
+                                        src=""
+                                        title={docToOpen.label.en}
+                                        style={{
+                                          border: "none",
+                                          width: "100%",
+                                          height: "100%",
+                                        }}
+                                      ></iframe>
+                                    </div>
+                                  ) : (
+                                    <div className="lg:w-[460px] lg:h-[300px]">
+                                      <ImageOrDefault
+                                        width={460}
+                                        height={300}
+                                        alt={docToOpen.label.en}
+                                        src={docToOpen.value}
+                                        additionalClassNameP="py-14 px-3 lg:py-[135px]"
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="w-full flex items-center justify-center mt-3">
+                                    <Button
+                                      disabled={!docToOpen?.value}
+                                      onClick={() =>
+                                        downloadDocument(docToOpen.value)
+                                      }
+                                    >
+                                      Download
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : docToOpen.type.toLowerCase() === "number" ? (
+                                <p>{formatMoney(docToOpen.value)}</p>
+                              ) : docToOpen.type.toLowerCase() ===
+                                "datetime" ? (
+                                <p>{docToOpen.value}</p>
+                              ) : (
+                                <p>{docToOpen.value || "-"}</p>
+                              )}
+                            </DialogContent>
+                          )}
+                        </Dialog>
+                        {/* <Drawer direction="right">
                           <DrawerTrigger className="bg-[#016DA1] text-white px-4 py-2 rounded-full">
                             View
                           </DrawerTrigger>
@@ -515,16 +624,18 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                                 </Button>
                               </DrawerClose>
                               <DrawerTitle className="text-black font-bold text-xl">
-                                Original Boarding Pass, Ticket or Itinerary
-                              </DrawerTitle>
-                              <DrawerDescription>
-                                <div className="flex flex-col w-full mt-5 rounded-xl overflow-hidden">
-                                  <img
+                                {/* Original Boarding Pass, Ticket or Itinerary */}
+                        {/* {document?.label.en} */}
+                        {/* </DrawerTitle> */}
+                        {/* <DrawerDescription> */}
+                        {/* <div className="flex flex-col w-full mt-5 text-black"> */}
+                        {/* {document?.value} */}
+                        {/* <img
                                     src={claim?.general[0]?.value}
                                     alt="passport-participant"
-                                  />
-                                </div>
-                                <div className="w-full flex items-center justify-center mt-3">
+                                  /> */}
+                        {/* </div> */}
+                        {/* <div className="w-full flex items-center justify-center mt-3">
                                   <Button
                                     className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
                                     onClick={() =>
@@ -533,11 +644,11 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                                   >
                                     Download
                                   </Button>
-                                </div>
-                              </DrawerDescription>
+                                </div> */}
+                        {/* </DrawerDescription>
                             </DrawerHeader>
                           </DrawerContent>
-                        </Drawer>
+                        </Drawer> */}
                       </TableCell>
                     </TableRow>
                   ))
