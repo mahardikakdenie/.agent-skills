@@ -88,6 +88,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
         setDocuments([
           ...claimDetailResponse.general,
           ...claimDetailResponse.claim,
+          ...claimDetailResponse.claim_config,
         ]);
         const claimHistoriesResponse = await claimService.getClaimsHistories(
           id
@@ -534,7 +535,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
-                          {document?.label.en}
+                          {document?.label.en || document?.label}
                         </div>
                       </TableCell>
                       <TableCell>

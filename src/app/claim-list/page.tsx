@@ -341,6 +341,7 @@ const ClaimsPage = () => {
     setStatusOld(statusOld[0]);
     setCurrencyApp(currencyApp[0]);
     setFinalSelectedDocuments([]);
+    setSelectedDocuments([]);
   };
 
   const updateStatus = (
@@ -644,7 +645,257 @@ const ClaimsPage = () => {
                 </>
               )}
 
-              {pendingStatus === "Lack of Documents Operator" && (
+              {(pendingStatus === "Lack of Documents Operator" ||
+                pendingStatus === "Lack of Documents Insurance") && (
+                <>
+                  <div className="w-[600px]">
+                    <p className="text-sm mb-2">
+                      Reason <span className="!text-red-500">*</span>
+                    </p>
+                    <textarea
+                      name=""
+                      id=""
+                      rows={4}
+                      value={notes}
+                      onChange={(e) => {
+                        setNotes(e.target.value);
+                        setNoteMsg("");
+                      }}
+                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                      placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
+                      required
+                    ></textarea>
+                    <p className="text-xs text-red-500">{noteMsg}</p>
+                  </div>
+                  <div className="w-full">
+                    <p className="text-sm">
+                      Lack of Document Reasons{" "}
+                      <span className="!text-red-500">*</span>
+                    </p>
+                    {finalSelectedDocuments.length > 0 && (
+                      <ul className="mt-3">
+                        {finalSelectedDocuments.map((doc) => (
+                          <li
+                            key={doc.id}
+                            className="flex justify-between items-center mb-2 gap-2"
+                          >
+                            <Input
+                              name="lack_of_documents"
+                              value={
+                                doc?.label?.en || doc?.label_multilanguage?.en
+                              }
+                              className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
+                            />
+                            <Button
+                              disabled={!canDelete}
+                              className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                              onClick={() =>
+                                handleDeleteSelectedDocument(doc.name)
+                              }
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <p className="text-xs text-red-500">{docsMsg}</p>
+
+                    <Dialog>
+                      {filteredClaims.slice(0, 1).map((document) => (
+                        <DialogTrigger asChild key={document.id}>
+                          <Button
+                            color="warning"
+                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
+                            onClick={() => handleSelectDocument()}
+                          >
+                            <Plus className="w-4 h-4 mr-2" /> Add Document
+                          </Button>
+                        </DialogTrigger>
+                      ))}
+                      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
+                        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                            Lack of Document Reasons
+                            <DialogClose className="ml-auto">
+                              <Button
+                                type="button"
+                                className="bg-transparent hover:bg-transparent text-black p-0"
+                              >
+                                <X className="w-5 h-5" />
+                              </Button>
+                            </DialogClose>
+                          </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="p-4 h-full overflow-auto max-h-[70vh]">
+                          <Table className="table-claims">
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="whitespace-nowrap py-2 w-10">
+                                  Select
+                                </TableHead>
+                                <TableHead className="py-2">
+                                  Document Type
+                                </TableHead>
+                                <TableHead className="py-2">Criteria</TableHead>
+                                <TableHead className="py-2">
+                                  Definition
+                                </TableHead>
+                                <TableHead className="py-2 text-center">
+                                  Message
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {dataDocument.length > 0 ? (
+                                dataDocument
+                                  .filter(
+                                    (document) =>
+                                      document.type === "file" ||
+                                      document.type === "file multiple"
+                                  )
+                                  .map((document) => (
+                                    <TableRow
+                                      key={document.id}
+                                      className="cursor-pointer"
+                                    >
+                                      <TableCell align="center">
+                                        <Input
+                                          type="checkbox"
+                                          checked={isDocumentSelected(
+                                            document.name
+                                          )}
+                                          onClick={() =>
+                                            handleCheckboxChange(document.name)
+                                          }
+                                          className="w-4 h-4"
+                                        />
+                                      </TableCell>
+                                      <TableCell
+                                        onClick={() =>
+                                          handleCheckboxChange(document.name)
+                                        }
+                                      >
+                                        {document?.label?.en ||
+                                          document?.label_multilanguage?.en ||
+                                          "-"}
+                                      </TableCell>
+                                      <TableCell
+                                        className=""
+                                        onClick={() =>
+                                          handleCheckboxChange(document.name)
+                                        }
+                                      >
+                                        {document.criteria || "-"}
+                                      </TableCell>
+                                      <TableCell
+                                        className=""
+                                        onClick={() =>
+                                          handleCheckboxChange(document.name)
+                                        }
+                                      >
+                                        {document.definition || "-"}
+                                      </TableCell>
+                                      <TableCell className="w-24 text-center">
+                                        <Dialog>
+                                          {filteredClaims
+                                            .slice(0, 1)
+                                            .map((document) => (
+                                              <DialogTrigger
+                                                asChild
+                                                key={document.id}
+                                              >
+                                                <Button
+                                                  color="warning"
+                                                  className="bg-trasparent hover:bg-transparent rounded-full text-blue-500 w-auto p-0 h-6"
+                                                  onClick={() =>
+                                                    handleSelectDocument()
+                                                  }
+                                                >
+                                                  <Eye className="w-4 h-4" />{" "}
+                                                </Button>
+                                              </DialogTrigger>
+                                            ))}
+                                          <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
+                                            <DialogHeader className="bg-transparent py-3 px-4 sm:px-6">
+                                              <DialogTitle className="text-sm sm:text-base flex items-center">
+                                                Message Preview
+                                                <DialogClose className="ml-auto">
+                                                  <Button
+                                                    type="button"
+                                                    className="bg-transparent hover:bg-transparent text-black p-0"
+                                                  >
+                                                    <X className="w-5 h-5" />
+                                                  </Button>
+                                                </DialogClose>
+                                              </DialogTitle>
+                                            </DialogHeader>
+
+                                            <div className="flex flex-col px-4 pb-4">
+                                              <p className="text-sm">
+                                                Document type:{" "}
+                                                {document.document_type || "-"}
+                                              </p>
+                                              <p className="text-sm">
+                                                Criteria:{" "}
+                                                {document.criteria || "-"}
+                                              </p>
+                                              <p className="text-sm">
+                                                Definition:{" "}
+                                                {document?.definition || "-"}
+                                              </p>
+                                              <hr className="my-4" />
+                                              <p className="text-sm">
+                                                "
+                                                {document
+                                                  ?.pending_reason_message
+                                                  ?.en || "-"}
+                                                "{" "}
+                                              </p>
+                                            </div>
+                                          </DialogContent>
+                                        </Dialog>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))
+                              ) : (
+                                <TableRow className="hover:!bg-white">
+                                  <TableCell colSpan={3}>
+                                    <div className="flex flex-col gap-4 items-center justify-center py-14">
+                                      <Image
+                                        alt="no data"
+                                        src={noData}
+                                        width={200}
+                                      />
+                                      No transaction data available
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+
+                        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                          <DialogClose asChild>
+                            <Button
+                              type="button"
+                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                              onClick={handleAddSelectedDocuments}
+                            >
+                              <Check className="w-4 h-4 mr-2" /> Add selected
+                              document
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </>
+              )}
+
+              {/* {pendingStatus === "Lack of Documents Operator" && (
                 <>
                   <div className="w-[600px]">
                     <p className="text-sm mb-2">
@@ -726,15 +977,20 @@ const ClaimsPage = () => {
                           </DialogTitle>
                         </DialogHeader>
 
-                        <div className="p-4">
+                        <div className="p-4 h-full overflow-auto max-h-[70vh]">
                           <Table className="table-claims">
                             <TableHeader>
                               <TableRow>
                                 <TableHead className="whitespace-nowrap py-2 w-10">
                                   Select
                                 </TableHead>
-                                <TableHead className="py-2">Name</TableHead>
-                                <TableHead className="py-2">Type</TableHead>
+                                <TableHead className="py-2">
+                                  Document Type
+                                </TableHead>
+                                <TableHead className="py-2">Criteria</TableHead>
+                                <TableHead className="py-2">
+                                  Definition
+                                </TableHead>
                                 <TableHead className="py-2 text-center">
                                   Message
                                 </TableHead>
@@ -774,13 +1030,11 @@ const ClaimsPage = () => {
                                           document?.label_multilanguage?.en ||
                                           "-"}
                                       </TableCell>
-                                      <TableCell
-                                        className="w-36"
-                                        onClick={() =>
-                                          handleCheckboxChange(document.name)
-                                        }
-                                      >
-                                        {document.type || "-"}
+                                      <TableCell className="">
+                                        {document.criteria || "-"}
+                                      </TableCell>
+                                      <TableCell className="">
+                                        {document.definition || "-"}
                                       </TableCell>
                                       <TableCell className="w-24 text-center">
                                         <Dialog>
@@ -819,23 +1073,24 @@ const ClaimsPage = () => {
 
                                             <div className="flex flex-col px-4 pb-4">
                                               <p className="text-sm">
-                                                Document type: {}
+                                                Document type:{" "}
+                                                {document.document_type || "-"}
                                               </p>
                                               <p className="text-sm">
-                                                Criteria: {}
+                                                Criteria:{" "}
+                                                {document.criteria || "-"}
                                               </p>
                                               <p className="text-sm">
-                                                Definition: {}
+                                                Definition:{" "}
+                                                {document?.definition || "-"}
                                               </p>
                                               <hr className="my-4" />
                                               <p className="text-sm">
-                                                “Your insurance claim
-                                                application is pending due to an
-                                                incomplete or unclear
-                                                ID/Passport. Please resubmit
-                                                your insurance claim application
-                                                at the provided link. Thank
-                                                you.”
+                                                "
+                                                {document
+                                                  ?.pending_reason_message
+                                                  ?.en || "-"}
+                                                "{" "}
                                               </p>
                                             </div>
                                           </DialogContent>
@@ -960,15 +1215,23 @@ const ClaimsPage = () => {
                           </DialogTitle>
                         </DialogHeader>
 
-                        <div className="p-4">
+                        <div className="p-4 h-full overflow-auto max-h-[70vh]">
                           <Table className="table-claims">
                             <TableHeader>
                               <TableRow>
                                 <TableHead className="whitespace-nowrap py-2 w-10">
                                   Select
                                 </TableHead>
-                                <TableHead className="py-2">Name</TableHead>
-                                <TableHead className="py-2">Type</TableHead>
+                                <TableHead className="py-2">
+                                  Document Type
+                                </TableHead>
+                                <TableHead className="py-2">Criteria</TableHead>
+                                <TableHead className="py-2">
+                                  Definition
+                                </TableHead>
+                                <TableHead className="py-2 text-center">
+                                  Message
+                                </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -983,9 +1246,6 @@ const ClaimsPage = () => {
                                     <TableRow
                                       key={document.id}
                                       className="cursor-pointer"
-                                      onClick={() =>
-                                        handleCheckboxChange(document.name)
-                                      }
                                     >
                                       <TableCell align="center">
                                         <Input
@@ -993,16 +1253,86 @@ const ClaimsPage = () => {
                                           checked={isDocumentSelected(
                                             document.name
                                           )}
+                                          onClick={() =>
+                                            handleCheckboxChange(document.name)
+                                          }
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
-                                      <TableCell>
+                                      <TableCell
+                                        onClick={() =>
+                                          handleCheckboxChange(document.name)
+                                        }
+                                      >
                                         {document?.label?.en ||
                                           document?.label_multilanguage?.en ||
                                           "-"}
                                       </TableCell>
-                                      <TableCell className="w-36">
-                                        {document.type || "-"}
+                                      <TableCell className="">
+                                        {document.criteria || "-"}
+                                      </TableCell>
+                                      <TableCell className="">
+                                        {document.definition || "-"}
+                                      </TableCell>
+                                      <TableCell className="w-24 text-center">
+                                        <Dialog>
+                                          {filteredClaims
+                                            .slice(0, 1)
+                                            .map((document) => (
+                                              <DialogTrigger
+                                                asChild
+                                                key={document.id}
+                                              >
+                                                <Button
+                                                  color="warning"
+                                                  className="bg-trasparent hover:bg-transparent rounded-full text-blue-500 w-auto p-0 h-6"
+                                                  onClick={() =>
+                                                    handleSelectDocument()
+                                                  }
+                                                >
+                                                  <Eye className="w-4 h-4" />{" "}
+                                                </Button>
+                                              </DialogTrigger>
+                                            ))}
+                                          <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
+                                            <DialogHeader className="bg-transparent py-3 px-4 sm:px-6">
+                                              <DialogTitle className="text-sm sm:text-base flex items-center">
+                                                Message Preview
+                                                <DialogClose className="ml-auto">
+                                                  <Button
+                                                    type="button"
+                                                    className="bg-transparent hover:bg-transparent text-black p-0"
+                                                  >
+                                                    <X className="w-5 h-5" />
+                                                  </Button>
+                                                </DialogClose>
+                                              </DialogTitle>
+                                            </DialogHeader>
+
+                                            <div className="flex flex-col px-4 pb-4">
+                                              <p className="text-sm">
+                                                Document type:{" "}
+                                                {document.document_type || "-"}
+                                              </p>
+                                              <p className="text-sm">
+                                                Criteria:{" "}
+                                                {document.criteria || "-"}
+                                              </p>
+                                              <p className="text-sm">
+                                                Definition:{" "}
+                                                {document?.definition || "-"}
+                                              </p>
+                                              <hr className="my-4" />
+                                              <p className="text-sm">
+                                                "
+                                                {document
+                                                  ?.pending_reason_message
+                                                  ?.en || "-"}
+                                                "{" "}
+                                              </p>
+                                            </div>
+                                          </DialogContent>
+                                        </Dialog>
                                       </TableCell>
                                     </TableRow>
                                   ))
@@ -1040,7 +1370,7 @@ const ClaimsPage = () => {
                     </Dialog>
                   </div>
                 </>
-              )}
+              )} */}
 
               <div className="flex gap-4 justify-center">
                 <Button
