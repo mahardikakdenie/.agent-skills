@@ -132,14 +132,12 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       name,
       email,
       phone_number,
-      password,
+      password: "",
       status,
       role,
       channel,
     },
   });
-
-  const selectRoleLabel = watch("role");
 
   const onSubmit = async (data: any) => {
     try {
