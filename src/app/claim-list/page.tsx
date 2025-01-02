@@ -339,6 +339,7 @@ const ClaimsPage = () => {
     setNumberID(numberId[0]);
     setStatusOld(statusOld[0]);
     setCurrencyApp(currencyApp[0]);
+    setFinalSelectedDocuments([]);
   };
 
   const updateStatus = (
@@ -538,26 +539,6 @@ const ClaimsPage = () => {
           </Button>
         </div>
 
-        {/* <div className="min-w-32">
-          <Select
-            value={searchChannel}
-            onValueChange={handleSearchChannelOnChange}
-          >
-            <SelectTrigger className="h-16">
-              <SelectValue placeholder="Channels" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="All">All Channel</SelectItem>
-                {channel.map((channels) => (
-                  <SelectItem key={channels.id} value={channels.id}>
-                    {channels.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div> */}
         <div className="min-w-32">
           <Select
             value={searchSlaStatus}
@@ -635,18 +616,6 @@ const ClaimsPage = () => {
                     </div>
                     <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
                   </div>
-                  {/* <div className="w-full">
-                    <p className="text-sm mb-2">Reason</p>
-                    <textarea
-                      name=""
-                      id=""
-                      rows={4}
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert Reason"
-                    ></textarea>
-                  </div> */}
                 </>
               )}
 
