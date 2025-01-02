@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  Eye,
   Plus,
   Search,
   Trash2,
@@ -734,6 +735,9 @@ const ClaimsPage = () => {
                                 </TableHead>
                                 <TableHead className="py-2">Name</TableHead>
                                 <TableHead className="py-2">Type</TableHead>
+                                <TableHead className="py-2 text-center">
+                                  Message
+                                </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -748,9 +752,6 @@ const ClaimsPage = () => {
                                     <TableRow
                                       key={document.id}
                                       className="cursor-pointer"
-                                      onClick={() =>
-                                        handleCheckboxChange(document.name)
-                                      }
                                     >
                                       <TableCell align="center">
                                         <Input
@@ -758,16 +759,87 @@ const ClaimsPage = () => {
                                           checked={isDocumentSelected(
                                             document.name
                                           )}
+                                          onClick={() =>
+                                            handleCheckboxChange(document.name)
+                                          }
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
-                                      <TableCell>
+                                      <TableCell
+                                        onClick={() =>
+                                          handleCheckboxChange(document.name)
+                                        }
+                                      >
                                         {document?.label?.en ||
                                           document?.label_multilanguage?.en ||
                                           "-"}
                                       </TableCell>
-                                      <TableCell className="w-36">
+                                      <TableCell
+                                        className="w-36"
+                                        onClick={() =>
+                                          handleCheckboxChange(document.name)
+                                        }
+                                      >
                                         {document.type || "-"}
+                                      </TableCell>
+                                      <TableCell className="w-24 text-center">
+                                        <Dialog>
+                                          {filteredClaims
+                                            .slice(0, 1)
+                                            .map((document) => (
+                                              <DialogTrigger
+                                                asChild
+                                                key={document.id}
+                                              >
+                                                <Button
+                                                  color="warning"
+                                                  className="bg-trasparent hover:bg-transparent rounded-full text-blue-500 w-auto p-0 h-6"
+                                                  onClick={() =>
+                                                    handleSelectDocument()
+                                                  }
+                                                >
+                                                  <Eye className="w-4 h-4" />{" "}
+                                                </Button>
+                                              </DialogTrigger>
+                                            ))}
+                                          <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
+                                            <DialogHeader className="bg-transparent py-3 px-4 sm:px-6">
+                                              <DialogTitle className="text-sm sm:text-base flex items-center">
+                                                Message Preview
+                                                <DialogClose className="ml-auto">
+                                                  <Button
+                                                    type="button"
+                                                    className="bg-transparent hover:bg-transparent text-black p-0"
+                                                  >
+                                                    <X className="w-5 h-5" />
+                                                  </Button>
+                                                </DialogClose>
+                                              </DialogTitle>
+                                            </DialogHeader>
+
+                                            <div className="flex flex-col px-4 pb-4">
+                                              <p className="text-sm">
+                                                Document type: {}
+                                              </p>
+                                              <p className="text-sm">
+                                                Criteria: {}
+                                              </p>
+                                              <p className="text-sm">
+                                                Definition: {}
+                                              </p>
+                                              <hr className="my-4" />
+                                              <p className="text-sm">
+                                                “Your insurance claim
+                                                application is pending due to an
+                                                incomplete or unclear
+                                                ID/Passport. Please resubmit
+                                                your insurance claim application
+                                                at the provided link. Thank
+                                                you.”
+                                              </p>
+                                            </div>
+                                          </DialogContent>
+                                        </Dialog>
                                       </TableCell>
                                     </TableRow>
                                   ))
