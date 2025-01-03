@@ -367,6 +367,7 @@ const ClaimsPage = () => {
       )
       .then(() => {
         setSuccessUpdate(true);
+        alert("Update status successfully.");
       })
       .catch((error) => {
         console.error("Error updating status:", error);
@@ -1041,7 +1042,7 @@ const ClaimsPage = () => {
                           {claim.status || "Select Status"}
                         </SelectValue>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="max-h-48 overflow-auto">
                         <SelectItem
                           value="Submitted"
                           disabled={claim.status !== "Draft"}
