@@ -235,13 +235,19 @@ const ClaimsPage = () => {
     claimService.getClaimCategory(id).then((res) => {
       const label = filteredClaims[0]?.claim_config;
 
-      const updatedDataDocument = res.data.map((document: any) => ({
-        ...document,
-        label: {
-          ...document.label,
-          en: document.label?.en || label,
-        },
-      }));
+      const updatedDataDocument = res.data
+        .filter(
+          (doc: any) =>
+            doc.type.toLowerCase() === "file" ||
+            doc.type.toLowerCase() === "file multiple"
+        )
+        .map((document: any) => ({
+          ...document,
+          label: {
+            ...document.label,
+            en: document.label?.en || label,
+          },
+        }));
 
       setDataDocument([...updatedDataDocument, ...label]);
     });
@@ -772,29 +778,15 @@ const ClaimsPage = () => {
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
-                                      <TableCell
-                                        onClick={() =>
-                                          handleCheckboxChange(document.name)
-                                        }
-                                      >
+                                      <TableCell>
                                         {document?.label?.en ||
                                           document?.label_multilanguage?.en ||
                                           "-"}
                                       </TableCell>
-                                      <TableCell
-                                        className=""
-                                        onClick={() =>
-                                          handleCheckboxChange(document.name)
-                                        }
-                                      >
+                                      <TableCell className="">
                                         {document.criteria || "-"}
                                       </TableCell>
-                                      <TableCell
-                                        className=""
-                                        onClick={() =>
-                                          handleCheckboxChange(document.name)
-                                        }
-                                      >
+                                      <TableCell className="">
                                         {document.definition || "-"}
                                       </TableCell>
                                       <TableCell className="w-24 text-center">
