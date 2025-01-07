@@ -784,10 +784,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isGroupSelected(group.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChange(group.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>
@@ -1022,10 +1018,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isUserSelected(role.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChangeRole(role.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>
