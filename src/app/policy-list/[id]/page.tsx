@@ -149,7 +149,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                 </TableRow>
               </Table>
               {policy?.package_data[0]?.benefits?.map((item: any) => (
-                <TableRow>
+                <TableRow key={item.id}>
                   <TableCell>{item.benefits?.description_id}</TableCell>
                   <TableCell>{formatMoney(item.value) ?? item.html}</TableCell>
                 </TableRow>
