@@ -156,9 +156,6 @@ const PromotionPage = () => {
       } else {
         setEmbeddedDiscount([]);
       }
-      console.log(
-        "setEmbedded: " + embeddedHistory.data[0].total_discount_amount
-      );
 
       setDrawerOpen(true);
 
@@ -556,7 +553,7 @@ const PromotionPage = () => {
                                     >
                                       <div className="flex gap-2">
                                         <div className="sm:min-w-40 sm:w-40 min-w-32">
-                                          Discount Amount
+                                          Total Discount Usage
                                         </div>
                                         <div className="max-w-1 w-1">:</div>
                                         <div>
@@ -568,7 +565,7 @@ const PromotionPage = () => {
                                     </div>
                                   ))
                                 ) : (
-                                  <p>Discount Amount is not available.</p>
+                                  <p>Total Discount Usage is not available.</p>
                                 )}
                               </div>
                             )}
