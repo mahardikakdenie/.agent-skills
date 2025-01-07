@@ -41,7 +41,6 @@ const UploadPackage = ({
         header: true,
         complete: (results) => {
           setCsvData(results.data);
-          console.log(results.data);
         },
         error: (error) => {
           console.error("Error parsing CSV file:", error);
