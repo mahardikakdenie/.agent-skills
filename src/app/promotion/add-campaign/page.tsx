@@ -1294,7 +1294,7 @@ const CreatePromotionPage = () => {
             </div>
             <div className="">
               <label htmlFor="minimum_amount" className="font-normal">
-                Minimum Amount
+                Minimum Transaction Amount
               </label>
               <Controller
                 name="minimum_amount"
@@ -1315,7 +1315,7 @@ const CreatePromotionPage = () => {
             </div>
             <div className="">
               <label htmlFor="maximum_amount" className="font-normal">
-                Maximum Amount
+                Maximum Discount Amount
               </label>
               <Controller
                 name="maximum_amount"

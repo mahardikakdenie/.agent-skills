@@ -441,14 +441,14 @@ const PromotionPage = () => {
                             </div>
                             <div className="flex gap-2 text-sm font-medium">
                               <div className="sm:min-w-40 sm:w-40 min-w-32">
-                                Minimum Amount
+                                Minimum Transaction Amount
                               </div>
                               <div className="max-w-1 w-1">:</div>
                               <div>{selectedPromotion?.minimum_amount}</div>
                             </div>
                             <div className="flex gap-2 text-sm font-medium">
                               <div className="sm:min-w-40 sm:w-40 min-w-32">
-                                Maximum Amount
+                                Maximum Discount Amount
                               </div>
                               <div className="max-w-1 w-1">:</div>
                               <div>{selectedPromotion?.maximum_amount}</div>
