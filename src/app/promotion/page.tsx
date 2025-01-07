@@ -27,9 +27,21 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Edit, Plus, Search, Trash, X } from "react-feather";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  Plus,
+  Search,
+  Trash,
+  X,
+} from "react-feather";
 import { VoucherService } from "@/services/voucher.services";
-import { clearToken, hasPermission, isTokenExpired } from "@/context/auth.context";
+import {
+  clearToken,
+  hasPermission,
+  isTokenExpired,
+} from "@/context/auth.context";
 
 const PromotionPage = () => {
   useRequireAuth();
@@ -67,6 +79,13 @@ const PromotionPage = () => {
     }[]
   >([]);
 
+  const [embeddedDiscount, setEmbeddedDiscount] = useState<
+    {
+      currency: string;
+      total_discount_amount: number;
+    }[]
+  >([]);
+
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -79,7 +98,7 @@ const PromotionPage = () => {
       const editBtn = await hasPermission("Promotions.Update");
 
       setCanDelete(deleteBtn);
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setHasAccess(access);
       if (!access) {
         router.push("/forbidden");
@@ -129,6 +148,15 @@ const PromotionPage = () => {
       const response = await promotionService.getPromotionCampaignById(id);
       const promotionData = response.data[0];
       setSelectedPromotion(promotionData);
+
+      const embeddedHistory =
+        await promotionService.getPromotionCampaignByIdEmbedded(id);
+      if (embeddedHistory.data && embeddedHistory.data[0]) {
+        setEmbeddedDiscount([embeddedHistory.data[0]]);
+      } else {
+        setEmbeddedDiscount([]);
+      }
+
       setDrawerOpen(true);
 
       const fetchNames = async () => {
@@ -214,7 +242,6 @@ const PromotionPage = () => {
     }
   };
 
-
   const handleSearch = async () => {
     const value = searchTerm.toLowerCase();
     setSearchTerm(value);
@@ -230,7 +257,6 @@ const PromotionPage = () => {
       .catch((error) => {
         console.error("Failed to query sanction:", error);
       });
-
   };
 
   return (
@@ -254,7 +280,7 @@ const PromotionPage = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               handleSearch();
             }
           }}
@@ -274,34 +300,46 @@ const PromotionPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Campaign Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Currency</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Start Date</TableHead>
-              <TableHead>End Date</TableHead>
-              <TableHead>Active</TableHead>
-              <TableHead className="w-20">Action</TableHead>
+              <TableHead className="text-center align-middle">
+                Campaign Name
+              </TableHead>
+              <TableHead className="text-center align-middle">Type</TableHead>
+              <TableHead className="text-center align-middle">
+                Currency
+              </TableHead>
+              <TableHead className="text-center align-middle">Value</TableHead>
+              <TableHead className="text-center align-middle">
+                Start Date
+              </TableHead>
+              <TableHead className="text-center align-middle">
+                End Date
+              </TableHead>
+              <TableHead className="text-center align-middle">Active</TableHead>
+              <TableHead className="text-center align-middle w-20">
+                Action
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {promotions.map((promotion) => (
               <TableRow key={promotion.campaign_id}>
-                <TableCell>{promotion.name}</TableCell>
-                <TableCell>{promotion.type}</TableCell>
-                <TableCell>{promotion.value_currency}</TableCell>
-                <TableCell>
+                <TableCell align="center">{promotion.name}</TableCell>
+                <TableCell align="center">{promotion.type}</TableCell>
+                <TableCell align="center">{promotion.value_currency}</TableCell>
+                <TableCell align="center">
                   {promotion.value_type === "percentage"
                     ? `${promotion.value}%`
-                    : `${promotion.value_currency} ${promotion.value}`}
+                    : `${Number(promotion?.value).toLocaleString()}`}
                 </TableCell>
-                <TableCell>
+                <TableCell align="center">
                   {format(new Date(promotion.start_date), "dd-MM-yyyy")}
                 </TableCell>
-                <TableCell>
+                <TableCell align="center">
                   {format(new Date(promotion.end_date), "dd-MM-yyyy")}
                 </TableCell>
-                <TableCell>{renderStatus(promotion.active)}</TableCell>
+                <TableCell align="center">
+                  {renderStatus(promotion.active)}
+                </TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
                     <Drawer direction="right">
@@ -349,9 +387,9 @@ const PromotionPage = () => {
                               <div>
                                 {selectedPromotion?.start_date
                                   ? format(
-                                    new Date(selectedPromotion.start_date),
-                                    "dd-MM-yyyy"
-                                  )
+                                      new Date(selectedPromotion.start_date),
+                                      "dd-MM-yyyy"
+                                    )
                                   : "N/A"}
                               </div>
                             </div>
@@ -363,9 +401,9 @@ const PromotionPage = () => {
                               <div>
                                 {selectedPromotion?.end_date
                                   ? format(
-                                    new Date(selectedPromotion.end_date),
-                                    "dd-MM-yyyy"
-                                  )
+                                      new Date(selectedPromotion.end_date),
+                                      "dd-MM-yyyy"
+                                    )
                                   : "N/A"}
                               </div>
                             </div>
@@ -377,7 +415,11 @@ const PromotionPage = () => {
                               <div>
                                 {selectedPromotion?.value_type === "percentage"
                                   ? `${selectedPromotion?.value}%`
-                                  : `${selectedPromotion?.value_currency} ${selectedPromotion?.value}`}
+                                  : `${
+                                      selectedPromotion?.value_currency
+                                    } ${Number(
+                                      selectedPromotion?.value
+                                    ).toLocaleString()}`}
                               </div>
                             </div>
                             <div className="flex gap-2 text-sm font-medium">
@@ -399,14 +441,14 @@ const PromotionPage = () => {
                             </div>
                             <div className="flex gap-2 text-sm font-medium">
                               <div className="sm:min-w-40 sm:w-40 min-w-32">
-                                Minimum Amount
+                                Minimum Transaction Amount
                               </div>
                               <div className="max-w-1 w-1">:</div>
                               <div>{selectedPromotion?.minimum_amount}</div>
                             </div>
                             <div className="flex gap-2 text-sm font-medium">
                               <div className="sm:min-w-40 sm:w-40 min-w-32">
-                                Maximum Amount
+                                Maximum Discount Amount
                               </div>
                               <div className="max-w-1 w-1">:</div>
                               <div>{selectedPromotion?.maximum_amount}</div>
@@ -422,6 +464,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_channels.map(
                                     (channel: { channel_id: string }) => (
                                       <p key={channel.channel_id}>
+                                        •{" "}
                                         {channelNames.get(channel.channel_id) ||
                                           "Unknown"}
                                       </p>
@@ -443,6 +486,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_insurances.map(
                                     (insurance: { insurance_id: string }) => (
                                       <p key={insurance.insurance_id}>
+                                        •{" "}
                                         {insuranceNames.get(
                                           insurance.insurance_id
                                         ) || "Unknown"}
@@ -465,6 +509,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_products.map(
                                     (product: { product_id: string }) => (
                                       <p key={product.product_id}>
+                                        •{" "}
                                         {productNames.get(product.product_id) ||
                                           "Unknown"}
                                       </p>
@@ -486,6 +531,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_plans.map(
                                     (plan: { plan_id: string }) => (
                                       <p key={plan.plan_id}>
+                                        •{" "}
                                         {planNames.get(plan.plan_id) ||
                                           "Unknown"}
                                       </p>
@@ -496,6 +542,37 @@ const PromotionPage = () => {
                                 )}
                               </div>
                             </div>
+
+                            {selectedPromotion?.type === "embedded" && (
+                              <div className="mt-4">
+                                <h3 className="text-lg font-semibold">
+                                  Embedded Details
+                                </h3>
+                                {Array.isArray(embeddedDiscount) &&
+                                embeddedDiscount.length > 0 ? (
+                                  embeddedDiscount.map((embedded, index) => (
+                                    <div
+                                      key={index}
+                                      className="mb-4 p-4 border rounded-lg bg-white shadow-md"
+                                    >
+                                      <div className="flex gap-2">
+                                        <div className="sm:min-w-40 sm:w-40 min-w-32">
+                                          Total Discount Usage
+                                        </div>
+                                        <div className="max-w-1 w-1">:</div>
+                                        <div>
+                                          {`${
+                                            embedded.currency
+                                          } ${embedded.total_discount_amount.toLocaleString()}`}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <p>Total Discount Usage is not available.</p>
+                                )}
+                              </div>
+                            )}
 
                             {selectedPromotion?.type === "voucher" &&
                               vouchers.length > 0 && (
