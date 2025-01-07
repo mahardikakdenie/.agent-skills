@@ -44,8 +44,26 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   const [channel, setChannel] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { saveUser, channels, roles, fetchChannels, fetchRole } = useUser();
+  const { saveUser, channels, fetchChannels, fetchRole } = useUser();
 
+  const roles = [
+    {
+      id: 'Admin',
+      name: 'Admin',
+    },
+    {
+      id: 'Partner',
+      name: 'Partner',
+    },
+    {
+      id: 'User',
+      name: 'User',
+    },
+    {
+      id: 'Insurer',
+      name: 'Insurer',
+    }
+  ]
   const {
     handleSubmit,
     control,

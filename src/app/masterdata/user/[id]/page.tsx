@@ -115,10 +115,15 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     removeAccountRoles,
     fetchChannels,
     fetchRole,
-    roles,
     channels,
   } = useUser();
 
+  const roles = [
+    { id: "Admin", name: "Admin" },
+    { id: "User", name: "User" },
+    { id: "Partner", name: "Partner" },
+    { id: "Insurer", name: "Insurer" },
+  ]
   const {
     handleSubmit,
     control,
