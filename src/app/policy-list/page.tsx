@@ -245,15 +245,6 @@ const PolicyPage = () => {
                       {policy.status}
                     </span>
                   </TableCell>
-                  {/* <TableCell>
-                    {new Date(
-                      policy.declarations.transaction_data.date
-                    ).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </TableCell> */}
                   <TableCell>
                     <Button
                       onClick={() => goToDetail(policy.id)}
