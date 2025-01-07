@@ -230,13 +230,13 @@ const PolicyPage = () => {
                   <TableCell>{rowNumber}</TableCell>
                   <TableCell>
                     <div className="flex gap-2 items-center">
-                      {policy?.declarations?.transaction_data?.customer?.name ||
+                      {policy?.policy_holder?.name ||
                         "-"}
                     </div>
                   </TableCell>
                   <TableCell>{policy.number}</TableCell>
                   <TableCell>
-                    {policy?.declarations?.transaction_data?.insurance?.plan?.name
+                    {policy?.policy_products?.plan_data?.name
                       .split("|")
                       .join(" - ") || "-"}
                   </TableCell>
