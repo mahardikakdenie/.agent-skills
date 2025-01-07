@@ -483,12 +483,15 @@ const CreatePromotionPage = () => {
       maximum_amount: formData.maximum_amount,
       products: promotion.embedded_discount_products.map((product) => ({
         product_id: product.product_id,
+        name: product.product_name
       })),
       insurances: promotion.embedded_discount_insurances.map((insurance) => ({
         insurance_id: insurance.insurance_id,
+        name: insurance.insurance_name
       })),
       plans: promotion.embedded_discount_plans.map((plan) => ({
         plan_id: plan.plan_id,
+        name: plan.name
       })),
       channels: promotion.embedded_discount_channels.map((channel) => ({
         channel_id: channel.channel_id,
