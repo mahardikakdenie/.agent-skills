@@ -329,9 +329,7 @@ const PromotionPage = () => {
                 <TableCell align="center">
                   {promotion.value_type === "percentage"
                     ? `${promotion.value}%`
-                    : `${promotion.value_currency} ${Number(
-                        selectedPromotion?.value
-                      ).toLocaleString()}`}
+                    : `${Number(promotion?.value).toLocaleString()}`}
                 </TableCell>
                 <TableCell align="center">
                   {format(new Date(promotion.start_date), "dd-MM-yyyy")}
@@ -339,7 +337,9 @@ const PromotionPage = () => {
                 <TableCell align="center">
                   {format(new Date(promotion.end_date), "dd-MM-yyyy")}
                 </TableCell>
-                <TableCell align="center">{renderStatus(promotion.active)}</TableCell>
+                <TableCell align="center">
+                  {renderStatus(promotion.active)}
+                </TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
                     <Drawer direction="right">
@@ -464,6 +464,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_channels.map(
                                     (channel: { channel_id: string }) => (
                                       <p key={channel.channel_id}>
+                                        •{" "}
                                         {channelNames.get(channel.channel_id) ||
                                           "Unknown"}
                                       </p>
@@ -485,6 +486,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_insurances.map(
                                     (insurance: { insurance_id: string }) => (
                                       <p key={insurance.insurance_id}>
+                                        •{" "}
                                         {insuranceNames.get(
                                           insurance.insurance_id
                                         ) || "Unknown"}
@@ -507,6 +509,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_products.map(
                                     (product: { product_id: string }) => (
                                       <p key={product.product_id}>
+                                        •{" "}
                                         {productNames.get(product.product_id) ||
                                           "Unknown"}
                                       </p>
@@ -528,6 +531,7 @@ const PromotionPage = () => {
                                   selectedPromotion.embedded_discount_plans.map(
                                     (plan: { plan_id: string }) => (
                                       <p key={plan.plan_id}>
+                                        •{" "}
                                         {planNames.get(plan.plan_id) ||
                                           "Unknown"}
                                       </p>
