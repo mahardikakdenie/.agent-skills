@@ -154,14 +154,14 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
       urlArr[urlArr.length - 1].toLowerCase() !== "pdf"
         ? `image/${urlArr[urlArr.length - 1].toLowerCase()}`
         : "application/pdf";
-    fetch(url, {})
-      .then((res) => res.blob())
-      .then((blob) => {
-        const file = new Blob([blob], { type: mimeType });
-        let fileURL = URL.createObjectURL(file);
-        let element = document.getElementById(id);
-        element?.setAttribute("src", fileURL);
-      });
+    // fetch(url, {})
+    //   .then((res) => res.blob())
+    //   .then((blob) => {
+    //     const file = new Blob([blob], { type: mimeType });
+    //     let fileURL = URL.createObjectURL(file);
+    //     let element = document.getElementById(id);
+    //     element?.setAttribute("src", fileURL);
+    //   });
   };
 
   const viewDocument = (documentObject: any) => {
@@ -552,7 +552,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                             <DialogContent>
                               <DialogHeader>
                                 <DialogTitle className=" text-sm sm:text-base flex items-center">
-                                  {document?.label.en}
+                                  {document?.label.en || document?.label}
                                   <DialogClose className="ml-auto">
                                     <Button
                                       type="button"
@@ -581,14 +581,18 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                                       ></iframe>
                                     </div>
                                   ) : (
-                                    <div className="lg:w-[460px] lg:h-[300px]">
-                                      <ImageOrDefault
-                                        width={460}
-                                        height={300}
-                                        alt={docToOpen.label.en}
-                                        src={docToOpen.value}
-                                        additionalClassNameP="py-14 px-3 lg:py-[135px]"
-                                      />
+                                    <div className="max-h-[70vh] overflow-auto text-center">
+                                      {docToOpen?.value ? (
+                                        <img
+                                          className="mx-auto w-full"
+                                          src={docToOpen.value}
+                                          alt={docToOpen.label.en}
+                                        />
+                                      ) : (
+                                        <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">
+                                          No image available
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                   <div className="w-full flex items-center justify-center mt-3">
@@ -613,43 +617,6 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                             </DialogContent>
                           )}
                         </Dialog>
-                        {/* <Drawer direction="right">
-                          <DrawerTrigger className="bg-[#016DA1] text-white px-4 py-2 rounded-full">
-                            View
-                          </DrawerTrigger>
-                          <DrawerContent>
-                            <DrawerHeader>
-                              <DrawerClose className="absolute right-2 top-2">
-                                <Button variant="ghost">
-                                  <X />
-                                </Button>
-                              </DrawerClose>
-                              <DrawerTitle className="text-black font-bold text-xl">
-                                {/* Original Boarding Pass, Ticket or Itinerary */}
-                        {/* {document?.label.en} */}
-                        {/* </DrawerTitle> */}
-                        {/* <DrawerDescription> */}
-                        {/* <div className="flex flex-col w-full mt-5 text-black"> */}
-                        {/* {document?.value} */}
-                        {/* <img
-                                    src={claim?.general[0]?.value}
-                                    alt="passport-participant"
-                                  /> */}
-                        {/* </div> */}
-                        {/* <div className="w-full flex items-center justify-center mt-3">
-                                  <Button
-                                    className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
-                                    onClick={() =>
-                                      downloadDocument(claim?.general[0]?.value)
-                                    }
-                                  >
-                                    Download
-                                  </Button>
-                                </div> */}
-                        {/* </DrawerDescription>
-                            </DrawerHeader>
-                          </DrawerContent>
-                        </Drawer> */}
                       </TableCell>
                     </TableRow>
                   ))
