@@ -492,6 +492,7 @@ const CreatePromotionPage = () => {
       })),
       channels: promotion.embedded_discount_channels.map((channel) => ({
         channel_id: channel.channel_id,
+        name: channel.channel_name
       })),
       vouchers: vouchers.map((voucher) => ({
         code: voucher.code,
