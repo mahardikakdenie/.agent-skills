@@ -159,7 +159,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
           </div>
 
         </div>
-        {policy?.participants.map((item: any) => (<div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative">
+        {policy?.participants.map((item: any) => (<div key={item.id} className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative">
           <div className="absolute lg:right-6 right-4 top-3 text-xs text-gray-500">
             <i>
               Last Update{" "}
