@@ -246,7 +246,7 @@ const ReportCampaignPage = () => {
           Type: promotion.type || "",
           "Insurance Company Name": promotion.insurance_name || "N/A",
           "Plan Name": promotion.plan_name || "N/A",
-          "Currency": promotion.currency || "N/A",
+          Currency: promotion.currency || "N/A",
           "Transaction Amount": promotion.total_transaction_amount || 0,
           "Discount Amount": promotion.total_discount_amount || 0,
         }));
@@ -284,7 +284,9 @@ const ReportCampaignPage = () => {
     setFilterBy(value);
     if (value !== "insurance") {
       setSelectedInsurance(undefined);
-      reset({ insurance: "" });
+      reset({ filter: value, insurance: "" });
+    } else {
+      reset({ filter: value });
     }
   };
 
@@ -365,9 +367,10 @@ const ReportCampaignPage = () => {
           <Controller
             name="filter"
             control={control}
+            defaultValue={filterBy}
             render={({ field }) => (
               <Select
-                value={field.value || filterBy}
+                value={filterBy}
                 onValueChange={(value) => {
                   handleChangeFilter(value);
                   field.onChange(value);
@@ -383,6 +386,7 @@ const ReportCampaignPage = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="date">Date</SelectItem>
                     <SelectItem value="embedded">Embedded</SelectItem>
                     <SelectItem value="voucher">Voucher</SelectItem>
                     <SelectItem value="insurance">Insurance</SelectItem>
@@ -462,10 +466,12 @@ const ReportCampaignPage = () => {
                 <TableCell align="center">{promotion.insurance_name}</TableCell>
                 <TableCell align="center">{promotion.plan_name}</TableCell>
                 <TableCell align="center">
-                {promotion.currency} {Number(promotion.total_transaction_amount).toLocaleString()}
+                  {promotion.currency}{" "}
+                  {Number(promotion.total_transaction_amount).toLocaleString()}
                 </TableCell>
                 <TableCell align="center">
-                {promotion.currency} {Number(promotion.total_discount_amount).toLocaleString()}
+                  {promotion.currency}{" "}
+                  {Number(promotion.total_discount_amount).toLocaleString()}
                 </TableCell>
               </TableRow>
             ))}
