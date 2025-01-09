@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/table";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { PromotionService } from "@/services/promotion.service";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { startOfMonth, endOfMonth } from "date-fns";
 import { Controller, useForm } from "react-hook-form";
 import {
   Select,
@@ -23,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, Upload } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Upload, X } from "react-feather";
 import { hasPermission } from "@/context/auth.context";
 import { Button } from "@/components/ui/button";
 import { NewPromotionCampaign } from "@/app/promotion/dto/promotion.dto";
@@ -37,6 +40,14 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { InsuranceService } from "@/services/insurance.services";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
 
 interface InsuranceOption {
   id: string;
@@ -57,6 +68,10 @@ const ReportCampaignPage = () => {
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("date");
   const [filterBy, setFilterBy] = useState<string>("all");
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date()),
+  });
   const [insuranceOptions, setInsuranceOptions] = useState<InsuranceOption[]>(
     []
   );
@@ -136,7 +151,8 @@ const ReportCampaignPage = () => {
             page,
             rowsPerPage,
             sortBy,
-            selectedInsurance
+            selectedInsurance, date?.from,
+            date?.to
           )
           .then((res) => {
             setPromotions(res.data);
@@ -149,7 +165,8 @@ const ReportCampaignPage = () => {
       } else {
         // Fetch promotion report based on the selected filter (non-insurance)
         promotionService
-          .getPromotionCampaignReport(page, rowsPerPage, sortBy, filterBy)
+          .getPromotionCampaignReport(page, rowsPerPage, sortBy, filterBy, date?.from,
+            date?.to)
           .then((res) => {
             setPromotions(res.data);
             setTotalItems(res.total);
@@ -160,7 +177,7 @@ const ReportCampaignPage = () => {
           });
       }
     }
-  }, [hasAccess, page, rowsPerPage, sortBy, filterBy, selectedInsurance]);
+  }, [hasAccess, page, rowsPerPage, sortBy, filterBy, selectedInsurance, date]);
 
   const fetchInsuranceOptions = async () => {
     try {
@@ -181,6 +198,10 @@ const ReportCampaignPage = () => {
     return <div>Loading...</div>;
   }
 
+  const handleClear = () => {
+    setDate(undefined);
+  };
+
   const handleDownloadReport = async () => {
     try {
       // console.log(
@@ -195,7 +216,9 @@ const ReportCampaignPage = () => {
         const response: AxiosResponse<any> =
           await promotionService.getPromotionCampaignExportReportInsurance(
             sortBy,
-            selectedInsurance
+            selectedInsurance,
+            date?.from,
+            date?.to
           );
         const { data } = response;
 
@@ -236,7 +259,9 @@ const ReportCampaignPage = () => {
         const response: AxiosResponse<any> =
           await promotionService.getPromotionCampaignExportReport(
             sortBy,
-            filterBy
+            filterBy,
+            date?.from,
+            date?.to
           );
         const { data } = response;
 
@@ -313,12 +338,67 @@ const ReportCampaignPage = () => {
             Promotions Campaign Report
           </h2>
         </div>
-        <Button
-          onClick={handleDownloadReport}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full flex items-center"
-        >
-          <Download className="w-5 h-5 mr-1" /> Download Report
-        </Button>
+
+        {/* Container for Date Picker and Download Button */}
+        <div className="flex items-center gap-4">
+          {/* Date Picker */}
+          <div className="flex gap-2 sm:w-auto w-full relative">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant={"outline"}
+                  className={cn(
+                    "sm:w-[280px] w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="w-4 h-4 mr-2" />
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {format(date.from, "LLL dd, y")} -{" "}
+                        {format(date.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(date.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  defaultMonth={new Date()}
+                  selected={date}
+                  onSelect={(range) => setDate(range)}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+            <Button
+              onClick={handleClear}
+              disabled={!date}
+              className={cn(
+                "font-semibold bg-transparent hover:bg-transparent p-0 text-red-700 text-sm cursor-pointer absolute right-2",
+                !date && "text-gray-500 cursor-not-allowed"
+              )}
+              title="Clear"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {/* Download Report Button */}
+          <Button
+            onClick={handleDownloadReport}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full flex items-center"
+          >
+            <Download className="w-5 h-5 mr-1" /> Download Report
+          </Button>
+        </div>
       </div>
 
       <div className="pt-5 md:px-6 p-4 m-5 bg-white">
@@ -386,7 +466,6 @@ const ReportCampaignPage = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="date">Date</SelectItem>
                     <SelectItem value="embedded">Embedded</SelectItem>
                     <SelectItem value="voucher">Voucher</SelectItem>
                     <SelectItem value="insurance">Insurance</SelectItem>
