@@ -159,7 +159,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
           </div>
 
         </div>
-        {policy?.participants.map((item: any) => (<div key={item.id} className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative">
+        {policy?.insured_parties.map((item: any) => (<div key={item.id} className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative">
           <div className="absolute lg:right-6 right-4 top-3 text-xs text-gray-500">
             <i>
               Last Update{" "}
@@ -182,7 +182,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               Participant Number
             </div>
             <div className="max-w-1 w-1">:</div>
-            <div>{policy?.participants?.[0]?.number || "-"}</div>
+            <div>{item?.number || "-"}</div>
           </div>
           {item?.data?.data?.name && <div className="flex gap-2 text-sm font-medium">
             <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Full Name</div>
@@ -239,22 +239,37 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             <div>
               {item?.data?.data?.date_of_issue || "-"}
             </div>
-          </div>}
-          {item?.data?.data?.date_of_expiry && <div className="flex gap-2 text-sm font-medium">
+          </div>}          {item.data?.data?.date_of_expiry && <div className="flex gap-2 text-sm font-medium">
             <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Expiry Date</div>
             <div className="max-w-1 w-1">:</div>
             <div>
-              {item?.data?.data?.date_of_expiry || "-"}
+              {item.data?.data?.date_of_expiry || "-"}
             </div>
           </div>}
-          {Object.keys(item?.data || {}).map((key) => {
-            const formattedKey = key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+          {item.profile && Object.keys(item.profile).map((key, i) => {
+            console.log(key);
+            const formattedKey = key ? key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : null;
+            const value = typeof item.profile[key] === 'object' ? JSON.stringify(item.profile[key]) : item.profile[key];
             return (
-              <div key={key} className="flex gap-2 text-sm font-medium">
+              <div key={i} className="flex gap-2 text-sm font-medium">
                 <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">{formattedKey}</div>
                 <div className="max-w-1 w-1">:</div>
                 <div>
-                  {item?.data?.[key] || "-"}
+                  {value || "-"}
+                </div>
+              </div>
+            );
+          })}
+          {item.other_info && Object.keys(item.other_info).map((key, i) => {
+            console.log(key);
+            const formattedKey = key ? key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : null;
+            const value = typeof item.other_info[key] === 'object' ? JSON.stringify(item.other_info[key]) : item.other_info[key];
+            return (
+              <div key={i} className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">{formattedKey}</div>
+                <div className="max-w-1 w-1">:</div>
+                <div>
+                  {value || "-"}
                 </div>
               </div>
             );
