@@ -535,7 +535,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
-                          {document?.label.en || document?.label}
+                          {document?.label.en || document?.label} {document?.insured_type && ' - ' + document?.insured_type.charAt(0).toUpperCase() + document?.insured_type.slice(1)}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -568,17 +568,9 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                                 <div>
                                   {docToOpen?.value?.split(".").at(-1) ===
                                   "pdf" ? (
-                                    <div className="w-[calc(90vh)] h-[calc(50vh)]">
-                                      <iframe
-                                        id="pdfFrame"
-                                        src=""
-                                        title={docToOpen.label.en}
-                                        style={{
-                                          border: "none",
-                                          width: "100%",
-                                          height: "100%",
-                                        }}
-                                      ></iframe>
+                                    <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400 p-5">
+                                      The document cannot be previewed, please
+                                      download if you want to see it
                                     </div>
                                   ) : (
                                     <div className="max-h-[70vh] overflow-auto text-center">

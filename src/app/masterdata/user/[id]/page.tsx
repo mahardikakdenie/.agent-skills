@@ -115,10 +115,15 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     removeAccountRoles,
     fetchChannels,
     fetchRole,
-    roles,
     channels,
   } = useUser();
 
+  const roles = [
+    { id: "Admin", name: "Admin" },
+    { id: "User", name: "User" },
+    { id: "Partner", name: "Partner" },
+    { id: "Insurer", name: "Insurer" },
+  ]
   const {
     handleSubmit,
     control,
@@ -132,14 +137,12 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       name,
       email,
       phone_number,
-      password,
+      password: "",
       status,
       role,
       channel,
     },
   });
-
-  const selectRoleLabel = watch("role");
 
   const onSubmit = async (data: any) => {
     try {
@@ -786,10 +789,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isGroupSelected(group.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChange(group.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>
@@ -1024,10 +1023,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isUserSelected(role.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChangeRole(role.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>

@@ -1,5 +1,6 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
+import { DateRange } from "react-day-picker";
 
 
 interface PromotionResponse {
@@ -33,8 +34,45 @@ export class PromotionService {
 
   }
 
+  
+  async getPromotionCampaignReport(page: number, limit: number, sortBy: string, filterBy: string, dateFrom?: Date, dateTo?: Date): Promise<any> {
+    if (page <= 0) {
+      page = 1;
+    }
+    return this.httpClientPromotion.get(`/v1/campaign/report?page=${page}&limit=${limit}&sort=${sortBy}&filter=${filterBy}&dateFrom=${dateFrom}
+      &dateTo=${dateTo}`);
+
+  }
+
+  async getPromotionCampaignReportInsurance(page: number, limit: number, sortBy: string, insurance: string, dateFrom?: Date, dateTo?: Date): Promise<any> {
+    if (page <= 0) {
+      page = 1;
+    }
+    return this.httpClientPromotion.get(`/v1/campaign/report/insurance?page=${page}&limit=${limit}&sort=${sortBy}&insurance=${insurance}&dateFrom=${dateFrom}
+      &dateTo=${dateTo}`);
+
+  }
+
+  async getPromotionCampaignExportReport(sortBy: string, filterBy: string, dateFrom?: Date, dateTo?: Date): Promise<any> {
+
+    return this.httpClientPromotion.get(`/v1/campaign/report/export?sort=${sortBy}&filter=${filterBy}&dateFrom=${dateFrom}
+      &dateTo=${dateTo}`);
+
+  }
+
+  async getPromotionCampaignExportReportInsurance(sortBy: string, insurance: string, dateFrom?: Date, dateTo?: Date): Promise<any> {
+
+    return this.httpClientPromotion.get(`/v1/campaign/report/export/insurance?sort=${sortBy}&insurance=${insurance}&dateFrom=${dateFrom}
+      &dateTo=${dateTo}`);
+
+  }
+
   async getPromotionCampaignById(id: string): Promise<PromotionResponse> {
     return this.httpClientPromotion.get(`/v1/campaign/${id}?id=${id}`);
+}
+
+async getPromotionCampaignByIdEmbedded(id: string): Promise<PromotionResponse> {
+  return this.httpClientPromotion.get(`/v1/campaign/embedded/history/${id}?id=${id}`);
 }
 
   async deleteDiscCampaignById(id: string): Promise<any> {
