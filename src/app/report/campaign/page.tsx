@@ -151,7 +151,8 @@ const ReportCampaignPage = () => {
             page,
             rowsPerPage,
             sortBy,
-            selectedInsurance, date?.from,
+            selectedInsurance,
+            date?.from,
             date?.to
           )
           .then((res) => {
@@ -165,8 +166,14 @@ const ReportCampaignPage = () => {
       } else {
         // Fetch promotion report based on the selected filter (non-insurance)
         promotionService
-          .getPromotionCampaignReport(page, rowsPerPage, sortBy, filterBy, date?.from,
-            date?.to)
+          .getPromotionCampaignReport(
+            page,
+            rowsPerPage,
+            sortBy,
+            filterBy,
+            date?.from,
+            date?.to
+          )
           .then((res) => {
             setPromotions(res.data);
             setTotalItems(res.total);
@@ -229,7 +236,11 @@ const ReportCampaignPage = () => {
           "Insurance Company Name": promotion.insurance_name || "N/A",
           "Plan Name": promotion.plan_name || "N/A",
           "Transaction Amount": promotion.total_transaction_amount || 0,
-          "Discount Amount": promotion.total_discount_amount || 0,
+          "Discount Amount":
+            promotion.total_transaction_amount -
+              promotion.total_discount_amount || 0,
+          "Transaction Amount after Discount":
+            promotion.total_discount_amount || 0,
         }));
 
         // Create a new workbook and add data
@@ -273,7 +284,11 @@ const ReportCampaignPage = () => {
           "Plan Name": promotion.plan_name || "N/A",
           Currency: promotion.currency || "N/A",
           "Transaction Amount": promotion.total_transaction_amount || 0,
-          "Discount Amount": promotion.total_discount_amount || 0,
+          "Discount Amount":
+            promotion.total_transaction_amount -
+              promotion.total_discount_amount || 0,
+          "Transaction Amount after Discount":
+            promotion.total_discount_amount || 0,
         }));
 
         // Create a new workbook and add data
@@ -535,6 +550,9 @@ const ReportCampaignPage = () => {
               <TableHead style={{ textAlign: "center" }}>
                 Discount Amount
               </TableHead>
+              <TableHead style={{ textAlign: "center" }}>
+                Transaction Amount after Discount
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -550,6 +568,12 @@ const ReportCampaignPage = () => {
                 </TableCell>
                 <TableCell align="center">
                   {promotion.currency}{" "}
+                  {Number(
+                    promotion.total_transaction_amount -
+                      promotion.total_discount_amount
+                  ).toLocaleString()}
+                </TableCell>
+                <TableCell align="center">
                   {Number(promotion.total_discount_amount).toLocaleString()}
                 </TableCell>
               </TableRow>

@@ -83,6 +83,7 @@ const PromotionPage = () => {
     {
       currency: string;
       total_discount_amount: number;
+      total_transaction_amount: number;
     }[]
   >([]);
 
@@ -561,9 +562,10 @@ const PromotionPage = () => {
                                         </div>
                                         <div className="max-w-1 w-1">:</div>
                                         <div>
-                                          {`${
-                                            embedded.currency
-                                          } ${embedded.total_discount_amount.toLocaleString()}`}
+                                          {`${embedded.currency} ${(
+                                            embedded.total_transaction_amount -
+                                            embedded.total_discount_amount
+                                          ).toLocaleString()}`}
                                         </div>
                                       </div>
                                     </div>
