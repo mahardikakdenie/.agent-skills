@@ -264,107 +264,117 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                     <TableRow>
                       <TableCell>Nama Lengkap</TableCell>
                       <TableCell>
-                        {endorsement?.participants?.full_name ||
-                          endorsement?.participants?.name}
+                        {endorsement?.participants?.profile?.full_name ||
+                          endorsement?.participants?.profile?.name}
                       </TableCell>
                       <TableCell>
-                        {endorsement?.data?.full_name ||
-                          endorsement?.data?.name}
+                        {endorsement?.data?.profile?.full_name ||
+                          endorsement?.data?.profile?.name}
                       </TableCell>
                     </TableRow>
-                    {(endorsement?.participants?.gender ||
-                      endorsement.data.gender) && (
+                    {(endorsement?.participants?.profile?.gender ||
+                      endorsement.data.profile?.gender) && (
                       <TableRow>
                         <TableCell>Jenis Kelamin</TableCell>
                         <TableCell>
-                          {endorsement?.participants?.gender}
+                          {endorsement?.participants?.profile?.gender}
                         </TableCell>
 
-                        <TableCell>{endorsement?.data?.gender}</TableCell>
+                        <TableCell>
+                          {endorsement?.data?.profile?.gender}
+                        </TableCell>
                       </TableRow>
                     )}
                     <TableRow>
                       <TableCell>
-                        {endorsement?.participants?.passport_no
+                        {endorsement?.participants?.profile?.passport_no
                           ? "No. Passport"
-                          : endorsement?.participants?.nik
+                          : endorsement?.participants?.profile?.nik
                           ? "NIK"
-                          : endorsement?.participants?.identification_number
+                          : endorsement?.participants?.profile
+                              ?.identification_number
                           ? "No. Identitas"
                           : ""}
                       </TableCell>
                       <TableCell>
-                        {endorsement?.participants?.passport_no ||
-                          endorsement.participants.nik ||
-                          endorsement.participants.identification_number}
+                        {endorsement?.participants?.profile?.passport_no ||
+                          endorsement.participants?.profile?.nik ||
+                          endorsement.participants?.profile
+                            ?.identification_number}
                       </TableCell>
 
                       <TableCell>
-                        {endorsement?.data?.passport_no ||
-                          endorsement.data.nik ||
-                          endorsement.data.identification_number}
+                        {endorsement?.data?.profile?.passport_no ||
+                          endorsement.data.profile?.nik ||
+                          endorsement.data.profile?.identification_number}
                       </TableCell>
                     </TableRow>
-                    {(endorsement?.participants?.nationality ||
-                      endorsement.participants.country ||
-                      endorsement?.data?.nationality ||
-                      endorsement.data.country) && (
+                    {(endorsement?.participants?.profile?.nationality ||
+                      endorsement.participants?.profile?.country ||
+                      endorsement?.data?.profile?.nationality ||
+                      endorsement.data.profile?.country) && (
                       <TableRow>
                         <TableCell>Kewarganegaraan</TableCell>
                         <TableCell>
-                          {endorsement?.participants?.nationality ||
-                            endorsement.participants.country}
+                          {endorsement?.participants?.profile?.nationality ||
+                            endorsement.participants.profile?.country}
                         </TableCell>
 
                         <TableCell>
-                          {endorsement?.data?.nationality ||
-                            endorsement.data.country}
+                          {endorsement?.data?.profile?.nationality ||
+                            endorsement.data?.profile?.country}
                         </TableCell>
                       </TableRow>
                     )}
-                    {(endorsement?.participants?.pob ||
-                      endorsement.participants.country_of_birth ||
-                      endorsement?.data?.pob ||
-                      endorsement.data.country_of_birth) && (
+                    {(endorsement?.participants?.profile?.pob ||
+                      endorsement.participants?.profile?.country_of_birth ||
+                      endorsement?.data?.profile?.pob ||
+                      endorsement.data.profile?.country_of_birth) && (
                       <TableRow>
                         <TableCell>Tempat Lahir</TableCell>
                         <TableCell>
-                          {endorsement?.participants?.pob ||
-                            endorsement.participants.country_of_birth}
+                          {endorsement?.participants?.profile?.pob ||
+                            endorsement.participants?.profile?.country_of_birth}
                         </TableCell>
 
                         <TableCell>
-                          {endorsement?.data?.pob ||
-                            endorsement.data.country_of_birth}
+                          {endorsement?.data?.profile?.pob ||
+                            endorsement.data?.profile?.country_of_birth}
                         </TableCell>
                       </TableRow>
                     )}
-                    {(endorsement?.participants?.dob ||
-                      endorsement?.data?.dob) && (
+                    {(endorsement?.participants?.profile?.dob ||
+                      endorsement?.data?.profile?.dob) && (
                       <TableRow>
                         <TableCell>Tanggal Lahir</TableCell>
-                        <TableCell>{endorsement?.participants?.dob}</TableCell>
+                        <TableCell>
+                          {endorsement?.participants?.profile?.dob}
+                        </TableCell>
 
-                        <TableCell>{endorsement?.data?.dob}</TableCell>
+                        <TableCell>{endorsement?.data?.profile?.dob}</TableCell>
                       </TableRow>
                     )}
-                    {(endorsement?.participants?.address ||
-                      endorsement?.data?.address) && (
+                    {(endorsement?.participants?.profile?.address ||
+                      endorsement?.data?.profile?.address) && (
                       <TableRow>
                         <TableCell>Alamat</TableCell>
                         <TableCell>
-                          {endorsement?.participants?.address}
+                          {endorsement?.participants?.profile?.address}
                         </TableCell>
 
-                        <TableCell>{endorsement?.data?.address}</TableCell>
+                        <TableCell>
+                          {endorsement?.data?.profile?.address}
+                        </TableCell>
                       </TableRow>
                     )}
-                    {(endorsement?.participants?.job ||
-                      endorsement?.data?.job) && (
+                    {(endorsement?.participants?.profile?.job ||
+                      endorsement?.data?.profile?.job) && (
                       <TableRow>
                         <TableCell>Pekerjaan</TableCell>
-                        <TableCell>{endorsement?.participants?.job}</TableCell>
-                        <TableCell>{endorsement?.data?.job}</TableCell>
+                        <TableCell>
+                          {endorsement?.participants?.profile?.job}
+                        </TableCell>
+                        <TableCell>{endorsement?.data?.profile?.job}</TableCell>
                       </TableRow>
                     )}
                   </TableBody>
