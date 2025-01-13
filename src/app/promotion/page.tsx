@@ -152,11 +152,11 @@ const PromotionPage = () => {
 
       const embeddedHistory =
         await promotionService.getPromotionCampaignByIdEmbedded(id);
-      if (embeddedHistory.data && embeddedHistory.data[0]) {
-        setEmbeddedDiscount([embeddedHistory.data[0]]);
-      } else {
-        setEmbeddedDiscount([]);
-      }
+        if (embeddedHistory) {
+          setEmbeddedDiscount([embeddedHistory]);
+        } else {
+          setEmbeddedDiscount([]);
+        }
 
       setDrawerOpen(true);
 
@@ -563,7 +563,6 @@ const PromotionPage = () => {
                                         <div className="max-w-1 w-1">:</div>
                                         <div>
                                           {`${embedded.currency} ${(
-                                            embedded.total_transaction_amount -
                                             embedded.total_discount_amount
                                           ).toLocaleString()}`}
                                         </div>
