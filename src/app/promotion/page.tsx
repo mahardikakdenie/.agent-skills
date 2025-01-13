@@ -150,14 +150,6 @@ const PromotionPage = () => {
       const promotionData = response.data[0];
       setSelectedPromotion(promotionData);
 
-      const embeddedHistory =
-        await promotionService.getPromotionCampaignByIdEmbedded(id);
-        if (embeddedHistory) {
-          setEmbeddedDiscount([embeddedHistory]);
-        } else {
-          setEmbeddedDiscount([]);
-        }
-
       setDrawerOpen(true);
 
       const fetchNames = async () => {
@@ -214,6 +206,16 @@ const PromotionPage = () => {
         );
         setVouchers(vouchersResponse.data);
       }
+
+      if (promotionData.type === "embedded") {
+        const embeddedHistory =
+          await promotionService.getPromotionCampaignByIdEmbedded(id);
+          if (embeddedHistory) {
+            setEmbeddedDiscount([embeddedHistory]);
+          } else {
+            setEmbeddedDiscount([]);
+          }
+        }
 
       await fetchNames();
     } catch (err) {
