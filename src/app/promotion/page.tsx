@@ -150,14 +150,6 @@ const PromotionPage = () => {
       const promotionData = response.data[0];
       setSelectedPromotion(promotionData);
 
-      const embeddedHistory =
-        await promotionService.getPromotionCampaignByIdEmbedded(id);
-      if (embeddedHistory.data && embeddedHistory.data[0]) {
-        setEmbeddedDiscount([embeddedHistory.data[0]]);
-      } else {
-        setEmbeddedDiscount([]);
-      }
-
       setDrawerOpen(true);
 
       const fetchNames = async () => {
@@ -214,6 +206,16 @@ const PromotionPage = () => {
         );
         setVouchers(vouchersResponse.data);
       }
+
+      if (promotionData.type === "embedded") {
+        const embeddedHistory =
+          await promotionService.getPromotionCampaignByIdEmbedded(id);
+          if (embeddedHistory) {
+            setEmbeddedDiscount([embeddedHistory]);
+          } else {
+            setEmbeddedDiscount([]);
+          }
+        }
 
       await fetchNames();
     } catch (err) {
@@ -562,7 +564,7 @@ const PromotionPage = () => {
                                         </div>
                                         <div className="max-w-1 w-1">:</div>
                                         <div>
-                                          {`${embedded.currency} ${(
+                                        {`${embedded.currency} ${(
                                             embedded.total_transaction_amount -
                                             embedded.total_discount_amount
                                           ).toLocaleString()}`}

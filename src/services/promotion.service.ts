@@ -71,7 +71,7 @@ export class PromotionService {
     return this.httpClientPromotion.get(`/v1/campaign/${id}?id=${id}`);
 }
 
-async getPromotionCampaignByIdEmbedded(id: string): Promise<PromotionResponse> {
+async getPromotionCampaignByIdEmbedded(id: string): Promise<any> {
   return this.httpClientPromotion.get(`/v1/campaign/embedded/history/${id}?id=${id}`);
 }
 
