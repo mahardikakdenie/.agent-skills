@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,7 +18,6 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { usePages } from "../hooks";
 import { hasPermission } from "@/context/auth.context";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { ContentState, EditorState, Modifier } from "draft-js";
 import {
@@ -39,6 +39,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { stateToHTML } from "draft-js-export-html";
+
+// Replace the Editor import with dynamic import
+const Editor = dynamic(
+  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+  {
+    ssr: false,
+    loading: () => <p>Loading editor...</p>,
+  }
+);
 
 const AddPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -203,6 +212,13 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     const htmlContent = stateToHTML(state.getCurrentContent());
     setContent(htmlContent);
   };
+
+  // Add loading state
+  const [isEditorLoaded, setIsEditorLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsEditorLoaded(true);
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -581,13 +597,15 @@ const AddPage = ({ params }: { params: { id: string } }) => {
             )}
 
             <div className="mt-4">
-              <Editor
-                editorState={editorState}
-                toolbarClassName="toolbarClassName"
-                wrapperClassName="wrapperClassName"
-                editorClassName="editorClassName"
-                onEditorStateChange={handleEditorChange}
-              />
+              {isEditorLoaded && (
+                <Editor
+                  editorState={editorState}
+                  toolbarClassName="toolbarClassName"
+                  wrapperClassName="wrapperClassName"
+                  editorClassName="editorClassName"
+                  onEditorStateChange={handleEditorChange}
+                />
+              )}
             </div>
           </div>
         </div>
