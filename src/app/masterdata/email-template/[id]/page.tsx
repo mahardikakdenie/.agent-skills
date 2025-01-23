@@ -55,6 +55,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [content, setContent] = useState("");
   const [subject, setSubject] = useState("");
+  const [category] = useState("");
+  const [insurance] = useState("");
+  const [product] = useState("");
+  const [plan] = useState("");
 
   const {
     categories = [],
@@ -68,7 +72,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     journey,
     fetchJourney,
     emailTag,
-    savePages,
+    updatePages,
     fetchEmailTag,
     fetchMailTemplateById,
     mailTemplate,
@@ -82,13 +86,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: undefined,
-      product: undefined,
-      plan: undefined,
+      insurance: "undefined",
+      product: "undefined",
+      plan: "undefined",
       journey: "",
       emailTag: "",
       subject: "",
       content: content,
+    },
+    values: {
+      category,
+      insurance,
+      product,
+      plan,
+      journey,
+      subject,
     },
   });
 
@@ -114,6 +126,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     fetchMailTemplateById(id);
     fetchJourney({});
     fetchInsurances({});
+    fetchProductSelect({});
+    fetchPlans({});
+    fetchEmailTag({});
   }, [id]);
 
   useEffect(() => {
@@ -130,19 +145,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   }, [router]);
 
   useEffect(() => {
-    // fetchJourney({});
-    // fetchEmailTag({});
-
-    // fetchProductSelect({
-    //   page: 1,
-    //   insuranceId: selectedInsuranceId,
-    // });
-
-    // fetchPlans({
-    //   page: 1,
-    //   insuranceId: selectedInsuranceId,
-    // });
-
     if (selectedInsuranceId) {
       fetchProductSelect({
         insuranceId: selectedInsuranceId,
@@ -157,18 +159,23 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       });
     }
   }, [selectedProductId]);
+
   useEffect(() => {
     if (mailTemplate && mailTemplate.length > 0) {
-      fetchEmailTag({
-        journey: mailTemplate[0]?.journey,
-      });
-
       setValue("category", mailTemplate[0].category);
       setValue("insurance", mailTemplate[0].insurance ?? null);
       setValue("product", mailTemplate[0].product ?? null);
       setValue("plan", mailTemplate[0].plan ?? null);
       setValue("journey", mailTemplate[0].journey);
       setValue("subject", mailTemplate[0].subject);
+
+      const selectedJourney = journey.find(
+        (jour) => jour.code === mailTemplate[0].journey
+      );
+      if (selectedJourney) {
+        setSelectedJourneyId(selectedJourney.code); // Store journey ID if needed
+      }
+
       const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
       const contentState = ContentState.createFromBlockArray(
         blocksFromHTML.contentBlocks,
@@ -184,30 +191,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setSelectedJourneyId(mailTemplate[0].journey);
       setEmailTitlePreview(mailTemplate[0].subject);
     }
-  }, [mailTemplate]);
-  const updateEmailTitle = (
-    categoryName: string,
-    journeyName: string,
-    planName: string
-  ) => {
-    const formattedCategoryName = categoryName
-      .split("-")
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  }, [mailTemplate, journey]);
 
-    let emailTitle = `${formattedCategoryName} - ${journeyName} - ${planName}`;
-
-    if (formattedCategoryName)
-      emailTitle = emailTitle.replace(/.*? -/, `${formattedCategoryName} -`);
-    if (journeyName)
-      emailTitle = emailTitle.replace(/ -.*? -/, ` - ${journeyName} -`);
-    if (planName) emailTitle = emailTitle.replace(/ -[^-]+$/, ` - ${planName}`);
-
-    setValue("subject", emailTitle);
-    setEmailTitlePreview(emailTitle);
-  };
-
-  const onSubmit = async (data: any, id: any) => {
+  const onSubmit = async (data: any) => {
     try {
       const requestData = {
         ...data,
@@ -215,8 +201,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       };
 
       delete requestData.emailTag;
-
-      const response = await savePages(requestData, id);
+      const response = await updatePages(requestData, id);
       if (response.id != null) {
         router.back();
       }
@@ -395,10 +380,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                     disabled={!selectedInsuranceId}
                     onValueChange={(value) => {
                       field.onChange(value);
+                      setSelectedProductId(value);
                       const selectedProduct = products.find(
                         (prod) => prod.id === value
                       );
-                      setSelectedProductId(value);
                       if (selectedProduct) {
                         handleEditorInsert(`${selectedProduct.name}\n`);
                       }
@@ -425,6 +410,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 </p>
               )}
             </div>
+
             <div>
               <label
                 htmlFor="plan"
@@ -441,9 +427,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedPlanId(value);
-                      const selectedPlans = plans.find(
-                        (cat) => cat.id === value
-                      );
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -451,9 +434,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {plans.map((prod: any) => (
-                          <SelectItem key={prod.id} value={prod.id}>
-                            {prod.name}
+                        {plans.map((plan: any) => (
+                          <SelectItem key={plan.id} value={plan.id}>
+                            {plan.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -481,13 +464,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 rules={{ required: "Journey is required" }}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    value={field.value.toString()}
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedJourneyId(value);
-                      const selectedJourney = journey.find(
-                        (prod) => prod.id === value
-                      );
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -495,9 +475,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {journey.map((prod: any) => (
-                          <SelectItem key={prod.code} value={prod.code}>
-                            {prod.name}
+                        {journey.map((jour: any) => (
+                          <SelectItem key={jour.code} value={jour.code}>
+                            {jour.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -505,12 +485,13 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
-              {errors.plan && (
+              {errors.journey && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.plan.message?.toString()}
+                  {errors.journey.message?.toString()}
                 </p>
               )}
             </div>
+
             <div>
               <label
                 htmlFor="emailTag"

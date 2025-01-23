@@ -216,9 +216,12 @@ export class MailTemplateService {
     }
   }
 
-  async updateProduct(data: any, id: string): Promise<any> {
+  async updateJourney(data: any, id: string): Promise<any> {
     try {
-      return await this.httpClient.put("v1/products/" + id, data);
+      return await this.httpClient.put(
+        "v1/email-templates/journey/" + id,
+        data
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
