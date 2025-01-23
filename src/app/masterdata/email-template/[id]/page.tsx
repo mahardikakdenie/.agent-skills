@@ -11,7 +11,7 @@ import {
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Check, ChevronLeft, Eye, X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { usePages } from "../hooks";
 import { hasPermission } from "@/context/auth.context";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { ContentState, EditorState, Modifier } from "draft-js";
+import { EditorState, Modifier, ContentState, convertFromHTML } from "draft-js";
 import {
   Select,
   SelectContent,
@@ -28,14 +28,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MailTemplateService } from "@/services/masterdata/mail-template.service";
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { stateToHTML } from "draft-js-export-html";
@@ -48,6 +46,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedInsuranceId, setSelectedInsuranceId] = useState("");
+  const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedPlanId, setSelectedPlanId] = useState("");
   const [selectedJourneyId, setSelectedJourneyId] = useState("");
   const [emailTitlePreview, setEmailTitlePreview] = useState("");
@@ -55,6 +54,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [content, setContent] = useState("");
+  const [subject, setSubject] = useState("");
 
   const {
     categories = [],
@@ -70,6 +70,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     emailTag,
     savePages,
     fetchEmailTag,
+    fetchMailTemplateById,
+    mailTemplate,
   } = usePages();
 
   const {
@@ -80,9 +82,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: "",
-      product: "",
-      plan: "",
+      insurance: undefined,
+      product: undefined,
+      plan: undefined,
       journey: "",
       emailTag: "",
       subject: "",
@@ -109,8 +111,14 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   };
 
   useEffect(() => {
+    fetchMailTemplateById(id);
+    fetchJourney({});
+    fetchInsurances({});
+  }, [id]);
+
+  useEffect(() => {
     const checkAccess = async () => {
-      const access = await hasPermission("Masterdata.Create");
+      const access = await hasPermission("Masterdata.Edit");
       setHasAccess(access);
       if (!access) {
         router.push("/forbidden");
@@ -122,21 +130,18 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   }, [router]);
 
   useEffect(() => {
-    fetchInsurances({
-      page: 1,
-      // categoryId: selectedCategoryId,
-    });
-    fetchJourney({});
-    fetchEmailTag({});
-    fetchPlans({
-      page: 1,
-      insuranceId: selectedInsuranceId,
-    });
+    // fetchJourney({});
+    // fetchEmailTag({});
 
-    fetchProductSelect({
-      page: 1,
-      insuranceId: selectedInsuranceId,
-    });
+    // fetchProductSelect({
+    //   page: 1,
+    //   insuranceId: selectedInsuranceId,
+    // });
+
+    // fetchPlans({
+    //   page: 1,
+    //   insuranceId: selectedInsuranceId,
+    // });
 
     if (selectedInsuranceId) {
       fetchProductSelect({
@@ -145,6 +150,41 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     }
   }, [selectedInsuranceId]);
 
+  useEffect(() => {
+    if (selectedProductId) {
+      fetchPlans({
+        product: selectedProductId,
+      });
+    }
+  }, [selectedProductId]);
+  useEffect(() => {
+    if (mailTemplate && mailTemplate.length > 0) {
+      fetchEmailTag({
+        journey: mailTemplate[0]?.journey,
+      });
+
+      setValue("category", mailTemplate[0].category);
+      setValue("insurance", mailTemplate[0].insurance ?? null);
+      setValue("product", mailTemplate[0].product ?? null);
+      setValue("plan", mailTemplate[0].plan ?? null);
+      setValue("journey", mailTemplate[0].journey);
+      setValue("subject", mailTemplate[0].subject);
+      const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
+      const contentState = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
+      setEditorState(EditorState.createWithContent(contentState));
+      setContent(mailTemplate[0].content);
+      setSubject(mailTemplate[0].subject);
+      setSelectedCategoryId(mailTemplate[0].category);
+      setSelectedInsuranceId(mailTemplate[0].insurance ?? null);
+      setSelectedProductId(mailTemplate[0].product ?? null);
+      setSelectedPlanId(mailTemplate[0].plan ?? null);
+      setSelectedJourneyId(mailTemplate[0].journey);
+      setEmailTitlePreview(mailTemplate[0].subject);
+    }
+  }, [mailTemplate]);
   const updateEmailTitle = (
     categoryName: string,
     journeyName: string,
@@ -173,6 +213,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         ...data,
         content,
       };
+
+      delete requestData.emailTag;
 
       const response = await savePages(requestData, id);
       if (response.id != null) {
@@ -267,19 +309,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedCategoryId(value);
-
-                      const selectedCategory = categories.find(
-                        (cat) => cat.id === value
-                      );
-                      if (selectedCategory) {
-                        updateEmailTitle(
-                          selectedCategory.name,
-                          journey.find((jour) => jour.id === selectedJourneyId)
-                            ?.name || "",
-                          plans.find((plan) => plan.id === selectedPlanId)
-                            ?.name || ""
-                        );
-                      }
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -315,12 +344,11 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 htmlFor="insurance"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Insurance<span className="text-red-500">*</span>
+                Insurance
               </label>
               <Controller
                 name="insurance"
                 control={control}
-                rules={{ required: "Insurance is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value}
@@ -356,12 +384,11 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 htmlFor="product"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Product<span className="text-red-500">*</span>
+                Product
               </label>
               <Controller
                 name="product"
                 control={control}
-                rules={{ required: "Product is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value}
@@ -371,6 +398,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       const selectedProduct = products.find(
                         (prod) => prod.id === value
                       );
+                      setSelectedProductId(value);
                       if (selectedProduct) {
                         handleEditorInsert(`${selectedProduct.name}\n`);
                       }
@@ -402,12 +430,11 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 htmlFor="plan"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Plan<span className="text-red-500">*</span>
+                Plan
               </label>
               <Controller
                 name="plan"
                 control={control}
-                rules={{ required: "Plans is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value}
@@ -417,16 +444,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       const selectedPlans = plans.find(
                         (cat) => cat.id === value
                       );
-                      if (selectedPlans) {
-                        updateEmailTitle(
-                          categories.find(
-                            (cat) => cat.id === selectedCategoryId
-                          )?.name || "",
-                          journey.find((jour) => jour.id === selectedJourneyId)
-                            ?.name || "",
-                          selectedPlans.name
-                        );
-                      }
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -471,16 +488,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       const selectedJourney = journey.find(
                         (prod) => prod.id === value
                       );
-                      if (selectedJourney) {
-                        updateEmailTitle(
-                          categories.find(
-                            (cat) => cat.id === selectedCategoryId
-                          )?.name || "",
-                          selectedJourney.name,
-                          plans.find((plan) => plan.id === selectedPlanId)
-                            ?.name || ""
-                        );
-                      }
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -489,7 +496,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                     <SelectContent>
                       <SelectGroup>
                         {journey.map((prod: any) => (
-                          <SelectItem key={prod.id} value={prod.id}>
+                          <SelectItem key={prod.code} value={prod.code}>
                             {prod.name}
                           </SelectItem>
                         ))}
@@ -524,7 +531,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                         (tag) => tag.id === value
                       );
                       if (selectedEmailTag) {
-                        handleEditorInsert(`${selectedEmailTag.tag}\n`);
+                        handleEditorInsert(`{{${selectedEmailTag.tag}}}\n`);
                       }
                     }}
                   >

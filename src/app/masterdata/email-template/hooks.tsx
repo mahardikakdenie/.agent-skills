@@ -79,8 +79,8 @@ export const usePages = () => {
     return response;
   };
   const fetchMailTemplateById = async (id: string) => {
-    const response = await mailTemplateService.getMailTemplateById(id);
-    return response;
+    const { data } = await mailTemplateService.getMailTemplateById(id);
+    setMailTemplate(data);
   };
   const fetchJourney = async (search: any) => {
     const { data } = await mailTemplateService.getJourney(search);
