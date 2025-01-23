@@ -80,9 +80,9 @@ const AddPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: "",
-      product: "",
-      plan: "",
+      insurance: undefined,
+      product: undefined,
+      plan: undefined,
       journey: "",
       emailTag: "",
       subject: "",
@@ -178,6 +178,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
         content,
       };
 
+      delete requestData.emailTag;
       const response = await savePages(requestData, id);
       if (response.id != null) {
         router.back();
@@ -275,15 +276,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                       const selectedCategory = categories.find(
                         (cat) => cat.id === value
                       );
-                      if (selectedCategory) {
-                        updateEmailTitle(
-                          selectedCategory.name,
-                          journey.find((jour) => jour.id === selectedJourneyId)
-                            ?.name || "",
-                          plans.find((plan) => plan.id === selectedPlanId)
-                            ?.name || ""
-                        );
-                      }
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -319,12 +311,11 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 htmlFor="insurance"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Insurance<span className="text-red-500">*</span>
+                Insurance
               </label>
               <Controller
                 name="insurance"
                 control={control}
-                rules={{ required: "Insurance is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value}
@@ -360,12 +351,11 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 htmlFor="product"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Product<span className="text-red-500">*</span>
+                Product
               </label>
               <Controller
                 name="product"
                 control={control}
-                rules={{ required: "Product is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value}
@@ -406,12 +396,11 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 htmlFor="plan"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Plan<span className="text-red-500">*</span>
+                Plan
               </label>
               <Controller
                 name="plan"
                 control={control}
-                rules={{ required: "Plans is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value}
@@ -421,16 +410,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                       const selectedPlans = plans.find(
                         (cat) => cat.id === value
                       );
-                      if (selectedPlans) {
-                        updateEmailTitle(
-                          categories.find(
-                            (cat) => cat.id === selectedCategoryId
-                          )?.name || "",
-                          journey.find((jour) => jour.id === selectedJourneyId)
-                            ?.name || "",
-                          selectedPlans.name
-                        );
-                      }
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -472,19 +451,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedJourneyId(value);
-                      const selectedJourney = journey.find(
-                        (prod) => prod.id === value
-                      );
-                      if (selectedJourney) {
-                        updateEmailTitle(
-                          categories.find(
-                            (cat) => cat.id === selectedCategoryId
-                          )?.name || "",
-                          selectedJourney.name,
-                          plans.find((plan) => plan.id === selectedPlanId)
-                            ?.name || ""
-                        );
-                      }
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -493,7 +459,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                     <SelectContent>
                       <SelectGroup>
                         {journey.map((jour: any) => (
-                          <SelectItem key={jour.id} value={jour.id}>
+                          <SelectItem key={jour.id} value={jour.code}>
                             {jour.name}
                           </SelectItem>
                         ))}
