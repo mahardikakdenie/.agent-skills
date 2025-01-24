@@ -42,8 +42,8 @@ export const usePages = () => {
     return response;
   };
 
-  const updateProduct = async (data: any, id: string) => {
-    const { data: response } = await mailTemplateService.updateProduct(
+  const updatePages = async (data: any, id: string) => {
+    const { data: response } = await mailTemplateService.updateJourney(
       data,
       id
     );
@@ -96,7 +96,7 @@ export const usePages = () => {
     root,
     product,
     savePages,
-    updateProduct,
+    updatePages,
     deleteMailTemplate,
     fetchProduct,
     mailTemplateService,
