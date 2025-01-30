@@ -282,7 +282,8 @@ const TransactionsPage = () => {
             {filteredTransactions.map((transaction, index) => {
               const rowNumber = (page - 1) * rowsPerPage + index + 1;
 
-              const currencies = transaction?.insurance?.insurance?.currencies;
+              const currencies =
+                transaction?.insurance?.insurance?.currencies || [];
               const currency = currencies.find(
                 (currency: any) =>
                   currency.currency_from === transaction?.insurance?.currency &&
