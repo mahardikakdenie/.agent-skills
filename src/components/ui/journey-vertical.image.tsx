@@ -29,6 +29,7 @@ const JourneyVertical = (
         y2="70"
         stroke={color ? color : defaultColor}
         strokeDasharray="2 2"
+        className="min-w-[10px]"
       />
       <circle cx="5" cy="35" r="5" fill={color ? color : defaultColor} />
     </svg>

@@ -282,15 +282,15 @@ const TransactionsPage = () => {
             {filteredTransactions.map((transaction, index) => {
               const rowNumber = (page - 1) * rowsPerPage + index + 1;
 
-              const currencies = transaction.insurance.insurance.currencies;
+              const currencies = transaction?.insurance?.insurance?.currencies;
               const currency = currencies.find(
                 (currency: any) =>
-                  currency.currency_from === transaction.insurance.currency &&
+                  currency.currency_from === transaction?.insurance?.currency &&
                   currency.currency_to === "IDR"
               );
 
               const convertedPremium =
-                (currency?.value ?? 1) * transaction.insurance.premium;
+                (currency?.value ?? 1) * transaction?.insurance?.premium;
 
               const premiumWithEmbeddedDiscount =
                 transaction.insurance.plan.premium_discount_type ===
@@ -335,19 +335,19 @@ const TransactionsPage = () => {
                           alt=""
                         />
                       </div>
-                      {transaction.insurance.insurance.id.name}
+                      {transaction.insurance.insurance.id.name || "-"}
                     </div>
                   </TableCell>
                   <TableCell>
                     {transaction.insurance.plan.name
                       .split("|")
                       .splice(0, 2)
-                      .join(" - ")}
+                      .join(" - ") || "-"}
                   </TableCell>
-                  <TableCell>{transaction.customer.name}</TableCell>
-                  <TableCell>{transaction.insurance.currency}</TableCell>
+                  <TableCell>{transaction.customer.name || "-"}</TableCell>
+                  <TableCell>{transaction.insurance.currency || "-"}</TableCell>
                   <TableCell className="whitespace-nowrap">
-                    {formatMoney(totalPremium, "IDR")}
+                    {formatMoney(totalPremium, "IDR") || "-"}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(transaction.status)}>
