@@ -86,9 +86,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: "undefined",
-      product: "undefined",
-      plan: "undefined",
+      insurance: undefined,
+      product: undefined,
+      plan: undefined,
       journey: "",
       emailTag: "",
       subject: "",
@@ -96,9 +96,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     },
     values: {
       category,
-      insurance,
-      product,
-      plan,
+      // insurance,
+      // product,
+      // plan,
       journey,
       subject,
     },
@@ -199,6 +199,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         ...data,
         content,
       };
+      console.log(requestData);
 
       delete requestData.emailTag;
       const response = await updatePages(requestData, id);
