@@ -1074,7 +1074,10 @@ const ClaimsPage = () => {
                         </SelectItem>
                         <SelectItem
                           value="Lack of Documents Operator"
-                          disabled={claim.status !== "Document Review Operator"}
+                          disabled={
+                            claim.status !== "Document Review Operator" &&
+                            claim.status !== "Reupload Document Review Operator"
+                          }
                         >
                           Lack of Documents Operator
                         </SelectItem>
@@ -1098,7 +1101,9 @@ const ClaimsPage = () => {
                         <SelectItem
                           value="Lack of Documents Insurance"
                           disabled={
-                            claim.status !== "Document Review Insurance"
+                            claim.status !== "Document Review Insurance" &&
+                            claim.status !==
+                              "Reupload Document Review Insurance"
                           }
                         >
                           Lack of Documents Insurance
