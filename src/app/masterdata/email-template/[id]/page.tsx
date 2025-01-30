@@ -86,15 +86,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-<<<<<<< Updated upstream
       insurance: "undefined",
       product: "undefined",
       plan: "undefined",
-=======
-      insurance: "",
-      product: "",
-      plan: "",
->>>>>>> Stashed changes
       journey: "",
       emailTag: "",
       subject: "",
