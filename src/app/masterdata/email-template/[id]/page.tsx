@@ -86,9 +86,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: "",
-      product: "",
-      plan: "",
+      insurance: "undefined",
+      product: "undefined",
+      plan: "undefined",
       journey: "",
       emailTag: "",
       subject: "",

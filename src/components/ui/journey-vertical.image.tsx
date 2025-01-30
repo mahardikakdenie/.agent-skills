@@ -12,6 +12,7 @@ const JourneyVertical = (
     <svg
       width={width ? width : defaultWidth}
       height={height ? height : defaultHeight}
+      className="min-w-[10px]"
       viewBox={
         viewBox
           ? viewBox
@@ -29,7 +30,6 @@ const JourneyVertical = (
         y2="70"
         stroke={color ? color : defaultColor}
         strokeDasharray="2 2"
-        className="min-w-[10px]"
       />
       <circle cx="5" cy="35" r="5" fill={color ? color : defaultColor} />
     </svg>

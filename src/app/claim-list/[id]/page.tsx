@@ -543,15 +543,11 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
-<<<<<<< Updated upstream
-                          {document?.label?.en || document?.label || "-"} {document?.insured_type && ' - ' + document?.insured_type.charAt(0).toUpperCase() + document?.insured_type.slice(1)}
-=======
-                          {document?.label.en || document?.label}{" "}
+                          {document?.label?.en || document?.label || "-"}{" "}
                           {document?.insured_type &&
                             " - " +
                               document?.insured_type.charAt(0).toUpperCase() +
                               document?.insured_type.slice(1)}
->>>>>>> Stashed changes
                         </div>
                       </TableCell>
                       <TableCell>
