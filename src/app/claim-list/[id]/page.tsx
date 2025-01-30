@@ -25,15 +25,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
 import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 import {
@@ -157,14 +148,6 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
       urlArr[urlArr.length - 1].toLowerCase() !== "pdf"
         ? `image/${urlArr[urlArr.length - 1].toLowerCase()}`
         : "application/pdf";
-    // fetch(url, {})
-    //   .then((res) => res.blob())
-    //   .then((blob) => {
-    //     const file = new Blob([blob], { type: mimeType });
-    //     let fileURL = URL.createObjectURL(file);
-    //     let element = document.getElementById(id);
-    //     element?.setAttribute("src", fileURL);
-    //   });
   };
 
   const viewDocument = (documentObject: any) => {
