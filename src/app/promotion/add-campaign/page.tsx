@@ -483,15 +483,19 @@ const CreatePromotionPage = () => {
       maximum_amount: formData.maximum_amount,
       products: promotion.embedded_discount_products.map((product) => ({
         product_id: product.product_id,
+        name: product.product_name
       })),
       insurances: promotion.embedded_discount_insurances.map((insurance) => ({
         insurance_id: insurance.insurance_id,
+        name: insurance.insurance_name
       })),
       plans: promotion.embedded_discount_plans.map((plan) => ({
         plan_id: plan.plan_id,
+        name: plan.name
       })),
       channels: promotion.embedded_discount_channels.map((channel) => ({
         channel_id: channel.channel_id,
+        name: channel.channel_name
       })),
       vouchers: vouchers.map((voucher) => ({
         code: voucher.code,
@@ -1290,7 +1294,7 @@ const CreatePromotionPage = () => {
             </div>
             <div className="">
               <label htmlFor="minimum_amount" className="font-normal">
-                Minimum Amount
+                Minimum Transaction Amount
               </label>
               <Controller
                 name="minimum_amount"
@@ -1311,7 +1315,7 @@ const CreatePromotionPage = () => {
             </div>
             <div className="">
               <label htmlFor="maximum_amount" className="font-normal">
-                Maximum Amount
+                Maximum Discount Amount
               </label>
               <Controller
                 name="maximum_amount"

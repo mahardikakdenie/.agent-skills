@@ -1,3 +1,4 @@
+import { hasInsurers } from "@/context/auth.context";
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 
@@ -8,6 +9,10 @@ interface Response {
   page: number;
   pageTotal: number;
   total: number;
+}
+
+interface Insurer {
+  insurance: string;
 }
 
 export class SanctionService {
@@ -48,22 +53,25 @@ export class SanctionService {
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientSanction.get(`/v1/blacklist/search/query?query=${query}&page=${page}&limit=${limit}`);
+    return this.httpClientSanction.get(
+      `/v1/blacklist/search/query?query=${query}&page=${page}&limit=${limit}`);
   }
 
   async getSourceSearchQuery(query: string, page: number, limit: number): Promise<Response> {
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientSanction.get(`/v1/sources/search/query?query=${query}&page=${page}&limit=${limit}`);
+    return this.httpClientSanction.get(
+      `/v1/sources/search/query?query=${query}&page=${page}&limit=${limit}`);
   }
 
   async getSanctionList(page: number, limit: number): Promise<Response> {
     if (page <= 0) {
       page = 1;
     }
-    return this.httpClientSanction.get(`/v1/blacklist?page=${page}&limit=${limit}`);
-
+    return this.httpClientSanction.get(
+      `/v1/blacklist?page=${page}&limit=${limit}`
+    )
   }
 
   async getSanctionById(id: string): Promise<Response> {

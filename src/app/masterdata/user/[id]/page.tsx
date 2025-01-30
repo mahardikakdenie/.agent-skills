@@ -18,6 +18,8 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Eye,
+  EyeOff,
   Plus,
   Search,
   Trash2,
@@ -99,6 +101,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   const [status, setStatus] = useState("");
   const [role, setRole] = useState("");
   const [channel, setChannel] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const isAllSelected = selectedGroup.length === dataGroup.length;
   const isAllSelectedRole = selectedRole.length === dataRole.length;
@@ -112,13 +115,19 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     removeAccountRoles,
     fetchChannels,
     fetchRole,
-    roles,
     channels,
   } = useUser();
 
+  const roles = [
+    { id: "Admin", name: "Admin" },
+    { id: "User", name: "User" },
+    { id: "Partner", name: "Partner" },
+    { id: "Insurer", name: "Insurer" },
+  ]
   const {
     handleSubmit,
     control,
+    watch,
     setValue,
     formState: { errors },
   } = useForm({
@@ -128,7 +137,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       name,
       email,
       phone_number,
-      password: "Yes",
+      password: "",
       status,
       role,
       channel,
@@ -642,26 +651,55 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 </p>
               )}
             </div>
-            <div className="flex gap-5 items-center pt-2 sm:pt-5 sm:mb-0 mb-3">
+            <div className="relative">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Password
+                {watch("role") === "admin" && (
+                  <span className="text-red-500">*</span>
+                )}
               </label>
               <Controller
                 name="password"
                 control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    id="password"
-                    checked={field.value === "Yes"}
-                    onCheckedChange={(checked) =>
-                      field.onChange(checked ? "Yes" : "No")
+                defaultValue=""
+                rules={{
+                  validate: (value) => {
+                    const selectedRole = watch("role");
+                    if (selectedRole === "admin" && !value) {
+                      return "Password is required for Admin role";
                     }
-                  />
+                    return true;
+                  },
+                }}
+                render={({ field }) => (
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      placeholder="Insert Password"
+                      {...field}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.password ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-3 flex items-center"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 )}
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
@@ -751,10 +789,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isGroupSelected(group.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChange(group.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>
@@ -989,10 +1023,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isUserSelected(role.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChangeRole(role.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>

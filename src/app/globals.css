@@ -259,6 +259,56 @@ th {
 .table-claims.not-hover tr.hover\:bg-muted\/50:hover {
   background-color: auto;
 }
+.rdw-editor-wrapper {
+  border: 1px solid #eae9e9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.public-DraftEditor-content {
+  min-height: 350px;
+  padding: 10px;
+}
+.public-DraftStyleDefault-block {
+  margin: 0 !important;
+}
+.dialog-email-template {
+  width: 800px;
+  max-width: 96%;
+  padding-top: 70px;
+  color: black;
+}
+.dialog-email-template .editor-preview {
+  color: black;
+  max-height: 70vh;
+  overflow: auto;
+}
+.public-DraftEditor-content {
+  max-height: 400px;
+  overflow: auto;
+  font-size: 14px;
+}
+.editor-preview ul {
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+.editor-preview ol {
+  display: block;
+  list-style-type: decimal;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+
+/* responsive */
 @media screen and (max-width: 1199px) {
   .sidebar {
     position: fixed;
@@ -280,5 +330,20 @@ th {
   }
   .sidebar button.ms-1 {
     margin-left: 0;
+  }
+}
+
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  .bg-white {
+    background: white !important;
+    box-shadow: none !important;
   }
 }
