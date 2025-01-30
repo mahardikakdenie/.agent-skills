@@ -68,7 +68,10 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
   const [tab, setTab] = useState("Summary");
   const [histories, setHistories] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
-  const imageUrl = claim?.policy_data[0]?.value || noImage.src;
+  const imageUrl =
+    claim?.participant_data?.data?.ktp ||
+    claim?.participant_data?.data?.passport ||
+    noImage.src;
 
   const personalInfo = [
     claim?.personal_info?.address,
@@ -274,6 +277,9 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                             )}`
                           : "-"}
                       </p>
+                      {h?.note && (
+                        <p className="text-xs text-red-500">{h.note}</p>
+                      )}
                     </div>
                   </div>
                 ))
@@ -537,7 +543,15 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
+<<<<<<< Updated upstream
                           {document?.label?.en || document?.label || "-"} {document?.insured_type && ' - ' + document?.insured_type.charAt(0).toUpperCase() + document?.insured_type.slice(1)}
+=======
+                          {document?.label.en || document?.label}{" "}
+                          {document?.insured_type &&
+                            " - " +
+                              document?.insured_type.charAt(0).toUpperCase() +
+                              document?.insured_type.slice(1)}
+>>>>>>> Stashed changes
                         </div>
                       </TableCell>
                       <TableCell>
