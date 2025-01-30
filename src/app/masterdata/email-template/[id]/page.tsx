@@ -199,6 +199,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         ...data,
         content,
       };
+      console.log(requestData);
 
       delete requestData.emailTag;
       const response = await updatePages(requestData, id);
