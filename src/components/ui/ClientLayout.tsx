@@ -16,7 +16,7 @@ export default function ClientLayout({
     <div className="flex">
       <LoadingProvider>
         {pathname !== "/" && <Sidebar />}
-        <div className="w-full">
+        <div className="w-full h-screen overflow-auto">
           <AuthProvider>{children}</AuthProvider>
         </div>
       </LoadingProvider>

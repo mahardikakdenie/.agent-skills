@@ -293,14 +293,15 @@ const TransactionsPage = () => {
               const convertedPremium =
                 (currency?.value ?? 1) * transaction?.insurance?.premium;
 
+              const discountType =
+                transaction?.insurance?.plan?.premium_discount_type || "";
+              const discountValue =
+                transaction?.insurance?.plan?.premium_discount_value || 0;
+
               const premiumWithEmbeddedDiscount =
-                transaction.insurance.plan.premium_discount_type ===
-                "percentage"
-                  ? convertedPremium -
-                    (transaction.insurance.plan.premium_discount_value / 100) *
-                      convertedPremium
-                  : convertedPremium -
-                    transaction.insurance.plan.premium_discount_value;
+                discountType === "percentage"
+                  ? convertedPremium - (discountValue / 100) * convertedPremium
+                  : convertedPremium - discountValue;
 
               let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
               if (transaction.voucher_info) {
@@ -332,21 +333,26 @@ const TransactionsPage = () => {
                     <div className="flex gap-2 items-center">
                       <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
                         <img
-                          src={transaction.insurance.insurance.id.logo_url}
+                          src={
+                            transaction?.insurance?.insurance?.id?.logo_url ||
+                            "-"
+                          }
                           alt=""
                         />
                       </div>
-                      {transaction.insurance.insurance.id.name || "-"}
+                      {transaction?.insurance?.insurance?.id?.name || "-"}
                     </div>
                   </TableCell>
                   <TableCell>
-                    {transaction.insurance.plan.name
+                    {transaction?.insurance?.plan?.name
                       .split("|")
                       .splice(0, 2)
                       .join(" - ") || "-"}
                   </TableCell>
-                  <TableCell>{transaction.customer.name || "-"}</TableCell>
-                  <TableCell>{transaction.insurance.currency || "-"}</TableCell>
+                  <TableCell>{transaction?.customer?.name || "-"}</TableCell>
+                  <TableCell>
+                    {transaction?.insurance?.currency || "-"}
+                  </TableCell>
                   <TableCell className="whitespace-nowrap">
                     {formatMoney(Number(totalPremium) || 0, "IDR") || "-"}
                   </TableCell>
@@ -379,7 +385,8 @@ const TransactionsPage = () => {
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
                                   <div>
-                                    {transaction.insurance.insurance.id.name}
+                                    {transaction?.insurance?.insurance?.id
+                                      ?.name || "-"}
                                   </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
@@ -387,14 +394,18 @@ const TransactionsPage = () => {
                                     Plan Name
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
-                                  <div>{transaction.insurance.plan.name}</div>
+                                  <div>
+                                    {transaction?.insurance?.plan?.name || "-"}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
                                   <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
                                     Customer Name
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
-                                  <div>{transaction.customer.name}</div>
+                                  <div>
+                                    {transaction?.customer?.name || "-"}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
                                   <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
@@ -420,7 +431,7 @@ const TransactionsPage = () => {
                                         transaction.status
                                       )}
                                     >
-                                      {transaction.status}
+                                      {transaction?.status}
                                     </span>
                                   </div>
                                 </div>
