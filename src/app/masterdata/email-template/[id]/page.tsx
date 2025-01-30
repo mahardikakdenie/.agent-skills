@@ -96,9 +96,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     },
     values: {
       category,
-      // insurance,
-      // product,
-      // plan,
+      insurance,
+      product,
+      plan,
       journey,
       subject,
     },
