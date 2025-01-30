@@ -348,7 +348,7 @@ const TransactionsPage = () => {
                   <TableCell>{transaction.customer.name || "-"}</TableCell>
                   <TableCell>{transaction.insurance.currency || "-"}</TableCell>
                   <TableCell className="whitespace-nowrap">
-                    {formatMoney(totalPremium, "IDR") || "-"}
+                    {formatMoney(Number(totalPremium) || 0, "IDR") || "-"}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(transaction.status)}>
@@ -401,7 +401,13 @@ const TransactionsPage = () => {
                                     Amount
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
-                                  <div>{formatMoney(totalPremium, "IDR")}</div>
+                                  <div>
+                                    {formatMoney(
+                                      Number(totalPremium) || 0,
+                                      "IDR"
+                                    ) || "-"}
+                                    {/* {formatMoney(totalPremium, "IDR")} */}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
                                   <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
