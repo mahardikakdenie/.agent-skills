@@ -918,7 +918,9 @@ const ClaimsPage = () => {
             }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "All" && "text-primary"}`}
+              className={`text-sm mr-3 min-h-[90px] ${
+                tab === "All" && "text-primary"
+              }`}
             >
               All Claim
             </button>
@@ -939,7 +941,7 @@ const ClaimsPage = () => {
               }`}
             >
               <button
-                className={`text-sm mr-3 h-16 ${
+                className={`text-sm mr-3 min-h-[90px] ${
                   tab === status.status && "text-primary"
                 }`}
               >
