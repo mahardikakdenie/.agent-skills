@@ -12,6 +12,7 @@ const JourneyVertical = (
     <svg
       width={width ? width : defaultWidth}
       height={height ? height : defaultHeight}
+      className="min-w-[10px]"
       viewBox={
         viewBox
           ? viewBox

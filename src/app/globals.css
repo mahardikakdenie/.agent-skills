@@ -332,3 +332,18 @@ th {
     margin-left: 0;
   }
 }
+
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  .bg-white {
+    background: white !important;
+    box-shadow: none !important;
+  }
+}
