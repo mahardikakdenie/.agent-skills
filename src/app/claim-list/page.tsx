@@ -782,6 +782,7 @@ const ClaimsPage = () => {
                                       <TableCell>
                                         {document?.label?.en ||
                                           document?.label_multilanguage?.en ||
+                                          document?.label ||
                                           "-"}
                                       </TableCell>
                                       <TableCell className="">
