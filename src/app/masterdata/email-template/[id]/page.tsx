@@ -173,7 +173,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         (jour) => jour.code === mailTemplate[0].journey
       );
       if (selectedJourney) {
-        setSelectedJourneyId(selectedJourney.code); // Store journey ID if needed
+        setSelectedJourneyId(selectedJourney.code);
       }
 
       const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
@@ -195,13 +195,22 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
   const onSubmit = async (data: any) => {
     try {
+      const cleanedData = Object.fromEntries(
+        Object.entries(data).filter(
+          ([_, value]) => value !== "" && value !== undefined && value !== null
+        )
+      );
+
       const requestData = {
-        ...data,
+        ...cleanedData,
         content,
       };
+
       console.log(requestData);
 
-      delete requestData.emailTag;
+      // delete requestData.emailTag;
+      delete (requestData as any).emailTag;
+
       const response = await updatePages(requestData, id);
       if (response.id != null) {
         router.back();
