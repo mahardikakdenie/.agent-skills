@@ -32,7 +32,7 @@ export default function WithSidebar(Component: React.ComponentType<any>) {
         {isLoading && <Loading />}
         <div className="w-full relative flex flex-col">
           <Header />
-          <div className="flex frame-body min-w-full">
+          <div className="flex min-w-full">
             <Component {...props} />
           </div>
         </div>

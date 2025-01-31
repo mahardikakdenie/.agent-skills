@@ -25,15 +25,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
 import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 import {
@@ -68,7 +59,10 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
   const [tab, setTab] = useState("Summary");
   const [histories, setHistories] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
-  const imageUrl = claim?.policy_data[0]?.value || noImage.src;
+  const imageUrl =
+    claim?.participant_data?.data?.ktp ||
+    claim?.participant_data?.data?.passport ||
+    noImage.src;
 
   const personalInfo = [
     claim?.personal_info?.address,
@@ -154,14 +148,6 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
       urlArr[urlArr.length - 1].toLowerCase() !== "pdf"
         ? `image/${urlArr[urlArr.length - 1].toLowerCase()}`
         : "application/pdf";
-    // fetch(url, {})
-    //   .then((res) => res.blob())
-    //   .then((blob) => {
-    //     const file = new Blob([blob], { type: mimeType });
-    //     let fileURL = URL.createObjectURL(file);
-    //     let element = document.getElementById(id);
-    //     element?.setAttribute("src", fileURL);
-    //   });
   };
 
   const viewDocument = (documentObject: any) => {
@@ -272,8 +258,11 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                                 hour12: true,
                               }
                             )}`
-                          : "No Date"}
+                          : "-"}
                       </p>
+                      {h?.note && (
+                        <p className="text-xs text-red-500">{h.note}</p>
+                      )}
                     </div>
                   </div>
                 ))
@@ -303,7 +292,9 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                     Plan Name
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.package?.plan?.name.split("|").join(" - ")}</div>
+                  <div>
+                    {claim?.package?.plan?.name.split("|").join(" - ") || "-"}
+                  </div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -535,7 +526,11 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
-                          {document?.label.en || document?.label} {document?.insured_type && ' - ' + document?.insured_type.charAt(0).toUpperCase() + document?.insured_type.slice(1)}
+                          {document?.label?.en || document?.label || "-"}{" "}
+                          {document?.insured_type &&
+                            " - " +
+                              document?.insured_type.charAt(0).toUpperCase() +
+                              document?.insured_type.slice(1)}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -552,7 +547,9 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                             <DialogContent>
                               <DialogHeader>
                                 <DialogTitle className=" text-sm sm:text-base flex items-center">
-                                  {document?.label.en || document?.label}
+                                  {document?.label?.en ||
+                                    document?.label ||
+                                    "-"}
                                   <DialogClose className="ml-auto">
                                     <Button
                                       type="button"
@@ -578,7 +575,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                                         <img
                                           className="mx-auto w-full"
                                           src={docToOpen.value}
-                                          alt={docToOpen.label.en}
+                                          alt={docToOpen.label?.en || "-"}
                                         />
                                       ) : (
                                         <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">

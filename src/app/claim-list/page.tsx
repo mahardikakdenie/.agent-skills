@@ -918,7 +918,9 @@ const ClaimsPage = () => {
             }`}
           >
             <button
-              className={`text-sm mr-3 h-16 ${tab === "All" && "text-primary"}`}
+              className={`text-sm mr-3 min-h-[90px] ${
+                tab === "All" && "text-primary"
+              }`}
             >
               All Claim
             </button>
@@ -939,7 +941,7 @@ const ClaimsPage = () => {
               }`}
             >
               <button
-                className={`text-sm mr-3 h-16 ${
+                className={`text-sm mr-3 min-h-[90px] ${
                   tab === status.status && "text-primary"
                 }`}
               >
@@ -1065,8 +1067,19 @@ const ClaimsPage = () => {
                           Document Review Operator
                         </SelectItem>
                         <SelectItem
+                          value="Reupload Document Review Operator"
+                          disabled={
+                            claim.status !== "Lack of Documents Operator"
+                          }
+                        >
+                          Reupload Document Review Operator
+                        </SelectItem>
+                        <SelectItem
                           value="Lack of Documents Operator"
-                          disabled={claim.status !== "Document Review Operator"}
+                          disabled={
+                            claim.status !== "Document Review Operator" &&
+                            claim.status !== "Reupload Document Review Operator"
+                          }
                         >
                           Lack of Documents Operator
                         </SelectItem>
@@ -1080,9 +1093,19 @@ const ClaimsPage = () => {
                           Document Review Insurance
                         </SelectItem>
                         <SelectItem
+                          value="Reupload Document Review Insurance"
+                          disabled={
+                            claim.status !== "Lack of Documents Insurance"
+                          }
+                        >
+                          Reupload Document Review Insurance
+                        </SelectItem>
+                        <SelectItem
                           value="Lack of Documents Insurance"
                           disabled={
-                            claim.status !== "Document Review Insurance"
+                            claim.status !== "Document Review Insurance" &&
+                            claim.status !==
+                              "Reupload Document Review Insurance"
                           }
                         >
                           Lack of Documents Insurance
