@@ -123,6 +123,39 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   };
 
   useEffect(() => {
+    if (mailTemplate && mailTemplate.length > 0) {
+      setValue("category", mailTemplate[0].category);
+      setValue("insurance", mailTemplate[0].insurance ?? null);
+      setValue("product", mailTemplate[0].product ?? null);
+      setValue("plan", mailTemplate[0].plan ?? null);
+      setValue("journey", mailTemplate[0].journey);
+      setValue("subject", mailTemplate[0].subject);
+
+      const selectedJourney = journey.find(
+        (jour) => jour.code === mailTemplate[0].journey
+      );
+      if (selectedJourney) {
+        setSelectedJourneyId(selectedJourney.code);
+      }
+
+      const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
+      const contentState = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
+      setEditorState(EditorState.createWithContent(contentState));
+      setContent(mailTemplate[0].content);
+      setSubject(mailTemplate[0].subject);
+      setSelectedCategoryId(mailTemplate[0].category);
+      setSelectedInsuranceId(mailTemplate[0].insurance ?? null);
+      setSelectedProductId(mailTemplate[0].product ?? null);
+      setSelectedPlanId(mailTemplate[0].plan ?? null);
+      setSelectedJourneyId(mailTemplate[0].journey);
+      setEmailTitlePreview(mailTemplate[0].subject);
+    }
+  }, [mailTemplate, journey, selectedCategoryId]);
+
+  useEffect(() => {
     fetchMailTemplateById(id);
     fetchJourney({});
     fetchInsurances({});
@@ -159,39 +192,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       });
     }
   }, [selectedProductId]);
-
-  useEffect(() => {
-    if (mailTemplate && mailTemplate.length > 0) {
-      setValue("category", mailTemplate[0].category);
-      setValue("insurance", mailTemplate[0].insurance ?? null);
-      setValue("product", mailTemplate[0].product ?? null);
-      setValue("plan", mailTemplate[0].plan ?? null);
-      setValue("journey", mailTemplate[0].journey);
-      setValue("subject", mailTemplate[0].subject);
-
-      const selectedJourney = journey.find(
-        (jour) => jour.code === mailTemplate[0].journey
-      );
-      if (selectedJourney) {
-        setSelectedJourneyId(selectedJourney.code);
-      }
-
-      const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
-      const contentState = ContentState.createFromBlockArray(
-        blocksFromHTML.contentBlocks,
-        blocksFromHTML.entityMap
-      );
-      setEditorState(EditorState.createWithContent(contentState));
-      setContent(mailTemplate[0].content);
-      setSubject(mailTemplate[0].subject);
-      setSelectedCategoryId(mailTemplate[0].category);
-      setSelectedInsuranceId(mailTemplate[0].insurance ?? null);
-      setSelectedProductId(mailTemplate[0].product ?? null);
-      setSelectedPlanId(mailTemplate[0].plan ?? null);
-      setSelectedJourneyId(mailTemplate[0].journey);
-      setEmailTitlePreview(mailTemplate[0].subject);
-    }
-  }, [mailTemplate, journey]);
 
   const onSubmit = async (data: any) => {
     try {
