@@ -236,4 +236,23 @@ export class ClaimService {
   async getClaimsStatus(): Promise<any> {
     return this.httpClient.get(`/v1/claims/configurations`);
   }
+
+  async getClaimReport(
+    page: number,
+    rowsPerPage: number,
+    output: string,
+    date_from?: string,
+    date_to?: string,
+  ): Promise<any> {
+    const params = {
+      page,
+      limit: rowsPerPage,
+      output,
+      ...(date_from && { date_from }),
+      ...(date_to && { date_to })
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get<any>(`/v1/claims/export?${queryString}`);
+  }
 }
