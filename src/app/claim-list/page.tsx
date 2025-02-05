@@ -387,6 +387,7 @@ const ClaimsPage = () => {
       return;
     }
     if (
+      (notes === "" && pendingStatus === "Approved") ||
       (notes === "" && pendingStatus === "Rejected") ||
       (notes === "" && pendingStatus === "Lack of Documents Operator") ||
       (notes === "" && pendingStatus === "Lack of Documents Insurance")
@@ -625,6 +626,17 @@ const ClaimsPage = () => {
                     </div>
                     <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
                   </div>
+                  <textarea
+                    name=""
+                    id=""
+                    rows={4}
+                    value={notes}
+                    onChange={(e) => {
+                      setNotes(e.target.value);
+                    }}
+                    className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                    placeholder="Insert Reason"
+                  ></textarea>
                 </>
               )}
 
