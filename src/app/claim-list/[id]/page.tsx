@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, X } from "react-feather";
 import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
 import noImage from "/public/images/no-image.png";
+import moment from "moment";
 import {
   Table,
   TableBody,
@@ -36,6 +37,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import ImageOrDefault from "@/components/ui/image-or-default";
+
+interface FieldType {
+  name: string;
+  type: string;
+  label?: string;
+  criteria?: string;
+  required?: boolean;
+  definition?: string;
+  insured_type?: string;
+  document_type?: string;
+  label_multilanguage?: {
+    en?: string;
+    id?: string;
+  };
+  pending_reason_message?: {
+    en?: string;
+    id?: string;
+  };
+}
 
 const DetailClaim = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -156,6 +176,63 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
     setDocToOpen(documentObject);
     setIsViewDocument(true);
   };
+
+  const renderDocumentsDetails = (documentObject: any) => {
+    const documentType = documentObject.type.toLowerCase()
+    if (documentType === 'file') {
+      return (
+        <div>
+          {documentObject?.value?.split(".").at(-1) ===
+          "pdf" ? (
+            <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400 p-5">
+              The document cannot be previewed, please
+              download if you want to see it
+            </div>
+          ) : (
+            <div className="max-h-[70vh] overflow-auto text-center">
+              {documentObject?.value ? (
+                <img
+                  className="mx-auto w-full"
+                  src={documentObject.value}
+                  alt={documentObject.label?.en || "-"}
+                />
+              ) : (
+                <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">
+                  No image available
+                </div>
+              )}
+            </div>
+          )}
+          <div className="w-full flex items-center justify-center mt-3">
+            <Button
+              disabled={!documentObject?.value}
+              onClick={() =>
+                downloadDocument(documentObject.value)
+              }
+            >
+              Download
+            </Button>
+          </div>
+        </div>
+      )
+    }
+
+    if (documentType === 'number') {
+      return (
+        <p>{formatMoney(!!documentObject.value ? documentObject.value : 0)}</p>
+      )
+    }
+
+    if (documentType === 'datetime') {
+      return (
+        <p>{!!documentObject.value ? moment(documentObject.value).format("LLLL") : "-"}</p>
+      )
+    }
+
+    return (
+      <p>{!!documentObject.value ? documentObject.value : '-'}</p>
+    )
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -546,7 +623,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                           {isViewDocument && (
                             <DialogContent>
                               <DialogHeader>
-                                <DialogTitle className=" text-sm sm:text-base flex items-center">
+                                <DialogTitle className="text-sm sm:text-base flex items-center">
                                   {document?.label?.en ||
                                     document?.label ||
                                     "-"}
@@ -561,48 +638,16 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                                 </DialogTitle>
                               </DialogHeader>
 
-                              {docToOpen.type.toLowerCase() === "file" ? (
-                                <div>
-                                  {docToOpen?.value?.split(".").at(-1) ===
-                                  "pdf" ? (
-                                    <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400 p-5">
-                                      The document cannot be previewed, please
-                                      download if you want to see it
+                              {docToOpen.type.toLowerCase() === "fields"
+                                ? docToOpen.fields.map((field: FieldType) => (
+                                  <div>
+                                    <div className="text-sm sm:text-base font-semibold" key={field.name}>
+                                      {field?.label_multilanguage?.en || field?.label || "-"}{" "}
                                     </div>
-                                  ) : (
-                                    <div className="max-h-[70vh] overflow-auto text-center">
-                                      {docToOpen?.value ? (
-                                        <img
-                                          className="mx-auto w-full"
-                                          src={docToOpen.value}
-                                          alt={docToOpen.label?.en || "-"}
-                                        />
-                                      ) : (
-                                        <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">
-                                          No image available
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                  <div className="w-full flex items-center justify-center mt-3">
-                                    <Button
-                                      disabled={!docToOpen?.value}
-                                      onClick={() =>
-                                        downloadDocument(docToOpen.value)
-                                      }
-                                    >
-                                      Download
-                                    </Button>
+                                    {renderDocumentsDetails(field)}
                                   </div>
-                                </div>
-                              ) : docToOpen.type.toLowerCase() === "number" ? (
-                                <p>{formatMoney(docToOpen.value)}</p>
-                              ) : docToOpen.type.toLowerCase() ===
-                                "datetime" ? (
-                                <p>{docToOpen.value}</p>
-                              ) : (
-                                <p>{docToOpen.value || "-"}</p>
-                              )}
+                                  ))
+                                : renderDocumentsDetails(docToOpen)}
                             </DialogContent>
                           )}
                         </Dialog>
