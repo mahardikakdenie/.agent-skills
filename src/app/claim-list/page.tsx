@@ -116,6 +116,7 @@ const ClaimsPage = () => {
   const [channel, setChannel] = useState<ChannelsResponse[]>([]);
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
+  const [openAllStatus, setOpenAllStatus] = useState<boolean>(false);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -123,11 +124,14 @@ const ClaimsPage = () => {
       const editBtn = await hasPermission("Claim.Update");
       const deleteBtn = await hasPermission("Claim.Delete");
       const createBtn = await hasPermission("Claim.Create");
+      const openAllStatus = await hasPermission("Claim.Open All Status");
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
+      setOpenAllStatus(openAllStatus);
+
       if (!access) {
         router.push("/forbidden");
       }
@@ -1048,13 +1052,13 @@ const ClaimsPage = () => {
                       <SelectContent className="max-h-48 overflow-auto">
                         <SelectItem
                           value="Submitted"
-                          disabled={claim.status !== "Draft"}
+                          disabled={claim.status !== "Draft" && !openAllStatus}
                         >
                           Submitted
                         </SelectItem>
                         <SelectItem
                           value="Acknowledged"
-                          disabled={claim.status !== "Submitted"}
+                          disabled={claim.status !== "Submitted" && !openAllStatus}
                         >
                           Acknowledged
                         </SelectItem>
@@ -1062,7 +1066,8 @@ const ClaimsPage = () => {
                           value="Document Review Operator"
                           disabled={
                             claim.status !== "Acknowledged" &&
-                            claim.status !== "Lack of Documents Operator"
+                            claim.status !== "Lack of Documents Operator" &&
+                            !openAllStatus
                           }
                         >
                           Document Review Operator
@@ -1070,7 +1075,8 @@ const ClaimsPage = () => {
                         <SelectItem
                           value="Reupload Document Review Operator"
                           disabled={
-                            claim.status !== "Lack of Documents Operator"
+                            claim.status !== "Lack of Documents Operator" &&
+                            !openAllStatus
                           }
                         >
                           Reupload Document Review Operator
@@ -1079,7 +1085,8 @@ const ClaimsPage = () => {
                           value="Lack of Documents Operator"
                           disabled={
                             claim.status !== "Document Review Operator" &&
-                            claim.status !== "Reupload Document Review Operator"
+                            claim.status !== "Reupload Document Review Operator" &&
+                            !openAllStatus
                           }
                         >
                           Lack of Documents Operator
@@ -1088,7 +1095,8 @@ const ClaimsPage = () => {
                           value="Document Review Insurance"
                           disabled={
                             claim.status !== "Document Review Operator" &&
-                            claim.status !== "Lack of Documents Insurance"
+                            claim.status !== "Lack of Documents Insurance" &&
+                            !openAllStatus
                           }
                         >
                           Document Review Insurance
@@ -1096,7 +1104,8 @@ const ClaimsPage = () => {
                         <SelectItem
                           value="Reupload Document Review Insurance"
                           disabled={
-                            claim.status !== "Lack of Documents Insurance"
+                            claim.status !== "Lack of Documents Insurance" &&
+                            !openAllStatus
                           }
                         >
                           Reupload Document Review Insurance
@@ -1106,7 +1115,8 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Document Review Insurance" &&
                             claim.status !==
-                              "Reupload Document Review Insurance"
+                              "Reupload Document Review Insurance" &&
+                              !openAllStatus
                           }
                         >
                           Lack of Documents Insurance
@@ -1115,26 +1125,27 @@ const ClaimsPage = () => {
                           value="Claim Assessment"
                           disabled={
                             claim.status !== "Document Review" &&
-                            claim.status !== "Document Review Insurance"
+                            claim.status !== "Document Review Insurance" &&
+                            !openAllStatus
                           }
                         >
                           Claim Assessment
                         </SelectItem>
                         <SelectItem
                           value="Approved"
-                          disabled={claim.status !== "Claim Assessment"}
+                          disabled={claim.status !== "Claim Assessment" && !openAllStatus}
                         >
                           Approved
                         </SelectItem>
                         <SelectItem
                           value="Rejected"
-                          disabled={claim.status !== "Claim Assessment"}
+                          disabled={claim.status !== "Claim Assessment" && !openAllStatus}
                         >
                           Rejected
                         </SelectItem>
                         <SelectItem
                           value="Paid"
-                          disabled={claim.status !== "Approved"}
+                          disabled={claim.status !== "Approved" && !openAllStatus}
                         >
                           Paid
                         </SelectItem>
@@ -1142,7 +1153,8 @@ const ClaimsPage = () => {
                           value="Closed"
                           disabled={
                             claim.status !== "Paid" &&
-                            claim.status !== "Rejected"
+                            claim.status !== "Rejected" &&
+                            !openAllStatus
                           }
                         >
                           Closed
