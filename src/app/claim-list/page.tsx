@@ -24,6 +24,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
   X,
 } from "react-feather";
 import { Button } from "@/components/ui/button";
@@ -572,6 +573,12 @@ const ClaimsPage = () => {
           </Select>
         </div>
         <Button
+          onClick={() => router.push(`${path}/import`)}
+          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1" /> Import
+        </Button>
+        <Button
           onClick={() => router.push(`${path}/export`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
@@ -1070,7 +1077,9 @@ const ClaimsPage = () => {
                         </SelectItem>
                         <SelectItem
                           value="Acknowledged"
-                          disabled={claim.status !== "Submitted" && !openAllStatus}
+                          disabled={
+                            claim.status !== "Submitted" && !openAllStatus
+                          }
                         >
                           Acknowledged
                         </SelectItem>
@@ -1097,7 +1106,8 @@ const ClaimsPage = () => {
                           value="Lack of Documents Operator"
                           disabled={
                             claim.status !== "Document Review Operator" &&
-                            claim.status !== "Reupload Document Review Operator" &&
+                            claim.status !==
+                              "Reupload Document Review Operator" &&
                             !openAllStatus
                           }
                         >
@@ -1128,7 +1138,7 @@ const ClaimsPage = () => {
                             claim.status !== "Document Review Insurance" &&
                             claim.status !==
                               "Reupload Document Review Insurance" &&
-                              !openAllStatus
+                            !openAllStatus
                           }
                         >
                           Lack of Documents Insurance
@@ -1145,19 +1155,27 @@ const ClaimsPage = () => {
                         </SelectItem>
                         <SelectItem
                           value="Approved"
-                          disabled={claim.status !== "Claim Assessment" && !openAllStatus}
+                          disabled={
+                            claim.status !== "Claim Assessment" &&
+                            !openAllStatus
+                          }
                         >
                           Approved
                         </SelectItem>
                         <SelectItem
                           value="Rejected"
-                          disabled={claim.status !== "Claim Assessment" && !openAllStatus}
+                          disabled={
+                            claim.status !== "Claim Assessment" &&
+                            !openAllStatus
+                          }
                         >
                           Rejected
                         </SelectItem>
                         <SelectItem
                           value="Paid"
-                          disabled={claim.status !== "Approved" && !openAllStatus}
+                          disabled={
+                            claim.status !== "Approved" && !openAllStatus
+                          }
                         >
                           Paid
                         </SelectItem>

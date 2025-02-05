@@ -255,4 +255,19 @@ export class ClaimService {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get<any>(`/v1/claims/export?${queryString}`);
   }
+
+  async import(data: {
+    data: string;
+    input: string;
+    channel: string;
+    category: string;
+  }) {
+    const { data: base64String, input, channel, category } = data;
+    return this.httpClient.post(`/v1/claims/import`, {
+      data: base64String,
+      input: "File",
+      channel,
+      category,
+    });
+  }
 }
