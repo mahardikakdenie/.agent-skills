@@ -639,8 +639,8 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                               </DialogHeader>
 
                               {docToOpen.type.toLowerCase() === "fields"
-                                ? docToOpen.fields.map((field: FieldType) => (
-                                  <div>
+                                ? docToOpen.fields.map((field: FieldType, index: number) => (
+                                  <div key={index}>
                                     <div className="text-sm sm:text-base font-semibold" key={field.name}>
                                       {field?.label_multilanguage?.en || field?.label || "-"}{" "}
                                     </div>
