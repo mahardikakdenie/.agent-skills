@@ -125,7 +125,7 @@ const ClaimsPage = () => {
       const editBtn = await hasPermission("Claim.Update");
       const deleteBtn = await hasPermission("Claim.Delete");
       const createBtn = await hasPermission("Claim.Create");
-      const openAllStatus = await hasPermission("Claim.Open All Status");
+      const openAllStatus = await hasPermission("Claim.AllowChangeAllStatus");
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
