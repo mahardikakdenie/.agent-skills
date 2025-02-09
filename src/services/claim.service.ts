@@ -206,6 +206,24 @@ export class ClaimService {
     return this.httpClient.get(`/v1/claim-histories?claim=${id}`);
   }
 
+  async getClaimsHistoriesList(
+    page: number,
+    rowsPerPage: number,
+    searchData?: string,
+  ): Promise<ClaimResponse> {
+    const params: any = {
+      page: page,
+      limit: rowsPerPage,
+    };
+
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/v1/claims-histories?${queryString}`);
+  }
+
   async updateClaimStatus(
     id: string,
     data: any,
