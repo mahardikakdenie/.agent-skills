@@ -12,8 +12,6 @@ import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 
 import {
   Search,
-  ChevronLeft,
-  ChevronRight,
 } from "react-feather";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
