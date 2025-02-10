@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import noData from "/public/images/no-data.webp";
+import emptyStateSearchPrompt from "/public/images/empty-state-search-prompt.svg";
 
 import {
   Select,
@@ -92,7 +92,7 @@ const ClaimHistoryPage = () => {
   // const [totalItems, setTotalItems] = useState(0);
   const [totalItems, setTotalItems] = useState(125);
   const [totalData, setTotalData] = useState(0);
-  const [claimHistoryData, setClaimHistoryData] = useState<ClaimHistoryResponse>({
+  const [claimHistoryData, setClaimHistoryData] = useState<ClaimHistoryResponse | null>({
     data: [
       {
         id: "50ecd7c4-9930-45c8-86a8-7f89eb8438fc",
@@ -252,9 +252,22 @@ const ClaimHistoryPage = () => {
     );
   }
 
-  const renderEmptyTable = () => {
+  const renderSearchPromptImage = () => {
     return (
-      <div>The table is empty</div>
+      <Table>
+        <TableBody>
+          <TableRow className="hover:!bg-white">
+            <TableCell colSpan={10}>
+              <div className="flex flex-col gap-4 items-center justify-center py-14">
+                <Image alt="no data" src={emptyStateSearchPrompt} width={200} />
+                <div className="text-[#939597] text-base">
+                  Masukkan KTP / ID / NIK Number Number untuk melihat histori claim
+                </div>
+              </div>
+            </TableCell>{" "}
+          </TableRow>
+        </TableBody>
+      </Table>
     )
   }
 
@@ -303,130 +316,125 @@ const ClaimHistoryPage = () => {
       </div>
 
       <div className="w-full bg-white rounded-xl p-4">
-        <div className="bg-white flex flex-wrap flex-start gap-16 shadow p-4">
-          <div className="flex">
-            <div className="mr-3 text-base">Claim Limit</div>
-            <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.claim_limit))}</div>
-          </div>
-          <div className="flex">
-            <div className="mr-3 text-base">Total Paid</div>
-            <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.total_paid))}</div>
-          </div>
-          <div className="flex">
-            <div className="mr-3 text-base">Remaining Claim Limit</div>
-            <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.remaining_claim_limit))}</div>
-          </div>
-        </div>
+        {
+          claimHistoryData?.data && claimHistoryData?.data.length > 0 ? (
+            <>
+              <div className="bg-white flex flex-wrap flex-start gap-16 shadow p-4">
+                <div className="flex">
+                  <div className="mr-3 text-base">Claim Limit</div>
+                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.claim_limit))}</div>
+                </div>
+                <div className="flex">
+                  <div className="mr-3 text-base">Total Paid</div>
+                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.total_paid))}</div>
+                </div>
+                <div className="flex">
+                  <div className="mr-3 text-base">Remaining Claim Limit</div>
+                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.remaining_claim_limit))}</div>
+                </div>
+              </div>
 
-        <div className="mt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Claim ID</TableHead>
-                <TableHead>Insured Name</TableHead>
-                <TableHead>Submitted Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Currency</TableHead>
-                <TableHead>Claim Amount</TableHead>
-                <TableHead>Paid</TableHead>
-                <TableHead>Remaining Limit</TableHead>
-                <TableHead>Payment Type</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-            {claimHistoryData.data.length > 0 ? (
-              claimHistoryData.data.map((claim, index) => (
-                <TableRow
-                  key={claim.id}
-                >                  
-                  <TableCell>
-                    <div>{claim.number}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{claim.name}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{!!claim.submitted_date ? moment(claim.submitted_date).format("DD/MM/YYYY") : "-"}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{claim.status}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{claim.currency}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{formatMoneyClaim(Number(claim.claim_amount))}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{claim.paid ? formatMoneyClaim(Number(claim.paid)) : '-'}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{formatMoneyClaim(Number(claim.remaining_limit))}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{claim.payment_type}</div>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      disabled
-                      className="rounded-full"
-                    >
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              // EDIT THIS! Change the asset, match it with Figma
-              <TableRow className="hover:!bg-white">
-                <TableCell colSpan={10}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
-                  </div>
-                </TableCell>{" "}
-              </TableRow>
-            )}
-          </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={10}>
-                  <div className="flex justify-center items-center gap-2 font-normal">
-                    <label htmlFor="rowsPerPage">Showing:</label>
-                    <select
-                      id="rowsPerPage"
-                      value={rowsPerPage}
-                      onChange={handleRowsPerPageChange}
-                      className="p-2 border rounded"
-                    >
-                      {[10, 20, 30, 50, 100].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <span className="mr-2">of {totalItems} items</span>
-                    <button
-                      onClick={() => setPage((prevState) => prevState - 1)}
-                      disabled={page === 1}
-                      title="Prev"
-                    >
-                      <ChevronLeft />
-                    </button>
-                    <button
-                      onClick={() => setPage((prevState) => prevState + 1)}
-                      disabled={page === totalPages}
-                      title="Next"
-                    >
-                      <ChevronRight />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </div>
+              <div className="mt-6">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Claim ID</TableHead>
+                      <TableHead>Insured Name</TableHead>
+                      <TableHead>Submitted Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Currency</TableHead>
+                      <TableHead>Claim Amount</TableHead>
+                      <TableHead>Paid</TableHead>
+                      <TableHead>Remaining Limit</TableHead>
+                      <TableHead>Payment Type</TableHead>
+                      <TableHead>Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {
+                      claimHistoryData.data.map((claim) => (
+                        <TableRow key={claim.id}>
+                          <TableCell>
+                            <div>{claim.number}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{claim.name}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{!!claim.submitted_date ? moment(claim.submitted_date, "YYYY-MM-DD").format("DD/MM/YYYY") : "-"}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{claim.status}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{claim.currency}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{formatMoneyClaim(Number(claim.claim_amount))}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{claim.paid ? formatMoneyClaim(Number(claim.paid)) : '-'}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{formatMoneyClaim(Number(claim.remaining_limit))}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{claim.payment_type}</div>
+                          </TableCell>
+                          <TableCell>
+                            {/* This button is disabled until edit feature is enabled */}
+                            <Button
+                              disabled
+                              className="rounded-full"
+                            >
+                              View
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    }
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell colSpan={10}>
+                        <div className="flex justify-center items-center gap-2 font-normal">
+                          <label htmlFor="rowsPerPage">Showing:</label>
+                          <select
+                            id="rowsPerPage"
+                            value={rowsPerPage}
+                            onChange={handleRowsPerPageChange}
+                            className="p-2 border rounded"
+                          >
+                            {[10, 20, 30, 50, 100].map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                          <span className="mr-2">of {totalItems} items</span>
+                          <button
+                            onClick={() => setPage((prevState) => prevState - 1)}
+                            disabled={page === 1}
+                            title="Prev"
+                          >
+                            <ChevronLeft />
+                          </button>
+                          <button
+                            onClick={() => setPage((prevState) => prevState + 1)}
+                            disabled={page === totalPages}
+                            title="Next"
+                          >
+                            <ChevronRight />
+                          </button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </div>
+            </>
+          ) : renderSearchPromptImage()
+        }
       </div>
     </div>
   );
