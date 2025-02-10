@@ -32,7 +32,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -80,18 +79,10 @@ const ClaimHistoryPage = () => {
   // const router = useRouter();
 
   // Permissions state
-  const [canEdit, setCanEdit] = useState<boolean>(false);
+  // const [canEdit, setCanEdit] = useState<boolean>(false);
 
-  // Data & pagination state
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [tab, setTab] = useState("All");
+  // Data state
   const [searchData, setSearchData] = useState("");
-  // const [totalPages, setTotalPages] = useState(1);
-  const [totalPages, setTotalPages] = useState(13);
-  // const [totalItems, setTotalItems] = useState(0);
-  const [totalItems, setTotalItems] = useState(125);
-  const [totalData, setTotalData] = useState(0);
   const [claimHistoryData, setClaimHistoryData] = useState<ClaimHistoryResponse | null>({
     data: [
       {
@@ -176,6 +167,7 @@ const ClaimHistoryPage = () => {
 
   const [searchPlanName, setSearchPlanName] = useState("");
   const [disableSearchPlanName, setDisableSearchPlanName] = useState<boolean>(false);
+  const [isSearchParamValid, setIsSearchParamValid] = useState<boolean>(true);
 
   // Permissions checking
   // useEffect(() => {
@@ -200,32 +192,19 @@ const ClaimHistoryPage = () => {
   //   const fetchData = async () => {
   //     try {
   //       const res = await claimService.getClaimsHistoriesList(
-  //         page,
-  //         rowsPerPage,
   //         searchData,
   //       );
   //       setClaimHistoryData(res?.data);
-  //       setPage(res?.page);
-  //       setTotalPages(res?.pageTotal);
-  //       setTotalItems(res?.total);
-  //       setTotalData(res?.total);
   //     } catch (error) {
+  //       setIsSearchParamValid(false);
   //       console.error("Error fetching data: ", error);
   //     }
 
   //     fetchData();
   //   };
   // }, [
-  //   page,
-  //   rowsPerPage,
   //   searchData,
   // ]);
-
-  // Pagination
-  // const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   setRowsPerPage(Number(e.target.value));
-  //   setPage(1);
-  // };
 
   const handleSearchPlanName = (planName: string) => {
     setSearchPlanName(planName);
@@ -234,11 +213,6 @@ const ClaimHistoryPage = () => {
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
   }, 100);
-
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
 
   const renderPlanName = (plans: {id: string, name: string}[]) => {
     return (
@@ -284,7 +258,7 @@ const ClaimHistoryPage = () => {
           <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
             NIK / Passport / Claim Number
           </div>
-          <div className="relative">
+          <div className="relative mb-1">
             <Input
               type="text"
               placeholder="Search by Claim ID"
@@ -293,6 +267,13 @@ const ClaimHistoryPage = () => {
             />
             <Search className="absolute top-1/2 w-4 h-4 right-3 transform -translate-y-1/2 text-[#016da1]" />
           </div>
+          {
+            !isSearchParamValid && (
+              <p className="text-[#E83F3F] text-xs">
+                Please double-check your ID card, NIK, passport, or claim number
+              </p>
+            )
+          }
         </div>
         <div className="flex w-full flex-col">
           <div className="text-xs mb-1.5 font-medium">
@@ -394,42 +375,6 @@ const ClaimHistoryPage = () => {
                       ))
                     }
                   </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell colSpan={10}>
-                        <div className="flex justify-center items-center gap-2 font-normal">
-                          <label htmlFor="rowsPerPage">Showing:</label>
-                          <select
-                            id="rowsPerPage"
-                            value={rowsPerPage}
-                            onChange={handleRowsPerPageChange}
-                            className="p-2 border rounded"
-                          >
-                            {[10, 20, 30, 50, 100].map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                          <span className="mr-2">of {totalItems} items</span>
-                          <button
-                            onClick={() => setPage((prevState) => prevState - 1)}
-                            disabled={page === 1}
-                            title="Prev"
-                          >
-                            <ChevronLeft />
-                          </button>
-                          <button
-                            onClick={() => setPage((prevState) => prevState + 1)}
-                            disabled={page === totalPages}
-                            title="Next"
-                          >
-                            <ChevronRight />
-                          </button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  </TableFooter>
                 </Table>
               </div>
             </>
