@@ -236,7 +236,7 @@ const ClaimHistoryPage = () => {
                   Masukkan KTP / ID / NIK Number Number untuk melihat histori claim
                 </div>
               </div>
-            </TableCell>{" "}
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
