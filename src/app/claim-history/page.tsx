@@ -233,7 +233,7 @@ const ClaimHistoryPage = () => {
               <div className="flex flex-col gap-4 items-center justify-center py-14">
                 <Image alt="no data" src={emptyStateSearchPrompt} width={200} />
                 <div className="text-[#939597] text-base">
-                  Masukkan KTP / ID / NIK Number Number untuk melihat histori claim
+                  Masukkan KTP / ID / NIK Number untuk melihat histori claim
                 </div>
               </div>
             </TableCell>
