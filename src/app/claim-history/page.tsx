@@ -207,7 +207,7 @@ useRequireAuth();
           <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
             NIK / Passport / Claim Number
           </div>
-          <div className="relative mb-1">
+          <div className="relative mb-1.5">
             <Input
               type="text"
               placeholder="Search by Claim ID"
