@@ -155,8 +155,11 @@ useRequireAuth();
     // Reset select component
     setSelectedPlanId("");
 
-    // Disable search component if there's no keyword
-    if (keyword === "") setDisableSearchPlanName(true);
+    // Disable select component & reset claim history if there's no keyword
+    if (keyword === "") {
+      setDisableSearchPlanName(true);
+      setClaimHistoryData(null);
+    }
   }, 100);
 
   const renderPlanName = (plans: {planId: string, planName: string}[]) => {
