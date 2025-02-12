@@ -1,13 +1,13 @@
 "use client"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import _ from "lodash";
+import _, { set } from "lodash";
 import moment from "moment";
 
 import { hasPermission } from "@/context/auth.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import useRequireAuth from "@/hooks/useRequireAuth";
-import { ClaimService } from "@/services/claim.service";
+import { ClaimService, ClaimHistorySummary, ClaimHistoryDetail } from "@/services/claim.service";
 import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 
 import {
@@ -35,189 +35,137 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// Simulate data interface here
-interface Claim {
-  id: string;
-  number: string;
-  name: string;
-  submitted_date: string;
-  status: "Acknowledged" | "Rejected" | "Approved";
-  currency: string;
-  claim_amount: string;
-  paid: string | null;
-  remaining_limit: string;
-  payment_type: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Plan {
-  id: string;
-  name: string;
-}
-
-interface ClaimHistoryResponse {
-  data: Claim[];
-  plans: Plan[];
-  claim_limit: string;
-  total_paid: string;
-  remaining_claim_limit: string;
-  limit: number;
-  page: number;
-  pageTotal: number;
-  total: number;
-}
-
-
 const claimService = new ClaimService();
 const ClaimHistoryPage = () => {
-  useRequireAuth();
+useRequireAuth();
 
   // Define router to redirect user to forbidden page if user has no permission
-  // const router = useRouter();
+  const router = useRouter();
 
-  // Permissions state
+  // Permissions state, for future use when edit feature is available
   // const [canEdit, setCanEdit] = useState<boolean>(false);
 
   // Data state
   const [searchData, setSearchData] = useState("");
-  const [claimHistoryData, setClaimHistoryData] = useState<ClaimHistoryResponse | null>({
-    data: [
-      {
-        id: "50ecd7c4-9930-45c8-86a8-7f89eb8438fc",
-        number: "CLM-20250120-00006",
-        name: "Gabrella",
-        submitted_date: "2025-12-10",
-        status: "Acknowledged",
-        currency: "IDR",
-        claim_amount: "25000000",
-        paid: null,
-        remaining_limit: "70000000",
-        payment_type: "Cashless",
-        created_at: "2025-02-07T04:36:53.260Z",
-        updated_at: "2025-02-07T04:42:41.542Z"
-      },
-      {
-        id: "50ecd7c4-9930-45c8-86a8-7f89eb8438fd",
-        number: "CLM-20250120-00005",
-        name: "Gabrella",
-        submitted_date: "2025-9-6",
-        status: "Rejected",
-        currency: "IDR",
-        claim_amount: "15000000",
-        paid: null,
-        remaining_limit: "70000000",
-        payment_type: "Cashless",
-        created_at: "2025-02-07T04:36:53.260Z",
-        updated_at: "2025-02-07T04:42:41.542Z"
-      },
-      {
-        id: "50ecd7c4-9930-45c8-86a8-7f89eb8438fe",
-        number: "CLM-20250120-00004",
-        name: "Gabrella",
-        submitted_date: "2025-8-12",
-        status: "Approved",
-        currency: "IDR",
-        claim_amount: "30000000",
-        paid: "30000000",
-        remaining_limit: "70000000",
-        payment_type: "Cashless",
-        created_at: "2025-02-07T04:36:53.260Z",
-        updated_at: "2025-02-07T04:42:41.542Z"
-      },
-      {
-        id: "50ecd7c4-9930-45c8-86a8-7f89eb8438ff",
-        number: "CLM-20250120-00003",
-        name: "Gabrella",
-        submitted_date: "2025-4-12",
-        status: "Acknowledged",
-        currency: "IDR",
-        claim_amount: "25000000",
-        paid: "20000000",
-        remaining_limit: "100000000",
-        payment_type: "Cashless",
-        created_at: "2025-02-07T04:36:53.260Z",
-        updated_at: "2025-02-07T04:42:41.542Z"
-      }
-    ],
-    plans: [
-      {
-        id: "50ecd7c4-9930-45c8-86a8-7f89eb8438fg",
-        name: "Plan 1"
-      },
-      {
-        id: "50ecd7c4-9930-45c8-86a8-7f89eb8438fh",
-        name: "Plan 2"
-      },
-      {
-        id: "50ecd7c4-9930-45c8-86a8-7f89eb8438fi",
-        name: "Plan 3"
-      }
-    ],
-    claim_limit: "120000000",
-    total_paid: "50000000",
-    remaining_claim_limit: "70000000",
-    limit: 10,
-    page: 1,
-    pageTotal: 13,
-    total: 125
-  });
+  const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [claimHistoryData, setClaimHistoryData] = useState<ClaimHistorySummary | null>(null);
 
   const [searchPlanName, setSearchPlanName] = useState("");
-  const [disableSearchPlanName, setDisableSearchPlanName] = useState<boolean>(false);
+  const [disableSearchPlanName, setDisableSearchPlanName] = useState<boolean>(true);
   const [isSearchParamValid, setIsSearchParamValid] = useState<boolean>(true);
 
   // Permissions checking
-  // useEffect(() => {
-    // const checkAccess = async () => {
-      // const hasAccess = await hasPermission('Claim History.Read');
+  useEffect(() => {
+    const checkAccess = async () => {
+      const hasAccess = await hasPermission('Claim History.Read');
 
       // For future use when edit feature is available
       // const hasEditAccess = await hasPermission('Claim History.Update');
       // setCanEdit(hasEditAccess);
 
       // Redirect to forbidden page if user has no permission to read
-      // if(!hasAccess) {
-      //   router.push("/forbidden");
-      // }
-    // };
+      if(!hasAccess) {
+        router.push("/forbidden");
+      }
+    };
 
-    // checkAccess();
-  // }, [router]);
+    checkAccess();
+  }, [router]);
+
+  const mapResponse = (response: any): ClaimHistorySummary => {
+    // Map the claim details response
+    const dataResponse = response.data;
+
+    const mappedData: ClaimHistoryDetail[] = dataResponse.map((claim: any) => ({
+      claimId: claim.claimId,
+      insuredName: claim.insuredName || "-",
+      status: claim.status,
+      currency: claim.currency || "IDR",
+      paymentType: claim.paymentType || "-",
+      submittedDate: claim.submittedDate || "",
+      claimAmount: Number(claim.claimAmount) || 0,
+      paid: Number(claim.paid) || 0,
+      remainingLimit: Number(claim.remainingLimit) || 0,
+    }));
+  
+    // Extract the plans
+    const plans: { planId: string; planName: string }[] = [];
+    dataResponse.forEach((claim: any) => {
+      if (claim.plan?.planId && claim.plan?.planName) {
+        const isNewPlan = !plans.some((plan) => plan.planId === claim.plan.planId);
+        if (isNewPlan) {
+          plans.push({ planId: claim.plan.planId, planName: claim.plan.planName });
+        }
+      }
+    });
+
+    // If there's no plan list, disable the search component
+    if (plans.length > 0) {
+      setDisableSearchPlanName(false);
+    }
+  
+    return {
+      data: mappedData,
+      plans,
+      totalLimit: Number(response.totalLimit) || 0,
+      totalPaid: Number(response.totalPaid) || 0,
+      remainingClaimLimit: Number(response.remainingClaimLimit) || 0,
+    };
+  };
 
   // Fetch data to populate the list of claim history
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await claimService.getClaimsHistoriesList(
-  //         searchData,
-  //       );
-  //       setClaimHistoryData(res?.data);
-  //     } catch (error) {
-  //       setIsSearchParamValid(false);
-  //       console.error("Error fetching data: ", error);
-  //     }
+  useEffect(() => {
+    // Prevent fetching data when the page is loaded for the first time
+    if (searchData === "" && selectedPlanId === "") return;
+    
+    const fetchData = async () => {
+      try {
+        const res = await claimService.getClaimsHistoriesList({
+          searchData,
+          planId: selectedPlanId,
+        });
 
-  //     fetchData();
-  //   };
-  // }, [
-  //   searchData,
-  // ]);
+        // Validate the response
+        const mappedResponse = mapResponse(res.data);
+        if (mappedResponse.data.length > 0) {
+          setIsSearchParamValid(true);
+          setClaimHistoryData(mappedResponse);
+        } else {
+          setIsSearchParamValid(false);
+          setClaimHistoryData(null);
+        }
+      } catch (error) {
+        setIsSearchParamValid(false);
+        console.error("Error fetching data: ", error);
+      }
+    };
+    fetchData();
+  }, [
+    searchData,
+    selectedPlanId,
+  ]);
 
-  const handleSearchPlanName = (planName: string) => {
-    setSearchPlanName(planName);
+  const handleSearchPlanName = (planId: string) => {
+    setSelectedPlanId(planId);
   };
 
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
+
+    // Reset select component
+    setSelectedPlanId("");
+
+    // Disable search component if there's no keyword
+    if (keyword === "") setDisableSearchPlanName(true);
   }, 100);
 
-  const renderPlanName = (plans: {id: string, name: string}[]) => {
+  const renderPlanName = (plans: {planId: string, planName: string}[]) => {
+    if (plans.length === 0) return null;
     return (
       <SelectGroup>
         {plans.map((plan) => (
-          <SelectItem key={plan.id} value={plan.name}>
-            {plan.name}
+          <SelectItem key={plan.planId} value={plan.planId}>
+            {plan.planName}
           </SelectItem>
         ))}
       </SelectGroup>
@@ -279,7 +227,7 @@ const ClaimHistoryPage = () => {
           </div>
           <div>
             <Select
-              value={searchPlanName}
+              value={selectedPlanId}
               onValueChange={handleSearchPlanName}
               disabled={disableSearchPlanName}
             >
@@ -287,8 +235,9 @@ const ClaimHistoryPage = () => {
                 <SelectValue placeholder={disableSearchPlanName ? '-' : 'All Plan'} />
               </SelectTrigger>
               <SelectContent>
-                {!disableSearchPlanName && claimHistoryData?.plans && renderPlanName(claimHistoryData.plans)}
+                {!disableSearchPlanName && renderPlanName(claimHistoryData?.plans ?? [])}
               </SelectContent>
+
             </Select>
           </div>
         </div>
@@ -296,20 +245,20 @@ const ClaimHistoryPage = () => {
 
       <div className="w-full bg-white rounded-xl p-4">
         {
-          claimHistoryData?.data && claimHistoryData?.data.length > 0 ? (
+          claimHistoryData?.data?.length ?? 0 > 0 ? (
             <>
               <div className="bg-white flex flex-wrap flex-start gap-16 shadow p-4">
                 <div className="flex">
                   <div className="mr-3 text-base">Claim Limit</div>
-                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.claim_limit))}</div>
+                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData?.totalLimit))}</div>
                 </div>
                 <div className="flex">
                   <div className="mr-3 text-base">Total Paid</div>
-                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.total_paid))}</div>
+                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData?.totalPaid))}</div>
                 </div>
                 <div className="flex">
                   <div className="mr-3 text-base">Remaining Claim Limit</div>
-                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData.remaining_claim_limit))}</div>
+                  <div className="font-bold text-[#016DA1]">{formatMoney(Number(claimHistoryData?.remainingClaimLimit))}</div>
                 </div>
               </div>
 
@@ -331,16 +280,16 @@ const ClaimHistoryPage = () => {
                   </TableHeader>
                   <TableBody>
                     {
-                      claimHistoryData.data.map((claim) => (
-                        <TableRow key={claim.id}>
+                      claimHistoryData?.data.map((claim, index) => (
+                        <TableRow key={index}>
                           <TableCell>
-                            <div>{claim.number}</div>
+                            <div>{claim.claimId}</div>
                           </TableCell>
                           <TableCell>
-                            <div>{claim.name}</div>
+                            <div>{claim.insuredName}</div>
                           </TableCell>
                           <TableCell>
-                            <div>{!!claim.submitted_date ? moment(claim.submitted_date, "YYYY-MM-DD").format("DD/MM/YYYY") : "-"}</div>
+                            <div>{!!claim.submittedDate ? moment(claim.submittedDate).format("DD/MM/YYYY") : "-"}</div>
                           </TableCell>
                           <TableCell>
                             <div>{claim.status}</div>
@@ -349,16 +298,16 @@ const ClaimHistoryPage = () => {
                             <div>{claim.currency}</div>
                           </TableCell>
                           <TableCell>
-                            <div>{formatMoneyClaim(Number(claim.claim_amount))}</div>
+                            <div>{formatMoneyClaim(Number(claim.claimAmount))}</div>
                           </TableCell>
                           <TableCell>
                             <div>{claim.paid ? formatMoneyClaim(Number(claim.paid)) : '-'}</div>
                           </TableCell>
                           <TableCell>
-                            <div>{formatMoneyClaim(Number(claim.remaining_limit))}</div>
+                            <div>{formatMoneyClaim(Number(claim.remainingLimit))}</div>
                           </TableCell>
                           <TableCell>
-                            <div>{claim.payment_type}</div>
+                            <div>{claim.paymentType}</div>
                           </TableCell>
                           <TableCell>
                             {/* This button is disabled until edit feature is enabled */}
@@ -382,6 +331,8 @@ const ClaimHistoryPage = () => {
     </div>
   );
 };
+
+ClaimHistoryPage.displayName = "ClaimHistoryPage";
 
 const ClaimHistoryWithSidebar = (params: any) => WithSidebar(ClaimHistoryPage)(params);
 export default ClaimHistoryWithSidebar;
