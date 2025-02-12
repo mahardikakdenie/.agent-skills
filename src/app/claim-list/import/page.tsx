@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
+import { toastPromise } from '@/lib/toast';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Check, ChevronLeft, Download, Upload } from "react-feather";
@@ -91,13 +92,19 @@ const ImportPage = () => {
 
     setUploadStatus("uploading");
     setLoading(true);
-
+  
+    const uploadPromise = claimService.import({
+      data: base64String,
+      input: "File",
+      channel: "d1181179-a65f-4c9a-9085-6c7ce90f5845",
+      category: "b140a15e-af58-43c9-9888-e83cbca816e4",
+    });
+  
     try {
-      const response = await claimService.import({
-        data: base64String,
-        input: "File",
-        channel: "d1181179-a65f-4c9a-9085-6c7ce90f5845",
-        category: "b140a15e-af58-43c9-9888-e83cbca816e4",
+      await toastPromise(uploadPromise, {
+        loading: "Uploading file...",
+        success: <b>File uploaded successfully!</b>,
+        error: "Upload failed!", // Default fallback error message
       });
 
       setUploadStatus("success");
