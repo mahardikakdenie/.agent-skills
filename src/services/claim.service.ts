@@ -113,6 +113,25 @@ export interface ClaimChannel {
   form: string;
 }
 
+export interface ClaimHistoryDetail {
+  claimId: string;
+  insuredName: string;
+  status: string;
+  currency: string;
+  paymentType: string;
+  submittedDate: string;
+  claimAmount: number;
+  paid: number;
+  remainingLimit: number;
+}
+
+export interface ClaimHistorySummary {
+  data: ClaimHistoryDetail[];
+  plans: { planId: string; planName: string }[];
+  totalLimit: number;
+  totalPaid: number;
+  remainingClaimLimit: number;
+}
 export class ClaimService {
   private httpClient: IHttpClient;
 
@@ -206,6 +225,21 @@ export class ClaimService {
     return this.httpClient.get(`/v1/claim-histories?claim=${id}`);
   }
 
+  async getClaimsHistoriesList({
+    searchData,
+    planId,
+  }: {
+    searchData: string;
+    planId?: string;
+  }): Promise<{ data: ClaimHistorySummary[] }> {
+    const params: any = {};
+  
+    if (planId) params["plan_id"] = planId;
+    if (searchData) params["search"] = searchData;
+  
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/v1/claims/claim-list-limit?${queryString}`);
+  }
   async updateClaimStatus(
     id: string,
     data: any,
