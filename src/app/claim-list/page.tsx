@@ -419,7 +419,7 @@ const ClaimsPage = () => {
         pendingStatus,
         amountApproved,
         notes,
-        finalSelectedDocuments.map((item) => item.name)
+        finalSelectedDocuments.map((item) => !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name)
       );
       setClaims((prevClaims) =>
         prevClaims.map((claim) =>
@@ -459,7 +459,10 @@ const ClaimsPage = () => {
     const selected = dataDocument.filter((doc) =>
       selectedDocuments.includes(doc.name)
     );
-    const docListFields = dataDocument.length > 0 ? dataDocument.filter((doc: any) => doc.type.toLowerCase() === "fields" && doc.fields.length > 0).map((a: any) => a.fields.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple")).flat() : [];
+    const docListFields = dataDocument.length > 0 ? dataDocument.filter((doc: any) => doc.type.toLowerCase() === "fields" && doc.fields.length > 0).map((a: any) => a.fields.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple")).flat().map((d: any) => ({
+      ...d,
+      nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-"
+    })) : [];
     const selectedFields = docListFields.filter((doc) => selectedDocuments.includes(doc.name));
     setFinalSelectedDocuments([ ...selected, ...selectedFields ]);
   };
