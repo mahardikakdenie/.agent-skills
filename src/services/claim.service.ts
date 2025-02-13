@@ -123,11 +123,13 @@ export interface ClaimHistoryDetail {
   claimAmount: number;
   paid: number;
   remainingLimit: number;
+  selectedPolicy: string;
 }
 
 export interface ClaimHistorySummary {
   data: ClaimHistoryDetail[];
   plans: { planId: string; planName: string }[];
+  policies: { policyId: string; policyNo: string }[];
   totalLimit: number;
   totalPaid: number;
   remainingClaimLimit: number;
@@ -228,13 +230,16 @@ export class ClaimService {
   async getClaimsHistoriesList({
     searchData,
     planId,
+    policyId,
   }: {
     searchData: string;
     planId?: string;
+    policyId?: string;
   }): Promise<{ data: ClaimHistorySummary[] }> {
     const params: any = {};
   
     if (planId) params["plan_id"] = planId;
+    if (policyId) params["policy_id"] = policyId;
     if (searchData) params["search"] = searchData;
   
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
