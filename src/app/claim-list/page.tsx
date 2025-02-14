@@ -35,7 +35,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -52,10 +51,6 @@ import { Input } from "@/components/ui/input";
 import { hasPermission } from "@/context/auth.context";
 import _ from "lodash";
 import {
-  ChannelsResponse,
-  ChannelsService,
-} from "@/services/masterdata/channels.service";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -71,7 +66,6 @@ const ClaimsPage = () => {
   useRequireAuth();
   const path = usePathname();
   const claimService = new ClaimService();
-  const channelsService = new ChannelsService();
   const [claims, setClaims] = useState<any[]>([]);
   const [filteredClaims, setFilteredClaims] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -114,7 +108,6 @@ const ClaimsPage = () => {
 
   const [searchChannel, setSearchChannel] = useState("");
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
-  const [channel, setChannel] = useState<ChannelsResponse[]>([]);
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
   const [openAllStatus, setOpenAllStatus] = useState<boolean>(false);
@@ -149,7 +142,6 @@ const ClaimsPage = () => {
           rowsPerPage,
           tab === "All" ? "" : tab,
           searchData,
-          searchChannel === "All" ? "" : searchChannel,
           searchSlaStatus === "All" ? "" : searchSlaStatus,
           date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
           date?.to ? format(date.to, "yyyy-MM-dd") : undefined
@@ -171,7 +163,6 @@ const ClaimsPage = () => {
     tab,
     successUpdate,
     searchData,
-    searchChannel,
     searchSlaStatus,
     date,
   ]);
@@ -200,23 +191,6 @@ const ClaimsPage = () => {
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
   }, 100);
-
-  useEffect(() => {
-    const fetchChannels = async () => {
-      try {
-        const response = await channelsService.getChannels(page, rowsPerPage);
-        setChannel(response.data);
-        setTotalPages(response.pageTotal);
-        setTotalItems(response.total);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-
-    fetchChannels();
-  }, [page, rowsPerPage]);
 
   const handleSearchChannelOnChange = (v: string) => {
     setSearchChannel(v);
