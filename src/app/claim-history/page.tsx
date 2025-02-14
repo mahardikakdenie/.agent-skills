@@ -5,6 +5,7 @@ import _, { set } from "lodash";
 import moment from "moment";
 
 import { hasPermission } from "@/context/auth.context";
+import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { ClaimService, ClaimHistorySummary, ClaimHistoryDetail } from "@/services/claim.service";
@@ -37,7 +38,9 @@ import {
 
 const claimService = new ClaimService();
 const ClaimHistoryPage = () => {
-useRequireAuth();
+  useRequireAuth();
+
+  const { setLoading } = useLoading();
 
   // Define router to redirect user to forbidden page if user has no permission
   const router = useRouter();
@@ -120,6 +123,7 @@ useRequireAuth();
     
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await claimService.getClaimsHistoriesList({
           searchData,
           planId: selectedPlanId,
@@ -134,6 +138,7 @@ useRequireAuth();
           setIsSearchParamValid(false);
           setClaimHistoryData(null);
         }
+        setLoading(false);
       } catch (error) {
         setIsSearchParamValid(false);
         console.error("Error fetching data: ", error);
@@ -143,6 +148,7 @@ useRequireAuth();
   }, [
     searchData,
     selectedPlanId,
+    setLoading,
   ]);
 
   const handleSearchPlanName = (planId: string) => {
