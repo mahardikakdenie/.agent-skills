@@ -51,10 +51,11 @@ const ClaimHistoryPage = () => {
   // Data state
   const [searchData, setSearchData] = useState("");
   const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [selectedPolicyId, setSelectedPolicyId] = useState("");
   const [claimHistoryData, setClaimHistoryData] = useState<ClaimHistorySummary | null>(null);
 
-  const [searchPlanName, setSearchPlanName] = useState("");
-  const [disableSearchPlanName, setDisableSearchPlanName] = useState<boolean>(true);
+  const [disableSelectPlan, setDisableSelectPlan] = useState<boolean>(true);
+  const [disableSelectPolicy, setDisableSelectPolicy] = useState<boolean>(true);
   const [isSearchParamValid, setIsSearchParamValid] = useState<boolean>(true);
 
   // Permissions checking
@@ -91,7 +92,7 @@ const ClaimHistoryPage = () => {
       remainingLimit: Number(claim.remainingLimit) || 0,
     }));
   
-    // Extract the plans
+    // Extract & deduplicate the plans
     const plans: { planId: string; planName: string }[] = [];
     dataResponse.forEach((claim: any) => {
       if (claim.plan?.planId && claim.plan?.planName) {
@@ -102,14 +103,21 @@ const ClaimHistoryPage = () => {
       }
     });
 
-    // If there's no plan list, disable the search component
-    if (plans.length > 0) {
-      setDisableSearchPlanName(false);
+    // Set the selected policy
+    const selectedPolicy = response.selectedPolicy;
+    const policies = response.availablePolicies
+    setSelectedPolicyId(selectedPolicy);
+
+    // Enable the select plan & policy component as default state
+    if (plans.length > 0 || policies.length > 0) {
+      setDisableSelectPlan(false);
+      setDisableSelectPolicy(false);
     }
   
     return {
       data: mappedData,
       plans,
+      policies,
       totalLimit: Number(response.totalLimit) || 0,
       totalPaid: Number(response.totalPaid) || 0,
       remainingClaimLimit: Number(response.remainingClaimLimit) || 0,
@@ -127,6 +135,7 @@ const ClaimHistoryPage = () => {
         const res = await claimService.getClaimsHistoriesList({
           searchData,
           planId: selectedPlanId,
+          policyId: selectedPolicyId,
         });
 
         // Validate the response
@@ -150,26 +159,31 @@ const ClaimHistoryPage = () => {
     searchData,
     selectedPlanId,
     setLoading,
+    selectedPolicyId,
   ]);
 
-  const handleSearchPlanName = (planId: string) => {
+  const handleSelectPlan = (planId: string) => {
     setSelectedPlanId(planId);
   };
+
+  const handleSelectPolicy = (policyId: string) => {
+    setSelectedPolicyId(policyId);
+  }
 
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
 
     // Reset select component
     setSelectedPlanId("");
+    setSelectedPolicyId("");
 
-    // Disable select component & reset claim history if there's no keyword
-    if (keyword === "") {
-      setDisableSearchPlanName(true);
-      setClaimHistoryData(null);
-    }
+    // Disable filter select component & reset claim history
+    setDisableSelectPlan(true);
+    setDisableSelectPolicy(true);
+    setClaimHistoryData(null);
   }, 100);
 
-  const renderPlanName = (plans: {planId: string, planName: string}[]) => {
+  const renderPlan = (plans: {planId: string, planName: string}[]) => {
     if (plans.length === 0) return null;
     return (
       <SelectGroup>
@@ -180,7 +194,20 @@ const ClaimHistoryPage = () => {
         ))}
       </SelectGroup>
     );
-  }
+  };
+
+  const renderPolicy = (policies: {policyId: string, policyNo: string}[]) => {
+    if (policies.length === 0) return null;
+    return (
+      <SelectGroup>
+        {policies.map((policy) => (
+          <SelectItem key={policy.policyId} value={policy.policyId}>
+            {policy.policyNo}
+          </SelectItem>
+        ))}
+      </SelectGroup>
+    );
+  };
 
   const renderSearchPromptImage = () => {
     return (
@@ -233,19 +260,39 @@ const ClaimHistoryPage = () => {
         </div>
         <div className="flex w-full flex-col">
           <div className="text-xs mb-1.5 font-medium">
+            Policy Number
+          </div>
+          <div>
+            <Select
+              value={selectedPolicyId}
+              onValueChange={handleSelectPolicy}
+              disabled={disableSelectPolicy}
+            >
+              <SelectTrigger className="h-full">
+                <SelectValue placeholder={disableSelectPlan ? '-' : ''} />
+              </SelectTrigger>
+              <SelectContent>
+                {!disableSelectPolicy && renderPolicy(claimHistoryData?.policies ?? [])}
+              </SelectContent>
+
+            </Select>
+          </div>
+        </div>
+        <div className="flex w-full flex-col">
+          <div className="text-xs mb-1.5 font-medium">
             Plan Name
           </div>
           <div>
             <Select
               value={selectedPlanId}
-              onValueChange={handleSearchPlanName}
-              disabled={disableSearchPlanName}
+              onValueChange={handleSelectPlan}
+              disabled={disableSelectPlan}
             >
               <SelectTrigger className="h-full">
-                <SelectValue placeholder={disableSearchPlanName ? '-' : 'All Plan'} />
+                <SelectValue placeholder={disableSelectPlan ? '-' : 'All Plan'} />
               </SelectTrigger>
               <SelectContent>
-                {!disableSearchPlanName && renderPlanName(claimHistoryData?.plans ?? [])}
+                {!disableSelectPlan && renderPlan(claimHistoryData?.plans ?? [])}
               </SelectContent>
 
             </Select>
