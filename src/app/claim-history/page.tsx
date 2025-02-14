@@ -138,10 +138,11 @@ const ClaimHistoryPage = () => {
           setIsSearchParamValid(false);
           setClaimHistoryData(null);
         }
-        setLoading(false);
       } catch (error) {
         setIsSearchParamValid(false);
         console.error("Error fetching data: ", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
