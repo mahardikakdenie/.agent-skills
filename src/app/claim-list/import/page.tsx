@@ -44,9 +44,9 @@ const ImportPage = () => {
 
   const handleFileSelection = async (file: File) => {
     if (
-      file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-      file.type === "application/vnd.ms-excel"
+      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.type === "application/vnd.ms-excel" ||
+      file.type === "text/csv"
     ) {
       setSelectedFile(file);
       try {
