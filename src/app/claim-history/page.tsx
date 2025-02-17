@@ -158,8 +158,8 @@ const ClaimHistoryPage = () => {
   }, [
     searchData,
     selectedPlanId,
-    setLoading,
     selectedPolicyId,
+    setLoading,
   ]);
 
   const handleSelectPlan = (planId: string) => {
