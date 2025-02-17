@@ -559,6 +559,13 @@ const ClaimsPage = () => {
         >
           <Upload className="w-5 h-5 mr-1" /> Import
         </Button>
+        {/* New button to redirect to the new import page with preview */}
+        <Button
+          onClick={() => router.push(`${path}/import-with-preview`)}
+          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1" /> Import with Preview
+        </Button>
         <Button
           onClick={() => router.push(`${path}/export`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
