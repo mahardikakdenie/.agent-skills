@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChevronLeft, Upload } from "react-feather";
+import * as XLSX from "xlsx";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,7 +11,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+
 import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
@@ -28,20 +38,34 @@ const ImportWithPreviewPage = () => {
     "idle" | "uploading" | "success" | "error"
   >("idle");
   const [base64String, setBase64String] = useState<string>("");
+  const [tableData, setTableData] = useState<any[]>([]);
 
-  // Helper function to convert file to base64
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
+  // Helper function to parse Excel file into JSON
+  const parseExcelFile = (file: File) => {
+    return new Promise<any[]>((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        // Remove the data:application/[type];base64, prefix
-        const base64Content = base64String.split(",")[1];
-        resolve(base64Content);
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
+  
+        // Return the formatted data
+        resolve(jsonData);
       };
       reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
     });
+  };
+
+  const transformJsonWithHeaders = (tableData: any[]) => {
+    if (!tableData.length) return [];
+
+    const headers = tableData[0];
+    return tableData.slice(1).map((row) => 
+      Object.fromEntries(headers.map((key: string, index: number) => [key, row[index]]))
+    );
   };
 
   const handleFileSelection = async (file: File) => {
@@ -53,10 +77,10 @@ const ImportWithPreviewPage = () => {
     ) {
       setSelectedFile(file);
       try {
-        const base64 = await convertToBase64(file);
-        setBase64String(base64);
+        const jsonData = await parseExcelFile(file);
+        setTableData(jsonData);
       } catch (error) {
-        console.error("Error converting file to base64:", error);
+        console.error("Error processing file:", error);
         alert("Error processing file");
       }
     } else {
@@ -91,25 +115,27 @@ const ImportWithPreviewPage = () => {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile || !base64String) return;
-
+    if (!selectedFile || tableData.length <= 0) return;
     setUploadStatus("uploading");
     setLoading(true);
   
-    const uploadPromise = claimService.import({
-      data: base64String,
-      input: "File",
-      channel: "d1181179-a65f-4c9a-9085-6c7ce90f5845",
-      category: "b140a15e-af58-43c9-9888-e83cbca816e4",
-    });
-  
     try {
+      // Transform tableData so that the first row is used as keys for the subsequent rows
+      const importData = transformJsonWithHeaders(tableData);
+  
+      const uploadPromise = claimService.importAsJson({
+        data: importData,
+        input: "Data",
+        channel: "d1181179-a65f-4c9a-9085-6c7ce90f5845",
+        category: "b140a15e-af58-43c9-9888-e83cbca816e4",
+      });
+  
       await toastPromise(uploadPromise, {
         loading: "Uploading file...",
         success: <b>File uploaded successfully!</b>,
-        error: "Upload failed!", // Default fallback error message
+        error: "Upload failed!",
       });
-
+  
       setUploadStatus("success");
       setTimeout(() => {
         router.push("/claim-list");
@@ -120,6 +146,29 @@ const ImportWithPreviewPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderPreviewTable = () => {
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {tableData[0].map((header: string, index: number) => (
+              <TableHead key={index}>{header}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tableData.slice(1).map((row: any, index: number) => (
+            <TableRow key={index}>
+              {row.map((cell: any, cellIndex: number) => (
+                <TableCell key={cellIndex}>{cell}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
   };
 
   return (
@@ -211,6 +260,11 @@ const ImportWithPreviewPage = () => {
               </div>
             </div>
           </div>
+          {selectedFile && tableData.length > 0 ? (
+            <div className="pt-4">
+              {renderPreviewTable()}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
