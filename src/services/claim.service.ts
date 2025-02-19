@@ -309,4 +309,19 @@ export class ClaimService {
       category,
     });
   }
+
+  async importAsJson(importData: {
+    data: any[];
+    input: string;
+    channel: string;
+    category: string;
+  }) {
+    const { data, input, channel, category } = importData;
+    return this.httpClient.post(`/v1/claims/import`, {
+      data,
+      input: "Data",
+      channel,
+      category,
+    });
+  }
 }
