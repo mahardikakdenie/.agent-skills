@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChevronLeft, Upload } from "react-feather";
 import * as XLSX from "xlsx";
 import {
@@ -19,12 +19,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
 import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
+import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { toastPromise } from '@/lib/toast';
+import { capitalizeStringWithChar } from "@/lib/formatter";
 
 const ImportWithPreviewPage = () => {
   const claimService = new ClaimService();
@@ -37,8 +47,41 @@ const ImportWithPreviewPage = () => {
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "uploading" | "success" | "error"
   >("idle");
-  const [base64String, setBase64String] = useState<string>("");
   const [tableData, setTableData] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
+
+  // Use useRef to prevent double fetching
+  const hasFetchedCategory = useRef(false);
+  useEffect(() => {
+    const productCategoryService = new ProductCategoriesService();
+
+    const fetchCategoryOptions = async () => {
+      setLoading(true);
+      try {
+        const result = await productCategoryService.getCategories();
+        if (result && result.length > 0) {
+          setCategoryOptions(
+            result.map((category: any) => ({
+              label: capitalizeStringWithChar(category.name),
+              value: category.id,
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Ensure fetch function only called once
+    if (!hasFetchedCategory.current) {
+      hasFetchedCategory.current = true;
+      fetchCategoryOptions();
+    }
+  });
+
 
   // Helper function to parse Excel file into JSON
   const parseExcelFile = (file: File) => {
@@ -114,6 +157,10 @@ const ImportWithPreviewPage = () => {
     }
   };
 
+  const handleSelectCategory = (value: string) => {
+    setSelectedCategory(value);
+  };
+
   const handleUpload = async () => {
     if (!selectedFile || tableData.length <= 0) return;
     setUploadStatus("uploading");
@@ -146,6 +193,19 @@ const ImportWithPreviewPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderCategoryOptions = () => {
+    if (categoryOptions.length === 0) return null;
+    return (
+      <SelectGroup>
+        {categoryOptions.map((category) => (
+          <SelectItem key={category.value} value={category.value}>
+            {category.label}
+          </SelectItem>
+        ))}
+      </SelectGroup>
+    );
   };
 
   const renderPreviewTable = () => {
@@ -218,48 +278,66 @@ const ImportWithPreviewPage = () => {
 
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg">
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 ${
-              dragActive ? "border-[#F5BA41] bg-[#FDF7E9]" : "border-gray-300"
-            } ${selectedFile ? "border-green-500 bg-green-50" : ""}`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <div className="flex flex-col items-center justify-center gap-4">
-              <Upload
-                className={`w-12 h-12 ${
-                  selectedFile ? "text-green-500" : "text-gray-400"
-                }`}
-              />
-              <div className="text-center">
-                {selectedFile ? (
-                  <p className="text-green-500 font-medium">
-                    Selected: {selectedFile.name}
-                  </p>
-                ) : (
-                  <>
-                    <p className="text-gray-600">
-                      Drag and drop your file here, or{" "}
-                      <label className="text-[#F5BA41] cursor-pointer hover:text-[#e6a92d]">
-                        browse
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".xlsx,.xls,.csv"
-                          onChange={handleFileInput}
-                        />
-                      </label>
+          <div className="mb-4">
+            <div className="text-xs mb-1.5 font-medium">
+              Select Category
+            </div>
+            <Select
+              value={selectedCategory}
+              onValueChange={handleSelectCategory}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select option" />
+              </SelectTrigger>
+              <SelectContent>
+                {renderCategoryOptions()}
+              </SelectContent>
+            </Select>
+          </div>
+          {selectedCategory ? (
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 ${
+                dragActive ? "border-[#F5BA41] bg-[#FDF7E9]" : "border-gray-300"
+              } ${selectedFile ? "border-green-500 bg-green-50" : ""}`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <div className="flex flex-col items-center justify-center gap-4">
+                <Upload
+                  className={`w-12 h-12 ${
+                    selectedFile ? "text-green-500" : "text-gray-400"
+                  }`}
+                />
+                <div className="text-center">
+                  {selectedFile ? (
+                    <p className="text-green-500 font-medium">
+                      Selected: {selectedFile.name}
                     </p>
-                    <p className="text-gray-400 text-sm mt-2">
-                      Supported formats: .xlsx, .xls, .csv
-                    </p>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <p className="text-gray-600">
+                        Drag and drop your file here, or{" "}
+                        <label className="text-[#F5BA41] cursor-pointer hover:text-[#e6a92d]">
+                          browse
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept=".xlsx,.xls,.csv"
+                            onChange={handleFileInput}
+                          />
+                        </label>
+                      </p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        Supported formats: .xlsx, .xls, .csv
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
           {selectedFile && tableData.length > 0 ? (
             <div className="pt-4">
               {renderPreviewTable()}
