@@ -39,17 +39,10 @@ export class TransactionService {
     return this.httpClient.get(`/v1/transactions?${queryString}`);
   }
 
- async getTransactionsExport(
-    page: number,
-    rowsPerPage: number
-  ): Promise<TransactionResponse> {
-    const response: TransactionResponse = await this.httpClient.get(
-      `/v1/transactions?page=${page}&limit=${rowsPerPage}`
-    );
-    const pageTotal = response.pageTotal || rowsPerPage;
+  async getTransactionsExport(page: number): Promise<TransactionResponse> {
     const params: any = {
       page: page,
-      limit: pageTotal,
+      limit: 400,
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
