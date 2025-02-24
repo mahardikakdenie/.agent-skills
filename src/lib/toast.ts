@@ -26,13 +26,13 @@ export const toastPromise = <T>(
   promise: Promise<T>,
   messages: {
     loading: string;
-    success: string | JSX.Element;
+    success?: string | JSX.Element;
     error?: string | JSX.Element;
   }
 ) => {
   return toast.promise(promise, {
     loading: messages.loading,
-    success: messages.success,
+    success: messages.success || "Success!",
     error: (error) => {
       console.error("Backend Error:", error); // Log the full error for debugging
 
