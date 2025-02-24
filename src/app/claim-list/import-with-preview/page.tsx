@@ -37,6 +37,8 @@ import { ProductCategoriesService } from "@/services/masterdata/product-category
 import { toastPromise, toastNotification } from '@/lib/toast';
 import { capitalizeStringWithChar } from "@/lib/formatter";
 
+import headerGuideJson from "@/header-guide.json";
+
 const ImportWithPreviewPage = () => {
   const claimService = new ClaimService();
   const router = useRouter();
@@ -49,6 +51,7 @@ const ImportWithPreviewPage = () => {
     "idle" | "uploading" | "success" | "error"
   >("idle");
   const [tableData, setTableData] = useState<any[]>([]);
+  const [tableHeader, setTableHeader] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
   const [channel, setChannel] = useState<string | null>(null);
@@ -65,6 +68,7 @@ const ImportWithPreviewPage = () => {
       disable?: boolean;
     }[]
   >([]);
+  const [validatedHeader, setValidatedHeader] = useState<boolean[]>([]);
 
   // Get user channel
   useEffect(() => {
@@ -131,16 +135,15 @@ const ImportWithPreviewPage = () => {
     });
   };
 
-  const transformJsonWithHeaders = (tableData: any[]) => {
-    if (!tableData.length) return [];
+  const transformJsonWithHeaders = (tableHeader: any[], tableData: any[]) => {
+    if (!tableHeader.length && !tableData.length) return [];
 
-    const headers = tableData[0];
-    return tableData.slice(1).map((row) => 
-      Object.fromEntries(headers.map((key: string, index: number) => [key, row[index]]))
+    return tableData.map((row) => 
+      Object.fromEntries(tableHeader.map((key: string, index: number) => [key, row[index]]))
     );
   };
 
-  const handleFileSelection = async (file: File) => {
+  const handleFileSelection = async (file: File, callback: (data: any) => void) => {
     if (
       file.type ===
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
@@ -148,12 +151,21 @@ const ImportWithPreviewPage = () => {
       file.type === "text/csv"
     ) {
       setSelectedFile(file);
+      setLoading(true);
       try {
         const jsonData = await parseExcelFile(file);
-        setTableData(jsonData);
+        const tableData = jsonData;
+        const tableHeader = jsonData.shift();
+        setTableHeader(tableHeader);
+        setTableData(tableData);
+
+        // Compare header from the uploaded file with the header from the guide 
+        callback(tableHeader);
       } catch (error) {
         console.error("Error processing file:", error);
         alert("Error processing file");
+      } finally {
+        setLoading(false);
       }
     } else {
       alert("Please upload an Excel (.xlsx or .xls) or CSV (.csv) file");
@@ -176,13 +188,26 @@ const ImportWithPreviewPage = () => {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileSelection(e.dataTransfer.files[0]);
+      handleFileSelection(e.dataTransfer.files[0], validateHeaders);
     }
+  };
+
+  // Check if the header uploaded matches the header from the guide
+  const validateHeaders = (jsonData: any) => {
+    const fieldCount: Record<string, number> = {};
+    const fieldMap = new Set(headerGuide.map((item) => item.field));
+
+    jsonData.forEach((row: any) => {
+      fieldCount[row] = (fieldCount[row] || 0) + 1;
+    });
+
+    const validatedRows = jsonData.map((row: any) => fieldCount[row] <= 1 && fieldMap.has(row));
+    setValidatedHeader(validatedRows);
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleFileSelection(e.target.files[0]);
+      handleFileSelection(e.target.files[0], validateHeaders);
     }
   };
 
@@ -191,46 +216,75 @@ const ImportWithPreviewPage = () => {
     fetchImportDataGuide(value);
   };
 
-  const fetchImportDataGuide = async (categoryId: string) => {
+  const fetchImportDataGuide = (categoryId: string) => {
     setLoading(true);
+  
     try {
-      const response = await claimService.importDataGuide({
-        channel: channel || "",
-        category: categoryId,
-      });
-
-      const guideResponse = (Array.isArray(response) && response.length > 0) ? response[0].data : null;
-
+      const guideResponse = Array.isArray(headerGuideJson) && headerGuideJson.length > 0 
+        ? headerGuideJson[0].data 
+        : null;
+  
       if (guideResponse) {
         setHeaderGuide(guideResponse);
-        setHeaderOptions(guideResponse.map((guide: any) => {
-          return {
+        setHeaderOptions(
+          guideResponse.map((guide: any) => ({
             label: `${guide?.field} ${guide?.required ? '(Required)' : ''}`,
-              value: guide?.field,
-          };
-        }));
+            value: guide?.field,
+          }))
+        );
       } else {
         toastNotification(
-          "Header guide is empty. Please select another category", 
-          "error"
+          'Header guide is empty. Please select another category',
+          'error'
         );
       }
-
     } catch (error) {
-      console.error("Error fetching guide", error);
+      console.error('Error fetching guide', error);
     } finally {
       setLoading(false);
     }
   };
 
+  // UNCOMMENT THIS AFTER FINISHED USING THE SAMPLE
+  // const fetchImportDataGuide = async (categoryId: string) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await claimService.importDataGuide({
+  //       channel: channel || "",
+  //       category: categoryId,
+  //     });
+
+  //     const guideResponse = (Array.isArray(response) && response.length > 0) ? response[0].data : null;
+
+  //     if (guideResponse) {
+  //       setHeaderGuide(guideResponse);
+  //       setHeaderOptions(guideResponse.map((guide: any) => {
+  //         return {
+  //           label: `${guide?.field} ${guide?.required ? '(Required)' : ''}`,
+  //             value: guide?.field,
+  //         };
+  //       }));
+  //     } else {
+  //       toastNotification(
+  //         "Header guide is empty. Please select another category", 
+  //         "error"
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching guide", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleUpload = async () => {
-    if (!selectedFile || tableData.length <= 0) return;
+    if (!selectedFile || tableHeader.length <= 0 || tableData.length <= 0) return;
     setUploadStatus("uploading");
     setLoading(true);
   
     try {
       // Transform tableData so that the first row is used as keys for the subsequent rows
-      const importData = transformJsonWithHeaders(tableData);
+      const importData = transformJsonWithHeaders(tableHeader, tableData);
   
       const uploadPromise = claimService.importAsJson({
         data: importData,
@@ -275,13 +329,13 @@ const ImportWithPreviewPage = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            {tableData[0].map((header: string, index: number) => (
+            {tableHeader.map((header: string, index: number) => (
               <TableHead key={index}>{header}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tableData.slice(1).map((row: any, index: number) => (
+          {tableData.map((row: any, index: number) => (
             <TableRow key={index}>
               {row.map((cell: any, cellIndex: number) => (
                 <TableCell key={cellIndex}>{cell}</TableCell>
@@ -400,8 +454,18 @@ const ImportWithPreviewPage = () => {
               </div>
             </div>
           ) : null}
-          {selectedFile && tableData.length > 0 ? (
+          {selectedFile && tableHeader.length > 0 && tableData.length > 0 ? (
             <div className="pt-4">
+              <p className="mb-2 text-xs">
+                <span className="font-semibold">
+                  {`${validatedHeader.filter(Boolean).length} `}
+                </span>
+                column(s) will be imported.
+                <span className="font-semibold">
+                  {` ${validatedHeader.filter((value) => !value).length} `}
+                </span>
+                columns will not be imported.
+              </p>
               {renderPreviewTable()}
             </div>
           ) : null}
