@@ -330,6 +330,24 @@ const Sidebar = () => {
                   Claim List
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/claim-history"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/claim-history/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Claim History"
+                    className="w-7 min-w-7"
+                  />
+                  Claim History
+                </Link>
+              </li>
               <li className="mt-2 text-sm">
                 <strong>Masterdata</strong>
               </li>
@@ -542,6 +560,24 @@ const Sidebar = () => {
               </li>
               <li className="mt-2 text-sm">
                 <strong>Report</strong>
+              </li>
+              <li>
+                <Link
+                  href="/report/claim"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/report/claim/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Claim Report"
+                    className="w-7 min-w-7"
+                  />
+                  Claim Report
+                </Link>
               </li>
               <li>
                 <Link

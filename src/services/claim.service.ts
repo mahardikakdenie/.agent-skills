@@ -113,6 +113,27 @@ export interface ClaimChannel {
   form: string;
 }
 
+export interface ClaimHistoryDetail {
+  claimId: string;
+  insuredName: string;
+  status: string;
+  currency: string;
+  paymentType: string;
+  submittedDate: string;
+  claimAmount: number;
+  paid: number;
+  remainingLimit: number;
+  selectedPolicy: string;
+}
+
+export interface ClaimHistorySummary {
+  data: ClaimHistoryDetail[];
+  plans: { planId: string; planName: string }[];
+  policies: { policyId: string; policyNo: string }[];
+  totalLimit: number;
+  totalPaid: number;
+  remainingClaimLimit: number;
+}
 export class ClaimService {
   private httpClient: IHttpClient;
 
@@ -206,6 +227,24 @@ export class ClaimService {
     return this.httpClient.get(`/v1/claim-histories?claim=${id}`);
   }
 
+  async getClaimsHistoriesList({
+    searchData,
+    planId,
+    policyId,
+  }: {
+    searchData: string;
+    planId?: string;
+    policyId?: string;
+  }): Promise<{ data: ClaimHistorySummary[] }> {
+    const params: any = {};
+  
+    if (planId) params["plan_id"] = planId;
+    if (policyId) params["policy_id"] = policyId;
+    if (searchData) params["search"] = searchData;
+  
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/v1/claims/claim-list-limit?${queryString}`);
+  }
   async updateClaimStatus(
     id: string,
     data: any,
@@ -235,5 +274,39 @@ export class ClaimService {
 
   async getClaimsStatus(): Promise<any> {
     return this.httpClient.get(`/v1/claims/configurations`);
+  }
+
+  async getClaimReport(
+    page: number,
+    rowsPerPage: number,
+    output: string,
+    date_from?: string,
+    date_to?: string,
+  ): Promise<any> {
+    const params = {
+      page,
+      limit: rowsPerPage,
+      output,
+      ...(date_from && { date_from }),
+      ...(date_to && { date_to })
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get<any>(`/v1/claims/export?${queryString}`);
+  }
+
+  async import(data: {
+    data: string;
+    input: string;
+    channel: string;
+    category: string;
+  }) {
+    const { data: base64String, input, channel, category } = data;
+    return this.httpClient.post(`/v1/claims/import`, {
+      data: base64String,
+      input: "File",
+      channel,
+      category,
+    });
   }
 }
