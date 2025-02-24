@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useLoading } from "@/context/loading.context";
+import { getChannel } from "@/context/auth.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
@@ -50,6 +51,21 @@ const ImportWithPreviewPage = () => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
+  const [channel, setChannel] = useState<string | null>(null);
+
+  // Get user channel
+  useEffect(() => {
+    const fetchChannel = async () => {
+      try {
+        const userChannel = await getChannel();
+        setChannel(userChannel);
+      } catch (error) {
+        console.error("Failed to get channel:", error);
+      }
+    };
+  
+    fetchChannel();
+  }, []);
 
   // Use useRef to prevent double fetching
   const hasFetchedCategory = useRef(false);
@@ -162,7 +178,7 @@ const ImportWithPreviewPage = () => {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile || tableData.length <= 0) return;
+    if (!selectedFile || tableData.length <= 0 || !channel) return;
     setUploadStatus("uploading");
     setLoading(true);
   
@@ -173,8 +189,8 @@ const ImportWithPreviewPage = () => {
       const uploadPromise = claimService.importAsJson({
         data: importData,
         input: "Data",
-        channel: "d1181179-a65f-4c9a-9085-6c7ce90f5845",
-        category: "b140a15e-af58-43c9-9888-e83cbca816e4",
+        channel: channel,
+        category: selectedCategory,
       });
   
       await toastPromise(uploadPromise, {
