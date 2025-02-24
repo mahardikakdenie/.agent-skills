@@ -317,11 +317,18 @@ export class ClaimService {
     category: string;
   }) {
     const { data, input, channel, category } = importData;
-    return this.httpClient.post(`/v1/claims/import`, {
+    return await this.httpClient.post(`/v1/claims/import`, {
       data,
       input: "Data",
       channel,
       category,
     });
   }
+
+  async importDataGuide(params: { channel: string; category: string }): Promise<{ data: { data: any }[] }> {
+    const { channel, category } = params;
+    const queryString = qs.stringify({ channel, category }, { arrayFormat: "brackets" });
+  
+    return await this.httpClient.get(`/v1/claims/import-data-guide?${queryString}`);
+  }  
 }
