@@ -34,7 +34,7 @@ import { getChannel } from "@/context/auth.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
-import { toastPromise } from '@/lib/toast';
+import { toastPromise, toastNotification } from '@/lib/toast';
 import { capitalizeStringWithChar } from "@/lib/formatter";
 
 const ImportWithPreviewPage = () => {
@@ -52,6 +52,19 @@ const ImportWithPreviewPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
   const [channel, setChannel] = useState<string | null>(null);
+  const [headerGuide, setHeaderGuide] = useState<
+    {
+      field: string;
+      required: boolean;
+    }[]
+  >([]);
+  const [headerOptions, setHeaderOptions] = useState<
+    {
+      label: string;
+      value: string;
+      disable?: boolean;
+    }[]
+  >([]);
 
   // Get user channel
   useEffect(() => {
@@ -175,10 +188,43 @@ const ImportWithPreviewPage = () => {
 
   const handleSelectCategory = (value: string) => {
     setSelectedCategory(value);
+    fetchImportDataGuide(value);
+  };
+
+  const fetchImportDataGuide = async (categoryId: string) => {
+    setLoading(true);
+    try {
+      const response = await claimService.importDataGuide({
+        channel: channel || "",
+        category: categoryId,
+      });
+
+      const guideResponse = (Array.isArray(response) && response.length > 0) ? response[0].data : null;
+
+      if (guideResponse) {
+        setHeaderGuide(guideResponse);
+        setHeaderOptions(guideResponse.map((guide: any) => {
+          return {
+            label: `${guide?.field} ${guide?.required ? '(Required)' : ''}`,
+              value: guide?.field,
+          };
+        }));
+      } else {
+        toastNotification(
+          "Header guide is empty. Please select another category", 
+          "error"
+        );
+      }
+
+    } catch (error) {
+      console.error("Error fetching guide", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpload = async () => {
-    if (!selectedFile || tableData.length <= 0 || !channel) return;
+    if (!selectedFile || tableData.length <= 0) return;
     setUploadStatus("uploading");
     setLoading(true);
   
@@ -189,7 +235,7 @@ const ImportWithPreviewPage = () => {
       const uploadPromise = claimService.importAsJson({
         data: importData,
         input: "Data",
-        channel: channel,
+        channel: channel || "",
         category: selectedCategory,
       });
   
@@ -310,7 +356,7 @@ const ImportWithPreviewPage = () => {
               </SelectContent>
             </Select>
           </div>
-          {selectedCategory ? (
+          {selectedCategory && headerGuide.length > 0 ? (
             <div
               className={`border-2 border-dashed rounded-lg p-8 ${
                 dragActive ? "border-[#F5BA41] bg-[#FDF7E9]" : "border-gray-300"
