@@ -33,6 +33,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
+import _ from "lodash";
 
 const TransactionsPage = () => {
   useRequireAuth();
@@ -49,6 +50,7 @@ const TransactionsPage = () => {
   const [totalData, setTotalData] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [transaction, setTransaction] = useState<any>(null);
+  const [searchData, setSearchData] = useState("");
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -70,7 +72,7 @@ const TransactionsPage = () => {
 
   useEffect(() => {
     transactionService
-      .getTransactions(page, rowsPerPage, tab == "All" ? "" : tab)
+      .getTransactions(page, rowsPerPage, searchData, tab == "All" ? "" : tab)
       .then((res) => {
         setTransactions(res.data);
         setFilteredTransactions(res.data);
@@ -79,7 +81,7 @@ const TransactionsPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
-  }, [page, rowsPerPage, tab]);
+  }, [page, rowsPerPage, tab, searchData]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -133,6 +135,10 @@ const TransactionsPage = () => {
       alert(error);
     }
   };
+
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+  }, 100);
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -259,8 +265,7 @@ const TransactionsPage = () => {
           <input
             type="text"
             placeholder="Search by Insurance Name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="border p-3 rounded-md pr-10 w-full"
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
