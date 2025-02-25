@@ -66,8 +66,8 @@ const ExportPage = () => {
     }
 
     const sheetData = data.map((item, index) => {
-      const currencies = item.insurance.insurance.currencies;
-      const currency = currencies.find(
+      const currencies = item?.insurance?.insurance?.currencies;
+      const currency = currencies?.find(
         (currency: any) =>
           currency.currency_from === item.insurance.currency &&
           currency.currency_to === "IDR"
