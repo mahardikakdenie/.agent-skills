@@ -106,8 +106,8 @@ const ExportPage = () => {
 
       return {
         No: (page - 1) * rowsPerPage + index + 1,
-        "Insurance Name": item.insurance.insurance.id.name || "-",
-        "Plan Name": item.insurance.plan.name
+        "Insurance Name": item.insurance?.insurance?.id?.name || "-",
+        "Plan Name": item.insurance?.plan?.name
           .split("|")
           .splice(0, 2)
           .join(" - "),

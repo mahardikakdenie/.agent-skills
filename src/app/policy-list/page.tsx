@@ -47,7 +47,7 @@ const PolicyPage = () => {
   useEffect(() => {
     if (searchTerm) {
       const filtered = policies.filter((policy) =>
-        policy.declarations.transaction_data.insurance.plan.name
+        policy.declarations?.transaction_data?.insurance?.plan?.name
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       );
@@ -230,8 +230,7 @@ const PolicyPage = () => {
                   <TableCell>{rowNumber}</TableCell>
                   <TableCell>
                     <div className="flex gap-2 items-center">
-                      {policy?.policy_holder?.name ||
-                        "-"}
+                      {policy?.policy_holder?.name || "-"}
                     </div>
                   </TableCell>
                   <TableCell>{policy.number}</TableCell>
