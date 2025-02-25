@@ -305,4 +305,13 @@ export class ProductCatalogService {
       throw error;
     }
   }
+
+  async getChannelPlansByChannel(channel: string): Promise<any> {
+    try {
+      return await this.httpClient.get("/v1/channel-packages/plans/?channel=" + channel);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }
