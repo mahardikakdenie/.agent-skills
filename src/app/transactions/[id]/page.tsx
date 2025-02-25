@@ -56,7 +56,7 @@ const DetailTransaction = ({ params }: { params: { id: string } }) => {
     (currency?.value ?? 1) * transaction.insurance.premium;
 
   const premiumWithEmbeddedDiscount =
-    transaction.insurance.plan.premium_discount_type === "percentage"
+    transaction.insurance?.plan?.premium_discount_type === "percentage"
       ? convertedPremium -
         (transaction.insurance.plan.premium_discount_value / 100) *
           convertedPremium
