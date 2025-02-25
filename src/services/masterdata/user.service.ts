@@ -66,6 +66,20 @@ export class UserService {
     return this.authHttpClient.get(`/account/?${queryString}`);
   }
 
+    async getPartner(
+    page?: number,
+    rowsPerPage?: number,
+    searchData?: string
+  ): Promise<User> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+      search: searchData,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(`/v1/account/partner?${queryString}`);
+  }
   async getChannel(search: any): Promise<Channel> {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();

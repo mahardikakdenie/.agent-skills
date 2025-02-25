@@ -86,7 +86,7 @@ const TransactionsPage = () => {
   useEffect(() => {
     if (searchTerm) {
       const filtered = transactions.filter((transaction) =>
-        transaction.insurance.insurance.id.name
+        transaction.insurance?.insurance?.id?.name
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       );
