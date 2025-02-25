@@ -295,7 +295,7 @@ const CreateBillingPage = () => {
         details: {
           plan_name: data.insurance.plan.name,
           transaction_date: data.created_at,
-          insurance_name: data.insurance.insurance.id.name,
+          insurance_name: data.insurance?.insurance?.id?.name,
         },
       });
       if (type === "insurer") {
