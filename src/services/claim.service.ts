@@ -1,5 +1,6 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
+import { stat } from "fs";
 import qs from "qs";
 import { DateRange } from "react-day-picker";
 
@@ -150,7 +151,6 @@ export class ClaimService {
     rowsPerPage: number,
     status: string,
     searchData?: string,
-    searchChannel?: string,
     searchSlaStatus?: any,
     date_from?: string,
     date_to?: string
@@ -162,10 +162,6 @@ export class ClaimService {
 
     if (searchData) {
       params["keyword"] = searchData;
-    }
-
-    if (searchChannel) {
-      params["channel"] = searchChannel;
     }
 
     if (searchSlaStatus) {
@@ -206,15 +202,15 @@ export class ClaimService {
     return this.httpClient.get(`/v1/claims?${queryString}`);
   }
 
-  async getClaimsExport(
-    page: number,
-    rowsPerPage: number
-  ): Promise<ClaimResponse> {
-    const params: any = {
-      page: page,
-      limit: 100,
-    };
-
+  async getClaimsExport(params: {
+    page: number;
+    rowsPerPage: number;
+    status?: string;
+    searchData?: string;
+    searchSlaStatus?: any;
+    date_from?: string;
+    date_to?: string;
+  }): Promise<ClaimResponse> {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/claims?${queryString}`);
   }
@@ -237,11 +233,11 @@ export class ClaimService {
     policyId?: string;
   }): Promise<{ data: ClaimHistorySummary[] }> {
     const params: any = {};
-  
+
     if (planId) params["plan_id"] = planId;
     if (policyId) params["policy_id"] = policyId;
     if (searchData) params["search"] = searchData;
-  
+
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/claims/claim-list-limit?${queryString}`);
   }
@@ -281,14 +277,14 @@ export class ClaimService {
     rowsPerPage: number,
     output: string,
     date_from?: string,
-    date_to?: string,
+    date_to?: string
   ): Promise<any> {
     const params = {
       page,
       limit: rowsPerPage,
       output,
       ...(date_from && { date_from }),
-      ...(date_to && { date_to })
+      ...(date_to && { date_to }),
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });

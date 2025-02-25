@@ -25,7 +25,27 @@ const ExportPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await itemService.getPolicyExport(page);
+        const savedData = localStorage.getItem("exportPolicyData");
+        console.log("Saved Data from LocalStorage:", savedData);
+
+        if (!savedData) return;
+
+        const parsedData = JSON.parse(savedData);
+
+        const page = parsedData.page ?? 1;
+        const rowsPerPage = 100;
+        const status = parsedData.status ?? "All";
+        const searchData = parsedData.search ?? "";
+
+        console.log("Parsed Data:", { page, rowsPerPage, status, searchData });
+
+        const res = await itemService.getPolicyExport(
+          page,
+          rowsPerPage,
+          searchData,
+          status === "All" ? "" : status
+        );
+
         setData(res.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -35,7 +55,7 @@ const ExportPage = () => {
     };
 
     fetchData();
-  }, [page]);
+  }, []);
 
   const reportTemplateRef = useRef(null);
 
@@ -68,10 +88,9 @@ const ExportPage = () => {
 
     const sheetData = data.map((item, index) => ({
       No: (page - 1) * rowsPerPage + index + 1,
-      "Customer Name":
-        item.declarations?.transaction_data?.customer?.name || "-",
+      "Customer Name": item.policy_holder?.name || "-",
       "Policy Number": item.number || "-",
-      "Plan Name": item?.declarations.transaction_data.insurance.plan.name
+      "Plan Name": item?.policy_products?.plan_data?.name
         .split("|")
         .join(" - "),
       Status: item.status || "-",
@@ -166,20 +185,23 @@ const ExportPage = () => {
                   </td>
                   <td style={styles.td} valign="middle">
                     <div className="flex gap-2 items-center">
-                      {item.declarations?.transaction_data?.customer?.name ||
-                        "-"}
+                      {item.policy_holder?.name || "-"}
                     </div>
                   </td>
                   <td style={styles.td} valign="middle">
                     {item?.number || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item?.declarations.transaction_data.insurance.plan.name
+                    {item?.policy_products?.plan_data?.name
                       .split("|")
-                      .join(" - ")}
+                      .join(" - ") || "-"}
                   </td>
-                  <td style={styles.td} valign="middle">
-                    {item.status}
+                  <td
+                    style={styles.td}
+                    valign="middle"
+                    className="whitespace-nowrap"
+                  >
+                    {item.status || "-"}
                   </td>
                 </tr>
               ))

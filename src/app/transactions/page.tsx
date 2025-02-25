@@ -140,6 +140,18 @@ const TransactionsPage = () => {
     setSearchData(keyword);
   }, 100);
 
+  const handleExport = () => {
+    const exportData = {
+      page,
+      limit: rowsPerPage,
+      status: tab === "All" ? "" : tab,
+      search: searchData,
+    };
+
+    localStorage.setItem("exportTransactionData", JSON.stringify(exportData));
+    router.push(`${path}/export`);
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
@@ -151,7 +163,7 @@ const TransactionsPage = () => {
           <Upload className="w-5 h-5 mr-1 " /> Transactions List
         </Button>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={handleExport}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export

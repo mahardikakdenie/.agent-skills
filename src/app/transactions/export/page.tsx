@@ -24,7 +24,21 @@ const ExportPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await dataService.getTransactionsExport(page);
+        const savedData = localStorage.getItem("exportTransactionData");
+        if (!savedData) return;
+
+        const parsedData = JSON.parse(savedData);
+
+        const params = {
+          page: parsedData.page ?? 1,
+          limit: 150,
+          ...(parsedData.search && { keyword: parsedData.search }),
+          ...(parsedData.status &&
+            parsedData.status !== "All" && { status: parsedData.status }),
+        };
+
+        const res = await dataService.getTransactionsExport(params);
+
         setData(res.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -34,7 +48,7 @@ const ExportPage = () => {
     };
 
     fetchData();
-  }, [page]);
+  }, []);
 
   const reportTemplateRef = useRef(null);
 
