@@ -12,46 +12,40 @@ import { PolicyService } from "@/services/policy.service";
 import Spinner from "@/components/ui/spinner";
 import WithSidebar from "@/hoc/with-sidebar";
 
-const tableStyles = {
-  table: {
-    width: "100%",
-    border: "0.5px solid #cccccc",
-  },
-  th: {
-    padding: "10px",
-    border: "0.5px solid #cccccc",
-    fontWeight: "bold",
-    fontSize: "12px",
-    height: "auto",
-    background: "#e7e7e7",
-    verticalAlign: "middle",
-  },
-  td: {
-    padding: "10px",
-    height: "auto",
-    border: "0.5px solid #cccccc",
-    fontSize: "12px",
-    verticalAlign: "middle",
-  },
-};
-
 const ExportPage = () => {
   useRequireAuth();
   const itemService = new PolicyService();
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const router = useRouter();
-  const reportTemplateRef = useRef(null);
 
   useEffect(() => {
-    setMounted(true);
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await itemService.getPolicyExport(page);
+        const savedData = localStorage.getItem("exportPolicyData");
+        console.log("Saved Data from LocalStorage:", savedData);
+
+        if (!savedData) return;
+
+        const parsedData = JSON.parse(savedData);
+
+        const page = parsedData.page ?? 1;
+        const rowsPerPage = 100;
+        const status = parsedData.status ?? "All";
+        const searchData = parsedData.search ?? "";
+
+        console.log("Parsed Data:", { page, rowsPerPage, status, searchData });
+
+        const res = await itemService.getPolicyExport(
+          page,
+          rowsPerPage,
+          searchData,
+          status === "All" ? "" : status
+        );
+
         setData(res.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -61,7 +55,9 @@ const ExportPage = () => {
     };
 
     fetchData();
-  }, [page]);
+  }, []);
+
+  const reportTemplateRef = useRef(null);
 
   const handleGeneratePdf = () => {
     if (!reportTemplateRef.current) {
@@ -92,10 +88,9 @@ const ExportPage = () => {
 
     const sheetData = data.map((item, index) => ({
       No: (page - 1) * rowsPerPage + index + 1,
-      "Customer Name":
-        item.declarations?.transaction_data?.customer?.name || "-",
+      "Customer Name": item.policy_holder?.name || "-",
       "Policy Number": item.number || "-",
-      "Plan Name": item?.declarations?.transaction_data?.insurance?.plan?.name
+      "Plan Name": item?.policy_products?.plan_data?.name
         .split("|")
         .join(" - "),
       Status: item.status || "-",
@@ -108,14 +103,28 @@ const ExportPage = () => {
     XLSX.writeFile(workbook, "PolicyList.xlsx");
   };
 
-  if (!mounted) {
-    return (
-      <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
-        <Spinner />
-        Loading...
-      </div>
-    );
-  }
+  const styles = {
+    table: {
+      width: "100%",
+      border: "0.5px solid #cccccc",
+    },
+    th: {
+      padding: "10px",
+      border: "0.5px solid #cccccc",
+      fontWeight: "bold",
+      fontSize: "12px",
+      height: "auto",
+      background: "#e7e7e7",
+      verticalAlign: "middle",
+    },
+    td: {
+      padding: "10px",
+      height: "auto",
+      border: "0.5px solid #cccccc",
+      fontSize: "12px",
+      verticalAlign: "middle",
+    },
+  };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
@@ -150,63 +159,62 @@ const ExportPage = () => {
             Loading...
           </div>
         ) : (
-          <table style={tableStyles.table} ref={reportTemplateRef} border={1}>
-            <thead>
-              <tr>
-                <td style={tableStyles.th} valign="middle">
-                  No.
-                </td>
-                <td style={tableStyles.th} valign="middle">
-                  Customer Name
-                </td>
-                <td style={tableStyles.th} valign="middle">
-                  Policy Number
-                </td>
-                <td style={tableStyles.th} valign="middle">
-                  Plan Name
-                </td>
-                <td style={tableStyles.th} valign="middle">
-                  Status
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              {data.length > 0 ? (
-                data.map((item, index) => (
-                  <tr key={item.id}>
-                    <td style={tableStyles.td} valign="middle">
-                      {(page - 1) * rowsPerPage + index + 1}
-                    </td>
-                    <td style={tableStyles.td} valign="middle">
-                      <div className="flex gap-2 items-center">
-                        {item.declarations?.transaction_data?.customer?.name ||
-                          "-"}
-                      </div>
-                    </td>
-                    <td style={tableStyles.td} valign="middle">
-                      {item?.number || "-"}
-                    </td>
-                    <td style={tableStyles.td} valign="middle">
-                      {item?.declarations?.transaction_data?.insurance?.plan?.name
-                        .split("|")
-                        .join(" - ")}
-                    </td>
-                    <td style={tableStyles.td} valign="middle">
-                      {item.status}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr className="hover:!bg-white">
-                  <td colSpan={5}>
-                    <div className="flex flex-col gap-4 items-center justify-center py-14">
-                      <Image alt="no data" src={noData} width={200} /> No
-                      transaction data available
+          <table style={styles.table} ref={reportTemplateRef} border={1}>
+            <tr>
+              <td style={styles.th} valign="middle">
+                No.
+              </td>
+              <td style={styles.th} valign="middle">
+                Customer Name
+              </td>
+              <td style={styles.th} valign="middle">
+                Policy Number
+              </td>
+              <td style={styles.th} valign="middle">
+                Plan Name
+              </td>
+              <td style={styles.th} valign="middle">
+                Status
+              </td>
+            </tr>
+            {data.length > 0 ? (
+              data.map((item, index) => (
+                <tr key={item.id}>
+                  <td style={styles.td} valign="middle">
+                    {(page - 1) * rowsPerPage + index + 1}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    <div className="flex gap-2 items-center">
+                      {item.policy_holder?.name || "-"}
                     </div>
-                  </td>{" "}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item?.number || "-"}
+                  </td>
+                  <td style={styles.td} valign="middle">
+                    {item?.policy_products?.plan_data?.name
+                      .split("|")
+                      .join(" - ") || "-"}
+                  </td>
+                  <td
+                    style={styles.td}
+                    valign="middle"
+                    className="whitespace-nowrap"
+                  >
+                    {item.status || "-"}
+                  </td>
                 </tr>
-              )}
-            </tbody>
+              ))
+            ) : (
+              <tr className="hover:!bg-white">
+                <td colSpan={5}>
+                  <div className="flex flex-col gap-4 items-center justify-center py-14">
+                    <Image alt="no data" src={noData} width={200} /> No
+                    transaction data available
+                  </div>
+                </td>{" "}
+              </tr>
+            )}
           </table>
         )}
       </div>
