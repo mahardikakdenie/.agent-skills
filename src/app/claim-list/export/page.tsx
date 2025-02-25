@@ -226,21 +226,16 @@ const ExportPage = () => {
                     </div>
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item?.policy_data?.account?.name || "-"}
+                    {item?.policy_data?.policy_holder?.name || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item?.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
-                      .split("|")
-                      .join(" - ") || "-"}
+                    {item?.package?.plan?.name.split("|").join(" - ") || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item.policy_data?.declarations?.transaction_data?.insurance
-                      ?.package_data?.benefits[0]?.benefits?.description_en ||
-                      "-"}
+                    {item?.benefit?.description_en || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item.policy_data?.declarations?.transaction_data?.insurance
-                      ?.currency || "-"}
+                    {item?.currency || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
                     {(() => {
