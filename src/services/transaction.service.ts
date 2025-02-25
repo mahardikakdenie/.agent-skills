@@ -23,14 +23,19 @@ export class TransactionService {
   }
 
   async getTransactions(
-    page: number,
-    rowsPerPage: number,
-    status: string
+    page?: number,
+    rowsPerPage?: number,
+    searchData?: string,
+    status?: string
   ): Promise<TransactionResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
     };
+
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
 
     if (status) {
       params["status"] = status;
@@ -42,7 +47,7 @@ export class TransactionService {
   async getTransactionsExport(page: number): Promise<TransactionResponse> {
     const params: any = {
       page: page,
-      limit: 400,
+      limit: 200,
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
