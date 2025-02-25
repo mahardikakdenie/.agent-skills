@@ -76,12 +76,12 @@ const ExportPage = () => {
       const convertedPremium = (currency?.value ?? 1) * item.insurance.premium;
 
       const premiumWithEmbeddedDiscount =
-        item.insurance.plan.premium_discount_type === "percentage"
+        item.insurance?.plan?.premium_discount_type === "percentage"
           ? convertedPremium -
-            (item.insurance.plan.premium_discount_value || 0 / 100) *
+            (item.insurance?.plan?.premium_discount_value || 0 / 100) *
               convertedPremium
           : convertedPremium -
-            (item.insurance.plan.premium_discount_value || 0);
+            (item.insurance?.plan?.premium_discount_value || 0);
 
       let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
       if (item.voucher_info) {
