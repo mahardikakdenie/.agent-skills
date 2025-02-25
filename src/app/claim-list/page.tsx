@@ -35,7 +35,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -52,10 +51,6 @@ import { Input } from "@/components/ui/input";
 import { hasPermission } from "@/context/auth.context";
 import _ from "lodash";
 import {
-  ChannelsResponse,
-  ChannelsService,
-} from "@/services/masterdata/channels.service";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -71,7 +66,6 @@ const ClaimsPage = () => {
   useRequireAuth();
   const path = usePathname();
   const claimService = new ClaimService();
-  const channelsService = new ChannelsService();
   const [claims, setClaims] = useState<any[]>([]);
   const [filteredClaims, setFilteredClaims] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -114,7 +108,6 @@ const ClaimsPage = () => {
 
   const [searchChannel, setSearchChannel] = useState("");
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
-  const [channel, setChannel] = useState<ChannelsResponse[]>([]);
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
   const [openAllStatus, setOpenAllStatus] = useState<boolean>(false);
@@ -149,7 +142,6 @@ const ClaimsPage = () => {
           rowsPerPage,
           tab === "All" ? "" : tab,
           searchData,
-          searchChannel === "All" ? "" : searchChannel,
           searchSlaStatus === "All" ? "" : searchSlaStatus,
           date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
           date?.to ? format(date.to, "yyyy-MM-dd") : undefined
@@ -171,7 +163,6 @@ const ClaimsPage = () => {
     tab,
     successUpdate,
     searchData,
-    searchChannel,
     searchSlaStatus,
     date,
   ]);
@@ -201,23 +192,6 @@ const ClaimsPage = () => {
     setSearchData(keyword);
   }, 100);
 
-  useEffect(() => {
-    const fetchChannels = async () => {
-      try {
-        const response = await channelsService.getChannels(page, rowsPerPage);
-        setChannel(response.data);
-        setTotalPages(response.pageTotal);
-        setTotalItems(response.total);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-
-    fetchChannels();
-  }, [page, rowsPerPage]);
-
   const handleSearchChannelOnChange = (v: string) => {
     setSearchChannel(v);
   };
@@ -236,9 +210,9 @@ const ClaimsPage = () => {
     });
   };
 
-  const selectCategory = (id: string) => {
+  const selectCategory = (id: string, dataId: string) => {
     claimService.getClaimCategory(id).then((res) => {
-      const label = filteredClaims[0]?.claim_config;
+      const label = filteredClaims?.filter((f: any) => f?.id === dataId)?.[0]?.claim_config;
 
       const updatedDataDocument = res.data
         .filter(
@@ -250,18 +224,20 @@ const ClaimsPage = () => {
           ...document,
           label: {
             ...document.label,
-            en: document.label?.en || label,
+            en: document.label?.en || document?.label_multilanguage?.en || document.label,
           },
         }));
 
-      setDataDocument([...updatedDataDocument, ...label]);
+      const updatedDataDocumentFields = res?.data?.filter((doc: any) => doc?.type?.toLowerCase() === "fields" && doc?.fields?.length > 0).map((a: any) => a?.fields?.filter((doc: any) => doc?.type?.toLowerCase() === "file" || doc?.type?.toLowerCase() === "file multiple"))?.flat() || [];
+
+      setDataDocument([...updatedDataDocument, ...updatedDataDocumentFields, ...label]);
     });
   };
 
   const handleSelectDocument = () => {
     if (selectedClaim) {
       if (selectedClaim.policy) {
-        selectCategory(selectedClaim.category);
+        selectCategory(selectedClaim.category, selectedClaim.id);
       } else {
         selectChannel(selectedClaim.channel);
       }
@@ -417,7 +393,7 @@ const ClaimsPage = () => {
         pendingStatus,
         amountApproved,
         notes,
-        finalSelectedDocuments.map((item) => item.name)
+        finalSelectedDocuments.map((item) => !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name)
       );
       setClaims((prevClaims) =>
         prevClaims.map((claim) =>
@@ -457,7 +433,12 @@ const ClaimsPage = () => {
     const selected = dataDocument.filter((doc) =>
       selectedDocuments.includes(doc.name)
     );
-    setFinalSelectedDocuments(selected);
+    const docListFields = dataDocument.length > 0 ? dataDocument.filter((doc: any) => doc.type.toLowerCase() === "fields" && doc.fields.length > 0).map((a: any) => a.fields.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple")).flat().map((d: any) => ({
+      ...d,
+      nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-"
+    })) : [];
+    const selectedFields = docListFields.filter((doc) => selectedDocuments.includes(doc.name));
+    setFinalSelectedDocuments([ ...selected, ...selectedFields ]);
   };
 
   const handleDeleteSelectedDocument = (id: string) => {
@@ -712,7 +693,7 @@ const ClaimsPage = () => {
                             <Input
                               name="lack_of_documents"
                               value={
-                                doc?.label?.en || doc?.label_multilanguage?.en
+                                doc?.label?.en || doc?.label_multilanguage?.en || doc?.label || "-"
                               }
                               className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
                             />
@@ -782,8 +763,9 @@ const ClaimsPage = () => {
                                 dataDocument
                                   .filter(
                                     (document) =>
-                                      document.type === "file" ||
-                                      document.type === "file multiple"
+                                      document.type.toLowerCase() === "file" ||
+                                      document.type.toLowerCase() === "file multiple" ||
+                                      document.type.toLowerCase() === "fields"
                                   )
                                   .map((document) => (
                                     <TableRow
@@ -793,26 +775,33 @@ const ClaimsPage = () => {
                                       <TableCell align="center">
                                         <Input
                                           type="checkbox"
-                                          checked={isDocumentSelected(
+                                          checked={document.type.toLowerCase() === "fields" ? isDocumentSelected(document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.name) : isDocumentSelected(
                                             document.name
                                           )}
-                                          onClick={() =>
-                                            handleCheckboxChange(document.name)
-                                          }
+                                          onClick={() => {
+                                            let docName = document.name;
+                                            if (document.type.toLowerCase() === "fields") docName = document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.name;
+                                            handleCheckboxChange(docName)
+                                          }}
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
                                       <TableCell>
-                                        {document?.label?.en ||
+                                        {document.type.toLowerCase() === "fields" ? (
+                                          document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.label?.en ||
+                                          document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.label_multilanguage?.en ||
+                                          document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.label ||
+                                          "-"
+                                          ) : (document?.label?.en ||
                                           document?.label_multilanguage?.en ||
                                           document?.label ||
-                                          "-"}
+                                        "-")}
                                       </TableCell>
                                       <TableCell className="">
-                                        {document.criteria || "-"}
+                                        {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.criteria || "-") : (document?.criteria || "-")}
                                       </TableCell>
                                       <TableCell className="">
-                                        {document.definition || "-"}
+                                        {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.definition || "-") : (document?.definition || "-")}
                                       </TableCell>
                                       <TableCell className="w-24 text-center">
                                         <Dialog>
@@ -852,22 +841,24 @@ const ClaimsPage = () => {
                                             <div className="flex flex-col px-4 pb-4">
                                               <p className="text-sm">
                                                 Document type:{" "}
-                                                {document.document_type || "-"}
+                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.name || "-") : (document?.name || "-")}
                                               </p>
                                               <p className="text-sm">
                                                 Criteria:{" "}
-                                                {document.criteria || "-"}
+                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.criteria || "-") : (document?.criteria || "-")}
                                               </p>
                                               <p className="text-sm">
                                                 Definition:{" "}
-                                                {document?.definition || "-"}
+                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.definition || "-") : (document?.definition || "-")}
                                               </p>
                                               <hr className="my-4" />
                                               <p className="text-sm">
                                                 "
-                                                {document
+                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]
                                                   ?.pending_reason_message
-                                                  ?.en || "-"}
+                                                  ?.en || "-") : (document
+                                                  ?.pending_reason_message
+                                                  ?.en || "-")}
                                                 "{" "}
                                               </p>
                                             </div>
