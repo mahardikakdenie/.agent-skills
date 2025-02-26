@@ -77,6 +77,7 @@ const AssignPlan = ({
   }, [activeTab, page, rowsPerPage]);
 
   useEffect(() => {
+    if (!id) return;
     const loadAssignedPlans = async () => {
       const response = await productCatalogService.getChannelPlansByChannel(id);
       if (response) {
@@ -84,7 +85,7 @@ const AssignPlan = ({
       }
     };
     loadAssignedPlans();
-  }, []);
+  }, [id]);
 
   const fetchPlans = async (category: string) => {
     setLoading(true);
