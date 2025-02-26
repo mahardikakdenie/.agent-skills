@@ -596,7 +596,7 @@ const ClaimsPage = () => {
             value={searchSlaStatus}
             onValueChange={handleSearchSlaStatusChange}
           >
-            <SelectTrigger className="h-16">
+            <SelectTrigger className="h-10">
               <SelectValue placeholder="SLA Status" />
             </SelectTrigger>
             <SelectContent>
