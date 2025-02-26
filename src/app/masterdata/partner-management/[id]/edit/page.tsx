@@ -61,6 +61,7 @@ const EditPartner = ({ params }: { params: { id: string } }) => {
   const [channels, setChannels] = useState<any[]>([]);
   const [showApiKey, setShowApiKey] = useState(false);
   const [channelName, setChannelName] = useState("");
+  const [channelId, setChannelId] = useState("");
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const {
@@ -92,7 +93,7 @@ const EditPartner = ({ params }: { params: { id: string } }) => {
             (c: any) => c.id.toString() === partnerResponse.channel?.toString()
           );
           setChannelName(channel?.name || "");
-
+          setChannelId(partnerResponse.channel?.toString() || "");
           reset({
             name: partnerResponse.name,
             email: partnerResponse.email,
@@ -395,6 +396,7 @@ const EditPartner = ({ params }: { params: { id: string } }) => {
                     <Select
                       value={field.value?.toString() || ""}
                       onValueChange={field.onChange}
+                      disabled
                     >
                       <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                         <SelectValue placeholder="Select Channel" />
@@ -431,7 +433,7 @@ const EditPartner = ({ params }: { params: { id: string } }) => {
         <div className="flex flex-col w-full p-4 md:p-6">
           <div className="p-4 sm:p-6 bg-white rounded-lg">
             <h2 className="text-xl mb-4">Assign Plans</h2>
-            <AssignPlan id={id} channelName={channelName} />
+            <AssignPlan id={channelId} channelName={channelName} />
           </div>
         </div>
       </div>
