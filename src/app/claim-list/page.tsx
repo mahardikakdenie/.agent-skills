@@ -596,7 +596,7 @@ const ClaimsPage = () => {
             value={searchSlaStatus}
             onValueChange={handleSearchSlaStatusChange}
           >
-            <SelectTrigger className="h-16">
+            <SelectTrigger className="h-10">
               <SelectValue placeholder="SLA Status" />
             </SelectTrigger>
             <SelectContent>
@@ -614,6 +614,13 @@ const ClaimsPage = () => {
           className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
         >
           <Upload className="w-5 h-5 mr-1" /> Import
+        </Button>
+        {/* New button to redirect to the new import page with preview */}
+        <Button
+          onClick={() => router.push(`${path}/import-with-preview`)}
+          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1" /> Import with Preview
         </Button>
         <Button
           onClick={handleExport}
