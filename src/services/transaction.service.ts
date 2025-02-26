@@ -44,12 +44,12 @@ export class TransactionService {
     return this.httpClient.get(`/v1/transactions?${queryString}`);
   }
 
-  async getTransactionsExport(page: number): Promise<TransactionResponse> {
-    const params: any = {
-      page: page,
-      limit: 200,
-    };
-
+  async getTransactionsExport(params: {
+    page: number;
+    rowsPerPage: number;
+    status?: string;
+    keyword?: string;
+  }): Promise<TransactionResponse> {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/transactions?${queryString}`);
   }

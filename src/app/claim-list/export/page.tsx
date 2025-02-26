@@ -19,7 +19,7 @@ const ExportPage = () => {
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [totalData, setTotalData] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(totalData);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -27,8 +27,32 @@ const ExportPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await itemService.getClaimsExport(page, rowsPerPage);
-        setData(res.data);
+        const savedData = localStorage.getItem("exportClaimData");
+        if (!savedData) return;
+
+        const parsedData = JSON.parse(savedData);
+
+        const params = {
+          page: parsedData.page ?? 1,
+          limit: 150,
+          ...(parsedData.search && { keyword: parsedData.search }),
+          ...(parsedData.status &&
+            parsedData.status !== "All" && { status: parsedData.status }),
+          ...(parsedData.sla_status &&
+            parsedData.sla_status !== "All" && {
+              sla_status: parsedData.sla_status,
+            }),
+          ...(parsedData.date_from && { date_from: parsedData.date_from }),
+          ...(parsedData.date_to && { date_to: parsedData.date_to }),
+        };
+
+        const res = await itemService.getClaimsExport(params);
+
+        const filteredData = res.data.filter(
+          (item: any) => item.status !== "Draft"
+        );
+
+        setData(filteredData);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -202,21 +226,16 @@ const ExportPage = () => {
                     </div>
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item?.policy_data?.account?.name || "-"}
+                    {item?.policy_data?.policy_holder?.name || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item?.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
-                      .split("|")
-                      .join(" - ") || "-"}
+                    {item?.package?.plan?.name.split("|").join(" - ") || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item.policy_data?.declarations?.transaction_data?.insurance
-                      ?.package_data?.benefits[0]?.benefits?.description_en ||
-                      "-"}
+                    {item?.benefit?.description_en || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
-                    {item.policy_data?.declarations?.transaction_data?.insurance
-                      ?.currency || "-"}
+                    {item?.currency || "-"}
                   </td>
                   <td style={styles.td} valign="middle">
                     {(() => {

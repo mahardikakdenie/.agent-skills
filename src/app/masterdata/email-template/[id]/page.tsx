@@ -166,7 +166,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = await hasPermission("Masterdata.Edit");
+      const access = await hasPermission("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
         router.push("/forbidden");

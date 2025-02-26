@@ -29,11 +29,11 @@ const PolicyPage = () => {
   const router = useRouter();
   const [tab, setTab] = useState("All");
   const [totalData, setTotalData] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
     policyService
-      .getPolicy(page, rowsPerPage, tab == "All" ? "" : tab)
+      .getPolicy(page, rowsPerPage, searchData, tab == "All" ? "" : tab)
       .then((res) => {
         setPolicies(res.data);
         setFilteredTransactions(res.data);
@@ -42,20 +42,7 @@ const PolicyPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
-  }, [page, rowsPerPage, tab]);
-
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = policies.filter((policy) =>
-        policy.declarations?.transaction_data?.insurance?.plan?.name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      );
-      setFilteredTransactions(filtered);
-    } else {
-      setFilteredTransactions(policies);
-    }
-  }, [searchTerm, policies]);
+  }, [page, searchData, rowsPerPage, tab]);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -84,12 +71,24 @@ const PolicyPage = () => {
     router.push(`${path}/${policyId}`);
   };
 
+  const handleExport = () => {
+    const exportData = {
+      page,
+      limit: rowsPerPage,
+      status: tab === "All" ? "" : tab,
+      search: searchData,
+    };
+
+    localStorage.setItem("exportPolicyData", JSON.stringify(exportData));
+    router.push(`${path}/export`);
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Policy List</h1>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={handleExport}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export
@@ -203,8 +202,7 @@ const PolicyPage = () => {
           <input
             type="text"
             placeholder="Search by Plan Name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchData(e.target.value)}
             className="border p-3 rounded-md pr-10 w-full"
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
