@@ -28,6 +28,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import EditIcon from "@/components/icons/edit.icon";
+import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 
 import { useLoading } from "@/context/loading.context";
 import { getChannel } from "@/context/auth.context";
@@ -205,6 +208,18 @@ const ImportWithPreviewPage = () => {
     setValidatedHeader(validatedRows);
   };
 
+  const isHeaderValid = (header?: string, index?: number): boolean => {
+    const checkHeader = header ?? tableHeader[index ?? 0] ?? '';
+    const fieldCount = tableHeader.reduce<Record<string, number>>((acc, field) => {
+      acc[field] = (acc[field] || 0) + 1;
+      return acc;
+    }, {});
+  
+    const fieldMap = new Set(headerGuide.map((item) => item.field));
+  
+    return fieldCount[checkHeader] <= 1 && fieldMap.has(checkHeader);
+  };
+
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       handleFileSelection(e.target.files[0], validateHeaders);
@@ -311,6 +326,13 @@ const ImportWithPreviewPage = () => {
     }
   };
 
+  const handleCheckSelectedHeader = (index: number) => {
+    const newValidatedHeader = [...validatedHeader];
+    newValidatedHeader[index] = !newValidatedHeader[index];
+
+    setValidatedHeader(newValidatedHeader);
+  };
+
   const renderCategoryOptions = () => {
     if (categoryOptions.length === 0) return null;
     return (
@@ -330,7 +352,39 @@ const ImportWithPreviewPage = () => {
         <TableHeader>
           <TableRow>
             {tableHeader.map((header: string, index: number) => (
-              <TableHead key={index}>{header}</TableHead>
+              <TableHead
+                key={index}
+                className={`truncate cursor-pointer transition-colors duration-200 border-r ${!isHeaderValid(header) ? 'text-white bg-red-500 hover:bg-red-400' : 'hover:bg-gray-200'}`}
+              >
+                <div className="flex flex-row gap-3">
+                  {EditIcon(
+                    !isHeaderValid(header)
+                      ? "white"
+                      : "#016DA1",
+                    "20",
+                    "20",
+                    "0 0 24 24",
+                  )}
+
+                  {header}
+
+                  {isHeaderValid(header) ? (
+                    <Input
+                      type="checkbox"
+                      checked={validatedHeader[index]}
+                      onChange={() => handleCheckSelectedHeader(index)}
+                      className="w-4 h-4"
+                    />
+                  ) : (
+                    AlertCircleIcon(
+                      "white",
+                      "20",
+                      "20",
+                      "0 0 24 24",
+                    )
+                  )}
+                </div>
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -338,7 +392,7 @@ const ImportWithPreviewPage = () => {
           {tableData.map((row: any, index: number) => (
             <TableRow key={index}>
               {row.map((cell: any, cellIndex: number) => (
-                <TableCell key={cellIndex}>{cell}</TableCell>
+                <TableCell key={cellIndex} className="border-r">{cell}</TableCell>
               ))}
             </TableRow>
           ))}
