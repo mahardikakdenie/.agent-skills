@@ -95,17 +95,10 @@ const ExportPage = () => {
     const sheetData = data.map((item, index) => ({
       No: (page - 1) * rowsPerPage + index + 1,
       "Claim ID": item.number || "-",
-      "Customer Name": item.policy_data?.account?.name || "-",
-      "Plan Name":
-        item?.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
-          .split("|")
-          .join(" - ") || "-",
-      Benefit:
-        item.policy_data?.declarations?.transaction_data?.insurance
-          ?.package_data?.benefits[0]?.benefits?.description_en || "-",
-      Currency:
-        item.policy_data?.declarations?.transaction_data?.insurance?.currency ||
-        "-",
+      "Customer Name": item?.policy_data?.policy_holder?.name || "-",
+      "Plan Name": item?.package?.plan?.name.split("|").join(" - ") || "-",
+      Benefit: item?.benefit?.description_en || "-",
+      Currency: item?.currency || "-",
       "Requested Amount": (() => {
         const claimValue = item.claim?.find(
           (d: any) => d.type === "Number" && d.name === "claim"
