@@ -32,7 +32,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -52,10 +52,8 @@ import { getChannel } from "@/context/auth.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
-import { toastPromise, toastNotification } from '@/lib/toast';
+import { toastPromise, toastNotification } from "@/lib/toast";
 import { capitalizeStringWithChar } from "@/lib/formatter";
-
-import headerGuideJson from "@/header-guide.json";
 
 const ImportWithPreviewPage = () => {
   const claimService = new ClaimService();
@@ -91,7 +89,7 @@ const ImportWithPreviewPage = () => {
   const [headerIndex, setHeaderIndex] = useState<number>(0);
   const [selectedHeader, setSelectedHeader] = useState<string>("");
   const [newLabelHeader, setNewLabelHeader] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Get user channel
   useEffect(() => {
@@ -103,7 +101,7 @@ const ImportWithPreviewPage = () => {
         console.error("Failed to get channel:", error);
       }
     };
-  
+
     fetchChannel();
   }, []);
 
@@ -139,22 +137,26 @@ const ImportWithPreviewPage = () => {
   });
 
   const checkAllRequiredHeader = () => {
-    const filterRequiredHeader = headerGuide.filter((header) => header.required);
-    const filterHeaderSubmitted = tableHeader.filter((_, index) => validatedHeader[index]);
+    const filterRequiredHeader = headerGuide.filter(
+      (header) => header.required
+    );
+    const filterHeaderSubmitted = tableHeader.filter(
+      (_, index) => validatedHeader[index]
+    );
 
     const filterHeaderSubmittedSet = validatedHeader.length
       ? new Set(filterHeaderSubmitted)
       : new Set(tableHeader);
     return filterRequiredHeader.every((item) =>
-      filterHeaderSubmittedSet.has(item.field),
+      filterHeaderSubmittedSet.has(item.field)
     );
   };
 
   useEffect(() => {
     if (!checkAllRequiredHeader()) {
-      setErrorMessage('You must match all required column to import.');
+      setErrorMessage("You must match all required column to import.");
     } else {
-      setErrorMessage('');
+      setErrorMessage("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headerGuide, tableHeader, validatedHeader]);
@@ -168,8 +170,11 @@ const ImportWithPreviewPage = () => {
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
-  
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+          header: 1,
+          raw: false,
+        });
+
         // Return the formatted data
         resolve(jsonData);
       };
@@ -181,12 +186,17 @@ const ImportWithPreviewPage = () => {
   const transformJsonWithHeaders = (tableHeader: any[], tableData: any[]) => {
     if (!tableHeader.length && !tableData.length) return [];
 
-    return tableData.map((row) => 
-      Object.fromEntries(tableHeader.map((key: string, index: number) => [key, row[index]]))
+    return tableData.map((row) =>
+      Object.fromEntries(
+        tableHeader.map((key: string, index: number) => [key, row[index]])
+      )
     );
   };
 
-  const handleFileSelection = async (file: File, callback: (data: any) => void) => {
+  const handleFileSelection = async (
+    file: File,
+    callback: (data: any) => void
+  ) => {
     if (
       file.type ===
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
@@ -202,7 +212,7 @@ const ImportWithPreviewPage = () => {
         setTableHeader(tableHeader);
         setTableData(tableData);
 
-        // Compare header from the uploaded file with the header from the guide 
+        // Compare header from the uploaded file with the header from the guide
         callback(tableHeader);
       } catch (error) {
         console.error("Error processing file:", error);
@@ -244,19 +254,24 @@ const ImportWithPreviewPage = () => {
       fieldCount[row] = (fieldCount[row] || 0) + 1;
     });
 
-    const validatedRows = jsonData.map((row: any) => fieldCount[row] <= 1 && fieldMap.has(row));
+    const validatedRows = jsonData.map(
+      (row: any) => fieldCount[row] <= 1 && fieldMap.has(row)
+    );
     setValidatedHeader(validatedRows);
   };
 
   const isHeaderValid = (header?: string, index?: number): boolean => {
-    const checkHeader = header ?? tableHeader[index ?? 0] ?? '';
-    const fieldCount = tableHeader.reduce<Record<string, number>>((acc, field) => {
-      acc[field] = (acc[field] || 0) + 1;
-      return acc;
-    }, {});
-  
+    const checkHeader = header ?? tableHeader[index ?? 0] ?? "";
+    const fieldCount = tableHeader.reduce<Record<string, number>>(
+      (acc, field) => {
+        acc[field] = (acc[field] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
+
     const fieldMap = new Set(headerGuide.map((item) => item.field));
-  
+
     return fieldCount[checkHeader] <= 1 && fieldMap.has(checkHeader);
   };
 
@@ -279,19 +294,24 @@ const ImportWithPreviewPage = () => {
         category: categoryId,
       });
 
-      const guideResponse = (Array.isArray(response) && response.length > 0) ? response[0].data : null;
+      const guideResponse =
+        Array.isArray(response) && response.length > 0
+          ? response[0].data
+          : null;
 
       if (guideResponse) {
         setHeaderGuide(guideResponse);
-        setHeaderOptions(guideResponse.map((guide: any) => {
-          return {
-            label: `${guide?.field} ${guide?.required ? '(Required)' : ''}`,
+        setHeaderOptions(
+          guideResponse.map((guide: any) => {
+            return {
+              label: `${guide?.field} ${guide?.required ? "(Required)" : ""}`,
               value: guide?.field,
-          };
-        }));
+            };
+          })
+        );
       } else {
         toastNotification(
-          "Header guide is empty. Please select another category", 
+          "Header guide is empty. Please select another category",
           "error"
         );
       }
@@ -303,27 +323,28 @@ const ImportWithPreviewPage = () => {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile || tableHeader.length <= 0 || tableData.length <= 0) return;
+    if (!selectedFile || tableHeader.length <= 0 || tableData.length <= 0)
+      return;
     setUploadStatus("uploading");
     setLoading(true);
-  
+
     try {
       // Transform tableData so that the first row is used as keys for the subsequent rows
       const importData = transformJsonWithHeaders(tableHeader, tableData);
-  
+
       const uploadPromise = claimService.importAsJson({
         data: importData,
         input: "Data",
         channel: channel || "",
         category: selectedCategory,
       });
-  
+
       await toastPromise(uploadPromise, {
         loading: "Uploading file...",
         success: <b>File uploaded successfully!</b>,
         error: "Upload failed!",
       });
-  
+
       setUploadStatus("success");
       setTimeout(() => {
         router.push("/claim-list");
@@ -358,13 +379,20 @@ const ImportWithPreviewPage = () => {
   const handleConfirmEdit = () => {
     setTableHeader((prevItems) =>
       prevItems.map((item, i) =>
-        i === headerIndex ? (selectedHeader === "add" ? newLabelHeader : selectedHeader) : item
+        i === headerIndex
+          ? selectedHeader === "add"
+            ? newLabelHeader
+            : selectedHeader
+          : item
       )
     );
 
     // If a new label is provided, add it to the header options list
     if (newLabelHeader) {
-      setHeaderOptions((prev) => [...prev, { label: newLabelHeader, value: newLabelHeader }]);
+      setHeaderOptions((prev) => [
+        ...prev,
+        { label: newLabelHeader, value: newLabelHeader },
+      ]);
     }
 
     // Toggle the validation state for the selected header
@@ -398,49 +426,53 @@ const ImportWithPreviewPage = () => {
         <TableHeader>
           <TableRow>
             {tableHeader.map((header: string, index: number) => (
-                <TableHead
-                  key={index}
-                  className={`truncate cursor-pointer transition-colors duration-200 border-r ${!isHeaderValid(header) ? 'text-white bg-red-500 hover:bg-red-400' : 'hover:bg-gray-200'}`}
-                  onClick={() => handleClickHeader(index, header)}
-                >
-                  <div className="flex flex-row gap-3">
-                    {EditIcon(
-                      !isHeaderValid(header)
-                        ? "white"
-                        : "#016DA1",
-                      "20",
-                      "20",
-                      "0 0 24 24",
-                    )}
+              <TableHead
+                key={index}
+                className={`truncate cursor-pointer transition-colors duration-200 border-r ${
+                  !isHeaderValid(header)
+                    ? "text-white bg-red-500 hover:bg-red-400"
+                    : "hover:bg-gray-200"
+                }`}
+                onClick={() => handleClickHeader(index, header)}
+              >
+                <div className="flex flex-row gap-3">
+                  {EditIcon(
+                    !isHeaderValid(header) ? "white" : "#016DA1",
+                    "20",
+                    "20",
+                    "0 0 24 24"
+                  )}
 
-                    {header}
+                  {header}
 
-                    {isHeaderValid(header) ? (
-                      <Input
-                        type="checkbox"
-                        checked={validatedHeader[index]}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) => {
-                          handleCheckSelectedHeader(index);
-                        }}
-                        className="w-4 h-4"
-                      />
-                    ) : (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div>
-                              {AlertCircleIcon("white", "20", "20", "0 0 24 24")}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">
-                            <p className="text-sm">Edit the column name to resolve the error</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                </TableHead>
+                  {isHeaderValid(header) ? (
+                    <Input
+                      type="checkbox"
+                      checked={validatedHeader[index]}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => {
+                        handleCheckSelectedHeader(index);
+                      }}
+                      className="w-4 h-4"
+                    />
+                  ) : (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            {AlertCircleIcon("white", "20", "20", "0 0 24 24")}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p className="text-sm">
+                            Edit the column name to resolve the error
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -448,7 +480,9 @@ const ImportWithPreviewPage = () => {
           {tableData.map((row: any, index: number) => (
             <TableRow key={index}>
               {row.map((cell: any, cellIndex: number) => (
-                <TableCell key={cellIndex} className="border-r">{cell}</TableCell>
+                <TableCell key={cellIndex} className="border-r">
+                  {cell}
+                </TableCell>
               ))}
             </TableRow>
           ))}
@@ -487,12 +521,12 @@ const ImportWithPreviewPage = () => {
             </div>
           </DialogHeader>
           <DialogFooter>
-          <Button
-            className="border border-red-500 text-red-500 bg-white hover:bg-red-100"
-            onClick={() => setIsModalEditOpen(false)}
-          >
-            Cancel
-          </Button>
+            <Button
+              className="border border-red-500 text-red-500 bg-white hover:bg-red-100"
+              onClick={() => setIsModalEditOpen(false)}
+            >
+              Cancel
+            </Button>
             <Button
               className="btn btn-primary"
               onClick={() => handleConfirmEdit()}
@@ -535,7 +569,9 @@ const ImportWithPreviewPage = () => {
           </div>
           <Button
             onClick={handleUpload}
-            disabled={!selectedFile || uploadStatus === "uploading" || !!errorMessage}
+            disabled={
+              !selectedFile || uploadStatus === "uploading" || !!errorMessage
+            }
             className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
           >
             {uploadStatus === "uploading" ? (
@@ -553,9 +589,7 @@ const ImportWithPreviewPage = () => {
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg">
           <div className="mb-4">
-            <div className="text-xs mb-1.5 font-medium">
-              Select Category
-            </div>
+            <div className="text-xs mb-1.5 font-medium">Select Category</div>
             <Select
               value={selectedCategory}
               onValueChange={handleSelectCategory}
@@ -563,9 +597,7 @@ const ImportWithPreviewPage = () => {
               <SelectTrigger>
                 <SelectValue placeholder="Select option" />
               </SelectTrigger>
-              <SelectContent>
-                {renderCategoryOptions()}
-              </SelectContent>
+              <SelectContent>{renderCategoryOptions()}</SelectContent>
             </Select>
           </div>
           {selectedCategory && headerGuide.length > 0 ? (
@@ -614,24 +646,20 @@ const ImportWithPreviewPage = () => {
           ) : null}
           {selectedFile && tableHeader.length > 0 && tableData.length > 0 ? (
             <div className="pt-4">
-              {
-                errorMessage ? (
-                  <p className="mb-2 text-xs text-red-500">
-                    {errorMessage}
-                  </p>
-                ) : (
-                  <p className="mb-2 text-xs">
-                    <span className="font-semibold">
-                      {`${validatedHeader.filter(Boolean).length} `}
-                    </span>
-                    column(s) will be imported.
-                    <span className="font-semibold">
-                      {` ${validatedHeader.filter((value) => !value).length} `}
-                    </span>
-                    columns will not be imported.
-                  </p>
-                )
-              }
+              {errorMessage ? (
+                <p className="mb-2 text-xs text-red-500">{errorMessage}</p>
+              ) : (
+                <p className="mb-2 text-xs">
+                  <span className="font-semibold">
+                    {`${validatedHeader.filter(Boolean).length} `}
+                  </span>
+                  column(s) will be imported.
+                  <span className="font-semibold">
+                    {` ${validatedHeader.filter((value) => !value).length} `}
+                  </span>
+                  columns will not be imported.
+                </p>
+              )}
               {renderPreviewTable()}
               {isModalEditOpen ? renderEditModal() : null}
             </div>
@@ -642,5 +670,6 @@ const ImportWithPreviewPage = () => {
   );
 };
 
-const ImportWithPreviewPageWithSidebar = (params: any) => WithSidebar(ImportWithPreviewPage)(params);
+const ImportWithPreviewPageWithSidebar = (params: any) =>
+  WithSidebar(ImportWithPreviewPage)(params);
 export default ImportWithPreviewPageWithSidebar;
