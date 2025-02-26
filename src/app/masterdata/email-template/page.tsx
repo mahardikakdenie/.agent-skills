@@ -36,7 +36,6 @@ const MailTemplate = () => {
   const mailTemplateService = new MailTemplateService();
   const [insurance, setInsurance] = useState<Insurance[]>([]);
   const [mailTemplate, setMailTemplate] = useState<MailTemplateResponse[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -72,7 +71,6 @@ const MailTemplate = () => {
 
   useEffect(() => {
     const fetchMailTemplate = async () => {
-      setLoading(true);
       try {
         const result = await mailTemplateService.getMailTemplate(
           page,
@@ -86,7 +84,7 @@ const MailTemplate = () => {
       } catch (error) {
         console.error("Error fetching insurance products:", error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
@@ -104,20 +102,12 @@ const MailTemplate = () => {
       } catch (error) {
         console.error(error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
     fetchCategories();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        Loading...
-      </div>
-    );
-  }
 
   const handleEdit = (id: string) => {
     router.push(`${path}/${id}`);
@@ -143,6 +133,14 @@ const MailTemplate = () => {
     setTab(tab);
     setPage(1);
   };
+
+  // if (loading) {
+  //   return (
+  //     <div className="w-full h-full flex justify-center items-center">
+  //       Loading...
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
@@ -192,7 +190,6 @@ const MailTemplate = () => {
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
               <TableHead className="min-w-36">Subject</TableHead>
               <TableHead className="min-w-36">Journey</TableHead>
-              <TableHead>Updated Date</TableHead>
               <TableHead className="whitespace-nowrap w-12">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -203,7 +200,6 @@ const MailTemplate = () => {
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{mail?.subject || "-"}</TableCell>
                   <TableCell>{mail?.journey || "-"}</TableCell>
-                  <TableCell>{mail?.updated_at || "-"}</TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
                       <Button

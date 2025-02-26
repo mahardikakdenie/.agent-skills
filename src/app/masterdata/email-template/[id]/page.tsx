@@ -188,7 +188,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     if (selectedProductId) {
       fetchPlans({
-        product: selectedProductId,
+        productId: selectedProductId,
       });
     }
   }, [selectedProductId]);
