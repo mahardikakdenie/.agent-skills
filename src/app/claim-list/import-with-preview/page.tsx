@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, MouseEvent } from "react";
 import { ChevronLeft, Upload } from "react-feather";
 import * as XLSX from "xlsx";
 import {
@@ -33,6 +33,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import EditIcon from "@/components/icons/edit.icon";
@@ -78,6 +87,11 @@ const ImportWithPreviewPage = () => {
     }[]
   >([]);
   const [validatedHeader, setValidatedHeader] = useState<boolean[]>([]);
+  const [isModalEditOpen, setIsModalEditOpen] = useState<boolean>(false);
+  const [headerIndex, setHeaderIndex] = useState<number>(0);
+  const [selectedHeader, setSelectedHeader] = useState<string>("");
+  const [newLabelHeader, setNewLabelHeader] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   // Get user channel
   useEffect(() => {
@@ -124,6 +138,26 @@ const ImportWithPreviewPage = () => {
     }
   });
 
+  const checkAllRequiredHeader = () => {
+    const filterRequiredHeader = headerGuide.filter((header) => header.required);
+    const filterHeaderSubmitted = tableHeader.filter((_, index) => validatedHeader[index]);
+
+    const filterHeaderSubmittedSet = validatedHeader.length
+      ? new Set(filterHeaderSubmitted)
+      : new Set(tableHeader);
+    return filterRequiredHeader.every((item) =>
+      filterHeaderSubmittedSet.has(item.field),
+    );
+  };
+
+  useEffect(() => {
+    if (!checkAllRequiredHeader()) {
+      setErrorMessage('You must match all required column to import.');
+    } else {
+      setErrorMessage('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [headerGuide, tableHeader, validatedHeader]);
 
   // Helper function to parse Excel file into JSON
   const parseExcelFile = (file: File) => {
@@ -237,66 +271,36 @@ const ImportWithPreviewPage = () => {
     fetchImportDataGuide(value);
   };
 
-  const fetchImportDataGuide = (categoryId: string) => {
+  const fetchImportDataGuide = async (categoryId: string) => {
     setLoading(true);
-  
     try {
-      const guideResponse = Array.isArray(headerGuideJson) && headerGuideJson.length > 0 
-        ? headerGuideJson[0].data 
-        : null;
-  
+      const response = await claimService.importDataGuide({
+        channel: channel || "",
+        category: categoryId,
+      });
+
+      const guideResponse = (Array.isArray(response) && response.length > 0) ? response[0].data : null;
+
       if (guideResponse) {
         setHeaderGuide(guideResponse);
-        setHeaderOptions(
-          guideResponse.map((guide: any) => ({
+        setHeaderOptions(guideResponse.map((guide: any) => {
+          return {
             label: `${guide?.field} ${guide?.required ? '(Required)' : ''}`,
-            value: guide?.field,
-          }))
-        );
+              value: guide?.field,
+          };
+        }));
       } else {
         toastNotification(
-          'Header guide is empty. Please select another category',
-          'error'
+          "Header guide is empty. Please select another category", 
+          "error"
         );
       }
     } catch (error) {
-      console.error('Error fetching guide', error);
+      console.error("Error fetching guide", error);
     } finally {
       setLoading(false);
     }
   };
-
-  // UNCOMMENT THIS AFTER FINISHED USING THE SAMPLE
-  // const fetchImportDataGuide = async (categoryId: string) => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await claimService.importDataGuide({
-  //       channel: channel || "",
-  //       category: categoryId,
-  //     });
-
-  //     const guideResponse = (Array.isArray(response) && response.length > 0) ? response[0].data : null;
-
-  //     if (guideResponse) {
-  //       setHeaderGuide(guideResponse);
-  //       setHeaderOptions(guideResponse.map((guide: any) => {
-  //         return {
-  //           label: `${guide?.field} ${guide?.required ? '(Required)' : ''}`,
-  //             value: guide?.field,
-  //         };
-  //       }));
-  //     } else {
-  //       toastNotification(
-  //         "Header guide is empty. Please select another category", 
-  //         "error"
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching guide", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleUpload = async () => {
     if (!selectedFile || tableHeader.length <= 0 || tableData.length <= 0) return;
@@ -339,6 +343,42 @@ const ImportWithPreviewPage = () => {
     setValidatedHeader(newValidatedHeader);
   };
 
+  const handleClickHeader = (index: number, header: string) => {
+    const newHeaderOption = headerOptions.map((option) => ({
+      ...option,
+      disable: tableHeader.includes(option.value) && option.value !== header,
+    }));
+
+    setHeaderOptions(newHeaderOption);
+    setIsModalEditOpen(true);
+    setHeaderIndex(index);
+    setSelectedHeader(header);
+  };
+
+  const handleConfirmEdit = () => {
+    setTableHeader((prevItems) =>
+      prevItems.map((item, i) =>
+        i === headerIndex ? (selectedHeader === "add" ? newLabelHeader : selectedHeader) : item
+      )
+    );
+
+    // If a new label is provided, add it to the header options list
+    if (newLabelHeader) {
+      setHeaderOptions((prev) => [...prev, { label: newLabelHeader, value: newLabelHeader }]);
+    }
+
+    // Toggle the validation state for the selected header
+    setValidatedHeader((prev) => {
+      const updatedValidation = [...prev];
+      updatedValidation[headerIndex] = !updatedValidation[headerIndex];
+      return updatedValidation;
+    });
+
+    // Close the modal and reset input fields
+    setIsModalEditOpen(false);
+    setNewLabelHeader("");
+  };
+
   const renderCategoryOptions = () => {
     if (categoryOptions.length === 0) return null;
     return (
@@ -361,6 +401,7 @@ const ImportWithPreviewPage = () => {
                 <TableHead
                   key={index}
                   className={`truncate cursor-pointer transition-colors duration-200 border-r ${!isHeaderValid(header) ? 'text-white bg-red-500 hover:bg-red-400' : 'hover:bg-gray-200'}`}
+                  onClick={() => handleClickHeader(index, header)}
                 >
                   <div className="flex flex-row gap-3">
                     {EditIcon(
@@ -378,16 +419,13 @@ const ImportWithPreviewPage = () => {
                       <Input
                         type="checkbox"
                         checked={validatedHeader[index]}
-                        onChange={() => handleCheckSelectedHeader(index)}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          handleCheckSelectedHeader(index);
+                        }}
                         className="w-4 h-4"
                       />
                     ) : (
-                      // AlertCircleIcon(
-                      //   "white",
-                      //   "20",
-                      //   "20",
-                      //   "0 0 24 24",
-                      // )
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -416,6 +454,54 @@ const ImportWithPreviewPage = () => {
           ))}
         </TableBody>
       </Table>
+    );
+  };
+
+  const renderEditModal = () => {
+    return (
+      <Dialog open={isModalEditOpen}>
+        <DialogContent className="w-[90vw] max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="mb-4">Edit column label</DialogTitle>
+            <DialogDescription>
+              Select a field for this column
+            </DialogDescription>
+            <div>
+              <Select
+                value={selectedHeader}
+                onValueChange={(value) => setSelectedHeader(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={selectedHeader} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {headerOptions.map((option, index) => (
+                      <SelectItem key={index} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </DialogHeader>
+          <DialogFooter>
+          <Button
+            className="border border-red-500 text-red-500 bg-white hover:bg-red-100"
+            onClick={() => setIsModalEditOpen(false)}
+          >
+            Cancel
+          </Button>
+            <Button
+              className="btn btn-primary"
+              onClick={() => handleConfirmEdit()}
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   };
 
@@ -449,7 +535,7 @@ const ImportWithPreviewPage = () => {
           </div>
           <Button
             onClick={handleUpload}
-            disabled={!selectedFile || uploadStatus === "uploading"}
+            disabled={!selectedFile || uploadStatus === "uploading" || !!errorMessage}
             className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
           >
             {uploadStatus === "uploading" ? (
@@ -528,17 +614,26 @@ const ImportWithPreviewPage = () => {
           ) : null}
           {selectedFile && tableHeader.length > 0 && tableData.length > 0 ? (
             <div className="pt-4">
-              <p className="mb-2 text-xs">
-                <span className="font-semibold">
-                  {`${validatedHeader.filter(Boolean).length} `}
-                </span>
-                column(s) will be imported.
-                <span className="font-semibold">
-                  {` ${validatedHeader.filter((value) => !value).length} `}
-                </span>
-                columns will not be imported.
-              </p>
+              {
+                errorMessage ? (
+                  <p className="mb-2 text-xs text-red-500">
+                    {errorMessage}
+                  </p>
+                ) : (
+                  <p className="mb-2 text-xs">
+                    <span className="font-semibold">
+                      {`${validatedHeader.filter(Boolean).length} `}
+                    </span>
+                    column(s) will be imported.
+                    <span className="font-semibold">
+                      {` ${validatedHeader.filter((value) => !value).length} `}
+                    </span>
+                    columns will not be imported.
+                  </p>
+                )
+              }
               {renderPreviewTable()}
+              {isModalEditOpen ? renderEditModal() : null}
             </div>
           ) : null}
         </div>
