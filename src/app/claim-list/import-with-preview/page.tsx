@@ -27,6 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import EditIcon from "@/components/icons/edit.icon";
@@ -352,39 +358,51 @@ const ImportWithPreviewPage = () => {
         <TableHeader>
           <TableRow>
             {tableHeader.map((header: string, index: number) => (
-              <TableHead
-                key={index}
-                className={`truncate cursor-pointer transition-colors duration-200 border-r ${!isHeaderValid(header) ? 'text-white bg-red-500 hover:bg-red-400' : 'hover:bg-gray-200'}`}
-              >
-                <div className="flex flex-row gap-3">
-                  {EditIcon(
-                    !isHeaderValid(header)
-                      ? "white"
-                      : "#016DA1",
-                    "20",
-                    "20",
-                    "0 0 24 24",
-                  )}
-
-                  {header}
-
-                  {isHeaderValid(header) ? (
-                    <Input
-                      type="checkbox"
-                      checked={validatedHeader[index]}
-                      onChange={() => handleCheckSelectedHeader(index)}
-                      className="w-4 h-4"
-                    />
-                  ) : (
-                    AlertCircleIcon(
-                      "white",
+                <TableHead
+                  key={index}
+                  className={`truncate cursor-pointer transition-colors duration-200 border-r ${!isHeaderValid(header) ? 'text-white bg-red-500 hover:bg-red-400' : 'hover:bg-gray-200'}`}
+                >
+                  <div className="flex flex-row gap-3">
+                    {EditIcon(
+                      !isHeaderValid(header)
+                        ? "white"
+                        : "#016DA1",
                       "20",
                       "20",
                       "0 0 24 24",
-                    )
-                  )}
-                </div>
-              </TableHead>
+                    )}
+
+                    {header}
+
+                    {isHeaderValid(header) ? (
+                      <Input
+                        type="checkbox"
+                        checked={validatedHeader[index]}
+                        onChange={() => handleCheckSelectedHeader(index)}
+                        className="w-4 h-4"
+                      />
+                    ) : (
+                      // AlertCircleIcon(
+                      //   "white",
+                      //   "20",
+                      //   "20",
+                      //   "0 0 24 24",
+                      // )
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              {AlertCircleIcon("white", "20", "20", "0 0 24 24")}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            <p className="text-sm">Edit the column name to resolve the error</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
+                </TableHead>
             ))}
           </TableRow>
         </TableHeader>
