@@ -212,7 +212,8 @@ const ClaimsPage = () => {
 
   const selectCategory = (id: string, dataId: string) => {
     claimService.getClaimCategory(id).then((res) => {
-      const label = filteredClaims?.filter((f: any) => f?.id === dataId)?.[0]?.claim_config;
+      const label = filteredClaims?.filter((f: any) => f?.id === dataId)?.[0]
+        ?.claim_config;
 
       const updatedDataDocument = res.data
         .filter(
@@ -224,13 +225,33 @@ const ClaimsPage = () => {
           ...document,
           label: {
             ...document.label,
-            en: document.label?.en || document?.label_multilanguage?.en || document.label,
+            en:
+              document.label?.en ||
+              document?.label_multilanguage?.en ||
+              document.label,
           },
         }));
 
-      const updatedDataDocumentFields = res?.data?.filter((doc: any) => doc?.type?.toLowerCase() === "fields" && doc?.fields?.length > 0).map((a: any) => a?.fields?.filter((doc: any) => doc?.type?.toLowerCase() === "file" || doc?.type?.toLowerCase() === "file multiple"))?.flat() || [];
+      const updatedDataDocumentFields =
+        res?.data
+          ?.filter(
+            (doc: any) =>
+              doc?.type?.toLowerCase() === "fields" && doc?.fields?.length > 0
+          )
+          .map((a: any) =>
+            a?.fields?.filter(
+              (doc: any) =>
+                doc?.type?.toLowerCase() === "file" ||
+                doc?.type?.toLowerCase() === "file multiple"
+            )
+          )
+          ?.flat() || [];
 
-      setDataDocument([...updatedDataDocument, ...updatedDataDocumentFields, ...label]);
+      setDataDocument([
+        ...updatedDataDocument,
+        ...updatedDataDocumentFields,
+        ...label,
+      ]);
     });
   };
 
@@ -393,7 +414,9 @@ const ClaimsPage = () => {
         pendingStatus,
         amountApproved,
         notes,
-        finalSelectedDocuments.map((item) => !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name)
+        finalSelectedDocuments.map((item) =>
+          !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name
+        )
       );
       setClaims((prevClaims) =>
         prevClaims.map((claim) =>
@@ -433,12 +456,30 @@ const ClaimsPage = () => {
     const selected = dataDocument.filter((doc) =>
       selectedDocuments.includes(doc.name)
     );
-    const docListFields = dataDocument.length > 0 ? dataDocument.filter((doc: any) => doc.type.toLowerCase() === "fields" && doc.fields.length > 0).map((a: any) => a.fields.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple")).flat().map((d: any) => ({
-      ...d,
-      nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-"
-    })) : [];
-    const selectedFields = docListFields.filter((doc) => selectedDocuments.includes(doc.name));
-    setFinalSelectedDocuments([ ...selected, ...selectedFields ]);
+    const docListFields =
+      dataDocument.length > 0
+        ? dataDocument
+            .filter(
+              (doc: any) =>
+                doc.type.toLowerCase() === "fields" && doc.fields.length > 0
+            )
+            .map((a: any) =>
+              a.fields.filter(
+                (doc: any) =>
+                  doc.type.toLowerCase() === "file" ||
+                  doc.type.toLowerCase() === "file multiple"
+              )
+            )
+            .flat()
+            .map((d: any) => ({
+              ...d,
+              nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-",
+            }))
+        : [];
+    const selectedFields = docListFields.filter((doc) =>
+      selectedDocuments.includes(doc.name)
+    );
+    setFinalSelectedDocuments([...selected, ...selectedFields]);
   };
 
   const handleDeleteSelectedDocument = (id: string) => {
@@ -469,6 +510,21 @@ const ClaimsPage = () => {
 
     fetchClaimsStatus();
   }, []);
+
+  const handleExport = () => {
+    const exportData = {
+      page,
+      limit: rowsPerPage,
+      status: tab === "All" ? "" : tab,
+      search: searchData,
+      sla_status: searchSlaStatus === "All" ? "" : searchSlaStatus,
+      date_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
+      date_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+    };
+
+    localStorage.setItem("exportClaimData", JSON.stringify(exportData));
+    router.push(`${path}/export`);
+  };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -567,7 +623,7 @@ const ClaimsPage = () => {
           <Upload className="w-5 h-5 mr-1" /> Import with Preview
         </Button>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={handleExport}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export
@@ -700,7 +756,10 @@ const ClaimsPage = () => {
                             <Input
                               name="lack_of_documents"
                               value={
-                                doc?.label?.en || doc?.label_multilanguage?.en || doc?.label || "-"
+                                doc?.label?.en ||
+                                doc?.label_multilanguage?.en ||
+                                doc?.label ||
+                                "-"
                               }
                               className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
                             />
@@ -771,7 +830,8 @@ const ClaimsPage = () => {
                                   .filter(
                                     (document) =>
                                       document.type.toLowerCase() === "file" ||
-                                      document.type.toLowerCase() === "file multiple" ||
+                                      document.type.toLowerCase() ===
+                                        "file multiple" ||
                                       document.type.toLowerCase() === "fields"
                                   )
                                   .map((document) => (
@@ -782,33 +842,75 @@ const ClaimsPage = () => {
                                       <TableCell align="center">
                                         <Input
                                           type="checkbox"
-                                          checked={document.type.toLowerCase() === "fields" ? isDocumentSelected(document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.name) : isDocumentSelected(
-                                            document.name
-                                          )}
+                                          checked={
+                                            document.type.toLowerCase() ===
+                                            "fields"
+                                              ? isDocumentSelected(
+                                                  document?.fields?.filter(
+                                                    (a: any) =>
+                                                      a.type.toLowerCase() ===
+                                                      "file"
+                                                  )?.[0]?.name
+                                                )
+                                              : isDocumentSelected(
+                                                  document.name
+                                                )
+                                          }
                                           onClick={() => {
                                             let docName = document.name;
-                                            if (document.type.toLowerCase() === "fields") docName = document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.name;
-                                            handleCheckboxChange(docName)
+                                            if (
+                                              document.type.toLowerCase() ===
+                                              "fields"
+                                            )
+                                              docName =
+                                                document?.fields?.filter(
+                                                  (a: any) =>
+                                                    a.type.toLowerCase() ===
+                                                    "file"
+                                                )?.[0]?.name;
+                                            handleCheckboxChange(docName);
                                           }}
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
                                       <TableCell>
-                                        {document.type.toLowerCase() === "fields" ? (
-                                          document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.label?.en ||
-                                          document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.label_multilanguage?.en ||
-                                          document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.label ||
-                                          "-"
-                                          ) : (document?.label?.en ||
-                                          document?.label_multilanguage?.en ||
-                                          document?.label ||
-                                        "-")}
+                                        {document.type.toLowerCase() ===
+                                        "fields"
+                                          ? document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.label?.en ||
+                                            document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.label_multilanguage?.en ||
+                                            document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.label ||
+                                            "-"
+                                          : document?.label?.en ||
+                                            document?.label_multilanguage?.en ||
+                                            document?.label ||
+                                            "-"}
                                       </TableCell>
                                       <TableCell className="">
-                                        {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.criteria || "-") : (document?.criteria || "-")}
+                                        {document.type.toLowerCase() ===
+                                        "fields"
+                                          ? document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.criteria || "-"
+                                          : document?.criteria || "-"}
                                       </TableCell>
                                       <TableCell className="">
-                                        {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.definition || "-") : (document?.definition || "-")}
+                                        {document.type.toLowerCase() ===
+                                        "fields"
+                                          ? document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.definition || "-"
+                                          : document?.definition || "-"}
                                       </TableCell>
                                       <TableCell className="w-24 text-center">
                                         <Dialog>
@@ -848,24 +950,52 @@ const ClaimsPage = () => {
                                             <div className="flex flex-col px-4 pb-4">
                                               <p className="text-sm">
                                                 Document type:{" "}
-                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.name || "-") : (document?.name || "-")}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]?.name || "-"
+                                                  : document?.name || "-"}
                                               </p>
                                               <p className="text-sm">
                                                 Criteria:{" "}
-                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.criteria || "-") : (document?.criteria || "-")}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]?.criteria || "-"
+                                                  : document?.criteria || "-"}
                                               </p>
                                               <p className="text-sm">
                                                 Definition:{" "}
-                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]?.definition || "-") : (document?.definition || "-")}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]?.definition || "-"
+                                                  : document?.definition || "-"}
                                               </p>
                                               <hr className="my-4" />
                                               <p className="text-sm">
                                                 "
-                                                {document.type.toLowerCase() === "fields" ? (document?.fields?.filter((a: any) => a.type.toLowerCase() === "file")?.[0]
-                                                  ?.pending_reason_message
-                                                  ?.en || "-") : (document
-                                                  ?.pending_reason_message
-                                                  ?.en || "-")}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]
+                                                      ?.pending_reason_message
+                                                      ?.en || "-"
+                                                  : document
+                                                      ?.pending_reason_message
+                                                      ?.en || "-"}
                                                 "{" "}
                                               </p>
                                             </div>
