@@ -311,11 +311,15 @@ const ImportWithPreviewPage = () => {
         );
       } else {
         toastNotification(
-          "Header guide is empty. Please select another category",
+          "Header guide is empty. Please select another category.",
           "error"
         );
       }
     } catch (error) {
+      toastNotification(
+        "Header guide is empty. Please select another category.",
+        "error"
+      );
       console.error("Error fetching guide", error);
     } finally {
       setLoading(false);
