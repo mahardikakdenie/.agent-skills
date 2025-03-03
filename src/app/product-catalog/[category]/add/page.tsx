@@ -41,7 +41,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
   const [isInsuranceSelected, setIsInsuranceSelected] = useState(false);
   const [product, setProducts] = useState<ProductCatalogDto[]>([]);
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  
+
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -258,30 +258,11 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {products
-                          .filter((item) => {
-                            if (category == "airpaz") {
-                              return (
-                                item.category ==
-                                "38555c54-38f2-4251-9e81-c6332e0aaa44"
-                              );
-                            } else if (category == "travel") {
-                              return (
-                                item.category ==
-                                "efeb7f65-7807-40b5-8053-e45805711bef"
-                              );
-                            } else if (category == "personal-accident") {
-                              return (
-                                item.category ==
-                                "b140a15e-af58-43c9-9888-e83cbca816e4"
-                              );
-                            }
-                          })
-                          .map((product: any) => (
-                            <SelectItem key={product.id} value={product.id}>
-                              {product.name}
-                            </SelectItem>
-                          ))}
+                        {products.map((product: any) => (
+                          <SelectItem key={product.id} value={product.id}>
+                            {product.name}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
