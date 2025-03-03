@@ -36,7 +36,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -48,15 +47,16 @@ import EditIcon from "@/components/icons/edit.icon";
 import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 
 import { useLoading } from "@/context/loading.context";
-import { getChannel } from "@/context/auth.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
+import { ChannelsService } from "@/services/masterdata/channels.service"
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { toastPromise, toastNotification } from "@/lib/toast";
 import { capitalizeStringWithChar } from "@/lib/formatter";
 
 const ImportWithPreviewPage = () => {
   const claimService = new ClaimService();
+  const channelsService = new ChannelsService();
   const router = useRouter();
   const { setLoading } = useLoading();
 
@@ -68,9 +68,10 @@ const ImportWithPreviewPage = () => {
   >("idle");
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableHeader, setTableHeader] = useState<any[]>([]);
+  const [selectedChannel, setSelectedChannel] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [channelOptions, setChannelOptions] = useState<any[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
-  const [channel, setChannel] = useState<string | null>(null);
   const [headerGuide, setHeaderGuide] = useState<
     {
       field: string;
@@ -91,48 +92,53 @@ const ImportWithPreviewPage = () => {
   const [newLabelHeader, setNewLabelHeader] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Get user channel
-  useEffect(() => {
-    const fetchChannel = async () => {
-      try {
-        const userChannel = await getChannel();
-        setChannel(userChannel);
-      } catch (error) {
-        console.error("Failed to get channel:", error);
-      }
-    };
-
-    fetchChannel();
-  }, []);
-
   // Use useRef to prevent double fetching
+  const hasFetchedChannel = useRef(false);
   const hasFetchedCategory = useRef(false);
   useEffect(() => {
     const productCategoryService = new ProductCategoriesService();
 
-    const fetchCategoryOptions = async () => {
-      setLoading(true);
+    // Generic function to fetch and set options
+    const fetchOptions = async (fetchFunction: () => Promise<any>, setOptions: (options: any) => void) => {
       try {
-        const result = await productCategoryService.getCategories();
+        const result = await fetchFunction();
         if (result && result.length > 0) {
-          setCategoryOptions(
-            result.map((category: any) => ({
-              label: capitalizeStringWithChar(category.name),
-              value: category.id,
+          setOptions(
+            result.map((item: any) => ({
+              label: capitalizeStringWithChar(item.name),
+              value: item.id,
             }))
           );
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching data:", error);
       }
     };
 
-    // Ensure fetch function only called once
-    if (!hasFetchedCategory.current) {
-      hasFetchedCategory.current = true;
-      fetchCategoryOptions();
+    if (!hasFetchedCategory.current || !hasFetchedChannel.current) {
+      setLoading(true);
+
+      const fetchData = async () => {
+        if (!hasFetchedCategory.current) {
+          hasFetchedCategory.current = true;
+          await fetchOptions(
+            () => productCategoryService.getCategories(),
+            setCategoryOptions
+          );
+        }
+
+        if (!hasFetchedChannel.current) {
+          hasFetchedChannel.current = true;
+          await fetchOptions(
+            () => channelsService.getChannels().then((res) => res.data),
+            setChannelOptions
+          );
+        }
+
+        setLoading(false);
+      };
+
+      fetchData();
     }
   });
 
@@ -281,16 +287,40 @@ const ImportWithPreviewPage = () => {
     }
   };
 
-  const handleSelectCategory = (value: string) => {
-    setSelectedCategory(value);
-    fetchImportDataGuide(value);
+  const handleSelectChannel = (value: string) => {
+    setSelectedChannel(value);
   };
 
-  const fetchImportDataGuide = async (categoryId: string) => {
+  const handleSelectCategory = (value: string) => {
+    setSelectedCategory(value);
+  };
+
+  const lastSelectedChannel = useRef<string | null>(null);
+  const lastSelectedCategory = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (
+      selectedChannel &&
+      selectedCategory &&
+      (selectedChannel !== lastSelectedChannel.current || selectedCategory !== lastSelectedCategory.current)
+    ) {
+      fetchImportDataGuide(selectedChannel, selectedCategory);
+      
+      // Update the last selected values to prevent duplicate calls
+      lastSelectedChannel.current = selectedChannel;
+      lastSelectedCategory.current = selectedCategory;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedChannel, selectedCategory]);
+
+  const fetchImportDataGuide = async (channelId: string, categoryId: string) => {
+    // Reset the header guide state
+    setHeaderGuide([]);
+
     setLoading(true);
     try {
       const response = await claimService.importDataGuide({
-        channel: channel || "",
+        channel: channelId,
         category: categoryId,
       });
 
@@ -311,13 +341,13 @@ const ImportWithPreviewPage = () => {
         );
       } else {
         toastNotification(
-          "Header guide is empty. Please select another category.",
+          "Header Guide not found. Please select another category.",
           "error"
         );
       }
     } catch (error) {
       toastNotification(
-        "Header guide is empty. Please select another category.",
+        "Header Guide not found. Please select another category.",
         "error"
       );
       console.error("Error fetching guide", error);
@@ -339,7 +369,7 @@ const ImportWithPreviewPage = () => {
       const uploadPromise = claimService.importAsJson({
         data: importData,
         input: "Data",
-        channel: channel || "",
+        channel: selectedChannel,
         category: selectedCategory,
       });
 
@@ -409,6 +439,19 @@ const ImportWithPreviewPage = () => {
     // Close the modal and reset input fields
     setIsModalEditOpen(false);
     setNewLabelHeader("");
+  };
+
+  const renderChannelOptions = () => {
+    if (channelOptions.length === 0) return null;
+    return (
+      <SelectGroup>
+        {channelOptions.map((channel) => (
+          <SelectItem key={channel.value} value={channel.value}>
+            {channel.label}
+          </SelectItem>
+        ))}
+      </SelectGroup>
+    );
   };
 
   const renderCategoryOptions = () => {
@@ -593,6 +636,18 @@ const ImportWithPreviewPage = () => {
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg">
           <div className="mb-4">
+            <div className="text-xs mb-1.5 font-medium">Select Channel</div>
+            <Select
+              value={selectedChannel}
+              onValueChange={handleSelectChannel}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select option" />
+              </SelectTrigger>
+              <SelectContent>{renderChannelOptions()}</SelectContent>
+            </Select>
+          </div>
+          <div className="mb-4">
             <div className="text-xs mb-1.5 font-medium">Select Category</div>
             <Select
               value={selectedCategory}
@@ -621,7 +676,7 @@ const ImportWithPreviewPage = () => {
                   }`}
                 />
                 <div className="text-center">
-                  {selectedFile ? (
+                  {selectedFile && headerGuide.length > 0 ? (
                     <p className="text-green-500 font-medium">
                       Selected: {selectedFile.name}
                     </p>
