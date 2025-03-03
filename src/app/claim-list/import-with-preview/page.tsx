@@ -320,8 +320,8 @@ const ImportWithPreviewPage = () => {
     setLoading(true);
     try {
       const response = await claimService.importDataGuide({
-        channel: channelId || selectedChannel,
-        category: categoryId || selectedCategory,
+        channel: channelId,
+        category: categoryId,
       });
 
       const guideResponse =
