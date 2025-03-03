@@ -289,20 +289,39 @@ const ImportWithPreviewPage = () => {
 
   const handleSelectChannel = (value: string) => {
     setSelectedChannel(value);
-    if (selectedCategory) fetchImportDataGuide();
   };
 
   const handleSelectCategory = (value: string) => {
     setSelectedCategory(value);
-    fetchImportDataGuide();
   };
 
-  const fetchImportDataGuide = async () => {
+  const lastSelectedChannel = useRef<string | null>(null);
+  const lastSelectedCategory = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (
+      selectedChannel &&
+      selectedCategory &&
+      (selectedChannel !== lastSelectedChannel.current || selectedCategory !== lastSelectedCategory.current)
+    ) {
+      fetchImportDataGuide(selectedChannel, selectedCategory);
+      
+      // Update the last selected values to prevent duplicate calls
+      lastSelectedChannel.current = selectedChannel;
+      lastSelectedCategory.current = selectedCategory;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedChannel, selectedCategory]);
+
+  const fetchImportDataGuide = async (channelId: string, categoryId: string) => {
+    // Reset the header guide state
+    setHeaderGuide([]);
+
     setLoading(true);
     try {
       const response = await claimService.importDataGuide({
-        channel: selectedChannel || "",
-        category: selectedCategory,
+        channel: channelId || selectedChannel,
+        category: categoryId || selectedCategory,
       });
 
       const guideResponse =
@@ -657,7 +676,7 @@ const ImportWithPreviewPage = () => {
                   }`}
                 />
                 <div className="text-center">
-                  {selectedFile ? (
+                  {selectedFile && headerGuide.length > 0 ? (
                     <p className="text-green-500 font-medium">
                       Selected: {selectedFile.name}
                     </p>
