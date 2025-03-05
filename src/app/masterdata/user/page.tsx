@@ -57,21 +57,25 @@ const Users = () => {
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
+  const [canToggleStatus, setCanToggleStatus] = useState<boolean>(false);
 
   const { updateUser } = useUser();
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = await hasPermission("Masterdata.Read");
+      const accessMasterData = await hasPermission("Masterdata.Read");
+      const accessUser = await hasPermission("Userdata.Read");
       const editBtn = await hasPermission("Masterdata.Update");
       const deleteBtn = await hasPermission("Masterdata.Delete");
       const createBtn = await hasPermission("Masterdata.Create");
+      const canToggleStatus = await hasPermission("User.Change Status");
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
-      setHasAccess(access);
+      setHasAccess(accessMasterData || accessUser);
       setCanCreate(createBtn);
-      if (!access) {
+      setCanToggleStatus(canToggleStatus);
+      if (!accessMasterData && !accessUser) {
         router.push("/forbidden");
       }
     };
@@ -257,6 +261,7 @@ const Users = () => {
                   <TableCell>{user.role || "-"}</TableCell>
                   <TableCell>
                     <Switch
+                      disabled={!canToggleStatus}
                       checked={user.status === "Active"}
                       onCheckedChange={() => handleStatusChange(user)}
                       aria-readonly
