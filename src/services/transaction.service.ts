@@ -23,14 +23,19 @@ export class TransactionService {
   }
 
   async getTransactions(
-    page: number,
-    rowsPerPage: number,
-    status: string
+    page?: number,
+    rowsPerPage?: number,
+    searchData?: string,
+    status?: string
   ): Promise<TransactionResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
     };
+
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
 
     if (status) {
       params["status"] = status;
@@ -39,19 +44,12 @@ export class TransactionService {
     return this.httpClient.get(`/v1/transactions?${queryString}`);
   }
 
- async getTransactionsExport(
-    page: number,
-    rowsPerPage: number
-  ): Promise<TransactionResponse> {
-    const response: TransactionResponse = await this.httpClient.get(
-      `/v1/transactions?page=${page}&limit=${rowsPerPage}`
-    );
-    const pageTotal = response.pageTotal || rowsPerPage;
-    const params: any = {
-      page: page,
-      limit: pageTotal,
-    };
-
+  async getTransactionsExport(params: {
+    page: number;
+    rowsPerPage: number;
+    status?: string;
+    keyword?: string;
+  }): Promise<TransactionResponse> {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/transactions?${queryString}`);
   }

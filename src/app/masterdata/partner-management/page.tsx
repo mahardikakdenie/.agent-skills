@@ -13,35 +13,29 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
+import { ChevronLeft, ChevronRight, Plus, Search, Trash } from "react-feather";
+
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
-import {
-  CategoriesResponse,
-  Insurance,
-  InsuranceService,
-} from "@/services/masterdata/insurance.service";
-import { usePages } from "./hooks";
+import { User, UserService } from "@/services/masterdata/user.service";
 import { hasPermission } from "@/context/auth.context";
-import {
-  MailTemplateResponse,
-  MailTemplateService,
-} from "@/services/masterdata/mail-template.service";
+import { Input } from "@/components/ui/input";
+import _ from "lodash";
 
-const MailTemplate = () => {
+const PartnerIntegation = () => {
   useRequireAuth();
   const path = usePathname();
-  const insuranceService = new InsuranceService();
-  const categoriesService = new MailTemplateService();
-  const mailTemplateService = new MailTemplateService();
-  const [insurance, setInsurance] = useState<Insurance[]>([]);
-  const [mailTemplate, setMailTemplate] = useState<MailTemplateResponse[]>([]);
+  const userService = new UserService();
+  const [user, setUser] = useState<User[]>([]);
+  const [filteredUser, setFilteredUser] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [tab, setTab] = useState("");
-  const [categories, setCategories] = useState<CategoriesResponse[]>([]);
+  const [searchData, setSearchData] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -70,56 +64,50 @@ const MailTemplate = () => {
   }, [router]);
 
   useEffect(() => {
-    const fetchMailTemplate = async () => {
+    const fetchUser = async () => {
       try {
-        const result = await mailTemplateService.getMailTemplate(
+        const result = await userService.getPartner(
           page,
           rowsPerPage,
-          tab == "Travel" ? "" : tab
+          searchData
         );
-
-        setMailTemplate(result.data);
+        setUser(result.data);
+        setFilteredUser(result.data);
         setTotalPages(result.meta.pageTotal);
         setTotalItems(result.meta.total);
       } catch (error) {
-        console.error("Error fetching insurance products:", error);
+        console.error("Error fetching page:", error);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchMailTemplate();
-  }, [page, rowsPerPage, tab]);
+    fetchUser();
+  }, [page, rowsPerPage, searchData]);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const result = await categoriesService.getCategories();
-        setCategories(result);
-        if (result.length > 0) {
-          setTab(result[0].id);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        // setLoading(false);
-      }
-    };
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+  }, 100);
 
-    fetchCategories();
-  }, []);
+  if (loading) {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        Loading...
+      </div>
+    );
+  }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(`${path}/${id}/edit`);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeletePlan = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
       try {
-        await mailTemplateService.deleteMailTemplate(id);
-        setMailTemplate((prev) => prev.filter((mail) => mail.id !== id));
+        await userService.deleteUser(id);
+        setUser((prevUser) => prevUser.filter((user) => user.id !== id));
       } catch (error) {
-        console.error("Failed to delete Mail Template:", error);
+        console.error("Failed to delete user:", error);
       }
     }
   };
@@ -129,58 +117,39 @@ const MailTemplate = () => {
     setPage(1);
   };
 
-  const selectTab = (tab: string) => {
-    setTab(tab);
-    setPage(1);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Inactive":
+        return "text-gray-400 font-normal";
+      case "Active":
+        return "text-[#00AB4F]";
+      default:
+        return "text-[#7B5D21]";
+    }
   };
-
-  // if (loading) {
-  //   return (
-  //     <div className="w-full h-full flex justify-center items-center">
-  //       Loading...
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">
-          Mail Template
+      <div className="flex gap-4 pb-4 items-center">
+        <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
+          Partner Management
         </h1>
+        <div className="relative max-w-sm w-full ml-auto shadow-sm">
+          <Input
+            type="text"
+            placeholder="Search by Name or Email"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-3 rounded-md pr-10 w-full"
+          />
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Button
           onClick={() => router.push(`${path}/add`)}
           disabled={!canCreate}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Plus className="w-5 h-5 mr-1 " /> Add New
         </Button>
-      </div>
-
-      <div className="block bg-white rounded-md mb-3">
-        <div className="w-full flex items-center overflow-auto">
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              onClick={() => selectTab(category.id)}
-              className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
-                tab === category.id &&
-                "border-b-[3px] border-primary sm:px-7 px-5"
-              }`}
-            >
-              <button
-                className={`text-sm py-5 ${
-                  tab === category.id && "text-primary"
-                }`}
-              >
-                {category.name
-                  .split("-")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(" ")}
-              </button>
-            </div>
-          ))}
-        </div>
       </div>
 
       <div className="w-full p-4 bg-white rounded-lg">
@@ -188,24 +157,36 @@ const MailTemplate = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead className="min-w-36">Subject</TableHead>
-              <TableHead className="min-w-36">Journey</TableHead>
-              <TableHead className="whitespace-nowrap w-12">Action</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Phone Number</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="whitespace-nowrap w-36">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mailTemplate.length > 0 ? (
-              mailTemplate.map((mail, index) => (
-                <TableRow key={mail.id}>
+            {filteredUser.length > 0 ? (
+              filteredUser.map((user, index) => (
+                <TableRow key={user.id}>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>{mail?.subject || "-"}</TableCell>
-                  <TableCell>{mail?.journey || "-"}</TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {user.name || "-"}
+                  </TableCell>
+                  <TableCell>{user.email || "-"}</TableCell>
+                  <TableCell>{user.phone_number || "-"}</TableCell>
+                  <TableCell>{user.role || "-"}</TableCell>
+                  <TableCell className="font-semibold whitespace-nowrap">
+                    <span className={getStatusColor(user.status)}>
+                      {user.status || "-"}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
                       <Button
                         variant="secondary"
                         disabled={!canEdit}
-                        onClick={() => handleEdit(mail.id)}
+                        onClick={() => handleEdit(user.id)}
                         className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
                       >
                         Edit
@@ -213,7 +194,7 @@ const MailTemplate = () => {
                       <Button
                         variant="ghost"
                         disabled={!canDelete}
-                        onClick={() => handleDelete(mail.id)}
+                        onClick={() => handleDeletePlan(user.id)}
                         className="text-red-600 px-0"
                       >
                         <Trash />
@@ -224,7 +205,7 @@ const MailTemplate = () => {
               ))
             ) : (
               <TableRow className="hover:!bg-white">
-                <TableCell colSpan={5}>
+                <TableCell colSpan={7}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
@@ -233,6 +214,7 @@ const MailTemplate = () => {
               </TableRow>
             )}
           </TableBody>
+
           <TableFooter>
             <TableRow>
               <TableCell colSpan={8}>
@@ -281,6 +263,6 @@ const MailTemplate = () => {
   );
 };
 
-const MailTemplateWithSidebar = (params: any) =>
-  WithSidebar(MailTemplate)(params);
-export default MailTemplateWithSidebar;
+const PartnerIntegationWithSidebar = (params: any) =>
+  WithSidebar(PartnerIntegation)(params);
+export default PartnerIntegationWithSidebar;

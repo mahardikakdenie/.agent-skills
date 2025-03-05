@@ -24,6 +24,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
   X,
 } from "react-feather";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -51,10 +51,6 @@ import { Input } from "@/components/ui/input";
 import { hasPermission } from "@/context/auth.context";
 import _ from "lodash";
 import {
-  ChannelsResponse,
-  ChannelsService,
-} from "@/services/masterdata/channels.service";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -70,7 +66,6 @@ const ClaimsPage = () => {
   useRequireAuth();
   const path = usePathname();
   const claimService = new ClaimService();
-  const channelsService = new ChannelsService();
   const [claims, setClaims] = useState<any[]>([]);
   const [filteredClaims, setFilteredClaims] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -113,9 +108,9 @@ const ClaimsPage = () => {
 
   const [searchChannel, setSearchChannel] = useState("");
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
-  const [channel, setChannel] = useState<ChannelsResponse[]>([]);
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
+  const [openAllStatus, setOpenAllStatus] = useState<boolean>(false);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -123,11 +118,14 @@ const ClaimsPage = () => {
       const editBtn = await hasPermission("Claim.Update");
       const deleteBtn = await hasPermission("Claim.Delete");
       const createBtn = await hasPermission("Claim.Create");
+      const openAllStatus = await hasPermission("Claim.AllowChangeAllStatus");
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
+      setOpenAllStatus(openAllStatus);
+
       if (!access) {
         router.push("/forbidden");
       }
@@ -144,7 +142,6 @@ const ClaimsPage = () => {
           rowsPerPage,
           tab === "All" ? "" : tab,
           searchData,
-          searchChannel === "All" ? "" : searchChannel,
           searchSlaStatus === "All" ? "" : searchSlaStatus,
           date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
           date?.to ? format(date.to, "yyyy-MM-dd") : undefined
@@ -166,7 +163,6 @@ const ClaimsPage = () => {
     tab,
     successUpdate,
     searchData,
-    searchChannel,
     searchSlaStatus,
     date,
   ]);
@@ -196,23 +192,6 @@ const ClaimsPage = () => {
     setSearchData(keyword);
   }, 100);
 
-  useEffect(() => {
-    const fetchChannels = async () => {
-      try {
-        const response = await channelsService.getChannels(page, rowsPerPage);
-        setChannel(response.data);
-        setTotalPages(response.pageTotal);
-        setTotalItems(response.total);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-
-    fetchChannels();
-  }, [page, rowsPerPage]);
-
   const handleSearchChannelOnChange = (v: string) => {
     setSearchChannel(v);
   };
@@ -231,9 +210,10 @@ const ClaimsPage = () => {
     });
   };
 
-  const selectCategory = (id: string) => {
+  const selectCategory = (id: string, dataId: string) => {
     claimService.getClaimCategory(id).then((res) => {
-      const label = filteredClaims[0]?.claim_config;
+      const label = filteredClaims?.filter((f: any) => f?.id === dataId)?.[0]
+        ?.claim_config;
 
       const updatedDataDocument = res.data
         .filter(
@@ -245,18 +225,40 @@ const ClaimsPage = () => {
           ...document,
           label: {
             ...document.label,
-            en: document.label?.en || label,
+            en:
+              document.label?.en ||
+              document?.label_multilanguage?.en ||
+              document.label,
           },
         }));
 
-      setDataDocument([...updatedDataDocument, ...label]);
+      const updatedDataDocumentFields =
+        res?.data
+          ?.filter(
+            (doc: any) =>
+              doc?.type?.toLowerCase() === "fields" && doc?.fields?.length > 0
+          )
+          .map((a: any) =>
+            a?.fields?.filter(
+              (doc: any) =>
+                doc?.type?.toLowerCase() === "file" ||
+                doc?.type?.toLowerCase() === "file multiple"
+            )
+          )
+          ?.flat() || [];
+
+      setDataDocument([
+        ...updatedDataDocument,
+        ...updatedDataDocumentFields,
+        ...label,
+      ]);
     });
   };
 
   const handleSelectDocument = () => {
     if (selectedClaim) {
       if (selectedClaim.policy) {
-        selectCategory(selectedClaim.category);
+        selectCategory(selectedClaim.category, selectedClaim.id);
       } else {
         selectChannel(selectedClaim.channel);
       }
@@ -387,6 +389,7 @@ const ClaimsPage = () => {
       return;
     }
     if (
+      (notes === "" && pendingStatus === "Approved") ||
       (notes === "" && pendingStatus === "Rejected") ||
       (notes === "" && pendingStatus === "Lack of Documents Operator") ||
       (notes === "" && pendingStatus === "Lack of Documents Insurance")
@@ -411,7 +414,9 @@ const ClaimsPage = () => {
         pendingStatus,
         amountApproved,
         notes,
-        finalSelectedDocuments.map((item) => item.name)
+        finalSelectedDocuments.map((item) =>
+          !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name
+        )
       );
       setClaims((prevClaims) =>
         prevClaims.map((claim) =>
@@ -451,7 +456,30 @@ const ClaimsPage = () => {
     const selected = dataDocument.filter((doc) =>
       selectedDocuments.includes(doc.name)
     );
-    setFinalSelectedDocuments(selected);
+    const docListFields =
+      dataDocument.length > 0
+        ? dataDocument
+            .filter(
+              (doc: any) =>
+                doc.type.toLowerCase() === "fields" && doc.fields.length > 0
+            )
+            .map((a: any) =>
+              a.fields.filter(
+                (doc: any) =>
+                  doc.type.toLowerCase() === "file" ||
+                  doc.type.toLowerCase() === "file multiple"
+              )
+            )
+            .flat()
+            .map((d: any) => ({
+              ...d,
+              nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-",
+            }))
+        : [];
+    const selectedFields = docListFields.filter((doc) =>
+      selectedDocuments.includes(doc.name)
+    );
+    setFinalSelectedDocuments([...selected, ...selectedFields]);
   };
 
   const handleDeleteSelectedDocument = (id: string) => {
@@ -482,6 +510,21 @@ const ClaimsPage = () => {
 
     fetchClaimsStatus();
   }, []);
+
+  const handleExport = () => {
+    const exportData = {
+      page,
+      limit: rowsPerPage,
+      status: tab === "All" ? "" : tab,
+      search: searchData,
+      sla_status: searchSlaStatus === "All" ? "" : searchSlaStatus,
+      date_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
+      date_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+    };
+
+    localStorage.setItem("exportClaimData", JSON.stringify(exportData));
+    router.push(`${path}/export`);
+  };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -553,7 +596,7 @@ const ClaimsPage = () => {
             value={searchSlaStatus}
             onValueChange={handleSearchSlaStatusChange}
           >
-            <SelectTrigger className="h-16">
+            <SelectTrigger className="h-10">
               <SelectValue placeholder="SLA Status" />
             </SelectTrigger>
             <SelectContent>
@@ -567,7 +610,20 @@ const ClaimsPage = () => {
           </Select>
         </div>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={() => router.push(`${path}/import`)}
+          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1" /> Import
+        </Button>
+        {/* New button to redirect to the new import page with preview */}
+        <Button
+          onClick={() => router.push(`${path}/import-with-preview`)}
+          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1" /> Import with Preview
+        </Button>
+        <Button
+          onClick={handleExport}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export
@@ -625,6 +681,17 @@ const ClaimsPage = () => {
                     </div>
                     <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
                   </div>
+                  <textarea
+                    name=""
+                    id=""
+                    rows={4}
+                    value={notes}
+                    onChange={(e) => {
+                      setNotes(e.target.value);
+                    }}
+                    className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                    placeholder="Insert Reason"
+                  ></textarea>
                 </>
               )}
 
@@ -689,7 +756,10 @@ const ClaimsPage = () => {
                             <Input
                               name="lack_of_documents"
                               value={
-                                doc?.label?.en || doc?.label_multilanguage?.en
+                                doc?.label?.en ||
+                                doc?.label_multilanguage?.en ||
+                                doc?.label ||
+                                "-"
                               }
                               className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
                             />
@@ -759,8 +829,10 @@ const ClaimsPage = () => {
                                 dataDocument
                                   .filter(
                                     (document) =>
-                                      document.type === "file" ||
-                                      document.type === "file multiple"
+                                      document.type.toLowerCase() === "file" ||
+                                      document.type.toLowerCase() ===
+                                        "file multiple" ||
+                                      document.type.toLowerCase() === "fields"
                                   )
                                   .map((document) => (
                                     <TableRow
@@ -770,26 +842,75 @@ const ClaimsPage = () => {
                                       <TableCell align="center">
                                         <Input
                                           type="checkbox"
-                                          checked={isDocumentSelected(
-                                            document.name
-                                          )}
-                                          onClick={() =>
-                                            handleCheckboxChange(document.name)
+                                          checked={
+                                            document.type.toLowerCase() ===
+                                            "fields"
+                                              ? isDocumentSelected(
+                                                  document?.fields?.filter(
+                                                    (a: any) =>
+                                                      a.type.toLowerCase() ===
+                                                      "file"
+                                                  )?.[0]?.name
+                                                )
+                                              : isDocumentSelected(
+                                                  document.name
+                                                )
                                           }
+                                          onClick={() => {
+                                            let docName = document.name;
+                                            if (
+                                              document.type.toLowerCase() ===
+                                              "fields"
+                                            )
+                                              docName =
+                                                document?.fields?.filter(
+                                                  (a: any) =>
+                                                    a.type.toLowerCase() ===
+                                                    "file"
+                                                )?.[0]?.name;
+                                            handleCheckboxChange(docName);
+                                          }}
                                           className="w-4 h-4"
                                         />
                                       </TableCell>
                                       <TableCell>
-                                        {document?.label?.en ||
-                                          document?.label_multilanguage?.en ||
-                                          document?.label ||
-                                          "-"}
+                                        {document.type.toLowerCase() ===
+                                        "fields"
+                                          ? document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.label?.en ||
+                                            document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.label_multilanguage?.en ||
+                                            document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.label ||
+                                            "-"
+                                          : document?.label?.en ||
+                                            document?.label_multilanguage?.en ||
+                                            document?.label ||
+                                            "-"}
                                       </TableCell>
                                       <TableCell className="">
-                                        {document.criteria || "-"}
+                                        {document.type.toLowerCase() ===
+                                        "fields"
+                                          ? document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.criteria || "-"
+                                          : document?.criteria || "-"}
                                       </TableCell>
                                       <TableCell className="">
-                                        {document.definition || "-"}
+                                        {document.type.toLowerCase() ===
+                                        "fields"
+                                          ? document?.fields?.filter(
+                                              (a: any) =>
+                                                a.type.toLowerCase() === "file"
+                                            )?.[0]?.definition || "-"
+                                          : document?.definition || "-"}
                                       </TableCell>
                                       <TableCell className="w-24 text-center">
                                         <Dialog>
@@ -829,22 +950,52 @@ const ClaimsPage = () => {
                                             <div className="flex flex-col px-4 pb-4">
                                               <p className="text-sm">
                                                 Document type:{" "}
-                                                {document.document_type || "-"}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]?.name || "-"
+                                                  : document?.name || "-"}
                                               </p>
                                               <p className="text-sm">
                                                 Criteria:{" "}
-                                                {document.criteria || "-"}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]?.criteria || "-"
+                                                  : document?.criteria || "-"}
                                               </p>
                                               <p className="text-sm">
                                                 Definition:{" "}
-                                                {document?.definition || "-"}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]?.definition || "-"
+                                                  : document?.definition || "-"}
                                               </p>
                                               <hr className="my-4" />
                                               <p className="text-sm">
                                                 "
-                                                {document
-                                                  ?.pending_reason_message
-                                                  ?.en || "-"}
+                                                {document.type.toLowerCase() ===
+                                                "fields"
+                                                  ? document?.fields?.filter(
+                                                      (a: any) =>
+                                                        a.type.toLowerCase() ===
+                                                        "file"
+                                                    )?.[0]
+                                                      ?.pending_reason_message
+                                                      ?.en || "-"
+                                                  : document
+                                                      ?.pending_reason_message
+                                                      ?.en || "-"}
                                                 "{" "}
                                               </p>
                                             </div>
@@ -1048,13 +1199,15 @@ const ClaimsPage = () => {
                       <SelectContent className="max-h-48 overflow-auto">
                         <SelectItem
                           value="Submitted"
-                          disabled={claim.status !== "Draft"}
+                          disabled={claim.status !== "Draft" && !openAllStatus}
                         >
                           Submitted
                         </SelectItem>
                         <SelectItem
                           value="Acknowledged"
-                          disabled={claim.status !== "Submitted"}
+                          disabled={
+                            claim.status !== "Submitted" && !openAllStatus
+                          }
                         >
                           Acknowledged
                         </SelectItem>
@@ -1062,7 +1215,8 @@ const ClaimsPage = () => {
                           value="Document Review Operator"
                           disabled={
                             claim.status !== "Acknowledged" &&
-                            claim.status !== "Lack of Documents Operator"
+                            claim.status !== "Lack of Documents Operator" &&
+                            !openAllStatus
                           }
                         >
                           Document Review Operator
@@ -1070,7 +1224,8 @@ const ClaimsPage = () => {
                         <SelectItem
                           value="Reupload Document Review Operator"
                           disabled={
-                            claim.status !== "Lack of Documents Operator"
+                            claim.status !== "Lack of Documents Operator" &&
+                            !openAllStatus
                           }
                         >
                           Reupload Document Review Operator
@@ -1079,7 +1234,9 @@ const ClaimsPage = () => {
                           value="Lack of Documents Operator"
                           disabled={
                             claim.status !== "Document Review Operator" &&
-                            claim.status !== "Reupload Document Review Operator"
+                            claim.status !==
+                              "Reupload Document Review Operator" &&
+                            !openAllStatus
                           }
                         >
                           Lack of Documents Operator
@@ -1088,7 +1245,8 @@ const ClaimsPage = () => {
                           value="Document Review Insurance"
                           disabled={
                             claim.status !== "Document Review Operator" &&
-                            claim.status !== "Lack of Documents Insurance"
+                            claim.status !== "Lack of Documents Insurance" &&
+                            !openAllStatus
                           }
                         >
                           Document Review Insurance
@@ -1096,7 +1254,8 @@ const ClaimsPage = () => {
                         <SelectItem
                           value="Reupload Document Review Insurance"
                           disabled={
-                            claim.status !== "Lack of Documents Insurance"
+                            claim.status !== "Lack of Documents Insurance" &&
+                            !openAllStatus
                           }
                         >
                           Reupload Document Review Insurance
@@ -1106,7 +1265,8 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Document Review Insurance" &&
                             claim.status !==
-                              "Reupload Document Review Insurance"
+                              "Reupload Document Review Insurance" &&
+                            !openAllStatus
                           }
                         >
                           Lack of Documents Insurance
@@ -1115,26 +1275,35 @@ const ClaimsPage = () => {
                           value="Claim Assessment"
                           disabled={
                             claim.status !== "Document Review" &&
-                            claim.status !== "Document Review Insurance"
+                            claim.status !== "Document Review Insurance" &&
+                            !openAllStatus
                           }
                         >
                           Claim Assessment
                         </SelectItem>
                         <SelectItem
                           value="Approved"
-                          disabled={claim.status !== "Claim Assessment"}
+                          disabled={
+                            claim.status !== "Claim Assessment" &&
+                            !openAllStatus
+                          }
                         >
                           Approved
                         </SelectItem>
                         <SelectItem
                           value="Rejected"
-                          disabled={claim.status !== "Claim Assessment"}
+                          disabled={
+                            claim.status !== "Claim Assessment" &&
+                            !openAllStatus
+                          }
                         >
                           Rejected
                         </SelectItem>
                         <SelectItem
                           value="Paid"
-                          disabled={claim.status !== "Approved"}
+                          disabled={
+                            claim.status !== "Approved" && !openAllStatus
+                          }
                         >
                           Paid
                         </SelectItem>
@@ -1142,7 +1311,8 @@ const ClaimsPage = () => {
                           value="Closed"
                           disabled={
                             claim.status !== "Paid" &&
-                            claim.status !== "Rejected"
+                            claim.status !== "Rejected" &&
+                            !openAllStatus
                           }
                         >
                           Closed

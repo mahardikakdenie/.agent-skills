@@ -18,3 +18,7 @@ export const formatMoneyClaim = (amount: number): string => {
   });
   return formatter.format(amount);
 };
+
+export const capitalizeStringWithChar = (value: string, splitter: string = "-") => {
+  return value.split(splitter).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+};

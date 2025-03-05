@@ -25,6 +25,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Check as CheckIcon, X as XIcon } from "react-feather";
+
+const passwordValidationRules = {
+  required: (role: string) =>
+    role === "admin" ? "Password is required for Admin role" : false,
+  minLength: {
+    value: 8,
+    message: "Password must be at least 8 characters",
+  },
+  pattern: {
+    value:
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/,
+    message:
+      "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+  },
+};
+
+const validatePassword = (password: string) => {
+  return {
+    minLength: password.length >= 8,
+    hasUpperCase: /[A-Z]/.test(password),
+    hasLowerCase: /[a-z]/.test(password),
+    hasNumber: /\d/.test(password),
+    hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
+  };
+};
 
 const AddUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -48,22 +74,22 @@ const AddUser = ({ params }: { params: { id: string } }) => {
 
   const roles = [
     {
-      id: 'Admin',
-      name: 'Admin',
+      id: "Admin",
+      name: "Admin",
     },
     {
-      id: 'Partner',
-      name: 'Partner',
+      id: "Partner",
+      name: "Partner",
     },
     {
-      id: 'User',
-      name: 'User',
+      id: "User",
+      name: "User",
     },
     {
-      id: 'Insurer',
-      name: 'Insurer',
-    }
-  ]
+      id: "Insurer",
+      name: "Insurer",
+    },
+  ];
   const {
     handleSubmit,
     control,
@@ -99,10 +125,23 @@ const AddUser = ({ params }: { params: { id: string } }) => {
 
   const selectRole = watch("role");
 
+  const [validations, setValidations] = useState({
+    minLength: false,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  });
+
   useEffect(() => {
     fetchChannels({});
     fetchRole({});
   }, []);
+
+  useEffect(() => {
+    const currentValidations = validatePassword(password);
+    setValidations(currentValidations);
+  }, [password]);
 
   const onSubmit = async (data: any) => {
     try {
@@ -410,29 +449,93 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                   validate: (value) => {
                     const selectedRole = watch("role");
                     if (selectedRole === "admin" && !value) {
-                      return "Password is required for Admin role";
+                      return passwordValidationRules.required(selectedRole);
+                    }
+                    if (value) {
+                      const validations = validatePassword(value);
+                      if (!Object.values(validations).every(Boolean)) {
+                        return "Password does not meet requirements";
+                      }
                     }
                     return true;
                   },
                 }}
                 render={({ field }) => (
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      placeholder="Insert Password"
-                      {...field}
-                      className={`mt-1 block w-full h-12 ${
-                        errors.password ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-3 flex items-center"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        placeholder="Insert Password"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setPassword(e.target.value);
+                        }}
+                        className={`mt-1 block w-full h-12 ${
+                          errors.password ? "border-red-500" : "border-gray-300"
+                        } rounded-md shadow-sm`}
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-3 flex items-center"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
+                      </button>
+                    </div>
+
+                    {(field.value || watch("role") === "admin") && (
+                      <div className="bg-gray-50 p-3 rounded-md space-y-2 text-sm">
+                        <div className="font-medium mb-2">
+                          Password Requirements:
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {validations.minLength ? (
+                            <CheckIcon className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <XIcon className="w-4 h-4 text-red-500" />
+                          )}
+                          <span>Minimum 8 characters</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {validations.hasUpperCase ? (
+                            <CheckIcon className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <XIcon className="w-4 h-4 text-red-500" />
+                          )}
+                          <span>At least one uppercase letter</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {validations.hasLowerCase ? (
+                            <CheckIcon className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <XIcon className="w-4 h-4 text-red-500" />
+                          )}
+                          <span>At least one lowercase letter</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {validations.hasNumber ? (
+                            <CheckIcon className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <XIcon className="w-4 h-4 text-red-500" />
+                          )}
+                          <span>At least one number</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {validations.hasSpecialChar ? (
+                            <CheckIcon className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <XIcon className="w-4 h-4 text-red-500" />
+                          )}
+                          <span>At least one special character</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               />

@@ -39,12 +39,16 @@ export class PolicyService {
   async getPolicy(
     page: number,
     rowsPerPage: number,
+    searchData: string,
     status: string
   ): Promise<PolicyResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
     };
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
 
     if (status) {
       params["status"] = status;
@@ -53,17 +57,30 @@ export class PolicyService {
     return this.httpClient.get(`/v1/policies?${queryString}`);
   }
 
-  async getPolicyExport(page: number): Promise<PolicyResponse> {
+  async getPolicyDetail(id: string): Promise<any> {
+    return this.httpClient.get(`/v1/policies/${id}`);
+  }
+
+  async getPolicyExport(
+    page: number,
+    rowsPerPage: number,
+    searchData: string,
+    status: string
+  ): Promise<PolicyResponse> {
     const params: any = {
       page: page,
-      limit: 100,
+      limit: rowsPerPage,
     };
+
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
+
+    if (status) {
+      params["status"] = status;
+    }
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/policies?${queryString}`);
-  }
-
-  async getPolicyDetail(id: string): Promise<any> {
-    return this.httpClient.get("/v1/policies/" + id);
   }
 }
