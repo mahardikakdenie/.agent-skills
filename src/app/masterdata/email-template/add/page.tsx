@@ -55,6 +55,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const { id } = params;
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedInsuranceId, setSelectedInsuranceId] = useState("");
   const [selectedPlanId, setSelectedPlanId] = useState("");
@@ -74,7 +75,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     fetchProductSelect,
     plans = [],
     fetchPlans,
-    journey,
+    journey = [],
     fetchJourney,
     emailTag,
     savePages,
@@ -128,31 +129,40 @@ const AddPage = ({ params }: { params: { id: string } }) => {
 
     checkAccess();
     fetchCategories({});
+    fetchJourney({});
   }, [router]);
 
   useEffect(() => {
-    fetchInsurances({
-      page: 1,
-      // categoryId: selectedCategoryId,
-    });
-    fetchJourney({});
-    fetchEmailTag({});
-    fetchPlans({
-      page: 1,
-      insuranceId: selectedInsuranceId,
-    });
-
-    fetchProductSelect({
-      page: 1,
-      insuranceId: selectedInsuranceId,
-    });
-
+    if (selectedCategoryId) {
+      fetchInsurances({
+        page: 1,
+        categoryId: selectedCategoryId,
+      });
+    }
     if (selectedInsuranceId) {
       fetchProductSelect({
+        page: 1,
         insuranceId: selectedInsuranceId,
       });
     }
-  }, [selectedInsuranceId]);
+    if (selectedProductId) {
+      fetchPlans({
+        page: 1,
+        productId: selectedProductId,
+      });
+    }
+    if (selectedJourneyId) {
+      fetchEmailTag({
+        page: 1,
+        journeyId: selectedJourneyId,
+      });
+    }
+  }, [
+    selectedCategoryId,
+    selectedInsuranceId,
+    selectedProductId,
+    selectedJourneyId,
+  ]);
 
   const updateEmailTitle = (
     categoryName: string,
@@ -288,10 +298,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedCategoryId(value);
-
-                      const selectedCategory = categories.find(
-                        (cat) => cat.id === value
-                      );
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -378,6 +384,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                     disabled={!selectedInsuranceId}
                     onValueChange={(value) => {
                       field.onChange(value);
+                      setSelectedProductId(value);
                       const selectedProduct = products.find(
                         (prod) => prod.id === value
                       );
@@ -420,12 +427,10 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     value={field.value}
+                    disabled={!selectedProductId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedPlanId(value);
-                      const selectedPlans = plans.find(
-                        (cat) => cat.id === value
-                      );
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -433,9 +438,9 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {plans.map((prod: any) => (
-                          <SelectItem key={prod.id} value={prod.id}>
-                            {prod.name}
+                        {plans.map((plan: any) => (
+                          <SelectItem key={plan.id} value={plan.id}>
+                            {plan.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -475,7 +480,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                     <SelectContent>
                       <SelectGroup>
                         {journey.map((jour: any) => (
-                          <SelectItem key={jour.id} value={jour.code}>
+                          <SelectItem key={jour.id} value={jour.id}>
                             {jour.name}
                           </SelectItem>
                         ))}
@@ -503,7 +508,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     value={field.value}
-                    // disabled={!selectedInsuranceId}
+                    disabled={!selectedJourneyId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       const selectedEmailTag = emailTag.find(
