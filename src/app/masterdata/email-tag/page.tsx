@@ -55,10 +55,10 @@ const EmailTag = () => {
   }, [router]);
 
   useEffect(() => {
-    const fetchEmailTag = async () => {
+    const fetchEmailTag = async (search: any) => {
       try {
-        const result = await emailTagService.getEmailTag();
-        setEmailTag(result);
+        const result = await emailTagService.getEmailTag(search);
+        setEmailTag(result.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -66,8 +66,9 @@ const EmailTag = () => {
       }
     };
 
-    fetchEmailTag();
+    fetchEmailTag({});
   }, []);
+
   if (!emailTag) {
     return (
       <div className="w-full h-full flex justify-center items-center">

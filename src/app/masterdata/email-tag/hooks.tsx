@@ -11,9 +11,9 @@ export const useEmailTag = () => {
   const [emailTag, setEmailTag] = useState<any[]>([]);
   const [journeys, setJourneys] = useState<any[]>([]);
 
-  const fetchEmailTag = async (search: any) => {
-    const { data } = await emailTagService.getEmailTag();
-    setEmailTag(data);
+  const fetchEmailTag = async (data: any) => {
+    const { data: response } = await emailTagService.getEmailTag(data);
+    return response;
   };
 
   const fetchEmailTagById = async (id: string) => {

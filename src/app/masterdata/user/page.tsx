@@ -9,10 +9,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import iconWarning from "/public/images/icon-warning.png";
+import { toastPromise, toastNotification } from "@/lib/toast";
 import { ChevronLeft, ChevronRight, Plus, Search, Trash } from "react-feather";
 
 import noData from "/public/images/no-data.webp";
@@ -21,6 +32,7 @@ import { User, UserService } from "@/services/masterdata/user.service";
 import { hasPermission } from "@/context/auth.context";
 import { Input } from "@/components/ui/input";
 import _ from "lodash";
+import { useUser } from "./hooks";
 
 const Users = () => {
   useRequireAuth();
@@ -34,6 +46,8 @@ const Users = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchData, setSearchData] = useState("");
+  const [isModalChangeStatusOpen, setIsModalChangeStatusOpen] = useState<boolean>(false);
+  const [selectedUserStatus, setSelectedUserStatus] = useState<User>();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,19 +57,25 @@ const Users = () => {
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
+  const [canToggleStatus, setCanToggleStatus] = useState<boolean>(false);
+
+  const { updateUser } = useUser();
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = await hasPermission("Masterdata.Read");
+      const accessMasterData = await hasPermission("Masterdata.Read");
+      const accessUser = await hasPermission("Userdata.Read");
       const editBtn = await hasPermission("Masterdata.Update");
       const deleteBtn = await hasPermission("Masterdata.Delete");
       const createBtn = await hasPermission("Masterdata.Create");
+      const canToggleStatus = await hasPermission("User.Change Status");
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
-      setHasAccess(access);
+      setHasAccess(accessMasterData || accessUser);
       setCanCreate(createBtn);
-      if (!access) {
+      setCanToggleStatus(canToggleStatus);
+      if (!accessMasterData && !accessUser) {
         router.push("/forbidden");
       }
     };
@@ -124,6 +144,73 @@ const Users = () => {
     }
   };
 
+  const handleStatusChange = (userInfo: User) => {
+    setSelectedUserStatus(userInfo);  
+    setIsModalChangeStatusOpen(true);
+  };
+  
+  const handleUpdateStatus = async () => {
+    setLoading(true);
+    try {
+      const id = selectedUserStatus ? selectedUserStatus.id : "";
+      const data = {
+        status: selectedUserStatus?.status === "Active" ? "Inactive" : "Active",
+      }
+      const updatePromise = updateUser(data, id);
+      await toastPromise(updatePromise, {
+        loading: "Updating user's status...",
+        success: <b>User's status has been successfully updated</b>,
+        error: "Update failed!",
+      });
+    } catch (error: any) {
+      toastNotification(
+        error.message,
+        "error"
+      );
+    } finally {
+      setLoading(false);
+      setIsModalChangeStatusOpen(false);
+      window.location.reload();
+    }
+  };
+
+  const renderChangeStatusModal = () => {
+    return (
+      <Dialog open={isModalChangeStatusOpen}>
+        <DialogContent className="w-[90vw] md:w-[600px]">
+          <DialogHeader className="items-center gap-4">
+            <Image
+              alt="icon warning"
+              src={iconWarning}
+              width={88}
+            />
+            <DialogTitle className="sm:text-center">
+              {`Are you sure to ${selectedUserStatus?.status === "Active" ? "deactivate" : "activate"} the user account?`}
+            </DialogTitle>
+            <DialogDescription className="sm:text-center">
+              {`Once ${selectedUserStatus?.status === "Active" ? "deactivated" : "activated"}, the user will no longer have access to the portal.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-4">
+            <Button
+              variant="outline"
+              className="min-w-[108px] rounded-full border border-red-500 text-red-500 hover:bg-red-100 hover:text-red-500"
+              onClick={() => setIsModalChangeStatusOpen(false)}
+            >
+              No
+            </Button>
+            <Button
+              className="btn min-w-[108px] rounded-full bg-[#F5BA41] text-black"
+              onClick={() => handleUpdateStatus()}
+            >
+              Yes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex gap-4 pb-4 items-center">
@@ -172,10 +259,13 @@ const Users = () => {
                   <TableCell>{user.email || "-"}</TableCell>
                   <TableCell>{user.phone_number || "-"}</TableCell>
                   <TableCell>{user.role || "-"}</TableCell>
-                  <TableCell className="font-semibold whitespace-nowrap">
-                    <span className={getStatusColor(user.status)}>
-                      {user.status || "-"}
-                    </span>
+                  <TableCell>
+                    <Switch
+                      disabled={!canToggleStatus}
+                      checked={user.status === "Active"}
+                      onCheckedChange={() => handleStatusChange(user)}
+                      aria-readonly
+                    />
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
@@ -255,6 +345,7 @@ const Users = () => {
           </TableFooter>
         </Table>
       </div>
+      {renderChangeStatusModal()}
     </div>
   );
 };

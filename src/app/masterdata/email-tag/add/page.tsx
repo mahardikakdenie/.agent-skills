@@ -79,10 +79,10 @@ const AddEmailTag = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (saveSuccess === true) {
-      alert("Data berhasil disimpan!");
+      alert("Data has been successfully saved!");
       router.back();
     } else if (saveSuccess === false) {
-      alert("Terjadi kesalahan saat menyimpan data.");
+      alert("Email Tag has already been used for this Journey!");
     }
     setSaveSuccess(null);
   }, [saveSuccess, router]);

@@ -165,8 +165,3 @@ export const hasInsurers = async (): Promise<any> => {
   const claims = await getClaims();
   return claims?.account_insurers || false;
 };
-
-export const getChannel = async (): Promise<string | null> => {
-  const claims = await getClaims();
-  return claims?.channel || null;
-};
