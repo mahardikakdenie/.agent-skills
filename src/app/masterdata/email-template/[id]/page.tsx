@@ -249,7 +249,13 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
   const handleEditorChange = (state: EditorState) => {
     setEditorState(state);
-    const htmlContent = stateToHTML(state.getCurrentContent());
+
+    let htmlContent = stateToHTML(state.getCurrentContent());
+    htmlContent = htmlContent
+      .replace(/\s+/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/ {2}/g, " ");
+
     setContent(htmlContent);
   };
 

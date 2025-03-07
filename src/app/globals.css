@@ -289,9 +289,6 @@ th {
   min-height: 350px;
   padding: 10px;
 }
-.public-DraftStyleDefault-block {
-  margin: 0 !important;
-}
 .dialog-email-template {
   width: 800px;
   max-width: 96%;
@@ -302,6 +299,9 @@ th {
   color: black;
   max-height: 70vh;
   overflow: auto;
+}
+.dialog-email-template .editor-preview p {
+  margin-bottom: 1rem;
 }
 .public-DraftEditor-content {
   max-height: 400px;
@@ -368,8 +368,6 @@ th {
     box-shadow: none !important;
   }
 }
-
-
 
 @layer base {
   * {

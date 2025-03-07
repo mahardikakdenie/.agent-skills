@@ -154,7 +154,8 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     if (selectedJourneyId) {
       fetchEmailTag({
         page: 1,
-        journeyId: selectedJourneyId,
+        pageSize: 100,
+        journey: selectedJourneyId,
       });
     }
   }, [
@@ -163,32 +164,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     selectedProductId,
     selectedJourneyId,
   ]);
-
-  const updateEmailTitle = (
-    categoryName: string,
-    journeyName: string,
-    planName: string
-  ) => {
-    const formattedCategoryName = categoryName
-      .split("-")
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-
-    let emailTitle = `${formattedCategoryName} - ${journeyName} - ${planName}`;
-
-    if (formattedCategoryName)
-      emailTitle = emailTitle.replace(
-        /.*? -/,
-        `{{${formattedCategoryName}}} -`
-      );
-    if (journeyName)
-      emailTitle = emailTitle.replace(/ -.*? -/, ` - {{${journeyName}}} -`);
-    if (planName)
-      emailTitle = emailTitle.replace(/ -[^-]+$/, ` - {{${planName}}}`);
-
-    setValue("subject", emailTitle);
-    setEmailTitlePreview(emailTitle);
-  };
 
   const onSubmit = async (data: any, id: any) => {
     try {
@@ -219,16 +194,15 @@ const AddPage = ({ params }: { params: { id: string } }) => {
 
   const handleEditorChange = (state: EditorState) => {
     setEditorState(state);
-    const htmlContent = stateToHTML(state.getCurrentContent());
+
+    let htmlContent = stateToHTML(state.getCurrentContent());
+    htmlContent = htmlContent
+      .replace(/\s+/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/ {2}/g, " ");
+
     setContent(htmlContent);
   };
-
-  // Add loading state
-  const [isEditorLoaded, setIsEditorLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsEditorLoaded(true);
-  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -480,7 +454,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                     <SelectContent>
                       <SelectGroup>
                         {journey.map((jour: any) => (
-                          <SelectItem key={jour.id} value={jour.id}>
+                          <SelectItem key={jour.id} value={jour.code}>
                             {jour.name}
                           </SelectItem>
                         ))}
@@ -602,15 +576,13 @@ const AddPage = ({ params }: { params: { id: string } }) => {
             )}
 
             <div className="mt-4">
-              {isEditorLoaded && (
-                <Editor
-                  editorState={editorState}
-                  toolbarClassName="toolbarClassName"
-                  wrapperClassName="wrapperClassName"
-                  editorClassName="editorClassName"
-                  onEditorStateChange={handleEditorChange}
-                />
-              )}
+              <Editor
+                editorState={editorState}
+                toolbarClassName="toolbarClassName"
+                wrapperClassName="wrapperClassName"
+                editorClassName="editorClassName"
+                onEditorStateChange={handleEditorChange}
+              />
             </div>
           </div>
         </div>
