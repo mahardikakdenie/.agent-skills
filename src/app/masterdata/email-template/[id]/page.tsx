@@ -104,23 +104,22 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     },
   });
 
-  const handleEditorInsert = (text: string) => {
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
 
-    const newContentState = Modifier.replaceText(
-      contentState,
-      selectionState,
-      text
-    );
-
-    const newEditorState = EditorState.push(
-      editorState,
-      newContentState,
-      "insert-characters"
-    );
-    setEditorState(newEditorState);
-  };
+    checkAccess();
+    fetchCategories({});
+    fetchInsurances({});
+    fetchProductSelect({});
+    fetchMailTemplateById(id);
+    fetchJourney({});
+  }, [router, id]);
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -157,12 +156,28 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (mailTemplate && mailTemplate.length > 0) {
-      setValue("category", mailTemplate[0].category);
-      setValue("insurance", mailTemplate[0].insurance ?? null);
-      setValue("product", mailTemplate[0].product ?? null);
-      setValue("plan", mailTemplate[0].plan ?? null);
-      setValue("journey", mailTemplate[0]?.journey);
-      setValue("subject", mailTemplate[0].subject);
+      const categoryValue = mailTemplate[0].category || "";
+      setValue("category", categoryValue);
+
+      const insuraceValue = mailTemplate[0].insurance ?? null;
+      setValue("insurance", insuraceValue);
+
+      const productValue = mailTemplate[0].product ?? null;
+      setValue("product", productValue);
+
+      const planValue = mailTemplate[0].plan ?? null;
+      setValue("plan", planValue);
+
+      const journeyValue = mailTemplate[0].journey || "";
+      setValue("journey", journeyValue);
+
+      const subjectValue = mailTemplate[0].subject || "";
+      setValue("subject", subjectValue);
+
+      setSelectedCategoryId(categoryValue);
+      setSelectedInsuranceId(insuraceValue);
+      setSelectedProductId(productValue);
+      setSelectedPlanId(planValue);
 
       const selectedJourney = journey.find(
         (jour) => jour.code === mailTemplate[0].journey
@@ -193,23 +208,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setValue("plan", mailTemplate[0].plan ?? null);
     }
   }, [plans]);
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = await hasPermission("Masterdata.Update");
-      setHasAccess(access);
-      if (!access) {
-        router.push("/forbidden");
-      }
-    };
-
-    checkAccess();
-    fetchCategories({});
-    fetchInsurances({});
-    fetchProductSelect({});
-    fetchMailTemplateById(id);
-    fetchJourney({});
-  }, [router, id]);
 
   const onSubmit = async (data: any) => {
     try {
@@ -257,6 +255,24 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       .replace(/ {2}/g, " ");
 
     setContent(htmlContent);
+  };
+
+  const handleEditorInsert = (text: string) => {
+    const contentState = editorState.getCurrentContent();
+    const selectionState = editorState.getSelection();
+
+    const newContentState = Modifier.replaceText(
+      contentState,
+      selectionState,
+      text
+    );
+
+    const newEditorState = EditorState.push(
+      editorState,
+      newContentState,
+      "insert-characters"
+    );
+    setEditorState(newEditorState);
   };
 
   return (
@@ -323,7 +339,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    key={selectedCategoryId}
+                    value={selectedCategoryId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedCategoryId(value);
@@ -369,7 +386,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    key={selectedInsuranceId}
+                    value={selectedInsuranceId}
                     disabled={!selectedCategoryId}
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -415,7 +433,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    key={selectedProductId}
+                    value={selectedProductId}
                     disabled={!selectedInsuranceId}
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -462,7 +481,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    key={selectedPlanId}
+                    value={selectedPlanId}
                     disabled={!selectedProductId}
                     onValueChange={(value) => {
                       field.onChange(value);
