@@ -82,13 +82,13 @@ const EmailTag = () => {
   };
 
   const handleDeletePlan = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
+    if (window.confirm("Are you sure you want to delete this Email Tag?")) {
       try {
         await emailTagService.deleteEmailTag(id);
         setEmailTag((prev) => prev.filter((emailTag) => emailTag.id !== id));
         window.location.reload();
       } catch (error) {
-        console.error("Failed to delete emailTag:", error);
+        console.error("Failed to delete Email Tag:", error);
       }
     }
   };
