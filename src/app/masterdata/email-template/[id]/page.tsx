@@ -86,7 +86,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: "undefined",
+      insurance: null,
       product: "undefined",
       plan: "undefined",
       journey: "",
@@ -201,7 +201,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setSelectedJourneyId(mailTemplate[0].journey);
       setEmailTitlePreview(mailTemplate[0].subject);
     }
-  }, [mailTemplate, selectedCategoryId]);
+  }, [mailTemplate]);
 
   useEffect(() => {
     if (plans.length > 0) {
@@ -212,9 +212,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const onSubmit = async (data: any) => {
     try {
       const cleanedData = Object.fromEntries(
-        Object.entries(data).filter(
-          ([_, value]) => value !== "" && value !== undefined && value !== null
-        )
+        Object.entries(data).map(([key, value]) => [
+          key,
+          value === "" ? null : value, // Konversi string kosong ke null
+        ])
       );
 
       const requestData = {
@@ -222,9 +223,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         content,
       };
 
-      console.log(requestData);
+      console.log(requestData); // Debugging untuk memastikan null dikirim
 
-      delete (requestData as any).emailTag;
+      delete (requestData as any).emailTag; // Hapus jika tidak diperlukan
 
       const response = await updatePages(requestData, id);
       if (response.id != null) {
@@ -374,7 +375,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               )}
             </div>
 
-            <div>
+            <div className="relative field-combobox">
               <label
                 htmlFor="insurance"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -387,7 +388,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     key={selectedInsuranceId}
-                    value={selectedInsuranceId}
+                    value={selectedInsuranceId ?? ""}
                     disabled={!selectedCategoryId}
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -415,13 +416,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
-              {errors.insurance && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.insurance.message?.toString()}
-                </p>
+              {selectedInsuranceId && (
+                <button
+                  type="button"
+                  className="absolute right-8 top-10 text-gray-400 hover:text-gray-600"
+                  onClick={() => {
+                    setValue("insurance", "", { shouldValidate: true });
+                    setSelectedInsuranceId("");
+                  }}
+                >
+                  ✕
+                </button>
               )}
             </div>
-            <div>
+
+            <div className="relative field-combobox">
               <label
                 htmlFor="product"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -434,7 +443,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     key={selectedProductId}
-                    value={selectedProductId}
+                    value={selectedProductId ?? ""}
                     disabled={!selectedInsuranceId}
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -462,14 +471,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
-              {errors.product && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.product.message?.toString()}
-                </p>
+              {selectedProductId && (
+                <button
+                  type="button"
+                  className="absolute right-8 top-10 text-gray-400 hover:text-gray-600"
+                  onClick={() => {
+                    setValue("product", "", { shouldValidate: true });
+                    setSelectedProductId("");
+                  }}
+                >
+                  ✕
+                </button>
               )}
             </div>
 
-            <div>
+            <div className="relative field-combobox">
               <label
                 htmlFor="plan"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -482,7 +498,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     key={selectedPlanId}
-                    value={selectedPlanId}
+                    value={selectedPlanId ?? ""}
                     disabled={!selectedProductId}
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -504,10 +520,17 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
-              {errors.plan && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.plan.message?.toString()}
-                </p>
+              {selectedPlanId && (
+                <button
+                  type="button"
+                  className="absolute right-8 top-10 text-gray-400 hover:text-gray-600"
+                  onClick={() => {
+                    setValue("plan", "", { shouldValidate: true });
+                    setSelectedPlanId("");
+                  }}
+                >
+                  ✕
+                </button>
               )}
             </div>
 
