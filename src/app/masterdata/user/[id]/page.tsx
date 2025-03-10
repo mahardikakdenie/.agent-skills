@@ -30,7 +30,6 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
-import { UserService } from "@/services/masterdata/user.service";
 import {
   Select,
   SelectContent,
@@ -39,7 +38,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogClose,
