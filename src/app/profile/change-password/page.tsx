@@ -28,6 +28,8 @@ const ChangePasswordPage = () => {
     newPassword: false,
     confirmNewPassword: false,
   });
+  const [isOldPasswordIncorrect, setIsOldPasswordIncorrect] = useState(false);
+  const [isConfirmPasswordMismatch, setIsConfirmPasswordMismatch] = useState(false);
 
   const togglePasswordVisibility = (field: "oldPassword" | "newPassword" | "confirmNewPassword") => {
     setPasswordVisibility((prev) => ({
@@ -81,6 +83,13 @@ const ChangePasswordPage = () => {
               )}
             </button>
           </div>
+          {
+            isOldPasswordIncorrect ? (
+              <div className="text-red-500 text-xs">
+                Password incorrect, contact admin for support
+              </div>
+            ) : null
+          }
         </div>
 
         <div className="flex flex-col gap-1.5 w-full md:w-1/2">
@@ -131,6 +140,13 @@ const ChangePasswordPage = () => {
               )}
             </button>
           </div>
+          {
+            isConfirmPasswordMismatch ? (
+              <div className="text-red-500 text-xs">
+                Passwords do not match. Please re-enter your confirmation password.
+              </div>
+            ) : null
+          }
         </div>
       </div>
     </div>
