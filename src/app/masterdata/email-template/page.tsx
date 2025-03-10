@@ -114,7 +114,9 @@ const MailTemplate = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
+    if (
+      window.confirm("Are you sure you want to delete this Email Template?")
+    ) {
       try {
         await mailTemplateService.deleteMailTemplate(id);
         setMailTemplate((prev) => prev.filter((mail) => mail.id !== id));
