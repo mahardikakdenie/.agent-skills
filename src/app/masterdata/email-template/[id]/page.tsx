@@ -86,7 +86,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: null,
+      insurance: "undefine",
       product: "undefined",
       plan: "undefined",
       journey: "",
@@ -214,7 +214,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       const cleanedData = Object.fromEntries(
         Object.entries(data).map(([key, value]) => [
           key,
-          value === "" ? null : value, // Konversi string kosong ke null
+          value === "" ? null : value,
         ])
       );
 
@@ -223,9 +223,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         content,
       };
 
-      console.log(requestData); // Debugging untuk memastikan null dikirim
-
-      delete (requestData as any).emailTag; // Hapus jika tidak diperlukan
+      delete (requestData as any).emailTag;
 
       const response = await updatePages(requestData, id);
       if (response.id != null) {
