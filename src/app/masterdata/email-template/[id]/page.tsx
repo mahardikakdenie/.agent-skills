@@ -211,10 +211,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const onSubmit = async (data: any) => {
     try {
       const cleanedData = Object.fromEntries(
-        Object.entries(data).map(([key, value]) => [
-          key,
-          value === "" ? null : value,
-        ])
+        Object.entries(data)
+          .map(([key, value]) => [key, value === "" ? null : value])
+          .filter(([_, value]) => value !== undefined)
       );
 
       const requestData = {
