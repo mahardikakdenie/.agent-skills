@@ -86,7 +86,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   } = useForm({
     defaultValues: {
       category: "",
-      insurance: "undefine",
+      insurance: "undefined",
       product: "undefined",
       plan: "undefined",
       journey: "",
@@ -168,11 +168,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       const planValue = mailTemplate[0].plan ?? null;
       setValue("plan", planValue);
 
-      const journeyValue = mailTemplate[0].journey || "";
-      setValue("journey", journeyValue);
-
-      const subjectValue = mailTemplate[0].subject || "";
-      setValue("subject", subjectValue);
+      setValue("journey", mailTemplate[0].journey || "");
+      setValue("subject", mailTemplate[0].subject || "");
 
       setSelectedCategoryId(categoryValue);
       setSelectedInsuranceId(insuraceValue);
@@ -182,8 +179,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       const selectedJourney = journey.find(
         (jour) => jour.code === mailTemplate[0].journey
       );
+
       if (selectedJourney) {
         setSelectedJourneyId(selectedJourney.code);
+        console.log(selectedJourney.code);
       }
 
       const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
