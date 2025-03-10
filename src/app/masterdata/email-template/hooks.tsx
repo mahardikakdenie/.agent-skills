@@ -82,6 +82,7 @@ export const usePages = () => {
     const { data } = await mailTemplateService.getMailTemplateById(id);
     setMailTemplate(data);
   };
+
   const fetchJourney = async (search: any) => {
     const { data } = await mailTemplateService.getJourney(search);
     setJourney(data);
