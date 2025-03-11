@@ -85,7 +85,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: category,
+      category: "",
       insurance: selectedInsuranceId,
       product: selectedProductId,
       plan: selectedPlanId,
@@ -200,7 +200,13 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setSelectedJourneyId(mailTemplate[0].journey);
       setEmailTitlePreview(mailTemplate[0].subject);
     }
-  }, [mailTemplate]);
+  }, [mailTemplate, selectedCategoryId]);
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      setValue("category", mailTemplate[0]?.category);
+    }
+  }, [categories]);
 
   useEffect(() => {
     if (plans.length > 0) {
