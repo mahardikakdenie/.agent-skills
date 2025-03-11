@@ -83,9 +83,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     control,
     setValue,
     formState: { errors },
+    watch,
   } = useForm({
     defaultValues: {
-      category: "",
+      category: selectedCategoryId,
       insurance: selectedInsuranceId,
       product: selectedProductId,
       plan: selectedPlanId,
@@ -156,7 +157,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (mailTemplate && mailTemplate.length > 0) {
-      const categoryValue = mailTemplate[0].category || "";
+      const categoryValue = mailTemplate[0].category ?? null;
       setValue("category", categoryValue);
       setSelectedCategoryId(categoryValue);
 
@@ -180,7 +181,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
       if (selectedJourney) {
         setSelectedJourneyId(selectedJourney.code);
-        console.log(selectedJourney.code);
       }
 
       setValue("subject", mailTemplate[0].subject || "");
@@ -193,7 +193,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setEditorState(EditorState.createWithContent(contentState));
       setContent(mailTemplate[0].content);
       setSubject(mailTemplate[0].subject);
-      setSelectedCategoryId(mailTemplate[0].category);
       setSelectedInsuranceId(mailTemplate[0].insurance ?? null);
       setSelectedProductId(mailTemplate[0].product ?? null);
       setSelectedPlanId(mailTemplate[0].plan ?? null);
@@ -201,12 +200,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setEmailTitlePreview(mailTemplate[0].subject);
     }
   }, [mailTemplate, selectedCategoryId]);
-
-  useEffect(() => {
-    if (categories.length > 0) {
-      setValue("category", mailTemplate[0]?.category);
-    }
-  }, [categories]);
 
   useEffect(() => {
     if (plans.length > 0) {
@@ -219,30 +212,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setValue("journey", mailTemplate[0].journey ?? null);
     }
   }, [journey]);
-
-  const onSubmit = async (data: any) => {
-    try {
-      const cleanedData = Object.fromEntries(
-        Object.entries(data)
-          .map(([key, value]) => [key, value === "" ? null : value])
-          .filter(([_, value]) => value !== undefined)
-      );
-
-      const requestData = {
-        ...cleanedData,
-        content,
-      };
-
-      delete (requestData as any).emailTag;
-
-      const response = await updatePages(requestData, id);
-      if (response.id != null) {
-        router.back();
-      }
-    } catch (error) {
-      setUpdateSuccess(false);
-    }
-  };
 
   useEffect(() => {
     if (saveSuccess === true) {
@@ -282,6 +251,34 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       "insert-characters"
     );
     setEditorState(newEditorState);
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      const categoryValue =
+        watch("category") || selectedCategoryId || data.category;
+      console.log(categoryValue);
+
+      const cleanedData = Object.fromEntries(
+        Object.entries({ ...data, category: categoryValue })
+          .map(([key, value]) => [key, value === "" ? null : value])
+          .filter(([_, value]) => value !== undefined)
+      );
+
+      const requestData = {
+        ...cleanedData,
+        content,
+      };
+
+      delete (requestData as any).emailTag;
+
+      const response = await updatePages(requestData, id);
+      if (response.id != null) {
+        router.back();
+      }
+    } catch (error) {
+      setUpdateSuccess(false);
+    }
   };
 
   return (
