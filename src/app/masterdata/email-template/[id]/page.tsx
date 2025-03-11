@@ -85,7 +85,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: selectedCategoryId,
+      category: category,
       insurance: selectedInsuranceId,
       product: selectedProductId,
       plan: selectedPlanId,
