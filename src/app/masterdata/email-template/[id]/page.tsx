@@ -333,15 +333,14 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="category"
                 control={control}
-                // rules={{ required: "Product Category is required" }}
+                rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
                   <Select
                     key={selectedCategoryId}
-                    value={selectedCategoryId ?? ""}
+                    value={selectedCategoryId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedCategoryId(value);
-                      setValue("category", value, { shouldValidate: true });
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -541,7 +540,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="journey"
                 control={control}
-                // rules={{ required: "Journey is required" }}
+                rules={{ required: "Journey is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value.toString()}
