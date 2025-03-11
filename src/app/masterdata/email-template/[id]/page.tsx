@@ -333,12 +333,13 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="category"
                 control={control}
-                rules={{ required: "Product Category is required" }}
+                // rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
                   <Select
                     key={selectedCategoryId}
                     value={selectedCategoryId ?? ""}
                     onValueChange={(value) => {
+                      field.onChange(value);
                       setSelectedCategoryId(value);
                       setValue("category", value, { shouldValidate: true });
                     }}
@@ -540,7 +541,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               <Controller
                 name="journey"
                 control={control}
-                rules={{ required: "Journey is required" }}
+                // rules={{ required: "Journey is required" }}
                 render={({ field }) => (
                   <Select
                     value={field.value.toString()}
