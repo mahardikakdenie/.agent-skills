@@ -75,7 +75,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     updatePages,
     fetchEmailTag,
     fetchMailTemplateById,
-    mailTemplate,
   } = usePages();
 
   const {
@@ -156,62 +155,116 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   ]);
 
   useEffect(() => {
-    if (mailTemplate && mailTemplate.length > 0) {
-      const categoryValue = mailTemplate[0].category ?? null;
-      setValue("category", categoryValue);
-      setSelectedCategoryId(categoryValue);
-
-      const insuraceValue = mailTemplate[0].insurance ?? null;
-      setValue("insurance", insuraceValue);
-      setSelectedInsuranceId(insuraceValue);
-
-      const productValue = mailTemplate[0].product ?? null;
-      setValue("product", productValue);
-      setSelectedProductId(productValue);
-
-      const planValue = mailTemplate[0].plan ?? null;
-      setValue("plan", planValue);
-      setSelectedPlanId(planValue);
-
-      setValue("journey", mailTemplate[0].journey || "");
-
-      const selectedJourney = journey.find(
-        (jour) => jour.code === mailTemplate[0].journey
-      );
-
-      if (selectedJourney) {
-        setSelectedJourneyId(selectedJourney.code);
-      }
-
-      setValue("subject", mailTemplate[0].subject || "");
-
-      const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
-      const contentState = ContentState.createFromBlockArray(
-        blocksFromHTML.contentBlocks,
-        blocksFromHTML.entityMap
-      );
-      setEditorState(EditorState.createWithContent(contentState));
-      setContent(mailTemplate[0].content);
-      setSubject(mailTemplate[0].subject);
-      setSelectedInsuranceId(mailTemplate[0].insurance ?? null);
-      setSelectedProductId(mailTemplate[0].product ?? null);
-      setSelectedPlanId(mailTemplate[0].plan ?? null);
-      setSelectedJourneyId(mailTemplate[0].journey);
-      setEmailTitlePreview(mailTemplate[0].subject);
+    if (id) {
+      fetchMailTemplateById(id);
     }
-  }, [mailTemplate, selectedCategoryId]);
+  }, [id]);
 
   useEffect(() => {
-    if (plans.length > 0) {
-      setValue("plan", mailTemplate[0].plan ?? null);
-    }
-  }, [plans]);
+    if (id) {
+      (async () => {
+        try {
+          const res = await fetchMailTemplateById(id);
 
-  useEffect(() => {
-    if (journey.length > 0) {
-      setValue("journey", mailTemplate[0].journey ?? null);
+          const categoryValue = res?.data[0]?.category;
+          setValue("category", categoryValue);
+          setSelectedCategoryId(categoryValue);
+
+          const insuraceValue = res?.data[0]?.insurance ?? null;
+          setValue("insurance", insuraceValue);
+          setSelectedInsuranceId(insuraceValue);
+
+          const productValue = res?.data[0]?.product ?? null;
+          setValue("product", productValue);
+          setSelectedProductId(productValue);
+
+          const planValue = res?.data[0]?.plan ?? null;
+          setValue("plan", planValue);
+          setSelectedPlanId(planValue);
+
+          setValue("journey", res?.data[0]?.journey || "");
+
+          const selectedJourney = journey.find(
+            (jour) => jour.code === res?.data[0]?.journey
+          );
+
+          if (selectedJourney) {
+            setSelectedJourneyId(selectedJourney.code);
+          }
+
+          setValue("subject", res?.data[0]?.subject || "");
+
+          const blocksFromHTML = convertFromHTML(res?.data[0]?.content);
+          const contentState = ContentState.createFromBlockArray(
+            blocksFromHTML.contentBlocks,
+            blocksFromHTML.entityMap
+          );
+          setEditorState(EditorState.createWithContent(contentState));
+          setContent(res?.data[0]?.content);
+        } catch (error) {
+          console.error("Error fetching channels by ID:", error);
+        }
+      })();
     }
-  }, [journey]);
+  }, [id, setValue]);
+
+  // useEffect(() => {
+  //   if (mailTemplate && mailTemplate.length > 0) {
+  //     const categoryValue = mailTemplate[0].category ?? null;
+  //     setValue("category", categoryValue);
+  //     setSelectedCategoryId(categoryValue);
+
+  //     const insuraceValue = mailTemplate[0].insurance ?? null;
+  //     setValue("insurance", insuraceValue);
+  //     setSelectedInsuranceId(insuraceValue);
+
+  //     const productValue = mailTemplate[0].product ?? null;
+  //     setValue("product", productValue);
+  //     setSelectedProductId(productValue);
+
+  //     const planValue = mailTemplate[0].plan ?? null;
+  //     setValue("plan", planValue);
+  //     setSelectedPlanId(planValue);
+
+  //     setValue("journey", mailTemplate[0].journey || "");
+
+  //     const selectedJourney = journey.find(
+  //       (jour) => jour.code === mailTemplate[0].journey
+  //     );
+
+  //     if (selectedJourney) {
+  //       setSelectedJourneyId(selectedJourney.code);
+  //     }
+
+  //     setValue("subject", mailTemplate[0].subject || "");
+
+  //     const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
+  //     const contentState = ContentState.createFromBlockArray(
+  //       blocksFromHTML.contentBlocks,
+  //       blocksFromHTML.entityMap
+  //     );
+  //     setEditorState(EditorState.createWithContent(contentState));
+  //     setContent(mailTemplate[0].content);
+  //     setSubject(mailTemplate[0].subject);
+  //     setSelectedInsuranceId(mailTemplate[0].insurance ?? null);
+  //     setSelectedProductId(mailTemplate[0].product ?? null);
+  //     setSelectedPlanId(mailTemplate[0].plan ?? null);
+  //     setSelectedJourneyId(mailTemplate[0].journey);
+  //     setEmailTitlePreview(mailTemplate[0].subject);
+  //   }
+  // }, [mailTemplate, selectedCategoryId]);
+
+  // useEffect(() => {
+  //   if (plans.length > 0) {
+  //     setValue("plan", mailTemplate[0].plan ?? null);
+  //   }
+  // }, [plans]);
+
+  // useEffect(() => {
+  //   if (journey.length > 0) {
+  //     setValue("journey", mailTemplate[0].journey ?? null);
+  //   }
+  // }, [journey]);
 
   useEffect(() => {
     if (saveSuccess === true) {
@@ -344,33 +397,36 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
-                  <Select
-                    key={selectedCategoryId}
-                    value={selectedCategoryId}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedCategoryId(value);
-                    }}
-                  >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {categories.map((categorie: any) => (
-                          <SelectItem key={categorie.id} value={categorie.id}>
-                            {categorie.name
-                              .split("-")
-                              .map(
-                                (word: string) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  console.log(selectedCategoryId),
+                  (
+                    <Select
+                      key={selectedCategoryId}
+                      value={selectedCategoryId}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedCategoryId(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                        <SelectValue placeholder="Select Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {categories.map((categorie: any) => (
+                            <SelectItem key={categorie.id} value={categorie.id}>
+                              {categorie.name
+                                .split("-")
+                                .map(
+                                  (word: string) =>
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                )
+                                .join(" ")}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )
                 )}
               />
               {errors.category && (
