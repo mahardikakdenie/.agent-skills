@@ -85,11 +85,11 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: "",
-      insurance: "undefined",
-      product: "undefined",
-      plan: "undefined",
-      journey: "",
+      category: selectedCategoryId,
+      insurance: selectedInsuranceId,
+      product: selectedProductId,
+      plan: selectedPlanId,
+      journey: selectedJourneyId,
       emailTag: "",
       subject: "",
       content: content,
@@ -158,23 +158,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     if (mailTemplate && mailTemplate.length > 0) {
       const categoryValue = mailTemplate[0].category || "";
       setValue("category", categoryValue);
+      setSelectedCategoryId(categoryValue);
 
       const insuraceValue = mailTemplate[0].insurance ?? null;
       setValue("insurance", insuraceValue);
+      setSelectedInsuranceId(insuraceValue);
 
       const productValue = mailTemplate[0].product ?? null;
       setValue("product", productValue);
+      setSelectedProductId(productValue);
 
       const planValue = mailTemplate[0].plan ?? null;
       setValue("plan", planValue);
+      setSelectedPlanId(planValue);
 
       setValue("journey", mailTemplate[0].journey || "");
-      setValue("subject", mailTemplate[0].subject || "");
-
-      setSelectedCategoryId(categoryValue);
-      setSelectedInsuranceId(insuraceValue);
-      setSelectedProductId(productValue);
-      setSelectedPlanId(planValue);
 
       const selectedJourney = journey.find(
         (jour) => jour.code === mailTemplate[0].journey
@@ -184,6 +182,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         setSelectedJourneyId(selectedJourney.code);
         console.log(selectedJourney.code);
       }
+
+      setValue("subject", mailTemplate[0].subject || "");
 
       const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
       const contentState = ContentState.createFromBlockArray(
@@ -207,6 +207,12 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setValue("plan", mailTemplate[0].plan ?? null);
     }
   }, [plans]);
+
+  useEffect(() => {
+    if (journey.length > 0) {
+      setValue("journey", mailTemplate[0].journey ?? null);
+    }
+  }, [journey]);
 
   const onSubmit = async (data: any) => {
     try {
@@ -550,7 +556,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select Categories" />
+                      <SelectValue placeholder="Select Journey" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
