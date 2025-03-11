@@ -337,10 +337,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     key={selectedCategoryId}
-                    value={selectedCategoryId}
+                    value={selectedCategoryId ?? ""}
                     onValueChange={(value) => {
-                      field.onChange(value);
                       setSelectedCategoryId(value);
+                      setValue("category", value, { shouldValidate: true });
                     }}
                   >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
