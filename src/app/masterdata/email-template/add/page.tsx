@@ -623,7 +623,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                   <textarea
                     name=""
                     id=""
-                    rows={4}
+                    rows={20}
                     value={content}
                     onChange={(e) => {
                       setContent(e.target.value);
