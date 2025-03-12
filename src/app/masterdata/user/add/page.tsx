@@ -24,8 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Check as CheckIcon, X as XIcon } from "react-feather";
 import Image from "next/image";
 import iconCopy from "/public/images/icon-copy.svg"
 import { toastNotification } from "@/lib/toast";
