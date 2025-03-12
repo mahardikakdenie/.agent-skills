@@ -82,7 +82,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     control,
     setValue,
     formState: { errors },
-    watch,
   } = useForm({
     defaultValues: {
       category: selectedCategoryId,
@@ -115,8 +114,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
     checkAccess();
     fetchCategories({});
-    fetchInsurances({});
-    fetchProductSelect({});
     fetchJourney({});
   }, [router, id]);
 
@@ -175,15 +172,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
           setValue("plan", planValue);
           setSelectedPlanId(planValue);
 
-          setValue("journey", res?.data[0]?.journey || "");
-
-          const selectedJourney = journey.find(
-            (jour) => jour.code === res?.data[0]?.journey
-          );
-
-          if (selectedJourney) {
-            setSelectedJourneyId(selectedJourney.code);
-          }
+          const journeyValue = res?.data[0]?.journey || "";
+          setValue("journey", journeyValue);
+          setSelectedJourneyId(journeyValue);
 
           setValue("subject", res?.data[0]?.subject || "");
 
@@ -583,7 +574,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     value={field.value}
-                    disabled={!selectedJourneyId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       const selectedEmailTag = emailTag.find(
