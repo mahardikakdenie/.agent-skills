@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { ChevronDown } from "react-feather";
 import {
   DropdownMenu,
@@ -30,6 +31,12 @@ const Header = () => {
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-44 p-3">
+              <Link
+                href="/profile/change-password"
+                className="justify-center flex text-sm p-2"
+              >
+                Change Password
+              </Link>
               <DropdownMenuItem
                 key="logout"
                 onClick={handleLogout}

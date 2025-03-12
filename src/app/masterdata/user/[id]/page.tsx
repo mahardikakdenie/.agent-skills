@@ -30,7 +30,6 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
-import { UserService } from "@/services/masterdata/user.service";
 import {
   Select,
   SelectContent,
@@ -39,7 +38,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogClose,
@@ -404,6 +402,35 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     setValidations(currentValidations);
   }, [password]);
 
+  const generateSecurePassword = () => {
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const specialChars = "!@#$%^&*()_+{}[]:;<>,.?/~`-=";
+    
+    const allChars = uppercase + lowercase + numbers + specialChars;
+    
+    let password = "";
+    
+    // Ensure at least one of each required character type
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += specialChars[Math.floor(Math.random() * specialChars.length)];
+    
+    // Fill the rest with random characters
+    for (let i = password.length; i < 8; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+    
+    // Shuffle the password to ensure randomness
+    return password.split("").sort(() => 0.5 - Math.random()).join("");
+  };
+
+  const handleGeneratePassword = () => {
+    setValue("password", generateSecurePassword())
+  };
+
   return (
     <div className="flex flex-col w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -732,11 +759,12 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                   },
                 }}
                 render={({ field }) => (
-                  <div className="space-y-2">
-                    <div className="relative">
+                  <div className="flex w-full gap-1.5 items-center">
+                    <div className="relative flex-[3]">
                       <Input
                         type={showPassword ? "text" : "password"}
                         id="password"
+                        disabled
                         placeholder="Insert Password"
                         {...field}
                         onChange={(e) => {
@@ -759,54 +787,17 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                         )}
                       </button>
                     </div>
-
-                    {(field.value || watch("role") === "admin") && (
-                      <div className="bg-gray-50 p-3 rounded-md space-y-2 text-sm">
-                        <div className="font-medium mb-2">
-                          Password Requirements:
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.minLength ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>Minimum 8 characters</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasUpperCase ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one uppercase letter</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasLowerCase ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one lowercase letter</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasNumber ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one number</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasSpecialChar ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one special character</span>
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex-[1]">
+                      <Button
+                        className="w-full bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleGeneratePassword();
+                        }}
+                      >
+                        Generate Password
+                      </Button>
+                    </div>
                   </div>
                 )}
               />
