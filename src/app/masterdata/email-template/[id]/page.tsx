@@ -88,9 +88,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       insurance: selectedInsuranceId,
       product: selectedProductId,
       plan: selectedPlanId,
-      journey: selectedJourneyId,
+      journey: "",
       emailTag: "",
-      subject: "",
+      subject: subject,
       content: content,
     },
     values: {
@@ -116,6 +116,49 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     fetchCategories({});
     fetchJourney({});
   }, [router, id]);
+
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        try {
+          const res = await fetchMailTemplateById(id);
+
+          const categoryValue = res?.data[0]?.category;
+          setValue("category", categoryValue);
+          setSelectedCategoryId(categoryValue);
+
+          const insuraceValue = res?.data[0]?.insurance ?? null;
+          setValue("insurance", insuraceValue);
+          setSelectedInsuranceId(insuraceValue);
+
+          const productValue = res?.data[0]?.product ?? null;
+          setValue("product", productValue);
+          setSelectedProductId(productValue);
+
+          const planValue = res?.data[0]?.plan ?? null;
+          setValue("plan", planValue);
+          setSelectedPlanId(planValue);
+
+          const journeyValue = res?.data[0]?.journey || "";
+          setValue("journey", journeyValue);
+          setSelectedJourneyId(journeyValue);
+
+          setValue("subject", res?.data[0]?.subject);
+          setSubject(res?.data[0]?.subject);
+
+          const blocksFromHTML = convertFromHTML(res?.data[0]?.content);
+          const contentState = ContentState.createFromBlockArray(
+            blocksFromHTML.contentBlocks,
+            blocksFromHTML.entityMap
+          );
+          setEditorState(EditorState.createWithContent(contentState));
+          setContent(res?.data[0]?.content);
+        } catch (error) {
+          console.error("Error fetching channels by ID:", error);
+        }
+      })();
+    }
+  }, [id, setValue]);
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -149,48 +192,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     selectedProductId,
     selectedJourneyId,
   ]);
-
-  useEffect(() => {
-    if (id) {
-      (async () => {
-        try {
-          const res = await fetchMailTemplateById(id);
-
-          const categoryValue = res?.data[0]?.category;
-          setValue("category", categoryValue);
-          setSelectedCategoryId(categoryValue);
-
-          const insuraceValue = res?.data[0]?.insurance ?? null;
-          setValue("insurance", insuraceValue);
-          setSelectedInsuranceId(insuraceValue);
-
-          const productValue = res?.data[0]?.product ?? null;
-          setValue("product", productValue);
-          setSelectedProductId(productValue);
-
-          const planValue = res?.data[0]?.plan ?? null;
-          setValue("plan", planValue);
-          setSelectedPlanId(planValue);
-
-          const journeyValue = res?.data[0]?.journey || "";
-          setValue("journey", journeyValue);
-          setSelectedJourneyId(journeyValue);
-
-          setValue("subject", res?.data[0]?.subject || "");
-
-          const blocksFromHTML = convertFromHTML(res?.data[0]?.content);
-          const contentState = ContentState.createFromBlockArray(
-            blocksFromHTML.contentBlocks,
-            blocksFromHTML.entityMap
-          );
-          setEditorState(EditorState.createWithContent(contentState));
-          setContent(res?.data[0]?.content);
-        } catch (error) {
-          console.error("Error fetching channels by ID:", error);
-        }
-      })();
-    }
-  }, [id, setValue]);
 
   useEffect(() => {
     if (saveSuccess === true) {
@@ -526,32 +527,30 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 rules={{ required: "Journey is required" }}
                 render={({ field }) => (
-                  <Select
-                    value={field.value.toString()}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedJourneyId(value);
-                    }}
-                  >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select Journey" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {journey.map((jour: any) => (
-                          <SelectItem key={jour.id} value={jour.code}>
-                            {jour.name
-                              .split("-")
-                              .map(
-                                (word: string) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  console.log(selectedJourneyId),
+                  (
+                    <Select
+                      key={selectedJourneyId}
+                      value={selectedJourneyId ?? ""}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedJourneyId(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                        <SelectValue placeholder="Select Journey" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {journey.map((jour: any) => (
+                            <SelectItem key={jour.id} value={jour.code}>
+                              {jour.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )
                 )}
               />
               {errors.journey && (
@@ -653,6 +652,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               render={({ field }) => (
                 <Input
                   {...field}
+                  key={subject}
+                  value={subject ?? ""}
                   type="text"
                   placeholder="Insert Judul Email"
                   onChange={(e) => field.onChange(e.target.value)}
