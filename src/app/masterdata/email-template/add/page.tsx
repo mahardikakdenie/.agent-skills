@@ -35,10 +35,14 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { stateToHTML } from "draft-js-export-html";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import { Label } from "@radix-ui/react-label";
 
 // Replace the Editor import with dynamic import
 const Editor = dynamic(
@@ -65,6 +69,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [content, setContent] = useState("");
+  const [selectedTemplateType, setSelectedTemplateType] = useState("email");
 
   const {
     categories = [],
@@ -97,6 +102,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       emailTag: "",
       subject: "",
       content: content,
+      templateType: "email",
     },
   });
 
@@ -204,6 +210,10 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     setContent(htmlContent);
   };
 
+  const handleSelectTemplateType = (value: string) => {
+    setSelectedTemplateType(value);
+  };
+
   return (
     <div className="flex flex-col w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -254,7 +264,31 @@ const AddPage = ({ params }: { params: { id: string } }) => {
         <div className="grid grid-cols-6 w-full p-4 md:p-6 gap-4">
           <div className="md:col-span-2 col-span-6 p-4 sm:p-6 bg-white rounded-lg flex flex-col gap-4">
             <div className="text-primary font-bold">Settings</div>
+            <div>
+              <label
+                htmlFor="templateType"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Template Type
+              </label>
+              <div>
+                <RadioGroup
+                  defaultValue={selectedTemplateType}
+                  className="flex flex-col gap-2"
+                  onValueChange={handleSelectTemplateType}
+                >
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="email" id="email" />
+                    <Label className="text-sm" htmlFor="email">Email Template</Label>
+                  </div>
 
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="whatsapp" id="whatsapp" />
+                    <Label className="text-sm" htmlFor="whatsapp">WhatsApp Template</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
             <div>
               <label
                 htmlFor="category"
@@ -576,13 +610,30 @@ const AddPage = ({ params }: { params: { id: string } }) => {
             )}
 
             <div className="mt-4">
-              <Editor
-                editorState={editorState}
-                toolbarClassName="toolbarClassName"
-                wrapperClassName="wrapperClassName"
-                editorClassName="editorClassName"
-                onEditorStateChange={handleEditorChange}
-              />
+              {
+                selectedTemplateType === "email" ? (
+                  <Editor
+                    editorState={editorState}
+                    toolbarClassName="toolbarClassName"
+                    wrapperClassName="wrapperClassName"
+                    editorClassName="editorClassName"
+                    onEditorStateChange={handleEditorChange}
+                  />
+                ) : (
+                  <textarea
+                    name=""
+                    id=""
+                    rows={4}
+                    value={content}
+                    onChange={(e) => {
+                      setContent(e.target.value);
+                    }}
+                    className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                    placeholder="Insert content"
+                  >
+                  </textarea>
+                )
+              }
             </div>
           </div>
         </div>
