@@ -183,6 +183,7 @@ export class MailTemplateService {
       throw error;
     }
   }
+
   async getInsurance(search: any): Promise<InsurancesResponse> {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();

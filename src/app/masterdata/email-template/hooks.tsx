@@ -74,14 +74,17 @@ export const usePages = () => {
     const { data } = await mailTemplateService.getMailTemplate(search);
     setMailTemplate(data);
   };
+
   const deleteMailTemplate = async (id: string) => {
     const { data: response } = await mailTemplateService.deleteMailTemplate(id);
     return response;
   };
+
   const fetchMailTemplateById = async (id: string) => {
-    const { data } = await mailTemplateService.getMailTemplateById(id);
-    setMailTemplate(data);
+    const response = await mailTemplateService.getMailTemplateById(id);
+    return response;
   };
+
   const fetchJourney = async (search: any) => {
     const { data } = await mailTemplateService.getJourney(search);
     setJourney(data);

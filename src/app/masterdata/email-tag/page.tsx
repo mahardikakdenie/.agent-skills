@@ -55,10 +55,10 @@ const EmailTag = () => {
   }, [router]);
 
   useEffect(() => {
-    const fetchEmailTag = async () => {
+    const fetchEmailTag = async (search: any) => {
       try {
-        const result = await emailTagService.getEmailTag();
-        setEmailTag(result);
+        const result = await emailTagService.getEmailTag(search);
+        setEmailTag(result.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -66,8 +66,9 @@ const EmailTag = () => {
       }
     };
 
-    fetchEmailTag();
+    fetchEmailTag({});
   }, []);
+
   if (!emailTag) {
     return (
       <div className="w-full h-full flex justify-center items-center">
@@ -81,13 +82,13 @@ const EmailTag = () => {
   };
 
   const handleDeletePlan = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
+    if (window.confirm("Are you sure you want to delete this Email Tag?")) {
       try {
         await emailTagService.deleteEmailTag(id);
         setEmailTag((prev) => prev.filter((emailTag) => emailTag.id !== id));
         window.location.reload();
       } catch (error) {
-        console.error("Failed to delete emailTag:", error);
+        console.error("Failed to delete Email Tag:", error);
       }
     }
   };
