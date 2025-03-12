@@ -63,6 +63,8 @@ import {
   GroupResponse,
   GroupService,
 } from "@/services/masterdata/group.service";
+import iconCopy from "/public/images/icon-copy.svg"
+import { toastNotification } from "@/lib/toast";
 
 const passwordValidationRules = {
   required: (role: string) =>
@@ -431,6 +433,20 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     setValue("password", generateSecurePassword())
   };
 
+  const copyPassword = () => {
+    const password = watch("password");
+    if (!password) {
+      toastNotification("No password to copy", "error");
+      return;
+    }
+    navigator.clipboard.writeText(password).then(() => {
+      toastNotification("Password copied!", "success")
+    }).catch(err => {
+      console.error("Failed to copy password:", err)
+      toastNotification("Failed to copy password", "error")
+    });
+  }
+
   return (
     <div className="flex flex-col w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -777,14 +793,21 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                       />
                       <button
                         type="button"
-                        className="absolute inset-y-0 right-3 flex items-center"
+                        className="absolute inset-y-0 right-11 flex items-center"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff size={18} />
+                          <EyeOff size={18} className="text-[#015B86]"/>
                         ) : (
-                          <Eye size={18} />
+                          <Eye size={18} className="text-[#015B86]"/>
                         )}
+                      </button>
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-3 flex items-center"
+                        onClick={() => copyPassword()}
+                      >
+                        <Image alt="copy" src={iconCopy} width={18}/>
                       </button>
                     </div>
                     <div className="flex-[1]">
