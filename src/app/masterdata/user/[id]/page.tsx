@@ -24,8 +24,6 @@ import {
   Search,
   Trash2,
   X,
-  Check as CheckIcon,
-  X as XIcon,
 } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
