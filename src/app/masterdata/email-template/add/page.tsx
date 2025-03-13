@@ -211,6 +211,8 @@ const AddPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleSelectTemplateType = (value: string) => {
+    setContent("");
+    setEditorState(EditorState.createEmpty());
     setSelectedTemplateType(value);
   };
 
@@ -269,23 +271,22 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 htmlFor="templateType"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Template Type
+                Choose Channel<span className="text-red-500">*</span>
               </label>
               <div>
                 <RadioGroup
                   defaultValue={selectedTemplateType}
-                  className="flex flex-col gap-2"
+                  className="flex flex-row gap-4"
                   onValueChange={handleSelectTemplateType}
                 >
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem value="email" id="email" />
-                    <Label className="text-sm" htmlFor="email">Email Template</Label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
                     <RadioGroupItem value="whatsapp" id="whatsapp" />
-                    <Label className="text-sm" htmlFor="whatsapp">WhatsApp Template</Label>
+                    <Label className="text-sm" htmlFor="whatsapp">WhatsApp</Label>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="email" id="email" />
+                    <Label className="text-sm" htmlFor="email">Email</Label>
+                  </div>                  
                 </RadioGroup>
               </div>
             </div>
@@ -567,15 +568,27 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                           </Button>
                         </DialogClose>
                       </div>
-                      <h3 className="text-black text-lg font-semibold mb-2">
-                        {emailTitlePreview}
-                      </h3>
-                      <div className="text-xs">
-                        Friendsure Teknologi Indonesia (no-reply@friendsure.id)
-                      </div>
+                      {
+                        selectedTemplateType === "email" ? (
+                          <>
+                            <h3 className="text-black text-lg font-semibold mb-2">
+                              {emailTitlePreview}
+                            </h3>
+                            <div className="text-xs">
+                              Friendsure Teknologi Indonesia (no-reply@friendsure.id)
+                            </div>
+                          </>
+                        ) : null
+                      }
                       <div className="mt-6 bg-white rounded-lg">
                         <div className="editor-preview">
-                          <div dangerouslySetInnerHTML={{ __html: html }} />
+                          {
+                            selectedTemplateType === "email" ? (
+                              <div dangerouslySetInnerHTML={{ __html: html }} />
+                            ) : (
+                              <div>{content}</div>
+                            )
+                          }
                         </div>
                       </div>
                     </DialogDescription>
@@ -588,7 +601,10 @@ const AddPage = ({ params }: { params: { id: string } }) => {
               htmlFor="subject"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Judul email<span className="text-red-500">*</span>
+              {
+                selectedTemplateType === "email" ? "Judul email" : "Judul"
+              }
+              <span className="text-red-500">*</span>
             </label>
             <Controller
               name="subject"
@@ -598,7 +614,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 <Input
                   {...field}
                   type="text"
-                  placeholder="Insert Judul Email"
+                  placeholder={selectedTemplateType === "email" ? "Insert Judul Email" : "Insert Judul"}
                   onChange={(e) => field.onChange(e.target.value)}
                 />
               )}
