@@ -124,8 +124,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
           const res = await fetchMailTemplateById(id);
 
           const categoryValue = res?.data[0]?.category;
-          setValue("category", categoryValue);
           setSelectedCategoryId(categoryValue);
+          setValue("category", categoryValue);
 
           const insuraceValue = res?.data[0]?.insurance ?? null;
           setValue("insurance", insuraceValue);
@@ -320,33 +320,36 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
-                  <Select
-                    key={selectedCategoryId}
-                    value={selectedCategoryId}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedCategoryId(value);
-                    }}
-                  >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {categories.map((categorie: any) => (
-                          <SelectItem key={categorie.id} value={categorie.id}>
-                            {categorie?.name
-                              .split("-")
-                              .map(
-                                (word: string) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  console.log(selectedCategoryId),
+                  (
+                    <Select
+                      key={selectedCategoryId}
+                      value={selectedCategoryId}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedCategoryId(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                        <SelectValue placeholder="Select Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {categories.map((categorie: any) => (
+                            <SelectItem key={categorie.id} value={categorie.id}>
+                              {categorie?.name
+                                .split("-")
+                                .map(
+                                  (word: string) =>
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                )
+                                .join(" ")}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )
                 )}
               />
               {errors.category && (
