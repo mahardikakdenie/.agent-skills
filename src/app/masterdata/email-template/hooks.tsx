@@ -13,6 +13,7 @@ export const usePages = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [insurances, setInsurances] = useState<any[]>([]);
   const [mailTemplate, setMailTemplate] = useState<any[]>([]);
+  const [mailTemplateById, setMailTemplateById] = useState<any[]>([]);
   const [journey, setJourney] = useState<any[]>([]);
   const [emailTag, setEmailTag] = useState<any[]>([]);
 
@@ -75,13 +76,13 @@ export const usePages = () => {
     setMailTemplate(data);
   };
 
-  const deleteMailTemplate = async (id: string) => {
-    const { data: response } = await mailTemplateService.deleteMailTemplate(id);
-    return response;
+  const fetchMailTemplateById = async (id: any) => {
+    const { data } = await mailTemplateService.getMailTemplateById(id);
+    setMailTemplateById(data);
   };
 
-  const fetchMailTemplateById = async (id: string) => {
-    const response = await mailTemplateService.getMailTemplateById(id);
+  const deleteMailTemplate = async (id: string) => {
+    const { data: response } = await mailTemplateService.deleteMailTemplate(id);
     return response;
   };
 
@@ -105,6 +106,7 @@ export const usePages = () => {
     mailTemplateService,
     products,
     setProducts,
+    mailTemplateById,
     fetchMailTemplateById,
     categories,
     fetchCategories,

@@ -71,6 +71,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     fetchPlans,
     journey,
     fetchJourney,
+    mailTemplateById,
     emailTag,
     updatePages,
     fetchEmailTag,
@@ -84,7 +85,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: "",
+      category: selectedCategoryId,
       insurance: selectedInsuranceId,
       product: selectedProductId,
       plan: selectedPlanId,
@@ -92,14 +93,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       emailTag: "",
       subject: subject,
       content: content,
-    },
-    values: {
-      category,
-      insurance,
-      product,
-      plan,
-      journey,
-      subject,
     },
   });
 
@@ -115,50 +108,58 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     checkAccess();
     fetchCategories({});
     fetchJourney({});
+    fetchMailTemplateById(id);
   }, [router, id]);
 
   useEffect(() => {
-    if (id) {
-      (async () => {
-        try {
-          const res = await fetchMailTemplateById(id);
+    if (mailTemplateById && mailTemplateById.length > 0) {
+      const categoryValue = mailTemplateById[0].category || "";
+      setValue("category", categoryValue);
 
-          const categoryValue = res?.data[0]?.category;
-          setSelectedCategoryId(categoryValue);
-          setValue("category", categoryValue);
+      const insuraceValue = mailTemplateById[0].insurance ?? null;
+      setValue("insurance", insuraceValue);
 
-          const insuraceValue = res?.data[0]?.insurance ?? null;
-          setValue("insurance", insuraceValue);
-          setSelectedInsuranceId(insuraceValue);
+      const productValue = mailTemplateById[0].product ?? null;
+      setValue("product", productValue);
 
-          const productValue = res?.data[0]?.product ?? null;
-          setValue("product", productValue);
-          setSelectedProductId(productValue);
+      const planValue = mailTemplateById[0].plan ?? null;
+      setValue("plan", planValue);
 
-          const planValue = res?.data[0]?.plan ?? null;
-          setValue("plan", planValue);
-          setSelectedPlanId(planValue);
+      setValue("journey", mailTemplateById[0].journey || "");
 
-          const journeyValue = res?.data[0]?.journey || "";
-          setValue("journey", journeyValue);
-          setSelectedJourneyId(journeyValue);
+      const selectedJourney = journey.find(
+        (jour) => jour.code === mailTemplateById[0].journey
+      );
 
-          setValue("subject", res?.data[0]?.subject);
-          setSubject(res?.data[0]?.subject);
+      if (selectedJourney) {
+        setSelectedJourneyId(selectedJourney.code);
+      }
 
-          const blocksFromHTML = convertFromHTML(res?.data[0]?.content);
-          const contentState = ContentState.createFromBlockArray(
-            blocksFromHTML.contentBlocks,
-            blocksFromHTML.entityMap
-          );
-          setEditorState(EditorState.createWithContent(contentState));
-          setContent(res?.data[0]?.content);
-        } catch (error) {
-          console.error("Error fetching channels by ID:", error);
-        }
-      })();
+      setValue("subject", mailTemplateById[0].subject || "");
+
+      const blocksFromHTML = convertFromHTML(mailTemplateById[0].content);
+      const contentState = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
+
+      setEditorState(EditorState.createWithContent(contentState));
+      setContent(mailTemplateById[0].content);
+      setSubject(mailTemplateById[0].subject);
+      setSelectedCategoryId(mailTemplateById[0].category);
+      setSelectedInsuranceId(mailTemplateById[0].insurance ?? null);
+      setSelectedProductId(mailTemplateById[0].product ?? null);
+      setSelectedPlanId(mailTemplateById[0].plan ?? null);
+      setSelectedJourneyId(mailTemplateById[0].journey);
+      setEmailTitlePreview(mailTemplateById[0].subject);
     }
-  }, [id, setValue]);
+  }, [mailTemplateById, selectedCategoryId]);
+
+  useEffect(() => {
+    if (plans.length > 0) {
+      setValue("plan", mailTemplateById[0].plan ?? null);
+    }
+  }, [plans]);
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -320,36 +321,33 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
-                  console.log(selectedCategoryId),
-                  (
-                    <Select
-                      key={selectedCategoryId}
-                      value={selectedCategoryId}
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setSelectedCategoryId(value);
-                      }}
-                    >
-                      <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                        <SelectValue placeholder="Select Categories" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {categories.map((categorie: any) => (
-                            <SelectItem key={categorie.id} value={categorie.id}>
-                              {categorie?.name
-                                .split("-")
-                                .map(
-                                  (word: string) =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                )
-                                .join(" ")}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )
+                  <Select
+                    key={selectedCategoryId}
+                    value={selectedCategoryId}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setSelectedCategoryId(value);
+                    }}
+                  >
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {categories.map((categorie: any) => (
+                          <SelectItem key={categorie.id} value={categorie.id}>
+                            {categorie?.name
+                              .split("-")
+                              .map(
+                                (word: string) =>
+                                  word.charAt(0).toUpperCase() + word.slice(1)
+                              )
+                              .join(" ")}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 )}
               />
               {errors.category && (
