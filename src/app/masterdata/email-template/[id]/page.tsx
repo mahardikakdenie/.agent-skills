@@ -51,14 +51,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const [selectedJourneyId, setSelectedJourneyId] = useState("");
   const [emailTitlePreview, setEmailTitlePreview] = useState("");
   const html = stateToHTML(editorState.getCurrentContent());
-  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [content, setContent] = useState("");
   const [subject, setSubject] = useState("");
-  const [category] = useState("");
-  const [insurance] = useState("");
-  const [product] = useState("");
-  const [plan] = useState("");
 
   const {
     categories = [],
@@ -156,12 +151,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   }, [mailTemplateById, selectedCategoryId]);
 
   useEffect(() => {
-    if (plans.length > 0) {
-      setValue("plan", mailTemplateById[0].plan ?? null);
-    }
-  }, [plans]);
-
-  useEffect(() => {
     if (selectedCategoryId) {
       fetchInsurances({
         page: 1,
@@ -193,16 +182,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     selectedProductId,
     selectedJourneyId,
   ]);
-
-  useEffect(() => {
-    if (saveSuccess === true) {
-      alert("Data berhasil disimpan!");
-      router.back();
-    } else if (saveSuccess === false) {
-      alert("Terjadi kesalahan saat menyimpan data.");
-    }
-    setSaveSuccess(null);
-  }, [saveSuccess, router]);
 
   const handleEditorChange = (state: EditorState) => {
     setEditorState(state);
@@ -253,10 +232,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       if (response.id != null) {
         router.back();
       }
+      setUpdateSuccess(true);
     } catch (error) {
       setUpdateSuccess(false);
     }
   };
+
+  useEffect(() => {
+    if (updateSuccess === true) {
+      alert("Data has been successfully saved!");
+      router.replace("/masterdata/email-template");
+    } else if (updateSuccess === false) {
+      alert("Email Tag has already been used for this Journey!");
+    }
+    setUpdateSuccess(null);
+  }, [updateSuccess, router]);
 
   return (
     <div className="flex flex-col w-full">
@@ -329,7 +319,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       setSelectedCategoryId(value);
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="category"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Categories" />
                     </SelectTrigger>
                     <SelectContent>
@@ -377,7 +370,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       setSelectedInsuranceId(value);
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="insurance"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Insurance" />
                     </SelectTrigger>
                     <SelectContent>
@@ -432,7 +428,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       }
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="product"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Product" />
                     </SelectTrigger>
                     <SelectContent>
@@ -481,7 +480,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       setSelectedPlanId(value);
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="plan"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Plan" />
                     </SelectTrigger>
                     <SelectContent>
@@ -530,7 +532,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       setSelectedJourneyId(value);
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="journey"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Journey" />
                     </SelectTrigger>
                     <SelectContent>
@@ -575,7 +580,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       }
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="emailTag"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select tag" />
                     </SelectTrigger>
                     <SelectContent>
@@ -644,6 +652,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               render={({ field }) => (
                 <Input
                   {...field}
+                  id="subject"
                   key={subject}
                   value={subject ?? ""}
                   type="text"

@@ -67,16 +67,6 @@ const EditEmailTag = ({ params }: { params: { id: string } }) => {
     },
   });
 
-  const onSubmit = async (data: any) => {
-    try {
-      const id = params.id;
-      await updateEmailTag(data, id);
-      setUpdateSuccess(true);
-    } catch (error) {
-      setUpdateSuccess(false);
-    }
-  };
-
   useEffect(() => {
     if (id) {
       (async () => {
@@ -92,6 +82,16 @@ const EditEmailTag = ({ params }: { params: { id: string } }) => {
     }
     fetchJourney({});
   }, [id, setValue]);
+
+  const onSubmit = async (data: any) => {
+    try {
+      const id = params.id;
+      await updateEmailTag(data, id);
+      setUpdateSuccess(true);
+    } catch (error) {
+      setUpdateSuccess(false);
+    }
+  };
 
   useEffect(() => {
     if (updateSuccess === true) {
