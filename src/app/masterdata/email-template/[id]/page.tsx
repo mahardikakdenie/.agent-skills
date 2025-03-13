@@ -84,7 +84,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: selectedCategoryId,
+      category: "",
       insurance: selectedInsuranceId,
       product: selectedProductId,
       plan: selectedPlanId,
@@ -124,8 +124,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
           const res = await fetchMailTemplateById(id);
 
           const categoryValue = res?.data[0]?.category;
-          setValue("category", categoryValue);
           setSelectedCategoryId(categoryValue);
+          setValue("category", categoryValue);
 
           const insuraceValue = res?.data[0]?.insurance ?? null;
           setValue("insurance", insuraceValue);
@@ -320,33 +320,36 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
-                  <Select
-                    key={selectedCategoryId}
-                    value={selectedCategoryId}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedCategoryId(value);
-                    }}
-                  >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {categories.map((categorie: any) => (
-                          <SelectItem key={categorie.id} value={categorie.id}>
-                            {categorie.name
-                              .split("-")
-                              .map(
-                                (word: string) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  console.log(selectedCategoryId),
+                  (
+                    <Select
+                      key={selectedCategoryId}
+                      value={selectedCategoryId}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedCategoryId(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                        <SelectValue placeholder="Select Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {categories.map((categorie: any) => (
+                            <SelectItem key={categorie.id} value={categorie.id}>
+                              {categorie?.name
+                                .split("-")
+                                .map(
+                                  (word: string) =>
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                )
+                                .join(" ")}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )
                 )}
               />
               {errors.category && (
@@ -383,13 +386,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       <SelectGroup>
                         {insurances.map((insurance: any) => (
                           <SelectItem key={insurance.id} value={insurance.id}>
-                            {insurance.name
-                              .split("-")
-                              .map(
-                                (word: string) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
+                            {insurance.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -527,30 +524,27 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 rules={{ required: "Journey is required" }}
                 render={({ field }) => (
-                  console.log(selectedJourneyId),
-                  (
-                    <Select
-                      key={selectedJourneyId}
-                      value={selectedJourneyId ?? ""}
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setSelectedJourneyId(value);
-                      }}
-                    >
-                      <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                        <SelectValue placeholder="Select Journey" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {journey.map((jour: any) => (
-                            <SelectItem key={jour.id} value={jour.code}>
-                              {jour.name}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )
+                  <Select
+                    key={selectedJourneyId}
+                    value={selectedJourneyId ?? ""}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setSelectedJourneyId(value);
+                    }}
+                  >
+                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                      <SelectValue placeholder="Select Journey" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {journey.map((jour: any) => (
+                          <SelectItem key={jour.id} value={jour.code}>
+                            {jour.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 )}
               />
               {errors.journey && (
