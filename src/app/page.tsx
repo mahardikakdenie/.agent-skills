@@ -33,12 +33,11 @@ export default function LoginPage() {
     try {
       const token = await authService.login(data);
       login(token.access_token);
+      router.push("/transactions");
     } catch (error) {
       console.error(error);
       return;
     }
-
-    router.push("/transactions");
   };
 
   return (
