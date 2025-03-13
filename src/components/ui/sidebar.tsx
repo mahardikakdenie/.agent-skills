@@ -511,7 +511,7 @@ const Sidebar = () => {
                 <Link
                   href="/masterdata/email-template"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/mail-template/*")
+                    isActive("/masterdata/email-template/*")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
@@ -525,7 +525,7 @@ const Sidebar = () => {
                 <Link
                   href="/masterdata/email-tag"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/mail-tag/*")
+                    isActive("/masterdata/email-tag/*")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
