@@ -102,7 +102,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       emailTag: "",
       subject: "",
       content: content,
-      templateType: "email",
     },
   });
 
@@ -176,6 +175,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       const requestData = {
         ...data,
         content,
+        type: selectedTemplateType,
       };
 
       delete requestData.emailTag;
@@ -211,6 +211,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleSelectTemplateType = (value: string) => {
+    // Reset content input field
     setContent("");
     setEditorState(EditorState.createEmpty());
     setSelectedTemplateType(value);
