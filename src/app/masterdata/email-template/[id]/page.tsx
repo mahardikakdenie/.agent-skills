@@ -312,12 +312,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
                   <Select
-                    key={selectedCategoryId}
-                    value={selectedCategoryId}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedCategoryId(value);
-                    }}
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
                   >
                     <SelectTrigger
                       id="category"
