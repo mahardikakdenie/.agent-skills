@@ -167,4 +167,13 @@ export class UserService {
       throw error;
     }
   }
+
+  async changePassword(id: string, data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.put("/v1/account/" + id + "/change-password", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }

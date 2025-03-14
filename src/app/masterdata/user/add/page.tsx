@@ -24,8 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Check as CheckIcon, X as XIcon } from "react-feather";
+import Image from "next/image";
+import iconCopy from "/public/images/icon-copy.svg"
+import { toastNotification } from "@/lib/toast";
 
 const passwordValidationRules = {
   required: (role: string) =>
@@ -94,6 +95,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     shouldUnregister: false,
@@ -154,6 +156,49 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       setSaveSuccess(false);
     }
   };
+
+  const generateSecurePassword = () => {
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const specialChars = "!@#$%^&*()_+{}[]:;<>,.?/~`-=";
+    
+    const allChars = uppercase + lowercase + numbers + specialChars;
+    
+    let password = "";
+    
+    // Ensure at least one of each required character type
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += specialChars[Math.floor(Math.random() * specialChars.length)];
+    
+    // Fill the rest with random characters
+    for (let i = password.length; i < 8; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+    
+    // Shuffle the password to ensure randomness
+    return password.split("").sort(() => 0.5 - Math.random()).join("");
+  };
+
+  const handleGeneratePassword = () => {
+    setValue("password", generateSecurePassword())
+  };
+
+  const copyPassword = () => {
+    const password = watch("password");
+    if (!password) {
+      toastNotification("No password to copy", "error");
+      return;
+    }
+    navigator.clipboard.writeText(password).then(() => {
+      toastNotification("Password copied!", "success")
+    }).catch(err => {
+      console.error("Failed to copy password:", err)
+      toastNotification("Failed to copy password", "error")
+    });
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -461,11 +506,12 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                   },
                 }}
                 render={({ field }) => (
-                  <div className="space-y-2">
-                    <div className="relative">
+                  <div className="flex w-full gap-1.5 items-center">
+                    <div className="relative flex-[3]">
                       <Input
                         type={showPassword ? "text" : "password"}
                         id="password"
+                        disabled
                         placeholder="Insert Password"
                         {...field}
                         onChange={(e) => {
@@ -478,64 +524,34 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                       />
                       <button
                         type="button"
-                        className="absolute inset-y-0 right-3 flex items-center"
+                        className="absolute inset-y-0 right-11 flex items-center"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff size={18} />
+                          <EyeOff size={18} className="text-[#015B86]"/>
                         ) : (
-                          <Eye size={18} />
+                          <Eye size={18} className="text-[#015B86]"/>
                         )}
                       </button>
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-3 flex items-center"
+                        onClick={() => copyPassword()}
+                      >
+                        <Image alt="copy" src={iconCopy} width={18}/>
+                      </button>
                     </div>
-
-                    {(field.value || watch("role") === "admin") && (
-                      <div className="bg-gray-50 p-3 rounded-md space-y-2 text-sm">
-                        <div className="font-medium mb-2">
-                          Password Requirements:
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.minLength ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>Minimum 8 characters</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasUpperCase ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one uppercase letter</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasLowerCase ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one lowercase letter</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasNumber ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one number</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {validations.hasSpecialChar ? (
-                            <CheckIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <XIcon className="w-4 h-4 text-red-500" />
-                          )}
-                          <span>At least one special character</span>
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex-[1]">
+                      <Button
+                        className="w-full bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleGeneratePassword();
+                        }}
+                      >
+                        Generate Password
+                      </Button>
+                    </div>
                   </div>
                 )}
               />

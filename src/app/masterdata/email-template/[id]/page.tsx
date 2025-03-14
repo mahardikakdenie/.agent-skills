@@ -51,14 +51,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const [selectedJourneyId, setSelectedJourneyId] = useState("");
   const [emailTitlePreview, setEmailTitlePreview] = useState("");
   const html = stateToHTML(editorState.getCurrentContent());
-  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [content, setContent] = useState("");
   const [subject, setSubject] = useState("");
-  const [category] = useState("");
-  const [insurance] = useState("");
-  const [product] = useState("");
-  const [plan] = useState("");
 
   const {
     categories = [],
@@ -71,11 +66,11 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     fetchPlans,
     journey,
     fetchJourney,
+    mailTemplateById,
     emailTag,
     updatePages,
     fetchEmailTag,
     fetchMailTemplateById,
-    mailTemplate,
   } = usePages();
 
   const {
@@ -85,42 +80,75 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: "",
-      insurance: "undefined",
-      product: "undefined",
-      plan: "undefined",
+      category: selectedCategoryId,
+      insurance: selectedInsuranceId,
+      product: selectedProductId,
+      plan: selectedPlanId,
       journey: "",
       emailTag: "",
-      subject: "",
+      subject: subject,
       content: content,
-    },
-    values: {
-      category,
-      insurance,
-      product,
-      plan,
-      journey,
-      subject,
     },
   });
 
-  const handleEditorInsert = (text: string) => {
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Masterdata.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push("/forbidden");
+      }
+    };
 
-    const newContentState = Modifier.replaceText(
-      contentState,
-      selectionState,
-      text
-    );
+    checkAccess();
+    fetchCategories({});
+    fetchJourney({});
+    fetchMailTemplateById(id);
+  }, [router, id]);
 
-    const newEditorState = EditorState.push(
-      editorState,
-      newContentState,
-      "insert-characters"
-    );
-    setEditorState(newEditorState);
-  };
+  useEffect(() => {
+    if (mailTemplateById && mailTemplateById.length > 0) {
+      const categoryValue = mailTemplateById[0].category || "";
+      setValue("category", categoryValue);
+
+      const insuraceValue = mailTemplateById[0].insurance ?? null;
+      setValue("insurance", insuraceValue);
+
+      const productValue = mailTemplateById[0].product ?? null;
+      setValue("product", productValue);
+
+      const planValue = mailTemplateById[0].plan ?? null;
+      setValue("plan", planValue);
+
+      setValue("journey", mailTemplateById[0].journey || "");
+
+      const selectedJourney = journey.find(
+        (jour) => jour.code === mailTemplateById[0].journey
+      );
+
+      if (selectedJourney) {
+        setSelectedJourneyId(selectedJourney.code);
+      }
+
+      setValue("subject", mailTemplateById[0].subject || "");
+
+      const blocksFromHTML = convertFromHTML(mailTemplateById[0].content);
+      const contentState = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
+
+      setEditorState(EditorState.createWithContent(contentState));
+      setContent(mailTemplateById[0].content);
+      setSubject(mailTemplateById[0].subject);
+      setSelectedCategoryId(mailTemplateById[0].category);
+      setSelectedInsuranceId(mailTemplateById[0].insurance ?? null);
+      setSelectedProductId(mailTemplateById[0].product ?? null);
+      setSelectedPlanId(mailTemplateById[0].plan ?? null);
+      setSelectedJourneyId(mailTemplateById[0].journey);
+      setEmailTitlePreview(mailTemplateById[0].subject);
+    }
+  }, [mailTemplateById, selectedCategoryId]);
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -155,98 +183,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     selectedJourneyId,
   ]);
 
-  useEffect(() => {
-    if (mailTemplate && mailTemplate.length > 0) {
-      setValue("category", mailTemplate[0].category);
-      setValue("insurance", mailTemplate[0].insurance ?? null);
-      setValue("product", mailTemplate[0].product ?? null);
-      setValue("plan", mailTemplate[0].plan ?? null);
-      setValue("journey", mailTemplate[0]?.journey);
-      setValue("subject", mailTemplate[0].subject);
-
-      const selectedJourney = journey.find(
-        (jour) => jour.code === mailTemplate[0].journey
-      );
-      if (selectedJourney) {
-        setSelectedJourneyId(selectedJourney.code);
-      }
-
-      const blocksFromHTML = convertFromHTML(mailTemplate[0].content);
-      const contentState = ContentState.createFromBlockArray(
-        blocksFromHTML.contentBlocks,
-        blocksFromHTML.entityMap
-      );
-      setEditorState(EditorState.createWithContent(contentState));
-      setContent(mailTemplate[0].content);
-      setSubject(mailTemplate[0].subject);
-      setSelectedCategoryId(mailTemplate[0].category);
-      setSelectedInsuranceId(mailTemplate[0].insurance ?? null);
-      setSelectedProductId(mailTemplate[0].product ?? null);
-      setSelectedPlanId(mailTemplate[0].plan ?? null);
-      setSelectedJourneyId(mailTemplate[0].journey);
-      setEmailTitlePreview(mailTemplate[0].subject);
-    }
-  }, [mailTemplate, selectedCategoryId]);
-
-  useEffect(() => {
-    if (plans.length > 0) {
-      setValue("plan", mailTemplate[0].plan ?? null);
-    }
-  }, [plans]);
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = await hasPermission("Masterdata.Update");
-      setHasAccess(access);
-      if (!access) {
-        router.push("/forbidden");
-      }
-    };
-
-    checkAccess();
-    fetchCategories({});
-    fetchInsurances({});
-    fetchProductSelect({});
-    fetchMailTemplateById(id);
-    fetchJourney({});
-  }, [router, id]);
-
-  const onSubmit = async (data: any) => {
-    try {
-      const cleanedData = Object.fromEntries(
-        Object.entries(data).filter(
-          ([_, value]) => value !== "" && value !== undefined && value !== null
-        )
-      );
-
-      const requestData = {
-        ...cleanedData,
-        content,
-      };
-
-      console.log(requestData);
-
-      delete (requestData as any).emailTag;
-
-      const response = await updatePages(requestData, id);
-      if (response.id != null) {
-        router.back();
-      }
-    } catch (error) {
-      setUpdateSuccess(false);
-    }
-  };
-
-  useEffect(() => {
-    if (saveSuccess === true) {
-      alert("Data berhasil disimpan!");
-      router.back();
-    } else if (saveSuccess === false) {
-      alert("Terjadi kesalahan saat menyimpan data.");
-    }
-    setSaveSuccess(null);
-  }, [saveSuccess, router]);
-
   const handleEditorChange = (state: EditorState) => {
     setEditorState(state);
 
@@ -258,6 +194,59 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
     setContent(htmlContent);
   };
+
+  const handleEditorInsert = (text: string) => {
+    const contentState = editorState.getCurrentContent();
+    const selectionState = editorState.getSelection();
+
+    const newContentState = Modifier.replaceText(
+      contentState,
+      selectionState,
+      text
+    );
+
+    const newEditorState = EditorState.push(
+      editorState,
+      newContentState,
+      "insert-characters"
+    );
+    setEditorState(newEditorState);
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      const cleanedData = Object.fromEntries(
+        Object.entries({ ...data })
+          .map(([key, value]) => [key, value === "" ? null : value])
+          .filter(([_, value]) => value !== undefined)
+      );
+
+      const requestData = {
+        ...cleanedData,
+        content,
+      };
+
+      delete (requestData as any).emailTag;
+
+      const response = await updatePages(requestData, id);
+      if (response.id != null) {
+        router.back();
+      }
+      setUpdateSuccess(true);
+    } catch (error) {
+      setUpdateSuccess(false);
+    }
+  };
+
+  useEffect(() => {
+    if (updateSuccess === true) {
+      alert("Data has been successfully saved!");
+      router.replace("/masterdata/email-template");
+    } else if (updateSuccess === false) {
+      alert("Email Tag has already been used for this Journey!");
+    }
+    setUpdateSuccess(null);
+  }, [updateSuccess, router]);
 
   return (
     <div className="flex flex-col w-full">
@@ -324,19 +313,19 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     value={field.value}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedCategoryId(value);
-                    }}
+                    onValueChange={(value) => field.onChange(value)}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="category"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Categories" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         {categories.map((categorie: any) => (
                           <SelectItem key={categorie.id} value={categorie.id}>
-                            {categorie.name
+                            {categorie?.name
                               .split("-")
                               .map(
                                 (word: string) =>
@@ -357,7 +346,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               )}
             </div>
 
-            <div>
+            <div className="relative field-combobox">
               <label
                 htmlFor="insurance"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -369,27 +358,25 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    key={selectedInsuranceId}
+                    value={selectedInsuranceId ?? ""}
                     disabled={!selectedCategoryId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedInsuranceId(value);
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="insurance"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Insurance" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         {insurances.map((insurance: any) => (
                           <SelectItem key={insurance.id} value={insurance.id}>
-                            {insurance.name
-                              .split("-")
-                              .map(
-                                (word: string) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
+                            {insurance.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -397,13 +384,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
-              {errors.insurance && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.insurance.message?.toString()}
-                </p>
+              {selectedInsuranceId && (
+                <button
+                  type="button"
+                  className="absolute right-8 top-10 text-gray-400 hover:text-gray-600"
+                  onClick={() => {
+                    setValue("insurance", "", { shouldValidate: true });
+                    setSelectedInsuranceId("");
+                  }}
+                >
+                  ✕
+                </button>
               )}
             </div>
-            <div>
+
+            <div className="relative field-combobox">
               <label
                 htmlFor="product"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -415,7 +410,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    key={selectedProductId}
+                    value={selectedProductId ?? ""}
                     disabled={!selectedInsuranceId}
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -428,7 +424,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       }
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="product"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Product" />
                     </SelectTrigger>
                     <SelectContent>
@@ -443,14 +442,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
-              {errors.product && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.product.message?.toString()}
-                </p>
+              {selectedProductId && (
+                <button
+                  type="button"
+                  className="absolute right-8 top-10 text-gray-400 hover:text-gray-600"
+                  onClick={() => {
+                    setValue("product", "", { shouldValidate: true });
+                    setSelectedProductId("");
+                  }}
+                >
+                  ✕
+                </button>
               )}
             </div>
 
-            <div>
+            <div className="relative field-combobox">
               <label
                 htmlFor="plan"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -462,14 +468,18 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    value={field.value}
+                    key={selectedPlanId}
+                    value={selectedPlanId ?? ""}
                     disabled={!selectedProductId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedPlanId(value);
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="plan"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select Plan" />
                     </SelectTrigger>
                     <SelectContent>
@@ -484,10 +494,17 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   </Select>
                 )}
               />
-              {errors.plan && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.plan.message?.toString()}
-                </p>
+              {selectedPlanId && (
+                <button
+                  type="button"
+                  className="absolute right-8 top-10 text-gray-400 hover:text-gray-600"
+                  onClick={() => {
+                    setValue("plan", "", { shouldValidate: true });
+                    setSelectedPlanId("");
+                  }}
+                >
+                  ✕
+                </button>
               )}
             </div>
 
@@ -504,26 +521,24 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 rules={{ required: "Journey is required" }}
                 render={({ field }) => (
                   <Select
-                    value={field.value.toString()}
+                    key={selectedJourneyId}
+                    value={selectedJourneyId ?? ""}
                     onValueChange={(value) => {
                       field.onChange(value);
                       setSelectedJourneyId(value);
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                      <SelectValue placeholder="Select Categories" />
+                    <SelectTrigger
+                      id="journey"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
+                      <SelectValue placeholder="Select Journey" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         {journey.map((jour: any) => (
                           <SelectItem key={jour.id} value={jour.code}>
-                            {jour.name
-                              .split("-")
-                              .map(
-                                (word: string) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
+                            {jour.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -551,7 +566,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 render={({ field }) => (
                   <Select
                     value={field.value}
-                    disabled={!selectedJourneyId}
                     onValueChange={(value) => {
                       field.onChange(value);
                       const selectedEmailTag = emailTag.find(
@@ -562,7 +576,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                       }
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
+                    <SelectTrigger
+                      id="emailTag"
+                      className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                    >
                       <SelectValue placeholder="Select tag" />
                     </SelectTrigger>
                     <SelectContent>
@@ -631,6 +648,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               render={({ field }) => (
                 <Input
                   {...field}
+                  id="subject"
                   type="text"
                   placeholder="Insert Judul Email"
                   onChange={(e) => field.onChange(e.target.value)}

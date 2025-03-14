@@ -328,6 +328,15 @@ th {
   padding-inline-start: 40px;
   unicode-bidi: isolate;
 }
+.field-combobox button[role="combobox"] {
+  text-align: left;
+}
+.field-combobox button[role="combobox"] span {
+  padding-right: 20px;
+}
+.field-combobox button[role="combobox"] svg {
+  min-width: 1rem;
+}
 
 /* responsive */
 @media screen and (max-width: 1199px) {
