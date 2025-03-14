@@ -312,12 +312,8 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 rules={{ required: "Product Category is required" }}
                 render={({ field }) => (
                   <Select
-                    key={selectedCategoryId}
-                    value={selectedCategoryId}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedCategoryId(value);
-                    }}
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
                   >
                     <SelectTrigger
                       id="category"
@@ -653,8 +649,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 <Input
                   {...field}
                   id="subject"
-                  key={subject}
-                  value={subject ?? ""}
                   type="text"
                   placeholder="Insert Judul Email"
                   onChange={(e) => field.onChange(e.target.value)}
