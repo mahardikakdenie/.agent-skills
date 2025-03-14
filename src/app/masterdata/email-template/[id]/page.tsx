@@ -653,8 +653,6 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 <Input
                   {...field}
                   id="subject"
-                  key={subject}
-                  value={subject ?? ""}
                   type="text"
                   placeholder="Insert Judul Email"
                   onChange={(e) => field.onChange(e.target.value)}
