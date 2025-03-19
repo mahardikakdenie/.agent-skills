@@ -35,10 +35,14 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { stateToHTML } from "draft-js-export-html";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import { Label } from "@radix-ui/react-label";
 
 // Replace the Editor import with dynamic import
 const Editor = dynamic(
@@ -65,6 +69,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [content, setContent] = useState("");
+  const [selectedTemplateType, setSelectedTemplateType] = useState("email");
 
   const {
     categories = [],
@@ -170,6 +175,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       const requestData = {
         ...data,
         content,
+        type: selectedTemplateType,
       };
 
       delete requestData.emailTag;
@@ -202,6 +208,13 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       .replace(/ {2}/g, " ");
 
     setContent(htmlContent);
+  };
+
+  const handleSelectTemplateType = (value: string) => {
+    // Reset content input field
+    setContent("");
+    setEditorState(EditorState.createEmpty());
+    setSelectedTemplateType(value);
   };
 
   return (
@@ -254,7 +267,30 @@ const AddPage = ({ params }: { params: { id: string } }) => {
         <div className="grid grid-cols-6 w-full p-4 md:p-6 gap-4">
           <div className="md:col-span-2 col-span-6 p-4 sm:p-6 bg-white rounded-lg flex flex-col gap-4">
             <div className="text-primary font-bold">Settings</div>
-
+            <div>
+              <label
+                htmlFor="templateType"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Choose Channel<span className="text-red-500">*</span>
+              </label>
+              <div>
+                <RadioGroup
+                  defaultValue={selectedTemplateType}
+                  className="flex flex-row gap-4"
+                  onValueChange={handleSelectTemplateType}
+                >
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="whatsapp" id="whatsapp" />
+                    <Label className="text-sm" htmlFor="whatsapp">WhatsApp</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="email" id="email" />
+                    <Label className="text-sm" htmlFor="email">Email</Label>
+                  </div>                  
+                </RadioGroup>
+              </div>
+            </div>
             <div>
               <label
                 htmlFor="category"
@@ -533,15 +569,27 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                           </Button>
                         </DialogClose>
                       </div>
-                      <h3 className="text-black text-lg font-semibold mb-2">
-                        {emailTitlePreview}
-                      </h3>
-                      <div className="text-xs">
-                        Friendsure Teknologi Indonesia (no-reply@friendsure.id)
-                      </div>
+                      {
+                        selectedTemplateType === "email" ? (
+                          <>
+                            <h3 className="text-black text-lg font-semibold mb-2">
+                              {emailTitlePreview}
+                            </h3>
+                            <div className="text-xs">
+                              Friendsure Teknologi Indonesia (no-reply@friendsure.id)
+                            </div>
+                          </>
+                        ) : null
+                      }
                       <div className="mt-6 bg-white rounded-lg">
                         <div className="editor-preview">
-                          <div dangerouslySetInnerHTML={{ __html: html }} />
+                          {
+                            selectedTemplateType === "email" ? (
+                              <div dangerouslySetInnerHTML={{ __html: html }} />
+                            ) : (
+                              <div>{content}</div>
+                            )
+                          }
                         </div>
                       </div>
                     </DialogDescription>
@@ -554,7 +602,10 @@ const AddPage = ({ params }: { params: { id: string } }) => {
               htmlFor="subject"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Judul email<span className="text-red-500">*</span>
+              {
+                selectedTemplateType === "email" ? "Judul email" : "Judul"
+              }
+              <span className="text-red-500">*</span>
             </label>
             <Controller
               name="subject"
@@ -564,7 +615,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 <Input
                   {...field}
                   type="text"
-                  placeholder="Insert Judul Email"
+                  placeholder={selectedTemplateType === "email" ? "Insert Judul Email" : "Insert Judul"}
                   onChange={(e) => field.onChange(e.target.value)}
                 />
               )}
@@ -576,13 +627,30 @@ const AddPage = ({ params }: { params: { id: string } }) => {
             )}
 
             <div className="mt-4">
-              <Editor
-                editorState={editorState}
-                toolbarClassName="toolbarClassName"
-                wrapperClassName="wrapperClassName"
-                editorClassName="editorClassName"
-                onEditorStateChange={handleEditorChange}
-              />
+              {
+                selectedTemplateType === "email" ? (
+                  <Editor
+                    editorState={editorState}
+                    toolbarClassName="toolbarClassName"
+                    wrapperClassName="wrapperClassName"
+                    editorClassName="editorClassName"
+                    onEditorStateChange={handleEditorChange}
+                  />
+                ) : (
+                  <textarea
+                    name=""
+                    id=""
+                    rows={20}
+                    value={content}
+                    onChange={(e) => {
+                      setContent(e.target.value);
+                    }}
+                    className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                    placeholder="Insert content"
+                  >
+                  </textarea>
+                )
+              }
             </div>
           </div>
         </div>
