@@ -27,6 +27,7 @@ import {
   MailTemplateResponse,
   MailTemplateService,
 } from "@/services/masterdata/mail-template.service";
+import { capitalizeStringWithChar } from "@/lib/formatter";
 
 const MailTemplate = () => {
   useRequireAuth();
@@ -192,6 +193,7 @@ const MailTemplate = () => {
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
               <TableHead className="min-w-36">Subject</TableHead>
               <TableHead className="min-w-36">Journey</TableHead>
+              <TableHead className="min-w-36">Channel</TableHead>
               <TableHead className="whitespace-nowrap w-12">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -202,6 +204,7 @@ const MailTemplate = () => {
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{mail?.subject || "-"}</TableCell>
                   <TableCell>{mail?.journey || "-"}</TableCell>
+                  <TableCell>{capitalizeStringWithChar(mail?.type) || "-"}</TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
                       <Button
