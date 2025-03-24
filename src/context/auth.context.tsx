@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useReducer, useContext, useEffect } from "react";
+import React, { createContext, useReducer, useContext } from "react";
 import { CookieService } from "@/services/masterdata/cookie.service";
 import { jwtDecode } from "jwt-decode";
 
@@ -91,10 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       dispatch({ type: "CHECK_LOGIN", isAuthenticated: false });
     }
   };
-
-  useEffect(() => {
-    checkLogin().then();
-  }, []);
 
   return (
     <AuthContext.Provider
