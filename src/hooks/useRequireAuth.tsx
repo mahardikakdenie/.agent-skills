@@ -1,21 +1,23 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
-import { getCookie } from "@/lib/utils";
+import { getGlobalToken } from "@/lib/token-storage";
+
 const useRequireAuth = () => {
   const { state } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    const check = async () => {
+    const checkAuth = async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      const isToken = await getCookie("token");
+      const isToken = getGlobalToken();
       if (!isToken) {
         router.push("/");
       }
     };
-    check().then();
-  }, [state.isAuthenticated, router]);
+
+    checkAuth();
+  }, [state.token, router]);
 };
 
 export default useRequireAuth;
