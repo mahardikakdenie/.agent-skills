@@ -2,9 +2,10 @@
 import React, { createContext, useReducer, useContext } from "react";
 import { CookieService } from "@/services/masterdata/cookie.service";
 import { jwtDecode } from "jwt-decode";
+import { getGlobalToken, setGlobalToken } from "@/lib/token-storage";
 
 interface AuthState {
-  isAuthenticated: boolean | null;
+  token: string | null;
 }
 
 interface Insurers {
@@ -36,25 +37,16 @@ const cookieService = new CookieService();
 type AuthAction =
   | { type: "LOGIN"; token: string }
   | { type: "LOGOUT" }
-  | { type: "CHECK_LOGIN"; isAuthenticated: boolean }
-  | { type: "LOAD_STATE"; isAuthenticated: boolean };
+  | { type: "CHECK_LOGIN"; token: string | null };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case "LOGIN":
-      localStorage.setItem("isAuthenticated", "true");
-      return { isAuthenticated: true };
+      return { token: action.token };
     case "LOGOUT":
-      localStorage.setItem("isAuthenticated", "false");
-      return { isAuthenticated: false };
+      return { token: null };
     case "CHECK_LOGIN":
-      localStorage.setItem(
-        "isAuthenticated",
-        action.isAuthenticated.toString()
-      );
-      return { isAuthenticated: action.isAuthenticated };
-    case "LOAD_STATE":
-      return { isAuthenticated: action.isAuthenticated };
+      return { token: action.token };
     default:
       return state;
   }
@@ -66,29 +58,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(authReducer, {
-    isAuthenticated:
-      typeof window !== "undefined" &&
-      localStorage.getItem("isAuthenticated") === "true",
+    token: null,
   });
 
   const login = async (token: string) => {
-    await cookieService
-      .saveCookie({ name: "token", value: token, days: 1 })
-      .then();
+    await cookieService.saveCookie({ name: "token", value: token, days: 1 });
+    setGlobalToken(token);
     dispatch({ type: "LOGIN", token });
   };
 
   const logout = async () => {
-    await cookieService.deleteCookieByKey("token").then();
+    await cookieService.deleteCookieByKey("token");
+    setGlobalToken(null);
     dispatch({ type: "LOGOUT" });
   };
 
   const checkLogin = async () => {
-    try {
-      const token = await cookieService.getCookieByKey("token");
-      dispatch({ type: "CHECK_LOGIN", isAuthenticated: !!token });
-    } catch (e) {
-      dispatch({ type: "CHECK_LOGIN", isAuthenticated: false });
+    const token = await cookieService.getCookieByKey("token");
+    if (token) {
+      setGlobalToken(token);
+      dispatch({ type: "CHECK_LOGIN", token });
+    } else {
+      dispatch({ type: "CHECK_LOGIN", token: null });
     }
   };
 
@@ -115,11 +106,11 @@ export const useAuth = () => {
 };
 
 export const setToken = (token: string) => {
-  localStorage.setItem("authToken", token);
+  setGlobalToken(token);
 };
 
 export const getClaims = async (): Promise<JwtPayload | null> => {
-  const token = await cookieService.getCookieByKey("token");
+  const token = getGlobalToken();
   if (!token) return null;
 
   try {
@@ -147,7 +138,7 @@ export const isTokenExpired = async (): Promise<boolean> => {
 };
 
 export const clearToken = () => {
-  localStorage.removeItem("authToken");
+  setGlobalToken(null);
 };
 
 export const hasPermission = async (
