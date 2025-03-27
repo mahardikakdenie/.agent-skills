@@ -1,31 +1,34 @@
-## Description
-
-The internal portal is a platform used to manage various data within our system. It features fine-grained role management, allowing precise control over access to specific resources or actions. The data managed within the portal includes:
-
-- **Transaction Management**
-- **Product Catalog Management**
-- **Claim Management**
-- **Promotion Management**
-- **Roles Management**
-- **Master Data Management**
-
-
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Then, add `.env` file to root file with this values or you can see in `app/.env.example` file:
+
+    NEXT_PUBLIC_AUTH_TOKEN=
+    NEXT_PUBLIC_AUTH_SERVICE_URL=
+    NEXT_PUBLIC_TRANSACTION_SERVICE_URL=
+    NEXT_PUBLIC_PRODUCT_SERVICE_URL=
+    NEXT_PUBLIC_PROMOTION_SERVICE_URL=
+    NEXT_PUBLIC_CHANNEL_SERVICE_URL=
+    NEXT_PUBLIC_API_POLICY_BASE_URL=
+    NEXT_PUBLIC_API_CLAIM_BASE_URL=
+    NEXT_PUBLIC_SANCTION_SERVICE_URL=
+    NEXT_PUBLIC_COUNTRY_SERVICE_URL=
+    NEXT_PUBLIC_FINANCE_SERVICE_URL=
+
+Next, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result or if there is application that running in port 3000, you can check your application console for the new port.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
