@@ -1,15 +1,19 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Description
 
-## Getting Started
+The internal portal is a platform used to manage various data within our system. It features fine-grained role management, allowing precise control over access to specific resources or actions. The data managed within the portal includes:
 
-First, install the dependencies:
+- **Transaction Management**
+- **Product Catalog Management**
+- **Claim Management**
+- **Promotion Management**
+- **Roles Management**
+- **Master Data Management**
 
-```bash
-npm install
-```
+## Environment Configuration
 
-Then, add `.env` file to root file with this values or you can see in `app/.env.example` file:
+Create a `.env.example` file in the project root and configure the following variables:
 
+```env
     NEXT_PUBLIC_AUTH_TOKEN=
     NEXT_PUBLIC_AUTH_SERVICE_URL=
     NEXT_PUBLIC_TRANSACTION_SERVICE_URL=
@@ -21,14 +25,23 @@ Then, add `.env` file to root file with this values or you can see in `app/.env.
     NEXT_PUBLIC_SANCTION_SERVICE_URL=
     NEXT_PUBLIC_COUNTRY_SERVICE_URL=
     NEXT_PUBLIC_FINANCE_SERVICE_URL=
+```
 
-Next, run the development server:
+## Getting Started
+
+First, run the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result or if there is application that running in port 3000, you can check your application console for the new port.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
