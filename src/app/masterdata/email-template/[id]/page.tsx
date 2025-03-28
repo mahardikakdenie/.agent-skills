@@ -59,7 +59,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [content, setContent] = useState("");
   const [subject, setSubject] = useState("");
-  const [selectedTemplateType, setSelectedTemplateType] = useState("email");
+  const [selectedTemplateType, setSelectedTemplateType] = useState<string | null>(null);
 
   const {
     categories = [],
@@ -153,6 +153,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       setSelectedPlanId(mailTemplateById[0].plan ?? null);
       setSelectedJourneyId(mailTemplateById[0].journey);
       setEmailTitlePreview(mailTemplateById[0].subject);
+      if (mailTemplateById[0].type) {
+        setSelectedTemplateType(mailTemplateById[0].type);
+      }
     }
   }, [mailTemplateById, selectedCategoryId]);
 
@@ -321,7 +324,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
               </label>
               <div>
                 <RadioGroup
-                  defaultValue={selectedTemplateType}
+                  value={selectedTemplateType || "email"}
                   className="flex flex-row gap-4"
                   onValueChange={handleSelectTemplateType}
                 >
