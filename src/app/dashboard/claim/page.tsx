@@ -26,7 +26,7 @@ const claimColumns = [
   { key: 'status', label: 'Status' },
 ];
 
-export const DashboardClaim = () => {
+const DashboardClaim = () => {
     const [ claimStatisticData, setClaimStatisticData ] = useState<Claim | null>(null);
     const [ totalClaimAmount, setTotalClaimAmount ] = useState<number>(0);
     const [ totalClaimAmountApproved, setTotalClaimAmountApproved ] = useState<number>(0);

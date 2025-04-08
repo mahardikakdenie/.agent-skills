@@ -23,7 +23,7 @@ const policyColumns = [
   { key: "transaction", label: "Transaction" },
 ];
 
-export const DashboardTransaction = () => {
+const DashboardTransaction = () => {
     const [transactionStatisticData, setTransactionStatisticData] = useState<Transaction | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<string>("");
     const [productOptions, setProductOptions] = useState<any[]>([]);
