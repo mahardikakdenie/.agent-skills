@@ -327,4 +327,31 @@ export class ClaimService {
   
     return await this.httpClient.get(`/v1/claims/import-data-guide?${queryString}`);
   }  
+
+  async getClaimStatistic(
+    page: number,
+    rowsPerPage: number,
+    filters?: {
+      insurance?: string;
+      product?: string;
+      plan?: string;
+      date_from?: string;
+      date_to?: string;
+    }
+  ): Promise<any> {
+    const params = {
+      page,
+      pageSize: rowsPerPage,
+      sort: 'desc',
+      ...(filters?.insurance && { insurance: filters.insurance }),
+      ...(filters?.product && { product: filters.product }),
+      ...(filters?.plan && { plan: filters.plan }),
+      ...(filters?.date_from && { from: filters.date_from }),
+      ...(filters?.date_to && { to: filters.date_to }),
+    };
+  
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get<any>(`/v1/claims/statistic-data?${queryString}`);
+  }
+  
 }
