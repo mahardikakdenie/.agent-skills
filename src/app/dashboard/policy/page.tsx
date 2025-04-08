@@ -22,7 +22,7 @@ const policyColumns = [
   { key: "created_at", label: "Created At" },
 ];
 
-export const DashboardPolicy = () => {
+const DashboardPolicy = () => {
     const [ policiesStatisticData, setPoliciesStatisticData ] = useState<PolicyData | null>(null);
     const [ totalPolicies, setTotalPolicies ] = useState<number>(0);
     const [ totalPremium, setTotalPremium ] = useState<number>(0);
@@ -352,6 +352,7 @@ export const DashboardPolicy = () => {
         </div>
     );
 };
+
 
 const DashboardPolicyWithSidebar = (params: any) => WithSidebar(DashboardPolicy)(params);
 export default DashboardPolicyWithSidebar;
