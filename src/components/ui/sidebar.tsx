@@ -17,6 +17,7 @@ import logoAirpaz from "/public/images/logo-airpaz.webp";
 import { Menu } from "react-feather";
 import { Button } from "./button";
 import { usePathname } from "next/navigation";
+import { ChartPie } from "lucide-react";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -88,6 +89,20 @@ const Sidebar = () => {
                 >
                   <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
                   Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard/claim"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/dashboard/claim/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  Claim
                 </Link>
               </li>
               <li className="mt-2 text-sm">
