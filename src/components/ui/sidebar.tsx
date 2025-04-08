@@ -93,6 +93,34 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
+                  href="/dashboard/transaction"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/dashboard/transaction/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  Transaction
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard/policy"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/dashboard/policy/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  Policy
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/dashboard/claim"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
                     isActive("/dashboard/claim/*")
