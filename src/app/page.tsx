@@ -38,7 +38,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/transactions");
+    router.push("/dashboard/transaction");
   };
 
   return (

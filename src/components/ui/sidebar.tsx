@@ -77,7 +77,7 @@ const Sidebar = () => {
               <li className="text-sm">
                 <strong>Dashboard</strong>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/home"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
@@ -90,7 +90,7 @@ const Sidebar = () => {
                   <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
                   Home
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/dashboard/transaction"

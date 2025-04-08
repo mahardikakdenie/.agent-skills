@@ -394,7 +394,7 @@ export const DashboardClaim = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white p-5 rounded-md shadow-sm w-full table-claim">
+                    <div className="bg-white p-5 rounded-md shadow-sm w-full table-claim min-h-[567px]">
                         <h5 className="font-semibold mb-3">Detail Claim</h5>
                         <DetailTable data={tableData} columns={claimColumns} />
                     </div>
