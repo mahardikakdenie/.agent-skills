@@ -110,6 +110,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     fetchCategories({});
     fetchJourney({});
     fetchMailTemplateById(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, id]);
 
   useEffect(() => {
@@ -157,6 +158,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         setSelectedTemplateType(mailTemplateById[0].type);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mailTemplateById, selectedCategoryId]);
 
   useEffect(() => {
@@ -185,6 +187,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         journey: selectedJourneyId,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedCategoryId,
     selectedInsuranceId,

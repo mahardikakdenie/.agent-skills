@@ -174,6 +174,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const onSubmit = async (data: any) => {
@@ -208,6 +209,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
     };
 
     fetchMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectMenu = async (value: string, field: any, index: number) => {

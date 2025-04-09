@@ -90,6 +90,7 @@ const MailTemplate = () => {
     };
 
     fetchMailTemplate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, tab]);
 
   useEffect(() => {
@@ -108,6 +109,7 @@ const MailTemplate = () => {
     };
 
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleEdit = (id: string) => {

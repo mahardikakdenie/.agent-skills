@@ -133,6 +133,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   useEffect(() => {
@@ -154,6 +155,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
       fetchPermission();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, pageId]);
 
   useEffect(() => {

@@ -20,6 +20,7 @@ const EmailTagPage = () => {
 
   useEffect(() => {
     fetchEmailTag({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const router = useRouter();
 

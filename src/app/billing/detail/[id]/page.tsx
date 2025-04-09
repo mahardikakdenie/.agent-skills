@@ -62,6 +62,7 @@ const DetailBillingPage = () => {
 
   useEffect(() => {
     getBillingById(id as string, 1, rowsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const router = useRouter();

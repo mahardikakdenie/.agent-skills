@@ -88,7 +88,9 @@ const CreateBillingPage = () => {
         newPremium,
       };
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionList]);
+
   const handleRowsPerPageChange = (e: any) => {
     setRowsPerPage(e.target.value);
   };
@@ -108,6 +110,7 @@ const CreateBillingPage = () => {
         setLoading(false);
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   useEffect(() => {

@@ -81,6 +81,7 @@ const TransactionsPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, tab, searchData]);
 
   useEffect(() => {

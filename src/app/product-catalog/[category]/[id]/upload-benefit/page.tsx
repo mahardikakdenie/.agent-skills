@@ -28,6 +28,7 @@ const UploadPlanBenefit = ({
     if (params.id) {
       fetchPlanById(params.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const [file, setFile] = useState<any>(null);

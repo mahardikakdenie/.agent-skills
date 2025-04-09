@@ -105,10 +105,12 @@ const CreateSanctionPage = () => {
 
     useEffect(() => {
         fetchSources();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         fetchCountry();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchSources = async () => {

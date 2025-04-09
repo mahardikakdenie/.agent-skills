@@ -75,6 +75,7 @@ const AddEmailTag = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     fetchJourney({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

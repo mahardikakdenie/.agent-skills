@@ -78,6 +78,7 @@ const SourcePage = () => {
             .catch((error) => {
                 console.error("Failed to fetch sources:", error);
             });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, rowsPerPage]);
 
     const handleEditSource = (id: string) => {

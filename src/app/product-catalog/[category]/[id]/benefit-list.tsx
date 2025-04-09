@@ -16,6 +16,7 @@ export default function BenefitList(props: { id: string }) {
   const { getPlanBenefits, benefits } = useProducts();
   useEffect(() => {
     (async () => await getPlanBenefits(id))();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const path = usePathname();

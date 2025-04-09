@@ -83,6 +83,7 @@ const PartnerIntegation = () => {
     };
 
     fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, searchData]);
 
   const handleSearch = _.debounce((keyword: string) => {
