@@ -28,6 +28,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { EndorsementService } from "@/services/endorsement.service";
+import Image from "next/image";
 
 const DetailEndorsement = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -151,7 +152,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
             <p className="font-semibold mb-3">Insured Detail</p>
             <div className="flex flex-col gap-3">
               <div className="w-full border rounded-lg overflow-hidden">
-                <img src={imageUrl} alt="" className="w-full h-auto" />
+                <Image src={imageUrl} alt="" width={200} height={100} className="w-full h-auto" />
               </div>
               <div className="flex gap-2 text-sm font-medium">
                 <div className="min-w-24 w-24">No. Polis</div>

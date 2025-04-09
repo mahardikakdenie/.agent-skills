@@ -141,10 +141,12 @@ const InsuranceProduct = () => {
                   <TableCell>{insurance.name}</TableCell>
                   <TableCell>
                     <div className="flex gap-3">
-                      <img
+                      <Image
                         src={insurance.logo_url}
                         alt=""
                         className="max-w-20 w-auto h-auto max-h-12"
+                        height={50}
+                        width={100}
                       />
                     </div>
                   </TableCell>

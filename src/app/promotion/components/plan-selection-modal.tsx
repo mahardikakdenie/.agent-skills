@@ -92,6 +92,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     new Set()
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const data = plans?.data || [];
   let totalItems = plans?.meta.total || 0;
   let totalPages = Math.ceil(totalItems / showPlansPerPage);

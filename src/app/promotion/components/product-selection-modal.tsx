@@ -67,6 +67,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     Set<string>
   >(new Set());
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const data = products?.data || [];
   const totalItems = products?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / showProdPerPage);

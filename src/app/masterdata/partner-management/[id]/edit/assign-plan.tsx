@@ -236,9 +236,12 @@ const AssignPlan = ({
                           <TableCell>
                             <div className="flex gap-2 items-center">
                               <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                                <img
+                                <Image
                                   src={product.products.insurances.logo_url}
                                   alt=""
+                                  width={100}
+                                  height={50}
+                                  className="w-full h-auto"
                                 />
                               </div>
                               {product.products.insurances.name}
