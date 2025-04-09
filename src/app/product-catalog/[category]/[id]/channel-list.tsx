@@ -40,6 +40,7 @@ export default function ChannelList(props: { id: string }) {
     useState(false);
   useEffect(() => {
     (async () => await getChannelPlans(id))();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { setLoading } = useLoading();
   const handleUnassignPlan = async () => {

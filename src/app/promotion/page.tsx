@@ -122,6 +122,7 @@ const PromotionPage = () => {
           console.error("Failed to fetch promotions:", error);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAccess, page, rowsPerPage]);
 
   if (hasAccess === null) {

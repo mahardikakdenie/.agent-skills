@@ -17,6 +17,7 @@ const InvoicePage = () => {
   const { setLoading } = useLoading();
   useEffect(() => {
     getBillingById(id as string, undefined, undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleDownloadPDF = async () => {

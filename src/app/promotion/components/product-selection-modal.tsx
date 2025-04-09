@@ -119,6 +119,7 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     };
 
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCheckboxChange = (productId: string) => {

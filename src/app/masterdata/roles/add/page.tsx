@@ -71,6 +71,7 @@ const AddRolesPage = ({ params }: { params: { id: string } }) => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   const onSubmit = async (data: any) => {

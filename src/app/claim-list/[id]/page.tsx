@@ -191,11 +191,13 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
           ) : (
             <div className="max-h-[70vh] overflow-auto text-center">
               {documentObject?.value ? (
-                <img
-                  className="mx-auto w-full"
+                <Image
+                  className="mx-auto w-full h-full"
                   src={documentObject.value}
                   alt={documentObject.label?.en || "-"}
-                />
+                  width={200}
+                  height={100}
+                 />
               ) : (
                 <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">
                   No image available
@@ -438,7 +440,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                 <div className="flex flex-col lg:flex-row gap-4">
                   <div className="lg:min-w-60 lg:w-60">
                     <div className="w-full border rounded-lg overflow-hidden">
-                      <img src={imageUrl} alt="" className="w-full h-auto" />
+                      <Image src={imageUrl} alt="" width={200} height={100} className="w-full h-auto" />
                     </div>
                   </div>
                   <div className="w-full flex gap-3 flex-col">

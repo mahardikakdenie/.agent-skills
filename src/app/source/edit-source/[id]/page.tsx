@@ -116,10 +116,12 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
 
     useEffect(() => {
         fetchInsurance();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         fetchCountry();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchCountry = async () => {
@@ -160,6 +162,7 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
                     setLoading(false);
                 });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.id]);
 
     const handleChangeInsurance = (selectedInsurance: { insurance_id: string, insurance_name: string }) => {

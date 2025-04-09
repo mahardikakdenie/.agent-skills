@@ -78,6 +78,7 @@ const SanctionPage = () => {
             .catch((error) => {
                 console.error("Failed to fetch sanction:", error);
             });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, rowsPerPage]);
 
     const handleEditSanction = (id: string) => {

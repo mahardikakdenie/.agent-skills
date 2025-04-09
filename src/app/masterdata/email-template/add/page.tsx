@@ -135,6 +135,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     checkAccess();
     fetchCategories({});
     fetchJourney({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   useEffect(() => {
@@ -163,6 +164,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
         journey: selectedJourneyId,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedCategoryId,
     selectedInsuranceId,

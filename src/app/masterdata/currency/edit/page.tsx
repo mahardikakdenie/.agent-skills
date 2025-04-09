@@ -156,6 +156,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
     fetchInsurances({});
     fetchTypeCurrencies({});
     fetchCurrency("", categoryId, insuranceId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

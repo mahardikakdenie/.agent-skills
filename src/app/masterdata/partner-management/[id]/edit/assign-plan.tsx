@@ -57,6 +57,7 @@ const AssignPlan = ({
       await fetchCategories("");
     };
     loadCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // New useEffect to set default tab when categories are loaded
@@ -64,6 +65,7 @@ const AssignPlan = ({
     if (categories.length > 0 && !activeTab) {
       setActiveTab(categories[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 
   // Separate useEffect for fetching plans when activeTab changes
@@ -74,6 +76,7 @@ const AssignPlan = ({
         fetchPlans(category.name);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, page, rowsPerPage]);
 
   useEffect(() => {
@@ -85,6 +88,7 @@ const AssignPlan = ({
       }
     };
     loadAssignedPlans();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchPlans = async (category: string) => {

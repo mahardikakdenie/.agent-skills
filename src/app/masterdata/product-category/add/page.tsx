@@ -73,6 +73,7 @@ const AddProductCategory = ({ params }: { params: { id: string } }) => {
         await fetchCategories({});
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {

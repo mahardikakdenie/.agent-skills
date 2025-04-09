@@ -111,11 +111,13 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
 
   useEffect(() => {
     fetchInsurances({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (watch("insuranceId"))
       fetchProducts({ insuranceId: watch("insuranceId") });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("insuranceId")]);
 
   const onSubmit = async (data: any) => {

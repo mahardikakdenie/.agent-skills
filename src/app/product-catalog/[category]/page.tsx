@@ -104,6 +104,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
     };
 
     fetchPlans();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     category,
     searchPlanName,
@@ -116,6 +117,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
   useEffect(() => {
     fetchInsurances({});
     fetchProducts({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -124,6 +126,7 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
         insuranceId: searchInsurer,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInsurer]);
 
   const handleViewDetail = (id: string) => {

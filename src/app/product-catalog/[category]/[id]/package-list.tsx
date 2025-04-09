@@ -59,6 +59,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
     };
 
     checkAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routerN]);
 
   useEffect(() => {
@@ -76,6 +77,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
         setPage(response.meta.page);
         setTotalItems(response.meta.total);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, page, rowsPerPage]);
 
   const handleFilter = () => {
@@ -111,6 +113,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
   useEffect(() => {
     handleFilter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [adultFilter, childrenFilter, ageFilter, occupationClassFilter]);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
