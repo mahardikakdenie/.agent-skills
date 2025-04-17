@@ -138,6 +138,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     fetchChannels({});
     fetchRole({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

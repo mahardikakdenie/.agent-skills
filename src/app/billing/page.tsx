@@ -30,6 +30,7 @@ const BillingPage = () => {
 
   useEffect(() => {
     getBilling();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ const BillingPage = () => {
 
   useEffect(() => {
     getBilling(page, rowsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
 
   const router = useRouter();

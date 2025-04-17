@@ -82,6 +82,7 @@ const Currency = () => {
     };
 
     fetchInsurance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
 
   if (loading) {

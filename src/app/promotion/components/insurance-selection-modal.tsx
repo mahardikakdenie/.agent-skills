@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { FaCheck, FaTimes } from "react-icons/fa";
@@ -53,6 +54,8 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   const [localSelectedInsuranceIds, setLocalSelectedInsuranceIds] = useState<
     Set<string>
   >(new Set());
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const data = insurances?.data || [];
   const totalItems = insurances?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / showInsPerPage);
@@ -189,10 +192,12 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {insurance.logo_url ? (
-                        <img
+                        <Image
                           src={insurance.logo_url}
                           alt={insurance.name}
                           className="w-12 h-12 object-cover"
+                          width={100}
+                          height={50}
                         />
                       ) : (
                         <span>No Logo</span>

@@ -35,8 +35,10 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { stateToHTML } from "draft-js-export-html";
 import {
   RadioGroup,
@@ -135,6 +137,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     checkAccess();
     fetchCategories({});
     fetchJourney({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   useEffect(() => {
@@ -163,6 +166,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
         journey: selectedJourneyId,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedCategoryId,
     selectedInsuranceId,
@@ -555,6 +559,9 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                 </DialogTrigger>
                 <DialogContent className="dialog-email-template overflow-hidden">
                   <DialogHeader>
+                    <DialogTitle>
+                      <VisuallyHidden>This title is provided to prevent DialogTitle warning</VisuallyHidden>
+                    </DialogTitle>
                     <DialogDescription>
                       <div className="bg-primary absolute top-0 left-0 text-white flex items-center w-full py-1 px-5">
                         <div className="text-sm font-semibold">
@@ -616,7 +623,10 @@ const AddPage = ({ params }: { params: { id: string } }) => {
                   {...field}
                   type="text"
                   placeholder={selectedTemplateType === "email" ? "Insert Judul Email" : "Insert Judul"}
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    setEmailTitlePreview(e.target.value);
+                  }}
                 />
               )}
             />

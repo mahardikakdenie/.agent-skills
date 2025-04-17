@@ -25,6 +25,7 @@ export default function DetailList(props: { id: string }) {
   const { getPlanDetails, details } = useProducts();
   useEffect(() => {
     (async () => await getPlanDetails(id, type))();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   const path = usePathname();

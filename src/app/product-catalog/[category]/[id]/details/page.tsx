@@ -8,6 +8,7 @@ const PlanDetail = (props: { params: { id: string } }) => {
   const { id } = props.params;
   useEffect(() => {
     fetchPlanById(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">

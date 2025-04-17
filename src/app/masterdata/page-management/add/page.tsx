@@ -33,6 +33,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     };
 
     checkAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
   const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);

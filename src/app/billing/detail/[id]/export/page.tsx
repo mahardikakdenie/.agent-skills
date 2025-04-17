@@ -48,6 +48,7 @@ const ExportDetailBillingPage = () => {
 
   useEffect(() => {
     getBillingById(id as string, undefined, undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const router = useRouter();

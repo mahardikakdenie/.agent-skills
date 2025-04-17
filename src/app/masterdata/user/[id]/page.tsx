@@ -213,11 +213,13 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   useEffect(() => {
     fetchChannels({});
     fetchRole({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

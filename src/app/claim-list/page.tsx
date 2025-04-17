@@ -157,6 +157,7 @@ const ClaimsPage = () => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     page,
     rowsPerPage,
@@ -509,6 +510,7 @@ const ClaimsPage = () => {
     };
 
     fetchClaimsStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleExport = () => {

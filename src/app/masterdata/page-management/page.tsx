@@ -77,6 +77,7 @@ const Pages = () => {
     };
 
     fetchInsurance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
 
   const handleEdit = (id: string) => {

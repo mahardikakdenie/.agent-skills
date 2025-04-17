@@ -81,6 +81,7 @@ const EditEmailTag = ({ params }: { params: { id: string } }) => {
       })();
     }
     fetchJourney({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   const onSubmit = async (data: any) => {

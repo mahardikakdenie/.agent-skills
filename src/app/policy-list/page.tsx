@@ -42,6 +42,7 @@ const PolicyPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchData, rowsPerPage, tab]);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

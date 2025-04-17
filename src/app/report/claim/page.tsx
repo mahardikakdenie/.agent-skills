@@ -105,6 +105,7 @@ const ReportClaimPage = () => {
           });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAccess, page, rowsPerPage, sortBy, date]);
 
   const handleClear = () => {

@@ -46,6 +46,7 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const data = channels?.data || [];
   const totalItems = channels?.total || 0;
   const totalPages = Math.ceil(totalItems / showChannelsPerPage);

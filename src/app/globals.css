@@ -338,6 +338,28 @@ th {
   min-width: 1rem;
 }
 
+
+.table-transaction table td:nth-child(2),
+.table-transaction table td:nth-child(4),
+.table-transaction table td:last-child,
+.table-claim table td:nth-child(2),
+.table-claim table td:nth-child(3),
+.table-policy table td:nth-child(2),
+.table-policy table td:nth-child(4),
+.table-policy table td:last-child,
+.table-policy table th:last-child {
+  white-space: nowrap;
+}
+.table-transaction .max-h-\[451px\] {
+  max-height: 351px;
+}
+.table-transaction table td:last-child,
+.table-transaction table th:last-child,
+.table-transaction table td:nth-child(4),
+.table-transaction table th:nth-child(4) {
+  text-align: right;
+}
+
 /* responsive */
 @media screen and (max-width: 1199px) {
   .sidebar {

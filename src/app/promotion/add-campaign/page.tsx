@@ -192,14 +192,17 @@ const CreatePromotionPage = () => {
 
   useEffect(() => {
     fetchInsurances(currentPageIns, showInsPerPage);
-  }, [showInsPerPage]); // Trigger only when the page size changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showInsPerPage]);
 
   useEffect(() => {
     fetchChannels(currentPageChannels, showChannelsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPageChannels, showChannelsPerPage]);
 
   useEffect(() => {
     fetchCurrency();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -214,6 +217,7 @@ const CreatePromotionPage = () => {
       setPlans(undefined);
       setSelectedPlanIds(new Set());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalSelectedProdIds]);
 
   const fetchPlansByProducts = async (

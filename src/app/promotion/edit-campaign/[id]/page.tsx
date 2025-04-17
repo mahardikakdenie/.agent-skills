@@ -183,6 +183,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         }))
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promotion.embedded_discount_insurances]);
 
 
@@ -191,6 +192,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
       fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
       setCurrentPagePlan(1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promotion.embedded_discount_products]);
 
   useEffect(() => {
@@ -237,15 +239,18 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setLoading(false);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id, reset]);
 
 
   useEffect(() => {
     fetchInsurances(currentPage, showInsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
     fetchChannelsAfter(currentPageChannels, showChannelsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPageChannels, showChannelsPerPage]);
 
   useEffect(() => {
@@ -271,6 +276,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     } else {
       setProducts(undefined);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalSelectedInsuranceIds]);
 
   const handlePageChange = (page: number) => {

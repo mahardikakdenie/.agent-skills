@@ -9,8 +9,6 @@ The internal portal is a platform used to manage various data within our system.
 - **Roles Management**
 - **Master Data Management**
 
-
-
 ## Getting Started
 
 First, run the development server:
@@ -23,6 +21,24 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+## Environment Configuration
+
+Create a `.env` file in the project root and configure the following variables:
+
+```env
+NEXT_PUBLIC_AUTH_TOKEN=
+NEXT_PUBLIC_AUTH_SERVICE_URL=
+NEXT_PUBLIC_TRANSACTION_SERVICE_URL=
+NEXT_PUBLIC_PRODUCT_SERVICE_URL=
+NEXT_PUBLIC_PROMOTION_SERVICE_URL=
+NEXT_PUBLIC_CHANNEL_SERVICE_URL=
+NEXT_PUBLIC_API_POLICY_BASE_URL=
+NEXT_PUBLIC_API_CLAIM_BASE_URL=
+NEXT_PUBLIC_SANCTION_SERVICE_URL=
+NEXT_PUBLIC_COUNTRY_SERVICE_URL=
+NEXT_PUBLIC_FINANCE_SERVICE_URL=
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
