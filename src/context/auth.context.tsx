@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useReducer, useContext } from "react";
+import React, { createContext, useReducer, useContext, useState } from "react";
 import { CookieService } from "@/services/masterdata/cookie.service";
 import { jwtDecode } from "jwt-decode";
 import { getGlobalToken, setGlobalToken } from "@/lib/token-storage";
@@ -54,12 +54,8 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [state, dispatch] = useReducer(authReducer, {
-    token: null,
-  });
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, { token: null });
 
   const login = async (token: string) => {
     await cookieService.saveCookie({ name: "token", value: token, days: 1 });
@@ -73,7 +69,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     dispatch({ type: "LOGOUT" });
   };
 
+  const [hasCheckedLogin, setHasCheckedLogin] = useState(false);
+
   const checkLogin = async () => {
+    // Prevent double call
+    if (hasCheckedLogin || state.token !== null) return;
+    setHasCheckedLogin(true);
+
     const token = await cookieService.getCookieByKey("token");
     if (token) {
       setGlobalToken(token);
@@ -83,15 +85,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+
   return (
-    <AuthContext.Provider
-      value={{
-        state,
-        login,
-        logout,
-        checkLogin,
-      }}
-    >
+    <AuthContext.Provider value={{ state, login, logout, checkLogin }}>
       {children}
     </AuthContext.Provider>
   );
@@ -99,15 +95,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
 
-export const setToken = (token: string) => {
-  setGlobalToken(token);
-};
+// Optional helpers
 
 export const getClaims = async (): Promise<JwtPayload | null> => {
   const token = getGlobalToken();
@@ -123,27 +115,14 @@ export const getClaims = async (): Promise<JwtPayload | null> => {
 
 export const isTokenExpired = async (): Promise<boolean> => {
   const claims = await getClaims();
-  if (!claims) {
-    console.error("Token is missing or invalid.");
-    return true;
-  }
-
-  if (!claims.exp) {
-    console.error("Token does not contain an 'exp' field.");
-    return true;
-  }
-
+  if (!claims?.exp) return true;
   const now = Math.floor(Date.now() / 1000);
   return now >= claims.exp;
 };
 
-export const clearToken = () => {
-  setGlobalToken(null);
-};
+export const clearToken = () => setGlobalToken(null);
 
-export const hasPermission = async (
-  requiredPermission: string
-): Promise<boolean> => {
+export const hasPermission = async (requiredPermission: string): Promise<boolean> => {
   const claims = await getClaims();
   return claims?.permission_list?.includes(requiredPermission) || false;
 };
