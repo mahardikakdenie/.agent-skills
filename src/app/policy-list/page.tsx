@@ -135,8 +135,8 @@ const PolicyPage = () => {
               <SelectGroup>
                 {/* <SelectItem value={'All'}>All Channel</SelectItem> */}
                 {
-                  channels.map((item) => (
-                    <SelectItem value={item.id}>{item.name}</SelectItem>
+                  channels.map((item, index) => (
+                    <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
                   ))
                 }
               </SelectGroup>
