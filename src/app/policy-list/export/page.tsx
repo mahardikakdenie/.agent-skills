@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { PolicyService } from "@/services/policy.service";
 import Spinner from "@/components/ui/spinner";
 import WithSidebar from "@/hoc/with-sidebar";
+import autoTable from "jspdf-autotable";
+import moment from "moment";
 
 const ExportPage = () => {
   useRequireAuth();
@@ -33,7 +35,7 @@ const ExportPage = () => {
         const parsedData = JSON.parse(savedData);
 
         const page = parsedData.page ?? 1;
-        const rowsPerPage = 100;
+        const rowsPerPage = 1000;
         const status = parsedData.status ?? "All";
         const searchData = parsedData.search ?? "";
         const channel = parsedData.channel;
@@ -74,13 +76,43 @@ const ExportPage = () => {
     });
     doc.setFontSize(10);
     doc.setFont("Inter-Regular", "normal");
-    doc.html(reportTemplateRef.current, {
-      async callback(doc) {
-        await doc.save("PolicyList.pdf");
+
+    //old
+    // doc.html(reportTemplateRef.current, {
+    //   async callback(doc) {
+    //     await doc.save("PolicyList.pdf");
+    //   },
+    //   x: 30,
+    //   y: 30,
+    // });  
+
+    //new with auto page break
+    autoTable(doc, {
+      head: [['No.', 'Customer Name', 'Policy Number', 'Plan Name', 'Status']],
+      body: data.map((item, index) => [
+        (page - 1) * rowsPerPage + index + 1,
+        item.policy_holder?.name || "-",
+        item?.number || "-",
+        item?.policy_products?.plan_data?.name
+          .split("|")
+          .join(" - ") || "-",
+        item.status || "-"
+      ]),
+      startY: 30,
+      headStyles: {
+        textColor: 'black',
+        fontStyle: 'bold',
+        fontSize: 10,
+        fillColor: [231, 231, 231], //grey
       },
-      x: 30,
-      y: 30,
+      bodyStyles: {
+        textColor: 'black',
+        fontSize: 10,
+      },
     });
+    const date = moment();
+    const formattedDate = date.format('YYYY_MM_DD');
+    doc.save(`policylist_${formattedDate}.pdf`);
   };
 
   const handleGenerateXlsx = () => {
@@ -100,10 +132,26 @@ const ExportPage = () => {
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(sheetData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "PolicyList");
 
-    XLSX.writeFile(workbook, "PolicyList.xlsx");
+    const columnWidths: Record<string, number> = {};
+    columnWidths["No"] = 30;
+    columnWidths["Customer Name"] = 100;
+    columnWidths["Policy Number"] = 150;
+    columnWidths["Plan Name"] = 500;
+    columnWidths["Status"] = 100;
+    // Set the width for each column
+    worksheet['!cols'] = Object.keys(columnWidths).map((key) => ({
+      wpx: columnWidths[key], //adjust multiplier for better fit
+    }));
+
+    const workbook = XLSX.utils.book_new();
+
+    const date = moment();
+    const formattedDate = date.format('YYYY_MM_DD');
+    let name = `policylist_${formattedDate}`;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "policylist");
+    XLSX.writeFile(workbook, `${name}.xlsx`);
   };
 
   const styles = {
@@ -163,61 +211,65 @@ const ExportPage = () => {
           </div>
         ) : (
           <table style={styles.table} ref={reportTemplateRef} border={1}>
-            <tr>
-              <td style={styles.th} valign="middle">
-                No.
-              </td>
-              <td style={styles.th} valign="middle">
-                Customer Name
-              </td>
-              <td style={styles.th} valign="middle">
-                Policy Number
-              </td>
-              <td style={styles.th} valign="middle">
-                Plan Name
-              </td>
-              <td style={styles.th} valign="middle">
-                Status
-              </td>
-            </tr>
-            {data.length > 0 ? (
-              data.map((item, index) => (
-                <tr key={item.id}>
-                  <td style={styles.td} valign="middle">
-                    {(page - 1) * rowsPerPage + index + 1}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    <div className="flex gap-2 items-center">
-                      {item.policy_holder?.name || "-"}
-                    </div>
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {item?.number || "-"}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {item?.policy_products?.plan_data?.name
-                      .split("|")
-                      .join(" - ") || "-"}
-                  </td>
-                  <td
-                    style={styles.td}
-                    valign="middle"
-                    className="whitespace-nowrap"
-                  >
-                    {item.status || "-"}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr className="hover:!bg-white">
-                <td colSpan={5}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
-                  </div>
-                </td>{" "}
+            <thead>
+              <tr>
+                <td style={styles.th} valign="middle">
+                  No.
+                </td>
+                <td style={styles.th} valign="middle">
+                  Customer Name
+                </td>
+                <td style={styles.th} valign="middle">
+                  Policy Number
+                </td>
+                <td style={styles.th} valign="middle">
+                  Plan Name
+                </td>
+                <td style={styles.th} valign="middle">
+                  Status
+                </td>
               </tr>
-            )}
+            </thead>
+            <tbody>
+              {data.length > 0 ? (
+                data.map((item, index) => (
+                  <tr key={item.id}>
+                    <td style={styles.td} valign="middle">
+                      {(page - 1) * rowsPerPage + index + 1}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      <div className="flex gap-2 items-center">
+                        {item.policy_holder?.name || "-"}
+                      </div>
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {item?.number || "-"}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {item?.policy_products?.plan_data?.name
+                        .split("|")
+                        .join(" - ") || "-"}
+                    </td>
+                    <td
+                      style={styles.td}
+                      valign="middle"
+                      className="whitespace-nowrap"
+                    >
+                      {item.status || "-"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="hover:!bg-white">
+                  <td colSpan={5}>
+                    <div className="flex flex-col gap-4 items-center justify-center py-14">
+                      <Image alt="no data" src={noData} width={200} /> No
+                      transaction data available
+                    </div>
+                  </td>{" "}
+                </tr>
+              )}
+            </tbody>
           </table>
         )}
       </div>
