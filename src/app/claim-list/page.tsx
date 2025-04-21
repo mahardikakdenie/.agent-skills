@@ -61,6 +61,7 @@ import { CalendarIcon } from "lucide-react";
 import { addDays, format } from "date-fns";
 import React from "react";
 import { DateRange } from "react-day-picker";
+import { ChannelService } from "@/services/channel.services";
 
 const ClaimsPage = () => {
   useRequireAuth();
@@ -75,6 +76,7 @@ const ClaimsPage = () => {
   const router = useRouter();
   const [tab, setTab] = useState("All");
   const [totalData, setTotalData] = useState(0);
+  const [channels, setChannels] = useState<any[]>([]);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -106,7 +108,7 @@ const ClaimsPage = () => {
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
 
-  const [searchChannel, setSearchChannel] = useState("");
+  const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
@@ -144,7 +146,8 @@ const ClaimsPage = () => {
           searchData,
           searchSlaStatus === "All" ? "" : searchSlaStatus,
           date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-          date?.to ? format(date.to, "yyyy-MM-dd") : undefined
+          date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+          searchChannel// === "All" ? "" : searchChannel,
         );
         setFilteredClaims(res?.data);
         setPage(res?.page);
@@ -166,7 +169,23 @@ const ClaimsPage = () => {
     searchData,
     searchSlaStatus,
     date,
+    searchChannel
   ]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const channelService = new ChannelService();
+        const channelResponse = await channelService.getChannels();
+        setChannels(channelResponse.data || []);
+      } catch (error) {
+        console.error('Failed to fetch channels:', error);
+      }
+    };
+
+    fetchData();
+
+  }, []);
 
   useEffect(() => {
     if (searchTerm) {
@@ -193,12 +212,12 @@ const ClaimsPage = () => {
     setSearchData(keyword);
   }, 100);
 
-  const handleSearchChannelOnChange = (v: string) => {
-    setSearchChannel(v);
-  };
-
   const handleSearchSlaStatusChange = (v: string) => {
     setSearchSlaStatus(v);
+  };
+
+  const handleChannelChange = (v: string) => {
+    setSearchChannel(v);
   };
 
   const goToDetail = (claimId: string) => {
@@ -460,22 +479,22 @@ const ClaimsPage = () => {
     const docListFields =
       dataDocument.length > 0
         ? dataDocument
-            .filter(
+          .filter(
+            (doc: any) =>
+              doc.type.toLowerCase() === "fields" && doc.fields.length > 0
+          )
+          .map((a: any) =>
+            a.fields.filter(
               (doc: any) =>
-                doc.type.toLowerCase() === "fields" && doc.fields.length > 0
+                doc.type.toLowerCase() === "file" ||
+                doc.type.toLowerCase() === "file multiple"
             )
-            .map((a: any) =>
-              a.fields.filter(
-                (doc: any) =>
-                  doc.type.toLowerCase() === "file" ||
-                  doc.type.toLowerCase() === "file multiple"
-              )
-            )
-            .flat()
-            .map((d: any) => ({
-              ...d,
-              nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-",
-            }))
+          )
+          .flat()
+          .map((d: any) => ({
+            ...d,
+            nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-",
+          }))
         : [];
     const selectedFields = docListFields.filter((doc) =>
       selectedDocuments.includes(doc.name)
@@ -522,6 +541,7 @@ const ClaimsPage = () => {
       sla_status: searchSlaStatus === "All" ? "" : searchSlaStatus,
       date_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
       date_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+      channel: searchChannel
     };
 
     localStorage.setItem("exportClaimData", JSON.stringify(exportData));
@@ -593,6 +613,27 @@ const ClaimsPage = () => {
           </Button>
         </div>
 
+        <div className="min-w-48">
+          <Select
+            value={searchChannel}
+            onValueChange={handleChannelChange}
+          >
+            <SelectTrigger className="h-10">
+              <SelectValue placeholder="Channel" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {/* <SelectItem value={'All'}>All Channel</SelectItem> */}
+                {
+                  channels.map((item) => (
+                    <SelectItem value={item.id}>{item.name}</SelectItem>
+                  ))
+                }
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="min-w-32">
           <Select
             value={searchSlaStatus}
@@ -611,6 +652,7 @@ const ClaimsPage = () => {
             </SelectContent>
           </Select>
         </div>
+
         <Button
           onClick={() => router.push(`${path}/import`)}
           className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
@@ -723,162 +765,162 @@ const ClaimsPage = () => {
 
               {(pendingStatus === "Lack of Documents Operator" ||
                 pendingStatus === "Lack of Documents Insurance") && (
-                <>
-                  <div className="w-[600px]">
-                    <p className="text-sm mb-2">
-                      Reason <span className="!text-red-500">*</span>
-                    </p>
-                    <textarea
-                      name=""
-                      id=""
-                      rows={4}
-                      value={notes}
-                      onChange={(e) => {
-                        setNotes(e.target.value);
-                        setNoteMsg("");
-                      }}
-                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                      placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
-                      required
-                    ></textarea>
-                    <p className="text-xs text-red-500">{noteMsg}</p>
-                  </div>
-                  <div className="w-full">
-                    <p className="text-sm">
-                      Lack of Document Reasons{" "}
-                      <span className="!text-red-500">*</span>
-                    </p>
-                    {finalSelectedDocuments.length > 0 && (
-                      <ul className="mt-3">
-                        {finalSelectedDocuments.map((doc) => (
-                          <li
-                            key={doc.id}
-                            className="flex justify-between items-center mb-2 gap-2"
-                          >
-                            <Input
-                              name="lack_of_documents"
-                              value={
-                                doc?.label?.en ||
-                                doc?.label_multilanguage?.en ||
-                                doc?.label ||
-                                "-"
-                              }
-                              className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
-                            />
-                            <Button
-                              disabled={!canDelete}
-                              className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                              onClick={() =>
-                                handleDeleteSelectedDocument(doc.name)
-                              }
+                  <>
+                    <div className="w-[600px]">
+                      <p className="text-sm mb-2">
+                        Reason <span className="!text-red-500">*</span>
+                      </p>
+                      <textarea
+                        name=""
+                        id=""
+                        rows={4}
+                        value={notes}
+                        onChange={(e) => {
+                          setNotes(e.target.value);
+                          setNoteMsg("");
+                        }}
+                        className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                        placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
+                        required
+                      ></textarea>
+                      <p className="text-xs text-red-500">{noteMsg}</p>
+                    </div>
+                    <div className="w-full">
+                      <p className="text-sm">
+                        Lack of Document Reasons{" "}
+                        <span className="!text-red-500">*</span>
+                      </p>
+                      {finalSelectedDocuments.length > 0 && (
+                        <ul className="mt-3">
+                          {finalSelectedDocuments.map((doc) => (
+                            <li
+                              key={doc.id}
+                              className="flex justify-between items-center mb-2 gap-2"
                             >
-                              <Trash2 className="w-5 h-5" />
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <p className="text-xs text-red-500">{docsMsg}</p>
-
-                    <Dialog>
-                      {filteredClaims.slice(0, 1).map((document) => (
-                        <DialogTrigger asChild key={document.id}>
-                          <Button
-                            color="warning"
-                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
-                            onClick={() => handleSelectDocument()}
-                          >
-                            <Plus className="w-4 h-4 mr-2" /> Add Document
-                          </Button>
-                        </DialogTrigger>
-                      ))}
-                      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
-                        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
-                          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
-                            Lack of Document Reasons
-                            <DialogClose className="ml-auto">
+                              <Input
+                                name="lack_of_documents"
+                                value={
+                                  doc?.label?.en ||
+                                  doc?.label_multilanguage?.en ||
+                                  doc?.label ||
+                                  "-"
+                                }
+                                className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
+                              />
                               <Button
-                                type="button"
-                                className="bg-transparent hover:bg-transparent text-black p-0"
+                                disabled={!canDelete}
+                                className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                                onClick={() =>
+                                  handleDeleteSelectedDocument(doc.name)
+                                }
                               >
-                                <X className="w-5 h-5" />
+                                <Trash2 className="w-5 h-5" />
                               </Button>
-                            </DialogClose>
-                          </DialogTitle>
-                        </DialogHeader>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <p className="text-xs text-red-500">{docsMsg}</p>
 
-                        <div className="p-4 h-full overflow-auto max-h-[70vh]">
-                          <Table className="table-claims">
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="whitespace-nowrap py-2 w-10">
-                                  Select
-                                </TableHead>
-                                <TableHead className="py-2">
-                                  Document Type
-                                </TableHead>
-                                <TableHead className="py-2">Criteria</TableHead>
-                                <TableHead className="py-2">
-                                  Definition
-                                </TableHead>
-                                <TableHead className="py-2 text-center">
-                                  Message
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {dataDocument.length > 0 ? (
-                                dataDocument
-                                  .filter(
-                                    (document) =>
-                                      document.type.toLowerCase() === "file" ||
-                                      document.type.toLowerCase() ===
+                      <Dialog>
+                        {filteredClaims.slice(0, 1).map((document) => (
+                          <DialogTrigger asChild key={document.id}>
+                            <Button
+                              color="warning"
+                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
+                              onClick={() => handleSelectDocument()}
+                            >
+                              <Plus className="w-4 h-4 mr-2" /> Add Document
+                            </Button>
+                          </DialogTrigger>
+                        ))}
+                        <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
+                          <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                            <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                              Lack of Document Reasons
+                              <DialogClose className="ml-auto">
+                                <Button
+                                  type="button"
+                                  className="bg-transparent hover:bg-transparent text-black p-0"
+                                >
+                                  <X className="w-5 h-5" />
+                                </Button>
+                              </DialogClose>
+                            </DialogTitle>
+                          </DialogHeader>
+
+                          <div className="p-4 h-full overflow-auto max-h-[70vh]">
+                            <Table className="table-claims">
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="whitespace-nowrap py-2 w-10">
+                                    Select
+                                  </TableHead>
+                                  <TableHead className="py-2">
+                                    Document Type
+                                  </TableHead>
+                                  <TableHead className="py-2">Criteria</TableHead>
+                                  <TableHead className="py-2">
+                                    Definition
+                                  </TableHead>
+                                  <TableHead className="py-2 text-center">
+                                    Message
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {dataDocument.length > 0 ? (
+                                  dataDocument
+                                    .filter(
+                                      (document) =>
+                                        document.type.toLowerCase() === "file" ||
+                                        document.type.toLowerCase() ===
                                         "file multiple" ||
-                                      document.type.toLowerCase() === "fields"
-                                  )
-                                  .map((document) => (
-                                    <TableRow
-                                      key={document.id}
-                                      className="cursor-pointer"
-                                    >
-                                      <TableCell align="center">
-                                        <Input
-                                          type="checkbox"
-                                          checked={
-                                            document.type.toLowerCase() ===
-                                            "fields"
-                                              ? isDocumentSelected(
+                                        document.type.toLowerCase() === "fields"
+                                    )
+                                    .map((document) => (
+                                      <TableRow
+                                        key={document.id}
+                                        className="cursor-pointer"
+                                      >
+                                        <TableCell align="center">
+                                          <Input
+                                            type="checkbox"
+                                            checked={
+                                              document.type.toLowerCase() ===
+                                                "fields"
+                                                ? isDocumentSelected(
                                                   document?.fields?.filter(
                                                     (a: any) =>
                                                       a.type.toLowerCase() ===
                                                       "file"
                                                   )?.[0]?.name
                                                 )
-                                              : isDocumentSelected(
+                                                : isDocumentSelected(
                                                   document.name
                                                 )
-                                          }
-                                          onClick={() => {
-                                            let docName = document.name;
-                                            if (
-                                              document.type.toLowerCase() ===
-                                              "fields"
-                                            )
-                                              docName =
-                                                document?.fields?.filter(
-                                                  (a: any) =>
-                                                    a.type.toLowerCase() ===
-                                                    "file"
-                                                )?.[0]?.name;
-                                            handleCheckboxChange(docName);
-                                          }}
-                                          className="w-4 h-4"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        {document.type.toLowerCase() ===
-                                        "fields"
-                                          ? document?.fields?.filter(
+                                            }
+                                            onClick={() => {
+                                              let docName = document.name;
+                                              if (
+                                                document.type.toLowerCase() ===
+                                                "fields"
+                                              )
+                                                docName =
+                                                  document?.fields?.filter(
+                                                    (a: any) =>
+                                                      a.type.toLowerCase() ===
+                                                      "file"
+                                                  )?.[0]?.name;
+                                              handleCheckboxChange(docName);
+                                            }}
+                                            className="w-4 h-4"
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          {document.type.toLowerCase() ===
+                                            "fields"
+                                            ? document?.fields?.filter(
                                               (a: any) =>
                                                 a.type.toLowerCase() === "file"
                                             )?.[0]?.label?.en ||
@@ -891,156 +933,156 @@ const ClaimsPage = () => {
                                                 a.type.toLowerCase() === "file"
                                             )?.[0]?.label ||
                                             "-"
-                                          : document?.label?.en ||
+                                            : document?.label?.en ||
                                             document?.label_multilanguage?.en ||
                                             document?.label ||
                                             "-"}
-                                      </TableCell>
-                                      <TableCell className="">
-                                        {document.type.toLowerCase() ===
-                                        "fields"
-                                          ? document?.fields?.filter(
+                                        </TableCell>
+                                        <TableCell className="">
+                                          {document.type.toLowerCase() ===
+                                            "fields"
+                                            ? document?.fields?.filter(
                                               (a: any) =>
                                                 a.type.toLowerCase() === "file"
                                             )?.[0]?.criteria || "-"
-                                          : document?.criteria || "-"}
-                                      </TableCell>
-                                      <TableCell className="">
-                                        {document.type.toLowerCase() ===
-                                        "fields"
-                                          ? document?.fields?.filter(
+                                            : document?.criteria || "-"}
+                                        </TableCell>
+                                        <TableCell className="">
+                                          {document.type.toLowerCase() ===
+                                            "fields"
+                                            ? document?.fields?.filter(
                                               (a: any) =>
                                                 a.type.toLowerCase() === "file"
                                             )?.[0]?.definition || "-"
-                                          : document?.definition || "-"}
-                                      </TableCell>
-                                      <TableCell className="w-24 text-center">
-                                        <Dialog>
-                                          {filteredClaims
-                                            .slice(0, 1)
-                                            .map((document) => (
-                                              <DialogTrigger
-                                                asChild
-                                                key={document.id}
-                                              >
-                                                <Button
-                                                  color="warning"
-                                                  className="bg-trasparent hover:bg-transparent rounded-full text-blue-500 w-auto p-0 h-6"
-                                                  onClick={() =>
-                                                    handleSelectDocument()
-                                                  }
+                                            : document?.definition || "-"}
+                                        </TableCell>
+                                        <TableCell className="w-24 text-center">
+                                          <Dialog>
+                                            {filteredClaims
+                                              .slice(0, 1)
+                                              .map((document) => (
+                                                <DialogTrigger
+                                                  asChild
+                                                  key={document.id}
                                                 >
-                                                  <Eye className="w-4 h-4" />{" "}
-                                                </Button>
-                                              </DialogTrigger>
-                                            ))}
-                                          <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
-                                            <DialogHeader className="bg-transparent py-3 px-4 sm:px-6">
-                                              <DialogTitle className="text-sm sm:text-base flex items-center">
-                                                Message Preview
-                                                <DialogClose className="ml-auto">
                                                   <Button
-                                                    type="button"
-                                                    className="bg-transparent hover:bg-transparent text-black p-0"
+                                                    color="warning"
+                                                    className="bg-trasparent hover:bg-transparent rounded-full text-blue-500 w-auto p-0 h-6"
+                                                    onClick={() =>
+                                                      handleSelectDocument()
+                                                    }
                                                   >
-                                                    <X className="w-5 h-5" />
+                                                    <Eye className="w-4 h-4" />{" "}
                                                   </Button>
-                                                </DialogClose>
-                                              </DialogTitle>
-                                            </DialogHeader>
+                                                </DialogTrigger>
+                                              ))}
+                                            <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
+                                              <DialogHeader className="bg-transparent py-3 px-4 sm:px-6">
+                                                <DialogTitle className="text-sm sm:text-base flex items-center">
+                                                  Message Preview
+                                                  <DialogClose className="ml-auto">
+                                                    <Button
+                                                      type="button"
+                                                      className="bg-transparent hover:bg-transparent text-black p-0"
+                                                    >
+                                                      <X className="w-5 h-5" />
+                                                    </Button>
+                                                  </DialogClose>
+                                                </DialogTitle>
+                                              </DialogHeader>
 
-                                            <div className="flex flex-col px-4 pb-4">
-                                              <p className="text-sm">
-                                                Document type:{" "}
-                                                {document.type.toLowerCase() ===
-                                                "fields"
-                                                  ? document?.fields?.filter(
+                                              <div className="flex flex-col px-4 pb-4">
+                                                <p className="text-sm">
+                                                  Document type:{" "}
+                                                  {document.type.toLowerCase() ===
+                                                    "fields"
+                                                    ? document?.fields?.filter(
                                                       (a: any) =>
                                                         a.type.toLowerCase() ===
                                                         "file"
                                                     )?.[0]?.name || "-"
-                                                  : document?.name || "-"}
-                                              </p>
-                                              <p className="text-sm">
-                                                Criteria:{" "}
-                                                {document.type.toLowerCase() ===
-                                                "fields"
-                                                  ? document?.fields?.filter(
+                                                    : document?.name || "-"}
+                                                </p>
+                                                <p className="text-sm">
+                                                  Criteria:{" "}
+                                                  {document.type.toLowerCase() ===
+                                                    "fields"
+                                                    ? document?.fields?.filter(
                                                       (a: any) =>
                                                         a.type.toLowerCase() ===
                                                         "file"
                                                     )?.[0]?.criteria || "-"
-                                                  : document?.criteria || "-"}
-                                              </p>
-                                              <p className="text-sm">
-                                                Definition:{" "}
-                                                {document.type.toLowerCase() ===
-                                                "fields"
-                                                  ? document?.fields?.filter(
+                                                    : document?.criteria || "-"}
+                                                </p>
+                                                <p className="text-sm">
+                                                  Definition:{" "}
+                                                  {document.type.toLowerCase() ===
+                                                    "fields"
+                                                    ? document?.fields?.filter(
                                                       (a: any) =>
                                                         a.type.toLowerCase() ===
                                                         "file"
                                                     )?.[0]?.definition || "-"
-                                                  : document?.definition || "-"}
-                                              </p>
-                                              <hr className="my-4" />
-                                              <p className="text-sm">
-                                                "
-                                                {document.type.toLowerCase() ===
-                                                "fields"
-                                                  ? document?.fields?.filter(
+                                                    : document?.definition || "-"}
+                                                </p>
+                                                <hr className="my-4" />
+                                                <p className="text-sm">
+                                                  "
+                                                  {document.type.toLowerCase() ===
+                                                    "fields"
+                                                    ? document?.fields?.filter(
                                                       (a: any) =>
                                                         a.type.toLowerCase() ===
                                                         "file"
                                                     )?.[0]
                                                       ?.pending_reason_message
                                                       ?.en || "-"
-                                                  : document
+                                                    : document
                                                       ?.pending_reason_message
                                                       ?.en || "-"}
-                                                "{" "}
-                                              </p>
-                                            </div>
-                                          </DialogContent>
-                                        </Dialog>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))
-                              ) : (
-                                <TableRow className="hover:!bg-white">
-                                  <TableCell colSpan={3}>
-                                    <div className="flex flex-col gap-4 items-center justify-center py-14">
-                                      <Image
-                                        alt="no data"
-                                        src={noData}
-                                        width={200}
-                                      />
-                                      No transaction data available
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
+                                                  "{" "}
+                                                </p>
+                                              </div>
+                                            </DialogContent>
+                                          </Dialog>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))
+                                ) : (
+                                  <TableRow className="hover:!bg-white">
+                                    <TableCell colSpan={3}>
+                                      <div className="flex flex-col gap-4 items-center justify-center py-14">
+                                        <Image
+                                          alt="no data"
+                                          src={noData}
+                                          width={200}
+                                        />
+                                        No transaction data available
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
 
-                        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
-                          <DialogClose asChild>
-                            <Button
-                              type="button"
-                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-                              onClick={handleAddSelectedDocuments}
-                            >
-                              <Check className="w-4 h-4 mr-2" /> Add selected
-                              document
-                            </Button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </>
-              )}
+                          <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                            <DialogClose asChild>
+                              <Button
+                                type="button"
+                                className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                                onClick={handleAddSelectedDocuments}
+                              >
+                                <Check className="w-4 h-4 mr-2" /> Add selected
+                                document
+                              </Button>
+                            </DialogClose>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </>
+                )}
 
               <div className="flex gap-4 justify-center">
                 <Button
@@ -1067,21 +1109,18 @@ const ClaimsPage = () => {
         <div className="w-full flex items-center overflow-auto">
           <div
             onClick={() => selectTab("All")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-              tab === "All" && "border-b-[3px] border-primary px-5"
-            }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "All" && "border-b-[3px] border-primary px-5"
+              }`}
           >
             <button
-              className={`text-sm mr-3 min-h-[90px] ${
-                tab === "All" && "text-primary"
-              }`}
+              className={`text-sm mr-3 min-h-[90px] ${tab === "All" && "text-primary"
+                }`}
             >
               All Claim
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "All" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+                } ${tab !== "All" && "hidden"}`}
             >
               {totalData}
             </span>
@@ -1090,25 +1129,22 @@ const ClaimsPage = () => {
             <div
               key={status.id}
               onClick={() => selectTab(status.status)}
-              className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${
-                tab === status.status && "border-b-[3px] border-primary px-5"
-              }`}
+              className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === status.status && "border-b-[3px] border-primary px-5"
+                }`}
             >
               <button
-                className={`text-sm mr-3 min-h-[90px] ${
-                  tab === status.status && "text-primary"
-                }`}
+                className={`text-sm mr-3 min-h-[90px] ${tab === status.status && "text-primary"
+                  }`}
               >
                 {status.status}
               </button>
               <span
-                className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${
-                  status.count > 9
-                    ? "px-1.5"
-                    : status.count > 99
+                className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${status.count > 9
+                  ? "px-1.5"
+                  : status.count > 99
                     ? "px-0.5"
                     : "px-2"
-                } ${tab !== status.status && "hidden"}`}
+                  } ${tab !== status.status && "hidden"}`}
               >
                 {totalData}
               </span>
@@ -1137,13 +1173,12 @@ const ClaimsPage = () => {
               filteredClaims.map((claim, index) => (
                 <TableRow
                   key={claim.id}
-                  className={`${
-                    claim.sla_status === "Pending"
-                      ? "bg-[#FFFEE2]"
-                      : claim.sla_status === "Overdue"
+                  className={`${claim.sla_status === "Pending"
+                    ? "bg-[#FFFEE2]"
+                    : claim.sla_status === "Overdue"
                       ? "bg-[#fadede]"
                       : ""
-                  }`}
+                    }`}
                 >
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>
@@ -1237,7 +1272,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Document Review Operator" &&
                             claim.status !==
-                              "Reupload Document Review Operator" &&
+                            "Reupload Document Review Operator" &&
                             !openAllStatus
                           }
                         >
@@ -1267,7 +1302,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Document Review Insurance" &&
                             claim.status !==
-                              "Reupload Document Review Insurance" &&
+                            "Reupload Document Review Insurance" &&
                             !openAllStatus
                           }
                         >

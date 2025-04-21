@@ -40,10 +40,11 @@ const ExportPage = () => {
             parsedData.status !== "All" && { status: parsedData.status }),
           ...(parsedData.sla_status &&
             parsedData.sla_status !== "All" && {
-              sla_status: parsedData.sla_status,
-            }),
+            sla_status: parsedData.sla_status,
+          }),
           ...(parsedData.date_from && { date_from: parsedData.date_from }),
           ...(parsedData.date_to && { date_to: parsedData.date_to }),
+          ...(parsedData.channel && { channel: parsedData.channel }),
         };
 
         const res = await itemService.getClaimsExport(params);

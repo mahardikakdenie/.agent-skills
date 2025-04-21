@@ -36,14 +36,16 @@ const ExportPage = () => {
         const rowsPerPage = 100;
         const status = parsedData.status ?? "All";
         const searchData = parsedData.search ?? "";
+        const channel = parsedData.channel;
 
-        console.log("Parsed Data:", { page, rowsPerPage, status, searchData });
+        console.log("Parsed Data:", { page, rowsPerPage, status, searchData, channel });
 
         const res = await itemService.getPolicyExport(
           page,
           rowsPerPage,
           searchData,
-          status === "All" ? "" : status
+          status === "All" ? "" : status,
+          channel
         );
 
         setData(res.data);

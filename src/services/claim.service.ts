@@ -153,7 +153,8 @@ export class ClaimService {
     searchData?: string,
     searchSlaStatus?: any,
     date_from?: string,
-    date_to?: string
+    date_to?: string,
+    channel?: string
   ): Promise<ClaimResponse> {
     const params: any = {
       page: page,
@@ -198,6 +199,7 @@ export class ClaimService {
       params["date_to"] = date_to;
     }
 
+    params["channel"] = channel;
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/claims?${queryString}`);
   }
@@ -210,6 +212,7 @@ export class ClaimService {
     searchSlaStatus?: any;
     date_from?: string;
     date_to?: string;
+    channel?: string;
   }): Promise<ClaimResponse> {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/claims?${queryString}`);
@@ -324,9 +327,9 @@ export class ClaimService {
   async importDataGuide(params: { channel: string; category: string }): Promise<{ data: { data: any }[] }> {
     const { channel, category } = params;
     const queryString = qs.stringify({ channel, category }, { arrayFormat: "brackets" });
-  
+
     return await this.httpClient.get(`/v1/claims/import-data-guide?${queryString}`);
-  }  
+  }
 
   async getClaimStatistic(
     page: number,
@@ -349,9 +352,9 @@ export class ClaimService {
       ...(filters?.date_from && { from: filters.date_from }),
       ...(filters?.date_to && { to: filters.date_to }),
     };
-  
+
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get<any>(`/v1/claims/statistic-data?${queryString}`);
   }
-  
+
 }
