@@ -220,26 +220,6 @@ const PolicyPage = () => {
 
         <div className="min-w-48">
           <Select
-            value={searchCategory}
-            onValueChange={handleCategoryChange}
-          >
-            <SelectTrigger className="h-10">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={'All'} key={-1}>All Category</SelectItem>
-                {
-                  categories.map((item, index) => (
-                    <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
-                  ))
-                }
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="min-w-48">
-          <Select
             value={searchChannel}
             onValueChange={handleChannelChange}
           >
@@ -251,6 +231,26 @@ const PolicyPage = () => {
                 {/* <SelectItem value={'All'}>All Channel</SelectItem> */}
                 {
                   channels.map((item, index) => (
+                    <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
+                  ))
+                }
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="min-w-48">
+          <Select
+            value={searchCategory}
+            onValueChange={handleCategoryChange}
+          >
+            <SelectTrigger className="h-10">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={'All'} key={-1}>All Category</SelectItem>
+                {
+                  categories.map((item, index) => (
                     <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
                   ))
                 }
