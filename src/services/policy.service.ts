@@ -77,7 +77,10 @@ export class PolicyService {
     rowsPerPage: number,
     searchData: string,
     status: string,
-    channel: string
+    channel: string,
+    category: any,
+    date_from?: string,
+    date_to?: string,
   ): Promise<PolicyResponse> {
     const params: any = {
       page: page,
@@ -92,6 +95,15 @@ export class PolicyService {
     }
     if (channel) {
       params["channel"] = channel;
+    }
+    if (category) {
+      params["category"] = category;
+    }
+    if (date_from) {
+      params["from"] = date_from;
+    }
+    if (date_to) {
+      params["to"] = date_to;
     }
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/policies?${queryString}`);
@@ -107,6 +119,9 @@ export class PolicyService {
     searchData: string,
     status: string,
     channel: string,
+    category: any,
+    date_from?: string,
+    date_to?: string,
   ): Promise<PolicyResponse> {
     const params: any = {
       page: page,
@@ -122,6 +137,15 @@ export class PolicyService {
     }
     if (channel) {
       params["channel"] = channel;
+    }
+    if (category) {
+      params["category"] = category;
+    }
+    if (date_from) {
+      params["from"] = date_from;
+    }
+    if (date_to) {
+      params["to"] = date_to;
     }
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
