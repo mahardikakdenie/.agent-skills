@@ -94,22 +94,24 @@ const PolicyPage = () => {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const productCategoriesService = new ProductCategoriesService();
-        const categoriesResponse = await productCategoriesService.getCategories();
-        setCategories(categoriesResponse || []);
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
-    };
-
-    fetchData();
+    getCategories();
 
   }, []);
 
+  const getCategories = async () => {
+
+    try {
+      const productCategoriesService = new ProductCategoriesService();
+      const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(searchChannel);
+      setCategories(categoriesResponse.data || []);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  }
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
+    getCategories();
+    setSearchCategory("All");
   };
 
   const handleCategoryChange = (v: string) => {
@@ -240,6 +242,7 @@ const PolicyPage = () => {
         </div>
         <div className="min-w-48">
           <Select
+            disabled={!searchChannel}
             value={searchCategory}
             onValueChange={handleCategoryChange}
           >

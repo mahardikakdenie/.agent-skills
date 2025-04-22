@@ -37,6 +37,10 @@ export class ProductCategoriesService {
     return this.httpClient.get("/v1/categories/" + id);
   }
 
+  async getCategoriesByChannelId(channelId: string): Promise<any> {
+    return this.httpClient.get("/v1/categories/channel/" + channelId);
+  }
+
   async deleteCategories(id: string): Promise<any> {
     try {
       return await this.httpClient.delete("/v1/categories/" + id);
