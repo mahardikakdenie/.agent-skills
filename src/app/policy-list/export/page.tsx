@@ -39,6 +39,9 @@ const ExportPage = () => {
         const status = parsedData.status ?? "All";
         const searchData = parsedData.search ?? "";
         const channel = parsedData.channel;
+        const category = parsedData.category;
+        const date_from = parsedData.date_from;
+        const date_to = parsedData.date_to;
 
         console.log("Parsed Data:", { page, rowsPerPage, status, searchData, channel });
 
@@ -47,7 +50,10 @@ const ExportPage = () => {
           rowsPerPage,
           searchData,
           status === "All" ? "" : status,
-          channel
+          channel,
+          category,
+          date_from,
+          date_to
         );
 
         setData(res.data);
