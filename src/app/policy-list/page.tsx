@@ -36,6 +36,7 @@ import { ChannelService } from "@/services/channel.services";
 import { DateRange } from "react-day-picker";
 import { ProductService } from "@/services/product.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
+import { useLoading } from "@/context/loading.context";
 
 const PolicyPage = () => {
   useRequireAuth();
@@ -55,10 +56,12 @@ const PolicyPage = () => {
   const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [searchCategory, setSearchCategory] = useState("All");
+  const { setLoading } = useLoading();
 
   const [channels, setChannels] = useState<any[]>([]);
 
   useEffect(() => {
+    setLoading(true);
     policyService
       .getPolicy(page, rowsPerPage, searchData, tab == "All" ? "" : tab,
         searchChannel, // === "All" ? "" : searchChannel,
@@ -68,6 +71,7 @@ const PolicyPage = () => {
 
       )
       .then((res) => {
+        setLoading(false);
         setPolicies(res.data);
         setFilteredTransactions(res.data);
         setPage(res.page);
@@ -96,21 +100,21 @@ const PolicyPage = () => {
   useEffect(() => {
     getCategories();
 
-  }, []);
+  }, [searchChannel]);
 
   const getCategories = async () => {
-
     try {
+      setLoading(true);
       const productCategoriesService = new ProductCategoriesService();
       const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(searchChannel);
       setCategories(categoriesResponse.data || []);
+      setLoading(false);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
     }
   }
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
-    getCategories();
     setSearchCategory("All");
   };
 
