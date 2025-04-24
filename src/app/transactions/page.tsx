@@ -14,7 +14,14 @@ import { TransactionService } from "@/services/transaction.service";
 import { useEffect, useState } from "react";
 import { formatMoney } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, Search, X } from "react-feather";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Search,
+  Upload,
+  X,
+} from "react-feather";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -26,6 +33,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
+import _ from "lodash";
+import Image from "next/image";
 
 const TransactionsPage = () => {
   useRequireAuth();
@@ -42,6 +51,7 @@ const TransactionsPage = () => {
   const [totalData, setTotalData] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [transaction, setTransaction] = useState<any>(null);
+  const [searchData, setSearchData] = useState("");
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -50,9 +60,6 @@ const TransactionsPage = () => {
     const checkAccess = async () => {
       const access = await hasPermission("Transactions.Read");
       const editBtn = await hasPermission("Transactions.Update");
-
-      console.log("access: " + access);
-      console.log("edit: " + editBtn);
 
       setCanEdit(editBtn);
       setHasAccess(access);
@@ -66,7 +73,7 @@ const TransactionsPage = () => {
 
   useEffect(() => {
     transactionService
-      .getTransactions(page, rowsPerPage, tab == "All" ? "" : tab)
+      .getTransactions(page, rowsPerPage, searchData, tab == "All" ? "" : tab)
       .then((res) => {
         setTransactions(res.data);
         setFilteredTransactions(res.data);
@@ -75,12 +82,13 @@ const TransactionsPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
-  }, [page, rowsPerPage, tab]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage, tab, searchData]);
 
   useEffect(() => {
     if (searchTerm) {
       const filtered = transactions.filter((transaction) =>
-        transaction.insurance.insurance.id.name
+        transaction.insurance?.insurance?.id?.name
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       );
@@ -130,13 +138,35 @@ const TransactionsPage = () => {
     }
   };
 
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+  }, 100);
+
+  const handleExport = () => {
+    const exportData = {
+      page,
+      limit: rowsPerPage,
+      status: tab === "All" ? "" : tab,
+      search: searchData,
+    };
+
+    localStorage.setItem("exportTransactionData", JSON.stringify(exportData));
+    router.push(`${path}/export`);
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Transactions</h1>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={() => router.push(`${path}/import`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1 " /> Transactions List
+        </Button>
+        <Button
+          onClick={handleExport}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export
         </Button>
@@ -249,8 +279,7 @@ const TransactionsPage = () => {
           <input
             type="text"
             placeholder="Search by Insurance Name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="border p-3 rounded-md pr-10 w-full"
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
@@ -272,24 +301,26 @@ const TransactionsPage = () => {
             {filteredTransactions.map((transaction, index) => {
               const rowNumber = (page - 1) * rowsPerPage + index + 1;
 
-              const currencies = transaction.insurance.insurance.currencies;
+              const currencies =
+                transaction?.insurance?.insurance?.currencies || [];
               const currency = currencies.find(
                 (currency: any) =>
-                  currency.currency_from === transaction.insurance.currency &&
+                  currency.currency_from === transaction?.insurance?.currency &&
                   currency.currency_to === "IDR"
               );
 
               const convertedPremium =
-                (currency?.value ?? 1) * transaction.insurance.premium;
+                (currency?.value ?? 1) * transaction?.insurance?.premium;
+
+              const discountType =
+                transaction?.insurance?.plan?.premium_discount_type || "";
+              const discountValue =
+                transaction?.insurance?.plan?.premium_discount_value || 0;
 
               const premiumWithEmbeddedDiscount =
-                transaction.insurance.plan.premium_discount_type ===
-                "percentage"
-                  ? convertedPremium -
-                    (transaction.insurance.plan.premium_discount_value / 100) *
-                      convertedPremium
-                  : convertedPremium -
-                    transaction.insurance.plan.premium_discount_value;
+                discountType === "percentage"
+                  ? convertedPremium - (discountValue / 100) * convertedPremium
+                  : convertedPremium - discountValue;
 
               let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
               if (transaction.voucher_info) {
@@ -320,24 +351,28 @@ const TransactionsPage = () => {
                   <TableCell>
                     <div className="flex gap-2 items-center">
                       <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                        <img
-                          src={transaction.insurance.insurance.id.logo_url}
+                        <Image
+                          src={transaction?.insurance?.insurance?.id?.logo_url || "-"}
                           alt=""
+                          width={100}
+                          height={50}
                         />
                       </div>
-                      {transaction.insurance.insurance.id.name}
+                      {transaction?.insurance?.insurance?.id?.name || "-"}
                     </div>
                   </TableCell>
                   <TableCell>
-                    {transaction.insurance.plan.name
+                    {transaction?.insurance?.plan?.name
                       .split("|")
                       .splice(0, 2)
-                      .join(" - ")}
+                      .join(" - ") || "-"}
                   </TableCell>
-                  <TableCell>{transaction.customer.name}</TableCell>
-                  <TableCell>{transaction.insurance.currency}</TableCell>
+                  <TableCell>{transaction?.customer?.name || "-"}</TableCell>
+                  <TableCell>
+                    {transaction?.insurance?.currency || "-"}
+                  </TableCell>
                   <TableCell className="whitespace-nowrap">
-                    {formatMoney(totalPremium, "IDR")}
+                    {formatMoney(Number(totalPremium) || 0, "IDR") || "-"}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(transaction.status)}>
@@ -368,7 +403,8 @@ const TransactionsPage = () => {
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
                                   <div>
-                                    {transaction.insurance.insurance.id.name}
+                                    {transaction?.insurance?.insurance?.id
+                                      ?.name || "-"}
                                   </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
@@ -376,21 +412,31 @@ const TransactionsPage = () => {
                                     Plan Name
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
-                                  <div>{transaction.insurance.plan.name}</div>
+                                  <div>
+                                    {transaction?.insurance?.plan?.name || "-"}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
                                   <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
                                     Customer Name
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
-                                  <div>{transaction.customer.name}</div>
+                                  <div>
+                                    {transaction?.customer?.name || "-"}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
                                   <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
                                     Amount
                                   </div>
                                   <div className="max-w-1 w-1">:</div>
-                                  <div>{formatMoney(totalPremium, "IDR")}</div>
+                                  <div>
+                                    {formatMoney(
+                                      Number(totalPremium) || 0,
+                                      "IDR"
+                                    ) || "-"}
+                                    {/* {formatMoney(totalPremium, "IDR")} */}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2 text-sm font-medium justify-start text-start">
                                   <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
@@ -403,7 +449,7 @@ const TransactionsPage = () => {
                                         transaction.status
                                       )}
                                     >
-                                      {transaction.status}
+                                      {transaction?.status}
                                     </span>
                                   </div>
                                 </div>

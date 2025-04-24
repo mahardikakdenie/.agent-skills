@@ -13,7 +13,7 @@ import { Search } from "react-feather";
 import { useBilling } from "./hook";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Printer } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatMoney } from "@/lib/formatter";
 
@@ -30,6 +30,7 @@ const BillingPage = () => {
 
   useEffect(() => {
     getBilling();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ const BillingPage = () => {
 
   useEffect(() => {
     getBilling(page, rowsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
 
   const router = useRouter();
@@ -91,13 +93,35 @@ const BillingPage = () => {
                     )
                     .join(" ")}
                 </TableCell>
-                <TableCell>
-                  <Button
-                    className="btn btn-primary"
-                    onClick={() => router.push(`billing/detail/${billing.id}`)}
-                  >
-                    Detail
-                  </Button>
+                <TableCell className="flex">
+                  <div className="relative group">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() =>
+                        router.push(`billing/detail/${billing.id}`)
+                      }
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      View Detail
+                    </span>
+                  </div>
+                  <div className="relative group">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() =>
+                        router.push(`billing/detail/${billing.id}/invoice`)
+                      }
+                    >
+                      <Printer className="h-4 w-4" />
+                    </Button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      View Invoice
+                    </span>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

@@ -49,8 +49,6 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
     { id: "", name: "" },
   ]);
 
-
-  
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -103,7 +101,6 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
       setSelectedInsuranceId(data.insurance);
       for (let i = 0; i < productFields.length; i++) {
         if (productFields[i].id == "") {
-          console.log(data.insurance);
           await saveProduct({
             category: data.category || selectedCategoryId,
             insurance: data.insurance,
@@ -133,6 +130,7 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
       page: 1,
       categoryId: selectedCategoryId,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategoryId]);
 
   useEffect(() => {

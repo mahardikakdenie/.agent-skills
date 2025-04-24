@@ -10,7 +10,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 200 99% 32%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -57,11 +57,13 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground bg-[#f8f8f8];
   }
 }
 
@@ -150,6 +152,25 @@ main {
 ::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
+
+/* Custom scrollbar styles */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
 .frame-body {
   height: calc(100vh - 85px);
   overflow: auto;
@@ -227,7 +248,119 @@ th {
 .frame-body button[role="combobox"].h-10 {
   height: 2.5rem !important;
 }
+.rdp-month_grid {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+  border-collapse: collapse;
+  width: 100%;
+}
 
+.rdp-weekdays {
+  display: flex;
+}
+.rdp-weekday {
+  color: hsl(var(--muted-foreground));
+  font-weight: 400;
+  font-size: 0.8rem;
+  border-radius: calc(var(--radius) - 2px);
+  width: 2rem;
+}
+.rdp-range_start,
+.rdp-range_start:hover,
+.rdp-range_end,
+.rdp-range_end:hover {
+  background: #18181b !important;
+  color: white !important;
+}
+.rdp-range_middle {
+  background-color: #f4f4f5;
+  border-radius: 0;
+}
+.table-claims.not-hover tr.hover\:bg-muted\/50:hover {
+  background-color: auto;
+}
+.rdw-editor-wrapper {
+  border: 1px solid #eae9e9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.public-DraftEditor-content {
+  min-height: 350px;
+  padding: 10px;
+}
+.dialog-email-template {
+  width: 800px;
+  max-width: 96%;
+  padding-top: 70px;
+  color: black;
+}
+.dialog-email-template .editor-preview {
+  color: black;
+  max-height: 70vh;
+  overflow: auto;
+}
+.dialog-email-template .editor-preview p {
+  margin-bottom: 1rem;
+}
+.public-DraftEditor-content {
+  max-height: 400px;
+  overflow: auto;
+  font-size: 14px;
+}
+.editor-preview ul {
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+.editor-preview ol {
+  display: block;
+  list-style-type: decimal;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+.field-combobox button[role="combobox"] {
+  text-align: left;
+}
+.field-combobox button[role="combobox"] span {
+  padding-right: 20px;
+}
+.field-combobox button[role="combobox"] svg {
+  min-width: 1rem;
+}
+
+
+.table-transaction table td:nth-child(2),
+.table-transaction table td:nth-child(4),
+.table-transaction table td:last-child,
+.table-claim table td:nth-child(2),
+.table-claim table td:nth-child(3),
+.table-policy table td:nth-child(2),
+.table-policy table td:nth-child(4),
+.table-policy table td:last-child,
+.table-policy table th:last-child {
+  white-space: nowrap;
+}
+.table-transaction .max-h-\[451px\] {
+  max-height: 351px;
+}
+.table-transaction table td:last-child,
+.table-transaction table th:last-child,
+.table-transaction table td:nth-child(4),
+.table-transaction table th:nth-child(4) {
+  text-align: right;
+}
+
+/* responsive */
 @media screen and (max-width: 1199px) {
   .sidebar {
     position: fixed;
@@ -249,5 +382,29 @@ th {
   }
   .sidebar button.ms-1 {
     margin-left: 0;
+  }
+}
+
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  .bg-white {
+    background: white !important;
+    box-shadow: none !important;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

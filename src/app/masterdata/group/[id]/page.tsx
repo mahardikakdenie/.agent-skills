@@ -142,6 +142,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     };
 
     fetchGroup();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const onSubmit = async (data: any) => {
@@ -174,6 +175,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   useEffect(() => {
@@ -212,6 +214,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     };
 
     fetchRole();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageRoles, rowsPerPageRoles, platformFilter, rolesFilter]);
 
   const selectRoles = () => {
@@ -319,6 +322,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
     };
 
     fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, platformFilter, userFilter]);
 
   const selectUser = () => {

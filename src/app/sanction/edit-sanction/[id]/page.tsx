@@ -115,10 +115,12 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
 
     useEffect(() => {
         fetchSources();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         fetchCountry();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchSources = async () => {
@@ -186,6 +188,7 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
                     setLoading(false);
                 });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.id]);
 
 

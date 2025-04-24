@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { set } from "date-fns";
 import { useLoading } from "@/context/loading.context";
+import { UserCheck } from "react-feather";
 
 export default function ChannelList(props: { id: string }) {
   const { id } = props;
@@ -39,6 +40,7 @@ export default function ChannelList(props: { id: string }) {
     useState(false);
   useEffect(() => {
     (async () => await getChannelPlans(id))();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { setLoading } = useLoading();
   const handleUnassignPlan = async () => {
@@ -55,7 +57,7 @@ export default function ChannelList(props: { id: string }) {
   return (
     <div>
       <Button className="btn btn-primary" onClick={() => setOpen(true)}>
-        Assign Plan
+        <UserCheck className="w-5 h-5 mr-2" /> Assign Plan
       </Button>
       <Table className="table-search-params mt-5">
         <TableRow>

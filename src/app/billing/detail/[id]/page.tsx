@@ -62,6 +62,7 @@ const DetailBillingPage = () => {
 
   useEffect(() => {
     getBillingById(id as string, 1, rowsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const router = useRouter();
@@ -142,7 +143,12 @@ const DetailBillingPage = () => {
             <div>
               <div>Billing No. {billing.data[0].billings.billing_no}</div>
               <div>
-                Total Amount: {formatMoney(billing.data[0].billings.amount)}
+                Total Transaction Amount:{" "}
+                {formatMoney(billing.data[0].billings.total)}
+              </div>
+              <div>
+                Total Commission Amount:{" "}
+                {formatMoney(billing.data[0].billings.amount)}
               </div>
               <div>
                 Billing Created Date:{" "}
@@ -164,19 +170,27 @@ const DetailBillingPage = () => {
 
               {billing.data[0].billings.status === "waiting-for-payment" && (
                 <div className="pt-5 flex flex-row gap-3">
-                  <div>
-                    <Button onClick={() => setOpenUpdateToPaid(true)}>
-                      Update to Paid
-                    </Button>
-                  </div>
-                  <div>
-                    <Button
-                      onClick={() => setOpenCancel(true)}
-                      variant={"destructive"}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={() => setOpenUpdateToPaid(true)}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <span className="flex items-center">✓ Mark as Paid</span>
+                  </Button>
+
+                  <Button
+                    onClick={() => router.push(`/billing/detail/${id}/invoice`)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <span className="flex items-center">📄 View Invoice</span>
+                  </Button>
+
+                  <Button
+                    onClick={() => setOpenCancel(true)}
+                    variant="destructive"
+                    className="hover:bg-red-700"
+                  >
+                    <span className="flex items-center">✕ Cancel Billing</span>
+                  </Button>
                 </div>
               )}
             </div>

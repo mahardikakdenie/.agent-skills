@@ -66,6 +66,20 @@ export class UserService {
     return this.authHttpClient.get(`/account/?${queryString}`);
   }
 
+    async getPartner(
+    page?: number,
+    rowsPerPage?: number,
+    searchData?: string
+  ): Promise<User> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+      search: searchData,
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(`/v1/account/partner?${queryString}`);
+  }
   async getChannel(search: any): Promise<Channel> {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();
@@ -148,6 +162,15 @@ export class UserService {
   async removeAccountRoles(id: string): Promise<any> {
     try {
       return await this.authHttpClient.delete("v1/account-roles/" + id);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async changePassword(id: string, data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.put("/v1/account/" + id + "/change-password", data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

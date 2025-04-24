@@ -24,7 +24,21 @@ const ExportPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await dataService.getTransactionsExport(page, rowsPerPage);
+        const savedData = localStorage.getItem("exportTransactionData");
+        if (!savedData) return;
+
+        const parsedData = JSON.parse(savedData);
+
+        const params = {
+          page: parsedData.page ?? 1,
+          limit: 150,
+          ...(parsedData.search && { keyword: parsedData.search }),
+          ...(parsedData.status &&
+            parsedData.status !== "All" && { status: parsedData.status }),
+        };
+
+        const res = await dataService.getTransactionsExport(params);
+
         setData(res.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -34,7 +48,8 @@ const ExportPage = () => {
     };
 
     fetchData();
-  }, [page, rowsPerPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const reportTemplateRef = useRef(null);
 
@@ -66,8 +81,8 @@ const ExportPage = () => {
     }
 
     const sheetData = data.map((item, index) => {
-      const currencies = item.insurance.insurance.currencies;
-      const currency = currencies.find(
+      const currencies = item?.insurance?.insurance?.currencies;
+      const currency = currencies?.find(
         (currency: any) =>
           currency.currency_from === item.insurance.currency &&
           currency.currency_to === "IDR"
@@ -76,20 +91,22 @@ const ExportPage = () => {
       const convertedPremium = (currency?.value ?? 1) * item.insurance.premium;
 
       const premiumWithEmbeddedDiscount =
-        item.insurance.plan.premium_discount_type === "percentage"
+        item.insurance?.plan?.premium_discount_type === "percentage"
           ? convertedPremium -
-            (item.insurance.plan.premium_discount_value / 100) *
+            (item.insurance?.plan?.premium_discount_value || 0 / 100) *
               convertedPremium
-          : convertedPremium - item.insurance.plan.premium_discount_value;
+          : convertedPremium -
+            (item.insurance?.plan?.premium_discount_value || 0);
 
       let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
       if (item.voucher_info) {
         premiumWithVoucherDiscount =
           item.voucher_info?.data.value_type === "percentage"
             ? premiumWithEmbeddedDiscount -
-              (item.voucher_info?.data.value / 100) *
+              (item.voucher_info?.data.value || 0 / 100) *
                 premiumWithEmbeddedDiscount
-            : premiumWithEmbeddedDiscount - item.voucher_info?.data.value;
+            : premiumWithEmbeddedDiscount -
+              (item.voucher_info?.data.value || 0);
       }
 
       let totalPremium = premiumWithVoucherDiscount;
@@ -104,8 +121,8 @@ const ExportPage = () => {
 
       return {
         No: (page - 1) * rowsPerPage + index + 1,
-        "Insurance Name": item.insurance.insurance.id.name || "-",
-        "Plan Name": item.insurance.plan.name
+        "Insurance Name": item.insurance?.insurance?.id?.name || "-",
+        "Plan Name": item.insurance?.plan?.name
           .split("|")
           .splice(0, 2)
           .join(" - "),
@@ -180,102 +197,108 @@ const ExportPage = () => {
           </div>
         ) : (
           <table style={styles.table} ref={reportTemplateRef}>
-            <tr>
-              <td style={styles.th} valign="middle">
-                No.
-              </td>
-              <td style={styles.th} valign="middle">
-                Insurance Name
-              </td>
-              <td style={styles.th} valign="middle">
-                Plan Name
-              </td>
-              <td style={styles.th} valign="middle">
-                Customer Name
-              </td>
-              <td style={styles.th} valign="middle">
-                Currency
-              </td>
-              <td style={styles.th} valign="middle">
-                Amount
-              </td>
-              <td style={styles.th} valign="middle">
-                Status
-              </td>
-            </tr>
-            {data.map((item, index) => {
-              const rowNumber = (page - 1) * rowsPerPage + index + 1;
+            <thead>
+              <tr>
+                <td style={styles.th} valign="middle">
+                  No.
+                </td>
+                <td style={styles.th} valign="middle">
+                  Insurance Name
+                </td>
+                <td style={styles.th} valign="middle">
+                  Plan Name
+                </td>
+                <td style={styles.th} valign="middle">
+                  Customer Name
+                </td>
+                <td style={styles.th} valign="middle">
+                  Currency
+                </td>
+                <td style={styles.th} valign="middle">
+                  Amount
+                </td>
+                <td style={styles.th} valign="middle">
+                  Status
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, index) => {
+                const rowNumber = (page - 1) * rowsPerPage + index + 1;
 
-              const currencies = item.insurance.insurance.currencies;
-              const currency = currencies.find(
-                (currency: any) =>
-                  currency.currency_from === item.insurance.currency &&
-                  currency.currency_to === "IDR"
-              );
+                const currencies = item?.insurance?.insurance?.currencies || [];
+                const currency =
+                  currencies.find(
+                    (currency: any) =>
+                      currency.currency_from === item.insurance.currency &&
+                      currency.currency_to === "IDR"
+                  ) || 0;
 
-              const convertedPremium =
-                (currency?.value ?? 1) * item.insurance.premium;
+                const convertedPremium =
+                  (currency?.value ?? 1) * item.insurance.premium;
 
-              const premiumWithEmbeddedDiscount =
-                item.insurance.plan.premium_discount_type === "percentage"
-                  ? convertedPremium -
-                    (item.insurance.plan.premium_discount_value / 100) *
-                      convertedPremium
-                  : convertedPremium -
-                    item.insurance.plan.premium_discount_value;
+                const premiumWithEmbeddedDiscount =
+                  item?.insurance?.plan?.premium_discount_type === "percentage"
+                    ? convertedPremium -
+                      ((item?.insurance?.plan?.premium_discount_value || 0) /
+                        100) *
+                        convertedPremium
+                    : convertedPremium -
+                      (item?.insurance?.plan?.premium_discount_value || 0);
 
-              let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
-              if (item.voucher_info) {
-                premiumWithVoucherDiscount =
-                  item.voucher_info?.data.value_type === "percentage"
-                    ? premiumWithEmbeddedDiscount -
-                      (item.voucher_info?.data.value / 100) *
-                        premiumWithEmbeddedDiscount
-                    : premiumWithEmbeddedDiscount -
-                      item.voucher_info?.data.value;
-              }
+                let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
+                if (item.voucher_info) {
+                  premiumWithVoucherDiscount =
+                    item.voucher_info?.data.value_type === "percentage"
+                      ? premiumWithEmbeddedDiscount -
+                        (item.voucher_info?.data.value || 0 / 100) *
+                          premiumWithEmbeddedDiscount
+                      : premiumWithEmbeddedDiscount -
+                        (item.voucher_info?.data.value || 0);
+                }
 
-              let totalPremium = premiumWithVoucherDiscount;
+                let totalPremium = premiumWithVoucherDiscount;
 
-              if (item.fees) {
-                totalPremium =
-                  premiumWithVoucherDiscount +
-                  item.fees
-                    .map((v: any) => v.value)
-                    .reduce((a: any, b: any) => {
-                      return a + b;
-                    }, 0);
-              }
+                if (item.fees) {
+                  totalPremium =
+                    premiumWithVoucherDiscount +
+                    item.fees
+                      .map((v: any) => v.value)
+                      .reduce((a: any, b: any) => {
+                        return a + b;
+                      }, 0);
+                }
 
-              return (
-                <tr key={item.id}>
-                  <td style={styles.td} valign="middle">
-                    {rowNumber}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {item.insurance.insurance.id.name}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {item.insurance.plan.name
-                      .split("|")
-                      .splice(0, 2)
-                      .join(" - ")}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {item.customer.name}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {item.insurance.currency}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {formatMoney(totalPremium, "IDR")}
-                  </td>
-                  <td style={styles.td} valign="middle">
-                    {item.status}
-                  </td>
-                </tr>
-              );
-            })}
+                return (
+                  <tr key={item.id}>
+                    <td style={styles.td} valign="middle">
+                      {rowNumber}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {item?.insurance?.insurance?.id?.name || "-"}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {item?.insurance?.plan?.name
+                        .split("|")
+                        .splice(0, 2)
+                        .join(" - ") || "-"}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {item?.customer?.name || "-"}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {item?.insurance?.currency || "-"}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {formatMoney(totalPremium, "IDR")}
+                    </td>
+                    <td style={styles.td} valign="middle">
+                      {item?.status || "-"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         )}
       </div>

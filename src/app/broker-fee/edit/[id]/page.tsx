@@ -87,6 +87,7 @@ const EditBrokerFeePage = () => {
       return;
     }
     fetchProducts({ insuranceId: watchInsurance });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchInsurance]);
 
   useEffect(() => {
@@ -94,11 +95,13 @@ const EditBrokerFeePage = () => {
       return;
     }
     fetchPlans({ productId: watchProduct });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchProduct]);
 
   useEffect(() => {
     getBrokerFees({ id });
     fetchInsurances({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -108,6 +111,7 @@ const EditBrokerFeePage = () => {
       setValue("plan", brokerFees[0].plan);
       setValue("fee", brokerFees[0].fee);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brokerFees]);
   return (
     <div className="flex flex-col w-full">

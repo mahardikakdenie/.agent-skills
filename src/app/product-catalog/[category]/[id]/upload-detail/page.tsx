@@ -37,6 +37,7 @@ const UploadPlanDetail = ({
     if (params.id) {
       fetchPlanById(params.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const [file, setFile] = useState<any>(null);
@@ -49,7 +50,6 @@ const UploadPlanDetail = ({
         header: true,
         complete: (results) => {
           setCsvData(results.data);
-          console.log(results.data);
         },
         error: (error) => {
           console.error("Error parsing CSV file:", error);

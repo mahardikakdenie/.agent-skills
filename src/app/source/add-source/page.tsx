@@ -92,10 +92,12 @@ const CreateSourcePage = () => {
 
     useEffect(() => {
         fetchInsurance();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         fetchCountry();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchCountry = async () => {

@@ -127,13 +127,13 @@ const EditPage = ({ params }: { params: { id: string } }) => {
           setName(res.data.name);
           setPageData(res);
           setPageId(res.data.id);
-          console.log(res.data.id);
           setValue("name", res.data.name);
         } catch (error) {
           console.error("Error fetching category by ID:", error);
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   useEffect(() => {
@@ -155,6 +155,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
 
       fetchPermission();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, pageId]);
 
   useEffect(() => {

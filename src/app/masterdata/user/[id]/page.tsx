@@ -18,6 +18,8 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Eye,
+  EyeOff,
   Plus,
   Search,
   Trash2,
@@ -26,7 +28,6 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
-import { UserService } from "@/services/masterdata/user.service";
 import {
   Select,
   SelectContent,
@@ -35,7 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogClose,
@@ -61,6 +61,33 @@ import {
   GroupResponse,
   GroupService,
 } from "@/services/masterdata/group.service";
+import iconCopy from "/public/images/icon-copy.svg"
+import { toastNotification } from "@/lib/toast";
+
+const passwordValidationRules = {
+  required: (role: string) =>
+    role === "admin" ? "Password is required for Admin role" : false,
+  minLength: {
+    value: 8,
+    message: "Password must be at least 8 characters",
+  },
+  pattern: {
+    value:
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/,
+    message:
+      "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+  },
+};
+
+const validatePassword = (password: string) => {
+  return {
+    minLength: password.length >= 8,
+    hasUpperCase: /[A-Z]/.test(password),
+    hasLowerCase: /[a-z]/.test(password),
+    hasNumber: /\d/.test(password),
+    hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
+  };
+};
 
 const EditUser = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -99,6 +126,14 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   const [status, setStatus] = useState("");
   const [role, setRole] = useState("");
   const [channel, setChannel] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [validations, setValidations] = useState({
+    minLength: false,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  });
 
   const isAllSelected = selectedGroup.length === dataGroup.length;
   const isAllSelectedRole = selectedRole.length === dataRole.length;
@@ -112,13 +147,19 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     removeAccountRoles,
     fetchChannels,
     fetchRole,
-    roles,
     channels,
   } = useUser();
 
+  const roles = [
+    { id: "Admin", name: "Admin" },
+    { id: "User", name: "User" },
+    { id: "Partner", name: "Partner" },
+    { id: "Insurer", name: "Insurer" },
+  ];
   const {
     handleSubmit,
     control,
+    watch,
     setValue,
     formState: { errors },
   } = useForm({
@@ -128,7 +169,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       name,
       email,
       phone_number,
-      password: "Yes",
+      password: "",
       status,
       role,
       channel,
@@ -172,11 +213,13 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   useEffect(() => {
     fetchChannels({});
     fetchRole({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -355,6 +398,54 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       setSelectedRole(selectedIds);
     }
   };
+
+  useEffect(() => {
+    const currentValidations = validatePassword(password);
+    setValidations(currentValidations);
+  }, [password]);
+
+  const generateSecurePassword = () => {
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const specialChars = "!@#$%^&*()_+{}[]:;<>,.?/~`-=";
+    
+    const allChars = uppercase + lowercase + numbers + specialChars;
+    
+    let password = "";
+    
+    // Ensure at least one of each required character type
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += specialChars[Math.floor(Math.random() * specialChars.length)];
+    
+    // Fill the rest with random characters
+    for (let i = password.length; i < 8; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+    
+    // Shuffle the password to ensure randomness
+    return password.split("").sort(() => 0.5 - Math.random()).join("");
+  };
+
+  const handleGeneratePassword = () => {
+    setValue("password", generateSecurePassword())
+  };
+
+  const copyPassword = () => {
+    const password = watch("password");
+    if (!password) {
+      toastNotification("No password to copy", "error");
+      return;
+    }
+    navigator.clipboard.writeText(password).then(() => {
+      toastNotification("Password copied!", "success")
+    }).catch(err => {
+      console.error("Failed to copy password:", err)
+      toastNotification("Failed to copy password", "error")
+    });
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -642,26 +733,102 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 </p>
               )}
             </div>
-            <div className="flex gap-5 items-center pt-2 sm:pt-5 sm:mb-0 mb-3">
+            <div className="relative">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Password
+                {watch("role") === "admin" && (
+                  <span className="text-red-500">*</span>
+                )}
               </label>
               <Controller
                 name="password"
                 control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    id="password"
-                    checked={field.value === "Yes"}
-                    onCheckedChange={(checked) =>
-                      field.onChange(checked ? "Yes" : "No")
+                defaultValue=""
+                rules={{
+                  validate: (value) => {
+                    const selectedRole = watch("role");
+
+                    // Check if password is required for admin
+                    if (selectedRole === "admin" && !value) {
+                      return passwordValidationRules.required(selectedRole);
                     }
-                  />
+
+                    // If password is provided (optional for non-admin), validate it
+                    if (value) {
+                      // Check minimum length
+                      if (
+                        value.length < passwordValidationRules.minLength.value
+                      ) {
+                        return passwordValidationRules.minLength.message;
+                      }
+
+                      // Check pattern
+                      if (!passwordValidationRules.pattern.value.test(value)) {
+                        return passwordValidationRules.pattern.message;
+                      }
+                    }
+
+                    return true;
+                  },
+                }}
+                render={({ field }) => (
+                  <div className="flex w-full gap-1.5 items-center">
+                    <div className="relative flex-[3]">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        disabled
+                        placeholder="Insert Password"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setPassword(e.target.value);
+                        }}
+                        className={`mt-1 block w-full h-12 ${
+                          errors.password ? "border-red-500" : "border-gray-300"
+                        } rounded-md shadow-sm`}
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-11 flex items-center"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff size={18} className="text-[#015B86]"/>
+                        ) : (
+                          <Eye size={18} className="text-[#015B86]"/>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-3 flex items-center"
+                        onClick={() => copyPassword()}
+                      >
+                        <Image alt="copy" src={iconCopy} width={18}/>
+                      </button>
+                    </div>
+                    <div className="flex-[1]">
+                      <Button
+                        className="w-full bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleGeneratePassword();
+                        }}
+                      >
+                        Generate Password
+                      </Button>
+                    </div>
+                  </div>
                 )}
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
@@ -751,10 +918,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isGroupSelected(group.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChange(group.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>
@@ -989,10 +1152,6 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 <Input
                                   type="checkbox"
                                   checked={isUserSelected(role.id)}
-                                  onChange={(event) => {
-                                    event.stopPropagation();
-                                    handleCheckboxChangeRole(role.id);
-                                  }}
                                   className="w-4 h-4"
                                 />
                               </TableCell>

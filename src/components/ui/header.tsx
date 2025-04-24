@@ -1,21 +1,19 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { ChevronDown } from "react-feather";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/auth.context";
 
 const Header = () => {
-  const { logout, checkLogin } = useAuth();
+  const { logout } = useAuth();
   const handleLogout = () => {
     logout();
-    checkLogin();
   };
 
   return (
@@ -30,6 +28,12 @@ const Header = () => {
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-44 p-3">
+              <Link
+                href="/profile/change-password"
+                className="justify-center flex text-sm p-2"
+              >
+                Change Password
+              </Link>
               <DropdownMenuItem
                 key="logout"
                 onClick={handleLogout}

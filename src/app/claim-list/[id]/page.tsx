@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, X } from "react-feather";
 import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
 import noImage from "/public/images/no-image.png";
+import moment from "moment";
 import {
   Table,
   TableBody,
@@ -25,20 +26,43 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
+import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import ImageOrDefault from "@/components/ui/image-or-default";
 
-const DetailPolicy = ({ params }: { params: { id: string } }) => {
+interface FieldType {
+  name: string;
+  type: string;
+  label?: string;
+  criteria?: string;
+  required?: boolean;
+  definition?: string;
+  insured_type?: string;
+  document_type?: string;
+  label_multilanguage?: {
+    en?: string;
+    id?: string;
+  };
+  pending_reason_message?: {
+    en?: string;
+    id?: string;
+  };
+}
+
+const DetailClaim = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [docToOpen, setDocToOpen] = useState<any>(null);
+  const [isViewDocument, setIsViewDocument] = useState(false);
+  const [claimCurrency, setClaimCurrency] = useState<string | undefined>();
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -55,7 +79,10 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const [tab, setTab] = useState("Summary");
   const [histories, setHistories] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
-  const imageUrl = claim?.general[0]?.value || noImage.src;
+  const imageUrl =
+    claim?.participant_data?.data?.ktp ||
+    claim?.participant_data?.data?.passport ||
+    noImage.src;
 
   const personalInfo = [
     claim?.personal_info?.address,
@@ -75,6 +102,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
         setDocuments([
           ...claimDetailResponse.general,
           ...claimDetailResponse.claim,
+          ...claimDetailResponse.claim_config,
         ]);
         const claimHistoriesResponse = await claimService.getClaimsHistories(
           id
@@ -134,6 +162,80 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  const processUrl = (url: string, id: string) => {
+    const urlArr = url.split(".") || "";
+    const mimeType =
+      urlArr[urlArr.length - 1].toLowerCase() !== "pdf"
+        ? `image/${urlArr[urlArr.length - 1].toLowerCase()}`
+        : "application/pdf";
+  };
+
+  const viewDocument = (documentObject: any) => {
+    if (documentObject.type.toLowerCase() === "file" && documentObject.value)
+      processUrl(documentObject.value, "pdfFrame");
+    setDocToOpen(documentObject);
+    setIsViewDocument(true);
+  };
+
+  const renderDocumentsDetails = (documentObject: any) => {
+    const documentType = documentObject.type.toLowerCase()
+    if (documentType === 'file') {
+      return (
+        <div>
+          {documentObject?.value?.split(".").at(-1) ===
+          "pdf" ? (
+            <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400 p-5">
+              The document cannot be previewed, please
+              download if you want to see it
+            </div>
+          ) : (
+            <div className="max-h-[70vh] overflow-auto text-center">
+              {documentObject?.value ? (
+                <Image
+                  className="mx-auto w-full h-full"
+                  src={documentObject.value}
+                  alt={documentObject.label?.en || "-"}
+                  width={200}
+                  height={100}
+                 />
+              ) : (
+                <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">
+                  No image available
+                </div>
+              )}
+            </div>
+          )}
+          <div className="w-full flex items-center justify-center mt-3">
+            <Button
+              disabled={!documentObject?.value}
+              onClick={() =>
+                downloadDocument(documentObject.value)
+              }
+            >
+              Download
+            </Button>
+          </div>
+        </div>
+      )
+    }
+
+    if (documentType === 'number') {
+      return (
+        <p>{formatMoney(!!documentObject.value ? documentObject.value : 0)}</p>
+      )
+    }
+
+    if (documentType === 'datetime') {
+      return (
+        <p>{!!documentObject.value ? moment(documentObject.value).format("LLLL") : "-"}</p>
+      )
+    }
+
+    return (
+      <p>{!!documentObject.value ? documentObject.value : '-'}</p>
+    )
+  }
+
   return (
     <div className="flex flex-col w-full">
       <div className="bg-white md:px-6 p-4 flex items-center">
@@ -145,7 +247,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/policy-list">List</BreadcrumbLink>
+                <BreadcrumbLink href="/claim-list">List</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -235,8 +337,11 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                                 hour12: true,
                               }
                             )}`
-                          : "No Date"}
+                          : "-"}
                       </p>
+                      {h?.note && (
+                        <p className="text-xs text-red-500">{h.note}</p>
+                      )}
                     </div>
                   </div>
                 ))
@@ -259,7 +364,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     Customer Name
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.name || "-"}</div>
+                  <div>{claim?.policy_data?.policy_holder?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -267,9 +372,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   </div>
                   <div className="max-w-1 w-1">:</div>
                   <div>
-                    {claim.policy_data?.declarations?.transaction_data?.insurance?.plan?.name
-                      .split("|")
-                      .join(" - ")}
+                    {claim?.package?.plan?.name.split("|").join(" - ") || "-"}
                   </div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
@@ -281,13 +384,32 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Amount
+                    Requested Amount
                   </div>
                   <div className="max-w-1 w-1">:</div>
                   <div>
-                    {claim.claim.find(
-                      (d: any) => d.type === "Number" && d.name === "claim"
-                    ).value || "-"}
+                    {(() => {
+                      const claimValue = claim.claim?.find(
+                        (d: any) => d.type === "Number" && d.name === "claim"
+                      )?.value;
+
+                      const numericValue = Number(claimValue);
+
+                      return !isNaN(numericValue)
+                        ? formatMoneyClaim(numericValue)
+                        : "-";
+                    })()}
+                  </div>
+                </div>
+                <div className="flex gap-2 text-sm font-medium">
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                    Approved Amount
+                  </div>
+                  <div className="max-w-1 w-1">:</div>
+                  <div>
+                    {formatMoneyClaim(
+                      claim.amount_approved != null ? claim.amount_approved : 0
+                    )}
                   </div>
                 </div>
               </div>
@@ -298,19 +420,19 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     Customer Name
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.name || "-"}</div>
+                  <div>{claim?.participant_data?.data?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Phone Number
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.phone || "-"}</div>
+                  <div>{claim?.participant_data?.data?.phone || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.account?.email || "-"}</div>
+                  <div>{claim?.participant_data?.data?.email || "-"}</div>
                 </div>
               </div>
               <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
@@ -318,7 +440,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                 <div className="flex flex-col lg:flex-row gap-4">
                   <div className="lg:min-w-60 lg:w-60">
                     <div className="w-full border rounded-lg overflow-hidden">
-                      <img src={imageUrl} alt="" className="w-full h-auto" />
+                      <Image src={imageUrl} alt="" width={200} height={100} className="w-full h-auto" />
                     </div>
                   </div>
                   <div className="w-full flex gap-3 flex-col">
@@ -334,9 +456,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                         No. Peserta
                       </div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.reg_no || "-"}
-                      </div>
+                      <div>{claim?.participant_data?.number || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -344,7 +464,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.name || "-"}
+                        {claim?.participant_data?.data?.data?.name ||
+                          claim?.participant_data?.data?.name ||
+                          "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
@@ -352,9 +474,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                         Gender
                       </div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.gender || "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.gender || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -362,17 +482,26 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.country_code ||
-                          "-"}
+                        {claim?.participant_data?.data?.country_code || "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        No. Paspor
+                        {claim?.participant_data?.data?.data?.passport_no
+                          ? "No. Passport"
+                          : claim?.participant_data?.data?.passport_no
+                          ? "No. Passport"
+                          : claim?.participant_data?.data?.nik
+                          ? "NIK"
+                          : claim?.participant_data?.data?.identification_number
+                          ? "No. Identitas"
+                          : ""}
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
                         {claim?.participant_data?.data?.data?.passport_no ||
+                          claim?.participant_data?.data?.passport_no ||
+                          claim?.participant_data?.data?.nik ||
                           "-"}
                       </div>
                     </div>
@@ -383,6 +512,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       <div className="max-w-1 w-1">:</div>
                       <div>
                         {claim?.participant_data?.data?.data?.nationality ||
+                          claim?.participant_data?.data?.nationality ||
                           "-"}
                       </div>
                     </div>
@@ -392,7 +522,9 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       </div>
                       <div className="max-w-1 w-1">:</div>
                       <div>
-                        {claim?.participant_data?.data?.data?.dob || "-"}
+                        {claim?.participant_data?.data?.data?.dob ||
+                          claim?.participant_data?.data?.dob ||
+                          "-"}
                       </div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
@@ -400,9 +532,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                         Tempat Lahir
                       </div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.pob || "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.pob || "-"}</div>
                     </div>
                   </div>
                 </div>
@@ -436,7 +566,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                     Nama Bank
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.bank_info?.bank || "-"}</div>
+                  <div>{claim?.bank_info?.bank?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -475,45 +605,54 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
-                          {document?.label.en}
+                          {document?.label?.en || document?.label || "-"}{" "}
+                          {document?.insured_type &&
+                            " - " +
+                              document?.insured_type.charAt(0).toUpperCase() +
+                              document?.insured_type.slice(1)}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Drawer direction="right">
-                          <DrawerTrigger className="bg-[#016DA1] text-white px-4 py-2 rounded-full">
-                            View
-                          </DrawerTrigger>
-                          <DrawerContent>
-                            <DrawerHeader>
-                              <DrawerClose className="absolute right-2 top-2">
-                                <Button variant="ghost">
-                                  <X />
-                                </Button>
-                              </DrawerClose>
-                              <DrawerTitle className="text-black font-bold text-xl">
-                                Original Boarding Pass, Ticket or Itinerary
-                              </DrawerTitle>
-                              <DrawerDescription>
-                                <div className="flex flex-col w-full mt-5 rounded-xl overflow-hidden">
-                                  <img
-                                    src={claim?.general[0]?.value}
-                                    alt="passport-participant"
-                                  />
-                                </div>
-                                <div className="w-full flex items-center justify-center mt-3">
-                                  <Button
-                                    className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
-                                    onClick={() =>
-                                      downloadDocument(claim?.general[0]?.value)
-                                    }
-                                  >
-                                    Download
-                                  </Button>
-                                </div>
-                              </DrawerDescription>
-                            </DrawerHeader>
-                          </DrawerContent>
-                        </Drawer>
+                        <Dialog>
+                          <DialogTrigger>
+                            <Button
+                              className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
+                              onClick={() => viewDocument(document)}
+                            >
+                              View
+                            </Button>
+                          </DialogTrigger>
+                          {isViewDocument && (
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle className="text-sm sm:text-base flex items-center">
+                                  {document?.label?.en ||
+                                    document?.label ||
+                                    "-"}
+                                  <DialogClose className="ml-auto">
+                                    <Button
+                                      type="button"
+                                      className="bg-transparent hover:bg-transparent text-black p-0"
+                                    >
+                                      <X className="w-5 h-5" />
+                                    </Button>
+                                  </DialogClose>
+                                </DialogTitle>
+                              </DialogHeader>
+
+                              {docToOpen.type.toLowerCase() === "fields"
+                                ? docToOpen.fields.map((field: FieldType, index: number) => (
+                                  <div key={index}>
+                                    <div className="text-sm sm:text-base font-semibold" key={field.name}>
+                                      {field?.label_multilanguage?.en || field?.label || "-"}{" "}
+                                    </div>
+                                    {renderDocumentsDetails(field)}
+                                  </div>
+                                  ))
+                                : renderDocumentsDetails(docToOpen)}
+                            </DialogContent>
+                          )}
+                        </Dialog>
                       </TableCell>
                     </TableRow>
                   ))
@@ -536,6 +675,6 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const DetailPolicyWithSidebar = (params: any) =>
-  WithSidebar(DetailPolicy)(params);
-export default DetailPolicyWithSidebar;
+const DetailClaimWithSidebar = (params: any) =>
+  WithSidebar(DetailClaim)(params);
+export default DetailClaimWithSidebar;

@@ -33,6 +33,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
     };
 
     checkAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
   const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
@@ -65,7 +66,6 @@ const AddPage = ({ params }: { params: { id: string } }) => {
         const id = response.id;
         router.push(`/masterdata/page-management/${id}`);
       }
-      console.log("selesai");
     } catch (error) {
       setUpdateSuccess(false);
     }

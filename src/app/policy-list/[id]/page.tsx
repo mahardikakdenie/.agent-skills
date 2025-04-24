@@ -7,7 +7,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Table, TableCell, TableHead, TableRow } from "@/components/ui/table";
 import WithSidebar from "@/hoc/with-sidebar";
+import { formatMoney } from "@/lib/formatter";
 import { PolicyService } from "@/services/policy.service";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -85,125 +87,221 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               Customer Name
             </div>
             <div className="max-w-1 w-1">:</div>
-            <div>
-              {policy.declarations.transaction_data.customer.name || "-"}
-            </div>
+            <div>{policy?.policy_holder?.name || "-"}</div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
             <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
               Phone Number
             </div>
             <div className="max-w-1 w-1">:</div>
-            <div>
-              {policy.declarations.transaction_data.customer.phone || "-"}
-            </div>
+            <div>{policy?.policy_holder?.phone || "-"}</div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
             <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Email</div>
             <div className="max-w-1 w-1">:</div>
-            <div>
-              {policy.declarations.transaction_data.customer.email || "-"}
-            </div>
+            <div>{policy?.policy_holder?.email || "-"}</div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
             <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Status</div>
             <div className="max-w-1 w-1">:</div>
             <div className="font-semibold">
               <span className={getStatusColor(policy.status)}>
-                {policy.status}
+                {policy?.status}
               </span>
             </div>
           </div>
         </div>
-        <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative">
-          <div className="absolute lg:right-6 right-4 top-3 text-xs text-gray-500">
-            <i>
-              Last Update{" "}
-              {policy?.updated_at
-                ? new Date(policy.updated_at).toLocaleDateString("en-GB")
-                : "-"}
-            </i>
-          </div>
-          <div className="font-bold text-base">Insured Person</div>
+        <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto">
+          <div className="font-bold text-base">Plan Information</div>
           <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-              Policy Number
+            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Plan Name</div>
+            <div className="max-w-1 w-1">:</div>
+            <div>{policy?.package_data[0]?.plan?.name || "-"}</div>
+          </div>
+          <div className="flex gap-2 text-sm font-medium">
+            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+              Product Name
             </div>
             <div className="max-w-1 w-1">:</div>
-            <div>{policy.number || "-"}</div>
+            <div>{policy?.package_data[0]?.product?.name || "-"}</div>
           </div>
-
           <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-              Participant Number
+            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+              Insurance Name
             </div>
             <div className="max-w-1 w-1">:</div>
-            <div>{policy?.participants?.[0]?.data?.data?.reg_no || "-"}</div>
+            <div>{policy?.package_data[0]?.insurance?.name || "-"}</div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Full Name</div>
-            <div className="max-w-1 w-1">:</div>
-            <div>{policy?.participants?.[0]?.data?.data?.name || "-"}</div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Gender</div>
-            <div className="max-w-1 w-1">:</div>
-            <div>{policy?.participants?.[0]?.data?.data?.gender || "-"}</div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-              Country Code
-            </div>
-            <div className="max-w-1 w-1">:</div>
             <div>
-              {policy?.participants?.[0]?.data?.data?.country_code || "-"}
-            </div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-              Passport Number
-            </div>
-            <div className="max-w-1 w-1">:</div>
-            <div>
-              {policy?.participants?.[0]?.data?.data?.passport_no || "-"}
-            </div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Nationality</div>
-            <div className="max-w-1 w-1">:</div>
-            <div>
-              {policy?.participants?.[0]?.data?.data?.nationality || "-"}
-            </div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Birthdate</div>
-            <div className="max-w-1 w-1">:</div>
-            <div>{policy?.participants?.[0]?.data?.data?.dob || "-"}</div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-              Place of Birth
-            </div>
-            <div className="max-w-1 w-1">:</div>
-            <div>{policy?.participants?.[0]?.data?.data?.pob || "-"}</div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-              Release Date
-            </div>
-            <div className="max-w-1 w-1">:</div>
-            <div>
-              {policy?.participants?.[0]?.data?.data?.date_of_issue || "-"}
-            </div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Expiry Date</div>
-            <div className="max-w-1 w-1">:</div>
-            <div>
-              {policy?.participants?.[0]?.data?.data?.date_of_expiry || "-"}
+              <Table>
+                <TableRow>
+                  <TableHead>Benefit</TableHead>
+                  <TableHead>Limit</TableHead>
+                </TableRow>
+              </Table>
+              {policy?.package_data[0]?.benefits?.map((item: any) => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.benefits?.description_id}</TableCell>
+                  <TableCell>{formatMoney(item.value) ?? item.html}</TableCell>
+                </TableRow>
+              ))}
             </div>
           </div>
         </div>
+        {policy?.insured_parties.map((item: any) => (
+          <div
+            key={item.id}
+            className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative"
+          >
+            <div className="absolute lg:right-6 right-4 top-3 text-xs text-gray-500">
+              <i>
+                Last Update{" "}
+                {policy?.updated_at
+                  ? new Date(policy.updated_at).toLocaleDateString("en-GB")
+                  : "-"}
+              </i>
+            </div>
+            <div className="font-bold text-base">Insured Parties</div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                Policy Number
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{policy?.number || "-"}</div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                Participant Number
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{item?.number || "-"}</div>
+            </div>
+            {item?.data?.data?.name && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Full Name
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.name || "-"}</div>
+              </div>
+            )}
+            {item?.data?.data?.gender && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Gender</div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.gender || "-"}</div>
+              </div>
+            )}
+            {item?.data?.data?.country_code && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Country Code
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.country_code || "-"}</div>
+              </div>
+            )}
+            {item?.data?.data?.passport_no && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Passport Number
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.passport_no || "-"}</div>
+              </div>
+            )}
+            {item?.data?.data?.nationality && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Nationality
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.nationality || "-"}</div>
+              </div>
+            )}
+            {item?.data?.data?.dob && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Birthdate
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.dob || "-"}</div>
+              </div>
+            )}
+            {item?.data?.data?.pob && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Place of Birth
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.pob || "-"}</div>
+              </div>
+            )}
+            {item?.data?.data?.date_of_issue && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Release Date
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item?.data?.data?.date_of_issue || "-"}</div>
+              </div>
+            )}{" "}
+            {item.data?.data?.date_of_expiry && (
+              <div className="flex gap-2 text-sm font-medium">
+                <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                  Expiry Date
+                </div>
+                <div className="max-w-1 w-1">:</div>
+                <div>{item.data?.data?.date_of_expiry || "-"}</div>
+              </div>
+            )}
+            {item.profile &&
+              Object.keys(item.profile).map((key, i) => {
+                console.log(key);
+                const formattedKey = key
+                  ? key
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (char) => char.toUpperCase())
+                  : null;
+                const value =
+                  typeof item.profile[key] === "object"
+                    ? JSON.stringify(item.profile[key])
+                    : item.profile[key];
+                return (
+                  <div key={i} className="flex gap-2 text-sm font-medium">
+                    <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                      {formattedKey}
+                    </div>
+                    <div className="max-w-1 w-1">:</div>
+                    <div>{value || "-"}</div>
+                  </div>
+                );
+              })}
+            {item.other_info &&
+              Object.keys(item.other_info).map((key, i) => {
+                console.log(key);
+                const formattedKey = key
+                  ? key
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (char) => char.toUpperCase())
+                  : null;
+                const value =
+                  typeof item.other_info[key] === "object"
+                    ? JSON.stringify(item.other_info[key])
+                    : item.other_info[key];
+                return (
+                  <div key={i} className="flex gap-2 text-sm font-medium">
+                    <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                      {formattedKey}
+                    </div>
+                    <div className="max-w-1 w-1">:</div>
+                    <div>{value || "-"}</div>
+                  </div>
+                );
+              })}
+          </div>
+        ))}
       </div>
     </div>
   );
