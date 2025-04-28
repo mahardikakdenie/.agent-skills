@@ -353,6 +353,27 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="mt-2 text-sm">
+                <strong>Membership</strong>
+              </li>
+              <li>
+                <Link
+                  href="/membership-list"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/membership-list")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Membership List"
+                    className="w-7 min-w-7"
+                  />
+                  Membership List
+                </Link>
+              </li>
+              <li className="mt-2 text-sm">
                 <strong>Claim</strong>
               </li>
               <li>
