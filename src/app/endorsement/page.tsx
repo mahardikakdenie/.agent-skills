@@ -13,7 +13,7 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { EndorsementService } from "@/services/endorsement.service";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, Search } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Search, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
@@ -43,6 +43,7 @@ const EndorsementPage = () => {
           tab === "All" ? "" : tab,
           searchData
         );
+        console.log(res.data);
 
         const sortedData = res.data.sort(
           (a: any, b: any) =>
@@ -98,8 +99,14 @@ const EndorsementPage = () => {
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Endorsement List</h1>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={() => router.push(`${path}/upload`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1 " /> Upload
+        </Button>
+        <Button
+          onClick={() => router.push(`${path}/export`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export
         </Button>
@@ -207,17 +214,15 @@ const EndorsementPage = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-white rounded-lg">
-        <div className="sm:p-6 p-4">
-          <div className="relative w-full ml-auto">
-            <Input
-              type="text"
-              placeholder="Search by Name"
-              onChange={(e) => handleSearch(e.target.value)}
-              className="border p-3 rounded-md pr-10 w-full"
-            />
-            <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
-          </div>
+      <div className="w-full sm:p-6 p-4 bg-white rounded-lg">
+        <div className="relative w-full ml-auto">
+          <Input
+            type="text"
+            placeholder="Search by Name"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-3 rounded-md pr-10 w-full"
+          />
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
         <Table className="table-claims">
           <TableHeader>
@@ -247,10 +252,9 @@ const EndorsementPage = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {endorsement?.participants?.full_name ||
-                      endorsement?.participants?.name ||
-                      endorsement?.participants?.first_name ||
-                      endorsement?.participants?.last_name ||
+                  {endorsement?.insured_parties?.profile?.name ||
+                      endorsement?.policies?.policy_holders?.name ||
+                      endorsement?.participants?.profile?.name ||
                       "-"}
                   </TableCell>
                   <TableCell>{endorsement.policies?.number || "-"}</TableCell>

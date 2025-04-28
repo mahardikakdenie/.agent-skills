@@ -28,11 +28,11 @@ export default function WithSidebar(Component: React.ComponentType<any>) {
     };
 
     return (
-      <div className="flex">
+      <div className="flex h-full">
         {isLoading && <Loading />}
-        <div className="w-full relative flex flex-col">
+        <div className="w-full relative flex flex-col h-full">
           <Header />
-          <div className="flex min-w-full">
+          <div className="flex min-w-full h-full">
             <Component {...props} />
           </div>
         </div>
