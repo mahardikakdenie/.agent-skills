@@ -35,18 +35,21 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 
 const CreateBillingPage = () => {
   useRequireAuth();
 
   const { channelList, getChannel } = useChannel();
   const { fetchInsurances, insurances } = useProduct();
+  const [categories, setCategories] = useState<any[]>([]);
   const { transactionList, getTransactions, setTransactionList } =
     useTransaction();
   const { getFees, fees, createBilling, checkDuplicateBilling } = useBilling();
   const [type, setType] = useState<string>("");
   const [company, setCompany] = useState<string>("");
   const [companyName, setCompanyName] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
   const [list, setList] = useState<any[]>([]);
   const { setLoading } = useLoading();
   const [month, setMonth] = useState<any>(null);
@@ -65,7 +68,7 @@ const CreateBillingPage = () => {
       let newPremium = premium;
       if (
         !fees[
-          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+        `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
         ]
       ) {
         getFees(
@@ -123,7 +126,26 @@ const CreateBillingPage = () => {
 
   const handleChangeType = (value: string) => {
     setType(value);
+    setCategory("All");
   };
+
+  useEffect(() => {
+    if (company != "") {
+      getCategories();
+
+    }
+
+  }, [company]);
+
+  const getCategories = async () => {
+    try {
+      const productCategoriesService = new ProductCategoriesService();
+      const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(company);
+      setCategories(categoriesResponse.data || []);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  }
 
   const months = [
     {
@@ -291,8 +313,8 @@ const CreateBillingPage = () => {
         commission_percentage:
           type === "insurer"
             ? fees[
-                `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-              ]?.fee
+              `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+            ]?.fee
             : 0,
         commission_amount: type === "insurer" ? commission : 0,
         details: {
@@ -300,6 +322,7 @@ const CreateBillingPage = () => {
           transaction_date: data.created_at,
           insurance_name: data.insurance?.insurance?.id?.name,
         },
+        category: category != "All" ? category : null
       });
       if (type === "insurer") {
         totalCommission += commission;
@@ -318,6 +341,7 @@ const CreateBillingPage = () => {
         company,
         company_name: companyName,
         transaction_period: `${year}-${month}`,
+        category: category != "All" ? category : null
       });
       router.push("/billing");
       setLoading(false);
@@ -392,6 +416,7 @@ const CreateBillingPage = () => {
               const selectedCompany = list.find((item) => item.id === value);
               setCompany(value);
               setCompanyName(selectedCompany?.name || "");
+              setCategory("All");
             }}
           >
             <SelectTrigger>
@@ -400,6 +425,34 @@ const CreateBillingPage = () => {
             <SelectContent>
               {list &&
                 list.map((data) => {
+                  return (
+                    <SelectItem key={data.id} value={data.id}>
+                      {data.name}
+                    </SelectItem>
+                  );
+                })}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="pt-5">
+          <Select
+            value={category}
+            onValueChange={(value) => {
+              const selectedCategory = categories.find((item) => item.id === value);
+              setCategory(value);
+              // setCategoryName(selectedCategory?.name || "");
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choose Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {/* <SelectItem key={-1} value={"All"}>
+                All Category
+              </SelectItem> */}
+              {categories &&
+                categories.map((data) => {
                   return (
                     <SelectItem key={data.id} value={data.id}>
                       {data.name}
@@ -485,7 +538,7 @@ const CreateBillingPage = () => {
                         `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
                       ]?.fee ?? 0) /
                         100) *
-                        data.newPremium
+                      data.newPremium
                     );
                   return (
                     <TableRow key={data.id}>
@@ -500,12 +553,12 @@ const CreateBillingPage = () => {
                       <TableCell>{data.created_at}</TableCell>
                       <TableCell>
                         {type === "insurer" &&
-                        fees[
-                          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                        ]?.fee
+                          fees[
+                            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                          ]?.fee
                           ? fees[
-                              `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                            ]?.fee ?? 0
+                            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                          ]?.fee ?? 0
                           : 0}
                       </TableCell>
                       <TableCell>{type === "insurer" ? fee : 0}</TableCell>

@@ -18,6 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useLoading } from "@/context/loading.context";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import moment from "moment";
 
 const ExportDetailBillingPage = () => {
   useRequireAuth();
@@ -96,18 +98,142 @@ const ExportDetailBillingPage = () => {
     }
 
     const doc = new jsPDF({
-      format: "a1",
+      format: "a4",
       unit: "px",
     });
     doc.setFontSize(10);
     doc.setFont("Inter-Regular", "normal");
-    doc.html(refTemplate.current, {
-      async callback(doc) {
-        await doc.save(billing_no + ".pdf");
-      },
-      x: 30,
-      y: 30,
-    });
+    // doc.html(refTemplate.current, {
+    //   async callback(doc) {
+    //     await doc.save(billing_no + ".pdf");
+    //   },
+    //   x: 30,
+    //   y: 30,
+    // });
+    let html = `
+  <div width="100%">
+  <h2>Billing Information</h2>
+    <tbody>
+      <tr>
+        <td width="155">Billing No.</td>
+        <td>: BILL-INS-1744870338139</td>
+      </tr>
+      <tr>
+        <td>Total Amount</td>
+        <td>: IDR 1,954,875.00</td>
+      </tr>
+      <tr>
+        <td>Billing Created Date</td>
+        <td>: Thu Apr 17 2025</td>
+      </tr>
+      <tr>
+        <td>Status</td>
+        <td>: Waiting For Payment</td>
+      </tr>
+      <tr>
+        <td>Type</td>
+        <td>: Insurer</td>
+      </tr>
+      <tr>
+        <td>Company Name</td>
+        <td>: PT Great Eastern General Insurance Indonesia</td>
+      </tr>
+      <tr>
+        <td>Period</td>
+        <td>: 2025-1</td>
+      </tr>
+    </tbody>
+  </div>`
+    // let html = `<table >
+    //               <tbody>
+    //               <tr>
+    //                 <td width={155}>
+    //                   Billing No.
+    //                 </td> 
+    //                 <td>: ${billing.data[0].billings.billing_no}</td>
+    //               </tr>
+    //               <tr>
+    //                 <td >Total Amount</td> 
+    //                 <td>: ${formatMoney(billing.data[0].billings.amount)}</td>
+    //               </tr>
+    //               <tr>
+    //                 <td >Billing Created Date</td> 
+    //                 <td>: ${new Date(
+    //   billing.data[0].billings.created_at
+    // ).toDateString()}
+    //                 </td>
+    //               </tr>
+    //               <tr>
+    //                 <td >Status</td> 
+    //                 <td>: ${billing.data[0].billings.status
+    //     .split("-")
+    //     .map(
+    //       (word: any) =>
+    //         word.charAt(0).toUpperCase() +
+    //         word.slice(1).toLowerCase()
+    //     )
+    //     .join(" ")}
+    //                 </td>
+    //               </tr>
+    //               <tr>
+    //                 <td >Type</td> 
+    //                 <td>: ${billing.data[0]?.billings?.type}</td>
+    //               </tr>
+    //               <tr>
+    //                 <td >Company Name</td> 
+    //                 <td>: ${billing.data[0].billings.company_name}</td>
+    //               </tr>
+    //               <tr>
+    //                 <td >Period</td> 
+    //                 <td>: ${billing.data[0].billings.transaction_period}</td>
+    //               </tr>
+    //               </tbody>
+    //             </table>`;
+    console.log(html)
+    doc.html(refTemplate.current,
+      {
+
+        callback: function () {
+          // autoTable(doc, {
+          //   head: [[
+          //     "Transaction Number",
+          //     "Plan Name",
+          //     // "Insurance Company Name",
+          //     "Amount",
+          //     "Transaction Date",
+          //     "Commission Percentage",
+          //     "Commission Amount",]],
+          //   body: billing.data.map((item: any, index: number) => {
+          //     return [
+          //       item.invoice_no,
+          //       item.details?.plan_name,
+          //       // item.details?.insurance_name,
+          //       formatMoney(item.amount),
+          //       item.details?.transaction_date,
+          //       item.commission_percentage ?? 0,
+          //       formatMoney(item.commission_amount ?? 0),
+          //     ]
+          //   }),
+          //   startY: (doc as any).previousAutoTable?.finalY || 30,
+          //   // startY: 30,
+          //   headStyles: {
+          //     textColor: 'black',
+          //     fontStyle: 'bold',
+          //     fontSize: 10,
+          //     fillColor: [231, 231, 231], //grey
+          //   },
+          //   bodyStyles: {
+          //     textColor: 'black',
+          //     fontSize: 10,
+          //   },
+          // });
+          const date = moment();
+          const formattedDate = date.format('YYYY_MM_DD');
+          doc.save(`${billing_no}_${formattedDate}.pdf`);
+        }
+      }
+    );
+
   };
 
   const handleGenerateXlsx = () => {

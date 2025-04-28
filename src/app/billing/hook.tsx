@@ -19,11 +19,11 @@ export const useBilling = () => {
   const [billingList, setBillingList] = useState<any>({});
   const [fees, setFees] = useState<any>([]);
   const billingService = new FinanceService();
-  const getBilling = async (page?: number, pageSize?: number) => {
+  const getBilling = async (query: any, page?: number, pageSize?: number) => {
     const billings = await billingService.getBillings(
       page ?? 1,
       pageSize ?? 10,
-      {}
+      query
     );
     setBillingList(billings);
   };
