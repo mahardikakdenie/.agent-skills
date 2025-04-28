@@ -346,7 +346,7 @@ const BillingPage = () => {
                       size="icon"
                       onClick={() => {
                         localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories }));
-                        router.push(`billing/detail/${billing.id}/invoice`);
+                        router.push(`billing/detail/${billing.id}/invoice?type=${billing.type}`);
                       }
                       }
                     >

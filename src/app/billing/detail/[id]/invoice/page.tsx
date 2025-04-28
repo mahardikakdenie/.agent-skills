@@ -16,8 +16,15 @@ const InvoicePage = () => {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const { setLoading } = useLoading();
 
+
   useEffect(() => {
-    getBillingById(id as string, undefined, undefined);
+    const searchParam = new URLSearchParams(window.location.search);
+    const type = searchParam.get("type") ?? "";
+    if (type == "partner") {
+      getBillingById(id as string, 1, 100, "insurance-product");
+    } else if (type == "insurer") {
+      getBillingById(id as string, 1, 100, "product");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 

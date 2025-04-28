@@ -83,9 +83,10 @@ export const useBilling = () => {
   const getBillingById = async (
     id: string,
     page?: number,
-    pageSize?: number
+    pageSize?: number,
+    groupBy?: string
   ) => {
-    const billing = await billingService.getBillingById(id, page, pageSize);
+    const billing = await billingService.getBillingById(id, page, pageSize, groupBy);
     setBilling(billing);
   };
 

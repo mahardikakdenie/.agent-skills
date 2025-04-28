@@ -99,12 +99,12 @@ const DetailBillingPage = () => {
         limit: rowsPerPage,
       };
 
-      await getBillingById(id as string, page, rowsPerPage);
+      await getBillingById(id as string, page, rowsPerPage, "product");
     })();
   };
 
   useEffect(() => {
-    getBillingById(id as string, 1, rowsPerPage)
+    getBillingById(id as string, 1, rowsPerPage, "product")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -254,7 +254,7 @@ const DetailBillingPage = () => {
                   </Button>
 
                   <Button
-                    onClick={() => router.push(`/billing/detail/${id}/invoice`)}
+                    onClick={() => router.push(`/billing/detail/${id}/invoice?type=${billing.data[0].items[0].billings.type}`)}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
                     <span className="flex items-center">📄 View Invoice</span>
