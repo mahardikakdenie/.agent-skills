@@ -15,8 +15,9 @@ import { useLoading } from "@/context/loading.context";
 import { useRouter } from "next/navigation";
 import { EndorsementService } from "@/services/endorsement.service";
 import * as XLSX from "xlsx";
-import { X } from "react-feather";
+import { ChevronLeft, X } from "react-feather";
 import { ChannelService } from "@/services/channel.services";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const UploadEndorsement = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -105,6 +106,17 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
       .toLowerCase();
 
     const handleUpload = async () => {
+      
+      if (!channel) {
+        alert("Please select a channel before uploading.");
+        return;
+      }
+    
+      if (!type) {
+        alert("Please select a type before uploading.");
+        return;
+      }
+  
       setLoading(true);
       try {
         const transformedData = xlsxData.map((row) => {
@@ -142,30 +154,43 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
       
   return (
     <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-      <h1 className="text-xl font-semibold mb-4">Upload Data</h1>
+      <div className="flex gap-4 mb-5">
+        <h1 className="text-black font-bold text-2xl mt-2">Upload Data</h1>
+        <div
+          onClick={() => router.back()}
+          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
+        >
+          <ChevronLeft className="w-4 h-4" /> Back
+        </div>
+      </div>
       <div className="flex gap-3 items-center mb-4">
-      <select
-          value={channel}
-          onChange={(e) => setChannel(e.target.value)}
-          className="border border-gray-300 rounded px-2 py-2 h-10 min-w-[170px] text-sm"
-        >
-          <option value="" disabled hidden>Choose Channel</option>
-          {channels.map((channel, index) => (
-            <option key={index} value={channel.id}>
-              {channel.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="border border-gray-300 rounded px-2 py-2 h-10 min-w-[170px] text-sm"
-        >
-            <option value="" disabled hidden>Choose File Type</option>
-            <option value="Additional">Additional</option>
-            <option value="Revision">Revision</option>
-            <option value="Reduction">Reduction</option>
-        </select>
+        <Select value={channel} onValueChange={(value) => setChannel(value)}>
+          <SelectTrigger className="min-w-[180px] w-[180px] ml-auto">
+            <SelectValue placeholder="Select Channel" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {channels.map ((channel, index) => (
+                <SelectItem key={index} value={channel.id}>
+                  {channel.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        
+        <Select value={type} onValueChange={(value) => setType(value)}>
+          <SelectTrigger className="min-w-[180px] w-[180px] ml-auto">
+            <SelectValue placeholder="Select Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="Additional">Additional</SelectItem>
+              <SelectItem value="Revision">Revision</SelectItem>
+              <SelectItem value="Reduction">Reduction</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <div className="w-full relative">
           <Input type="file" accept=".xlsx, .xls" onChange={handleChooseFile} />
           <Button

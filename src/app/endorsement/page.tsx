@@ -22,17 +22,17 @@ import { Input } from "@/components/ui/input";
 
 const EndorsementPage = () => {
   useRequireAuth();
+  const router = useRouter();
   const path = usePathname();
   const endorsementService = new EndorsementService();
-  const [filteredEndorsement, setFilteredEndorsement] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
-  const router = useRouter();
   const [tab, setTab] = useState("All");
   const [totalData, setTotalData] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [searchData, setSearchData] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filteredEndorsement, setFilteredEndorsement] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,8 +43,6 @@ const EndorsementPage = () => {
           tab === "All" ? "" : tab,
           searchData
         );
-        console.log(res.data);
-
         const sortedData = res.data.sort(
           (a: any, b: any) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -94,6 +92,7 @@ const EndorsementPage = () => {
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
   }, 100);
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
@@ -108,7 +107,7 @@ const EndorsementPage = () => {
           onClick={() => router.push(`${path}/export`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
-          <Download className="w-5 h-5 mr-1 " /> Export
+          <Download className="w-5 h-5 mr-1 " /> Download
         </Button>
       </div>
 
@@ -298,48 +297,28 @@ const EndorsementPage = () => {
               </TableRow>
             )}
           </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={10}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50, 100].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() => setPage((prevState) => prevState - 1)}
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() => setPage((prevState) => prevState + 1)}
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
         </Table>
+        
+        <div className="flex justify-center items-center gap-2 font-normal text-sm pt-2 border-t">
+          <label htmlFor="rowsPerPage">Showing:</label>
+          <select id="rowsPerPage" value={rowsPerPage} onChange={handleRowsPerPageChange} className="p-2 border rounded">
+            {[10, 20, 30, 50].map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+          <span className="mr-2">of {totalItems} items</span>
+          <button onClick={() => setPage((prevState) => prevState - 1)} disabled={page === 1} title="Prev">
+            <ChevronLeft />
+          </button>
+          <button onClick={() => setPage((prevState) => prevState + 1)} disabled={page === totalPages} title="Next">
+            <ChevronRight />
+          </button>
+        </div>
+
       </div>
     </div>
   );
 };
 
-const TransactionWithSidebar = (params: any) =>
-  WithSidebar(EndorsementPage)(params);
-export default TransactionWithSidebar;
+const EndorsementWithSidebar = (params: any) => WithSidebar(EndorsementPage)(params);
+export default EndorsementWithSidebar;

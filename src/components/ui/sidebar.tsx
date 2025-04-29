@@ -24,12 +24,12 @@ const Sidebar = () => {
 
   const pathname = usePathname();
 
-  const isActive = (href: string) => {
-    if (href.endsWith("/*")) {
-      const baseHref = href.slice(0, -2);
-      return pathname === baseHref || pathname.startsWith(`${baseHref}/`);
+  const isActive = (sidebar: string) => {
+    if (sidebar.endsWith('/*')) {
+      const base = sidebar.replace('/*', '');
+      return pathname.startsWith(base);
     }
-    return pathname === href;
+    return pathname === sidebar;
   };
 
   const toggleSidebar = () => {
@@ -77,20 +77,6 @@ const Sidebar = () => {
               <li className="text-sm">
                 <strong>Dashboard</strong>
               </li>
-              {/* <li>
-                <Link
-                  href="/home"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/home/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
-                  Home
-                </Link>
-              </li> */}
               <li>
                 <Link
                   href="/dashboard/transaction"

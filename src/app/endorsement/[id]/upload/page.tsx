@@ -15,7 +15,7 @@ import { useLoading } from "@/context/loading.context";
 import { useRouter } from "next/navigation";
 import { EndorsementService } from "@/services/endorsement.service";
 import * as XLSX from "xlsx";
-import { X } from "react-feather";
+import { ChevronLeft, X } from "react-feather";
 import { ChannelService } from "@/services/channel.services";
 
 const UploadEndorsement = ({ params }: { params: { id: string } }) => {
@@ -99,8 +99,15 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
       
   return (
     <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-      <h1 className="text-xl font-semibold mb-4">Upload Endorsement</h1>
-
+      <div className="flex gap-4 mb-5">
+        <h1 className="text-black font-bold text-2xl mt-2">Upload Data</h1>
+        <div
+          onClick={() => router.back()}
+          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
+        >
+          <ChevronLeft className="w-4 h-4" /> Back
+        </div>
+      </div>
       <div className="flex gap-3 items-center mb-4">
         <div className="w-full relative">
           <Input type="file" accept=".xlsx, .xls" onChange={handleChooseFile} />
