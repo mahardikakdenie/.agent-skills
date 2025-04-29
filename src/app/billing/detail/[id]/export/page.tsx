@@ -109,131 +109,75 @@ const ExportDetailBillingPage = () => {
     //   },
     //   x: 30,
     //   y: 30,
-    // });
-    let html = `
-  <div width="100%">
-  <h2>Billing Information</h2>
-    <tbody>
-      <tr>
-        <td width="155">Billing No.</td>
-        <td>: BILL-INS-1744870338139</td>
-      </tr>
-      <tr>
-        <td>Total Amount</td>
-        <td>: IDR 1,954,875.00</td>
-      </tr>
-      <tr>
-        <td>Billing Created Date</td>
-        <td>: Thu Apr 17 2025</td>
-      </tr>
-      <tr>
-        <td>Status</td>
-        <td>: Waiting For Payment</td>
-      </tr>
-      <tr>
-        <td>Type</td>
-        <td>: Insurer</td>
-      </tr>
-      <tr>
-        <td>Company Name</td>
-        <td>: PT Great Eastern General Insurance Indonesia</td>
-      </tr>
-      <tr>
-        <td>Period</td>
-        <td>: 2025-1</td>
-      </tr>
-    </tbody>
-  </div>`
-    // let html = `<table >
-    //               <tbody>
-    //               <tr>
-    //                 <td width={155}>
-    //                   Billing No.
-    //                 </td> 
-    //                 <td>: ${billing.data[0].billings.billing_no}</td>
-    //               </tr>
-    //               <tr>
-    //                 <td >Total Amount</td> 
-    //                 <td>: ${formatMoney(billing.data[0].billings.amount)}</td>
-    //               </tr>
-    //               <tr>
-    //                 <td >Billing Created Date</td> 
-    //                 <td>: ${new Date(
-    //   billing.data[0].billings.created_at
-    // ).toDateString()}
-    //                 </td>
-    //               </tr>
-    //               <tr>
-    //                 <td >Status</td> 
-    //                 <td>: ${billing.data[0].billings.status
-    //     .split("-")
-    //     .map(
-    //       (word: any) =>
-    //         word.charAt(0).toUpperCase() +
-    //         word.slice(1).toLowerCase()
-    //     )
-    //     .join(" ")}
-    //                 </td>
-    //               </tr>
-    //               <tr>
-    //                 <td >Type</td> 
-    //                 <td>: ${billing.data[0]?.billings?.type}</td>
-    //               </tr>
-    //               <tr>
-    //                 <td >Company Name</td> 
-    //                 <td>: ${billing.data[0].billings.company_name}</td>
-    //               </tr>
-    //               <tr>
-    //                 <td >Period</td> 
-    //                 <td>: ${billing.data[0].billings.transaction_period}</td>
-    //               </tr>
-    //               </tbody>
-    //             </table>`;
-    console.log(html)
-    doc.html(refTemplate.current,
-      {
+    // });  
+    doc.text('Billing No.', 30, 30)
+    doc.text(`: ${billing.data[0].billings.billing_no}`, 100, 30)
 
-        callback: function () {
-          // autoTable(doc, {
-          //   head: [[
-          //     "Transaction Number",
-          //     "Plan Name",
-          //     // "Insurance Company Name",
-          //     "Amount",
-          //     "Transaction Date",
-          //     "Commission Percentage",
-          //     "Commission Amount",]],
-          //   body: billing.data.map((item: any, index: number) => {
-          //     return [
-          //       item.invoice_no,
-          //       item.details?.plan_name,
-          //       // item.details?.insurance_name,
-          //       formatMoney(item.amount),
-          //       item.details?.transaction_date,
-          //       item.commission_percentage ?? 0,
-          //       formatMoney(item.commission_amount ?? 0),
-          //     ]
-          //   }),
-          //   startY: (doc as any).previousAutoTable?.finalY || 30,
-          //   // startY: 30,
-          //   headStyles: {
-          //     textColor: 'black',
-          //     fontStyle: 'bold',
-          //     fontSize: 10,
-          //     fillColor: [231, 231, 231], //grey
-          //   },
-          //   bodyStyles: {
-          //     textColor: 'black',
-          //     fontSize: 10,
-          //   },
-          // });
-          const date = moment();
-          const formattedDate = date.format('YYYY_MM_DD');
-          doc.save(`${billing_no}_${formattedDate}.pdf`);
-        }
-      }
-    );
+    doc.text('Total Amount', 30, 40) //x,y
+    doc.text(`: ${formatMoney(billing.data[0].billings.amount)}`, 100, 40)
 
+    doc.text('Billing Created Date', 30, 50)
+    doc.text(`: ${new Date(billing.data[0].billings.created_at).toDateString()}`, 100, 50)
+
+    doc.text('Status', 30, 60)
+    doc.text(`: ${billing.data[0].billings.status
+      .split("-")
+      .map(
+        (word: any) =>
+          word.charAt(0).toUpperCase() +
+          word.slice(1).toLowerCase()
+      )
+      .join(" ")}`, 100, 60)
+
+    doc.text('Type', 30, 70)
+    doc.text(`: ${billing.data[0]?.billings?.type}`, 100, 70)
+
+    doc.text('Company Name', 30, 80)
+    doc.text(`: ${billing.data[0].billings.company_name}`, 100, 80)
+
+    doc.text('Period', 30, 90)
+    doc.text(`: ${billing.data[0].billings.transaction_period}`, 100, 90)
+
+    autoTable(doc, {
+      head: [[
+        "Transaction Number",
+        "Plan Name",
+        // "Insurance Company Name",
+        "Amount",
+        "Transaction Date",
+        "Commission Percentage",
+        "Commission Amount",]],
+      body: billing.data.map((item: any, index: number) => {
+        return [
+          item.invoice_no,
+          item.details?.plan_name.split('|')[0],
+          // item.details?.insurance_name,
+          formatMoney(item.amount),
+          item.details?.transaction_date,
+          item.commission_percentage ?? 0,
+          formatMoney(item.commission_amount ?? 0),
+        ]
+      }),
+      columnStyles: {
+        2: { halign: 'right' },
+        4: { halign: 'right' },
+        5: { halign: 'right' },
+      },
+      startY: 120,
+      headStyles: {
+        textColor: 'black',
+        fontStyle: 'bold',
+        fontSize: 10,
+        fillColor: [231, 231, 231], //grey
+      },
+      bodyStyles: {
+        textColor: 'black',
+        fontSize: 10,
+      },
+    });
+    const date = moment();
+    const formattedDate = date.format('YYYY_MM_DD');
+    doc.save(`${billing_no}_${formattedDate}.pdf`);
   };
 
   const handleGenerateXlsx = () => {
@@ -279,7 +223,7 @@ const ExportDetailBillingPage = () => {
     ];
     const tableData = billing.data.map((item: any) => [
       item.invoice_no,
-      item.details?.plan_name,
+      item.details?.plan_name.split('|')[0],
       item.details?.insurance_name,
       formatMoney(item.amount),
       item.details?.transaction_date,
@@ -470,7 +414,7 @@ const ExportDetailBillingPage = () => {
                         <tr key={data.id}>
                           <td style={styles.td}>{data.invoice_no}</td>
                           <td style={styles.td}>
-                            {data.details?.plan_name.split("|").join("\n")}
+                            {data.details?.plan_name.split('|')[0]}
                           </td>
                           <td style={styles.td}>
                             {data.details?.insurance_name}

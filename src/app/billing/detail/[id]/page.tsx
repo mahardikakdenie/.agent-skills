@@ -57,8 +57,6 @@ const DetailBillingPage = () => {
   const [openCancel, setOpenCancel] = useState(false);
   const [openUpdateToPaid, setOpenUpdateToPaid] = useState(false);
 
-  const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
-  // const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [searchCategory, setSearchCategory] = useState("All");
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -69,20 +67,14 @@ const DetailBillingPage = () => {
 
   const getCategories = async () => {
     let data = [];
-    for (let i = 0; i < billing.data.length; i++) {
-      const element = billing.data[i];
-      data.push(element)
+    if (billing && billing.data) {
+      for (let i = 0; i < billing.data.length; i++) {
+        let element = billing.data[i];
+        element.product_name = billing.data[i].items[0].details.product_name;//SET PRODUCT NAME
+        data.push(element);
+      }
+      setCategories(data);
     }
-    setCategories(data);
-    // try {
-    //   setLoading(true);
-    //   const productCategoriesService = new ProductCategoriesService();
-    //   const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(searchChannel);
-    //   setCategories(categoriesResponse.data || []);
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.error('Failed to fetch categories:', error);
-    // }
   }
 
   const handleRowsPerPageChange = (e: any) => {
@@ -289,7 +281,7 @@ const DetailBillingPage = () => {
                     <SelectItem value={'All'} key={-1}>All Product</SelectItem>
                     {
                       categories.map((item, index) => (
-                        <SelectItem key={index} value={item.product}>{item.product}</SelectItem>
+                        <SelectItem key={index} value={item.product}>{item.product_name}</SelectItem>
                       ))
                     }
                   </SelectGroup>

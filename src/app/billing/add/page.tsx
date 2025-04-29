@@ -126,22 +126,18 @@ const CreateBillingPage = () => {
 
   const handleChangeType = (value: string) => {
     setType(value);
-    setCategory("All");
   };
 
   useEffect(() => {
-    if (company != "") {
-      getCategories();
+    getCategories();
 
-    }
-
-  }, [company]);
+  }, []);
 
   const getCategories = async () => {
     try {
       const productCategoriesService = new ProductCategoriesService();
-      const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(company);
-      setCategories(categoriesResponse.data || []);
+      const categoriesResponse = await productCategoriesService.getCategories();
+      setCategories(categoriesResponse);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
     }
@@ -293,7 +289,6 @@ const CreateBillingPage = () => {
       alert("No transaction to create billing");
       return;
     }
-
     const detail = [];
     let totalCommission = 0;
     for (let data of processedTransactionList) {
@@ -319,6 +314,7 @@ const CreateBillingPage = () => {
         commission_amount: type === "insurer" ? commission : 0,
         details: {
           plan_name: data.insurance.plan.name,
+          product_name: data.insurance.product.name,
           transaction_date: data.created_at,
           insurance_name: data.insurance?.insurance?.id?.name,
         },
