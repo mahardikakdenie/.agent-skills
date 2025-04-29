@@ -57,10 +57,13 @@ export class FinanceService {
     return this.httpClientCookie.post('/v1/billings', data);
   }
 
-  async getBillingById(id: string, page?: number, pageSize?: number) {
+  async getBillingById(id: string, page?: number, pageSize?: number, groupBy?: string) {
     let qs = '';
     if (page && pageSize) {
       qs = `?page=${page}&pageSize=${pageSize}`;
+    }
+    if (groupBy) {
+      qs += '&groupBy=' + groupBy;
     }
     return this.httpClientCookie.get('/v1/billings/' + id + qs);
   }
