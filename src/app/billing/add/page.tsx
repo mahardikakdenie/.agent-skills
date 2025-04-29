@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CheckIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatMoney } from "@/lib/formatter";
 import { useRouter } from "next/navigation";
 import {
@@ -379,16 +379,23 @@ const CreateBillingPage = () => {
             <ChevronLeft className="w-4 h-4" />
             Back
           </div>
+
           <Button
-            className="bg-green-600"
             onClick={() => handleCreateBilling()}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
           >
-            Create Billing
+            <CheckIcon className="w-5 h-5 mr-1 " /> Create Billing
           </Button>
         </div>
       </div>
 
       <div className="pt-5 md:px-6 p-4 m-5 bg-white">
+        <label
+          htmlFor="type"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Choose Type
+        </label>
         <div>
           <Select
             value={type}
@@ -397,7 +404,7 @@ const CreateBillingPage = () => {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choose Type" />
+              <SelectValue placeholder="Choose" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={"partner"}>Partner</SelectItem>
@@ -405,62 +412,82 @@ const CreateBillingPage = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="pt-5">
-          <Select
-            value={company}
-            onValueChange={(value) => {
-              const selectedCompany = list.find((item) => item.id === value);
-              setCompany(value);
-              setCompanyName(selectedCompany?.name || "");
-              setCategory("All");
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose Company" />
-            </SelectTrigger>
-            <SelectContent>
-              {list &&
-                list.map((data) => {
-                  return (
-                    <SelectItem key={data.id} value={data.id}>
-                      {data.name}
-                    </SelectItem>
-                  );
-                })}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="pt-5">
-          <Select
-            value={category}
-            onValueChange={(value) => {
-              const selectedCategory = categories.find((item) => item.id === value);
-              setCategory(value);
-              // setCategoryName(selectedCategory?.name || "");
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose Category" />
-            </SelectTrigger>
-            <SelectContent>
-              {/* <SelectItem key={-1} value={"All"}>
+        <div className="pt-5 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
+          <div>
+            <label
+              htmlFor="type"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Choose Insurance Company
+            </label>
+            <Select
+              value={company}
+              onValueChange={(value) => {
+                const selectedCompany = list.find((item) => item.id === value);
+                setCompany(value);
+                setCompanyName(selectedCompany?.name || "");
+                setCategory("All");
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose" />
+              </SelectTrigger>
+              <SelectContent>
+                {list &&
+                  list.map((data) => {
+                    return (
+                      <SelectItem key={data.id} value={data.id}>
+                        {data.name}
+                      </SelectItem>
+                    );
+                  })}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Choose Category
+            </label>
+            <Select
+              value={category}
+              onValueChange={(value) => {
+                const selectedCategory = categories.find((item) => item.id === value);
+                setCategory(value);
+                // setCategoryName(selectedCategory?.name || "");
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose" />
+              </SelectTrigger>
+              <SelectContent>
+                {/* <SelectItem key={-1} value={"All"}>
                 All Category
               </SelectItem> */}
-              {categories &&
-                categories.map((data) => {
-                  return (
-                    <SelectItem key={data.id} value={data.id}>
-                      {data.name}
-                    </SelectItem>
-                  );
-                })}
-            </SelectContent>
-          </Select>
+                {categories &&
+                  categories.map((data) => {
+                    return (
+                      <SelectItem key={data.id} value={data.id}>
+                        {data.name}
+                      </SelectItem>
+                    );
+                  })}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="pt-5 grid grid-cols-2">
+
+        <div className="pt-5 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
           <div>
+            <label
+              htmlFor="type"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Choose Month
+            </label>
             <Select value={month} onValueChange={setMonth}>
               <SelectTrigger>
                 <SelectValue placeholder="Choose Month" />
@@ -478,8 +505,13 @@ const CreateBillingPage = () => {
             </Select>
           </div>
           <div>
+            <label
+              htmlFor="type"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Choose Year
+            </label>
             <Input
-              className="ml-2"
               type="text"
               value={year}
               placeholder="Year"
@@ -489,7 +521,11 @@ const CreateBillingPage = () => {
         </div>
 
         <div className="pt-5">
-          <Button className="btn-primary" onClick={handleGetTransaction}>
+          <Button
+            disabled={type && company && category && month && year ? false : true}
+            onClick={() => handleGetTransaction()}
+            className="ml-auto rounded-full"
+          >
             Get Transactions
           </Button>
         </div>
