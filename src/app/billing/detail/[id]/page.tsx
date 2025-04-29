@@ -165,6 +165,18 @@ const DetailBillingPage = () => {
     }
     return totalTransaction;
   }
+  const getStatusColor = (status: string) => {
+    if (status == "waiting-for-payment") {
+      return "#CC9B36";
+    }
+    else if (status == "paid") {
+      return "#00AB4F";
+    }
+    else if (status == "cancel") {
+      return "red";
+    }
+    return "";
+  }
   return (
     billing.data && (
       <div className="flex flex-col w-full">
@@ -203,9 +215,44 @@ const DetailBillingPage = () => {
         </div>
 
         <div className="pt-5 md:px-6 p-4 m-5 bg-white">
+          <table width="100%">
+            <tbody>
+              <tr>
+                <td>Billing No</td>
+                <td>: {billing.data[0].items[0].billings.billing_no}</td>
+                <td>Type</td>
+                <td>: {billing.data[0].items[0].billings.type}</td>
+              </tr>
+              <tr>
+                <td>Billing Created Date</td>
+                <td>: {new Date(billing.data[0].items[0].billings.created_at).toDateString()}</td>
+                <td>Company Name</td>
+                <td>: {billing.data[0].items[0].billings.company_name}</td>
+              </tr>
+              <tr>
+                <td>Total Transaction Amount</td>
+                <td>: {formatMoney(billing.data[0].items[0].billings.total)}</td>
+                <td>Period</td>
+                <td>: {billing.data[0].items[0].billings.transaction_period}</td>
+              </tr>
+              <tr>
+                <td>Total Commision Amount</td>
+                <td>: {formatMoney(billing.data[0].items[0].billings.amount)}</td>
+                <td>Status</td>
+                <td className={`font-bold`} style={{ color: `${getStatusColor(billing.data[0].items[0].billings.status)}` }}>: {billing.data[0].items[0].billings.status
+                  .split("-")
+                  .map(
+                    (word: any) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")}</td>
+              </tr>
+            </tbody>
+          </table>
+
           <div className="pt-5">
             <div>
-              <div>Billing No. {billing.data[0].items[0].billings.billing_no}</div>
+              {/* <div>Billing No. {billing.data[0].items[0].billings.billing_no}</div>
               <div>
                 Total Transaction:{" "}
                 {getTotalTransaction()}
@@ -234,20 +281,20 @@ const DetailBillingPage = () => {
               </div>
               <div>Type: {billing.data[0].items[0].billings.type}</div>
               <div>Company Name: {billing.data[0].items[0].billings.company_name}</div>
-              <div>Period: {billing.data[0].items[0].billings.transaction_period}</div>
+              <div>Period: {billing.data[0].items[0].billings.transaction_period}</div> */}
 
               {billing.data[0].items[0].billings.status === "waiting-for-payment" && (
                 <div className="pt-5 flex flex-row gap-3">
                   <Button
                     onClick={() => setOpenUpdateToPaid(true)}
-                    className="bg-green-600 hover:bg-green-700"
+                    className="rounded-full bg-green-600 hover:bg-green-700"
                   >
                     <span className="flex items-center">✓ Mark as Paid</span>
                   </Button>
 
                   <Button
                     onClick={() => router.push(`/billing/detail/${id}/invoice?type=${billing.data[0].items[0].billings.type}`)}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="rounded-full bg-blue-600 hover:bg-blue-700"
                   >
                     <span className="flex items-center">📄 View Invoice</span>
                   </Button>
@@ -255,7 +302,7 @@ const DetailBillingPage = () => {
                   <Button
                     onClick={() => setOpenCancel(true)}
                     variant="destructive"
-                    className="hover:bg-red-700"
+                    className="rounded-full bg-white border text-red-700 border-red-700 hover:bg-red-700 hover:text-white"
                   >
                     <span className="flex items-center">✕ Cancel Billing</span>
                   </Button>

@@ -31,7 +31,7 @@ import { Search } from "react-feather";
 import { useBilling } from "./hook";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, List, Printer } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Printer, PlusIcon, EyeIcon, File } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatMoney } from "@/lib/formatter";
 import { ChannelService } from "@/services/channel.services";
@@ -278,16 +278,13 @@ const BillingPage = () => {
           </Select>
         </div>
 
-      </div>
-      <div className="pb-5">
         <Button
-          className="btn btn-primary"
-          onClick={() => {
-            router.push("/billing/add");
-          }}
+          onClick={() => router.push("/billing/add")}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
-          Create Billing
+          <PlusIcon className="w-5 h-5 mr-1 " /> Create Billing
         </Button>
+
       </div>
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
         <Table className="table-transactions">
@@ -335,7 +332,7 @@ const BillingPage = () => {
                       }
                       }
                     >
-                      <List className="h-4 w-4" />
+                      <EyeIcon className="h-4 w-4" />
                     </Button>
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                       View Detail
@@ -351,7 +348,7 @@ const BillingPage = () => {
                       }
                       }
                     >
-                      <Printer className="h-4 w-4" />
+                      <File className="h-4 w-4" />
                     </Button>
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                       View Invoice
