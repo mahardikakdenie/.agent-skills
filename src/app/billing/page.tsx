@@ -39,6 +39,7 @@ import { DateRange } from "react-day-picker";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { useLoading } from "@/context/loading.context";
 import { useProduct } from "../masterdata/product/hooks";
+import moment from "moment";
 
 const BillingPage = () => {
   const { billingList, getBilling } = useBilling();
@@ -308,7 +309,7 @@ const BillingPage = () => {
               <TableRow key={index}>
                 <TableCell className="whitespace-nowrap">{index + 1}</TableCell>
                 <TableCell>{billing.billing_no}</TableCell>
-                <TableCell>{billing.created_at}</TableCell>
+                <TableCell>{moment(billing.created_at).local().format("DD-MM-YYYY HH:mm:ss")}</TableCell>
                 {/* <TableCell>{billing.transaction_period}</TableCell> */}
                 {/* <TableCell>{billing.type}</TableCell> */}
                 {/* <TableCell>{billing.company_name}</TableCell> */}
