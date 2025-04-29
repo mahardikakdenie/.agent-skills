@@ -259,7 +259,11 @@ const InvoicePage = () => {
       `;
 
     for (let i = 0; i < datas.length; i++) {
-      html += `<h4 class="font-bold sm:text-lg text-m sm:mt-2 mt-2">${datas[i].items[0].details.product_name}</h4>`;
+      html += `<div style="display: flex;justify-content: space-between">
+        <h4 style="font-weight: bold">${datas[i].items[0].details.product_name}</h4>
+        <div ></div>
+        <div >Commission ${datas[i].items[0].commission_percentage}%, Transaction :${datas[i].items.length}</div>
+      </div>`;
 
       let subTotal = 0;
       html += `  
