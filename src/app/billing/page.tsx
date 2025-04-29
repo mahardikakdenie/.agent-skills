@@ -295,9 +295,9 @@ const BillingPage = () => {
               <TableHead className="whitespace-nowrap">No.</TableHead>
               <TableHead>Billing No.</TableHead>
               <TableHead>Billing Date</TableHead>
-              <TableHead>Transaction Period</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Company Name</TableHead>
+              {/* <TableHead>Transaction Period</TableHead> */}
+              {/* <TableHead>Type</TableHead> */}
+              {/* <TableHead>Company Name</TableHead> */}
               <TableHead>Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
@@ -309,9 +309,9 @@ const BillingPage = () => {
                 <TableCell className="whitespace-nowrap">{index + 1}</TableCell>
                 <TableCell>{billing.billing_no}</TableCell>
                 <TableCell>{billing.created_at}</TableCell>
-                <TableCell>{billing.transaction_period}</TableCell>
-                <TableCell>{billing.type}</TableCell>
-                <TableCell>{billing.company_name}</TableCell>
+                {/* <TableCell>{billing.transaction_period}</TableCell> */}
+                {/* <TableCell>{billing.type}</TableCell> */}
+                {/* <TableCell>{billing.company_name}</TableCell> */}
                 <TableCell>{formatMoney(billing.amount)}</TableCell>
                 <TableCell>
                   {billing.status
