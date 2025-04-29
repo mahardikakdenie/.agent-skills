@@ -135,7 +135,6 @@ const InvoicePage = () => {
               <tr style="background-color: #f5f5f5;">
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;">Transaction No.</th>
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;">Plan</th> 
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;">Insurance</th>
                 <th style="padding: 12px; text-align: right; border-bottom: 2px solid #eee;">Amount</th>
               </tr>
             </thead>
@@ -147,14 +146,13 @@ const InvoicePage = () => {
           html += `<tr>
                 <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.invoice_no}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.details?.plan_name.split('|')[0]}</td>
-                <td style = "padding: 12px; border-bottom: 1px solid #eee;" >${d.details?.insurance_name}</td>
                 <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount)}</td>
               </tr>`;
         }
 
         html += ` 
       <tr style="font-weight: bold;">
-        <td colspan="3" style="padding: 12px; text-align: right;">Total:</td>
+        <td colspan="2" style="padding: 12px; text-align: right;">Total:</td>
         <td style="padding: 12px; text-align: right;">${formatMoney(
           subTotal
         )}</td>
@@ -169,7 +167,7 @@ const InvoicePage = () => {
       <table width="100%">  
           <tbody>
             <tr style="font-weight: bold;">
-              <td colspan="3" style="padding: 12px; text-align: right; width: 100%">Grand Total:</td>
+              <td colspan="2" style="padding: 12px; text-align: right; width: 100%">Grand Total:</td>
               <td style="padding: 12px; text-align: right;"> ${formatMoney(
       billing.data[0].billings.amount
     )}</td>
