@@ -321,7 +321,7 @@ const DetailBillingPage = () => {
 
                         <TableCell>{formatMoney(data.amount)}</TableCell>
                         <TableCell>{data.details?.transaction_date}</TableCell>
-                        <TableCell>{data.commission_percentage ?? 0}</TableCell>
+                        <TableCell>{data.commission_percentage ?? 0}%</TableCell>
                         <TableCell>
                           {formatMoney(data.commission_amount ?? 0)}
                         </TableCell>
