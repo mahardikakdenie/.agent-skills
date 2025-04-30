@@ -51,7 +51,7 @@ const DetailBillingPage = () => {
   useRequireAuth();
 
   const { getBillingById, billing, updateBilling } = useBilling();
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const { setLoading } = useLoading();
   const [openCancel, setOpenCancel] = useState(false);
@@ -98,7 +98,7 @@ const DetailBillingPage = () => {
   useEffect(() => {
     getBillingById(id as string, 1, rowsPerPage, "product")
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, rowsPerPage]);
 
   useEffect(() => {
     getCategories();
