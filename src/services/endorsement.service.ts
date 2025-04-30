@@ -90,7 +90,7 @@ export class EndorsementService {
 
   async uploadEndorsement(id: string, data: any): Promise<any> {
     try {
-      return await this.httpClient.post("v1/endorsements/buldfking/", data);
+      return await this.httpClient.post("v1/endorsements/bulking/", data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

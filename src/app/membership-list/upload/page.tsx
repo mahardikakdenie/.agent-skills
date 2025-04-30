@@ -23,8 +23,8 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
   const [ xlsxData, setXlsxData ] = useState<any[]>([]);
   const [ headers, setHeaders ] = useState<string[]>([]);
   
-  const membershipService = new MembershipService();
   const channelService = new ChannelService();
+  const membershipService = new MembershipService();
   
   const handleChooseFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
@@ -158,22 +158,19 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
         <Table className="min-w-full">
           <TableHeader>
             <TableRow>
-              {xlsxData.length > 0 &&
-                Object.keys(xlsxData[0]).map((item, i) => (
-                  <TableHead key={i} className="whitespace-nowrap">{item}</TableHead>
-                ))}
+              {xlsxData.length > 0 && Object.keys(xlsxData[0]).map((item, i) => (
+                <TableHead key={i} className="whitespace-nowrap">{item}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {xlsxData.length > 0 && xlsxData.map((item, i) => (
-                <TableRow key={i}>
-                  {Object.keys(item).map((key, j) => (
-                    <TableCell key={j}>
-                      {item[key] !== undefined && item[key] !== null ? item[key] : ""}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
+              <TableRow key={i}>
+                {Object.keys(item).map((key, j) => (
+                  <TableCell key={j}>{item[key] !== undefined && item[key] !== null ? item[key] : ""}</TableCell>
+                ))}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

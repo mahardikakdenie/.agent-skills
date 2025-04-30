@@ -1,21 +1,19 @@
 "use client";
 import WithSidebar from "@/hoc/with-sidebar";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { use, useEffect, useState } from "react";
 import { useLoading } from "@/context/loading.context";
 import { usePathname, useRouter } from "next/navigation";
 import { ChannelService } from "@/services/channel.services";
 import { MembershipService } from "@/services/membership.service";
-import { ChevronLeft, ChevronRight, Download, Search, Upload, X } from "react-feather";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChevronLeft, ChevronRight, Download, Upload } from "react-feather";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const MembershipPage = () => {
   useRequireAuth();
   const path = usePathname();
-  const membershipService = new MembershipService();
-  const channelService = new ChannelService();
   const router = useRouter();
   const { setLoading } = useLoading();
   const [ page, setPage ] = useState(1);
@@ -30,17 +28,14 @@ const MembershipPage = () => {
   const [ channels, setChannels ] = useState<any[]>([]);
   const [ membership, setMembership ] = useState<any[]>([]);
   const [ filteredMembership, setFilteredMembership ] = useState<any[]>([]);
+  
+  const channelService = new ChannelService();
+  const membershipService = new MembershipService();
 
   useEffect(() => {
     const fetchMembership = async () => {
       try {
-        const res = await membershipService.getMembership(
-          page,
-          rowsPerPage,
-          searchData,
-          tab === "All" ? "" : tab,
-          channel
-        );
+        const res = await membershipService.getMembership(page, rowsPerPage, searchData, tab === "All" ? "" : tab, channel);
         setMembership(res.data);
         setFilteredMembership(res.data);
         setPage(res.page);
@@ -95,13 +90,7 @@ const MembershipPage = () => {
   };
 
   const handleExport = () => {
-    const exportData = {
-      page,
-      limit: rowsPerPage,
-      status: tab === "All" ? "" : tab,
-      channel: channel
-    };
-
+    const exportData = {page, limit: rowsPerPage, status: tab === "All" ? "" : tab, channel: channel};
     localStorage.setItem("exportMembershipData", JSON.stringify(exportData));
     router.push(`${path}/export`);
   };
@@ -126,13 +115,16 @@ const MembershipPage = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
+
         <Button onClick={handleUpload} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full">
           <Upload className="w-5 h-5 mr-1 " /> Upload
         </Button>
+
         <Button onClick={handleExport} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full">
           <Download className="w-5 h-5 mr-1 " /> Download
         </Button>
       </div>
+
       <div className="block bg-white rounded-md mb-3">
         <div className="w-full flex items-center overflow-auto">
           <div
@@ -141,21 +133,13 @@ const MembershipPage = () => {
               tab === "All" && "border-b-[3px] border-primary sm:px-7 px-5"
             }`}
           >
-            <button
-              className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
-            >
-              All Membership
-            </button>
+            <button className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}>All Membership</button>
             <span
               className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
                 totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
               } ${tab !== "All" && "hidden"}`}
             >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
+              {totalData} <span className={`${totalData < 100 && "hidden"}`} style={{ fontSize: "10px" }}></span>
             </span>
           </div>
           <div
@@ -164,23 +148,13 @@ const MembershipPage = () => {
               tab === "Pending" && "border-b-[3px] border-primary sm:px-7 px-5"
             }`}
           >
-            <button
-              className={`text-sm py-5 mr-3 ${
-                tab === "Pending" && "text-primary"
-              }`}
-            >
-              Pending
-            </button>
+            <button className={`text-sm py-5 mr-3 ${ tab === "Pending" && "text-primary" }`}>Pending</button>
             <span
               className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
                 totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
               } ${tab !== "Pending" && "hidden"}`}
-            >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
+            > 
+              {totalData} <span className={`${totalData < 100 && "hidden"}`} style={{ fontSize: "10px" }}></span>
             </span>
           </div>
           <div
@@ -190,23 +164,13 @@ const MembershipPage = () => {
               "border-b-[3px] border-primary sm:px-7 px-5"
             }`}
           >
-            <button
-              className={`text-sm py-5 mr-3 ${
-                tab === "Active" && "text-primary"
-              }`}
-            >
-              Active
-            </button>
+            <button className={`text-sm py-5 mr-3 ${tab === "Active" && "text-primary"}`}>Active</button>
             <span
               className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
                 totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
               } ${tab !== "Active" && "hidden"}`}
             >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
+              {totalData} <span className={`${totalData < 100 && "hidden"}`} style={{ fontSize: "10px" }}></span>
             </span>
           </div>
           <div
@@ -215,27 +179,18 @@ const MembershipPage = () => {
               tab === "Inactive" && "border-b-[3px] border-primary sm:px-7 px-5"
             }`}
           >
-            <button
-              className={`text-sm py-5 mr-3 ${
-                tab === "Inactive" && "text-primary"
-              }`}
-            >
-              Inactive
-            </button>
+            <button className={`text-sm py-5 mr-3 ${tab === "Inactive" && "text-primary"}`}>Inactive</button>
             <span
               className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
                 totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
               } ${tab !== "Inactive" && "hidden"}`}
             >
-              {totalData}
-              <span
-                className={`${totalData < 100 && "hidden"}`}
-                style={{ fontSize: "10px" }}
-              ></span>
+              {totalData} <span className={`${totalData < 100 && "hidden"}`} style={{ fontSize: "10px" }}></span>
             </span>
           </div>
         </div>
       </div>
+
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
         <Table className="table-policies">
           <TableHeader>
@@ -297,23 +252,14 @@ const MembershipPage = () => {
         
         <div className="flex justify-center items-center gap-2 font-normal text-sm pt-2 border-t">
           <label htmlFor="rowsPerPage">Showing:</label>
-          <select
-            id="rowsPerPage"
-            value={rowsPerPage}
-            onChange={handleRowsPerPageChange}
-            className="p-2 border rounded"
-          >
+          <select id="rowsPerPage" value={rowsPerPage} onChange={handleRowsPerPageChange} className="p-2 border rounded">
             {[10, 20, 30, 50].map((option) => (
               <option key={option} value={option}>{option}</option>
             ))}
           </select>
           <span className="mr-2">of {totalItems} items</span>
-          <button onClick={() => setPage((prevState) => prevState - 1)} disabled={page === 1} title="Prev">
-            <ChevronLeft />
-          </button>
-          <button onClick={() => setPage((prevState) => prevState + 1)} disabled={page === totalPages} title="Next">
-            <ChevronRight />
-          </button>
+          <button onClick={() => setPage((prevState) => prevState - 1)} disabled={page === 1} title="Prev"><ChevronLeft /></button>
+          <button onClick={() => setPage((prevState) => prevState + 1)} disabled={page === totalPages} title="Next"><ChevronRight /></button>
         </div>
       </div>
     </div>
