@@ -313,10 +313,9 @@ const DetailBillingPage = () => {
         </div>
 
         <div className="pt-5 md:px-6 p-4 m-5 bg-white">
-          <div className="flex flex-wrap justify-start gap-4 pb-4 items-center">
+          {/* <div className="flex flex-wrap justify-start gap-4 pb-4 items-center">
             <div className="min-w-48">
-              <Select
-                // disabled={!searchChannel}
+              <Select 
                 value={searchCategory}
                 onValueChange={handleCategoryChange}
               >
@@ -334,22 +333,23 @@ const DetailBillingPage = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-            </div></div>
+            </div>
+          </div> */}
           <div>
             <Table className="table-claims w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Transaction Number</TableHead>
-                  <TableHead>Plan Name</TableHead>
+                  <TableHead style={{ width: "180px" }}>Transaction Number</TableHead>
+                  <TableHead style={{ width: "350px" }}>Plan Name</TableHead>
                   {billing.data[0].items[0].billings.type == "partner" ?
                     <TableHead>Insurance Company Name</TableHead>
                     :
                     ""}
 
-                  <TableHead>Amount</TableHead>
                   <TableHead>Transaction Date</TableHead>
-                  <TableHead>Commision Percentage</TableHead>
-                  <TableHead>Commision Amount</TableHead>
+                  <TableHead style={{ textAlign: "right" }}>Amount</TableHead>
+                  <TableHead style={{ textAlign: "right" }}>Commision Percentage</TableHead>
+                  <TableHead style={{ textAlign: "right" }}>Commision Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -366,10 +366,10 @@ const DetailBillingPage = () => {
                           :
                           ""}
 
-                        <TableCell>{formatMoney(data.amount)}</TableCell>
                         <TableCell>{data.details?.transaction_date}</TableCell>
-                        <TableCell>{data.commission_percentage ?? 0}%</TableCell>
-                        <TableCell>
+                        <TableCell style={{ textAlign: "right" }}>{formatMoney(data.amount)}</TableCell>
+                        <TableCell style={{ textAlign: "right" }}>{data.commission_percentage ?? 0}%</TableCell>
+                        <TableCell style={{ textAlign: "right" }}>
                           {formatMoney(data.commission_amount ?? 0)}
                         </TableCell>
                       </TableRow>
