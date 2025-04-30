@@ -74,6 +74,10 @@ const BillingPage = () => {
   }, [billingList]);
 
   useEffect(() => {
+    if (searchType == "" || searchChannel == "") {
+      return;
+    }
+
     getBilling({ type: searchType, company: searchChannel }, page, rowsPerPage,);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, searchType, searchChannel, searchCategory, date]);
@@ -84,25 +88,37 @@ const BillingPage = () => {
       await getChannels();
       await fetchInsurances("");
 
+      if (localStorage.getItem("billingPage")) {
+        const d = JSON.parse(localStorage.getItem("billingPage")!);
+        setCompanyDataSource();
+        setSearchType(d.type);
+        setSearchChannel(d.company)
+        return;
+      }
+
       setSearchType("partner")
     }
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (searchType == "insurer") {
-      setCompanies(insurances);
-      if (insurances.length > 0) {
-        setSearchChannel(insurances[0].id);
-      }
-    } else if (searchType == "partner") {
-      setCompanies(channels);
-      if (channels.length > 0) {
-        setSearchChannel(channels[0].id);
-      }
-    }
+    setCompanyDataSource();
   }, [searchType]);
 
+
+  const setCompanyDataSource = () => {
+    if (searchType == "insurer") {
+      setCompanies(insurances);
+      // if (insurances.length > 0) {
+      //   setSearchChannel(insurances[0].id);
+      // }
+    } else if (searchType == "partner") {
+      setCompanies(channels);
+      // if (channels.length > 0) {
+      //   setSearchChannel(channels[0].id);
+      // }
+    }
+  }
 
   const getChannels = async () => {
     try {
@@ -133,7 +149,6 @@ const BillingPage = () => {
   }
 
   const handleTypeChange = (v: string) => {
-    console.log(v);
     setSearchType(v);
     if (v == "insurer") {
       setCompanies(insurances);
@@ -146,11 +161,14 @@ const BillingPage = () => {
         setSearchChannel(channels[0].id);
       }
     }
+
+    localStorage.setItem("billingPage", JSON.stringify({ type: v, company: searchChannel }));
     setSearchCategory("All");
   };
 
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
+    localStorage.setItem("billingPage", JSON.stringify({ type: searchType, company: v }));
     setSearchCategory("All");
   };
 
