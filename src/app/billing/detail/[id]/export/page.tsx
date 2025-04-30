@@ -18,6 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useLoading } from "@/context/loading.context";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import moment from "moment";
 
 const ExportDetailBillingPage = () => {
   useRequireAuth();
@@ -48,6 +50,7 @@ const ExportDetailBillingPage = () => {
 
   useEffect(() => {
     getBillingById(id as string, undefined, undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const router = useRouter();
@@ -95,18 +98,86 @@ const ExportDetailBillingPage = () => {
     }
 
     const doc = new jsPDF({
-      format: "a1",
+      format: "a4",
       unit: "px",
     });
     doc.setFontSize(10);
     doc.setFont("Inter-Regular", "normal");
-    doc.html(refTemplate.current, {
-      async callback(doc) {
-        await doc.save(billing_no + ".pdf");
+    // doc.html(refTemplate.current, {
+    //   async callback(doc) {
+    //     await doc.save(billing_no + ".pdf");
+    //   },
+    //   x: 30,
+    //   y: 30,
+    // });  
+    doc.text('Billing No.', 30, 30)
+    doc.text(`: ${billing.data[0].billings.billing_no}`, 100, 30)
+
+    doc.text('Total Amount', 30, 40) //x,y
+    doc.text(`: ${formatMoney(billing.data[0].billings.amount)}`, 100, 40)
+
+    doc.text('Billing Created Date', 30, 50)
+    doc.text(`: ${new Date(billing.data[0].billings.created_at).toDateString()}`, 100, 50)
+
+    doc.text('Status', 30, 60)
+    doc.text(`: ${billing.data[0].billings.status
+      .split("-")
+      .map(
+        (word: any) =>
+          word.charAt(0).toUpperCase() +
+          word.slice(1).toLowerCase()
+      )
+      .join(" ")}`, 100, 60)
+
+    doc.text('Type', 30, 70)
+    doc.text(`: ${billing.data[0]?.billings?.type}`, 100, 70)
+
+    doc.text('Company Name', 30, 80)
+    doc.text(`: ${billing.data[0].billings.company_name}`, 100, 80)
+
+    doc.text('Period', 30, 90)
+    doc.text(`: ${billing.data[0].billings.transaction_period}`, 100, 90)
+
+    autoTable(doc, {
+      head: [[
+        "Transaction Number",
+        "Plan Name",
+        // "Insurance Company Name",
+        "Amount",
+        "Transaction Date",
+        "Commission Percentage",
+        "Commission Amount",]],
+      body: billing.data.map((item: any, index: number) => {
+        return [
+          item.invoice_no,
+          item.details?.plan_name.split('|')[0],
+          // item.details?.insurance_name,
+          formatMoney(item.amount),
+          item.details?.transaction_date,
+          item.commission_percentage ?? 0,
+          formatMoney(item.commission_amount ?? 0),
+        ]
+      }),
+      columnStyles: {
+        2: { halign: 'right' },
+        4: { halign: 'right' },
+        5: { halign: 'right' },
       },
-      x: 30,
-      y: 30,
+      startY: 120,
+      headStyles: {
+        textColor: 'black',
+        fontStyle: 'bold',
+        fontSize: 10,
+        fillColor: [231, 231, 231], //grey
+      },
+      bodyStyles: {
+        textColor: 'black',
+        fontSize: 10,
+      },
     });
+    const date = moment();
+    const formattedDate = date.format('YYYY_MM_DD');
+    doc.save(`${billing_no}_${formattedDate}.pdf`);
   };
 
   const handleGenerateXlsx = () => {
@@ -152,7 +223,7 @@ const ExportDetailBillingPage = () => {
     ];
     const tableData = billing.data.map((item: any) => [
       item.invoice_no,
-      item.details?.plan_name,
+      item.details?.plan_name.split('|')[0],
       item.details?.insurance_name,
       formatMoney(item.amount),
       item.details?.transaction_date,
@@ -343,7 +414,7 @@ const ExportDetailBillingPage = () => {
                         <tr key={data.id}>
                           <td style={styles.td}>{data.invoice_no}</td>
                           <td style={styles.td}>
-                            {data.details?.plan_name.split("|").join("\n")}
+                            {data.details?.plan_name.split('|')[0]}
                           </td>
                           <td style={styles.td}>
                             {data.details?.insurance_name}

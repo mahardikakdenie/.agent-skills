@@ -151,6 +151,7 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
     fetchCategories({});
     fetchInsurances({});
     fetchTypeCurrencies({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -83,6 +83,7 @@ const CreateBrokerFee = () => {
 
   useEffect(() => {
     fetchInsurances({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const watchInsurance = useWatch({
@@ -96,10 +97,12 @@ const CreateBrokerFee = () => {
   });
   useEffect(() => {
     if (watchInsurance) fetchProducts({ insuranceId: watchInsurance });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchInsurance]);
 
   useEffect(() => {
     if (watchProduct) fetchPlans({ productId: watchProduct });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchProduct]);
   return (
     <div className="flex flex-col w-full">

@@ -10,6 +10,66 @@ interface TransactionResponse {
   pageTotal: number;
   total: number;
 }
+
+export interface Transaction {
+  id: string;
+  status: string;
+  date: string;
+  customer: Customer;
+  insurance: Insurance;
+  discount: {};
+  fees: TransactionFee[];
+  forms: any;
+  participants: Participant[];
+  category: string;
+}
+
+export interface TransactionFee {
+  id?: string;
+  name: string;
+  description?: string;
+  value: number;
+  currency: string;
+  required: boolean;
+  exchange_rates: [];
+}
+
+export interface Customer {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  account: string;
+}
+
+export interface Insurance {
+  id: string;
+  sum_insured: string | null;
+  premium: string;
+  currency: string;
+  quantity: string;
+  plan: {
+      id: string;
+      name: string;
+  };
+  product: {
+      id: string;
+      name: string;
+  };
+  insurance: {
+      name: string;
+      logo_url: string;
+      currencies: [];
+  };
+  original_price: number;
+  discount: number;
+}
+
+export interface Participant {
+  id: string;
+  data: any;
+  number: string;
+}
 export class TransactionService {
   private httpClient: IHttpClient;
 
@@ -90,5 +150,29 @@ export class TransactionService {
       console.error("Request failed:", error);
       throw error;
     }
+  }
+
+  async getTransactionStatistic(
+    page: number,
+    filters?: {
+      insurance?: string;
+      product?: string;
+      plan?: string;
+      from?: string;
+      to?: string;
+    }
+  ): Promise<any> {
+    const params = {
+      page,
+      sort: 'desc',
+      ...(filters?.insurance && { insurance: filters.insurance }),
+      ...(filters?.product && { product: filters.product }),
+      ...(filters?.plan && { plan: filters.plan }),
+      ...(filters?.from && { from: filters.from }),
+      ...(filters?.to && { to: filters.to }),
+    };
+  
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get<any>(`/v1/transactions/statistic-data?${queryString}`);
   }
 }

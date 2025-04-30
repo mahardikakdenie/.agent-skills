@@ -30,6 +30,7 @@ export default function ChannelAddModal(props: {
   const { id, open, setOpen, getChannels, channels, assignPlans } = props;
   useEffect(() => {
     (async () => await getChannels())();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [channel, setChannel] = useState<string>("");
   const { setLoading } = useLoading();

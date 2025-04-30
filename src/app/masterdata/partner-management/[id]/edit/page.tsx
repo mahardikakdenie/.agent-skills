@@ -112,6 +112,7 @@ const EditPartner = ({ params }: { params: { id: string } }) => {
     if (id) {
       initializeData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, reset]);
 
   const generateApiKey = () => {

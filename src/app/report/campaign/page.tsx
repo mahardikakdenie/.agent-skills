@@ -132,6 +132,7 @@ const ReportCampaignPage = () => {
     if (filterBy == "insurance") {
       fetchInsuranceOptions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterBy]);
 
   useEffect(() => {
@@ -184,6 +185,7 @@ const ReportCampaignPage = () => {
           });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAccess, page, rowsPerPage, sortBy, filterBy, selectedInsurance, date]);
 
   const fetchInsuranceOptions = async () => {

@@ -34,6 +34,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -42,6 +43,7 @@ import {
 } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
 import { stateToHTML } from "draft-js-export-html";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const EditPage = ({ params }: { params: { id: string } }) => {
   useRequireAuth();
@@ -110,6 +112,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     fetchCategories({});
     fetchJourney({});
     fetchMailTemplateById(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, id]);
 
   useEffect(() => {
@@ -157,6 +160,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         setSelectedTemplateType(mailTemplateById[0].type);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mailTemplateById, selectedCategoryId]);
 
   useEffect(() => {
@@ -185,6 +189,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         journey: selectedJourneyId,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedCategoryId,
     selectedInsuranceId,
@@ -645,6 +650,9 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                 </DialogTrigger>
                 <DialogContent className="dialog-email-template overflow-hidden">
                   <DialogHeader>
+                    <DialogTitle>
+                      <VisuallyHidden>This title is provided to prevent DialogTitle warning</VisuallyHidden>
+                    </DialogTitle>
                     <DialogDescription>
                       <div className="bg-primary absolute top-0 left-0 text-white flex items-center w-full py-1 px-5">
                         <div className="text-sm font-semibold">
@@ -706,7 +714,10 @@ const EditPage = ({ params }: { params: { id: string } }) => {
                   id="subject"
                   type="text"
                   placeholder={selectedTemplateType === "email" ? "Insert Judul Email" : "Insert Judul"}
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    setEmailTitlePreview(e.target.value);
+                  }}
                 />
               )}
             />

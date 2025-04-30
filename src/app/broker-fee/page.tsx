@@ -34,6 +34,7 @@ const BrokerFeePage = () => {
         setLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
   const router = useRouter();
 
@@ -59,6 +60,7 @@ const BrokerFeePage = () => {
 
   useEffect(() => {
     getBrokerFees({}, page, rowsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
 
   useEffect(() => {

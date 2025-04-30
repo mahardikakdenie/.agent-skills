@@ -130,6 +130,7 @@ const AddProduct = ({ params }: { params: { id: string } }) => {
       page: 1,
       categoryId: selectedCategoryId,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategoryId]);
 
   useEffect(() => {

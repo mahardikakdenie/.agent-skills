@@ -88,6 +88,7 @@ const InsuranceProduct = () => {
     };
 
     fetchInsurance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, tab]);
 
   useEffect(() => {
@@ -106,6 +107,7 @@ const InsuranceProduct = () => {
     };
 
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

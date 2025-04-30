@@ -107,6 +107,7 @@ const DetaildPage = ({
         await fetchPlanById(id);
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
@@ -118,6 +119,7 @@ const DetaildPage = ({
     setValue("name", plan.name);
     setValue("slug", plan.slug);
     setValue("insuranceId", plan.products.insurances.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, insurances]);
 
   useEffect(() => {
@@ -125,6 +127,7 @@ const DetaildPage = ({
       return;
     }
     setValue("productId", plan.product);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, products]);
 
   const onSubmit = async (data: any) => {

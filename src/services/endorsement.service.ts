@@ -1,3 +1,4 @@
+// endorsement.service.ts
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 import qs from "qs";
@@ -77,4 +78,32 @@ export class EndorsementService {
   async getEndorsementDetail(id: string): Promise<any> {
     return this.httpClient.get("v1/endorsements/" + id);
   }
+
+  async updateEndorsement(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.put("v1/endorsements/update-status-bulking/" + id, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async uploadEndorsement(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("v1/endorsements/buldfking/", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async policiesMaster(channel_id: string): Promise<any> {
+    try {
+      return await this.httpClient.get(`v1/policies/master/${channel_id}?is_only_master_policy=true`);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
 }

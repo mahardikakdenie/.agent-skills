@@ -57,6 +57,7 @@ const AssignPlan = ({
       await fetchCategories("");
     };
     loadCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // New useEffect to set default tab when categories are loaded
@@ -64,6 +65,7 @@ const AssignPlan = ({
     if (categories.length > 0 && !activeTab) {
       setActiveTab(categories[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 
   // Separate useEffect for fetching plans when activeTab changes
@@ -74,6 +76,7 @@ const AssignPlan = ({
         fetchPlans(category.name);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, page, rowsPerPage]);
 
   useEffect(() => {
@@ -85,6 +88,7 @@ const AssignPlan = ({
       }
     };
     loadAssignedPlans();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchPlans = async (category: string) => {
@@ -232,9 +236,12 @@ const AssignPlan = ({
                           <TableCell>
                             <div className="flex gap-2 items-center">
                               <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                                <img
+                                <Image
                                   src={product.products.insurances.logo_url}
                                   alt=""
+                                  width={100}
+                                  height={50}
+                                  className="w-full h-auto"
                                 />
                               </div>
                               {product.products.insurances.name}

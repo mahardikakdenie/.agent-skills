@@ -81,6 +81,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
         await fetchInsurance({});
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {

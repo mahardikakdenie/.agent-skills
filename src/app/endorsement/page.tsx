@@ -13,7 +13,7 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { EndorsementService } from "@/services/endorsement.service";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, Search } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Search, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import noData from "/public/images/no-data.webp";
 import Image from "next/image";
@@ -22,17 +22,17 @@ import { Input } from "@/components/ui/input";
 
 const EndorsementPage = () => {
   useRequireAuth();
+  const router = useRouter();
   const path = usePathname();
   const endorsementService = new EndorsementService();
-  const [filteredEndorsement, setFilteredEndorsement] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
-  const router = useRouter();
   const [tab, setTab] = useState("All");
   const [totalData, setTotalData] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [searchData, setSearchData] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filteredEndorsement, setFilteredEndorsement] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +43,6 @@ const EndorsementPage = () => {
           tab === "All" ? "" : tab,
           searchData
         );
-
         const sortedData = res.data.sort(
           (a: any, b: any) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -60,6 +59,7 @@ const EndorsementPage = () => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, tab, searchData]);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -92,15 +92,22 @@ const EndorsementPage = () => {
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
   }, 100);
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Endorsement List</h1>
         <Button
-          onClick={() => router.push(`${path}/export`)}
+          onClick={() => router.push(`${path}/upload`)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
-          <Download className="w-5 h-5 mr-1 " /> Export
+          <Upload className="w-5 h-5 mr-1 " /> Upload
+        </Button>
+        <Button
+          onClick={() => router.push(`${path}/export`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+        >
+          <Download className="w-5 h-5 mr-1 " /> Download
         </Button>
       </div>
 
@@ -206,17 +213,15 @@ const EndorsementPage = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-white rounded-lg">
-        <div className="sm:p-6 p-4">
-          <div className="relative w-full ml-auto">
-            <Input
-              type="text"
-              placeholder="Search by Name"
-              onChange={(e) => handleSearch(e.target.value)}
-              className="border p-3 rounded-md pr-10 w-full"
-            />
-            <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
-          </div>
+      <div className="w-full sm:p-6 p-4 bg-white rounded-lg">
+        <div className="relative w-full ml-auto">
+          <Input
+            type="text"
+            placeholder="Search by Name"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-3 rounded-md pr-10 w-full"
+          />
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
         <Table className="table-claims">
           <TableHeader>
@@ -246,10 +251,9 @@ const EndorsementPage = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {endorsement?.participants?.full_name ||
-                      endorsement?.participants?.name ||
-                      endorsement?.participants?.first_name ||
-                      endorsement?.participants?.last_name ||
+                  {endorsement?.insured_parties?.profile?.name ||
+                      endorsement?.policies?.policy_holders?.name ||
+                      endorsement?.participants?.profile?.name ||
                       "-"}
                   </TableCell>
                   <TableCell>{endorsement.policies?.number || "-"}</TableCell>
@@ -293,48 +297,28 @@ const EndorsementPage = () => {
               </TableRow>
             )}
           </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={10}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50, 100].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() => setPage((prevState) => prevState - 1)}
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() => setPage((prevState) => prevState + 1)}
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
         </Table>
+        
+        <div className="flex justify-center items-center gap-2 font-normal text-sm pt-2 border-t">
+          <label htmlFor="rowsPerPage">Showing:</label>
+          <select id="rowsPerPage" value={rowsPerPage} onChange={handleRowsPerPageChange} className="p-2 border rounded">
+            {[10, 20, 30, 50].map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+          <span className="mr-2">of {totalItems} items</span>
+          <button onClick={() => setPage((prevState) => prevState - 1)} disabled={page === 1} title="Prev">
+            <ChevronLeft />
+          </button>
+          <button onClick={() => setPage((prevState) => prevState + 1)} disabled={page === totalPages} title="Next">
+            <ChevronRight />
+          </button>
+        </div>
+
       </div>
     </div>
   );
 };
 
-const TransactionWithSidebar = (params: any) =>
-  WithSidebar(EndorsementPage)(params);
-export default TransactionWithSidebar;
+const EndorsementWithSidebar = (params: any) => WithSidebar(EndorsementPage)(params);
+export default EndorsementWithSidebar;

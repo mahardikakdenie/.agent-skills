@@ -17,18 +17,19 @@ import logoAirpaz from "/public/images/logo-airpaz.webp";
 import { Menu } from "react-feather";
 import { Button } from "./button";
 import { usePathname } from "next/navigation";
+import { ChartPie } from "lucide-react";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   const pathname = usePathname();
 
-  const isActive = (href: string) => {
-    if (href.endsWith("/*")) {
-      const baseHref = href.slice(0, -2);
-      return pathname === baseHref || pathname.startsWith(`${baseHref}/`);
+  const isActive = (sidebar: string) => {
+    if (sidebar.endsWith('/*')) {
+      const base = sidebar.replace('/*', '');
+      return pathname.startsWith(base);
     }
-    return pathname === href;
+    return pathname === sidebar;
   };
 
   const toggleSidebar = () => {
@@ -78,16 +79,44 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/home"
+                  href="/dashboard/transaction"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/home/*")
+                    isActive("/dashboard/transaction/*")
                       ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                       : ""
                   }`}
                   onClick={handleMenuClick}
                 >
-                  <Image src={iconHome} alt="Home" className="w-7 min-w-7" />
-                  Home
+                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  Transaction
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard/policy"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/dashboard/policy/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard/claim"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/dashboard/claim/*")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  Claim
                 </Link>
               </li>
               <li className="mt-2 text-sm">
@@ -307,6 +336,27 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Endorsement
+                </Link>
+              </li>
+              <li className="mt-2 text-sm">
+                <strong>Membership</strong>
+              </li>
+              <li>
+                <Link
+                  href="/membership-list"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive("/membership-list")
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Membership List"
+                    className="w-7 min-w-7"
+                  />
+                  Membership List
                 </Link>
               </li>
               <li className="mt-2 text-sm">

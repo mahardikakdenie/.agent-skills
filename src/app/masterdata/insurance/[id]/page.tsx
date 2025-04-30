@@ -93,6 +93,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
   useEffect(() => {

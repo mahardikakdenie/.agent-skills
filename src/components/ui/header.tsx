@@ -6,22 +6,19 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/auth.context";
 
 const Header = () => {
-  const { logout, checkLogin } = useAuth();
+  const { logout } = useAuth();
   const handleLogout = () => {
     logout();
-    checkLogin();
   };
 
   return (
     <>
-      <div className="bg-[#006EA7] flex items-center w-full px-4 h-16">
+      <div className="bg-[#006EA7] flex items-center w-full px-4 h-16 min-h-16">
         <div className="ml-auto">
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center text-white gap-2 text-sm">

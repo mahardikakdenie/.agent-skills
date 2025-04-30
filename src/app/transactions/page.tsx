@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/drewer";
 import { hasPermission } from "@/context/auth.context";
 import _ from "lodash";
+import Image from "next/image";
 
 const TransactionsPage = () => {
   useRequireAuth();
@@ -81,6 +82,7 @@ const TransactionsPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, tab, searchData]);
 
   useEffect(() => {
@@ -349,12 +351,11 @@ const TransactionsPage = () => {
                   <TableCell>
                     <div className="flex gap-2 items-center">
                       <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                        <img
-                          src={
-                            transaction?.insurance?.insurance?.id?.logo_url ||
-                            "-"
-                          }
+                        <Image
+                          src={transaction?.insurance?.insurance?.id?.logo_url || "-"}
                           alt=""
+                          width={100}
+                          height={50}
                         />
                       </div>
                       {transaction?.insurance?.insurance?.id?.name || "-"}

@@ -41,6 +41,7 @@ const ExportPage = () => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const reportTemplateRef = useRef(null);
@@ -190,10 +191,9 @@ const ExportPage = () => {
                     </div>
                   </td>
                   <td style={styles.td} valign="middle">
-                    {endorsement?.participants?.full_name ||
-                      endorsement?.participants?.name ||
-                      endorsement?.participants?.first_name ||
-                      endorsement?.participants?.last_name ||
+                    {endorsement?.insured_parties?.profile?.name ||
+                      endorsement?.policies?.policy_holders?.name ||
+                      endorsement?.participants?.profile?.name ||
                       "-"}
                   </td>
                   <td style={styles.td} valign="middle">
