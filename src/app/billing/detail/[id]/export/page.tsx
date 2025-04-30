@@ -30,6 +30,8 @@ const ExportDetailBillingPage = () => {
   const { setLoading } = useLoading();
   const [openCancel, setOpenCancel] = useState(false);
   const [openUpdateToPaid, setOpenUpdateToPaid] = useState(false);
+  const [type, setType] = useState('');
+
   const handleRowsPerPageChange = (e: any) => {
     setRowsPerPage(e.target.value);
   };
@@ -49,9 +51,12 @@ const ExportDetailBillingPage = () => {
   };
 
   useEffect(() => {
+    const searchParam = new URLSearchParams(window.location.search);
+    let t = searchParam.get("type") ?? "";
     getBillingById(id as string, undefined, undefined);
+    setType(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, type]);
 
   const router = useRouter();
   const handleBack = () => {
@@ -138,28 +143,49 @@ const ExportDetailBillingPage = () => {
     doc.text('Period', 30, 90)
     doc.text(`: ${billing.data[0].billings.transaction_period}`, 100, 90)
 
-    autoTable(doc, {
-      head: [[
+    let head = [
+      "Transaction Number",
+      "Plan Name",
+      "Insurance Company Name",
+      "Transaction Date",
+      "Amount",];
+    if (type == "insurer") {
+      head = [
         "Transaction Number",
         "Plan Name",
-        // "Insurance Company Name",
-        "Amount",
         "Transaction Date",
-        "Commission Percentage",
-        "Commission Amount",]],
+        "Amount",
+        "%",
+        "Commission Amount"];
+    }
+    autoTable(doc, {
+      head: [head],
       body: billing.data.map((item: any, index: number) => {
-        return [
-          item.invoice_no,
-          item.details?.plan_name.split('|')[0],
-          // item.details?.insurance_name,
-          formatMoney(item.amount),
-          item.details?.transaction_date,
-          item.commission_percentage ?? 0,
-          formatMoney(item.commission_amount ?? 0),
-        ]
+        if (type == "partner") {
+          return [
+            item.invoice_no,
+            item.details?.plan_name.split('|')[0],
+            item.details?.insurance_name,
+            item.details?.transaction_date,
+            formatMoney(item.amount),
+          ]
+        }
+        else if (type == "insurer") {
+          return [
+            item.invoice_no,
+            item.details?.plan_name.split('|')[0],
+            item.details?.transaction_date,
+            formatMoney(item.amount),
+            (item.commission_percentage ?? 0) + "%",
+            formatMoney(item.commission_amount ?? 0),
+          ]
+        }
+
       }),
-      columnStyles: {
-        2: { halign: 'right' },
+      columnStyles: type == "partner" ? {
+        4: { halign: 'right' },
+      } : {
+        3: { halign: 'right' },
         4: { halign: 'right' },
         5: { halign: 'right' },
       },
@@ -215,23 +241,44 @@ const ExportDetailBillingPage = () => {
         "Transaction Number",
         "Plan Name",
         "Insurance Company Name",
-        "Amount",
         "Transaction Date",
-        "Commission Percentage",
-        "Commission Amount",
+        "Amount",
       ],
     ];
     const tableData = billing.data.map((item: any) => [
       item.invoice_no,
       item.details?.plan_name.split('|')[0],
       item.details?.insurance_name,
-      formatMoney(item.amount),
       item.details?.transaction_date,
-      item.commission_percentage ?? 0,
-      formatMoney(item.commission_amount ?? 0),
+      formatMoney(item.amount),
     ]);
 
-    const sheetData = [...headerBilling, ...tableHeader, ...tableData];
+    //insurer  
+    const tableHeaderInsurer = [
+      [
+        "Transaction Number",
+        "Plan Name",
+        "Transaction Date",
+        "Amount",
+        "%",
+        "Commission Amount",
+      ],
+    ];
+    const tableDataInsurer = billing.data.map((item: any) => [
+      item.invoice_no,
+      item.details?.plan_name.split('|')[0],
+      item.details?.transaction_date,
+      formatMoney(item.amount),
+      (item.commission_percentage ?? 0) + "%",
+      formatMoney(item.commission_amount ?? 0),
+    ]);
+    let sheetData = [];
+    if (type == "partner") {
+      sheetData = [...headerBilling, ...tableHeader, ...tableData];
+    }
+    else {
+      sheetData = [...headerBilling, ...tableHeaderInsurer, ...tableDataInsurer];
+    }
 
     const ws = XLSX.utils.aoa_to_sheet(sheetData);
 
@@ -401,11 +448,49 @@ const ExportDetailBillingPage = () => {
                   <tr>
                     <td style={styles.th}>Transaction Number</td>
                     <td style={styles.th}>Plan Name</td>
-                    <td style={styles.th}>Insurance Company Name</td>
-                    <td style={styles.th}>Amount</td>
+                    {
+                      type == "partner" ?
+                        <td style={styles.th}>Insurance Company Name</td>
+                        : ""
+                    }
                     <td style={styles.th}>Transaction Date</td>
-                    <td style={styles.th}>Commision Percentage</td>
-                    <td style={styles.th}>Commision Amount</td>
+                    <td style={{
+                      padding: "10px",
+                      border: "0.5px solid #cccccc",
+                      fontWeight: "bold",
+                      fontSize: "12px",
+                      height: "auto",
+                      background: "#e7e7e7",
+                      verticalAlign: "middle",
+                      textAlign: "right",
+                    }}>Amount</td>
+                    {
+                      type == "insurer" ?
+                        <td style={{
+                          padding: "10px",
+                          border: "0.5px solid #cccccc",
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                          height: "auto",
+                          background: "#e7e7e7",
+                          verticalAlign: "middle",
+                          textAlign: "right",
+                        }}>%</td> : ""
+                    }
+                    {
+                      type == "insurer" ?
+                        <td style={{
+                          padding: "10px",
+                          border: "0.5px solid #cccccc",
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                          height: "auto",
+                          background: "#e7e7e7",
+                          verticalAlign: "middle",
+                          textAlign: "right",
+                        }}>Commision Amount</td> : ""
+                    }
+
                   </tr>
 
                   {billing &&
@@ -416,19 +501,49 @@ const ExportDetailBillingPage = () => {
                           <td style={styles.td}>
                             {data.details?.plan_name.split('|')[0]}
                           </td>
-                          <td style={styles.td}>
-                            {data.details?.insurance_name}
-                          </td>
-                          <td style={styles.td}>{formatMoney(data.amount)}</td>
-                          <td style={styles.td}>
-                            {data.details?.transaction_date}
-                          </td>
-                          <td style={styles.td}>
-                            {data.commission_percentage ?? 0}
-                          </td>
-                          <td style={styles.td}>
-                            {formatMoney(data.commission_amount ?? 0)}
-                          </td>
+                          {
+                            type == "partner" ?
+                              <td style={styles.td}>
+                                {data.details?.insurance_name}
+                              </td>
+                              : ""
+                          }
+                          <td style={styles.td}>{data.details?.transaction_date}</td>
+                          <td style={{
+                            padding: "10px",
+                            height: "auto",
+                            border: "0.5px solid #cccccc",
+                            fontSize: "12px",
+                            verticalAlign: "middle",
+                            textAlign: "right",
+
+                          }}>{formatMoney(data.amount)}</td>
+                          {
+                            type == "insurer" ?
+                              <td style={{
+                                padding: "10px",
+                                height: "auto",
+                                border: "0.5px solid #cccccc",
+                                fontSize: "12px",
+                                verticalAlign: "middle",
+                                textAlign: "right",
+                              }}>
+                                {data.commission_percentage ?? 0}%
+                              </td> : ""
+                          }
+                          {
+                            type == "insurer" ?
+                              <td style={{
+                                padding: "10px",
+                                height: "auto",
+                                border: "0.5px solid #cccccc",
+                                fontSize: "12px",
+                                verticalAlign: "middle",
+                                textAlign: "right",
+                              }}>
+                                {formatMoney(data.commission_amount ?? 0)}
+                              </td> : ""
+                          }
                         </tr>
                       );
                     })}
