@@ -193,7 +193,7 @@ const BillingPage = () => {
           Billing List
         </h1>
 
-        <div className="flex gap-2 sm:w-auto w-full relative">
+        {/* <div className="flex gap-2 sm:w-auto w-full relative">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -240,7 +240,7 @@ const BillingPage = () => {
           >
             <X className="w-4 h-4" />
           </Button>
-        </div>
+        </div> */}
         <div className="min-w-48">
           <Select
             value={searchType}
@@ -319,7 +319,11 @@ const BillingPage = () => {
               {/* <TableHead>Transaction Period</TableHead> */}
               {/* <TableHead>Type</TableHead> */}
               {/* <TableHead>Company Name</TableHead> */}
-              <TableHead>Amount</TableHead>
+              {
+                searchCategory == "All" ?
+                  <TableHead>Category</TableHead> : ""
+              }
+              <TableHead style={{ textAlign: "right" }}>Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
@@ -330,10 +334,14 @@ const BillingPage = () => {
                 <TableCell className="whitespace-nowrap">{index + 1}</TableCell>
                 <TableCell>{billing.billing_no}</TableCell>
                 <TableCell>{moment(billing.created_at).local().format("DD-MM-YYYY HH:mm:ss")}</TableCell>
+                {
+                  searchCategory == "All" ?
+                    <TableCell>{categories.filter((c) => c.id == billing.category)[0].name}</TableCell> : ""
+                }
                 {/* <TableCell>{billing.transaction_period}</TableCell> */}
                 {/* <TableCell>{billing.type}</TableCell> */}
                 {/* <TableCell>{billing.company_name}</TableCell> */}
-                <TableCell>{formatMoney(billing.amount)}</TableCell>
+                <TableCell style={{ textAlign: "right" }}>{formatMoney(billing.amount)}</TableCell>
                 <TableCell>
                   {billing.status
                     .split("-")

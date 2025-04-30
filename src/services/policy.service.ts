@@ -178,4 +178,18 @@ export class PolicyService {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get<any>(`/v1/policies/statistic-data?${queryString}`);
   }
+
+  async uploadPolicyDrGadget(channelId: string, formData: any): Promise<any> {
+    try {
+      return new AxiosHttpClient({
+        baseURL: process.env.NEXT_PUBLIC_API_POLICY_BASE_URL,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }).post(`/v1/policies/upload/drgadget`, formData);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }
