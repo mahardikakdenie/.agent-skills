@@ -30,9 +30,9 @@ const InvoicePage = () => {
 
   useEffect(() => {
     if (type == "partner") {
-      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: billing.data[0].billings.company }));
+      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: billing.data[0].billings.company, category: billing.data[0].billings.category }));
     } else if (type == "insurer") {
-      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: billing.data[0].items[0].billings.company }));
+      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: billing.data[0].items[0].billings.company, category: billing.data[0].items[0].billings.category }));
     }
   }, [billing]);
 

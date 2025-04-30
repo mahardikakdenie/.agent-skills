@@ -185,7 +185,7 @@ const DetailBillingPage = () => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink>Billing</BreadcrumbLink>
+                  <BreadcrumbLink href="/billing">Billing</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
