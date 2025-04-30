@@ -77,8 +77,13 @@ const BillingPage = () => {
     if (searchType == "" || searchChannel == "") {
       return;
     }
+    let query: { [key: string]: string } = { type: searchType, company: searchChannel };
+    if (searchCategory != "All") {
+      query["category"] = searchCategory;
+    }
 
-    getBilling({ type: searchType, company: searchChannel }, page, rowsPerPage,);
+    localStorage.setItem("billingPage", JSON.stringify({ type: searchType, company: searchChannel, category: searchCategory }));
+    getBilling(query, page, rowsPerPage,);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, searchType, searchChannel, searchCategory, date]);
 
@@ -93,6 +98,7 @@ const BillingPage = () => {
         setCompanyDataSource();
         setSearchType(d.type);
         setSearchChannel(d.company)
+        setSearchCategory(d.category)
         return;
       }
 
@@ -140,8 +146,9 @@ const BillingPage = () => {
     try {
       setLoading(true);
       const productCategoriesService = new ProductCategoriesService();
-      const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(searchChannel);
-      setCategories(categoriesResponse.data || []);
+      const categoriesResponse = await productCategoriesService.getCategories();
+      // const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(searchChannel);
+      setCategories(categoriesResponse || []);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
@@ -162,13 +169,11 @@ const BillingPage = () => {
       }
     }
 
-    localStorage.setItem("billingPage", JSON.stringify({ type: v, company: searchChannel }));
     setSearchCategory("All");
   };
 
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
-    localStorage.setItem("billingPage", JSON.stringify({ type: searchType, company: v }));
     setSearchCategory("All");
   };
 
