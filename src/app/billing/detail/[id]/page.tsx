@@ -340,16 +340,22 @@ const DetailBillingPage = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead style={{ width: "180px" }}>Transaction Number</TableHead>
-                  <TableHead style={{ width: "350px" }}>Plan Name</TableHead>
+                  <TableHead style={{}}>Plan Name</TableHead>
                   {billing.data[0].items[0].billings.type == "partner" ?
                     <TableHead>Insurance Company Name</TableHead>
-                    :
-                    ""}
+                    : ""}
 
-                  <TableHead>Transaction Date</TableHead>
-                  <TableHead style={{ textAlign: "right" }}>Amount</TableHead>
-                  <TableHead style={{ textAlign: "right" }}>Commision Percentage</TableHead>
-                  <TableHead style={{ textAlign: "right" }}>Commision Amount</TableHead>
+                  <TableHead style={{ width: "180px" }}>Transaction Date</TableHead>
+                  <TableHead style={{ textAlign: "right", width: "180px" }}>Amount</TableHead>
+
+                  {billing.data[0].items[0].billings.type == "insurer" ?
+                    <TableHead style={{ textAlign: "right", width: "30px" }}>%</TableHead>
+                    : ""}
+
+                  {billing.data[0].items[0].billings.type == "insurer" ?
+                    <TableHead style={{ textAlign: "right", width: "150px" }}>Commision Amount</TableHead>
+                    : ""}
+
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -363,15 +369,18 @@ const DetailBillingPage = () => {
                         </TableCell>
                         {billing.data[0].items[0].billings.type == "partner" ?
                           <TableCell>{data.details?.insurance_name}</TableCell>
-                          :
-                          ""}
+                          : ""}
 
                         <TableCell>{data.details?.transaction_date}</TableCell>
                         <TableCell style={{ textAlign: "right" }}>{formatMoney(data.amount)}</TableCell>
-                        <TableCell style={{ textAlign: "right" }}>{data.commission_percentage ?? 0}%</TableCell>
-                        <TableCell style={{ textAlign: "right" }}>
-                          {formatMoney(data.commission_amount ?? 0)}
-                        </TableCell>
+
+                        {billing.data[0].items[0].billings.type == "insurer" ?
+                          <TableCell style={{ textAlign: "right" }}>{data.commission_percentage ?? 0}%</TableCell>
+                          : ""}
+
+                        {billing.data[0].items[0].billings.type == "insurer" ?
+                          <TableCell style={{ textAlign: "right" }}> {formatMoney(data.commission_amount ?? 0)} </TableCell>
+                          : ""}
                       </TableRow>
                     );
                   })}
