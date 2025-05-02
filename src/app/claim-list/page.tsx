@@ -176,7 +176,7 @@ const ClaimsPage = () => {
     const fetchData = async () => {
       try {
         const channelService = new ChannelService();
-        const channelResponse = await channelService.getChannels();
+        const channelResponse = await channelService.getChannels(undefined, 100);
         setChannels(channelResponse.data || []);
       } catch (error) {
         console.error('Failed to fetch channels:', error);

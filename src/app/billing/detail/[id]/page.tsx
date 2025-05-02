@@ -51,7 +51,7 @@ const DetailBillingPage = () => {
   useRequireAuth();
 
   const { getBillingById, billing, updateBilling } = useBilling();
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const { setLoading } = useLoading();
   const [openCancel, setOpenCancel] = useState(false);
@@ -98,7 +98,7 @@ const DetailBillingPage = () => {
   useEffect(() => {
     getBillingById(id as string, 1, rowsPerPage, "product")
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, rowsPerPage]);
 
   useEffect(() => {
     getCategories();
@@ -206,7 +206,7 @@ const DetailBillingPage = () => {
               Back
             </div>
             <Button
-              onClick={() => router.push(`/billing/detail/${id}/export`)}
+              onClick={() => router.push(`/billing/detail/${id}/export?type=${billing.data[0].items[0].billings.type}`)}
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
             >
               <Download className="w-5 h-5 mr-1 " /> Export

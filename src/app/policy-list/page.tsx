@@ -30,7 +30,7 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { PolicyService } from "@/services/policy.service";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, Search, X } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Upload, Search, X } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { ChannelService } from "@/services/channel.services";
 import { DateRange } from "react-day-picker";
@@ -100,7 +100,7 @@ const PolicyPage = () => {
   useEffect(() => {
     getCategories();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchChannel]);
 
   const getCategories = async () => {
@@ -152,6 +152,10 @@ const PolicyPage = () => {
 
   const goToDetail = (policyId: string) => {
     router.push(`${path}/${policyId}`);
+  };
+
+  const handleImport = () => {
+    router.push(`${path}/import`);
   };
 
   const handleExport = () => {
@@ -267,8 +271,14 @@ const PolicyPage = () => {
           </Select>
         </div>
         <Button
-          onClick={handleExport}
+          onClick={handleImport}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+        >
+          <Upload className="w-5 h-5 mr-1 " /> Import
+        </Button>
+        <Button
+          onClick={handleExport}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <Download className="w-5 h-5 mr-1 " /> Export
         </Button>

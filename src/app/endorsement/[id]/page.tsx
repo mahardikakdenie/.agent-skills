@@ -1,36 +1,17 @@
 "use client";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import * as XLSX from "xlsx";
+import Image from "next/image";
 import WithSidebar from "@/hoc/with-sidebar";
+import noImage from "/public/images/no-image.png";
+import { saveAs } from "file-saver";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { AlertCircle, ChevronLeft, Download, Upload } from "react-feather";
-import noImage from "/public/images/no-image.png";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { EndorsementService } from "@/services/endorsement.service";
-import Image from "next/image";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import { AlertCircle, ChevronLeft, Download, Upload } from "react-feather";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 const DetailEndorsement = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -59,19 +40,12 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
   }, [params.id]);
 
   if (!endorsement) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        Loading...
-      </div>
-    );
+    return (<div className="w-full h-full flex justify-center items-center">Loading...</div>);
   }
 
   const rejectedModal = async (id: string) => {
     try {
-      await endorsementService.updateStatus(id, {
-        status: "Rejected",
-        note: notes,
-      });
+      await endorsementService.updateStatus(id, { status: "Rejected", note: notes, });
       window.location.reload();
     } catch (error) {
       alert(error);
@@ -80,10 +54,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
 
   const confirmModal = async (id: string) => {
     try {
-      await endorsementService.updateStatus(id, {
-        status: "Approved",
-        note: "",
-      });
+      await endorsementService.updateStatus(id, { status: "Approved", note: "", });
       window.location.reload();
     } catch (error) {
       alert(error);
@@ -92,10 +63,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
 
   const confirmModalEdsb = async (id: string) => {
     try {
-      await endorsementService.updateEndorsement(id, {
-        status: "Approved",
-        note: "",
-      });
+      await endorsementService.updateEndorsement(id, { status: "Approved", note: "", });
       window.location.reload();
     } catch (error: any) {
       console.error("Update error:", error);
@@ -106,10 +74,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
   
   const rejectedModalEdsb = async (id: string) => {
     try {
-      await endorsementService.updateEndorsement(id, {
-        status: "Rejected",
-        note: notes,
-      });
+      await endorsementService.updateEndorsement(id, { status: "Rejected", note: notes, });
       window.location.reload();
     } catch (error: any) {
       console.error("Upload error:", error);
@@ -190,16 +155,10 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-            Detail Endorsement
-          </h2>
+          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">Detail Endorsement</h2>
         </div>
-        <a
-          href="/endorsement"
-          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back
+        <a href="/endorsement" className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
+          <ChevronLeft className="w-4 h-4" /> Back
         </a>
       </div>
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
@@ -277,24 +236,13 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                     {endorsement?.status == "Pending" && (
                       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                         <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full px-5 py-2 h-8"
-                          >
-                            Reject
-                          </Button>
+                          <Button variant="outline" className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full px-5 py-2 h-8">Reject</Button>
                         </DialogTrigger>
                         <DialogContent className="min-w-[590px] w-auto max-w-full">
                           <p className="text-center">
-                            <AlertCircle
-                              width={88}
-                              height={88}
-                              className="mx-auto text-[#F5AB1D]"
-                            />
+                            <AlertCircle width={88} height={88} className="mx-auto text-[#F5AB1D]" />
                           </p>
-                          <p className="text-center font-bold mb-0 text-sm">
-                            Reject updated data?
-                          </p>
+                          <p className="text-center font-bold mb-0 text-sm">Reject updated data?</p>
                           <div className="w-full">
                             <p className="text-sm mb-2">Reason</p>
                             <textarea
@@ -311,20 +259,9 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
 
                           <div className="flex gap-4 justify-center">
                             <DialogClose asChild>
-                              <Button
-                                variant="outline"
-                                className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full w-24"
-                              >
-                                No
-                              </Button>
+                              <Button variant="outline" className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full w-24">No</Button>
                             </DialogClose>
-                            <Button
-                              color="warning"
-                              onClick={() => rejectedModal(endorsement.id)}
-                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black"
-                            >
-                              Yes
-                            </Button>
+                            <Button color="warning" onClick={() => rejectedModal(endorsement.id)} className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black">Yes</Button>
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -340,40 +277,22 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                   <Table className="rounded-t-md min-w-full table-flip">
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="bg-[#016DA1] text-white">
-                          Data Type
-                        </TableHead>
-                        <TableHead className="bg-[#016DA1] text-white">
-                          Previous Data
-                        </TableHead>
-                        <TableHead className="bg-[#016DA1] text-white">
-                          Update Data
-                        </TableHead>
+                        <TableHead className="bg-[#016DA1] text-white">Data Type</TableHead>
+                        <TableHead className="bg-[#016DA1] text-white">Previous Data</TableHead>
+                        <TableHead className="bg-[#016DA1] text-white">Update Data</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       <TableRow>
                         <TableCell>Nama Lengkap</TableCell>
-                        <TableCell>
-                          {endorsement?.participants?.profile?.full_name ||
-                            endorsement?.participants?.profile?.name}
-                        </TableCell>
-                        <TableCell>
-                          {endorsement?.data?.profile?.full_name ||
-                            endorsement?.data?.profile?.name}
-                        </TableCell>
+                        <TableCell>{endorsement?.participants?.profile?.full_name || endorsement?.participants?.profile?.name}</TableCell>
+                        <TableCell>{endorsement?.data?.profile?.full_name || endorsement?.data?.profile?.name}</TableCell>
                       </TableRow>
-                      {(endorsement?.participants?.profile?.gender ||
-                        endorsement.data.profile?.gender) && (
+                      {(endorsement?.participants?.profile?.gender || endorsement.data.profile?.gender) && (
                         <TableRow>
                           <TableCell>Jenis Kelamin</TableCell>
-                          <TableCell>
-                            {endorsement?.participants?.profile?.gender}
-                          </TableCell>
-
-                          <TableCell>
-                            {endorsement?.data?.profile?.gender}
-                          </TableCell>
+                          <TableCell>{endorsement?.participants?.profile?.gender}</TableCell>
+                          <TableCell>{endorsement?.data?.profile?.gender}</TableCell>
                         </TableRow>
                       )}
                       <TableRow>
@@ -388,83 +307,53 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                             : ""}
                         </TableCell>
                         <TableCell>
-                          {endorsement?.participants?.profile?.passport_no ||
-                            endorsement.participants?.profile?.nik ||
-                            endorsement.participants?.profile
-                              ?.identification_number}
+                          {endorsement?.participants?.profile?.passport_no || endorsement.participants?.profile?.nik || endorsement.participants?.profile?.identification_number}
                         </TableCell>
-
                         <TableCell>
-                          {endorsement?.data?.profile?.passport_no ||
-                            endorsement.data.profile?.nik ||
-                            endorsement.data.profile?.identification_number}
+                          {endorsement?.data?.profile?.passport_no || endorsement.data.profile?.nik || endorsement.data.profile?.identification_number}
                         </TableCell>
                       </TableRow>
-                      {(endorsement?.participants?.profile?.nationality ||
-                        endorsement.participants?.profile?.country ||
-                        endorsement?.data?.profile?.nationality ||
-                        endorsement.data.profile?.country) && (
+                      {(endorsement?.participants?.profile?.nationality || endorsement.participants?.profile?.country || endorsement?.data?.profile?.nationality || endorsement.data.profile?.country) && (
                         <TableRow>
                           <TableCell>Kewarganegaraan</TableCell>
                           <TableCell>
-                            {endorsement?.participants?.profile?.nationality ||
-                              endorsement.participants.profile?.country}
+                            {endorsement?.participants?.profile?.nationality || endorsement.participants.profile?.country}
                           </TableCell>
-
                           <TableCell>
-                            {endorsement?.data?.profile?.nationality ||
-                              endorsement.data?.profile?.country}
+                            {endorsement?.data?.profile?.nationality || endorsement.data?.profile?.country}
                           </TableCell>
                         </TableRow>
                       )}
-                      {(endorsement?.participants?.profile?.pob ||
-                        endorsement.participants?.profile?.country_of_birth ||
-                        endorsement?.data?.profile?.pob ||
-                        endorsement.data.profile?.country_of_birth) && (
+                      {(endorsement?.participants?.profile?.pob || endorsement.participants?.profile?.country_of_birth || endorsement?.data?.profile?.pob || endorsement.data.profile?.country_of_birth) && (
                         <TableRow>
                           <TableCell>Tempat Lahir</TableCell>
                           <TableCell>
-                            {endorsement?.participants?.profile?.pob ||
-                              endorsement.participants?.profile?.country_of_birth}
+                            {endorsement?.participants?.profile?.pob || endorsement.participants?.profile?.country_of_birth}
                           </TableCell>
 
                           <TableCell>
-                            {endorsement?.data?.profile?.pob ||
-                              endorsement.data?.profile?.country_of_birth}
+                            {endorsement?.data?.profile?.pob || endorsement.data?.profile?.country_of_birth}
                           </TableCell>
                         </TableRow>
                       )}
-                      {(endorsement?.participants?.profile?.dob ||
-                        endorsement?.data?.profile?.dob) && (
+                      {(endorsement?.participants?.profile?.dob || endorsement?.data?.profile?.dob) && (
                         <TableRow>
                           <TableCell>Tanggal Lahir</TableCell>
-                          <TableCell>
-                            {endorsement?.participants?.profile?.dob}
-                          </TableCell>
-
+                          <TableCell>{endorsement?.participants?.profile?.dob}</TableCell>
                           <TableCell>{endorsement?.data?.profile?.dob}</TableCell>
                         </TableRow>
                       )}
-                      {(endorsement?.participants?.profile?.address ||
-                        endorsement?.data?.profile?.address) && (
+                      {(endorsement?.participants?.profile?.address || endorsement?.data?.profile?.address) && (
                         <TableRow>
                           <TableCell>Alamat</TableCell>
-                          <TableCell>
-                            {endorsement?.participants?.profile?.address}
-                          </TableCell>
-
-                          <TableCell>
-                            {endorsement?.data?.profile?.address}
-                          </TableCell>
+                          <TableCell>{endorsement?.participants?.profile?.address}</TableCell>
+                          <TableCell>{endorsement?.data?.profile?.address}</TableCell>
                         </TableRow>
                       )}
-                      {(endorsement?.participants?.profile?.job ||
-                        endorsement?.data?.profile?.job) && (
+                      {(endorsement?.participants?.profile?.job || endorsement?.data?.profile?.job) && (
                         <TableRow>
                           <TableCell>Pekerjaan</TableCell>
-                          <TableCell>
-                            {endorsement?.participants?.profile?.job}
-                          </TableCell>
+                          <TableCell>{endorsement?.participants?.profile?.job}</TableCell>
                           <TableCell>{endorsement?.data?.profile?.job}</TableCell>
                         </TableRow>
                       )}
@@ -485,32 +374,17 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                   <>{endorsement?.status || "-"}</>
                 ) : (
                   <>
-                    <Button
-                      onClick={() => confirmModalEdsb(endorsement.id)}
-                      className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-5 py-2 h-8"
-                    >
-                      Accept
-                    </Button>
+                    <Button onClick={() => confirmModalEdsb(endorsement.id)} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-5 py-2 h-8">Accept</Button>
                     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                       <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full px-5 py-2 h-8"
-                        >
-                          Reject
-                        </Button>
+                        <Button variant="outline" className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full px-5 py-2 h-8"
+                        >Reject</Button>
                       </DialogTrigger>
                       <DialogContent className="min-w-[590px] w-auto max-w-full">
                         <p className="text-center">
-                          <AlertCircle
-                            width={88}
-                            height={88}
-                            className="mx-auto text-[#F5AB1D]"
-                          />
+                          <AlertCircle width={88} height={88} className="mx-auto text-[#F5AB1D]" />
                         </p>
-                        <p className="text-center font-bold mb-0 text-sm">
-                          Reject updated data?
-                        </p>
+                        <p className="text-center font-bold mb-0 text-sm">Reject updated data?</p>
                         <div className="w-full">
                           <p className="text-sm mb-2">Reason</p>
                           <textarea
@@ -527,20 +401,9 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
 
                         <div className="flex gap-4 justify-center">
                           <DialogClose asChild>
-                            <Button
-                              variant="outline"
-                              className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full w-24"
-                            >
-                              No
-                            </Button>
+                            <Button variant="outline" className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full w-24">No</Button>
                           </DialogClose>
-                          <Button
-                            color="warning"
-                            onClick={() => rejectedModalEdsb(endorsement.id)}
-                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black"
-                          >
-                            Yes
-                          </Button>
+                          <Button color="warning" onClick={() => rejectedModalEdsb(endorsement.id)} className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black">Yes</Button>
                         </div>
                       </DialogContent>
                     </Dialog>
@@ -551,8 +414,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
             <div className="flex gap-2 text-sm font-medium">
               <div className="min-w-24 w-24">Verified By</div>
               <div className="max-w-1 w-1">:</div>
-              <div className="pl-2">{(endorsement?.status_description?.split(' by ')[1] || "-").replace(/\b\w/g, (c: string) => c.toUpperCase())}
-              </div>
+              <div className="pl-2">{(endorsement?.status_description?.split(' by ')[1] || "-").replace(/\b\w/g, (c: string) => c.toUpperCase())}</div>
             </div>
             <div className="flex gap-2 text-sm font-medium">
               <div className="min-w-24 w-24">Reason</div>
@@ -569,16 +431,14 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                   onClick={() => router.push(`/endorsement/${endorsement?.id}/upload`)}
                   disabled={endorsement?.status_description !== "Uploaded by partner"}
                 >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload
+                  <Upload className="w-4 h-4 mr-2" />Upload
                 </Button>
                 <Button
                   variant="outline"
                   className="border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white rounded-full px-5 py-2 h-8"
                   onClick={handleDownload}
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download
+                  <Download className="w-4 h-4 mr-2" />Download
                 </Button>
               </div>
             </div>
@@ -646,6 +506,5 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const DetailEndorsementWithSidebar = (params: any) =>
-  WithSidebar(DetailEndorsement)(params);
+const DetailEndorsementWithSidebar = (params: any) => WithSidebar(DetailEndorsement)(params);
 export default DetailEndorsementWithSidebar;
