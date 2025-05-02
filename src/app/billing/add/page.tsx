@@ -95,6 +95,7 @@ const CreateBillingPage = () => {
   }, [transactionList]);
 
   const handleRowsPerPageChange = (e: any) => {
+    setPage(1)
     setRowsPerPage(e.target.value);
   };
   useEffect(() => {
@@ -197,6 +198,9 @@ const CreateBillingPage = () => {
   const handleChangeYear = (e: any) => {
     setYear(e.target.value);
   };
+  useEffect(() => {
+    handleGetTransaction();
+  }, [rowsPerPage]);
 
   const handleGetTransaction = async () => {
     setTransactionList({});
