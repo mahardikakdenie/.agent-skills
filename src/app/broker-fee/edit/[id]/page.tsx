@@ -86,7 +86,10 @@ const EditBrokerFeePage = () => {
     if (!watchInsurance) {
       return;
     }
-    fetchProducts({ insuranceId: watchInsurance });
+    setLoading(true);
+    fetchProducts({ insuranceId: watchInsurance }).then((x) => {
+      setLoading(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchInsurance]);
 
@@ -94,22 +97,28 @@ const EditBrokerFeePage = () => {
     if (!watchPlan) {
       return;
     }
-    fetchPlans({ productId: watchProduct });
+    setLoading(true);
+    fetchPlans({ productId: watchProduct }).then((x) => {
+      setLoading(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchProduct]);
 
   useEffect(() => {
-    getBrokerFees({ id });
+    setLoading(true);
+    getBrokerFees({ id }).then((x) => {
+      setLoading(false);
+    });
     fetchInsurances({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (brokerFees[0]) {
-      setValue("insurance", brokerFees[0].insurance);
-      setValue("product", brokerFees[0].product);
-      setValue("plan", brokerFees[0].plan);
-      setValue("fee", brokerFees[0].fee);
+    if (brokerFees && brokerFees.data[0]) {
+      setValue("insurance", brokerFees.data[0].insurance);
+      setValue("product", brokerFees.data[0].product);
+      setValue("plan", brokerFees.data[0].plan);
+      setValue("fee", brokerFees.data[0].fee);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brokerFees]);
