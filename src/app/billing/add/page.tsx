@@ -246,7 +246,7 @@ const CreateBillingPage = () => {
         category: category != "All" ? category : null,
         from: `${year}-${month}-01`,
         to: `${year}-${month}-31`,
-        limit: 100000000,
+        page: page,
       });
       setLoading(false);
     } catch (error) {
@@ -277,6 +277,7 @@ const CreateBillingPage = () => {
       }
       await getTransactions({
         ...companySearch,
+        category: category != "All" ? category : null,
         from: `${year}-${month}-01`,
         to: `${year}-${month}-31`,
         page: page,
