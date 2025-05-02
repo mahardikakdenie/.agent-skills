@@ -94,7 +94,7 @@ const EditBrokerFeePage = () => {
   }, [watchInsurance]);
 
   useEffect(() => {
-    if (!watchPlan) {
+    if (!watchProduct) {
       return;
     }
     setLoading(true);
