@@ -243,6 +243,7 @@ const CreateBillingPage = () => {
       setLoading(true);
       await getTransactions({
         ...companySearch,
+        category: category != "All" ? category : null,
         from: `${year}-${month}-01`,
         to: `${year}-${month}-31`,
         limit: 100000000,
@@ -456,6 +457,9 @@ const CreateBillingPage = () => {
               onValueChange={(value) => {
                 const selectedCategory = categories.find((item) => item.id === value);
                 setCategory(value);
+                if (type && company && category && month && year) {
+                  setTransactionList({});
+                }
                 // setCategoryName(selectedCategory?.name || "");
               }}
             >
@@ -551,11 +555,20 @@ const CreateBillingPage = () => {
               <TableRow>
                 <TableHead>Transaction Number</TableHead>
                 <TableHead>Plan Name</TableHead>
-                <TableHead>Insurance Company Name</TableHead>
-                <TableHead>Amount</TableHead>
+                {
+                  type === "partner" ?
+                    <TableHead>Insurance Company Name</TableHead> : ""
+                }
                 <TableHead>Transaction Date</TableHead>
-                <TableHead>Commision Percentage</TableHead>
-                <TableHead>Commision Amount</TableHead>
+                <TableHead>Amount</TableHead>
+                {
+                  type === "insurer" ?
+                    <TableHead>Commision Percentage</TableHead> : ""
+                }
+                {
+                  type === "insurer" ?
+                    <TableHead>Commision Amount</TableHead> : ""
+                }
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -578,22 +591,31 @@ const CreateBillingPage = () => {
                       <TableCell>
                         {data.insurance?.plan?.name.split("|").join("\n")}
                       </TableCell>
-                      <TableCell>
-                        {data.insurance?.insurance?.id?.name}
-                      </TableCell>
-                      <TableCell>{formatMoney(data.newPremium)}</TableCell>
+                      {
+                        type === "partner" ?
+                          <TableCell>
+                            {data.insurance?.insurance?.id?.name}
+                          </TableCell> : ""
+                      }
                       <TableCell>{data.created_at}</TableCell>
-                      <TableCell>
-                        {type === "insurer" &&
-                          fees[
-                            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                          ]?.fee
-                          ? fees[
-                            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                          ]?.fee ?? 0
-                          : 0}
-                      </TableCell>
-                      <TableCell>{type === "insurer" ? fee : 0}</TableCell>
+                      <TableCell>{formatMoney(data.newPremium)}</TableCell>
+                      {
+                        type === "insurer" ?
+                          <TableCell>
+                            {type === "insurer" &&
+                              fees[
+                                `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                              ]?.fee
+                              ? fees[
+                                `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                              ]?.fee ?? 0
+                              : 0}
+                          </TableCell> : ""
+                      }
+                      {
+                        type === "insurer" ?
+                          <TableCell>{type === "insurer" ? fee : 0}</TableCell> : ""
+                      }
                     </TableRow>
                   );
                 })}
