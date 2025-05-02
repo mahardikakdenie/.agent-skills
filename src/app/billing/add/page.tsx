@@ -457,8 +457,8 @@ const CreateBillingPage = () => {
               onValueChange={(value) => {
                 const selectedCategory = categories.find((item) => item.id === value);
                 setCategory(value);
-                if (type && company && category && month && year && transactionList?.data?.length > 0) {
-                  handleGetTransaction()
+                if (type && company && category && month && year) {
+                  setTransactionList({});
                 }
                 // setCategoryName(selectedCategory?.name || "");
               }}
