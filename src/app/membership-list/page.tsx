@@ -98,6 +98,10 @@ const MembershipPage = () => {
   const handleUpload = () => {
     router.push(`${path}/upload`);
   };
+  
+  const goToDetail = (id: string) => {
+    router.push(`${path}/${id}`);
+  };
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -216,6 +220,7 @@ const MembershipPage = () => {
               <TableHead className="whitespace-nowrap">Membership ID</TableHead>
               <TableHead className="whitespace-nowrap">Submission Date</TableHead>
               <TableHead className="whitespace-nowrap">Status</TableHead>
+              <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -244,6 +249,7 @@ const MembershipPage = () => {
                   <TableCell>{item?.other_info?.tpa_member_id || "-"}</TableCell>
                   <TableCell>{item?.profile?.submission_date || "-"}</TableCell>
                   <TableCell className="font-semibold"><span className={getStatusColor(item?.status)}>{item?.status || "-"}</span></TableCell>
+                  <TableCell><Button onClick={() => goToDetail(item.id)} className="rounded-full">View</Button></TableCell>
                 </TableRow>
               );
             })}
