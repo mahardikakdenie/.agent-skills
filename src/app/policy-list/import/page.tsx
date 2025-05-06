@@ -149,7 +149,7 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
         </Select>
 
         <div className="w-full relative">
-          <Input type="file" accept=".xlsx, .xls" onChange={handleChooseFile} />
+          <Input type="file" accept=".csv" onChange={handleChooseFile} />
           <Button type="button" variant="secondary" className="rounded-full absolute right-0 top-0 bg-transparent text-red-500 px-2" onClick={handleClearFile} disabled={!file}>
             <X className="w-5 h-5" />
           </Button>
