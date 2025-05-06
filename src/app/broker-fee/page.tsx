@@ -23,6 +23,7 @@ const BrokerFeePage = () => {
   const { setLoading } = useLoading();
   const [totalItems, setTotalItems] = useState(0);
   const totalPages = Math.ceil(totalItems / rowsPerPage);
+
   useEffect(() => {
     (async () => {
       try {
@@ -36,6 +37,7 @@ const BrokerFeePage = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
+
   const router = useRouter();
 
   const handleRowsPerPageChange = (e: any) => {
@@ -48,7 +50,7 @@ const BrokerFeePage = () => {
       try {
         setLoading(true);
         await deleteBrokerFee(id);
-        await getBrokerFees({});
+        setPage(1);
       } catch (error) {
         console.error(error);
         alert("Failed to delete broker fee");
@@ -57,11 +59,6 @@ const BrokerFeePage = () => {
       }
     }
   };
-
-  useEffect(() => {
-    getBrokerFees({}, page, rowsPerPage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage]);
 
   useEffect(() => {
     if (brokerFees && brokerFees.data) {

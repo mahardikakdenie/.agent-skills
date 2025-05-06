@@ -95,6 +95,7 @@ const CreateBillingPage = () => {
   }, [transactionList]);
 
   const handleRowsPerPageChange = (e: any) => {
+    setPage(1)
     setRowsPerPage(e.target.value);
   };
   useEffect(() => {
@@ -197,6 +198,9 @@ const CreateBillingPage = () => {
   const handleChangeYear = (e: any) => {
     setYear(e.target.value);
   };
+  useEffect(() => {
+    handleGetTransaction();
+  }, [rowsPerPage]);
 
   const handleGetTransaction = async () => {
     setTransactionList({});
@@ -247,6 +251,7 @@ const CreateBillingPage = () => {
         from: `${year}-${month}-01`,
         to: `${year}-${month}-31`,
         page: page,
+        limit: 100000000, // untuk sementara
       });
       setLoading(false);
     } catch (error) {
@@ -281,6 +286,7 @@ const CreateBillingPage = () => {
         from: `${year}-${month}-01`,
         to: `${year}-${month}-31`,
         page: page,
+        limit: 100000000,//untuk sementara
       });
     })();
   };
@@ -626,7 +632,7 @@ const CreateBillingPage = () => {
                 <TableCell colSpan={10}>
                   <div className="flex justify-center items-center gap-2 font-normal">
                     <label htmlFor="rowsPerPage">Showing:</label>
-                    <select
+                    {/* <select
                       id="rowsPerPage"
                       value={rowsPerPage}
                       onChange={handleRowsPerPageChange}
@@ -637,9 +643,9 @@ const CreateBillingPage = () => {
                           {option}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
                     <span className="mr-2">
-                      of {transactionList.total} items
+                      {transactionList?.data?.length} of {transactionList.total} items
                     </span>
                     <button
                       onClick={() => handlePaging(page - 1)}

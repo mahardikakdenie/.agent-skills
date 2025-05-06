@@ -241,7 +241,7 @@ const BillingPage = () => {
             <X className="w-4 h-4" />
           </Button>
         </div> */}
-        <div className="min-w-48">
+        <div className="min-w-36 w-[100px]">
           <Select
             value={searchType}
             onValueChange={handleTypeChange}
@@ -260,7 +260,7 @@ const BillingPage = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="min-w-48">
+        <div className="min-w-48 w-[180px]">
           <Select
             value={searchChannel}
             onValueChange={handleChannelChange}
