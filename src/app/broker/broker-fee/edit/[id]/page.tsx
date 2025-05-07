@@ -19,29 +19,57 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import WithSidebar from "@/hoc/with-sidebar";
-import { Check } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { ChevronLeft } from "react-feather";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ChevronLeft, Check } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import useBrokerFee from "../hook";
+import useBrokerFee from "../../../hook";
 import { useLoading } from "@/context/loading.context";
 
-const CreateBrokerFee = () => {
+const EditBrokerFeePage = () => {
+  const { id } = useParams();
+  const { getBrokerFees, brokerFees, updateBrokerFee } = useBrokerFee();
+  const {
+    insurances,
+    products,
+    plans,
+    fetchInsurances,
+    fetchProducts,
+    fetchPlans,
+  } = useProducts();
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    defaultValues: {
+      insurance: "",
+      product: "",
+      plan: "",
+      fee: 0,
+    },
+  });
+
   const router = useRouter();
   const handleCancel = () => {
-    router.push("/broker-fee");
+    router.push("/broker/broker-fee");
   };
 
-  const { createBrokerFee } = useBrokerFee();
   const { setLoading } = useLoading();
-  const handleCreateBrokerFee = async (data: any) => {
+  const [searchType, setSearchType] = useState("");//DEFAULT PARTNER
+  const [types, setTypes] = useState<any[]>([
+    { name: "Partner", code: "partner" },
+    { name: "Insurer", code: "insurer" },
+  ]);
+  const [channels, setChannels] = useState<any[]>([]);
+
+  const handleUpdateBrokerFee = async (data: any) => {
     try {
       setLoading(true);
-      await createBrokerFee({
+      await updateBrokerFee(id as string, {
         ...data,
-        product: data.product ? data.product : null,
-        plan: data.plan ? data.plan : null,
         insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
         product_name: products?.find((i) => i.id === data.product)?.name,
         plan_name: plans?.find((i) => i.id === data.plan)?.name,
@@ -49,61 +77,59 @@ const CreateBrokerFee = () => {
         fee_type: "percentage",
         currency: "IDR",
       });
-      router.push("/broker-fee");
+      router.push("/broker/broker-fee");
+
     } catch (error) {
       console.error(error);
-      alert("Failed to create broker fee");
+      alert("Failed to update broker fee");
     } finally {
       setLoading(false);
     }
   };
 
-  const {
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      insurance: undefined,
-      product: undefined,
-      plan: undefined,
-      fee: 0,
-    },
-  });
-
-  const {
-    insurances,
-    fetchInsurances,
-    products,
-    fetchProducts,
-    plans,
-    fetchPlans,
-  } = useProducts();
-
+  const watchInsurance = useWatch({ control, name: "insurance" });
+  const watchProduct = useWatch({ control, name: "product" });
+  const watchPlan = useWatch({ control, name: "plan" });
   useEffect(() => {
-    fetchInsurances({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const watchInsurance = useWatch({
-    control,
-    name: "insurance",
-  });
-
-  const watchProduct = useWatch({
-    control,
-    name: "product",
-  });
-  useEffect(() => {
-    if (watchInsurance) fetchProducts({ insuranceId: watchInsurance });
+    if (!watchInsurance) {
+      return;
+    }
+    setLoading(true);
+    fetchProducts({ insuranceId: watchInsurance }).then((x) => {
+      setLoading(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchInsurance]);
 
   useEffect(() => {
-    if (watchProduct) fetchPlans({ productId: watchProduct });
+    if (!watchProduct) {
+      return;
+    }
+    setLoading(true);
+    fetchPlans({ productId: watchProduct }).then((x) => {
+      setLoading(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchProduct]);
+
+  useEffect(() => {
+    setLoading(true);
+    getBrokerFees({ id }).then((x) => {
+      setLoading(false);
+    });
+    fetchInsurances({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (brokerFees && brokerFees.data[0]) {
+      setValue("insurance", brokerFees.data[0].insurance);
+      setValue("product", brokerFees.data[0].product);
+      setValue("plan", brokerFees.data[0].plan);
+      setValue("fee", brokerFees.data[0].fee);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brokerFees]);
   return (
     <div className="flex flex-col w-full">
       <div className="bg-white md:px-6 p-4 flex items-center">
@@ -111,16 +137,16 @@ const CreateBrokerFee = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink>Broker Fee</BreadcrumbLink>
+                <BreadcrumbLink href="/broker/broker-fee">Broker Fee</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Create Broker Fee</BreadcrumbPage>
+                <BreadcrumbPage>Update Broker Fee</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-            Create Broker Fee
+            Update Broker Fee
           </h2>
         </div>
         <div className="flex space-x-4 ml-auto">
@@ -133,7 +159,7 @@ const CreateBrokerFee = () => {
           </div>
           <Button
             type="submit"
-            onClick={handleSubmit(handleCreateBrokerFee)}
+            onClick={handleSubmit(handleUpdateBrokerFee)}
             className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
           >
             <Check className="mr-2 w-4 h-4" />
@@ -276,6 +302,7 @@ const CreateBrokerFee = () => {
   );
 };
 
-const CreateBrokerFeePageWithSidebar = (params: any) =>
-  WithSidebar(CreateBrokerFee)(params);
-export default CreateBrokerFeePageWithSidebar;
+const EditBrokerFeePageWithSidebar = (params: any) =>
+  WithSidebar(EditBrokerFeePage)(params);
+
+export default EditBrokerFeePageWithSidebar;

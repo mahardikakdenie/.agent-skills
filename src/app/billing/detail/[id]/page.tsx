@@ -236,8 +236,13 @@ const DetailBillingPage = () => {
                 <td>: {billing.data[0].items[0].billings.transaction_period}</td>
               </tr>
               <tr>
-                <td>Total Commision Amount</td>
-                <td>: {formatMoney(billing.data[0].items[0].billings.amount)}</td>
+                {
+                  billing.data[0].items[0].billings.type == "insurer" ? <>
+                    <td>Total Commision Amount</td>
+                    <td>: {formatMoney(billing.data[0].items[0].billings.amount)}</td>
+                  </>
+                    :
+                    ""}
                 <td>Status</td>
                 <td className={`font-bold`} style={{ color: `${getStatusColor(billing.data[0].items[0].billings.status)}` }}>: {billing.data[0].items[0].billings.status
                   .split("-")

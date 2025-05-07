@@ -8,13 +8,24 @@ import {
   TableCell,
   TableFooter,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import WithSidebar from "@/hoc/with-sidebar";
-import useBrokerFee from "./hook";
+import useBrokerFee from "../hook";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, DeleteIcon, EditIcon, EyeIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useLoading } from "@/context/loading.context";
+import { useProduct } from "../../masterdata/product/hooks";
+import { ChannelService } from "@/services/channel.services";
+import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 
 const BrokerFeePage = () => {
   const { getBrokerFees, brokerFees, deleteBrokerFee } = useBrokerFee();
@@ -37,6 +48,7 @@ const BrokerFeePage = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage]);
+
 
   const router = useRouter();
 
@@ -65,18 +77,22 @@ const BrokerFeePage = () => {
       setTotalItems(brokerFees.meta.total);
     }
   }, [brokerFees]);
+
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-        Broker Fees
-      </h1>
-      <div className="pb-5">
+      <div className="flex flex-wrap justify-start gap-4 pb-4 items-center">
+        <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+          Broker Fee
+        </h1>
+
         <Button
-          className="btn btn-primary"
-          onClick={() => router.push("/broker-fee/add")}
+          onClick={() => router.push(`/broker/broker-fee/add`)}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
-          Create Broker Fee
+          <PlusIcon className="w-5 h-5 mr-1 " /> Create Broker Fee
         </Button>
+
       </div>
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
         <Table className="table-transactions">
@@ -100,21 +116,34 @@ const BrokerFeePage = () => {
                 <TableCell>{item.plan_name}</TableCell>
                 <TableCell>{item.fee_type}</TableCell>
                 <TableCell>{item.fee}</TableCell>
-                <TableCell className="flex gap-2">
-                  <Button
-                    className="btn btn-primary"
-                    onClick={() => router.push(`/broker-fee/edit/${item.id}`)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    className="btn btn-danger"
-                    variant={"destructive"}
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    Delete
-                  </Button>
+
+                <TableCell className="flex">
+                  <div className="relative group">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => router.push(`/broker/broker-fee/edit/${item.id}`)}
+                    >
+                      <EditIcon className="h-4 w-4" />
+                    </Button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      Edit
+                    </span>
+                  </div>
+                  <div className="relative group">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <TrashIcon className="h-4 w-4 text-red-600" />
+                    </Button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      Delete
+                    </span>
+                  </div>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
