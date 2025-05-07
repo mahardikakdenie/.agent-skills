@@ -107,30 +107,34 @@ const DetailMembership = ({ params }: { params: { id: string } }) => {
             <p className="font-semibold mb-3">Insured Detail</p>
             <div className="flex flex-col lg:flex-row gap-2 lg:gap-8">
                 {memberships?.profile && (
-                    <div className="flex flex-col gap-3">
-                        <div className="space-y-2 text-sm font-medium">
-                            {Object.entries(memberships?.profile || {}).map(([key, value], id) => (
-                                <div key={id} className="flex gap-2">
-                                <div className="min-w-[160px] capitalize">{formatLabel(key)}</div>
-                                <div className="w-1">:</div>
-                                <div>{value ? String(value) : "-"}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                  <div className="flex flex-col gap-3">
+                      <div className="space-y-2 text-sm font-medium">
+                      {Object.entries(memberships.profile)
+                        .filter(([_, value]) => value !== null && value !== undefined && value !== "")
+                        .map(([key, value], id) => (
+                              <div key={id} className="flex gap-2">
+                              <div className="min-w-[160px] capitalize">{formatLabel(key)}</div>
+                              <div className="w-1">:</div>
+                              <div>{String(value)}</div>
+                              </div>
+                          ))}
+                      </div>
+                  </div>
                 )}
                 {memberships?.other_info && (
-                    <div className="flex flex-col gap-3">
-                        <div className="space-y-2 text-sm font-medium">
-                            {Object.entries(memberships?.other_info || {}).map(([key, value], id) => (
-                                <div key={id} className="flex gap-2">
-                                <div className="min-w-[160px] capitalize">{formatLabel(key)}</div>
-                                <div className="w-1">:</div>
-                                <div>{value ? String(value) : "-"}</div>
-                                </div>
-                            ))}
-                        </div>
+                  <div className="flex flex-col gap-3">
+                    <div className="space-y-2 text-sm font-medium">
+                      {Object.entries(memberships.other_info)
+                        .filter(([key, value]) => value !== null && value !== undefined && value !== "" && key !== "email" && key !== "gender")
+                        .map(([key, value], id) => (
+                          <div key={id} className="flex gap-2">
+                            <div className="min-w-[160px] capitalize">{formatLabel(key)}</div>
+                            <div className="w-1">:</div>
+                            <div>{String(value)}</div>
+                          </div>
+                        ))}
                     </div>
+                  </div>
                 )}
             </div>
         </div>
