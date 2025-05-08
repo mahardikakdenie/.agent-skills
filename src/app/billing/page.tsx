@@ -35,11 +35,9 @@ import { ChevronLeft, ChevronRight, List, Printer, PlusIcon, EyeIcon, File } fro
 import { useRouter } from "next/navigation";
 import { formatDate, formatMoney } from "@/lib/formatter";
 import { ChannelService } from "@/services/channel.services";
-import { DateRange, DayPicker } from "react-day-picker";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { useLoading } from "@/context/loading.context";
 import { useProduct } from "../masterdata/product/hooks";
-import { CalendarMonthYear } from "@/components/ui/calendarmonthyear";
 
 const BillingPage = () => {
   const { billingList, getBilling } = useBilling();
