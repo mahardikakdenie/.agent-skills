@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useBilling } from "../../../hook";
 import * as XLSX from "xlsx";
 import { ChevronLeft, Download } from "lucide-react";
-import { formatMoney } from "@/lib/formatter";
+import { formatDate, formatMoney } from "@/lib/formatter";
 import { useParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -96,7 +96,28 @@ const ExportDetailBillingPage = () => {
   };
   const refTemplate = useRef(null);
 
-  const handleGeneratePdf = (billing_no: string) => {
+
+  const loadImageAsBase64 = (url: string): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("No 2D context");
+        ctx.fillStyle = "#ffffff";//important to create white
+        ctx.fillRect(0, 0, canvas.width, canvas.height);//important to create white
+        ctx.drawImage(img, 0, 0);
+        const dataURL = canvas.toDataURL("image/jpeg");
+        resolve(dataURL);
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+
+  const handleGeneratePdf = async (billing_no: string) => {
     if (!refTemplate.current) {
       console.error("Template element is not found.");
       return;
@@ -119,7 +140,7 @@ const ExportDetailBillingPage = () => {
     doc.text(`: ${billing.data[0].billings.billing_no}`, 100, 30)
 
     doc.text('Total Amount', 30, 40) //x,y
-    doc.text(`: ${formatMoney(billing.data[0].billings.amount)}`, 100, 40)
+    doc.text(`: ${billing.data[0].billings.currency} ${formatMoney(billing.data[0].billings.amount)}`, 100, 40)
 
     doc.text('Billing Created Date', 30, 50)
     doc.text(`: ${new Date(billing.data[0].billings.created_at).toDateString()}`, 100, 50)
@@ -143,17 +164,24 @@ const ExportDetailBillingPage = () => {
     doc.text('Period', 30, 90)
     doc.text(`: ${billing.data[0].billings.transaction_period}`, 100, 90)
 
+    const imageUrl = "https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png";
+    const image = await loadImageAsBase64(imageUrl);
+
+    doc.addImage(image, 'JPEG', 310, 25, 110, 40); // x, y, width, height
+
     let head = [
       "Transaction Number",
       "Plan Name",
       "Insurance Company Name",
       "Transaction Date",
+      "Currency",
       "Amount",];
     if (type == "insurer") {
       head = [
         "Transaction Number",
         "Plan Name",
         "Transaction Date",
+        "Currency",
         "Amount",
         "%",
         "Commission Amount"];
@@ -167,6 +195,7 @@ const ExportDetailBillingPage = () => {
             item.details?.plan_name.split('|')[0],
             item.details?.insurance_name,
             item.details?.transaction_date,
+            item.billings.currency,
             formatMoney(item.amount),
           ]
         }
@@ -175,6 +204,7 @@ const ExportDetailBillingPage = () => {
             item.invoice_no,
             item.details?.plan_name.split('|')[0],
             item.details?.transaction_date,
+            item.billings.currency,
             formatMoney(item.amount),
             (item.commission_percentage ?? 0) + "%",
             formatMoney(item.commission_amount ?? 0),
@@ -183,11 +213,11 @@ const ExportDetailBillingPage = () => {
 
       }),
       columnStyles: type == "partner" ? {
-        4: { halign: 'right' },
+        5: { halign: 'right' },
       } : {
-        3: { halign: 'right' },
         4: { halign: 'right' },
         5: { halign: 'right' },
+        6: { halign: 'right' },
       },
       startY: 120,
       headStyles: {
@@ -214,7 +244,7 @@ const ExportDetailBillingPage = () => {
 
     const headerBilling = [
       ["Billing No.", billing.data[0].billings.billing_no],
-      ["Total Amount", formatMoney(billing.data[0].billings.amount)],
+      ["Total Amount", billing.data[0].billings.currency + " " + formatMoney(billing.data[0].billings.amount)],
       [
         "Billing Created Date",
         new Date(billing.data[0].billings.created_at).toDateString(),
@@ -242,6 +272,7 @@ const ExportDetailBillingPage = () => {
         "Plan Name",
         "Insurance Company Name",
         "Transaction Date",
+        "Currency",
         "Amount",
       ],
     ];
@@ -249,7 +280,8 @@ const ExportDetailBillingPage = () => {
       item.invoice_no,
       item.details?.plan_name.split('|')[0],
       item.details?.insurance_name,
-      item.details?.transaction_date,
+      formatDate(item.details?.transaction_date, "YYYY-MM-DD"),
+      item.billings.currency,
       formatMoney(item.amount),
     ]);
 
@@ -259,6 +291,7 @@ const ExportDetailBillingPage = () => {
         "Transaction Number",
         "Plan Name",
         "Transaction Date",
+        "Currency",
         "Amount",
         "%",
         "Commission Amount",
@@ -268,6 +301,7 @@ const ExportDetailBillingPage = () => {
       item.invoice_no,
       item.details?.plan_name.split('|')[0],
       item.details?.transaction_date,
+      item.billings.currency,
       formatMoney(item.amount),
       (item.commission_percentage ?? 0) + "%",
       formatMoney(item.commission_amount ?? 0),
@@ -385,75 +419,87 @@ const ExportDetailBillingPage = () => {
         </div>
 
         <div className="pt-5 md:px-6 p-4 m-5 bg-white" ref={refTemplate}>
-          <table className="w-full">
-            <tr>
-              <td className="pb-5 text-sm">
-                <table width={500} cellPadding={3} className="table-header">
-                  <tr>
-                    <td className="pr-5" width={155}>
-                      Billing No.
-                    </td>
-                    <td>:</td>
-                    <td>{billing.data[0].billings.billing_no}</td>
-                  </tr>
-                  <tr>
-                    <td className="pr-5">Total Amount</td>
-                    <td>:</td>
-                    <td>{formatMoney(billing.data[0].billings.amount)}</td>
-                  </tr>
-                  <tr>
-                    <td className="pr-5">Billing Created Date</td>
-                    <td>:</td>
-                    <td>
-                      {new Date(
-                        billing.data[0].billings.created_at
-                      ).toDateString()}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="pr-5">Status</td>
-                    <td>:</td>
-                    <td>
-                      {billing.data[0].billings.status
-                        .split("-")
-                        .map(
-                          (word: any) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        )
-                        .join(" ")}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="pr-5">Type</td>
-                    <td>:</td>
-                    <td>{billing.data[0]?.billings?.type}</td>
-                  </tr>
-                  <tr>
-                    <td className="pr-5">Company Name</td>
-                    <td>:</td>
-                    <td>{billing.data[0].billings.company_name}</td>
-                  </tr>
-                  <tr>
-                    <td className="pr-5">Period</td>
-                    <td>:</td>
-                    <td>{billing.data[0].billings.transaction_period}</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table style={styles.table}>
-                  <tr>
-                    <td style={styles.th}>Transaction Number</td>
-                    <td style={styles.th}>Plan Name</td>
-                    {
-                      type == "partner" ?
-                        <td style={styles.th}>Insurance Company Name</td>
-                        : ""
-                    }
-                    <td style={styles.th}>Transaction Date</td>
+          <div className="w-full">
+            <div className="flex gap-8 items-start pb-5 text-sm">
+              <table cellPadding={3} className="table-header">
+                <tr>
+                  <td className="pr-5" width={155}>
+                    Billing No.
+                  </td>
+                  <td>:</td>
+                  <td>{billing.data[0].billings.billing_no}</td>
+                </tr>
+                <tr>
+                  <td className="pr-5">Total Amount</td>
+                  <td>:</td>
+                  <td>{billing.data[0].billings.currency} {formatMoney(billing.data[0].billings.amount)}</td>
+                </tr>
+                <tr>
+                  <td className="pr-5">Billing Created Date</td>
+                  <td>:</td>
+                  <td>
+                    {new Date(
+                      billing.data[0].billings.created_at
+                    ).toDateString()}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="pr-5">Status</td>
+                  <td>:</td>
+                  <td>
+                    {billing.data[0].billings.status
+                      .split("-")
+                      .map(
+                        (word: any) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="pr-5">Type</td>
+                  <td>:</td>
+                  <td>{billing.data[0]?.billings?.type}</td>
+                </tr>
+                <tr>
+                  <td className="pr-5">Company Name</td>
+                  <td>:</td>
+                  <td>{billing.data[0].billings.company_name}</td>
+                </tr>
+                <tr>
+                  <td className="pr-5">Period</td>
+                  <td>:</td>
+                  <td>{billing.data[0].billings.transaction_period}</td>
+                </tr>
+              </table>
+              <div className={"ml-auto"}>
+                <img width={180} src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png" alt="PT.Teman PIalang Asuransi" />
+              </div>
+            </div>
+            <table style={styles.table}>
+              <tr>
+                <td style={styles.th}>Transaction Number</td>
+                <td style={styles.th}>Plan Name</td>
+                {
+                  type == "partner" ?
+                    <td style={styles.th}>Insurance Company Name</td>
+                    : ""
+                }
+                <td style={styles.th}>Transaction Date</td>
+                <td style={styles.th}>Currency</td>
+                <td style={{
+                  padding: "10px",
+                  border: "0.5px solid #cccccc",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  height: "auto",
+                  background: "#e7e7e7",
+                  verticalAlign: "middle",
+                  textAlign: "right",
+                }}>Amount</td>
+                {
+                  type == "insurer" ?
                     <td style={{
                       padding: "10px",
                       border: "0.5px solid #cccccc",
@@ -463,52 +509,52 @@ const ExportDetailBillingPage = () => {
                       background: "#e7e7e7",
                       verticalAlign: "middle",
                       textAlign: "right",
-                    }}>Amount</td>
-                    {
-                      type == "insurer" ?
-                        <td style={{
-                          padding: "10px",
-                          border: "0.5px solid #cccccc",
-                          fontWeight: "bold",
-                          fontSize: "12px",
-                          height: "auto",
-                          background: "#e7e7e7",
-                          verticalAlign: "middle",
-                          textAlign: "right",
-                        }}>%</td> : ""
-                    }
-                    {
-                      type == "insurer" ?
-                        <td style={{
-                          padding: "10px",
-                          border: "0.5px solid #cccccc",
-                          fontWeight: "bold",
-                          fontSize: "12px",
-                          height: "auto",
-                          background: "#e7e7e7",
-                          verticalAlign: "middle",
-                          textAlign: "right",
-                        }}>Commision Amount</td> : ""
-                    }
+                    }}>%</td> : ""
+                }
+                {
+                  type == "insurer" ?
+                    <td style={{
+                      padding: "10px",
+                      border: "0.5px solid #cccccc",
+                      fontWeight: "bold",
+                      fontSize: "12px",
+                      height: "auto",
+                      background: "#e7e7e7",
+                      verticalAlign: "middle",
+                      textAlign: "right",
+                    }}>Commision Amount</td> : ""
+                }
 
-                  </tr>
+              </tr>
 
-                  {billing &&
-                    billing.data?.map((data: any) => {
-                      return (
-                        <tr key={data.id}>
-                          <td style={styles.td}>{data.invoice_no}</td>
+              {billing &&
+                billing.data?.map((data: any) => {
+                  return (
+                    <tr key={data.id}>
+                      <td style={styles.td}>{data.invoice_no}</td>
+                      <td style={styles.td}>
+                        {data.details?.plan_name.split('|')[0]}
+                      </td>
+                      {
+                        type == "partner" ?
                           <td style={styles.td}>
-                            {data.details?.plan_name.split('|')[0]}
+                            {data.details?.insurance_name}
                           </td>
-                          {
-                            type == "partner" ?
-                              <td style={styles.td}>
-                                {data.details?.insurance_name}
-                              </td>
-                              : ""
-                          }
-                          <td style={styles.td}>{data.details?.transaction_date}</td>
+                          : ""
+                      }
+                      <td style={styles.td}>{formatDate(data.details?.transaction_date, "YYYY-MM-DD")}</td>
+                      <td style={styles.td}>{data.billings.currency}</td>
+                      <td style={{
+                        padding: "10px",
+                        height: "auto",
+                        border: "0.5px solid #cccccc",
+                        fontSize: "12px",
+                        verticalAlign: "middle",
+                        textAlign: "right",
+
+                      }}>{formatMoney(data.amount)}</td>
+                      {
+                        type == "insurer" ?
                           <td style={{
                             padding: "10px",
                             height: "auto",
@@ -516,41 +562,28 @@ const ExportDetailBillingPage = () => {
                             fontSize: "12px",
                             verticalAlign: "middle",
                             textAlign: "right",
-
-                          }}>{formatMoney(data.amount)}</td>
-                          {
-                            type == "insurer" ?
-                              <td style={{
-                                padding: "10px",
-                                height: "auto",
-                                border: "0.5px solid #cccccc",
-                                fontSize: "12px",
-                                verticalAlign: "middle",
-                                textAlign: "right",
-                              }}>
-                                {data.commission_percentage ?? 0}%
-                              </td> : ""
-                          }
-                          {
-                            type == "insurer" ?
-                              <td style={{
-                                padding: "10px",
-                                height: "auto",
-                                border: "0.5px solid #cccccc",
-                                fontSize: "12px",
-                                verticalAlign: "middle",
-                                textAlign: "right",
-                              }}>
-                                {formatMoney(data.commission_amount ?? 0)}
-                              </td> : ""
-                          }
-                        </tr>
-                      );
-                    })}
-                </table>
-              </td>
-            </tr>
-          </table>
+                          }}>
+                            {data.commission_percentage ?? 0}%
+                          </td> : ""
+                      }
+                      {
+                        type == "insurer" ?
+                          <td style={{
+                            padding: "10px",
+                            height: "auto",
+                            border: "0.5px solid #cccccc",
+                            fontSize: "12px",
+                            verticalAlign: "middle",
+                            textAlign: "right",
+                          }}>
+                            {formatMoney(data.commission_amount ?? 0)}
+                          </td> : ""
+                      }
+                    </tr>
+                  );
+                })}
+            </table>
+          </div>
         </div>
       </div>
     )

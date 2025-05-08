@@ -79,11 +79,11 @@ const InvoicePage = () => {
       <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
           <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
-          <p style="color: #666; margin: 5px 0;">PT. Taawun Indonesia Sejahtera</p>
+          <p style="color: #666; margin: 5px 0;">PT. Teman Pialang Asuransi</p>
           <p style="color: #777; margin: 5px 0;">Jakarta, Indonesia</p>
         </div>
         <div style="text-align: right;">
-          <img src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png" alt="Taawun" style="height: 48px; margin-bottom: 16px;margin-left: auto;" />
+          <img src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png" alt="PT.Teman PIalang Asuransi" style="height: 48px; margin-bottom: 16px;margin-left: auto;" />
           <p style="color: #666; margin: 5px 0;">Invoice #${d.billing_no}</p>
           <p style="color: #777; margin: 5px 0;">Date: ${new Date(d.created_at).toLocaleDateString()}</p>
         </div>
@@ -97,7 +97,12 @@ const InvoicePage = () => {
         </div>
         <div style="flex: 1; text-align: right;"> 
           <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Amount Due</h2>
-          <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;">${type == "partner" ? formatMoney(d.total) : formatMoney(d.total_commission)}</p>
+          <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
+            ${type == "partner" ?
+        (billing.data[0].billings.currency) + " " + formatMoney(d.total)
+        :
+        (billing.data[0].items[0].billings.currency) + " " + formatMoney(d.total_commission)}
+          </p>
           <p style="color: #777; margin: 5px 0;">Status: ${status}</p>
           <p style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </p>
         </div>

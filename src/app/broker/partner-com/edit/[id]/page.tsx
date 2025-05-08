@@ -162,16 +162,16 @@ const EditPartnerComPage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/broker/partner-com">Partner Com</BreadcrumbLink>
+                <BreadcrumbLink href="/broker/partner-com">Partner Comm</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Update Partner Com</BreadcrumbPage>
+                <BreadcrumbPage>Update Partner Comm</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-            Update Partner Com
+            Update Partner Comm
           </h2>
         </div>
         <div className="flex space-x-4 ml-auto">

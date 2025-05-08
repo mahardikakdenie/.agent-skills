@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { formatMoney } from "@/lib/formatter";
+import { formatDate, formatMoney } from "@/lib/formatter";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -85,7 +85,7 @@ const CreateBillingPage = () => {
 
         newPremium = premium * (currencyData?.value ?? 1);
       }
-
+      data.currency = currency;
       return {
         ...data,
         newPremium,
@@ -198,9 +198,10 @@ const CreateBillingPage = () => {
   const handleChangeYear = (e: any) => {
     setYear(e.target.value);
   };
-  useEffect(() => {
-    handleGetTransaction();
-  }, [rowsPerPage]);
+
+  // useEffect(() => {
+  //   handleGetTransaction();
+  // }, [rowsPerPage]);
 
   const handleGetTransaction = async () => {
     setTransactionList({});
@@ -567,6 +568,7 @@ const CreateBillingPage = () => {
                     <TableHead>Insurance Company Name</TableHead> : ""
                 }
                 <TableHead>Transaction Date</TableHead>
+                <TableHead>Currency</TableHead>
                 <TableHead>Amount</TableHead>
                 {
                   type === "insurer" ?
@@ -604,8 +606,9 @@ const CreateBillingPage = () => {
                             {data.insurance?.insurance?.id?.name}
                           </TableCell> : ""
                       }
-                      <TableCell>{data.created_at}</TableCell>
-                      <TableCell>{formatMoney(data.newPremium)}</TableCell>
+                      <TableCell>{formatDate(data.created_at, "YYYY-MM-DD")}</TableCell>
+                      <TableCell>{data.currency}</TableCell>
+                      <TableCell className="text-right w-1">{formatMoney(data.newPremium)}</TableCell>
                       {
                         type === "insurer" ?
                           <TableCell>

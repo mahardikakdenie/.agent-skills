@@ -146,16 +146,16 @@ const CreatePartnerCom = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/broker/partner-com">Partner Com</BreadcrumbLink>
+                <BreadcrumbLink href="/broker/partner-com">Partner Comm</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Create Partner Com</BreadcrumbPage>
+                <BreadcrumbPage>Create Partner Comm</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-            Create Partner Com
+            Create Partner Comm
           </h2>
         </div>
         <div className="flex space-x-4 ml-auto">

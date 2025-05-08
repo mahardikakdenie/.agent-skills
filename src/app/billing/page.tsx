@@ -33,13 +33,13 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, List, Printer, PlusIcon, EyeIcon, File } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { formatMoney } from "@/lib/formatter";
+import { formatDate, formatMoney } from "@/lib/formatter";
 import { ChannelService } from "@/services/channel.services";
-import { DateRange } from "react-day-picker";
+import { DateRange, DayPicker } from "react-day-picker";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { useLoading } from "@/context/loading.context";
 import { useProduct } from "../masterdata/product/hooks";
-import moment from "moment";
+import { CalendarMonthYear } from "@/components/ui/calendarmonthyear";
 
 const BillingPage = () => {
   const { billingList, getBilling } = useBilling();
@@ -49,7 +49,9 @@ const BillingPage = () => {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
   const [searchType, setSearchType] = useState("");//DEFAULT PARTNER
   const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
-  const [date, setDate] = useState<DateRange | undefined>(undefined);
+  // const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [date, setDate] = useState<Date>(new Date());
+  const [dateTmp, setDateTmp] = useState<Date>(new Date());
   const [searchCategory, setSearchCategory] = useState("All");
   const { setLoading } = useLoading();
 
@@ -77,12 +79,12 @@ const BillingPage = () => {
     if (searchType == "" || searchChannel == "") {
       return;
     }
-    let query: { [key: string]: string } = { type: searchType, company: searchChannel };
+    let query: { [key: string]: string } = { type: searchType, company: searchChannel, date: formatDate(date.toString(), "YYYY-MM-DD") };
     if (searchCategory != "All") {
       query["category"] = searchCategory;
     }
 
-    localStorage.setItem("billingPage", JSON.stringify({ type: searchType, company: searchChannel, category: searchCategory }));
+    localStorage.setItem("billingPage", JSON.stringify({ type: searchType, company: searchChannel, category: searchCategory, date: date }));
     getBilling(query, page, rowsPerPage,);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, searchType, searchChannel, searchCategory, date]);
@@ -99,6 +101,8 @@ const BillingPage = () => {
         setSearchType(d.type);
         setSearchChannel(d.company)
         setSearchCategory(d.category)
+        setDate(new Date(d.date))
+        setDateTmp(new Date(d.date))
         return;
       }
 
@@ -181,10 +185,12 @@ const BillingPage = () => {
     setSearchCategory(v);
   };
 
-  const handleClear = () => {
-    setDate(undefined);
-  };
-
+  // const handleClear = () => {
+  //   setDate(new Date());
+  // };
+  let months = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  let years = ["2024", "2025", "2026", "2027", "2028", "2029", "2030"]
   const router = useRouter();
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -193,55 +199,126 @@ const BillingPage = () => {
           Billing List
         </h1>
 
-        {/* <div className="flex gap-2 sm:w-auto w-full relative">
+        <div className="flex gap-2 sm:w-auto w-full relative">
+
+          <Button
+            onClick={() => {
+
+              const year = date.getFullYear();
+              const month = date.getMonth();
+              setDate(new Date(year, month - 1, 1))
+              setDateTmp(new Date(year, month - 1, 1))
+              return;
+            }}
+            disabled={!date}
+            className={cn(
+              "font-semibold bg-transparent hover:bg-transparent p-0 text-black text-sm cursor-pointer absolute left-2",
+              !date && "text-gray-500 cursor-not-allowed"
+            )}
+            title="Previous"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 id="date"
                 variant={"outline"}
+                style={{ paddingLeft: "30px" }}
                 className={cn(
                   "sm:w-[280px] w-full justify-start text-left font-normal",
                   !date && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="w-4 h-4 mr-2" />
-                {date?.from ? (
-                  date.to ? (
-                    <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(date.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>Pick a date</span>
-                )}
+                {format(date, "LLL, y")}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                defaultMonth={new Date()}
+            <PopoverContent className="w-auto p-0" align="start" >
+              <div className="flex gap-2 sm:w-auto w-full relative">
+                <Select
+                  value={dateTmp.getMonth().toString()}
+                  onValueChange={(e) => {
+                    setDateTmp(new Date(dateTmp.getFullYear(), parseInt(e), 1));
+                  }}
+                >
+                  <SelectTrigger className="h-10 min-w-36">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup className="min-w-36">
+                      {
+                        months.map((item, index) => (
+                          <SelectItem key={index} value={index.toString()}>{item}</SelectItem>
+                        ))
+                      }
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={dateTmp.getFullYear().toString()}
+                  onValueChange={(e) => {
+                    setDateTmp(new Date(parseInt(e), dateTmp.getMonth(), 1));
+                  }}
+                >
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {
+                        years.map((item, index) => (
+                          <SelectItem key={index} value={item}>{item}</SelectItem>
+                        ))
+                      }
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Button onClick={(e) => {
+                  setDate(dateTmp);
+                }}>OK</Button>
+              </div>
+
+              {/* <Calendar
+                mode="single"
+                required={true}
                 selected={date}
-                onSelect={(range) => setDate(range)}
-                numberOfMonths={2}
-              />
+                onMonthChange={(date) => {
+                  setDate(date);
+                }}
+                onSelect={(date) => {
+                  setDate(date);
+                }}
+                captionLayout="dropdown" // Enables month & year dropdowns
+                startMonth={new Date(2000, 0)}
+                endMonth={new Date(2050, 0)}
+                showOutsideDays={false}
+                showWeekNumber={false}
+                modifiersClassNames={{
+                  selected: 'bg-blue-500 text-white', // Tailwind example
+                }}
+              /> */}
             </PopoverContent>
           </Popover>
           <Button
-            onClick={handleClear}
+            onClick={() => {
+
+              const year = date.getFullYear();
+              const month = date.getMonth();
+              setDate(new Date(year, month + 1, 1))
+              setDateTmp(new Date(year, month + 1, 1))
+            }}
             disabled={!date}
             className={cn(
-              "font-semibold bg-transparent hover:bg-transparent p-0 text-red-700 text-sm cursor-pointer absolute right-2",
+              "font-semibold bg-transparent hover:bg-transparent p-0 text-black text-sm cursor-pointer absolute right-2",
               !date && "text-gray-500 cursor-not-allowed"
             )}
-            title="Clear"
+            title="Next"
           >
-            <X className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" />
           </Button>
-        </div> */}
-        <div className="min-w-36 w-[100px]">
+        </div>
+        <div className="min-w-36 w-[100px] ml-auto">
           <Select
             value={searchType}
             onValueChange={handleTypeChange}
@@ -303,7 +380,7 @@ const BillingPage = () => {
 
         <Button
           onClick={() => router.push("/billing/add")}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <PlusIcon className="w-5 h-5 mr-1 " /> Create Billing
         </Button>
@@ -323,7 +400,8 @@ const BillingPage = () => {
                 searchCategory == "All" ?
                   <TableHead>Category</TableHead> : ""
               }
-              <TableHead style={{ textAlign: "right" }}>Amount</TableHead>
+              <TableHead style={{ width: "50px" }}>Currency</TableHead>
+              <TableHead style={{ width: "50px", textAlign: "right" }}>Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
@@ -333,7 +411,7 @@ const BillingPage = () => {
               <TableRow key={index}>
                 <TableCell className="whitespace-nowrap">{index + 1}</TableCell>
                 <TableCell>{billing.billing_no}</TableCell>
-                <TableCell>{moment(billing.created_at).local().format("DD-MM-YYYY HH:mm:ss")}</TableCell>
+                <TableCell>{formatDate(billing.created_at, "YYYY-MM-DD")}</TableCell>
                 {
                   searchCategory == "All" ?
                     <TableCell>{categories.filter((c) => c.id == billing.category)[0].name}</TableCell> : ""
@@ -341,6 +419,7 @@ const BillingPage = () => {
                 {/* <TableCell>{billing.transaction_period}</TableCell> */}
                 {/* <TableCell>{billing.type}</TableCell> */}
                 {/* <TableCell>{billing.company_name}</TableCell> */}
+                <TableCell>{billing.currency}</TableCell>
                 <TableCell style={{ textAlign: "right" }}>{formatMoney(billing.amount)}</TableCell>
                 <TableCell>
                   {billing.status
@@ -358,7 +437,7 @@ const BillingPage = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories }));
+                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories, "date": date }));
                         router.push(`billing/detail/${billing.id}`);
                       }
                       }
@@ -374,7 +453,7 @@ const BillingPage = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories }));
+                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories, "date": date }));
                         router.push(`billing/detail/${billing.id}/invoice?type=${billing.type}`);
                       }
                       }

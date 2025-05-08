@@ -113,10 +113,10 @@ const PartnerComPage = () => {
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex flex-wrap justify-start gap-4 pb-4 items-center">
         <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-          Partner Com
+          Partner Comm
         </h1>
 
-        <div className="min-w-48 w-[180px]">
+        <div className="min-w-48 w-[180px] ml-auto">
           <Select
             value={searchChannel}
             onValueChange={handleChannelChange}
@@ -139,9 +139,9 @@ const PartnerComPage = () => {
 
         <Button
           onClick={() => router.push(`/broker/partner-com/add`)}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
-          <PlusIcon className="w-5 h-5 mr-1 " /> Create Partner Com
+          <PlusIcon className="w-5 h-5 mr-1 " /> Create Partner Comm
         </Button>
 
       </div>

@@ -183,10 +183,10 @@ const Sidebar = () => {
                 >
                   <Image
                     src={iconClaim}
-                    alt="Partner Com"
+                    alt="Partner Comm"
                     className="w-7 min-w-7"
                   />
-                  Partner Com
+                  Partner Comm
                 </Link>
               </li>
               <li className="mt-2 text-sm">
