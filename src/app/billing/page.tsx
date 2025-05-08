@@ -99,8 +99,8 @@ const BillingPage = () => {
         setSearchType(d.type);
         setSearchChannel(d.company)
         setSearchCategory(d.category)
-        setDate(new Date(d.date))
-        setDateTmp(new Date(d.date))
+        setDate(d.date ? new Date(d.date) : new Date())
+        setDateTmp(d.date ? new Date(d.date) : new Date())
         return;
       }
 
@@ -229,7 +229,7 @@ const BillingPage = () => {
                 )}
               >
                 <CalendarIcon className="w-4 h-4 mr-2" />
-                {format(date, "LLL, y")}
+                {formatDate(date.toString(), "MMM, YYYY")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start" >

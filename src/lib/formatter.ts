@@ -4,9 +4,17 @@ export const formatMoney = (
   amount: number,
   currency: string = ""
 ): string => {
+  if (currency != "") {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    return formatter.format(amount);
+  }
+
   const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
