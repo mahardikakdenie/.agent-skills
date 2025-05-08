@@ -4,7 +4,7 @@ export const formatMoney = (
   amount: number,
   currency: string = ""
 ): string => {
-  if (currency != "") {
+  if (currency && currency != "") {
     const formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: currency,
