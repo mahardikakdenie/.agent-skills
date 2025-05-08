@@ -46,6 +46,7 @@ const EditPartnerComPage = () => {
     setValue,
   } = useForm({
     defaultValues: {
+      id: "",
       channel: "",
       insurance: "",
       product: "",
@@ -65,11 +66,13 @@ const EditPartnerComPage = () => {
   const handleUpdateBrokerFee = async (data: any) => {
     try {
       setLoading(true);
-      var res = await updateChannelFee(watchChannel, {
+      var res = await updateChannelFee(data.id, {
         channel: data.channel,
+        channel_name: channels.find((i) => i.id === data.channel)?.name,
         product: data.product ? data.product : null,
         plan: data.plan ? data.plan : null,
         insurance: data.insurance == "All" ? null : data.insurance,
+        insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
         fee_type: "percentage",
         currency: "IDR",
         fee: data.fee
@@ -143,6 +146,7 @@ const EditPartnerComPage = () => {
   useEffect(() => {
     if (channelFees && channelFees.data[0]) {
       console.log(channelFees)
+      setValue("id", channelFees.data[0].id);
       setValue("channel", channelFees.data[0].channel);
       setValue("insurance", channelFees.data[0].insurance ? channelFees.data[0].insurance : "All");
       // setValue("product", brokerFees.data[0].product);

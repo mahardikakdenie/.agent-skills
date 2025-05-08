@@ -43,6 +43,7 @@ const CreatePartnerCom = () => {
       setLoading(true);
       var res = await createChannelFee(watchChannel!, {
         channel: watchChannel!,
+        channel_name: channels.find((i) => i.id === watchChannel!)?.name,
         product: data.product ? data.product : null,
         plan: data.plan ? data.plan : null,
         insurance: data.insurance == "All" ? null : data.insurance,

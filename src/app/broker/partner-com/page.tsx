@@ -37,7 +37,7 @@ const PartnerComPage = () => {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
   const [channels, setChannels] = useState<any[]>([]);
 
-  const [searchChannel, setSearchChannel] = useState("All");//DEFAULT TEMAN
+  const [searchChannel, setSearchChannel] = useState("All");//DEFAULT TEMAN 
 
   useEffect(() => {
     (async () => {
@@ -88,7 +88,11 @@ const PartnerComPage = () => {
       try {
         setLoading(true);
         await deleteChannelFee(id);
-        setPage(1);
+        if (page === 1) {
+          await getChannelFees({ channelId: searchChannel == "All" ? null : searchChannel }, page, rowsPerPage);
+        } else {
+          setPage(1);
+        }
       } catch (error) {
         console.error(error);
         alert("Failed to delete partner com");

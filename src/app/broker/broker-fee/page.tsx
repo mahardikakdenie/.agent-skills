@@ -62,7 +62,12 @@ const BrokerFeePage = () => {
       try {
         setLoading(true);
         await deleteBrokerFee(id);
-        setPage(1);
+
+        if (page === 1) {
+          await getBrokerFees({}, page, rowsPerPage);
+        } else {
+          setPage(1);
+        }
       } catch (error) {
         console.error(error);
         alert("Failed to delete broker fee");
