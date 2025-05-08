@@ -77,7 +77,14 @@ const BillingPage = () => {
     if (searchType == "" || searchChannel == "") {
       return;
     }
-    let query: { [key: string]: string } = { type: searchType, company: searchChannel, date: formatDate(date.toString(), "YYYY-MM-DD") };
+    var startDate = formatDate(new Date(date.getFullYear(), date.getMonth(), 1).toString(), "YYYY-MM-DD")
+    var endDate = formatDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).toString(), "YYYY-MM-DD")
+    let query: { [key: string]: string } = {
+      type: searchType,
+      company: searchChannel,
+      startDate: startDate,
+      endDate: endDate
+    };
     if (searchCategory != "All") {
       query["category"] = searchCategory;
     }
