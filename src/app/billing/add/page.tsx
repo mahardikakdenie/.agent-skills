@@ -569,14 +569,14 @@ const CreateBillingPage = () => {
                 }
                 <TableHead>Transaction Date</TableHead>
                 <TableHead>Currency</TableHead>
-                <TableHead>Amount</TableHead>
+                <TableHead style={{ textAlign: "right" }}>Amount</TableHead>
                 {
                   type === "insurer" ?
                     <TableHead>Commision Percentage</TableHead> : ""
                 }
                 {
                   type === "insurer" ?
-                    <TableHead>Commision Amount</TableHead> : ""
+                    <TableHead className="text-right">Commision Amount</TableHead> : ""
                 }
               </TableRow>
             </TableHeader>
@@ -611,7 +611,7 @@ const CreateBillingPage = () => {
                       <TableCell className="text-right w-1">{formatMoney(data.newPremium)}</TableCell>
                       {
                         type === "insurer" ?
-                          <TableCell>
+                          <TableCell className="w-1">
                             {type === "insurer" &&
                               fees[
                                 `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
@@ -624,7 +624,7 @@ const CreateBillingPage = () => {
                       }
                       {
                         type === "insurer" ?
-                          <TableCell>{type === "insurer" ? fee : 0}</TableCell> : ""
+                          <TableCell className="text-right w-1">{type === "insurer" ? fee : 0}</TableCell> : ""
                       }
                     </TableRow>
                   );
