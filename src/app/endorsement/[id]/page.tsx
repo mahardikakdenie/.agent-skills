@@ -447,6 +447,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>No.</TableHead>
+                    <TableHead className="whitespace-nowrap">Record Mode</TableHead>
                     <TableHead className="whitespace-nowrap">Policy Number</TableHead>
                     <TableHead className="whitespace-nowrap">Subsidiary / Entity</TableHead>
                     <TableHead className="whitespace-nowrap">Employee ID</TableHead>
@@ -473,6 +474,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 {endorsement?.endorsements_detail?.map((item: any, index: any) => (
                   <TableRow key={index}>
                     <TableCell>{index + 1}</TableCell>
+                    <TableCell>{item?.data?.profile?.record_mode || "-"}</TableCell>
                     <TableCell className="min-w-[180px]">{item?.endorsements?.number || "-"}</TableCell>
                     <TableCell className="min-w-[230px]">{item?.data?.profile?.subsidiary || "-"}</TableCell>
                     <TableCell>{item?.data?.profile?.employee_id || "-"}</TableCell>
