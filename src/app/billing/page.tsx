@@ -48,7 +48,7 @@ const BillingPage = () => {
   const [searchType, setSearchType] = useState("");//DEFAULT PARTNER
   const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
   // const [date, setDate] = useState<DateRange | undefined>(undefined);
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date | null>(null);
   const [dateTmp, setDateTmp] = useState<Date>(new Date());
   const [searchCategory, setSearchCategory] = useState("All");
   const { setLoading } = useLoading();
@@ -77,14 +77,17 @@ const BillingPage = () => {
     if (searchType == "" || searchChannel == "") {
       return;
     }
-    var startDate = formatDate(new Date(date.getFullYear(), date.getMonth(), 1).toString(), "YYYY-MM-DD")
-    var endDate = formatDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).toString(), "YYYY-MM-DD")
     let query: { [key: string]: string } = {
       type: searchType,
       company: searchChannel,
-      startDate: startDate,
-      endDate: endDate
     };
+    if (date) {
+      var startDate = formatDate(new Date(date.getFullYear(), date.getMonth(), 1).toString(), "YYYY-MM-DD")
+      var endDate = formatDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).toString(), "YYYY-MM-DD")
+      query.startDate = startDate;
+      query.endDate = endDate;
+
+    }
     if (searchCategory != "All") {
       query["category"] = searchCategory;
     }
@@ -106,7 +109,7 @@ const BillingPage = () => {
         setSearchType(d.type);
         setSearchChannel(d.company)
         setSearchCategory(d.category)
-        setDate(d.date ? new Date(d.date) : new Date())
+        setDate(d.date ? new Date(d.date) : null)
         setDateTmp(d.date ? new Date(d.date) : new Date())
         return;
       }
@@ -190,9 +193,9 @@ const BillingPage = () => {
     setSearchCategory(v);
   };
 
-  // const handleClear = () => {
-  //   setDate(new Date());
-  // };
+  const handleClear = () => {
+    setDate(null);
+  };
   let months = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
   let years = ["2024", "2025", "2026", "2027", "2028", "2029", "2030"]
@@ -208,12 +211,13 @@ const BillingPage = () => {
 
           <Button
             onClick={() => {
-
-              const year = date.getFullYear();
-              const month = date.getMonth();
-              setDate(new Date(year, month - 1, 1))
-              setDateTmp(new Date(year, month - 1, 1))
-              return;
+              if (date) {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                setDate(new Date(year, month - 1, 1))
+                setDateTmp(new Date(year, month - 1, 1))
+                return;
+              }
             }}
             disabled={!date}
             className={cn(
@@ -236,7 +240,7 @@ const BillingPage = () => {
                 )}
               >
                 <CalendarIcon className="w-4 h-4 mr-2" />
-                {formatDate(date.toString(), "MMM, YYYY")}
+                {date ? formatDate(date.toString(), "MMM, YYYY") : "Select Period"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start" >
@@ -282,6 +286,10 @@ const BillingPage = () => {
                 <Button onClick={(e) => {
                   setDate(dateTmp);
                 }}>OK</Button>
+                <Button className="bg-red-600 hover:bg-red-500" onClick={(e) => {
+                  handleClear();
+                  setDateTmp(new Date());
+                }}>Reset</Button>
               </div>
 
               {/* <Calendar
@@ -307,11 +315,12 @@ const BillingPage = () => {
           </Popover>
           <Button
             onClick={() => {
-
-              const year = date.getFullYear();
-              const month = date.getMonth();
-              setDate(new Date(year, month + 1, 1))
-              setDateTmp(new Date(year, month + 1, 1))
+              if (date) {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                setDate(new Date(year, month + 1, 1))
+                setDateTmp(new Date(year, month + 1, 1))
+              }
             }}
             disabled={!date}
             className={cn(
