@@ -105,7 +105,7 @@ const DetailMembership = ({ params }: { params: { id: string } }) => {
         </div>
         <div className="bg-white rounded-md sm:p-6 p-4 mb-4 md:mb-0 h-fit max-h-full overflow-y-auto ">
             <p className="font-semibold mb-3">Insured Detail</p>
-            <div className="flex flex-col lg:flex-row gap-2 lg:gap-8">
+            <div className="flex flex-col lg:flex-row gap-2 lg:gap-20">
                 {memberships?.profile && (
                   <div className="flex flex-col gap-3">
                       <div className="space-y-2 text-sm font-medium">
