@@ -53,6 +53,26 @@ export class FinanceService {
     return this.httpClientCookie.get('/v1/fees/broker-filter/' + qs);
   }
 
+  async getChannelFees(param: { channelId: string, insuranceId?: string, productId?: string, planId?: string; }): Promise<any> {
+    const { channelId, insuranceId, productId, planId } = param;
+
+    let qs = '?channelId=' + channelId;
+    if (insuranceId) {
+      qs += `&insuranceId=${insuranceId}`;
+    }
+    //sementara di hilangkan
+    // if (productId) {
+    //   qs += `&productId=${productId}`;
+    // }
+
+    // if (planId) {
+    //   qs += `&planId=${planId}`;
+    // }
+
+
+    return this.httpClientCookie.get('/v1/fees/channel-filter/' + qs);
+  }
+
   async createBilling(data: any) {
     return this.httpClientCookie.post('/v1/billings', data);
   }

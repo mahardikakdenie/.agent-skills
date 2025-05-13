@@ -45,7 +45,7 @@ const CreateBillingPage = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const { transactionList, getTransactions, setTransactionList } =
     useTransaction();
-  const { getFees, fees, createBilling, checkDuplicateBilling } = useBilling();
+  const { getFees, getChannelFees, fees, clearFees, createBilling, checkDuplicateBilling } = useBilling();
   const [type, setType] = useState<string>("");
   const [company, setCompany] = useState<string>("");
   const [companyName, setCompanyName] = useState<string>("");
@@ -66,18 +66,33 @@ const CreateBillingPage = () => {
       const premium = parseFloat(data.insurance.premium);
       const currency = data.insurance.currency;
       let newPremium = premium;
-      if (
-        !fees[
-        `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-        ]
-      ) {
-        getFees(
-          data.insurance?.insurance?.id?.id,
-          data.insurance?.product?.id,
-          data.insurance?.plan?.id
-        );
-      }
+      if (type == "partner") {
+        if (
+          !fees[
+          `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]
+        ) {
+          getChannelFees(
+            company,
+            data.insurance?.insurance?.id?.id,
+            data.insurance?.product?.id,
+            data.insurance?.plan?.id
+          );
+        }
+      } else if (type == "insurer") {
+        if (
+          !fees[
+          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]
+        ) {
+          getFees(
+            data.insurance?.insurance?.id?.id,
+            data.insurance?.product?.id,
+            data.insurance?.plan?.id
+          );
+        }
 
+      }
       if (currency !== "IDR" && data.insurance.insurance.currencies) {
         const currencyData = data.insurance.insurance.currencies.find(
           (c: any) => c.currency_from === currency && c.currency_to === "IDR"
@@ -205,6 +220,7 @@ const CreateBillingPage = () => {
 
   const handleGetTransaction = async () => {
     setTransactionList({});
+    clearFees();
     if (!month && !year && !company && !type) {
       alert("Please fill all fields");
       return;
@@ -301,12 +317,33 @@ const CreateBillingPage = () => {
     const detail = [];
     let totalCommission = 0;
     for (let data of processedTransactionList) {
-      const commission =
-        ((fees[
+      let commission;
+      let commission_percentage;
+      if (type == "insurer") {
+        commission =
+          ((fees[
+            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]?.fee ?? 0) /
+            100) *
+          data.newPremium;
+
+        commission_percentage = fees[
           `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-        ]?.fee ?? 0) /
-          100) *
-        data.newPremium;
+        ]?.fee ?? 0;
+      }
+      else if (type == "partner") {
+        commission =
+          ((fees[
+            `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]?.fee ?? 0) /
+            100) *
+          data.newPremium;
+
+        commission_percentage = fees[
+          `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+        ]?.fee ?? 0;
+      }
+
       detail.push({
         transaction: data.id,
         invoice_no: data.invoice ?? "",
@@ -314,13 +351,8 @@ const CreateBillingPage = () => {
         product: data.insurance.product.id,
         plan: data.insurance.plan.id,
         amount: data.newPremium,
-        commission_percentage:
-          type === "insurer"
-            ? fees[
-              `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-            ]?.fee
-            : 0,
-        commission_amount: type === "insurer" ? commission : 0,
+        commission_percentage: commission_percentage,
+        commission_amount: commission,
         details: {
           plan_name: data.insurance.plan.name,
           product_name: data.insurance.product.name,
@@ -330,9 +362,9 @@ const CreateBillingPage = () => {
         category: category != "All" ? category : null
       });
       if (type === "insurer") {
-        totalCommission += commission;
+        totalCommission += commission!;
       } else if (type === "partner") {
-        totalCommission += data.newPremium;
+        totalCommission += commission!;//data.newPremium;
       }
     }
     try {
@@ -427,7 +459,7 @@ const CreateBillingPage = () => {
               htmlFor="type"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Choose Insurance Company
+              {type == "insurer" ? "Choose Insurance Company" : "Choose Partner"}
             </label>
             <Select
               value={company}
@@ -576,24 +608,44 @@ const CreateBillingPage = () => {
                 }
                 {
                   type === "insurer" ?
-                    <TableHead className="text-right">Commision Amount</TableHead> : ""
+                    <TableHead>Commision Amount</TableHead> : ""
                 }
+                {/* <TableHead>Commision Percentage</TableHead>
+                <TableHead className="text-right">Commision Amount</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
               {processedTransactionList &&
                 processedTransactionList.map((data: any) => {
-                  const fee =
-                    fees[
+                  let fee;
+                  if (type == "insurer") {
+                    fee = fees[
                       `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
                     ]?.fee &&
-                    formatMoney(
-                      ((fees[
-                        `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                      ]?.fee ?? 0) /
-                        100) *
-                      data.newPremium
-                    );
+                      formatMoney(
+                        ((fees[
+                          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        ]?.fee ?? 0) /
+                          100) *
+                        data.newPremium
+                      );
+                  }
+                  else if (type == "partner") {
+                    console.log(
+                      data.insurance
+                    )
+                    console.log(fees)
+                    fee = fees[
+                      `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                    ]?.fee &&
+                      formatMoney(
+                        ((fees[
+                          `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        ]?.fee ?? 0) /
+                          100) *
+                        data.newPremium
+                      );
+                  }
                   return (
                     <TableRow key={data.id}>
                       <TableCell>{data.invoice}</TableCell>
@@ -621,10 +673,22 @@ const CreateBillingPage = () => {
                               ]?.fee ?? 0
                               : 0}
                           </TableCell> : ""
+
+                        // <TableCell className="w-1">
+                        //   {type === "partner" &&
+                        //     fees[
+                        //       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        //     ]?.fee
+                        //     ? fees[
+                        //       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        //     ]?.fee ?? 0
+                        //     : 0}
+                        // </TableCell>
                       }
                       {
                         type === "insurer" ?
-                          <TableCell className="text-right w-1">{type === "insurer" ? fee : 0}</TableCell> : ""
+                          <TableCell className="text-right w-1">{fee}</TableCell> : ""
+                        // <TableCell className="text-right w-1">{fee}</TableCell>
                       }
                     </TableRow>
                   );
