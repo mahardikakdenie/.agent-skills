@@ -174,7 +174,9 @@ const EndorsementPage = () => {
               <TableHead className="py-2">Policy Number</TableHead>
               <TableHead className="whitespace-nowrap py-2">Request Date</TableHead>
               <TableHead className="whitespace-nowrap py-2">Approve/Rejected Date</TableHead>
+              <TableHead className="whitespace-nowrap py-2">Type</TableHead>
               <TableHead className="whitespace-nowrap py-2">Status</TableHead>
+              <TableHead className="whitespace-nowrap py-2">Verified by</TableHead>
               <TableHead className="whitespace-nowrap py-2">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -188,7 +190,9 @@ const EndorsementPage = () => {
                   <TableCell className="min-w-[170px]">{endorsement.policies?.number || "-"}</TableCell>
                   <TableCell>{endorsement?.created_at ? new Date(endorsement.created_at).toLocaleDateString(  "en-GB" ) : "-"}</TableCell>
                   <TableCell>{endorsement?.status !== "Pending" && endorsement?.updated_at && new Date(endorsement.updated_at).toLocaleDateString( "en-GB" )}</TableCell>
+                  <TableCell className="whitespace-nowrap">{endorsement?.type || "-"}</TableCell>
                   <TableCell className="font-semibold whitespace-nowrap"><span className={getStatusColor(endorsement.status)}>{endorsement.status}</span></TableCell>
+                  <TableCell className="whitespace-nowrap">{(endorsement?.status_description?.split(' by ')[1] || "-").replace(/\b\w/g, (c: string) => c.toUpperCase())}</TableCell>
                   <TableCell><Button onClick={() => goToDetail(endorsement.id)} className="rounded-full">View</Button></TableCell>
                 </TableRow>
               ))

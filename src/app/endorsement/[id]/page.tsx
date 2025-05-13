@@ -366,6 +366,11 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
         ) : (
           <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
             <p className="font-semibold">Update Verification</p>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="min-w-24 w-24">Type</div>
+              <div className="max-w-1 w-1">:</div>
+              <div className="pl-2">{endorsement?.type || "-"}</div>
+            </div>
             <div className="flex gap-2 text-sm font-medium items-center">
               <div className="min-w-24 w-24">Status</div>
               <div className="max-w-1 w-1">:</div>
