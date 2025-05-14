@@ -56,9 +56,8 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={`sidebar relative z-30 h-screen bg-white ${
-          isOpen ? "sm:min-w-72 sm:w-72 min-w-64 w-64" : "min-w-0 w-0"
-        }`}
+        className={`sidebar relative z-30 h-screen bg-white ${isOpen ? "sm:min-w-72 sm:w-72 min-w-64 w-64" : "min-w-0 w-0"
+          }`}
       >
         <Button
           className="absolute left-full top-0 z-10 h-[63px] p-0 min-w-unit-16 px-4 border-0 bg-transparent focus:bg-transparent rounded-none ms-1"
@@ -80,11 +79,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/dashboard/transaction"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/dashboard/transaction/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/transaction/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
@@ -94,11 +92,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/dashboard/policy"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/dashboard/policy/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/policy/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
@@ -108,11 +105,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/dashboard/claim"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/dashboard/claim/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/claim/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
@@ -125,11 +121,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/transactions"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/transactions/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/transactions/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -146,11 +141,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/billing"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/billing/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/billing/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -163,12 +157,11 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/broker-fee"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/broker-fee/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  href="/broker/broker-fee"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/broker/broker-fee/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -179,17 +172,33 @@ const Sidebar = () => {
                   Broker Fee
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/broker/partner-com"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/broker/partner-com/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Partner Comm"
+                    className="w-7 min-w-7"
+                  />
+                  Partner Comm
+                </Link>
+              </li>
               <li className="mt-2 text-sm">
                 <strong>Promotions</strong>
               </li>
               <li>
                 <Link
                   href="/promotion"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/promotion/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/promotion/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -206,11 +215,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/product-catalog/travel"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/travel/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/travel/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -224,11 +232,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/product-catalog/personal-accident"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/personal-accident/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/personal-accident/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -242,11 +249,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/product-catalog/motor-vehicle"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/motor-vehicle/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/motor-vehicle/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconMobil} alt="Mobil" className="w-7 min-w-7" />
@@ -256,11 +262,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/product-catalog/motor-cycle"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/motor-cycle/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/motor-cycle/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconMotor} alt="Motor" className="w-7 min-w-7" />
@@ -270,11 +275,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/product-catalog/airpaz"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/airpaz/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/airpaz/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -288,11 +292,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/product-catalog/gadget"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/product-catalog/gadget/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/gadget/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconPA} alt="Gadget" className="w-7 min-w-7" />
@@ -305,11 +308,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/policy-list"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/policy-list/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/policy-list/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -323,11 +325,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/endorsement"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/endorsement/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/endorsement/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -344,11 +345,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/membership-list"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/membership-list")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/membership-list")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -365,11 +365,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/claim-list"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/claim-list/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/claim-list/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -383,11 +382,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/claim-history"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/claim-history/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/claim-history/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -404,11 +402,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/product-category"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/product-category/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/product-category/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -422,11 +419,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/insurance"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/insurance/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/insurance/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -440,11 +436,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/product"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/product/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/product/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -458,11 +453,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/currency"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/currency/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/currency/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -476,11 +470,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/channels"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/channels/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/channels/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="User" className="w-7 min-w-7" />
@@ -490,11 +483,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/user"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/user/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/user/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="User" className="w-7 min-w-7" />
@@ -504,11 +496,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/group"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/group/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/group/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Group" className="w-7 min-w-7" />
@@ -518,11 +509,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/roles"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/roles/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/roles/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
@@ -532,11 +522,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/page-management"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/page-management/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/page-management/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -546,11 +535,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/partner-management"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/partner-management/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/partner-management/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -560,11 +548,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/email-template"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/email-template/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/email-template/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -574,11 +561,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/masterdata/email-tag"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/masterdata/email-tag/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/email-tag/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -591,11 +577,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/sanction"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/sanction/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/sanction/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -607,11 +592,10 @@ const Sidebar = () => {
                 </Link>
                 <Link
                   href="/source"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/source/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/source/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -628,11 +612,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/report/claim"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/report/claim/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/claim/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -646,11 +629,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/report/campaign"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/report/campaign/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/campaign/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -664,11 +646,10 @@ const Sidebar = () => {
               <li>
                 <Link
                   href="/report/performance-report"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                    isActive("/report/performance-report/*")
-                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                      : ""
-                  }`}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/performance-report/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image

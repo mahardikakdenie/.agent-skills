@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronLeft, ChevronRight, Download, X } from "lucide-react";
-import { formatMoney } from "@/lib/formatter";
+import { formatDate, formatMoney } from "@/lib/formatter";
 import { useParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -51,7 +51,7 @@ const DetailBillingPage = () => {
   useRequireAuth();
 
   const { getBillingById, billing, updateBilling } = useBilling();
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const { setLoading } = useLoading();
   const [openCancel, setOpenCancel] = useState(false);
@@ -98,7 +98,7 @@ const DetailBillingPage = () => {
   useEffect(() => {
     getBillingById(id as string, 1, rowsPerPage, "product")
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, rowsPerPage]);
 
   useEffect(() => {
     getCategories();
@@ -206,7 +206,7 @@ const DetailBillingPage = () => {
               Back
             </div>
             <Button
-              onClick={() => router.push(`/billing/detail/${id}/export`)}
+              onClick={() => router.push(`/billing/detail/${id}/export?type=${billing.data[0].items[0].billings.type}`)}
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
             >
               <Download className="w-5 h-5 mr-1 " /> Export
@@ -231,13 +231,18 @@ const DetailBillingPage = () => {
               </tr>
               <tr>
                 <td>Total Transaction Amount</td>
-                <td>: {formatMoney(billing.data[0].items[0].billings.total)}</td>
+                <td>: {billing.data[0].items[0].billings.currency} {formatMoney(billing.data[0].items[0].billings.total)}</td>
                 <td>Period</td>
                 <td>: {billing.data[0].items[0].billings.transaction_period}</td>
               </tr>
               <tr>
-                <td>Total Commision Amount</td>
-                <td>: {formatMoney(billing.data[0].items[0].billings.amount)}</td>
+                {
+                  billing.data[0].items[0].billings.type == "insurer" ? <>
+                    <td>Total Commision Amount</td>
+                    <td>: {billing.data[0].items[0].billings.currency} {formatMoney(billing.data[0].items[0].billings.amount)}</td>
+                  </>
+                    :
+                    ""}
                 <td>Status</td>
                 <td className={`font-bold`} style={{ color: `${getStatusColor(billing.data[0].items[0].billings.status)}` }}>: {billing.data[0].items[0].billings.status
                   .split("-")
@@ -346,7 +351,8 @@ const DetailBillingPage = () => {
                     : ""}
 
                   <TableHead style={{ width: "180px" }}>Transaction Date</TableHead>
-                  <TableHead style={{ textAlign: "right", width: "180px" }}>Amount</TableHead>
+                  <TableHead style={{ width: "50px" }}>Currency</TableHead>
+                  <TableHead style={{ textAlign: "right", width: "120px" }}>Amount</TableHead>
 
                   {billing.data[0].items[0].billings.type == "insurer" ?
                     <TableHead style={{ textAlign: "right", width: "30px" }}>%</TableHead>
@@ -371,7 +377,8 @@ const DetailBillingPage = () => {
                           <TableCell>{data.details?.insurance_name}</TableCell>
                           : ""}
 
-                        <TableCell>{data.details?.transaction_date}</TableCell>
+                        <TableCell>{formatDate(data.details?.transaction_date, "YYYY-MM-DD")}</TableCell>
+                        <TableCell style={{}}>{billing.data[0].items[0].billings.currency}</TableCell>
                         <TableCell style={{ textAlign: "right" }}>{formatMoney(data.amount)}</TableCell>
 
                         {billing.data[0].items[0].billings.type == "insurer" ?

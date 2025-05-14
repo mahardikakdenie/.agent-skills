@@ -31,6 +31,10 @@ export const useBilling = () => {
   const createBilling = async (data: any) => {
     await billingService.createBilling(data);
   };
+  const clearFees = () => {
+    setFees([]);
+  }
+
   const getFees = async (
     insuranceId: string,
     productId?: string,
@@ -80,6 +84,63 @@ export const useBilling = () => {
     }
   };
 
+  const getChannelFees = async (
+    channelId: string,
+    insuranceId?: string,
+    productId?: string,
+    planId?: string
+  ) => {
+    if (!channelId) {
+      return;
+    }
+    if (!insuranceId) {
+      return;
+    }
+    const feesResponse = await billingService.getChannelFees({
+      channelId,
+      insuranceId,
+      productId,
+      planId,
+    });
+
+    if (feesResponse && feesResponse.data.length > 0) {
+      // check if fee exist i fees state
+      let checkFeesExist: { [key: string]: any } = {};
+      checkFeesExist[
+        `${feesResponse.data[0]?.channel}-${insuranceId}-${productId}-${planId}`
+      ] = {
+        channel: channelId,
+        insurance: feesResponse.data[0].insurance,
+        fee: feesResponse.data[0].fee,
+        fee_type: feesResponse.data[0].fee_type,
+      };
+      // update fees state
+      setFees((fee: any) => {
+        return {
+          ...fee,
+          [`${feesResponse.data[0]?.channel}-${insuranceId}-${productId}-${planId}`]: {
+            channel: channelId,
+            insurance: feesResponse.data[0].insurance,
+            fee: feesResponse.data[0].fee,
+            fee_type: feesResponse.data[0].fee_type,
+          },
+        };
+      });
+    } else {
+      setFees((fee: any) => {
+        return {
+          ...fee,
+          [`${channelId}-${insuranceId}-${productId}-${planId}`]: {
+            channel: "",
+            insurance: "",
+            fee: 0,
+            fee_type: "",
+          },
+        };
+      });
+    }
+  };
+
   const getBillingById = async (
     id: string,
     page?: number,
@@ -114,6 +175,8 @@ export const useBilling = () => {
     billing,
     billingList,
     getFees,
+    getChannelFees,
+    clearFees,
     fees,
     createBilling,
   };
