@@ -92,7 +92,7 @@ const BillingPage = () => {
       query["category"] = searchCategory;
     }
 
-    localStorage.setItem("billingPage", JSON.stringify({ type: searchType, company: searchChannel, category: searchCategory, date: date }));
+    localStorage.setItem("billingPage", JSON.stringify({ type: searchType, company: searchChannel, category: searchCategory }));
     getBilling(query, page, rowsPerPage,);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, searchType, searchChannel, searchCategory, date]);
@@ -451,7 +451,7 @@ const BillingPage = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories, "date": date }));
+                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories }));
                         router.push(`billing/detail/${billing.id}`);
                       }
                       }
@@ -467,7 +467,7 @@ const BillingPage = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories, "date": date }));
+                        localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories }));
                         router.push(`billing/detail/${billing.id}/invoice?type=${billing.type}`);
                       }
                       }
