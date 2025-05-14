@@ -73,7 +73,7 @@ const EditBrokerFeePage = () => {
         insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
         product_name: products?.find((i) => i.id === data.product)?.name,
         plan_name: plans?.find((i) => i.id === data.plan)?.name,
-        broker: data.insurance,
+        broker: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
         fee_type: "percentage",
         currency: "IDR",
       });
