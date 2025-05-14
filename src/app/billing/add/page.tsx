@@ -380,6 +380,7 @@ const CreateBillingPage = () => {
         transaction_period: `${year}-${month}`,
         category: category != "All" ? category : null
       });
+      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: company, category: "All" }));
       router.push("/billing");
       setLoading(false);
     } catch (error) {
@@ -400,7 +401,7 @@ const CreateBillingPage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink>Billing</BreadcrumbLink>
+                <BreadcrumbLink href="/billing">Billing</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -631,10 +632,10 @@ const CreateBillingPage = () => {
                       );
                   }
                   else if (type == "partner") {
-                    console.log(
-                      data.insurance
-                    )
-                    console.log(fees)
+                    // console.log(
+                    //   data.insurance
+                    // )
+                    // console.log(fees)
                     fee = fees[
                       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
                     ]?.fee &&
