@@ -75,15 +75,15 @@ const InvoicePage = () => {
     const status = d.status.split("-").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ")
 
     const headerHtml = `
-    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #333;">
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #333;font-size:14px;">
       <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-          <h1 style="font-size: 32px; font-weight: bold; color: #333; margin: 0 0 10px 0;">INVOICE</h1>
-          <p style="color: #666; margin: 5px 0;">PT. Taawun Indonesia Sejahtera</p>
+          <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
+          <p style="color: #666; margin: 5px 0;">PT. Teman Pialang Asuransi</p>
           <p style="color: #777; margin: 5px 0;">Jakarta, Indonesia</p>
         </div>
         <div style="text-align: right;">
-          <img src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/logo-tis.png" alt="Taawun" style="height: 48px; margin-bottom: 16px;" />
+          <img src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png" alt="PT.Teman PIalang Asuransi" style="height: 48px; margin-bottom: 16px;margin-left: auto;" />
           <p style="color: #666; margin: 5px 0;">Invoice #${d.billing_no}</p>
           <p style="color: #777; margin: 5px 0;">Date: ${new Date(d.created_at).toLocaleDateString()}</p>
         </div>
@@ -97,7 +97,12 @@ const InvoicePage = () => {
         </div>
         <div style="flex: 1; text-align: right;"> 
           <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Amount Due</h2>
-          <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;">${type == "partner" ? formatMoney(d.total) : formatMoney(d.total_commission)}</p>
+          <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
+            ${type == "partner" ?
+        (billing.data[0].billings.currency) + " " + formatMoney(d.total)
+        :
+        (billing.data[0].items[0].billings.currency) + " " + formatMoney(d.total_commission)}
+          </p>
           <p style="color: #777; margin: 5px 0;">Status: ${status}</p>
           <p style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </p>
         </div>
@@ -177,7 +182,9 @@ const InvoicePage = () => {
               <tr style="background-color: #f5f5f5;">
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;width: 180px;">Transaction No.</th>
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;">Plan</th> 
-                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #eee;width: 150px;">Amount</th>
+                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #eee;width: 150px;">Premium</th>
+                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #eee;width: 20px;">%</th>
+                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #eee;width: 150px;">Net Premium</th>
               </tr>
             </thead>
             <tbody>`;
@@ -189,12 +196,14 @@ const InvoicePage = () => {
                 <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.invoice_no}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.details?.plan_name.split('|')[0]}</td>
                 <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount)}</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${d.commission_percentage ?? 0}%</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount - (d.commission_amount ?? 0))}</td>
               </tr>`;
         }
 
         html += ` 
       <tr style="font-weight: bold;">
-        <td colspan="2" style="padding: 12px; text-align: right;">Total:</td>
+        <td colspan="4" style="padding: 12px; text-align: right;">Total:</td>
         <td style="padding: 12px; text-align: right;">${formatMoney(
           subTotal
         )}</td>

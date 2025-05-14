@@ -21,35 +21,37 @@ import {
 import WithSidebar from "@/hoc/with-sidebar";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import useBrokerFee from "../hook";
+import useBrokerFee from "../../hook";
 import { useLoading } from "@/context/loading.context";
+import { ChannelService } from "@/services/channel.services";
 
 const CreateBrokerFee = () => {
   const router = useRouter();
   const handleCancel = () => {
-    router.push("/broker-fee");
+    router.push("/broker/broker-fee");
   };
 
   const { createBrokerFee } = useBrokerFee();
   const { setLoading } = useLoading();
+
   const handleCreateBrokerFee = async (data: any) => {
     try {
       setLoading(true);
-      await createBrokerFee({
+      var res = await createBrokerFee({
         ...data,
         product: data.product ? data.product : null,
         plan: data.plan ? data.plan : null,
         insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
         product_name: products?.find((i) => i.id === data.product)?.name,
         plan_name: plans?.find((i) => i.id === data.plan)?.name,
-        broker: data.insurance,
+        broker: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
         fee_type: "percentage",
         currency: "IDR",
       });
-      router.push("/broker-fee");
+      router.push("/broker/broker-fee");
     } catch (error) {
       console.error(error);
       alert("Failed to create broker fee");
@@ -61,6 +63,8 @@ const CreateBrokerFee = () => {
   const {
     handleSubmit,
     reset,
+    resetField,
+    setValue,
     control,
     formState: { errors },
   } = useForm({
@@ -82,8 +86,12 @@ const CreateBrokerFee = () => {
   } = useProducts();
 
   useEffect(() => {
-    fetchInsurances({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fetchData = async () => {
+      fetchInsurances({});
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }
+    fetchData();
   }, []);
 
   const watchInsurance = useWatch({
@@ -95,7 +103,11 @@ const CreateBrokerFee = () => {
     control,
     name: "product",
   });
+
   useEffect(() => {
+    if (!watchInsurance) {
+      return;
+    }
     if (watchInsurance) fetchProducts({ insuranceId: watchInsurance });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchInsurance]);
@@ -111,7 +123,7 @@ const CreateBrokerFee = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink>Broker Fee</BreadcrumbLink>
+                <BreadcrumbLink href="/broker/broker-fee">Broker Fee</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -144,6 +156,7 @@ const CreateBrokerFee = () => {
 
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
+
           <div>
             <label
               htmlFor="insurance"
@@ -157,7 +170,8 @@ const CreateBrokerFee = () => {
               control={control}
               rules={{ required: "Insurance Name is required" }}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select value={field.value}
+                  onValueChange={field.onChange}>
                   <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                     <SelectValue placeholder="Select Insurance " />
                   </SelectTrigger>

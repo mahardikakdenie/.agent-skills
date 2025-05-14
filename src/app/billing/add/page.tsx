@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { formatMoney } from "@/lib/formatter";
+import { formatDate, formatMoney } from "@/lib/formatter";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -45,7 +45,7 @@ const CreateBillingPage = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const { transactionList, getTransactions, setTransactionList } =
     useTransaction();
-  const { getFees, fees, createBilling, checkDuplicateBilling } = useBilling();
+  const { getFees, getChannelFees, fees, clearFees, createBilling, checkDuplicateBilling } = useBilling();
   const [type, setType] = useState<string>("");
   const [company, setCompany] = useState<string>("");
   const [companyName, setCompanyName] = useState<string>("");
@@ -66,18 +66,33 @@ const CreateBillingPage = () => {
       const premium = parseFloat(data.insurance.premium);
       const currency = data.insurance.currency;
       let newPremium = premium;
-      if (
-        !fees[
-        `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-        ]
-      ) {
-        getFees(
-          data.insurance?.insurance?.id?.id,
-          data.insurance?.product?.id,
-          data.insurance?.plan?.id
-        );
-      }
+      if (type == "partner") {
+        if (
+          !fees[
+          `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]
+        ) {
+          getChannelFees(
+            company,
+            data.insurance?.insurance?.id?.id,
+            data.insurance?.product?.id,
+            data.insurance?.plan?.id
+          );
+        }
+      } else if (type == "insurer") {
+        if (
+          !fees[
+          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]
+        ) {
+          getFees(
+            data.insurance?.insurance?.id?.id,
+            data.insurance?.product?.id,
+            data.insurance?.plan?.id
+          );
+        }
 
+      }
       if (currency !== "IDR" && data.insurance.insurance.currencies) {
         const currencyData = data.insurance.insurance.currencies.find(
           (c: any) => c.currency_from === currency && c.currency_to === "IDR"
@@ -85,7 +100,7 @@ const CreateBillingPage = () => {
 
         newPremium = premium * (currencyData?.value ?? 1);
       }
-
+      data.currency = currency;
       return {
         ...data,
         newPremium,
@@ -198,12 +213,14 @@ const CreateBillingPage = () => {
   const handleChangeYear = (e: any) => {
     setYear(e.target.value);
   };
-  useEffect(() => {
-    handleGetTransaction();
-  }, [rowsPerPage]);
+
+  // useEffect(() => {
+  //   handleGetTransaction();
+  // }, [rowsPerPage]);
 
   const handleGetTransaction = async () => {
     setTransactionList({});
+    clearFees();
     if (!month && !year && !company && !type) {
       alert("Please fill all fields");
       return;
@@ -300,12 +317,33 @@ const CreateBillingPage = () => {
     const detail = [];
     let totalCommission = 0;
     for (let data of processedTransactionList) {
-      const commission =
-        ((fees[
+      let commission;
+      let commission_percentage;
+      if (type == "insurer") {
+        commission =
+          ((fees[
+            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]?.fee ?? 0) /
+            100) *
+          data.newPremium;
+
+        commission_percentage = fees[
           `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-        ]?.fee ?? 0) /
-          100) *
-        data.newPremium;
+        ]?.fee ?? 0;
+      }
+      else if (type == "partner") {
+        commission =
+          ((fees[
+            `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+          ]?.fee ?? 0) /
+            100) *
+          data.newPremium;
+
+        commission_percentage = fees[
+          `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+        ]?.fee ?? 0;
+      }
+
       detail.push({
         transaction: data.id,
         invoice_no: data.invoice ?? "",
@@ -313,13 +351,8 @@ const CreateBillingPage = () => {
         product: data.insurance.product.id,
         plan: data.insurance.plan.id,
         amount: data.newPremium,
-        commission_percentage:
-          type === "insurer"
-            ? fees[
-              `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-            ]?.fee
-            : 0,
-        commission_amount: type === "insurer" ? commission : 0,
+        commission_percentage: commission_percentage,
+        commission_amount: commission,
         details: {
           plan_name: data.insurance.plan.name,
           product_name: data.insurance.product.name,
@@ -329,9 +362,9 @@ const CreateBillingPage = () => {
         category: category != "All" ? category : null
       });
       if (type === "insurer") {
-        totalCommission += commission;
+        totalCommission += commission!;
       } else if (type === "partner") {
-        totalCommission += data.newPremium;
+        totalCommission += commission!;//data.newPremium;
       }
     }
     try {
@@ -347,6 +380,7 @@ const CreateBillingPage = () => {
         transaction_period: `${year}-${month}`,
         category: category != "All" ? category : null
       });
+      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: company, category: "All" }));
       router.push("/billing");
       setLoading(false);
     } catch (error) {
@@ -367,7 +401,7 @@ const CreateBillingPage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink>Billing</BreadcrumbLink>
+                <BreadcrumbLink href="/billing">Billing</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -426,7 +460,7 @@ const CreateBillingPage = () => {
               htmlFor="type"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Choose Insurance Company
+              {type == "insurer" ? "Choose Insurance Company" : "Choose Partner"}
             </label>
             <Select
               value={company}
@@ -567,7 +601,8 @@ const CreateBillingPage = () => {
                     <TableHead>Insurance Company Name</TableHead> : ""
                 }
                 <TableHead>Transaction Date</TableHead>
-                <TableHead>Amount</TableHead>
+                <TableHead>Currency</TableHead>
+                <TableHead style={{ textAlign: "right" }}>Amount</TableHead>
                 {
                   type === "insurer" ?
                     <TableHead>Commision Percentage</TableHead> : ""
@@ -576,22 +611,42 @@ const CreateBillingPage = () => {
                   type === "insurer" ?
                     <TableHead>Commision Amount</TableHead> : ""
                 }
+                {/* <TableHead>Commision Percentage</TableHead>
+                <TableHead className="text-right">Commision Amount</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
               {processedTransactionList &&
                 processedTransactionList.map((data: any) => {
-                  const fee =
-                    fees[
+                  let fee;
+                  if (type == "insurer") {
+                    fee = fees[
                       `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
                     ]?.fee &&
-                    formatMoney(
-                      ((fees[
-                        `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                      ]?.fee ?? 0) /
-                        100) *
-                      data.newPremium
-                    );
+                      formatMoney(
+                        ((fees[
+                          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        ]?.fee ?? 0) /
+                          100) *
+                        data.newPremium
+                      );
+                  }
+                  else if (type == "partner") {
+                    // console.log(
+                    //   data.insurance
+                    // )
+                    // console.log(fees)
+                    fee = fees[
+                      `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                    ]?.fee &&
+                      formatMoney(
+                        ((fees[
+                          `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        ]?.fee ?? 0) /
+                          100) *
+                        data.newPremium
+                      );
+                  }
                   return (
                     <TableRow key={data.id}>
                       <TableCell>{data.invoice}</TableCell>
@@ -604,11 +659,12 @@ const CreateBillingPage = () => {
                             {data.insurance?.insurance?.id?.name}
                           </TableCell> : ""
                       }
-                      <TableCell>{data.created_at}</TableCell>
-                      <TableCell>{formatMoney(data.newPremium)}</TableCell>
+                      <TableCell>{formatDate(data.created_at, "YYYY-MM-DD")}</TableCell>
+                      <TableCell>{data.currency}</TableCell>
+                      <TableCell className="text-right w-1">{formatMoney(data.newPremium)}</TableCell>
                       {
                         type === "insurer" ?
-                          <TableCell>
+                          <TableCell className="w-1">
                             {type === "insurer" &&
                               fees[
                                 `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
@@ -618,10 +674,22 @@ const CreateBillingPage = () => {
                               ]?.fee ?? 0
                               : 0}
                           </TableCell> : ""
+
+                        // <TableCell className="w-1">
+                        //   {type === "partner" &&
+                        //     fees[
+                        //       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        //     ]?.fee
+                        //     ? fees[
+                        //       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
+                        //     ]?.fee ?? 0
+                        //     : 0}
+                        // </TableCell>
                       }
                       {
                         type === "insurer" ?
-                          <TableCell>{type === "insurer" ? fee : 0}</TableCell> : ""
+                          <TableCell className="text-right w-1">{fee}</TableCell> : ""
+                        // <TableCell className="text-right w-1">{fee}</TableCell>
                       }
                     </TableRow>
                   );

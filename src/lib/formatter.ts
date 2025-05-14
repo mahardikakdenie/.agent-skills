@@ -1,10 +1,20 @@
+import moment from "moment";
+
 export const formatMoney = (
   amount: number,
-  currency: string = "IDR"
+  currency: string = ""
 ): string => {
+  if (currency && currency != "") {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    return formatter.format(amount);
+  }
+
   const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -25,11 +35,18 @@ export const capitalizeStringWithChar = (value: string, splitter: string = "-") 
 
 export const numberSimpleFormatter = (value: number) => {
   if (value >= 1_000_000_000) {
-      return (value / 1_000_000_000).toFixed(1) + "B";
+    return (value / 1_000_000_000).toFixed(1) + "B";
   } else if (value >= 1_000_000) {
-      return (value / 1_000_000).toFixed(1) + "M";
+    return (value / 1_000_000).toFixed(1) + "M";
   } else if (value >= 1_000) {
-      return (value / 1_000).toFixed(1) + "K";
+    return (value / 1_000).toFixed(1) + "K";
   }
   return value;
+};
+
+export const formatDate = (
+  date: string,
+  format: string = "YYYY-MM-DD"
+): string => {
+  return moment(date).format(format);
 };

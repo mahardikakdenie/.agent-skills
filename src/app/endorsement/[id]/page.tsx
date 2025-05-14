@@ -366,6 +366,11 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
         ) : (
           <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
             <p className="font-semibold">Update Verification</p>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="min-w-24 w-24">Type</div>
+              <div className="max-w-1 w-1">:</div>
+              <div className="pl-2">{endorsement?.type || "-"}</div>
+            </div>
             <div className="flex gap-2 text-sm font-medium items-center">
               <div className="min-w-24 w-24">Status</div>
               <div className="max-w-1 w-1">:</div>
@@ -447,6 +452,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>No.</TableHead>
+                    <TableHead className="whitespace-nowrap">Record Mode</TableHead>
                     <TableHead className="whitespace-nowrap">Policy Number</TableHead>
                     <TableHead className="whitespace-nowrap">Subsidiary / Entity</TableHead>
                     <TableHead className="whitespace-nowrap">Employee ID</TableHead>
@@ -473,6 +479,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 {endorsement?.endorsements_detail?.map((item: any, index: any) => (
                   <TableRow key={index}>
                     <TableCell>{index + 1}</TableCell>
+                    <TableCell>{item?.data?.profile?.record_mode || "-"}</TableCell>
                     <TableCell className="min-w-[180px]">{item?.endorsements?.number || "-"}</TableCell>
                     <TableCell className="min-w-[230px]">{item?.data?.profile?.subsidiary || "-"}</TableCell>
                     <TableCell>{item?.data?.profile?.employee_id || "-"}</TableCell>
