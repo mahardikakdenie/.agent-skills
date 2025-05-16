@@ -1,5 +1,4 @@
 // "use client";
-// import { useProducts } from "@/app/product-catalog/hooks";
 // import {
 //   Breadcrumb,
 //   BreadcrumbItem,
@@ -23,20 +22,12 @@
 // import { useEffect, useState } from "react";
 // import { ChevronLeft, Check } from "react-feather";
 // import { Controller, useForm, useWatch } from "react-hook-form";
-// import useBrokerFee from "../../../hook";
 // import { useLoading } from "@/context/loading.context";
+// import useCalendar from "../../hook";
 
 // const EditHolidayPage = () => {
 //   const { id } = useParams();
-//   const { getBrokerFees, brokerFees, updateBrokerFee } = useBrokerFee();
-//   const {
-//     insurances,
-//     products,
-//     plans,
-//     fetchInsurances,
-//     fetchProducts,
-//     fetchPlans,
-//   } = useProducts();
+//   const {   updateCalendar } = useCalendar();
 //   const {
 //     handleSubmit,
 //     reset,
@@ -53,35 +44,31 @@
 //   });
 
 //   const router = useRouter();
-//   const handleCancel = () => {
-//     router.push("/broker/broker-fee");
-//   };
+//     const handleCancel = () => {
+//         router.push("/masterdata/holiday");
+//     };
 
 //   const { setLoading } = useLoading();
-//   const [searchType, setSearchType] = useState("");//DEFAULT PARTNER
-//   const [types, setTypes] = useState<any[]>([
-//     { name: "Partner", code: "partner" },
-//     { name: "Insurer", code: "insurer" },
-//   ]);
-//   const [channels, setChannels] = useState<any[]>([]);
+//     const [types, setTypes] = useState<any[]>([
+//         { name: "Joint Leave", code: "Joint Leave" },
+//         { name: "National Holiday", code: "National Holiday" },
+//     ]);
+//     const [countries, setCountries] = useState<any[]>([
+//         { name: "Indonesia", code: "id" },
+//         { name: "Malaysia", code: "my" },
+//     ]);
 
-//   const handleUpdateBrokerFee = async (data: any) => {
+//   const handleUpdateHoliday = async (data: any) => {
 //     try {
 //       setLoading(true);
-//       await updateBrokerFee(id as string, {
+//       await updateCalendar(id as string, {
 //         ...data,
-//         insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
-//         product_name: products?.find((i) => i.id === data.product)?.name,
-//         plan_name: plans?.find((i) => i.id === data.plan)?.name,
-//         broker: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
-//         fee_type: "percentage",
-//         currency: "IDR",
 //       });
-//       router.push("/broker/broker-fee");
+//       router.push("/masterdata/holiday");
 
 //     } catch (error) {
 //       console.error(error);
-//       alert("Failed to update broker fee");
+//       alert("Failed to update holiday");
 //     } finally {
 //       setLoading(false);
 //     }
@@ -90,34 +77,12 @@
 //   const watchInsurance = useWatch({ control, name: "insurance" });
 //   const watchProduct = useWatch({ control, name: "product" });
 //   const watchPlan = useWatch({ control, name: "plan" });
-//   useEffect(() => {
-//     if (!watchInsurance) {
-//       return;
-//     }
-//     setLoading(true);
-//     fetchProducts({ insuranceId: watchInsurance }).then((x) => {
-//       setLoading(false);
-//     });
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, [watchInsurance]);
-
-//   useEffect(() => {
-//     if (!watchProduct) {
-//       return;
-//     }
-//     setLoading(true);
-//     fetchPlans({ productId: watchProduct }).then((x) => {
-//       setLoading(false);
-//     });
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, [watchProduct]);
 
 //   useEffect(() => {
 //     setLoading(true);
 //     getBrokerFees({ id }).then((x) => {
 //       setLoading(false);
 //     });
-//     fetchInsurances({});
 //     // eslint-disable-next-line react-hooks/exhaustive-deps
 //   }, []);
 
@@ -130,6 +95,7 @@
 //     }
 //     // eslint-disable-next-line react-hooks/exhaustive-deps
 //   }, [brokerFees]);
+
 //   return (
 //     <div className="flex flex-col w-full">
 //       <div className="bg-white md:px-6 p-4 flex items-center">
@@ -159,7 +125,7 @@
 //           </div>
 //           <Button
 //             type="submit"
-//             onClick={handleSubmit(handleUpdateBrokerFee)}
+//             onClick={handleSubmit(handleUpdateHoliday)}
 //             className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
 //           >
 //             <Check className="mr-2 w-4 h-4" />
