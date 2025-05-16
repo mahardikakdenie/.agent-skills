@@ -35,11 +35,11 @@ const HolidayPage = () => {
 
   const [searchCountry, setSearchCountry] = useState("id");
   const [searchYear, setSearchYear] = useState<string>('');
-  const [searchType, setSearchType] = useState("All");
+  const [searchType, setSearchType] = useState("holiday");
   // const { setLoading } = useLoading();
 
   const [types, setTypes] = useState<any[]>([
-    { name: "All Holiday Type", code: "All" },
+    { name: "All Holiday Type", code: "holiday" },
     { name: "Joint Leave", code: "Joint Leave" },
     { name: "National Holiday", code: "National Holiday" },
   ]);
@@ -63,7 +63,7 @@ const HolidayPage = () => {
     (async () => {
       try {
         setLoading(true);
-        await getCalendarHoliday({ type: "holiday", year: searchYear, country: searchCountry, }, page, rowsPerPage);
+        await getCalendarHoliday({ type: searchType, year: searchYear, country: searchCountry, }, page, rowsPerPage);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -88,7 +88,7 @@ const HolidayPage = () => {
         await deleteCalendar(id);
 
         if (page === 1) {
-          await getCalendarHoliday({}, page, rowsPerPage);
+          await getCalendarHoliday({ type: searchType, year: searchYear, country: searchCountry, }, page, rowsPerPage);
         } else {
           setPage(1);
         }
@@ -217,7 +217,7 @@ const HolidayPage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => router.push(`/masterdaya/holiday/edit/${item.id}`)}
+                      onClick={() => router.push(`/masterdata/holiday/edit/${item.id}`)}
                     >
                       <EditIcon className="h-4 w-4" />
                     </Button>
