@@ -571,6 +571,19 @@ const Sidebar = () => {
                   Email Tags
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/masterdata/holiday"
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/holiday/*")
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
+                  Holiday Date
+                </Link>
+              </li>
               <li className="mt-2 text-sm">
                 <strong>Sanction List</strong>
               </li>

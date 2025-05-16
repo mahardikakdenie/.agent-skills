@@ -475,7 +475,7 @@ const BillingPage = () => {
                       <File className="h-4 w-4" />
                     </Button>
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      View Invoice
+                      {searchType == "insurer" ? "View Invoice" : "View Listing Detail"}
                     </span>
                   </div>
                 </TableCell>
