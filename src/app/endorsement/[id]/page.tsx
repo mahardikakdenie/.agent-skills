@@ -430,14 +430,17 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
             <div className="flex gap-2 items-center">
               <p className="font-semibold">Data Endorsement</p>
               <div className="ml-auto flex gap-2 items-center">
-                <Button
-                  variant="outline"
-                  className="border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white rounded-full px-5 py-2 h-8"
-                  onClick={() => router.push(`/endorsement/${endorsement?.id}/upload`)}
-                  disabled={endorsement?.status_description !== "Uploaded by partner"}
-                >
-                  <Upload className="w-4 h-4 mr-2" />Upload
-                </Button>
+                {endorsement?.status_description === "Uploaded by partner" && (
+                  <Button
+                    variant="outline"
+                    className="border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white rounded-full px-5 py-2 h-8"
+                    onClick={() => router.push(`/endorsement/${endorsement?.id}/upload`)}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload
+                  </Button>
+                )}
+
                 <Button
                   variant="outline"
                   className="border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white rounded-full px-5 py-2 h-8"
@@ -476,32 +479,83 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                {endorsement?.endorsements_detail?.map((item: any, index: any) => (
-                  <TableRow key={index}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{item?.data?.profile?.record_mode || "-"}</TableCell>
-                    <TableCell className="min-w-[180px]">{item?.endorsements?.number || "-"}</TableCell>
-                    <TableCell className="min-w-[230px]">{item?.data?.profile?.subsidiary || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.employee_id || "-"}</TableCell>
-                    <TableCell className="min-w-[240px]">{item?.data?.profile?.employee_name || "-"}</TableCell>
-                    <TableCell className="min-w-[240px]">{item?.data?.profile?.member_name || "-"}</TableCell>
-                    <TableCell className="text-center">{item?.data?.profile?.gender || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.date_of_birth || "-"}</TableCell>
-                    <TableCell className="text-center">{item?.data?.profile?.member_status || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.marital_status || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.plan || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.effective_date || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.remarks || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.bank_name || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.branch || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.bank_account_number || "-"}</TableCell>
-                    <TableCell className="min-w-[200px]">{item?.data?.profile?.bank_account_name || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.email || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.insurance_card || "-"}</TableCell>
-                    <TableCell>{item?.data?.profile?.submission_date || "-"}</TableCell>
-                    <TableCell className="font-semibold"><span className={getStatusColor(endorsement.status)}>{item?.endorsements?.status || "-"}</span></TableCell>
-                  </TableRow>
-                ))}
+                  {endorsement?.endorsements_detail?.map((item: any, index: any) => {
+                    const profile = item?.data?.profile || {};
+                    const insuredProfile = item?.insured_parties?.profile || {};
+
+                    const isDifferent = (key: string) => profile[key] !== insuredProfile[key];
+
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className={isDifferent("record_mode") ? "bg-yellow-50" : ""}>
+                          {profile.record_mode || "-"}
+                        </TableCell>
+                        <TableCell className={`min-w-[180px]`}>
+                          {item?.endorsements?.number || "-"}
+                        </TableCell>
+                        <TableCell className={`min-w-[230px] ${isDifferent("subsidiary") ? "bg-yellow-50" : ""}`}>
+                          {profile.subsidiary || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("employee_id") ? "bg-yellow-50" : ""}>
+                          {profile.employee_id || "-"}
+                        </TableCell>
+                        <TableCell className={`min-w-[240px] ${isDifferent("employee_name") ? "bg-yellow-50" : ""}`}>
+                          {profile.employee_name || "-"}
+                        </TableCell>
+                        <TableCell className={`min-w-[240px] ${isDifferent("member_name") ? "bg-yellow-50" : ""}`}>
+                          {profile.member_name || "-"}
+                        </TableCell>
+                        <TableCell className={`text-center ${isDifferent("gender") ? "bg-yellow-50" : ""}`}>
+                          {profile.gender || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("date_of_birth") ? "bg-yellow-50" : ""}>
+                          {profile.date_of_birth || "-"}
+                        </TableCell>
+                        <TableCell className={`text-center ${isDifferent("member_status") ? "bg-yellow-50" : ""}`}>
+                          {profile.member_status || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("marital_status") ? "bg-yellow-50" : ""}>
+                          {profile.marital_status || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("plan") ? "bg-yellow-50" : ""}>
+                          {profile.plan || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("effective_date") ? "bg-yellow-50" : ""}>
+                          {profile.effective_date || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("remarks") ? "bg-yellow-50" : ""}>
+                          {profile.remarks || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("bank_name") ? "bg-yellow-50" : ""}>
+                          {profile.bank_name || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("branch") ? "bg-yellow-50" : ""}>
+                          {profile.branch || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("bank_account_number") ? "bg-yellow-50" : ""}>
+                          {profile.bank_account_number || "-"}
+                        </TableCell>
+                        <TableCell className={`min-w-[200px] ${isDifferent("bank_account_name") ? "bg-yellow-50" : ""}`}>
+                          {profile.bank_account_name || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("email") ? "bg-yellow-50" : ""}>
+                          {profile.email || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("insurance_card") ? "bg-yellow-50" : ""}>
+                          {profile.insurance_card || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("submission_date") ? "bg-yellow-50" : ""}>
+                          {profile.submission_date || "-"}
+                        </TableCell>
+                        <TableCell className="font-semibold">
+                          <span className={getStatusColor(endorsement.status)}>
+                            {item?.endorsements?.status || "-"}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
 
                 </TableBody>
               </Table>
