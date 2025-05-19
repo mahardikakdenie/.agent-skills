@@ -104,16 +104,16 @@ const EditHolidayPage = () => {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/broker/broker-fee">Broker Fee</BreadcrumbLink>
+                                <BreadcrumbLink href="/masterdata/holiday">Holiday</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbPage>Update Broker Fee</BreadcrumbPage>
+                                <BreadcrumbPage>Update Holiday</BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                     </Breadcrumb>
                     <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-                        Update Broker Fee
+                        Update Holiday
                     </h2>
                 </div>
                 <div className="flex space-x-4 ml-auto">
@@ -173,31 +173,7 @@ const EditHolidayPage = () => {
                             </p>
                         )}
                     </div>
-                    <div>
-                        <label
-                            htmlFor="name"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Holiday Name
-                        </label>
-                        <Controller
-                            name="name"
-                            control={control}
-                            rules={{ required: "Holiday Name is required" }}
-                            render={({ field }) => (
-                                <Input
-                                    type="text"
-                                    className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
-                                    {...field}
-                                />
-                            )}
-                        />
-                        {errors.name && (
-                            <p className="text-red-500 text-xs mt-1">
-                                {errors.name.message?.toString()}
-                            </p>
-                        )}
-                    </div>
+                    <div></div>
                     <div>
                         <label
                             htmlFor="type"
@@ -234,7 +210,31 @@ const EditHolidayPage = () => {
                             </p>
                         )}
                     </div>
-                    <div></div>
+                    <div>
+                        <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
+                            Holiday Name
+                        </label>
+                        <Controller
+                            name="name"
+                            control={control}
+                            rules={{ required: "Holiday Name is required" }}
+                            render={({ field }) => (
+                                <Input
+                                    type="text"
+                                    className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                                    {...field}
+                                />
+                            )}
+                        />
+                        {errors.name && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.name.message?.toString()}
+                            </p>
+                        )}
+                    </div>
                     <div>
                         <label
                             htmlFor="date"
