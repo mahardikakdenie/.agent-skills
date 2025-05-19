@@ -359,6 +359,9 @@ th {
 .table-transaction table th:nth-child(4) {
   text-align: right;
 }
+.table-sticky div.overflow-auto {
+  overflow: visible;
+}
 
 /* responsive */
 @media screen and (max-width: 1199px) {

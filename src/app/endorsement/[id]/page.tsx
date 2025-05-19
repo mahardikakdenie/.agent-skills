@@ -450,9 +450,9 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                 </Button>
               </div>
             </div>
-            <div className="rounded-lg overflow-auto w-full">
+            <div className="rounded-lg border overflow-auto max-h-[458px] table-sticky">
               <Table className="min-w-full">
-                <TableHeader>
+                <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
                   <TableRow>
                     <TableHead>No.</TableHead>
                     <TableHead className="whitespace-nowrap">Record Mode</TableHead>
@@ -478,7 +478,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                     <TableHead className="whitespace-nowrap">Status</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="max-h-[200px] overflow-auto">
                   {endorsement?.endorsements_detail?.map((item: any, index: any) => {
                     const profile = item?.data?.profile || {};
                     const insuredProfile = item?.insured_parties?.profile || {};
