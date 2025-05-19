@@ -397,17 +397,21 @@ const ClaimsPage = () => {
       });
   };
 
+
   const confirmModal = () => {
-    if (amountApproved > reqAmountApproved) {
-      setAmApprovedMsg(
-        "Your approval amount limit cannot exceed the requested amount"
-      );
-      return;
+    if (selectedClaim.amount && selectedClaim.amount > 0) {//check amount available
+      if (amountApproved > reqAmountApproved) {
+        setAmApprovedMsg(
+          "Your approval amount limit cannot exceed the requested amount"
+        );
+        return;
+      }
+      if (amountApproved === 0 && pendingStatus === "Approved") {
+        setAmApprovedMsg("Approved Amount required!");
+        return;
+      }
     }
-    if (amountApproved === 0 && pendingStatus === "Approved") {
-      setAmApprovedMsg("Approved Amount required!");
-      return;
-    }
+
     if (
       (notes === "" && pendingStatus === "Approved") ||
       (notes === "" && pendingStatus === "Rejected") ||
@@ -447,7 +451,6 @@ const ClaimsPage = () => {
       );
       setIsModalOpen(false);
       setFinalSelectedDocuments([]);
-      setSuccessUpdate(true);
     }
   };
 
@@ -692,39 +695,47 @@ const ClaimsPage = () => {
               </p>
               {pendingStatus === "Approved" && (
                 <>
-                  <div>
-                    <p className="text-sm mb-2">Requested Amount</p>
-                    <div className="relative">
-                      <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
-                        {currencyApp}
-                      </span>
-                      <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
-                        {formatMoneyClaim(reqAmountApproved)}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm mb-2">
-                      Approved Amount <span className="!text-red-500">*</span>
-                    </p>
-                    <div className="relative">
-                      <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
-                        {currencyApp}
-                      </span>
-                      <Input
-                        type="text"
-                        value={
-                          amountApproved === 0
-                            ? ""
-                            : formatMoneyClaim(amountApproved)
-                        }
-                        onChange={handleInputChange}
-                        className="h-12 pl-12"
-                        required
-                      />
-                    </div>
-                    <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
-                  </div>
+                  {
+                    selectedClaim.amount && selectedClaim.amount > 0 ?
+                      <>
+                        <div>
+                          <p className="text-sm mb-2">Requested Amount</p>
+                          <div className="relative">
+                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                              {currencyApp}
+                            </span>
+                            <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
+                              {formatMoneyClaim(reqAmountApproved)}
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm mb-2">
+                            Approved Amount <span className="!text-red-500">*</span>
+                          </p>
+                          <div className="relative">
+                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                              {currencyApp}
+                            </span>
+                            <Input
+                              type="text"
+                              value={
+                                amountApproved === 0
+                                  ? ""
+                                  : formatMoneyClaim(amountApproved)
+                              }
+                              onChange={handleInputChange}
+                              className="h-12 pl-12"
+                              required
+                            />
+                          </div>
+                          <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
+                        </div>
+                      </>
+                      :
+                      ""
+                  }
+
                   <textarea
                     name=""
                     id=""
