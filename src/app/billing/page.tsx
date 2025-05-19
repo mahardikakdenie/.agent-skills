@@ -434,7 +434,13 @@ const BillingPage = () => {
                 {/* <TableCell>{billing.type}</TableCell> */}
                 {/* <TableCell>{billing.company_name}</TableCell> */}
                 <TableCell>{billing.currency}</TableCell>
-                <TableCell style={{ textAlign: "right" }}>{formatMoney(billing.amount)}</TableCell>
+                <TableCell style={{ textAlign: "right" }}>
+                  {searchType == "insurer" ?
+                    formatMoney(billing.amount) //insurer -> get commission amount
+                    :
+                    formatMoney(billing.total - billing.amount) //partner -> get net premium (total premium - commision amount)
+                  }
+                </TableCell>
                 <TableCell>
                   {billing.status
                     .split("-")
