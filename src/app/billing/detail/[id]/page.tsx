@@ -154,6 +154,14 @@ const DetailBillingPage = () => {
     } else {
       dataFilter = billing.data?.filter((x: { product: string; }) => { if (searchCategory != "All") return x.product == searchCategory; else { return x } })[0].items;
     }
+    try {
+      dataFilter.sort((a, b) => {
+        return new Date(b.details?.transaction_date).getTime() - new Date(a.details?.transaction_date).getTime();
+      });
+    } catch (error) {
+      console.log("Error get transaction date")
+    }
+
     return dataFilter;
   }
 
