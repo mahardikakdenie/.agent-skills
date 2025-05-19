@@ -161,6 +161,7 @@ const InvoicePage = () => {
     var html = getHeaderHtml();
 
     let insuranceKeyList = Object.keys(datas);
+    let grandTotal = 0;
     for (let i = 0; i < insuranceKeyList.length; i++) {
       const insurKey = insuranceKeyList[i];  // Insurance Key 
       // console.log(insurKey)
@@ -190,7 +191,7 @@ const InvoicePage = () => {
             <tbody>`;
         for (let k = 0; k < datas[insurKey][productKey].length; k++) {
           const d = datas[insurKey][productKey][k];
-          subTotal += parseInt(d.amount);
+          subTotal += parseInt(d.amount) - parseInt(d.commission_amount ?? "0");
           commission += parseInt(d.amount);
           html += `<tr>
                 <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.invoice_no}</td>
@@ -200,6 +201,7 @@ const InvoicePage = () => {
                 <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount - (d.commission_amount ?? 0))}</td>
               </tr>`;
         }
+        grandTotal += subTotal;
 
         html += ` 
       <tr style="font-weight: bold;">
@@ -219,7 +221,7 @@ const InvoicePage = () => {
           <tbody>
             <tr style="font-weight: bold;">
               <td colspan="2" style="padding: 12px; text-align: right; width: 100%">Grand Total:</td>
-              <td style="padding: 12px; text-align: right;"> ${formatMoney(billing.data[0].billings.amount)}</td>
+              <td style="padding: 12px; text-align: right;"> ${formatMoney(grandTotal)}</td>
             </tr>
           </tbody>
           </table>`;

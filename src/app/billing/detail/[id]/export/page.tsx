@@ -140,7 +140,12 @@ const ExportDetailBillingPage = () => {
     doc.text(`: ${billing.data[0].billings.billing_no}`, 100, 30)
 
     doc.text('Total Amount', 30, 40) //x,y
-    doc.text(`: ${billing.data[0].billings.currency} ${formatMoney(billing.data[0].billings.amount)}`, 100, 40)
+    if (type == "insurer") {
+      doc.text(`: ${billing.data[0].billings.currency} ${formatMoney(billing.data[0].billings.amount)}`, 100, 40)
+    }
+    else if (type == "partner") {
+      doc.text(`: ${billing.data[0].billings.currency} ${formatMoney(billing.data[0].billings.total - billing.data[0].billings.amount)}`, 100, 40)
+    }
 
     doc.text('Billing Created Date', 30, 50)
     doc.text(`: ${new Date(billing.data[0].billings.created_at).toDateString()}`, 100, 50)
@@ -175,7 +180,9 @@ const ExportDetailBillingPage = () => {
       "Insurance Company Name",
       "Transaction Date",
       "Currency",
-      "Amount",];
+      "Premium",
+      "%",
+      "Net Premium"];
     if (type == "insurer") {
       head = [
         "Transaction Number",
@@ -197,6 +204,8 @@ const ExportDetailBillingPage = () => {
             item.details?.transaction_date,
             item.billings.currency,
             formatMoney(item.amount),
+            (item.commission_percentage ?? 0) + "%",
+            formatMoney(item.amount - (item.commission_amount ?? 0)),
           ]
         }
         else if (type == "insurer") {
@@ -214,6 +223,8 @@ const ExportDetailBillingPage = () => {
       }),
       columnStyles: type == "partner" ? {
         5: { halign: 'right' },
+        6: { halign: 'right' },
+        7: { halign: 'right' },
       } : {
         4: { halign: 'right' },
         5: { halign: 'right' },
@@ -244,7 +255,7 @@ const ExportDetailBillingPage = () => {
 
     const headerBilling = [
       ["Billing No.", billing.data[0].billings.billing_no],
-      ["Total Amount", billing.data[0].billings.currency + " " + formatMoney(billing.data[0].billings.amount)],
+      ["Total Amount", billing.data[0].billings.currency + " " + formatMoney(type == "insurer" ? billing.data[0].billings.amount : (billing.data[0].billings.total - billing.data[0].billings.amount))],
       [
         "Billing Created Date",
         new Date(billing.data[0].billings.created_at).toDateString(),
@@ -273,7 +284,9 @@ const ExportDetailBillingPage = () => {
         "Insurance Company Name",
         "Transaction Date",
         "Currency",
-        "Amount",
+        "Premium",
+        "%",
+        "Net Premium"
       ],
     ];
     const tableData = billing.data.map((item: any) => [
@@ -283,6 +296,8 @@ const ExportDetailBillingPage = () => {
       formatDate(item.details?.transaction_date, "YYYY-MM-DD"),
       item.billings.currency,
       formatMoney(item.amount),
+      (item.commission_percentage ?? 0) + "%",
+      formatMoney(item.amount - (item.commission_amount ?? 0)),
     ]);
 
     //insurer  
@@ -432,7 +447,12 @@ const ExportDetailBillingPage = () => {
                 <tr>
                   <td className="pr-5">Total Amount</td>
                   <td>:</td>
-                  <td>{billing.data[0].billings.currency} {formatMoney(billing.data[0].billings.amount)}</td>
+                  {
+                    type == "insurer" ?
+                      <td>{billing.data[0].billings.currency} {formatMoney(billing.data[0].billings.amount)}</td>
+                      :
+                      <td>{billing.data[0].billings.currency} {formatMoney(billing.data[0].billings.total - billing.data[0].billings.amount)}</td>
+                  }
                 </tr>
                 <tr>
                   <td className="pr-5">Billing Created Date</td>
@@ -497,19 +517,20 @@ const ExportDetailBillingPage = () => {
                   background: "#e7e7e7",
                   verticalAlign: "middle",
                   textAlign: "right",
-                }}>Amount</td>
+                }}>Premium</td>
                 {
-                  type == "insurer" ?
-                    <td style={{
-                      padding: "10px",
-                      border: "0.5px solid #cccccc",
-                      fontWeight: "bold",
-                      fontSize: "12px",
-                      height: "auto",
-                      background: "#e7e7e7",
-                      verticalAlign: "middle",
-                      textAlign: "right",
-                    }}>%</td> : ""
+                  // type == "insurer" ?
+                  <td style={{
+                    padding: "10px",
+                    border: "0.5px solid #cccccc",
+                    fontWeight: "bold",
+                    fontSize: "12px",
+                    height: "auto",
+                    background: "#e7e7e7",
+                    verticalAlign: "middle",
+                    textAlign: "right",
+                  }}>%</td>
+                  // : ""
                 }
                 {
                   type == "insurer" ?
@@ -522,9 +543,18 @@ const ExportDetailBillingPage = () => {
                       background: "#e7e7e7",
                       verticalAlign: "middle",
                       textAlign: "right",
-                    }}>Commision Amount</td> : ""
+                    }}>Commision Amount</td> :
+                    <td style={{
+                      padding: "10px",
+                      border: "0.5px solid #cccccc",
+                      fontWeight: "bold",
+                      fontSize: "12px",
+                      height: "auto",
+                      background: "#e7e7e7",
+                      verticalAlign: "middle",
+                      textAlign: "right",
+                    }}>Net Premium</td>
                 }
-
               </tr>
 
               {billing &&
@@ -554,17 +584,18 @@ const ExportDetailBillingPage = () => {
 
                       }}>{formatMoney(data.amount)}</td>
                       {
-                        type == "insurer" ?
-                          <td style={{
-                            padding: "10px",
-                            height: "auto",
-                            border: "0.5px solid #cccccc",
-                            fontSize: "12px",
-                            verticalAlign: "middle",
-                            textAlign: "right",
-                          }}>
-                            {data.commission_percentage ?? 0}%
-                          </td> : ""
+                        // type == "insurer" ?
+                        <td style={{
+                          padding: "10px",
+                          height: "auto",
+                          border: "0.5px solid #cccccc",
+                          fontSize: "12px",
+                          verticalAlign: "middle",
+                          textAlign: "right",
+                        }}>
+                          {data.commission_percentage ?? 0}%
+                        </td>
+                        // : ""
                       }
                       {
                         type == "insurer" ?
@@ -577,7 +608,17 @@ const ExportDetailBillingPage = () => {
                             textAlign: "right",
                           }}>
                             {formatMoney(data.commission_amount ?? 0)}
-                          </td> : ""
+                          </td> :
+                          <td style={{
+                            padding: "10px",
+                            height: "auto",
+                            border: "0.5px solid #cccccc",
+                            fontSize: "12px",
+                            verticalAlign: "middle",
+                            textAlign: "right",
+                          }}>
+                            {formatMoney(data.amount - (data.commission_amount ?? 0))}
+                          </td>
                       }
                     </tr>
                   );
