@@ -230,8 +230,9 @@ const DetailBillingPage = () => {
                 <td>: {billing.data[0].items[0].billings.company_name}</td>
               </tr>
               <tr>
-                <td>Total Transaction Amount</td>
-                <td>: {billing.data[0].items[0].billings.currency} {formatMoney(billing.data[0].items[0].billings.total)}</td>
+                <td>{billing.data[0].items[0].billings.type == "insurer" ? "Total Transaction Amount" : "Total Net Premium"}</td>
+                <td>: {billing.data[0].items[0].billings.currency} {formatMoney(billing.data[0].items[0].billings.type == "insurer" ?
+                  billing.data[0].items[0].billings.total : (billing.data[0].items[0].billings.total - billing.data[0].items[0].billings.amount))}</td>
                 <td>Period</td>
                 <td>: {billing.data[0].items[0].billings.transaction_period}</td>
               </tr>

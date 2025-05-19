@@ -139,7 +139,7 @@ const ExportDetailBillingPage = () => {
     doc.text('Billing No.', 30, 30)
     doc.text(`: ${billing.data[0].billings.billing_no}`, 100, 30)
 
-    doc.text('Total Amount', 30, 40) //x,y
+    doc.text(type == "insurer" ? 'Total Amount' : 'Total Net Premium', 30, 40) //x,y
     if (type == "insurer") {
       doc.text(`: ${billing.data[0].billings.currency} ${formatMoney(billing.data[0].billings.amount)}`, 100, 40)
     }
@@ -255,7 +255,7 @@ const ExportDetailBillingPage = () => {
 
     const headerBilling = [
       ["Billing No.", billing.data[0].billings.billing_no],
-      ["Total Amount", billing.data[0].billings.currency + " " + formatMoney(type == "insurer" ? billing.data[0].billings.amount : (billing.data[0].billings.total - billing.data[0].billings.amount))],
+      [type == "insurer" ? "Total Amount" : "Total Net Premium", billing.data[0].billings.currency + " " + formatMoney(type == "insurer" ? billing.data[0].billings.amount : (billing.data[0].billings.total - billing.data[0].billings.amount))],
       [
         "Billing Created Date",
         new Date(billing.data[0].billings.created_at).toDateString(),
@@ -445,7 +445,7 @@ const ExportDetailBillingPage = () => {
                   <td>{billing.data[0].billings.billing_no}</td>
                 </tr>
                 <tr>
-                  <td className="pr-5">Total Amount</td>
+                  <td className="pr-5">{type == "insurer" ? "Total Amount" : "Total Net Premium"}</td>
                   <td>:</td>
                   {
                     type == "insurer" ?
