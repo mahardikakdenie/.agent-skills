@@ -50,11 +50,10 @@ const CreateHoliday = () => {
             console.log(data)
             var res = await createCalendar({
                 ...data,
-                type: "holiday",
                 date: data.startdate,
                 year: new Date(data.startdate).getFullYear().toString()
             });
-            router.push("/holiday");
+            router.push("/masterdata/holiday");
         } catch (error) {
             console.error(error);
             alert("Failed to create holiday");
@@ -170,31 +169,7 @@ const CreateHoliday = () => {
                             </p>
                         )}
                     </div>
-                    <div>
-                        <label
-                            htmlFor="name"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Holiday Name
-                        </label>
-                        <Controller
-                            name="name"
-                            control={control}
-                            rules={{ required: "Holiday Name is required" }}
-                            render={({ field }) => (
-                                <Input
-                                    type="text"
-                                    className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
-                                    {...field}
-                                />
-                            )}
-                        />
-                        {errors.name && (
-                            <p className="text-red-500 text-xs mt-1">
-                                {errors.name.message?.toString()}
-                            </p>
-                        )}
-                    </div>
+                    <div></div>
                     <div>
                         <label
                             htmlFor="type"
@@ -231,7 +206,32 @@ const CreateHoliday = () => {
                             </p>
                         )}
                     </div>
-                    <div></div>
+                    <div>
+                        <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
+                            Holiday Name
+                        </label>
+                        <Controller
+                            name="name"
+                            control={control}
+                            rules={{ required: "Holiday Name is required" }}
+                            render={({ field }) => (
+                                <Input
+                                    type="text"
+                                    className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2"
+                                    {...field}
+                                />
+                            )}
+                        />
+                        {errors.name && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.name.message?.toString()}
+                            </p>
+                        )}
+                    </div>
+
                     <div>
                         <label
                             htmlFor="startdate"
