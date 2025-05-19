@@ -96,10 +96,10 @@ const InvoicePage = () => {
           <p style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</p>
         </div>
         <div style="flex: 1; text-align: right;"> 
-          <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Amount Due</h2>
+          <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
           <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
             ${type == "partner" ?
-        (billing.data[0].billings.currency) + " " + formatMoney(d.total)
+        (billing.data[0].billings.currency) + " " + formatMoney(d.total - d.total_commission)
         :
         (billing.data[0].items[0].billings.currency) + " " + formatMoney(d.total_commission)}
           </p>

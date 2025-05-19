@@ -1247,14 +1247,14 @@ const ClaimsPage = () => {
                       <SelectContent className="max-h-48 overflow-auto">
                         <SelectItem
                           value="Submitted"
-                          disabled={claim.status !== "Draft" && !openAllStatus}
+                          disabled={claim.status !== "Draft" && !openAllStatus || claim.status == "Closed"}
                         >
                           Submitted
                         </SelectItem>
                         <SelectItem
                           value="Acknowledged"
                           disabled={
-                            claim.status !== "Submitted" && !openAllStatus
+                            claim.status !== "Submitted" && !openAllStatus || claim.status == "Closed"
                           }
                         >
                           Acknowledged
@@ -1265,6 +1265,7 @@ const ClaimsPage = () => {
                             claim.status !== "Acknowledged" &&
                             claim.status !== "Lack of Documents Operator" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Document Review Operator
@@ -1274,6 +1275,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Lack of Documents Operator" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Reupload Document Review Operator
@@ -1285,6 +1287,7 @@ const ClaimsPage = () => {
                             claim.status !==
                             "Reupload Document Review Operator" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Lack of Documents Operator
@@ -1295,6 +1298,7 @@ const ClaimsPage = () => {
                             claim.status !== "Document Review Operator" &&
                             claim.status !== "Lack of Documents Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Document Review Insurance
@@ -1304,6 +1308,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Lack of Documents Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Reupload Document Review Insurance
@@ -1315,6 +1320,7 @@ const ClaimsPage = () => {
                             claim.status !==
                             "Reupload Document Review Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Lack of Documents Insurance
@@ -1325,6 +1331,7 @@ const ClaimsPage = () => {
                             claim.status !== "Document Review" &&
                             claim.status !== "Document Review Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Claim Assessment
@@ -1334,6 +1341,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Claim Assessment" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Approved
@@ -1343,6 +1351,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Claim Assessment" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Rejected
@@ -1350,7 +1359,7 @@ const ClaimsPage = () => {
                         <SelectItem
                           value="Paid"
                           disabled={
-                            claim.status !== "Approved" && !openAllStatus
+                            claim.status !== "Approved" && !openAllStatus || claim.status == "Closed"
                           }
                         >
                           Paid
@@ -1361,6 +1370,7 @@ const ClaimsPage = () => {
                             claim.status !== "Paid" &&
                             claim.status !== "Rejected" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Closed

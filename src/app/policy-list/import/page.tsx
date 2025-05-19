@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLoading } from "@/context/loading.context";
 import { ChannelService } from "@/services/channel.services";
-import { MembershipService } from "@/services/membership.service";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PolicyService } from "@/services/policy.service";
@@ -74,38 +73,85 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
     setXlsxData([]);
   };
 
+
+  const convertCSV = async (f: any) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        try {
+          if (!event.target) return;
+          const data = new Uint8Array(event.target.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+
+          let csvData = XLSX.utils.sheet_to_csv(worksheet);
+          csvData = csvData.replace(/;/g, ',');
+
+          const blob = new Blob([csvData], { type: 'text/csv' });
+
+          const csvFile = new File(
+            [blob],
+            f.name.replace(/\.(xlsx|xls)$/i, ".csv"),
+            { type: "text/csv" }
+          );
+
+          // ✅ Trigger download
+          // const url = URL.createObjectURL(csvFile);
+          // const a = document.createElement('a');
+          // a.href = url;
+          // a.download = csvFile.name;
+          // document.body.appendChild(a);
+          // a.click();
+          // document.body.removeChild(a);
+          // URL.revokeObjectURL(url);
+
+          resolve(csvFile);
+        } catch (err) {
+          reject(err);
+        }
+      };
+
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(f);
+    });
+  };
+
   const handleUpload = async () => {
     if (!channel) {
       alert("Please select a channel before uploading.");
       return;
     }
+    const fileCSV: File | null = await convertCSV(file) as File | null;
 
     setLoading(true);
     try {
-      const transformedData = xlsxData.map((row) => {
-        const newRow: Record<string, any> = {};
+      // const transformedData = xlsxData.map((row) => {
+      //   const newRow: Record<string, any> = {};
 
-        const getExcelColumnName = (index: number) => {
-          let result = "";
-          while (index >= 0) {
-            result = String.fromCharCode((index % 26) + 97) + result;
-            index = Math.floor(index / 26) - 1;
-          }
-          return `column_${result}`;
-        };
+      //   const getExcelColumnName = (index: number) => {
+      //     let result = "";
+      //     while (index >= 0) {
+      //       result = String.fromCharCode((index % 26) + 97) + result;
+      //       index = Math.floor(index / 26) - 1;
+      //     }
+      //     return `column_${result}`;
+      //   };
 
-        const values = Object.values(row);
-        const MAX_COLUMNS = 66;
+      //   const values = Object.values(row);
+      //   const MAX_COLUMNS = 66;
 
-        for (let i = 0; i < MAX_COLUMNS; i++) {
-          const colKey = getExcelColumnName(i);
-          const rawValue = values[i];
-          const stringValue = rawValue === "-" ? "" : String(rawValue || "");
-          newRow[colKey] = stringValue;
-        }
+      //   for (let i = 0; i < MAX_COLUMNS; i++) {
+      //     const colKey = getExcelColumnName(i);
+      //     const rawValue = values[i];
+      //     const stringValue = rawValue === "-" ? "" : String(rawValue || "");
+      //     newRow[colKey] = stringValue;
+      //   }
 
-        return newRow;
-      });
+      //   return newRow;
+      // });
 
       // const payload = {
       //   is_master_policy: true,
@@ -113,12 +159,21 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
       // };
 
       const formData = new FormData();
-      formData.append('file', file!);
+      formData.append('file', fileCSV!);
 
-      const response = await policyService.uploadPolicyDrGadget(channel, formData);
-      const successMessage = response?.data?.message || "Data uploaded successfully!";
-      alert(successMessage);
-      router.push("/policy-list");
+      try {
+        var c = channels.filter((x) => x.id == channel)[0];
+        if (c.name == "drgadget") {
+          const response = await policyService.uploadPolicyDrGadget(channel, formData);
+          const successMessage = response?.data?.message || "Data uploaded successfully!";
+          alert(successMessage);
+          router.push("/policy-list");
+        } else {
+          alert("Fitur Import untuk Partner ini belum didukung");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } catch (error: any) {
       console.error("Upload error:", error);
       const errorMessage = error?.response?.data?.message || "Upload failed.";
@@ -149,7 +204,7 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
         </Select>
 
         <div className="w-full relative">
-          <Input type="file" accept=".csv" onChange={handleChooseFile} />
+          <Input type="file" accept=".xlsx" onChange={handleChooseFile} />
           <Button type="button" variant="secondary" className="rounded-full absolute right-0 top-0 bg-transparent text-red-500 px-2" onClick={handleClearFile} disabled={!file}>
             <X className="w-5 h-5" />
           </Button>
