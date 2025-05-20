@@ -1,7 +1,7 @@
 "use client";
 import * as XLSX from "xlsx";
 import WithSidebar from "@/hoc/with-sidebar";
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, X } from "react-feather";
@@ -25,6 +25,8 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
   const [channel, setChannel] = useState("");
   const [type, setType] = useState("");
   const [policiesId, setPoliciesId] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
 
   const handleChooseFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
@@ -70,6 +72,14 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel]);
 
+  const excelDateToISO = (serial: number) => {
+    const utcDays = Math.floor(serial - 25569);
+    const utcValue = utcDays * 86400;
+    const dateInfo = new Date(utcValue * 1000);
+    const iso = dateInfo.toISOString().split("T")[0];
+    return iso;
+  };
+
   const handlePreview = () => {
     if (file) {
       const reader = new FileReader();
@@ -78,8 +88,21 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const parsedData = XLSX.utils.sheet_to_json(worksheet);
-        setXlsxData(parsedData);
+        const parsedData = XLSX.utils.sheet_to_json(worksheet, { raw: false });
+
+        const transformed = parsedData.map((row: any) => {
+          const newRow: Record<string, any> = {};
+          Object.entries(row).forEach(([key, value]) => {
+            if (typeof value === "number" && value > 20000 && value < 60000) {
+              newRow[key] = excelDateToISO(value);
+            } else {
+              newRow[key] = value;
+            }
+          });
+          return newRow;
+        });
+
+        setXlsxData(transformed);
       };
       reader.readAsArrayBuffer(file);
     }
@@ -88,6 +111,9 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
   const handleClearFile = () => {
     setFile(null);
     setXlsxData([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const toSnakeCase = (str: string) => str.replace(/[\s\/-]+/g, "_").replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/^_+|_+$/g, "").replace(/_+/g, "_").toLowerCase();
@@ -165,7 +191,7 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
         </Select>
 
         <div className="w-full relative">
-          <Input type="file" accept=".xlsx, .xls" onChange={handleChooseFile} />
+          <Input ref={fileInputRef} type="file" accept=".xlsx, .xls" onChange={handleChooseFile}/>
           <Button type="button" variant="secondary" className="rounded-full absolute right-0 top-0 bg-transparent text-red-500 px-2" onClick={handleClearFile} disabled={!file}>
             <X className="w-5 h-5" />
           </Button>
