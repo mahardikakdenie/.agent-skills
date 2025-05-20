@@ -114,12 +114,12 @@ const DetailBillingPage = () => {
       setLoading(true);
       await updateBilling(id as string, { status: "paid" });
       setLoading(false);
-      alert("Billing updated to paid");
+      alert("Status updated to paid");
       router.push("/billing");
     } catch (error) {
       setLoading(false);
       console.error("Request failed:", error);
-      alert("Failed to update billing");
+      alert("Failed to update status paid");
     }
   };
 
@@ -131,13 +131,13 @@ const DetailBillingPage = () => {
         status: "cancelled",
         deleted_at: new Date(),
       });
-      alert("Billing cancelled");
+      alert("Status update to cancelled");
       setLoading(false);
       router.push("/billing");
     } catch (error) {
       setLoading(false);
       console.error("Request failed:", error);
-      alert("Failed to cancel billing");
+      alert("Failed change status to cancel");
     }
   };
 
@@ -154,6 +154,14 @@ const DetailBillingPage = () => {
     } else {
       dataFilter = billing.data?.filter((x: { product: string; }) => { if (searchCategory != "All") return x.product == searchCategory; else { return x } })[0].items;
     }
+    try {
+      dataFilter.sort((a, b) => {
+        return new Date(b.details?.transaction_date).getTime() - new Date(a.details?.transaction_date).getTime();
+      });
+    } catch (error) {
+      console.log("Error get transaction date")
+    }
+
     return dataFilter;
   }
 
@@ -189,12 +197,12 @@ const DetailBillingPage = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Billing Detail</BreadcrumbPage>
+                  <BreadcrumbPage>{billing.data[0].items[0].billings.type == "insurer" ? "Billing Detail" : "Listing Detail"}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
             <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-              Billing Detail
+              {billing.data[0].items[0].billings.type == "insurer" ? "Billing Detail" : "Listing Detail"}
             </h2>
           </div>
           <div className="flex space-x-4 ml-auto">
@@ -230,8 +238,9 @@ const DetailBillingPage = () => {
                 <td>: {billing.data[0].items[0].billings.company_name}</td>
               </tr>
               <tr>
-                <td>Total Transaction Amount</td>
-                <td>: {billing.data[0].items[0].billings.currency} {formatMoney(billing.data[0].items[0].billings.total)}</td>
+                <td>{billing.data[0].items[0].billings.type == "insurer" ? "Total Transaction Amount" : "Total Net Premium"}</td>
+                <td>: {billing.data[0].items[0].billings.currency} {formatMoney(billing.data[0].items[0].billings.type == "insurer" ?
+                  billing.data[0].items[0].billings.total : (billing.data[0].items[0].billings.total - billing.data[0].items[0].billings.amount))}</td>
                 <td>Period</td>
                 <td>: {billing.data[0].items[0].billings.transaction_period}</td>
               </tr>
@@ -301,7 +310,7 @@ const DetailBillingPage = () => {
                     onClick={() => router.push(`/billing/detail/${id}/invoice?type=${billing.data[0].items[0].billings.type}`)}
                     className="rounded-full bg-blue-600 hover:bg-blue-700"
                   >
-                    <span className="flex items-center">📄 View Invoice</span>
+                    <span className="flex items-center">{billing.data[0].items[0].billings.type == "insurer" ? "📄 View Invoice" : "📄 View Billing Listing"}</span>
                   </Button>
 
                   <Button
@@ -309,7 +318,7 @@ const DetailBillingPage = () => {
                     variant="destructive"
                     className="rounded-full bg-white border text-red-700 border-red-700 hover:bg-red-700 hover:text-white"
                   >
-                    <span className="flex items-center">✕ Cancel Billing</span>
+                    <span className="flex items-center">{billing.data[0].items[0].billings.type == "insurer" ? "✕ Cancel Billing" : "✕ Cancel Listing"}</span>
                   </Button>
                 </div>
               )}
@@ -352,15 +361,16 @@ const DetailBillingPage = () => {
 
                   <TableHead style={{ width: "180px" }}>Transaction Date</TableHead>
                   <TableHead style={{ width: "50px" }}>Currency</TableHead>
-                  <TableHead style={{ textAlign: "right", width: "120px" }}>Amount</TableHead>
 
-                  {billing.data[0].items[0].billings.type == "insurer" ?
-                    <TableHead style={{ textAlign: "right", width: "30px" }}>%</TableHead>
-                    : ""}
+                  <TableHead style={{ textAlign: "right", width: "120px" }}>Premium</TableHead>
+
+                  {/* {billing.data[0].items[0].billings.type == "insurer" ? */}
+                  <TableHead style={{ textAlign: "right", width: "30px" }}>%</TableHead>
+                  {/* : ""} */}
 
                   {billing.data[0].items[0].billings.type == "insurer" ?
                     <TableHead style={{ textAlign: "right", width: "150px" }}>Commision Amount</TableHead>
-                    : ""}
+                    : <TableHead style={{ textAlign: "right", width: "150px" }}>Net Premium</TableHead>}
 
                 </TableRow>
               </TableHeader>
@@ -381,13 +391,14 @@ const DetailBillingPage = () => {
                         <TableCell style={{}}>{billing.data[0].items[0].billings.currency}</TableCell>
                         <TableCell style={{ textAlign: "right" }}>{formatMoney(data.amount)}</TableCell>
 
-                        {billing.data[0].items[0].billings.type == "insurer" ?
-                          <TableCell style={{ textAlign: "right" }}>{data.commission_percentage ?? 0}%</TableCell>
-                          : ""}
+                        {/* {billing.data[0].items[0].billings.type == "insurer" ? */}
+                        <TableCell style={{ textAlign: "right" }}>{data.commission_percentage ?? 0}%</TableCell>
+                        {/* : ""} */}
 
                         {billing.data[0].items[0].billings.type == "insurer" ?
                           <TableCell style={{ textAlign: "right" }}> {formatMoney(data.commission_amount ?? 0)} </TableCell>
-                          : ""}
+                          :
+                          <TableCell style={{ textAlign: "right" }}> {formatMoney(data.amount - (data.commission_amount ?? 0))} </TableCell>}
                       </TableRow>
                     );
                   })}
@@ -463,7 +474,7 @@ const DetailBillingPage = () => {
               <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
                 <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
                   <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
-                    Cancel Billing
+                    {billing.data[0].items[0].billings.type == "insurer" ? "Cancel Billing" : "Cancel Listing"}
                     <DialogFooter className="ml-auto">
                       <Button
                         type="button"
@@ -475,14 +486,14 @@ const DetailBillingPage = () => {
                   </DialogTitle>
                 </DialogHeader>
                 <div className="p-4">
-                  <p>Are you sure you want to cancel this billing?</p>
+                  <p>{billing.data[0].items[0].billings.type == "insurer" ? "Are you sure you want to cancel this billing?" : "Are you sure you want to cancel this listing?"}</p>
                   <div className="flex justify-end mt-5">
                     <Button
                       className="btn btn-primary"
                       variant={"destructive"}
                       onClick={handleCancel}
                     >
-                      Cancel Billing
+                      {billing.data[0].items[0].billings.type == "insurer" ? "Cancel Billing" : "Cancel Listing"}
                     </Button>
                   </div>
                 </div>

@@ -434,7 +434,13 @@ const BillingPage = () => {
                 {/* <TableCell>{billing.type}</TableCell> */}
                 {/* <TableCell>{billing.company_name}</TableCell> */}
                 <TableCell>{billing.currency}</TableCell>
-                <TableCell style={{ textAlign: "right" }}>{formatMoney(billing.amount)}</TableCell>
+                <TableCell style={{ textAlign: "right" }}>
+                  {searchType == "insurer" ?
+                    formatMoney(billing.amount) //insurer -> get commission amount
+                    :
+                    formatMoney(billing.total - billing.amount) //partner -> get net premium (total premium - commision amount)
+                  }
+                </TableCell>
                 <TableCell>
                   {billing.status
                     .split("-")
@@ -475,7 +481,7 @@ const BillingPage = () => {
                       <File className="h-4 w-4" />
                     </Button>
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      View Invoice
+                      {searchType == "insurer" ? "View Invoice" : "View Listing Detail"}
                     </span>
                   </div>
                 </TableCell>
