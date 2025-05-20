@@ -247,8 +247,7 @@ const MembershipPage = () => {
                   <TableCell className="min-w-[200px]">{item?.profile?.bank_account_name || "-"}</TableCell>
                   <TableCell>{item?.profile?.email || "-"}</TableCell>
                   <TableCell>{item?.other_info?.tpa_member_id || "-"}</TableCell>
-                  <TableCell>{item?.profile?.submission_date ? new Date(item.profile.submission_date).toLocaleDateString("en-GB") : item?.updated_at ? new Date(item.updated_at).toLocaleDateString("en-GB") : ""}
-                  </TableCell>
+                  <TableCell>{item?.profile?.submission_date ? new Date(item.profile.submission_date).toISOString().split("T")[0] : item?.updated_at ? new Date(item.updated_at).toISOString().split("T")[0] : "-"}</TableCell>
                   <TableCell className="font-semibold"><span className={getStatusColor(item?.status)}>{item?.status || "-"}</span></TableCell>
                   <TableCell><Button onClick={() => goToDetail(item.id)} className="rounded-full">View</Button></TableCell>
                 </TableRow>
