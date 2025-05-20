@@ -147,7 +147,7 @@ const ExportDetailBillingPage = () => {
       doc.text(`: ${billing.data[0].billings.currency} ${formatMoney(billing.data[0].billings.total - billing.data[0].billings.amount)}`, 100, 40)
     }
 
-    doc.text('Billing Created Date', 30, 50)
+    doc.text('Created Date', 30, 50)
     doc.text(`: ${new Date(billing.data[0].billings.created_at).toDateString()}`, 100, 50)
 
     doc.text('Status', 30, 60)
@@ -455,7 +455,7 @@ const ExportDetailBillingPage = () => {
                   }
                 </tr>
                 <tr>
-                  <td className="pr-5">Billing Created Date</td>
+                  <td className="pr-5">Created Date</td>
                   <td>:</td>
                   <td>
                     {new Date(
