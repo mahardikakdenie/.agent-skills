@@ -257,7 +257,7 @@ const ExportDetailBillingPage = () => {
       ["Billing No.", billing.data[0].billings.billing_no],
       [type == "insurer" ? "Total Amount" : "Total Net Premium", billing.data[0].billings.currency + " " + formatMoney(type == "insurer" ? billing.data[0].billings.amount : (billing.data[0].billings.total - billing.data[0].billings.amount))],
       [
-        "Billing Created Date",
+        "Created Date",
         new Date(billing.data[0].billings.created_at).toDateString(),
       ],
       [
@@ -360,9 +360,9 @@ const ExportDetailBillingPage = () => {
     }
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Billing Detail");
+    XLSX.utils.book_append_sheet(wb, ws, type == "insurer" ? "Billing Detail" : "Listing Detail");
 
-    XLSX.writeFile(wb, "Billing Detail.xlsx");
+    XLSX.writeFile(wb, type == "insurer" ? "Billing Detail.xlsx" : "Listing Detail.xlsx");
   };
 
   const styles = {
@@ -399,12 +399,12 @@ const ExportDetailBillingPage = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Billing Detail</BreadcrumbPage>
+                  <BreadcrumbPage>{type == "insurer" ? "Billing Detail" : "Listing Detail"}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
             <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-              Billing Detail
+              {type == "insurer" ? "Billing Detail" : "Listing Detail"}
             </h2>
           </div>
           <div className="flex space-x-4 ml-auto">
