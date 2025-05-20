@@ -109,6 +109,7 @@ const ClaimsPage = () => {
   const [canDelete, setCanDelete] = useState<boolean>(false);
 
   const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
+  const [selectedChannel, setSelectedChannel] = useState<any>({ id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88", name: "Teman" });
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
@@ -218,6 +219,9 @@ const ClaimsPage = () => {
 
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
+
+    var c = channels.filter((x) => x.id == v)[0];
+    setSelectedChannel(c);
   };
 
   const goToDetail = (claimId: string) => {
@@ -399,6 +403,7 @@ const ClaimsPage = () => {
 
 
   const confirmModal = () => {
+
     if (selectedClaim.amount && selectedClaim.amount > 0) {//check amount available
       if (amountApproved > reqAmountApproved) {
         setAmApprovedMsg(
@@ -413,7 +418,7 @@ const ClaimsPage = () => {
     }
 
     if (
-      (notes === "" && pendingStatus === "Approved") ||
+      (notes === "" && pendingStatus === "Approved" && selectedChannel.name != "drgadget") ||
       (notes === "" && pendingStatus === "Rejected") ||
       (notes === "" && pendingStatus === "Lack of Documents Operator") ||
       (notes === "" && pendingStatus === "Lack of Documents Insurance")
@@ -736,17 +741,22 @@ const ClaimsPage = () => {
                       ""
                   }
 
-                  <textarea
-                    name=""
-                    id=""
-                    rows={4}
-                    value={notes}
-                    onChange={(e) => {
-                      setNotes(e.target.value);
-                    }}
-                    className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                    placeholder="Insert Reason"
-                  ></textarea>
+                  {
+                    selectedChannel.name != "drgadget" ?
+                      <textarea
+                        name=""
+                        id=""
+                        rows={4}
+                        value={notes}
+                        onChange={(e) => {
+                          setNotes(e.target.value);
+                        }}
+                        className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                        placeholder="Insert Reason"
+                      ></textarea>
+                      :
+                      ""
+                  }
                 </>
               )}
 
