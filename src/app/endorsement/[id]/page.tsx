@@ -456,6 +456,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                   <TableRow>
                     <TableHead>No.</TableHead>
                     <TableHead className="whitespace-nowrap">Record Mode</TableHead>
+                    <TableHead className="whitespace-nowrap">TPA Member ID</TableHead>
                     <TableHead className="whitespace-nowrap">Policy Number</TableHead>
                     <TableHead className="whitespace-nowrap">Subsidiary / Entity</TableHead>
                     <TableHead className="whitespace-nowrap">Employee ID</TableHead>
@@ -490,6 +491,9 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className={isDifferent("record_mode") ? "bg-yellow-50" : ""}>
                           {profile.record_mode || "-"}
+                        </TableCell>
+                        <TableCell className={isDifferent("tpa_member_id") ? "bg-yellow-50" : ""}>
+                          {profile.tpa_member_id || "-"}
                         </TableCell>
                         <TableCell className={`min-w-[180px]`}>
                           {item?.endorsements?.number || "-"}
