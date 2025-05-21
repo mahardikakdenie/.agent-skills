@@ -1,7 +1,7 @@
 "use client";
 import * as XLSX from "xlsx";
 import WithSidebar from "@/hoc/with-sidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, X } from "react-feather";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,8 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(100);
   const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [channel, setChannel] = useState("");
   const [channels, setChannels] = useState<any[]>([]);
   const [xlsxData, setXlsxData] = useState<any[]>([]);
@@ -71,6 +73,9 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
   const handleClearFile = () => {
     setFile(null);
     setXlsxData([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // ✅ this clears the file name
+    }
   };
 
 
@@ -204,7 +209,7 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
         </Select>
 
         <div className="w-full relative">
-          <Input type="file" accept=".xlsx" onChange={handleChooseFile} />
+          <Input type="file" ref={fileInputRef} accept=".xlsx" onChange={handleChooseFile} />
           <Button type="button" variant="secondary" className="rounded-full absolute right-0 top-0 bg-transparent text-red-500 px-2" onClick={handleClearFile} disabled={!file}>
             <X className="w-5 h-5" />
           </Button>
