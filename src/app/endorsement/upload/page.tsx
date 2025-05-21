@@ -116,7 +116,7 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const toSnakeCase = (str: string) => str.replace(/[\s\/-]+/g, "_").replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/^_+|_+$/g, "").replace(/_+/g, "_").toLowerCase();
+  const toSnakeCase = (str: string) => str.split(/[(/]/)[0].trim().replace(/[\s\/-]+/g, "_").replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/^_+|_+$/g, "").replace(/_+/g, "_").toLowerCase();
 
   const handleUpload = async () => {
     if (!channel) {

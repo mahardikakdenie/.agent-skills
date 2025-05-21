@@ -21,7 +21,15 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
     if (event.target.files?.[0]) {
       setFile(event.target.files[0]);
     }
-  };  
+  };
+
+  const excelDateToISO = (serial: number) => {
+    const utcDays = Math.floor(serial - 25569);
+    const utcValue = utcDays * 86400;
+    const dateInfo = new Date(utcValue * 1000);
+    const iso = dateInfo.toISOString().split("T")[0];
+    return iso;
+  };
 
   const handlePreview = () => {
     if (file) {
@@ -31,8 +39,21 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const parsedData = XLSX.utils.sheet_to_json(worksheet);
-        setXlsxData(parsedData);
+        const parsedData = XLSX.utils.sheet_to_json(worksheet, { raw: false });
+
+        const transformed = parsedData.map((row: any) => {
+          const newRow: Record<string, any> = {};
+          Object.entries(row).forEach(([key, value]) => {
+            if (typeof value === "number" && value > 20000 && value < 60000) {
+              newRow[key] = excelDateToISO(value);
+            } else {
+              newRow[key] = value;
+            }
+          });
+          return newRow;
+        });
+
+        setXlsxData(transformed);
       };
       reader.readAsArrayBuffer(file);
     }
@@ -43,7 +64,7 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
     setXlsxData([]);
   };
 
-  const toSnakeCase = (str: string) => str.replace(/[\s\/-]+/g, "_").replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/^_+|_+$/g, "").replace(/_+/g, "_").toLowerCase();
+  const toSnakeCase = (str: string) => str.split(/[(/]/)[0].trim().replace(/[\s\/-]+/g, "_").replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/^_+|_+$/g, "").replace(/_+/g, "_").toLowerCase();
 
   const handleUpload = async () => {
     setLoading(true);
@@ -64,7 +85,7 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
         is_send_email_to_third_party: true,
         data: transformedData,
       };
-  
+
       const response = await endorsementService.updateEndorsement( params.id, payload );
       const successMessage = response?.data?.message || "Data uploaded successfully!";
       alert(successMessage);
