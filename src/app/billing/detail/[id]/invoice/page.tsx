@@ -75,7 +75,8 @@ const InvoicePage = () => {
     const status = d.status.split("-").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ")
 
     const headerHtml = `
-    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #333;font-size:14px;">
+    <div id="headerText" style="padding: 60px;">
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; color: #333;font-size:14px;">
       <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
           <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
@@ -106,7 +107,7 @@ const InvoicePage = () => {
           <p style="color: #777; margin: 5px 0;">Status: ${status}</p>
           <p style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </p>
         </div>
-      </div>`;
+      </div> `;
     return headerHtml;
   }
 
@@ -178,7 +179,7 @@ const InvoicePage = () => {
         let subTotal = 0;
         let commission = 0;
         html += `  
-          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px">
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px; font-size: 14px;">
             <thead>
               <tr style="background-color: #f5f5f5;">
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;width: 180px;">Transaction No.</th>
@@ -243,7 +244,7 @@ const InvoicePage = () => {
       let subTotal = 0;
       let subTotalCommision = 0;
       html += `  
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px; font-size: 14px;">
           <thead>
             <tr style="background-color: #f5f5f5;">
               <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;width: 180px;">Transaction No.</th>
