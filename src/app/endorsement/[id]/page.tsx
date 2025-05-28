@@ -456,6 +456,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                   <TableRow>
                     <TableHead>No.</TableHead>
                     <TableHead className="whitespace-nowrap">Record Mode</TableHead>
+                    <TableHead className="whitespace-nowrap">TPA Member ID</TableHead>
                     <TableHead className="whitespace-nowrap">Policy Number</TableHead>
                     <TableHead className="whitespace-nowrap">Subsidiary / Entity</TableHead>
                     <TableHead className="whitespace-nowrap">Employee ID</TableHead>
@@ -483,16 +484,19 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                     const profile = item?.data?.profile || {};
                     const insuredProfile = item?.insured_parties?.profile || {};
 
-                    const isDifferent = (key: string) => profile[key] !== insuredProfile[key];
+                    const isDifferent = (key: string) => `${profile[key]}` !== `${insuredProfile[key]}`;
 
                     return (
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell className={isDifferent("record_mode") ? "bg-yellow-50" : ""}>
+                        <TableCell>
                           {profile.record_mode || "-"}
                         </TableCell>
                         <TableCell className={`min-w-[180px]`}>
-                          {item?.endorsements?.number || "-"}
+                          {profile.tpa_member_id || "-"}
+                        </TableCell>
+                        <TableCell className={`min-w-[180px]`}>
+                          {item?.insured_parties?.policy?.number || "-"}
                         </TableCell>
                         <TableCell className={`min-w-[230px] ${isDifferent("subsidiary") ? "bg-yellow-50" : ""}`}>
                           {profile.subsidiary || "-"}

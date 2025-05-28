@@ -232,7 +232,7 @@ const DetailBillingPage = () => {
                 <td>: {billing.data[0].items[0].billings.type}</td>
               </tr>
               <tr>
-                <td>Billing Created Date</td>
+                <td>Created Date</td>
                 <td>: {new Date(billing.data[0].items[0].billings.created_at).toDateString()}</td>
                 <td>Company Name</td>
                 <td>: {billing.data[0].items[0].billings.company_name}</td>
