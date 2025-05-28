@@ -75,7 +75,8 @@ const InvoicePage = () => {
     const status = d.status.split("-").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ")
 
     const headerHtml = `
-    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #333;font-size:14px;">
+    <div id="headerText" style="padding: 60px;">
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; color: #333;font-size:14px;">
       <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
           <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
@@ -96,17 +97,17 @@ const InvoicePage = () => {
           <p style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</p>
         </div>
         <div style="flex: 1; text-align: right;"> 
-          <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Amount Due</h2>
+          <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
           <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
             ${type == "partner" ?
-        (billing.data[0].billings.currency) + " " + formatMoney(d.total)
+        (billing.data[0].billings.currency) + " " + formatMoney(d.total - d.total_commission)
         :
         (billing.data[0].items[0].billings.currency) + " " + formatMoney(d.total_commission)}
           </p>
           <p style="color: #777; margin: 5px 0;">Status: ${status}</p>
           <p style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </p>
         </div>
-      </div>`;
+      </div> `;
     return headerHtml;
   }
 
@@ -161,6 +162,7 @@ const InvoicePage = () => {
     var html = getHeaderHtml();
 
     let insuranceKeyList = Object.keys(datas);
+    let grandTotal = 0;
     for (let i = 0; i < insuranceKeyList.length; i++) {
       const insurKey = insuranceKeyList[i];  // Insurance Key 
       // console.log(insurKey)
@@ -177,7 +179,7 @@ const InvoicePage = () => {
         let subTotal = 0;
         let commission = 0;
         html += `  
-          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px">
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px; font-size: 14px;">
             <thead>
               <tr style="background-color: #f5f5f5;">
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;width: 180px;">Transaction No.</th>
@@ -190,7 +192,7 @@ const InvoicePage = () => {
             <tbody>`;
         for (let k = 0; k < datas[insurKey][productKey].length; k++) {
           const d = datas[insurKey][productKey][k];
-          subTotal += parseInt(d.amount);
+          subTotal += parseInt(d.amount) - parseInt(d.commission_amount ?? "0");
           commission += parseInt(d.amount);
           html += `<tr>
                 <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.invoice_no}</td>
@@ -200,6 +202,7 @@ const InvoicePage = () => {
                 <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount - (d.commission_amount ?? 0))}</td>
               </tr>`;
         }
+        grandTotal += subTotal;
 
         html += ` 
       <tr style="font-weight: bold;">
@@ -219,7 +222,7 @@ const InvoicePage = () => {
           <tbody>
             <tr style="font-weight: bold;">
               <td colspan="2" style="padding: 12px; text-align: right; width: 100%">Grand Total:</td>
-              <td style="padding: 12px; text-align: right;"> ${formatMoney(billing.data[0].billings.amount)}</td>
+              <td style="padding: 12px; text-align: right;"> ${formatMoney(grandTotal)}</td>
             </tr>
           </tbody>
           </table>`;
@@ -241,7 +244,7 @@ const InvoicePage = () => {
       let subTotal = 0;
       let subTotalCommision = 0;
       html += `  
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px; font-size: 14px;">
           <thead>
             <tr style="background-color: #f5f5f5;">
               <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee;width: 180px;">Transaction No.</th>

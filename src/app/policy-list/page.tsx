@@ -154,6 +154,15 @@ const PolicyPage = () => {
     router.push(`${path}/${policyId}`);
   };
 
+  const handleDownloadTemplate = () => {
+    try {
+      var c = channels.filter((x) => x.id == searchChannel)[0];
+      window.open(`/policy_templates/${c.name}.xlsx`, '_blank');
+    } catch (error) {
+
+    }
+  };
+
   const handleImport = () => {
     router.push(`${path}/import`);
   };
@@ -270,6 +279,12 @@ const PolicyPage = () => {
             </SelectContent>
           </Select>
         </div>
+        <Button
+          onClick={handleDownloadTemplate}
+          className="bg-[#F5BA41] text-black hover:bg-[#F5BA41] mr-auto rounded-full"
+        >
+          <Download className="w-5 h-5 mr-1 " /> Import Template
+        </Button>
         <Button
           onClick={handleImport}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"

@@ -109,6 +109,7 @@ const ClaimsPage = () => {
   const [canDelete, setCanDelete] = useState<boolean>(false);
 
   const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
+  const [selectedChannel, setSelectedChannel] = useState<any>({ id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88", name: "Teman" });
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
@@ -218,6 +219,9 @@ const ClaimsPage = () => {
 
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
+
+    var c = channels.filter((x) => x.id == v)[0];
+    setSelectedChannel(c);
   };
 
   const goToDetail = (claimId: string) => {
@@ -397,19 +401,24 @@ const ClaimsPage = () => {
       });
   };
 
+
   const confirmModal = () => {
-    if (amountApproved > reqAmountApproved) {
-      setAmApprovedMsg(
-        "Your approval amount limit cannot exceed the requested amount"
-      );
-      return;
+
+    if (selectedClaim.amount && selectedClaim.amount > 0) {//check amount available
+      if (amountApproved > reqAmountApproved) {
+        setAmApprovedMsg(
+          "Your approval amount limit cannot exceed the requested amount"
+        );
+        return;
+      }
+      if (amountApproved === 0 && pendingStatus === "Approved") {
+        setAmApprovedMsg("Approved Amount required!");
+        return;
+      }
     }
-    if (amountApproved === 0 && pendingStatus === "Approved") {
-      setAmApprovedMsg("Approved Amount required!");
-      return;
-    }
+
     if (
-      (notes === "" && pendingStatus === "Approved") ||
+      (notes === "" && pendingStatus === "Approved" && selectedChannel.name != "drgadget") ||
       (notes === "" && pendingStatus === "Rejected") ||
       (notes === "" && pendingStatus === "Lack of Documents Operator") ||
       (notes === "" && pendingStatus === "Lack of Documents Insurance")
@@ -447,7 +456,6 @@ const ClaimsPage = () => {
       );
       setIsModalOpen(false);
       setFinalSelectedDocuments([]);
-      setSuccessUpdate(true);
     }
   };
 
@@ -692,50 +700,63 @@ const ClaimsPage = () => {
               </p>
               {pendingStatus === "Approved" && (
                 <>
-                  <div>
-                    <p className="text-sm mb-2">Requested Amount</p>
-                    <div className="relative">
-                      <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
-                        {currencyApp}
-                      </span>
-                      <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
-                        {formatMoneyClaim(reqAmountApproved)}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm mb-2">
-                      Approved Amount <span className="!text-red-500">*</span>
-                    </p>
-                    <div className="relative">
-                      <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
-                        {currencyApp}
-                      </span>
-                      <Input
-                        type="text"
-                        value={
-                          amountApproved === 0
-                            ? ""
-                            : formatMoneyClaim(amountApproved)
-                        }
-                        onChange={handleInputChange}
-                        className="h-12 pl-12"
-                        required
-                      />
-                    </div>
-                    <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
-                  </div>
-                  <textarea
-                    name=""
-                    id=""
-                    rows={4}
-                    value={notes}
-                    onChange={(e) => {
-                      setNotes(e.target.value);
-                    }}
-                    className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                    placeholder="Insert Reason"
-                  ></textarea>
+                  {
+                    selectedClaim.amount && selectedClaim.amount > 0 ?
+                      <>
+                        <div>
+                          <p className="text-sm mb-2">Requested Amount</p>
+                          <div className="relative">
+                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                              {currencyApp}
+                            </span>
+                            <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
+                              {formatMoneyClaim(reqAmountApproved)}
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm mb-2">
+                            Approved Amount <span className="!text-red-500">*</span>
+                          </p>
+                          <div className="relative">
+                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                              {currencyApp}
+                            </span>
+                            <Input
+                              type="text"
+                              value={
+                                amountApproved === 0
+                                  ? ""
+                                  : formatMoneyClaim(amountApproved)
+                              }
+                              onChange={handleInputChange}
+                              className="h-12 pl-12"
+                              required
+                            />
+                          </div>
+                          <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
+                        </div>
+                      </>
+                      :
+                      ""
+                  }
+
+                  {
+                    selectedChannel.name != "drgadget" ?
+                      <textarea
+                        name=""
+                        id=""
+                        rows={4}
+                        value={notes}
+                        onChange={(e) => {
+                          setNotes(e.target.value);
+                        }}
+                        className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                        placeholder="Insert Reason"
+                      ></textarea>
+                      :
+                      ""
+                  }
                 </>
               )}
 
@@ -1236,14 +1257,14 @@ const ClaimsPage = () => {
                       <SelectContent className="max-h-48 overflow-auto">
                         <SelectItem
                           value="Submitted"
-                          disabled={claim.status !== "Draft" && !openAllStatus}
+                          disabled={claim.status !== "Draft" && !openAllStatus || claim.status == "Closed"}
                         >
                           Submitted
                         </SelectItem>
                         <SelectItem
                           value="Acknowledged"
                           disabled={
-                            claim.status !== "Submitted" && !openAllStatus
+                            claim.status !== "Submitted" && !openAllStatus || claim.status == "Closed"
                           }
                         >
                           Acknowledged
@@ -1254,6 +1275,7 @@ const ClaimsPage = () => {
                             claim.status !== "Acknowledged" &&
                             claim.status !== "Lack of Documents Operator" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Document Review Operator
@@ -1263,6 +1285,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Lack of Documents Operator" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Reupload Document Review Operator
@@ -1274,6 +1297,7 @@ const ClaimsPage = () => {
                             claim.status !==
                             "Reupload Document Review Operator" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Lack of Documents Operator
@@ -1284,6 +1308,7 @@ const ClaimsPage = () => {
                             claim.status !== "Document Review Operator" &&
                             claim.status !== "Lack of Documents Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Document Review Insurance
@@ -1293,6 +1318,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Lack of Documents Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Reupload Document Review Insurance
@@ -1304,6 +1330,7 @@ const ClaimsPage = () => {
                             claim.status !==
                             "Reupload Document Review Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Lack of Documents Insurance
@@ -1314,6 +1341,7 @@ const ClaimsPage = () => {
                             claim.status !== "Document Review" &&
                             claim.status !== "Document Review Insurance" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Claim Assessment
@@ -1323,6 +1351,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Claim Assessment" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Approved
@@ -1332,6 +1361,7 @@ const ClaimsPage = () => {
                           disabled={
                             claim.status !== "Claim Assessment" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Rejected
@@ -1339,7 +1369,7 @@ const ClaimsPage = () => {
                         <SelectItem
                           value="Paid"
                           disabled={
-                            claim.status !== "Approved" && !openAllStatus
+                            claim.status !== "Approved" && !openAllStatus || claim.status == "Closed"
                           }
                         >
                           Paid
@@ -1350,6 +1380,7 @@ const ClaimsPage = () => {
                             claim.status !== "Paid" &&
                             claim.status !== "Rejected" &&
                             !openAllStatus
+                            || claim.status == "Closed"
                           }
                         >
                           Closed

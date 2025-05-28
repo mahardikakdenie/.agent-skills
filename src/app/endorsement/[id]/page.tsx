@@ -484,19 +484,19 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                     const profile = item?.data?.profile || {};
                     const insuredProfile = item?.insured_parties?.profile || {};
 
-                    const isDifferent = (key: string) => profile[key] !== insuredProfile[key];
+                    const isDifferent = (key: string) => `${profile[key]}` !== `${insuredProfile[key]}`;
 
                     return (
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell className={isDifferent("record_mode") ? "bg-yellow-50" : ""}>
+                        <TableCell>
                           {profile.record_mode || "-"}
                         </TableCell>
-                        <TableCell className={isDifferent("tpa_member_id") ? "bg-yellow-50" : ""}>
+                        <TableCell className={`min-w-[180px]`}>
                           {profile.tpa_member_id || "-"}
                         </TableCell>
                         <TableCell className={`min-w-[180px]`}>
-                          {item?.endorsements?.number || "-"}
+                          {item?.insured_parties?.policy?.number || "-"}
                         </TableCell>
                         <TableCell className={`min-w-[230px] ${isDifferent("subsidiary") ? "bg-yellow-50" : ""}`}>
                           {profile.subsidiary || "-"}

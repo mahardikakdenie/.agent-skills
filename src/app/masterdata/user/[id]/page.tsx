@@ -255,10 +255,11 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     selectGroup();
   };
 
-  const selectRole = () => {
-    groupService.getRoles(page, rowsPerPage).then((res) => {
+  const selectRole = (forPage: number = 1, forRowsPerPage: number = 10) => {
+    groupService.getRoles(forPage ? forPage : page, forRowsPerPage ? forRowsPerPage : rowsPerPage).then((res) => {
       setDataRole(res.data);
       setTotalItemsUser(res.meta.total);
+      setTotalPages(res.meta.pageTotal);
     });
   };
 
@@ -355,6 +356,16 @@ const EditUser = ({ params }: { params: { id: string } }) => {
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
     setPage(1);
+    selectRole(1, Number(e.target.value));
+  };
+
+  const handleSearch = (keyword: string) => {
+    setUserFilter(keyword);
+    fetchRole({ search: keyword }).then((res: any) => {
+      setDataRole(res.data);
+      setTotalItemsUser(res.meta.total);
+      setTotalPages(res.meta.pageTotal);
+    });
   };
 
   const handleAddSelectedRole = async () => {
@@ -1109,7 +1120,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                           type="text"
                           placeholder="Search"
                           value={userFilter}
-                          onChange={(e) => setUserFilter(e.target.value)}
+                          onChange={(e) => handleSearch(e.target.value)}
                           className="px-4 text-sm border rounded-lg h-11"
                         />
                         <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
@@ -1197,22 +1208,24 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                 of {totalItemsUser} items
                               </span>
                               <button
-                                onClick={() =>
+                                onClick={() => {
+                                  selectRole(page - 1);
                                   setPage((prevState) =>
                                     Math.max(prevState - 1, 1)
                                   )
-                                }
+                                }}
                                 disabled={page === 1}
                                 title="Prev"
                               >
                                 <ChevronLeft />
                               </button>
                               <button
-                                onClick={() =>
+                                onClick={() => {
+                                  selectRole(page + 1);
                                   setPage((prevState) =>
                                     Math.min(prevState + 1, totalPages)
                                   )
-                                }
+                                }}
                                 disabled={page === totalPages}
                                 title="Next"
                               >
