@@ -77,7 +77,7 @@ const InvoicePage = () => {
 
     const headerHtml = `
     <div id="headerText" style="padding: 60px;">
-      <div style="font-family: Arial; max-width: 800px; margin: 0 auto; color: #333;font-size:14px;">
+      <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; color: #333;font-size:14px;">
         <table style="width: 100%; border-bottom: 1px solid #eee; border-collapse: collapse;">
           <tr>
             <td style="vertical-align: top;">
@@ -95,12 +95,12 @@ const InvoicePage = () => {
 
         <table style="width: 100%; margin-top: 10px; padding: 0; border-collapse: collapse;">
           <tr>
-            <td style="vertical-align: top; width: 60%;">
+            <td style="vertical-align: top; width: 50%;">
               <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Bill To:</h2>
               <p style="color: #666; margin: 5px 0;">${d.company_name}</p>
               <p style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</p>
             </td>
-            <td style="vertical-align: top; width: 40%; text-align: right;">
+            <td style="vertical-align: top; width: 50%; text-align: right;">
               <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
               <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
                 ${type == "partner" ?
@@ -217,10 +217,10 @@ const InvoicePage = () => {
 
         html += ` 
       <tr style="font-weight: bold;">
-        <td colspan="4" style="padding: 12px; text-align: right;">Total:</td>
-        <td style="padding: 12px; text-align: right;">${formatMoney(
+        <td colspan="4" style="padding: 12px; text-align: right;"><div>Total:</div></td>
+        <td style="padding: 12px; text-align: right;"><div>${formatMoney(
           subTotal
-        )}</td>
+        )}</div></td>
       </tr> 
     </tbody>
   </table>`;
@@ -232,8 +232,8 @@ const InvoicePage = () => {
       <table width="100%">  
           <tbody>
             <tr style="font-weight: bold;">
-              <td colspan="2" style="padding: 12px; text-align: right; width: 100%">Grand Total:</td>
-              <td style="padding: 12px; text-align: right;"> ${formatMoney(grandTotal)}</td>
+              <td colspan="2" style="padding: 12px; text-align: right; width: 100%"><div>Grand Total:</div></td>
+              <td style="padding: 12px; text-align: right;"><div> ${formatMoney(grandTotal)}</div></td>
             </tr>
           </tbody>
           </table>`;
@@ -287,8 +287,8 @@ const InvoicePage = () => {
 
       html += ` 
             <tr style="font-weight: bold;">
-              <td colspan="4" style="padding: 12px; text-align: right;">Total:</td>
-              <td style="padding: 12px; text-align: right;">${formatMoney(subTotalCommision)}</td>
+              <td colspan="4" style="padding: 12px; text-align: right;"><div>Total:</div></td>
+              <td style="padding: 12px; text-align: right;"><div>${formatMoney(subTotalCommision)}</div></td>
             </tr> 
           </tbody>
         </table>`;
@@ -299,8 +299,8 @@ const InvoicePage = () => {
         <table width="100%">  
           <tbody>
             <tr style="font-weight: bold;">
-              <td colspan="3" style="padding: 12px; text-align: right; width: 100%">Grand Total:</td>
-              <td style="padding: 12px; text-align: right;"> ${formatMoney(billing.data[0].items[0].billings.amount)}</td>
+              <td colspan="3" style="padding: 12px; text-align: right; width: 100%"><div>Grand Total:</div></td>
+              <td style="padding: 12px; text-align: right;"><div> ${formatMoney(billing.data[0].items[0].billings.amount)}</div></td>
             </tr>
           </tbody>
         </table>`;
