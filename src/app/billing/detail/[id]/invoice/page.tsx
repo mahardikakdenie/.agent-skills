@@ -96,20 +96,20 @@ const InvoicePage = () => {
         <table style="width: 100%; margin-top: 10px; padding: 0; border-collapse: collapse;">
           <tr>
             <td style="vertical-align: top; width: 50%;">
-              <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Bill To:</h2>
-              <p style="color: #666; margin: 5px 0;">${d.company_name}</p>
-              <p style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</p>
+              <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">Bill To:</div>
+              <div style="color: #666; margin: 5px 0;">${d.company_name}</div>
+              <div style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</div>
             </td>
             <td style="vertical-align: top; width: 50%; text-align: right;">
-              <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
-              <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
+              <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</div>
+              <div style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
                 ${type == "partner" ?
         (billing.data[0].billings.currency) + " " + formatMoney(d.total - d.total_commission)
         :
         (billing.data[0].items[0].billings.currency) + " " + formatMoney(d.total_commission)}
-              </p>
-              <p style="color: #777; margin: 5px 0;">Status: ${status}</p>
-              <p style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </p>
+              </div>
+              <div style="color: #777; margin: 5px 0;">Status: ${status}</div>
+              <div style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </div>
             </td>
           </tr>
         </table> 
@@ -122,7 +122,7 @@ const InvoicePage = () => {
     <div style="page-break-before: always;"></div>
     <div style="margin-top: 0px; padding-top: 16px; border-top: 1px solid #eee;">
         <div style="color: #666;">
-          <p style="font-weight: 600; font-size:16px; margin-bottom: 8px;">Payment Details:</p>
+          <p style="font-weight: bold; font-size:16px; margin-bottom: 8px;">Payment Details:</p>
           <p style="margin: 5px 0;">Bank: Bank Central Asia (BCA)</p>
           <p style="margin: 5px 0;">Account Number: 123-456-789</p>
           <p style="margin: 5px 0;">Account Name: PT Friendsure Teknologi Indonesia</p>
