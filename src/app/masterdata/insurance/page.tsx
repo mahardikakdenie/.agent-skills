@@ -129,7 +129,7 @@ const InsurancePage = () => {
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
               <TableHead className="min-w-36">Category Name</TableHead>
-              <TableHead>Logo File</TableHead>
+              <TableHead className="text-center">Logo File</TableHead>
               <TableHead className="whitespace-nowrap w-36">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -140,7 +140,7 @@ const InsurancePage = () => {
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{insurance.name}</TableCell>
                   <TableCell>
-                    <div className="flex gap-3">
+                    <div className="flex justify-center gap-3">
                       <Image
                         src={insurance?.logo_url || "/images/no-image.png"}
                         alt=""
