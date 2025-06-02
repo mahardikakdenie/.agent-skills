@@ -7,26 +7,41 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Table, TableCell, TableHead, TableRow } from "@/components/ui/table";
+import Image from "next/image";
 import WithSidebar from "@/hoc/with-sidebar";
 import { formatMoney } from "@/lib/formatter";
+import { toastNotification } from "@/lib/toast";
 import { PolicyService } from "@/services/policy.service";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
 
 const DetailPolicy = ({ params }: { params: { id: string } }) => {
+  const policyService = new PolicyService();
   const router = useRouter();
+
   const [policy, setPolicy] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [submit, setSubmit] = useState(false);
 
   useEffect(() => {
-    const policyService = new PolicyService();
     if (params.id) {
       policyService.getPolicyDetail(params.id as string).then((res: any) => {
         setPolicy(res);
       });
     }
   }, [params.id]);
+
   if (!policy) {
     return (
       <div className="w-full h-full flex justify-center items-center">
@@ -40,11 +55,28 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
       case "Declaration":
         return "text-[#016DA1]";
       case "Grace Period":
-        return "text-orange-500";
+        return "text-[#CC9B36]";
       case "Expired":
         return "text-gray-400";
       default:
         return "text-[#016DA1]";
+    }
+  };
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleRenewPolicy = async () => {
+    setSubmit(true);
+    try {
+      await policyService.renewPolicy(policy.id);
+      toastNotification("Policy renewed successfully!");
+      router.push(`/policy-list`);
+    } catch (error) {
+      toastNotification("Failed to renew policy!", "error");
+    } finally {
+      setSubmit(false);
     }
   };
 
@@ -110,6 +142,14 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               </span>
             </div>
           </div>
+          {policy?.status === "Grace Period" && (
+            <Button
+              className="w-40 bg-[#F5BA41] hover:bg-[#e6a92d] text-black"
+              onClick={handleOpenDialog}
+            >
+              Renew Policy
+            </Button>
+          )}
         </div>
         <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto">
           <div className="font-bold text-base">Plan Information</div>
@@ -133,6 +173,18 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             <div>{policy?.package_data[0]?.insurance?.name || "-"}</div>
           </div>
           <div className="flex gap-2 text-sm font-medium">
+            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+              Effective Date
+            </div>
+            <div className="max-w-1 w-1">:</div>
+            <div>{policy?.start_date || "-"}</div>
+          </div>
+          <div className="flex gap-2 text-sm font-medium">
+            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Expiry Date</div>
+            <div className="max-w-1 w-1">:</div>
+            <div>{policy?.end_date || "-"}</div>
+          </div>
+          <div className="flex gap-2 text-sm font-medium">
             <div>
               <Table>
                 <TableRow>
@@ -149,6 +201,80 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+        {policy?.transaction_data?.company && (
+          <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto relative">
+            <div className="absolute lg:right-6 right-4 top-3 text-xs text-gray-500">
+              <i>
+                Last Update{" "}
+                {policy?.updated_at
+                  ? new Date(policy.updated_at).toLocaleDateString("en-GB")
+                  : "-"}
+              </i>
+            </div>
+            <div className="font-bold text-base">Insured Details</div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                Policy Number
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{policy?.number || "-"}</div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">PIC Name</div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{policy?.transaction_data?.company?.pic?.name || "-"}</div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                Phone Number
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>
+                {policy?.transaction_data?.company?.pic?.phone_number || "-"}
+              </div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">ID Number</div>
+              <div className="max-w-1 w-1">:</div>
+              <div>
+                {policy?.transaction_data?.company?.pic
+                  ?.identification_number || "-"}
+              </div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                NPWP Number
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>
+                {policy?.transaction_data?.company?.pic?.npwp_number || "-"}
+              </div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Address</div>
+              <div className="max-w-1 w-1">:</div>
+              <div>
+                {policy?.transaction_data?.company?.pic?.mailing_address || "-"}
+              </div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                Agent Name
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{policy?.transaction_data?.company?.agent?.name || "-"}</div>
+            </div>
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                Phone Number
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>
+                {policy?.transaction_data?.company?.agent?.phone_number || "-"}
+              </div>
+            </div>
+          </div>
+        )}
         {policy?.insured_parties.map((item: any) => (
           <div
             key={item.id}
@@ -162,7 +288,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
                   : "-"}
               </i>
             </div>
-            <div className="font-bold text-base">Insured Parties</div>
+            <div className="font-bold text-base">Insured Details</div>
             <div className="flex gap-2 text-sm font-medium">
               <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                 Policy Number
@@ -258,7 +384,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             )}
             {item.profile &&
               Object.keys(item.profile).map((key, i) => {
-                console.log(key);
+                // console.log(key);
                 const formattedKey = key
                   ? key
                       .replace(/_/g, " ")
@@ -280,7 +406,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               })}
             {item.other_info &&
               Object.keys(item.other_info).map((key, i) => {
-                console.log(key);
+                // console.log(key);
                 const formattedKey = key
                   ? key
                       .replace(/_/g, " ")
@@ -302,6 +428,44 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               })}
           </div>
         ))}
+        <div className="absolute top-5 right-5">
+          <Dialog open={dialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="mx-auto mb-2">
+                  <Image
+                    src={"/images/confirmation.png"}
+                    width={90}
+                    height={90}
+                    alt="Icon"
+                  />
+                </DialogTitle>
+                <DialogDescription className="text-center text-md text-black font-semibold">
+                  Do you want to proceed with renewing this policy?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="!flex !justify-center gap-2">
+                <Button
+                  disabled={submit}
+                  variant="outline"
+                  className="w-28 bg-transparent border border-[#E83F3F] hover:bg-[#E83F3F] hover:text-white text-[#E83F3F] rounded-3xl"
+                  onClick={() => {
+                    setDialogOpen(false);
+                  }}
+                >
+                  No
+                </Button>
+                <Button
+                  disabled={submit}
+                  className="w-28 bg-[#F5BA41] hover:bg-[#e6a92d] text-black rounded-3xl"
+                  onClick={handleRenewPolicy}
+                >
+                  Yes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   );
