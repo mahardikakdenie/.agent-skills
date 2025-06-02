@@ -22,7 +22,7 @@ import {
 } from "@/services/masterdata/insurance.service";
 import { hasPermission } from "@/context/auth.context";
 
-const InsuranceProduct = () => {
+const InsurancePage = () => {
   useRequireAuth();
   const path = usePathname();
   const insuranceService = new InsuranceService();
@@ -142,7 +142,7 @@ const InsuranceProduct = () => {
                   <TableCell>
                     <div className="flex gap-3">
                       <Image
-                        src={insurance.logo_url}
+                        src={insurance?.logo_url || "/images/no-image.png"}
                         alt=""
                         className="max-w-20 w-auto h-auto max-h-12"
                         height={50}
@@ -231,6 +231,5 @@ const InsuranceProduct = () => {
   );
 };
 
-const InsuranceProductWithSidebar = (params: any) =>
-  WithSidebar(InsuranceProduct)(params);
-export default InsuranceProductWithSidebar;
+const InsurancePageWithSidebar = (params: any) => WithSidebar(InsurancePage)(params);
+export default InsurancePageWithSidebar;
