@@ -49,17 +49,17 @@ export interface Insurance {
   currency: string;
   quantity: string;
   plan: {
-      id: string;
-      name: string;
+    id: string;
+    name: string;
   };
   product: {
-      id: string;
-      name: string;
+    id: string;
+    name: string;
   };
   insurance: {
-      name: string;
-      logo_url: string;
-      currencies: [];
+    name: string;
+    logo_url: string;
+    currencies: [];
   };
   original_price: number;
   discount: number;
@@ -70,6 +70,40 @@ export interface Participant {
   data: any;
   number: string;
 }
+
+interface CustomerConventional {
+  type: string;
+  name: string;
+  phone: string;
+  email: string;
+}
+
+interface Agent {
+  name: string;
+  phone_number: string;
+}
+
+interface Pic {
+  name: string;
+  phone_number: string;
+  identification_number: string;
+  npwp_number: string;
+  mailing_address: string;
+}
+
+interface CreateTransactionConventional {
+  customer: CustomerConventional;
+  package_id: string;
+  pic: Pic;
+  agent: Agent;
+  currency: string;
+  premium: number;
+  expiry_date: string;
+  effective_date: string;
+  payment_method: string;
+  participants: string[];
+}
+
 export class TransactionService {
   private httpClient: IHttpClient;
 
@@ -82,16 +116,43 @@ export class TransactionService {
     });
   }
 
+  async getCustomers(
+    page: number,
+    limit: number,
+    type?: string,
+    name?: string
+  ): Promise<any> {
+    const params = new URLSearchParams();
+
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+
+    if (type) {
+      params.append("type", type);
+    }
+    if (name) {
+      params.append("name", name);
+    }
+
+    return this.httpClient.get(`/v1/customers?${params.toString()}`);
+  }
+
   async getTransactions(
     page?: number,
     rowsPerPage?: number,
+    type?: string,
     searchData?: string,
     status?: string
   ): Promise<TransactionResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
+      type: type,
     };
+
+    if (type) {
+      params["type"] = type;
+    }
 
     if (searchData) {
       params["keyword"] = searchData;
@@ -164,15 +225,23 @@ export class TransactionService {
   ): Promise<any> {
     const params = {
       page,
-      sort: 'desc',
+      sort: "desc",
       ...(filters?.insurance && { insurance: filters.insurance }),
       ...(filters?.product && { product: filters.product }),
       ...(filters?.plan && { plan: filters.plan }),
       ...(filters?.from && { from: filters.from }),
       ...(filters?.to && { to: filters.to }),
     };
-  
+
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get<any>(`/v1/transactions/statistic-data?${queryString}`);
+    return this.httpClient.get<any>(
+      `/v1/transactions/statistic-data?${queryString}`
+    );
+  }
+
+  async createTransactionConventional(
+    data: CreateTransactionConventional
+  ): Promise<any> {
+    return this.httpClient.post("/v1/transactions/conventional", data);
   }
 }
