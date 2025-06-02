@@ -78,7 +78,7 @@ const InvoicePage = () => {
     const headerHtml = `
     <div id="headerText" style="padding: 60px;">
       <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; color: #333;font-size:14px;">
-        <table style="width: 100%; border-bottom: 1px solid #eee; padding-bottom: 20px; border-collapse: collapse;">
+        <table style="width: 100%; border-bottom: 1px solid #eee; border-collapse: collapse;">
           <tr>
             <td style="vertical-align: top;">
               <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
@@ -93,15 +93,15 @@ const InvoicePage = () => {
           </tr>
         </table>
 
-        <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+        <table style="width: 100%; margin-top: 10px; padding: 0; border-collapse: collapse;">
           <tr>
             <td style="vertical-align: top; width: 50%;">
-              <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Bill To:</h2>
+              <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Bill To:</h2>
               <p style="color: #666; margin: 5px 0;">${d.company_name}</p>
               <p style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</p>
             </td>
             <td style="vertical-align: top; width: 50%; text-align: right;">
-              <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
+              <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
               <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
                 ${type == "partner" ?
         (billing.data[0].billings.currency) + " " + formatMoney(d.total - d.total_commission)
@@ -119,9 +119,10 @@ const InvoicePage = () => {
 
 
   const footerHtml = `
-    <div style="margin-top: 0px; padding-top: 32px; border-top: 1px solid #eee;">
+    <div style="page-break-before: always;"></div>
+    <div style="margin-top: 0px; padding-top: 16px; border-top: 1px solid #eee;">
         <div style="color: #666;">
-          <h3 style="font-weight: 600; margin-bottom: 8px;">Payment Details:</h3>
+          <p style="font-weight: 600; font-size:16px; margin-bottom: 8px;">Payment Details:</p>
           <p style="margin: 5px 0;">Bank: Bank Central Asia (BCA)</p>
           <p style="margin: 5px 0;">Account Number: 123-456-789</p>
           <p style="margin: 5px 0;">Account Name: PT Friendsure Teknologi Indonesia</p>
@@ -172,7 +173,7 @@ const InvoicePage = () => {
     for (let i = 0; i < insuranceKeyList.length; i++) {
       const insurKey = insuranceKeyList[i];  // Insurance Key 
       // console.log(insurKey)
-      html += `<h3 style="font-weight: bold; margin-top:10px;">${insurKey}</h3>`;
+      html += `<div style="font-weight: bold; font-size: 16px; margin-top:10px;">${insurKey}</div>`;
 
       let productData = Object.keys(datas[insurKey]);
       for (let jx = 0; jx < productData.length; jx++) {
@@ -181,7 +182,7 @@ const InvoicePage = () => {
         html += `
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
-            <td><h4 style="font-weight: bold">${productKey}</h4></td>
+            <td><div style="font-weight: bold; font-size: 16px;">${productKey}</div></td>
             <td><div style="text-align: right;">Transaction: ${datas[insurKey][productKey].length}</div></td>
           </tr>
         </table>
@@ -247,9 +248,9 @@ const InvoicePage = () => {
 
     for (let i = 0; i < datas.length; i++) {
       html += ` 
-      <table style="width: 100%; border-collapse: collapse;">
+      <table style="width: 100%; border-collapse: collapse;margin-top:10px;">
         <tr>
-          <td><h4 style="font-weight: bold">${datas[i].items[0].details.product_name}</h4></td>
+          <td><div style="font-weight: bold; font-size: 16px;">${datas[i].items[0].details.product_name}</div></td>
           <td><div style="text-align: right;">Transaction: ${datas[i].items.length}</div></td>
         </tr>
       </table>`;
