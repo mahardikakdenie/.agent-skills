@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { HelperService } from "@/services/helper.service";
 import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
+import { PDFService } from "@/services/pdf.service";
 
 const InvoicePage = () => {
   const { getBillingById, billing } = useBilling();
@@ -37,12 +38,12 @@ const InvoicePage = () => {
   }, [billing]);
 
   const handleDownloadPDF = async () => {
-    const helperService = new HelperService();
+    const pdfService = new PDFService();
     if (!invoiceRef.current) return;
     const htmlContent = invoiceRef.current.innerHTML;
     setLoading(true);
     try {
-      const response: any = await helperService.htmlToPdf(
+      const response: any = await pdfService.htmlToPdf(
         htmlContent,
         type == "partner" ? billing.data[0].billings.billing_no : billing.data[0].items[0].billings.billing_no
       );
@@ -76,38 +77,43 @@ const InvoicePage = () => {
 
     const headerHtml = `
     <div id="headerText" style="padding: 60px;">
-    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; color: #333;font-size:14px;">
-      <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-          <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
-          <p style="color: #666; margin: 5px 0;">PT. Teman Pialang Asuransi</p>
-          <p style="color: #777; margin: 5px 0;">Jakarta, Indonesia</p>
-        </div>
-        <div style="text-align: right;">
-          <img src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png" alt="PT.Teman PIalang Asuransi" style="height: 48px; margin-bottom: 16px;margin-left: auto;" />
-          <p style="color: #666; margin: 5px 0;">Invoice #${d.billing_no}</p>
-          <p style="color: #777; margin: 5px 0;">Date: ${new Date(d.created_at).toLocaleDateString()}</p>
-        </div>
-      </div>
+      <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; color: #333;font-size:14px;">
+        <table style="width: 100%; border-bottom: 1px solid #eee; padding-bottom: 20px; border-collapse: collapse;">
+          <tr>
+            <td style="vertical-align: top;">
+              <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
+              <p style="color: #666; margin: 5px 0;">PT. Teman Pialang Asuransi</p>
+              <p style="color: #777; margin: 5px 0;">Jakarta, Indonesia</p>
+            </td>
+            <td style="vertical-align: top; text-align: right;">
+              <img src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png" alt="PT.Teman Pialang Asuransi" style="height: 48px; margin-bottom: 16px;margin-left:auto;">
+              <p style="color: #666; margin: 5px 0;">Invoice #${d.billing_no}</p>
+              <p style="color: #777; margin: 5px 0;">Date: ${new Date(d.created_at).toLocaleDateString()}</p>
+            </td>
+          </tr>
+        </table>
 
-      <div style="padding: 32px 0; display: flex; justify-content: space-between;">
-        <div style="flex: 1;">
-          <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Bill To:</h2>
-          <p style="color: #666; margin: 5px 0;">${d.company_name}</p>
-          <p style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</p>
-        </div>
-        <div style="flex: 1; text-align: right;"> 
-          <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
-          <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
-            ${type == "partner" ?
+        <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+          <tr>
+            <td style="vertical-align: top; width: 50%;">
+              <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Bill To:</h2>
+              <p style="color: #666; margin: 5px 0;">${d.company_name}</p>
+              <p style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</p>
+            </td>
+            <td style="vertical-align: top; width: 50%; text-align: right;">
+              <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</h2>
+              <p style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
+                ${type == "partner" ?
         (billing.data[0].billings.currency) + " " + formatMoney(d.total - d.total_commission)
         :
         (billing.data[0].items[0].billings.currency) + " " + formatMoney(d.total_commission)}
-          </p>
-          <p style="color: #777; margin: 5px 0;">Status: ${status}</p>
-          <p style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </p>
-        </div>
-      </div> `;
+              </p>
+              <p style="color: #777; margin: 5px 0;">Status: ${status}</p>
+              <p style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </p>
+            </td>
+          </tr>
+        </table> 
+         `;
     return headerHtml;
   }
 
@@ -166,16 +172,20 @@ const InvoicePage = () => {
     for (let i = 0; i < insuranceKeyList.length; i++) {
       const insurKey = insuranceKeyList[i];  // Insurance Key 
       // console.log(insurKey)
-      html += `<h3 class="font-bold sm:text-lg text-m sm:mt-2 mt-2">${insurKey}</h3>`;
+      html += `<h3 style="font-weight: bold; margin-top:10px;">${insurKey}</h3>`;
 
       let productData = Object.keys(datas[insurKey]);
       for (let jx = 0; jx < productData.length; jx++) {
         const productKey = productData[jx];  // Product Key 
         // console.log(productKey)   
-        html += `<div style="display: flex;justify-content: space-between">
-          <h4 style="font-weight: bold">${productKey}</h4>
-          <div >Transaction: ${datas[insurKey][productKey].length}</div>
-        </div>`;
+        html += `
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td><h4 style="font-weight: bold">${productKey}</h4></td>
+            <td><div style="text-align: right;">Transaction: ${datas[insurKey][productKey].length}</div></td>
+          </tr>
+        </table>
+        `;
         let subTotal = 0;
         let commission = 0;
         html += `  
@@ -236,10 +246,13 @@ const InvoicePage = () => {
     var html = getHeaderHtml();
 
     for (let i = 0; i < datas.length; i++) {
-      html += `<div style="display: flex;justify-content: space-between">
-        <h4 style="font-weight: bold">${datas[i].items[0].details.product_name}</h4>
-        <div >Transaction: ${datas[i].items.length}</div>
-      </div>`;
+      html += ` 
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td><h4 style="font-weight: bold">${datas[i].items[0].details.product_name}</h4></td>
+          <td><div style="text-align: right;">Transaction: ${datas[i].items.length}</div></td>
+        </tr>
+      </table>`;
 
       let subTotal = 0;
       let subTotalCommision = 0;
