@@ -25,12 +25,11 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   const isActive = (sidebar: string) => {
-    if (sidebar.endsWith('/*')) {
-      const base = sidebar.replace('/*', '');
-      return pathname.startsWith(base);
-    }
-    return pathname === sidebar;
+    const cleanSidebar = sidebar.replace('/*', '');
+    return pathname === cleanSidebar || pathname.startsWith(cleanSidebar + '/');
   };
+
+
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
