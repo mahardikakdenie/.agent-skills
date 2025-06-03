@@ -22,7 +22,7 @@ import {
 } from "@/services/masterdata/insurance.service";
 import { hasPermission } from "@/context/auth.context";
 
-const InsuranceProduct = () => {
+const InsurancePage = () => {
   useRequireAuth();
   const path = usePathname();
   const insuranceService = new InsuranceService();
@@ -129,7 +129,7 @@ const InsuranceProduct = () => {
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
               <TableHead className="min-w-36">Category Name</TableHead>
-              <TableHead>Logo File</TableHead>
+              <TableHead className="text-center">Logo File</TableHead>
               <TableHead className="whitespace-nowrap w-36">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -140,9 +140,9 @@ const InsuranceProduct = () => {
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{insurance.name}</TableCell>
                   <TableCell>
-                    <div className="flex gap-3">
+                    <div className="flex justify-center gap-3">
                       <Image
-                        src={insurance.logo_url}
+                        src={insurance?.logo_url || "/images/no-image.png"}
                         alt=""
                         className="max-w-20 w-auto h-auto max-h-12"
                         height={50}
@@ -231,6 +231,5 @@ const InsuranceProduct = () => {
   );
 };
 
-const InsuranceProductWithSidebar = (params: any) =>
-  WithSidebar(InsuranceProduct)(params);
-export default InsuranceProductWithSidebar;
+const InsurancePageWithSidebar = (params: any) => WithSidebar(InsurancePage)(params);
+export default InsurancePageWithSidebar;

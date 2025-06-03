@@ -25,7 +25,7 @@ import { useProduct } from "./hooks";
 import { MdProductService } from "@/services/masterdata/product.service";
 import { hasPermission } from "@/context/auth.context";
 
-const InsuranceProduct = () => {
+const Product = () => {
   useRequireAuth();
   const path = usePathname();
   const insuranceService = new InsuranceService();
@@ -281,6 +281,5 @@ const InsuranceProduct = () => {
   );
 };
 
-const InsuranceProductWithSidebar = (params: any) =>
-  WithSidebar(InsuranceProduct)(params);
-export default InsuranceProductWithSidebar;
+const ProductWithSidebar = (params: any) => WithSidebar(Product)(params);
+export default ProductWithSidebar;

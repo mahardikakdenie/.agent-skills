@@ -30,7 +30,14 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { PolicyService } from "@/services/policy.service";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, Upload, Search, X } from "react-feather";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Upload,
+  Search,
+  X,
+} from "react-feather";
 import { Button } from "@/components/ui/button";
 import { ChannelService } from "@/services/channel.services";
 import { DateRange } from "react-day-picker";
@@ -53,7 +60,9 @@ const PolicyPage = () => {
   const [tab, setTab] = useState("All");
   const [totalData, setTotalData] = useState(0);
   const [searchData, setSearchData] = useState("");
-  const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
+  const [searchChannel, setSearchChannel] = useState(
+    "40eee5bf-2b92-4d23-be55-f9caa9d3ea88"
+  ); //DEFAULT TEMAN
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [searchCategory, setSearchCategory] = useState("All");
   const { setLoading } = useLoading();
@@ -63,12 +72,15 @@ const PolicyPage = () => {
   useEffect(() => {
     setLoading(true);
     policyService
-      .getPolicy(page, rowsPerPage, searchData, tab == "All" ? "" : tab,
+      .getPolicy(
+        page,
+        rowsPerPage,
+        searchData,
+        tab == "All" ? "" : tab,
         searchChannel, // === "All" ? "" : searchChannel,
         searchCategory === "All" ? null : searchCategory,
         date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-        date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
-
+        date?.to ? format(date.to, "yyyy-MM-dd") : undefined
       )
       .then((res) => {
         setLoading(false);
@@ -89,12 +101,11 @@ const PolicyPage = () => {
         const channelResponse = await channelService.getChannels();
         setChannels(channelResponse.data || []);
       } catch (error) {
-        console.error('Failed to fetch channels:', error);
+        console.error("Failed to fetch channels:", error);
       }
     };
 
     fetchData();
-
   }, []);
 
   useEffect(() => {
@@ -107,13 +118,14 @@ const PolicyPage = () => {
     try {
       setLoading(true);
       const productCategoriesService = new ProductCategoriesService();
-      const categoriesResponse = await productCategoriesService.getCategoriesByChannelId(searchChannel);
+      const categoriesResponse =
+        await productCategoriesService.getCategoriesByChannelId(searchChannel);
       setCategories(categoriesResponse.data || []);
       setLoading(false);
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
+      console.error("Failed to fetch categories:", error);
     }
-  }
+  };
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
     setSearchCategory("All");
@@ -188,7 +200,6 @@ const PolicyPage = () => {
       <div className="flex flex-wrap justify-end gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Policy List</h1>
 
-
         <div className="flex gap-2 sm:w-auto w-full relative">
           <Popover>
             <PopoverTrigger asChild>
@@ -239,21 +250,18 @@ const PolicyPage = () => {
         </div>
 
         <div className="min-w-48">
-          <Select
-            value={searchChannel}
-            onValueChange={handleChannelChange}
-          >
+          <Select value={searchChannel} onValueChange={handleChannelChange}>
             <SelectTrigger className="h-10">
               <SelectValue placeholder="Channel" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 {/* <SelectItem value={'All'}>All Channel</SelectItem> */}
-                {
-                  channels.map((item, index) => (
-                    <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
-                  ))
-                }
+                {channels.map((item, index) => (
+                  <SelectItem key={index} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -269,12 +277,14 @@ const PolicyPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value={'All'} key={-1}>All Category</SelectItem>
-                {
-                  categories.map((item, index) => (
-                    <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
-                  ))
-                }
+                <SelectItem value={"All"} key={-1}>
+                  All Category
+                </SelectItem>
+                {categories.map((item, index) => (
+                  <SelectItem key={index} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -302,8 +312,9 @@ const PolicyPage = () => {
         <div className="w-full flex items-center overflow-auto">
           <div
             onClick={() => selectTab("All")}
-            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${tab === "All" && "border-b-[3px] border-primary sm:px-7 px-5"
-              }`}
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "All" && "border-b-[3px] border-primary sm:px-7 px-5"
+            }`}
           >
             <button
               className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
@@ -311,8 +322,9 @@ const PolicyPage = () => {
               All Policy
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "All" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "All" && "hidden"}`}
             >
               {totalData}
               <span
@@ -323,18 +335,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("In Force")}
-            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${tab === "In Force" && "border-b-[3px] border-primary sm:px-7 px-5"
-              }`}
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "In Force" && "border-b-[3px] border-primary sm:px-7 px-5"
+            }`}
           >
             <button
-              className={`text-sm py-5 mr-3 ${tab === "In Force" && "text-primary"
-                }`}
+              className={`text-sm py-5 mr-3 ${
+                tab === "In Force" && "text-primary"
+              }`}
             >
               In Force
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "In Force" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "In Force" && "hidden"}`}
             >
               {totalData}
               <span
@@ -345,19 +360,22 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Grace Period")}
-            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${tab === "Grace Period" &&
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "Grace Period" &&
               "border-b-[3px] border-primary sm:px-7 px-5"
-              }`}
+            }`}
           >
             <button
-              className={`text-sm py-5 mr-3 ${tab === "Grace Period" && "text-primary"
-                }`}
+              className={`text-sm py-5 mr-3 ${
+                tab === "Grace Period" && "text-primary"
+              }`}
             >
               Grace Period
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Grace Period" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Grace Period" && "hidden"}`}
             >
               {totalData}
               <span
@@ -368,18 +386,21 @@ const PolicyPage = () => {
           </div>
           <div
             onClick={() => selectTab("Expired")}
-            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${tab === "Expired" && "border-b-[3px] border-primary sm:px-7 px-5"
-              }`}
+            className={`cursor-pointer h-full flex items-center justify-center sm:px-7 px-5 ${
+              tab === "Expired" && "border-b-[3px] border-primary sm:px-7 px-5"
+            }`}
           >
             <button
-              className={`text-sm py-5 mr-3 ${tab === "Expired" && "text-primary"
-                }`}
+              className={`text-sm py-5 mr-3 ${
+                tab === "Expired" && "text-primary"
+              }`}
             >
               Expired
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "Expired" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "Expired" && "hidden"}`}
             >
               {totalData}
               <span
@@ -407,8 +428,11 @@ const PolicyPage = () => {
               <TableHead>Customer Name</TableHead>
               <TableHead>Policy Number</TableHead>
               <TableHead className="min-w-44">Plan Name</TableHead>
+              <TableHead className="whitespace-nowrap">
+                Effective Date
+              </TableHead>
+              <TableHead className="whitespace-nowrap">Expiry Date</TableHead>
               <TableHead className="whitespace-nowrap">Status</TableHead>
-              {/* <TableHead>Issued Date</TableHead> */}
               <TableHead className="whitespace-nowrap">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -430,6 +454,8 @@ const PolicyPage = () => {
                       .split("|")
                       .join(" - ") || "-"}
                   </TableCell>
+                  <TableCell>{policy?.start_date || "-"}</TableCell>
+                  <TableCell>{policy?.end_date || "-"}</TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
                     <span className={getStatusColor(policy.status)}>
                       {policy.status}
