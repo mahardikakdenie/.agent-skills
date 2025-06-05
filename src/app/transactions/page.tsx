@@ -63,6 +63,7 @@ const TransactionsPage = () => {
   const [type, setType] = useState<string>("conventional");
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [submitPaid, setSubmitPaid] = useState<boolean>(false);
 
   const types = [
     {
@@ -147,6 +148,7 @@ const TransactionsPage = () => {
   };
 
   const handleUpdateToPaid = async (id: string) => {
+    setSubmitPaid(true)
     try {
       await transactionService.updatePaymentTransaction(id, {
         payment_info: "Paid",
@@ -154,12 +156,14 @@ const TransactionsPage = () => {
       setTransactions((prevTransactions) => {
         return prevTransactions.map((transaction) =>
           transaction.id === id
-            ? { ...transaction, status: "Paid" }
+            ? { ...transaction, status: "Declaration" }
             : transaction
         );
       });
     } catch (error) {
       alert(error);
+    } finally {
+      setSubmitPaid(false);
     }
   };
 
@@ -407,7 +411,7 @@ const TransactionsPage = () => {
                         <Image
                           src={
                             transaction?.insurance?.insurance?.id?.logo_url ||
-                            ""
+                            "/images/no-image.png"
                           }
                           alt=""
                           width={100}
@@ -516,7 +520,7 @@ const TransactionsPage = () => {
                                       onClick={() =>
                                         handleUpdateToPaid(transaction.id)
                                       }
-                                      disabled={!canEdit}
+                                      disabled={!canEdit || submitPaid}
                                       className="bg-primary text-white px-4 py-2 rounded-full"
                                     >
                                       Update to Paid
