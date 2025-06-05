@@ -38,14 +38,14 @@ const InvoicePage = () => {
   }, [billing]);
 
   const handleDownloadPDF = async () => {
-    const pdfService = new PDFService();
+    const service = new HelperService();
     if (!invoiceRef.current) return;
     const htmlContent = invoiceRef.current.innerHTML;
     setLoading(true);
     try {
-      const response: any = await pdfService.htmlToPdf(
+      const response: any = await service.htmlToPdfGenerate(
         htmlContent,
-        type == "partner" ? billing.data[0].billings.billing_no : billing.data[0].items[0].billings.billing_no
+        'policies/' + (type == "partner" ? billing.data[0].billings.billing_no : billing.data[0].items[0].billings.billing_no)
       );
       window.open(response.file.url, "_blank");
     } catch (error) {
