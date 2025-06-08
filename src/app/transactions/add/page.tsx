@@ -27,6 +27,7 @@ import { Check, ChevronLeft, Edit, Plus, Trash2 } from "react-feather";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { ChannelService } from "@/services/channel.services";
 import { ProductService } from "@/services/product.services";
 import { TransactionService } from "@/services/transaction.service";
 import {
@@ -40,6 +41,7 @@ import {
 import { toastNotification } from "@/lib/toast";
 
 type RenewalForm = {
+  channel_id: string;
   agent_name?: string;
   agent_phone_number: string;
   agent_phone_number_code: string;
@@ -69,6 +71,7 @@ type RenewalForm = {
 const AddTransaction = () => {
   useRequireAuth();
 
+  const channelService = new ChannelService();
   const transactionService = new TransactionService();
   const productService = new ProductService();
 
@@ -76,6 +79,7 @@ const AddTransaction = () => {
   const [pickedPlan, setPickedPlan] = useState<any>({});
   const [pickedCustomer, setPickedCustomer] = useState<any>(null);
 
+  const [channels, setChannels] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [insurances, setInsurances] = useState<any[]>([]);
@@ -91,6 +95,7 @@ const AddTransaction = () => {
     formState: { errors, isSubmitting },
   } = useForm<RenewalForm>({
     defaultValues: {
+      channel_id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
       agent_name: "",
       agent_phone_number: "",
       agent_phone_number_code: "+62",
@@ -152,6 +157,7 @@ const AddTransaction = () => {
 
   const onSubmit = async (data: RenewalForm) => {
     const request = {
+      channel_id: data.channel_id,
       customer: {
         type: data.type,
         name: pickedCustomer.name,
@@ -257,6 +263,15 @@ const AddTransaction = () => {
     },
   ];
 
+  const fetchChannels = async () => {
+    try {
+      const res = await channelService.getChannels();
+      setChannels(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const fetchCustomers = async () => {
     try {
       const res = await transactionService.getCustomers(
@@ -312,13 +327,16 @@ const AddTransaction = () => {
   };
 
   useEffect(() => {
+    fetchChannels()
     fetchInsurances();
     fetchProductCategories();
     fetchCurrencies();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     fetchCustomers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType, searchCustomer]);
 
   useEffect(() => {
@@ -345,6 +363,7 @@ const AddTransaction = () => {
       }
       setPickedCustomer(findCustomer);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCustomer, resetField]);
 
   useEffect(() => {
@@ -356,6 +375,7 @@ const AddTransaction = () => {
         resetField("insured_premium_currency");
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedInsurance, selectedCategory, resetField]);
 
   useEffect(() => {
@@ -372,6 +392,7 @@ const AddTransaction = () => {
         clearErrors("insured_premium");
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPlan, resetField]);
 
   return (
@@ -415,6 +436,66 @@ const AddTransaction = () => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6 p-6">
+          {/* Channel */}
+          <div className="flex flex-col gap-4 pt-5 md:px-6 p-4 rounded-lg bg-white">
+            <div>
+              <h2 className="font-semibold text-[#016DA1]">
+                Channel
+              </h2>
+            </div>
+            <div className="flex gap-4">
+            <div className="w-1/2">
+                <label
+                  htmlFor="channel_id"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Product Category
+                </label>
+                <Controller
+                  name="channel_id"
+                  control={control}
+                  rules={{ required: "Channel is required" }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                      }}
+                    >
+                      <SelectTrigger
+                        className={`h-16 border border-gray-300 shadow-sm ${cn(
+                          errors.channel_id && "border-red-500"
+                        )}`}
+                      >
+                        <SelectValue placeholder="Choose channel">
+                          {field.value
+                            ? channels.find(
+                                (chn) => chn.id === field.value
+                              )?.name
+                            : "Choose channel"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {channels.map((chn) => (
+                            <SelectItem key={chn.id} value={chn.id}>
+                              {chn.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.channel_id && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.channel_id?.message?.toString()}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Policy Holder Information */}
           <div className="flex flex-col gap-4 pt-5 md:px-6 p-4 rounded-lg bg-white">
             <div>
