@@ -180,8 +180,6 @@ const CreateSourcePage = () => {
         setErrorMessage(''); // Clear previous error message
         setShowAlert(false); // Reset alert visibility
 
-        console.log("test: " + data.insurance_name);
-
         if (!data.source_name || !data.source_type || !data.source_url || !data.country) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
