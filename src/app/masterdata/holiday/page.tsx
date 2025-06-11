@@ -63,7 +63,11 @@ const HolidayPage = () => {
     (async () => {
       try {
         setLoading(true);
-        await getCalendarHoliday({ type: searchType, year: searchYear, country: searchCountry, }, page, rowsPerPage);
+        let where: any = { year: searchYear, country: searchCountry, };
+        if (searchType) {
+          where.type = searchType;
+        }
+        await getCalendarHoliday(where, page, rowsPerPage);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -88,7 +92,11 @@ const HolidayPage = () => {
         await deleteCalendar(id);
 
         if (page === 1) {
-          await getCalendarHoliday({ type: searchType, year: searchYear, country: searchCountry, }, page, rowsPerPage);
+          let where: any = { year: searchYear, country: searchCountry, };
+          if (searchType) {
+            where.type = searchType;
+          }
+          await getCalendarHoliday(where, page, rowsPerPage);
         } else {
           setPage(1);
         }
