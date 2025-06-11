@@ -5,10 +5,22 @@ import { ChevronDown } from "react-feather";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+  name: string;
+}
 
 const Header = () => {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, state } = useAuth();
+  
+  const getUserName = () => {
+    if (!state.token) return "Guest";
+    const decoded = jwtDecode<JwtPayload>(state.token);
+    return decoded.name;
+  };
+
   const handleLogout = () => {
     logout();
     router.push("/");
@@ -20,9 +32,9 @@ const Header = () => {
         <div className="ml-auto">
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center text-white gap-2 text-sm">
-              Hi, Super Admin <ChevronDown className="w-4 h-4" />
+              Hi, {getUserName()} <ChevronDown className="w-4 h-4" />
               <span className="text-[#5D5FEF] bg-white w-8 h-8 rounded-full inline-flex items-center justify-center font-semibold text-base">
-                S
+                {getUserName().charAt(0)}
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48 p-4">
