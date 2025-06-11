@@ -61,7 +61,7 @@ import {
   GroupResponse,
   GroupService,
 } from "@/services/masterdata/group.service";
-import iconCopy from "/public/images/icon-copy.svg"
+import iconCopy from "/public/images/icon-copy.svg";
 import { toastNotification } from "@/lib/toast";
 
 const passwordValidationRules = {
@@ -89,7 +89,7 @@ const validatePassword = (password: string) => {
   };
 };
 
-const EditUser = ({ params }: { params: { id: string } }) => {
+const EditUser = ({ params }: { params: { id: string; }; }) => {
   useRequireAuth();
   const router = useRouter();
   const { id } = params;
@@ -99,6 +99,8 @@ const EditUser = ({ params }: { params: { id: string } }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenUser, setIsModalOpenUser] = useState(false);
+  const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
+  const [userChannels, setUserChannels] = useState<any[]>([]);
 
   const [dataGroup, setDataGroup] = useState<any[]>([]);
   const [group, setGroup] = useState<GroupResponse[]>([]);
@@ -178,7 +180,11 @@ const EditUser = ({ params }: { params: { id: string } }) => {
 
   const onSubmit = async (data: any) => {
     try {
-      await updateUser(data, id);
+      const updatedData = {
+        ...data,
+        channels: userChannels.map(channel => channel.id)
+      };
+      await updateUser(updatedData, id);
       setUpdateSuccess(true);
     } catch (error) {
       setUpdateSuccess(false);
@@ -206,6 +212,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
           setAccountId(res.id);
           setUserGroup(res.account_groups.map((item: any) => item));
           setGroupRole(res.account_roles.map((item: any) => item));
+          setUserChannels(res.channels || []); // Add this line
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -410,6 +417,97 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  const ChannelModal = () => (
+    <Dialog open={isChannelModalOpen} onOpenChange={setIsChannelModalOpen}>
+      <DialogContent style={{ zIndex: 100 }} className="p-0 w-[1000px] max-w-full overflow-hidden">
+        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+            Select Channel
+            <DialogClose className="ml-auto">
+              <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
+                <X className="w-5 h-5" />
+              </Button>
+            </DialogClose>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="p-4">
+          <div className="grid gap-4 mb-4">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search"
+                className="px-4 text-sm border rounded-lg h-11"
+              />
+              <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
+            </div>
+          </div>
+
+          <Table className="table-claims">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="whitespace-nowrap py-2 w-14">
+                  <Input
+                    type="checkbox"
+                    className="w-4 h-4 mx-auto"
+                  />
+                </TableHead>
+                <TableHead className="py-2">Channel Name</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {channels.length > 0 ? (
+                channels.map((channel) => (
+                  <TableRow
+                    key={channel.id}
+                    className="cursor-pointer"
+                  >
+                    <TableCell align="center">
+                      <Input
+                        type="checkbox"
+                        checked={userChannels.some(uc => uc.id === channel.id)}
+                        className="w-4 h-4"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setUserChannels([...userChannels, channel]);
+                          } else {
+                            setUserChannels(userChannels.filter(uc => uc.id !== channel.id));
+                          }
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>{channel?.name || "-"}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="hover:!bg-white">
+                  <TableCell colSpan={10}>
+                    <div className="flex flex-col gap-4 items-center justify-center py-14">
+                      <Image alt="no data" src={noData} width={200} />
+                      No channels available
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+          <DialogClose asChild>
+            <Button
+              type="button"
+              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+              onClick={() => setIsChannelModalOpen(false)}
+            >
+              <Check className="w-4 h-4 mr-2" /> Save
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
   useEffect(() => {
     const currentValidations = validatePassword(password);
     setValidations(currentValidations);
@@ -420,28 +518,28 @@ const EditUser = ({ params }: { params: { id: string } }) => {
     const lowercase = "abcdefghijklmnopqrstuvwxyz";
     const numbers = "0123456789";
     const specialChars = "!@#$%^&*()_+{}[]:;<>,.?/~`-=";
-    
+
     const allChars = uppercase + lowercase + numbers + specialChars;
-    
+
     let password = "";
-    
+
     // Ensure at least one of each required character type
     password += uppercase[Math.floor(Math.random() * uppercase.length)];
     password += lowercase[Math.floor(Math.random() * lowercase.length)];
     password += numbers[Math.floor(Math.random() * numbers.length)];
     password += specialChars[Math.floor(Math.random() * specialChars.length)];
-    
+
     // Fill the rest with random characters
     for (let i = password.length; i < 8; i++) {
       password += allChars[Math.floor(Math.random() * allChars.length)];
     }
-    
+
     // Shuffle the password to ensure randomness
     return password.split("").sort(() => 0.5 - Math.random()).join("");
   };
 
   const handleGeneratePassword = () => {
-    setValue("password", generateSecurePassword())
+    setValue("password", generateSecurePassword());
   };
 
   const copyPassword = () => {
@@ -451,15 +549,16 @@ const EditUser = ({ params }: { params: { id: string } }) => {
       return;
     }
     navigator.clipboard.writeText(password).then(() => {
-      toastNotification("Password copied!", "success")
+      toastNotification("Password copied!", "success");
     }).catch(err => {
-      console.error("Failed to copy password:", err)
-      toastNotification("Failed to copy password", "error")
+      console.error("Failed to copy password:", err);
+      toastNotification("Failed to copy password", "error");
     });
-  }
+  };
 
   return (
     <div className="flex flex-col w-full">
+      <ChannelModal />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
@@ -525,9 +624,8 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                     id="name"
                     placeholder="Insert Name"
                     {...field}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-12 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
                   />
                 )}
               />
@@ -561,9 +659,8 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                     id="email"
                     placeholder="Insert Email"
                     {...field}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-12 ${errors.email ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
                   />
                 )}
               />
@@ -613,11 +710,10 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                           .replace(/(?!^)\+/g, "");
                         field.onChange(e);
                       }}
-                      className={`mt-1 block w-full h-12 ${
-                        errors.phone_number
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      } rounded-md shadow-sm`}
+                      className={`mt-1 block w-full h-12 ${errors.phone_number
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        } rounded-md shadow-sm`}
                     />
                     {errors.phone_number && (
                       <p className="text-red-500 text-xs mt-1">
@@ -798,9 +894,8 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                           field.onChange(e);
                           setPassword(e.target.value);
                         }}
-                        className={`mt-1 block w-full h-12 ${
-                          errors.password ? "border-red-500" : "border-gray-300"
-                        } rounded-md shadow-sm`}
+                        className={`mt-1 block w-full h-12 ${errors.password ? "border-red-500" : "border-gray-300"
+                          } rounded-md shadow-sm`}
                       />
                       <button
                         type="button"
@@ -808,9 +903,9 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff size={18} className="text-[#015B86]"/>
+                          <EyeOff size={18} className="text-[#015B86]" />
                         ) : (
-                          <Eye size={18} className="text-[#015B86]"/>
+                          <Eye size={18} className="text-[#015B86]" />
                         )}
                       </button>
                       <button
@@ -818,7 +913,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                         className="absolute inset-y-0 right-3 flex items-center"
                         onClick={() => copyPassword()}
                       >
-                        <Image alt="copy" src={iconCopy} width={18}/>
+                        <Image alt="copy" src={iconCopy} width={18} />
                       </button>
                     </div>
                     <div className="flex-[1]">
@@ -1033,15 +1128,15 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                           <div className="flex flex-wrap gap-2">
                             {group?.groups?.group_roles?.length > 0
                               ? group.groups.group_roles.map(
-                                  (groupRole: any) => (
-                                    <span
-                                      key={groupRole.roles?.id}
-                                      className="border border-gray-300 bg-gray-100 rounded py-1 px-2"
-                                    >
-                                      {groupRole.roles?.name || "-"}
-                                    </span>
-                                  )
+                                (groupRole: any) => (
+                                  <span
+                                    key={groupRole.roles?.id}
+                                    className="border border-gray-300 bg-gray-100 rounded py-1 px-2"
+                                  >
+                                    {groupRole.roles?.name || "-"}
+                                  </span>
                                 )
+                              )
                               : "-"}
                           </div>
                         </TableCell>
@@ -1064,7 +1159,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
             )}
           </div>
           <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center mt-6">
               <div>
                 <div className="text-primary font-bold mb-2">
                   Additional Role ({groupRole.length})
@@ -1212,7 +1307,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                   selectRole(page - 1);
                                   setPage((prevState) =>
                                     Math.max(prevState - 1, 1)
-                                  )
+                                  );
                                 }}
                                 disabled={page === 1}
                                 title="Prev"
@@ -1224,7 +1319,7 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                                   selectRole(page + 1);
                                   setPage((prevState) =>
                                     Math.min(prevState + 1, totalPages)
-                                  )
+                                  );
                                 }}
                                 disabled={page === totalPages}
                                 title="Next"
@@ -1288,10 +1383,64 @@ const EditUser = ({ params }: { params: { id: string } }) => {
                 </Table>
               </div>
             )}
+
+
           </div>
+          <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <div className="text-primary font-bold mb-2">
+                  User's Channels ({userChannels.length})
+                </div>
+                <p className="text-sm text-black/60">
+                  <i>
+                    Assigned channels for this user. These channels determine which data the user can access.
+                  </i>
+                </p>
+              </div>
+              <Button
+                color="warning"
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full w-36"
+                onClick={() => setIsChannelModalOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add Channel
+              </Button>
+            </div>
+
+            {userChannels.length > 0 && (
+              <div className="w-full bg-white rounded-lg overflow-auto">
+                <Table className="table-search-params">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap py-2">Channel</TableHead>
+                      <TableHead className="py-2"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {userChannels.map((channel) => (
+                      <TableRow key={channel.id}>
+                        <TableCell className="py-1">{channel.name || "-"}</TableCell>
+                        <TableCell className="py-1 text-center">
+                          <Button
+                            className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                            onClick={() => {
+                              setUserChannels(userChannels.filter(c => c.id !== channel.id));
+                            }}
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
+
         </div>
-      </form>
-    </div>
+      </form >
+    </div >
   );
 };
 
