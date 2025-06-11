@@ -587,7 +587,7 @@ const ClaimsPage = () => {
                 {date?.from ? (
                   date.to ? (
                     <>
-                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.from, "LLL dd, y")} -
                       {format(date.to, "LLL dd, y")}
                     </>
                   ) : (
@@ -695,7 +695,7 @@ const ClaimsPage = () => {
             <div className="flex flex-col gap-4">
               <p className="text-center text-sm">
                 Update <strong>{numberId}</strong> status <br />
-                from <strong>{statusOld}</strong> to{" "}
+                from <strong>{statusOld}</strong> to
                 <strong>{pendingStatus}</strong>
               </p>
               {pendingStatus === "Approved" && (
@@ -808,7 +808,7 @@ const ClaimsPage = () => {
                     </div>
                     <div className="w-full">
                       <p className="text-sm">
-                        Lack of Document Reasons{" "}
+                        Lack of Document Reasons
                         <span className="!text-red-500">*</span>
                       </p>
                       {finalSelectedDocuments.length > 0 && (
@@ -993,7 +993,7 @@ const ClaimsPage = () => {
                                                       handleSelectDocument()
                                                     }
                                                   >
-                                                    <Eye className="w-4 h-4" />{" "}
+                                                    <Eye className="w-4 h-4" />
                                                   </Button>
                                                 </DialogTrigger>
                                               ))}
@@ -1014,7 +1014,7 @@ const ClaimsPage = () => {
 
                                               <div className="flex flex-col px-4 pb-4">
                                                 <p className="text-sm">
-                                                  Document type:{" "}
+                                                  Document type:
                                                   {document.type.toLowerCase() ===
                                                     "fields"
                                                     ? document?.fields?.filter(
@@ -1025,7 +1025,7 @@ const ClaimsPage = () => {
                                                     : document?.name || "-"}
                                                 </p>
                                                 <p className="text-sm">
-                                                  Criteria:{" "}
+                                                  Criteria:
                                                   {document.type.toLowerCase() ===
                                                     "fields"
                                                     ? document?.fields?.filter(
@@ -1036,7 +1036,7 @@ const ClaimsPage = () => {
                                                     : document?.criteria || "-"}
                                                 </p>
                                                 <p className="text-sm">
-                                                  Definition:{" "}
+                                                  Definition:
                                                   {document.type.toLowerCase() ===
                                                     "fields"
                                                     ? document?.fields?.filter(
@@ -1061,7 +1061,7 @@ const ClaimsPage = () => {
                                                     : document
                                                       ?.pending_reason_message
                                                       ?.en || "-"}
-                                                  "{" "}
+                                                  "
                                                 </p>
                                               </div>
                                             </DialogContent>
@@ -1146,9 +1146,9 @@ const ClaimsPage = () => {
               {totalData}
             </span>
           </div>
-          {claimStatusOptions.map((status) => (
+          {claimStatusOptions.map((status, index) => (
             <div
-              key={status.id}
+              key={status.id || index}
               onClick={() => selectTab(status.status)}
               className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === status.status && "border-b-[3px] border-primary px-5"
                 }`}
@@ -1405,7 +1405,7 @@ const ClaimsPage = () => {
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

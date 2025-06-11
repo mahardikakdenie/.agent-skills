@@ -145,7 +145,6 @@ const EditPartnerComPage = () => {
 
   useEffect(() => {
     if (channelFees && channelFees.data[0]) {
-      console.log(channelFees)
       setValue("id", channelFees.data[0].id);
       setValue("channel", channelFees.data[0].channel);
       setValue("insurance", channelFees.data[0].insurance ? channelFees.data[0].insurance : "All");

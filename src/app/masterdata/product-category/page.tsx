@@ -165,7 +165,7 @@ const ProductCategory = () => {
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

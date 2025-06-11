@@ -167,7 +167,6 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
             sanctionService.getSanctionById(params.id as string)
                 .then((res) => {
                     const sanctionData: DetailsBlackListDTO = res.data[0];
-                    // console.log('Fetched Promotion Data:', promotionData);
                     setSanction(sanctionData);
                     reset({
                         country: sanctionData.country, // Update form with fetched data

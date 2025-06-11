@@ -16,12 +16,10 @@ export class HelperService {
   }
 
   async htmlToPdf(content: string, filename: string) {
-    console.log(content);
     return this.httpClientCookie.post("/v1/html2pdf", { content, filename });
   }
 
   async htmlToPdfGenerate(content: string, filename: string) {
-    console.log(content);
     return this.httpClientCookie.post("/v1/html2pdf/generate-pdf-service", { content, filename });
   }
 

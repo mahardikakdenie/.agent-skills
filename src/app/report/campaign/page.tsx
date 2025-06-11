@@ -213,10 +213,6 @@ const ReportCampaignPage = () => {
 
   const handleDownloadReport = async () => {
     try {
-      // console.log(
-      //   `Downloading report sorted by ${sortBy} and filtered by ${filterBy}`
-      // );
-
       if (
         filterBy === "insurance" &&
         selectedInsurance !== undefined &&
@@ -266,8 +262,6 @@ const ReportCampaignPage = () => {
         document.body.appendChild(link);
         link.click();
         link.remove();
-
-        console.log("Report downloaded successfully.");
       } else {
         const response: AxiosResponse<any> =
           await promotionService.getPromotionCampaignExportReport(
@@ -314,8 +308,6 @@ const ReportCampaignPage = () => {
         document.body.appendChild(link);
         link.click();
         link.remove();
-
-        console.log("Report downloaded successfully.");
       }
     } catch (error) {
       console.error("Failed to download the report:", error);

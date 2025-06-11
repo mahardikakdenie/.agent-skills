@@ -225,7 +225,6 @@ const CreatePromotionPage = () => {
     page: number,
     limit: number
   ) => {
-    // console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(
         productIds,
@@ -259,7 +258,6 @@ const CreatePromotionPage = () => {
   };
 
   const fetchInsurances = async (page: number, limit: number) => {
-    // console.log("Fetching insurances for page:", page, "with limit:", limit);
     try {
       const response = await insuranceService.getInsurances(page, limit);
       setInsurances(response);
@@ -536,7 +534,6 @@ const CreatePromotionPage = () => {
         const { data } = response;
 
         if (formData.type == "embedded") {
-          // console.log("data: " + data);
           if (data != null) {
             if (data.data?.error?.code === 409) {
               setErrorMessage(
@@ -905,7 +902,6 @@ const CreatePromotionPage = () => {
   };
 
   const handleInsurancePerPageChange = async (newInsPerPage: number) => {
-    // console.log("insPerPage: " + newInsPerPage);
     setShowInsPerPage(newInsPerPage);
     setCurrentPageIns(1);
     fetchInsurances(1, newInsPerPage);

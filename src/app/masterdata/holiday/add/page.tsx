@@ -47,7 +47,6 @@ const CreateHoliday = () => {
     const handleCreateHoliday = async (data: any) => {
         try {
             setLoading(true);
-            console.log(data)
             var res = await createCalendar({
                 ...data,
                 date: data.startdate,
