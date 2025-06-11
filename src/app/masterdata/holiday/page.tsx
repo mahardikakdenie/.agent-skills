@@ -35,11 +35,11 @@ const HolidayPage = () => {
 
   const [searchCountry, setSearchCountry] = useState("id");
   const [searchYear, setSearchYear] = useState<string>('');
-  const [searchType, setSearchType] = useState("holiday");
+  const [searchType, setSearchType] = useState("");
   // const { setLoading } = useLoading();
 
   const [types, setTypes] = useState<any[]>([
-    { name: "All Holiday Type", code: "holiday" },
+    { name: "All Holiday Type", code: "" },//code holiday
     { name: "Joint Leave", code: "Joint Leave" },
     { name: "National Holiday", code: "National Holiday" },
   ]);
