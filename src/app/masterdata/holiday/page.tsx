@@ -35,11 +35,11 @@ const HolidayPage = () => {
 
   const [searchCountry, setSearchCountry] = useState("id");
   const [searchYear, setSearchYear] = useState<string>('');
-  const [searchType, setSearchType] = useState("");
+  const [searchType, setSearchType] = useState<string | undefined>(undefined);
   // const { setLoading } = useLoading();
 
   const [types, setTypes] = useState<any[]>([
-    { name: "All Holiday Type", code: "" },//code holiday
+    { name: "All Holiday Type", code: undefined },//code holiday
     { name: "Joint Leave", code: "Joint Leave" },
     { name: "National Holiday", code: "National Holiday" },
   ]);
@@ -171,7 +171,7 @@ const HolidayPage = () => {
             onValueChange={handleTypeChange}
           >
             <SelectTrigger className="h-10">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder="" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
