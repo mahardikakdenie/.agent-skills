@@ -202,7 +202,7 @@ const EndorsementPage = () => {
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No transaction data available
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
