@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ui/ClientLayout";
 import { Toaster } from "react-hot-toast";
+import { LoadingProvider } from "@/context/loading.context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,12 +14,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
-        <Toaster />
-        <ClientLayout>{children}</ClientLayout>
+        <LoadingProvider>
+          <Toaster />
+          <ClientLayout>{children}</ClientLayout>
+        </LoadingProvider>
       </body>
     </html>
   );

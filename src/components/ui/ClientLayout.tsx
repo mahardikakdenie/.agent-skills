@@ -3,8 +3,9 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "@/context/auth.context";
-import { LoadingProvider } from "@/context/loading.context";
+import { LoadingProvider, useLoading } from "@/context/loading.context";
 import Sidebar from "@/components/ui/sidebar";
+import Loading from "./loading";
 
 function AuthChecker({ children }: { children: React.ReactNode }) {
   const { checkLogin, isAuthReady } = useAuth();
@@ -27,17 +28,28 @@ function AuthChecker({ children }: { children: React.ReactNode }) {
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
   return (
     <div className="flex">
       <LoadingProvider>
-        {pathname !== "/" && <Sidebar />}
-        <div className="w-full h-screen overflow-auto">
-          <AuthProvider>
-            <AuthChecker>{children}</AuthChecker>
-          </AuthProvider>
-        </div>
+        <LoadedContent pathname={pathname}>
+          {children}
+        </LoadedContent>
       </LoadingProvider>
     </div>
+  );
+}
+
+function LoadedContent({ children, pathname }: { children: React.ReactNode, pathname: string }) {
+  const { isLoading } = useLoading();
+  return (
+    <>
+      {pathname !== "/" && <Sidebar />}
+      {isLoading && <Loading />}
+      <div className="w-full h-screen overflow-auto">
+        <AuthProvider>
+          <AuthChecker>{children}</AuthChecker>
+        </AuthProvider>
+      </div>
+    </>
   );
 }
