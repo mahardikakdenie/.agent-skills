@@ -2,18 +2,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown } from "react-feather";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/auth.context";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
+  const router = useRouter();
   const { logout } = useAuth();
   const handleLogout = () => {
     logout();
+    router.push("/");
   };
 
   return (
@@ -27,17 +25,17 @@ const Header = () => {
                 S
               </span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-44 p-3">
+            <DropdownMenuContent className="w-48 p-4">
               <Link
                 href="/profile/change-password"
-                className="justify-center flex text-sm p-2"
+                className="justify-center flex text-sm p-2 bg-gray-300 rounded-full"
               >
                 Change Password
               </Link>
               <DropdownMenuItem
                 key="logout"
                 onClick={handleLogout}
-                className="justify-center flex bg-warning focus:bg-warning py-2 rounded-full"
+                className="justify-center flex bg-red-500 text-white focus:bg-red-600 focus:text-white mt-4 cursor-pointer py-2 rounded-full"
               >
                 Logout
               </DropdownMenuItem>
