@@ -40,6 +40,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
         setPolicy(res);
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   if (!policy) {
