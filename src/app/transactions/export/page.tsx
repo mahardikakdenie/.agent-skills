@@ -30,7 +30,7 @@ const ExportPage = () => {
         const parsedData = JSON.parse(savedData);
 
         const params = {
-          page: parsedData.page ?? 1,
+          page: 1,
           limit: 150,
           type:"conventional",
           ...(parsedData.search && { keyword: parsedData.search }),
