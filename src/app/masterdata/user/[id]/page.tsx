@@ -63,6 +63,10 @@ import {
 } from "@/services/masterdata/group.service";
 import iconCopy from "/public/images/icon-copy.svg";
 import { toastNotification } from "@/lib/toast";
+import { useAccountChannel } from "../../account-channel/hooks";
+import Spinner from "@/components/ui/spinner";
+import toast from "react-hot-toast";
+import { useLoading } from "@/context/loading.context";
 
 const passwordValidationRules = {
   required: (role: string) =>
@@ -96,11 +100,19 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const path = usePathname();
   const groupService = new GroupService();
+  const {
+    addAccountChannel,
+    removeAccountChannel,
+    getAccountChannels,
+    accountChannels,
+    loading: channelsLoading
+  } = useAccountChannel();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenUser, setIsModalOpenUser] = useState(false);
   const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
   const [userChannels, setUserChannels] = useState<any[]>([]);
+  const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
 
   const [dataGroup, setDataGroup] = useState<any[]>([]);
   const [group, setGroup] = useState<GroupResponse[]>([]);
@@ -114,12 +126,12 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   const [totalItemsUser, setTotalItemsUser] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [rowsPerPageGroup, setRowsPerPageRoles] = useState(10);
-  const [loading, setLoading] = useState(true);
+  const { setLoading } = useLoading();
   const [dataRole, setDataRole] = useState<any[]>([]);
   const [selectedRole, setSelectedRole] = useState<string[]>([]);
   const [groupRole, setGroupRole] = useState<any[]>([]);
   const [userFilter, setUserFilter] = useState("");
-  const [accoutndId, setAccountId] = useState("");
+  const [accountId, setAccountId] = useState("");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -182,7 +194,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     try {
       const updatedData = {
         ...data,
-        channels: userChannels.map(channel => channel.id)
+        channels: channels.map(channel => channel.id)
       };
       await updateUser(updatedData, id);
       setUpdateSuccess(true);
@@ -313,7 +325,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     for (let i = 0; i < selectedGroup.length; i++) {
       if (!addedIds.includes(selectedGroup[i])) {
         const response = await addAccountGroups({
-          account: accoutndId,
+          account: accountId,
           group: selectedGroup[i],
         });
 
@@ -368,11 +380,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
 
   const handleSearch = (keyword: string) => {
     setUserFilter(keyword);
-    fetchRole({ search: keyword }).then((res: any) => {
-      setDataRole(res.data);
-      setTotalItemsUser(res.meta.total);
-      setTotalPages(res.meta.pageTotal);
-    });
+    getAccountChannels(accountId);
   };
 
   const handleAddSelectedRole = async () => {
@@ -381,7 +389,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     for (let i = 0; i < selectedRole.length; i++) {
       if (!addedIds.includes(selectedRole[i])) {
         const response = await addAccountRoles({
-          account: accoutndId,
+          account: accountId,
           role: selectedRole[i],
         });
 
@@ -417,13 +425,45 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     }
   };
 
+  useEffect(() => {
+    getAccountChannels(params.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleAddSelectedChannels = async () => {
+    if (selectedChannels.length === 0) return;
+
+    try {
+      setLoading(true);
+      await addAccountChannel({ account: params.id, channel: selectedChannels[0] });
+      setSelectedChannels([]);
+      setIsChannelModalOpen(false);
+      toast.success("Channel added successfully");
+    } catch (error) {
+      console.error("Error adding channel:", error);
+      toast.error("Failed to add channel");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteSelectedChannel = async (channelId: string) => {
+    try {
+      await removeAccountChannel(params.id, channelId);
+      toast.success("Channel removed successfully");
+    } catch (error) {
+      console.error("Error removing channel:", error);
+      toast.error("Failed to remove channel");
+    }
+  };
+
   const ChannelModal = () => (
     <Dialog open={isChannelModalOpen} onOpenChange={setIsChannelModalOpen}>
-      <DialogContent style={{ zIndex: 100 }} className="p-0 w-[1000px] max-w-full overflow-hidden">
+      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
         <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
-          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center justify-between">
             Select Channel
-            <DialogClose className="ml-auto">
+            <DialogClose>
               <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
                 <X className="w-5 h-5" />
               </Button>
@@ -432,65 +472,36 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
         </DialogHeader>
 
         <div className="p-4">
-          <div className="grid gap-4 mb-4">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search"
-                className="px-4 text-sm border rounded-lg h-11"
-              />
-              <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
-            </div>
+          <div className="grid gap-4">
+            {channelsLoading ? (
+              <div className="flex justify-center items-center py-4">
+                <Spinner />
+                Loading...
+              </div>
+            ) : (
+              <Select
+                onValueChange={(value) => {
+                  const selectedChannel = accountChannels.find(channel => channel.id === value);
+                  if (selectedChannel) {
+                    setSelectedChannels([value]);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a channel" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {accountChannels.map((channel) => (
+                      <SelectItem key={channel.id} value={channel.id}>
+                        {channel.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
           </div>
-
-          <Table className="table-claims">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="whitespace-nowrap py-2 w-14">
-                  <Input
-                    type="checkbox"
-                    className="w-4 h-4 mx-auto"
-                  />
-                </TableHead>
-                <TableHead className="py-2">Channel Name</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {channels.length > 0 ? (
-                channels.map((channel) => (
-                  <TableRow
-                    key={channel.id}
-                    className="cursor-pointer"
-                  >
-                    <TableCell align="center">
-                      <Input
-                        type="checkbox"
-                        checked={userChannels.some(uc => uc.id === channel.id)}
-                        className="w-4 h-4"
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setUserChannels([...userChannels, channel]);
-                          } else {
-                            setUserChannels(userChannels.filter(uc => uc.id !== channel.id));
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>{channel?.name || "-"}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow className="hover:!bg-white">
-                  <TableCell colSpan={10}>
-                    <div className="flex flex-col gap-4 items-center justify-center py-14">
-                      <Image alt="no data" src={noData} width={200} />
-                      No channels available
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
         </div>
 
         <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
@@ -498,7 +509,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
             <Button
               type="button"
               className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-              onClick={() => setIsChannelModalOpen(false)}
+              onClick={handleAddSelectedChannels}
             >
               <Check className="w-4 h-4 mr-2" /> Save
             </Button>
@@ -1390,7 +1401,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <div className="text-primary font-bold mb-2">
-                  User's Channels ({userChannels.length})
+                  User's Channels ({channels.length})
                 </div>
                 <p className="text-sm text-black/60">
                   <i>
@@ -1407,7 +1418,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
               </Button>
             </div>
 
-            {userChannels.length > 0 && (
+            {accountChannels.length > 0 && (
               <div className="w-full bg-white rounded-lg overflow-auto">
                 <Table className="table-search-params">
                   <TableHeader>
@@ -1417,7 +1428,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {userChannels.map((channel) => (
+                    {accountChannels.map((channel) => (
                       <TableRow key={channel.id}>
                         <TableCell className="py-1">{channel.name || "-"}</TableCell>
                         <TableCell className="py-1 text-center">

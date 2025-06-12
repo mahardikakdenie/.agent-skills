@@ -176,4 +176,31 @@ export class UserService {
       throw error;
     }
   }
+
+  async addAccountChannels(data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.post("v1/account-channels", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async removeAccountChannels(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("v1/account-channels/" + id);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getAccountChannelsByAccountId(accountId: string): Promise<any> {
+    try {
+      return await this.authHttpClient.get(`/v1/account-channels/account/${accountId}`);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }
