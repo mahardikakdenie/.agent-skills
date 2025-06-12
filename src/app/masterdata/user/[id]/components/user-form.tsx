@@ -27,7 +27,7 @@ interface UserFormProps {
   handleGeneratePassword: () => void;
 }
 
-export const UserForm = forwardRef<HTMLFormElement, UserFormProps>((
+const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>((
   {
     control,
     handleSubmit,
@@ -49,6 +49,9 @@ export const UserForm = forwardRef<HTMLFormElement, UserFormProps>((
   }: UserFormProps,
   ref
 ) => {
+
+  UserFormComponent.displayName = 'UserForm';
+
   return <form ref={ref} onSubmit={handleSubmit(onSubmit)}>
     <div className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-4">
       <div>
@@ -392,3 +395,5 @@ export const UserForm = forwardRef<HTMLFormElement, UserFormProps>((
     </div>
   </form>;
 });
+
+export { UserFormComponent as UserForm };
