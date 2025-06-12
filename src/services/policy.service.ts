@@ -26,7 +26,6 @@ interface PolicyResponse {
   };
 }
 
-
 export interface PolicyData {
   id: string;
   type: string;
@@ -80,7 +79,7 @@ export class PolicyService {
     channel: string,
     category: any,
     date_from?: string,
-    date_to?: string,
+    date_to?: string
   ): Promise<PolicyResponse> {
     const params: any = {
       page: page,
@@ -121,7 +120,7 @@ export class PolicyService {
     channel: string,
     category: any,
     date_from?: string,
-    date_to?: string,
+    date_to?: string
   ): Promise<PolicyResponse> {
     const params: any = {
       page: page,
@@ -152,7 +151,6 @@ export class PolicyService {
     return this.httpClient.get(`/v1/policies?${queryString}`);
   }
 
-
   async getPolicyStatistic(
     page: number,
     rowsPerPage: number,
@@ -167,7 +165,7 @@ export class PolicyService {
     const params = {
       page,
       pageSize: rowsPerPage,
-      sort: 'desc',
+      sort: "desc",
       ...(filters?.insurance && { insurance: filters.insurance }),
       ...(filters?.product && { product: filters.product }),
       ...(filters?.plan && { plan: filters.plan }),
@@ -176,7 +174,9 @@ export class PolicyService {
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClient.get<any>(`/v1/policies/statistic-data?${queryString}`);
+    return this.httpClient.get<any>(
+      `/v1/policies/statistic-data?${queryString}`
+    );
   }
 
   async uploadPolicyDrGadget(channelId: string, formData: any): Promise<any> {
@@ -191,5 +191,9 @@ export class PolicyService {
       console.error("Request failed:", error);
       throw error;
     }
+  }
+
+  async renewPolicy(id: string): Promise<any> {
+    return this.httpClient.put(`/v1/policies/${id}/renew`, {});
   }
 }

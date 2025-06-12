@@ -38,14 +38,14 @@ const InvoicePage = () => {
   }, [billing]);
 
   const handleDownloadPDF = async () => {
-    const pdfService = new PDFService();
+    const service = new HelperService();
     if (!invoiceRef.current) return;
     const htmlContent = invoiceRef.current.innerHTML;
     setLoading(true);
     try {
-      const response: any = await pdfService.htmlToPdf(
+      const response: any = await service.htmlToPdfGenerate(
         htmlContent,
-        type == "partner" ? billing.data[0].billings.billing_no : billing.data[0].items[0].billings.billing_no
+        'policies/' + (type == "partner" ? billing.data[0].billings.billing_no : billing.data[0].items[0].billings.billing_no)
       );
       window.open(response.file.url, "_blank");
     } catch (error) {
@@ -172,13 +172,11 @@ const InvoicePage = () => {
     let grandTotal = 0;
     for (let i = 0; i < insuranceKeyList.length; i++) {
       const insurKey = insuranceKeyList[i];  // Insurance Key 
-      // console.log(insurKey)
       html += `<div style="font-weight: bold; font-size: 16px; margin-top:10px;">${insurKey}</div>`;
 
       let productData = Object.keys(datas[insurKey]);
       for (let jx = 0; jx < productData.length; jx++) {
         const productKey = productData[jx];  // Product Key 
-        // console.log(productKey)   
         html += `
         <table style="width: 100%; border-collapse: collapse;">
           <tr>

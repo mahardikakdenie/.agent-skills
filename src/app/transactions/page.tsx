@@ -15,6 +15,14 @@ import { useEffect, useState } from "react";
 import { formatMoney } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ChevronLeft,
   ChevronRight,
   Download,
@@ -52,9 +60,21 @@ const TransactionsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [transaction, setTransaction] = useState<any>(null);
   const [searchData, setSearchData] = useState("");
-
+  const [type, setType] = useState<string>("conventional");
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [submitPaid, setSubmitPaid] = useState<boolean>(false);
+
+  const types = [
+    {
+      id: "conventional",
+      name: "Conventional",
+    },
+    {
+      id: "online",
+      name: "Online",
+    },
+  ];
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -73,7 +93,13 @@ const TransactionsPage = () => {
 
   useEffect(() => {
     transactionService
-      .getTransactions(page, rowsPerPage, searchData, tab == "All" ? "" : tab)
+      .getTransactions(
+        page,
+        rowsPerPage,
+        type,
+        searchData,
+        tab == "All" ? "" : tab
+      )
       .then((res) => {
         setTransactions(res.data);
         setFilteredTransactions(res.data);
@@ -82,8 +108,8 @@ const TransactionsPage = () => {
         setTotalItems(res.total);
         setTotalData(res.total);
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, tab, searchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage, type, tab, searchData]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -122,6 +148,7 @@ const TransactionsPage = () => {
   };
 
   const handleUpdateToPaid = async (id: string) => {
+    setSubmitPaid(true)
     try {
       await transactionService.updatePaymentTransaction(id, {
         payment_info: "Paid",
@@ -129,13 +156,19 @@ const TransactionsPage = () => {
       setTransactions((prevTransactions) => {
         return prevTransactions.map((transaction) =>
           transaction.id === id
-            ? { ...transaction, status: "Paid" }
+            ? { ...transaction, status: "Declaration" }
             : transaction
         );
       });
     } catch (error) {
       alert(error);
+    } finally {
+      setSubmitPaid(false);
     }
+  };
+
+  const handleChannelChange = (v: string) => {
+    setType(v);
   };
 
   const handleSearch = _.debounce((keyword: string) => {
@@ -156,20 +189,44 @@ const TransactionsPage = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
-      <div className="flex gap-4 pb-4 items-center">
+      <div className="flex pb-4 items-center justify-between">
         <h1 className="text-black font-bold text-2xl mt-2">Transactions</h1>
-        <Button
-          onClick={() => router.push(`${path}/import`)}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
-        >
-          <Upload className="w-5 h-5 mr-1 " /> Transactions List
-        </Button>
-        <Button
-          onClick={handleExport}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
-        >
-          <Download className="w-5 h-5 mr-1 " /> Export
-        </Button>
+        <div className="flex gap-4">
+          <div className="min-w-48">
+            <Select value={type} onValueChange={handleChannelChange}>
+              <SelectTrigger className="h-10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {types.map((item, index) => (
+                    <SelectItem key={index} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            onClick={() => router.push(`${path}/add`)}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+          >
+            <Upload className="w-5 h-5 mr-2" /> Add Transaction
+          </Button>
+          <Button
+            onClick={() => router.push(`${path}/import`)}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+          >
+            <Upload className="w-5 h-5 mr-2" /> Transactions List
+          </Button>
+          <Button
+            onClick={handleExport}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+          >
+            <Download className="w-5 h-5 mr-2" /> Export
+          </Button>
+        </div>
       </div>
       <div className="block bg-white rounded-md mb-3">
         <div className="w-full flex items-center overflow-auto">
@@ -352,7 +409,10 @@ const TransactionsPage = () => {
                     <div className="flex gap-2 items-center">
                       <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
                         <Image
-                          src={transaction?.insurance?.insurance?.id?.logo_url || "-"}
+                          src={
+                            transaction?.insurance?.insurance?.id?.logo_url ||
+                            "/images/no-image.png"
+                          }
                           alt=""
                           width={100}
                           height={50}
@@ -460,7 +520,7 @@ const TransactionsPage = () => {
                                       onClick={() =>
                                         handleUpdateToPaid(transaction.id)
                                       }
-                                      disabled={!canEdit}
+                                      disabled={!canEdit || submitPaid}
                                       className="bg-primary text-white px-4 py-2 rounded-full"
                                     >
                                       Update to Paid

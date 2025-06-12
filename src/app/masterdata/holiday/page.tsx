@@ -35,11 +35,11 @@ const HolidayPage = () => {
 
   const [searchCountry, setSearchCountry] = useState("id");
   const [searchYear, setSearchYear] = useState<string>('');
-  const [searchType, setSearchType] = useState("holiday");
+  const [searchType, setSearchType] = useState<string | undefined>(undefined);
   // const { setLoading } = useLoading();
 
   const [types, setTypes] = useState<any[]>([
-    { name: "All Holiday Type", code: "holiday" },
+    { name: "All Holiday Type", code: undefined },//code holiday
     { name: "Joint Leave", code: "Joint Leave" },
     { name: "National Holiday", code: "National Holiday" },
   ]);
@@ -63,7 +63,11 @@ const HolidayPage = () => {
     (async () => {
       try {
         setLoading(true);
-        await getCalendarHoliday({ type: searchType, year: searchYear, country: searchCountry, }, page, rowsPerPage);
+        let where: any = { year: searchYear, country: searchCountry, };
+        if (searchType) {
+          where.type = searchType;
+        }
+        await getCalendarHoliday(where, page, rowsPerPage);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -88,7 +92,11 @@ const HolidayPage = () => {
         await deleteCalendar(id);
 
         if (page === 1) {
-          await getCalendarHoliday({ type: searchType, year: searchYear, country: searchCountry, }, page, rowsPerPage);
+          let where: any = { year: searchYear, country: searchCountry, };
+          if (searchType) {
+            where.type = searchType;
+          }
+          await getCalendarHoliday(where, page, rowsPerPage);
         } else {
           setPage(1);
         }
@@ -171,7 +179,7 @@ const HolidayPage = () => {
             onValueChange={handleTypeChange}
           >
             <SelectTrigger className="h-10">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder="" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>

@@ -28,7 +28,6 @@ const ExportPage = () => {
       setIsLoading(true);
       try {
         const savedData = localStorage.getItem("exportPolicyData");
-        console.log("Saved Data from LocalStorage:", savedData);
 
         if (!savedData) return;
 
@@ -42,8 +41,6 @@ const ExportPage = () => {
         const category = parsedData.category;
         const date_from = parsedData.date_from;
         const date_to = parsedData.date_to;
-
-        console.log("Parsed Data:", { page, rowsPerPage, status, searchData, channel });
 
         const res = await itemService.getPolicyExport(
           page,
