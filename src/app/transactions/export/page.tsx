@@ -32,7 +32,7 @@ const ExportPage = () => {
         const params = {
           page: 1,
           limit: 150,
-          type:"conventional",
+          type: parsedData.type,
           ...(parsedData.search && { keyword: parsedData.search }),
           ...(parsedData.status &&
             parsedData.status !== "All" && { status: parsedData.status }),

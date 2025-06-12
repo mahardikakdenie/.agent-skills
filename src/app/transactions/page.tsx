@@ -150,6 +150,7 @@ const TransactionsPage = () => {
       limit: rowsPerPage,
       status: tab === "All" ? "" : tab,
       search: searchData,
+      type: type,
     };
 
     localStorage.setItem("exportTransactionData", JSON.stringify(exportData));
