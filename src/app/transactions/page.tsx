@@ -1,48 +1,18 @@
 "use client";
-import WithSidebar from "@/hoc/with-sidebar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import useRequireAuth from "@/hooks/useRequireAuth";
-import { TransactionService } from "@/services/transaction.service";
-import { useEffect, useState } from "react";
-import { formatMoney } from "@/lib/formatter";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Search,
-  Upload,
-  X,
-} from "react-feather";
-import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drewer";
-import { hasPermission } from "@/context/auth.context";
 import _ from "lodash";
 import Image from "next/image";
+import WithSidebar from "@/hoc/with-sidebar";
+import useRequireAuth from "@/hooks/useRequireAuth";
+import { useEffect, useState } from "react";
+import { formatMoney } from "@/lib/formatter";
+import { Button } from "@/components/ui/button";
+import { hasPermission } from "@/context/auth.context";
+import { usePathname, useRouter } from "next/navigation";
+import { TransactionService } from "@/services/transaction.service";
+import { ChevronLeft, ChevronRight, Download, Search, Upload, X, } from "react-feather";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger, } from "@/components/ui/drewer";
 
 const TransactionsPage = () => {
   useRequireAuth();
@@ -58,7 +28,6 @@ const TransactionsPage = () => {
   const [tab, setTab] = useState("All");
   const [totalData, setTotalData] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [transaction, setTransaction] = useState<any>(null);
   const [searchData, setSearchData] = useState("");
   const [type, setType] = useState<string>("conventional");
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
