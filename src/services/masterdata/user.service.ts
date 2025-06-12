@@ -84,7 +84,7 @@ export class UserService {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();
       return await this.channelHttpClient.get<Channel>(
-        "v1/channels?" + queryString
+        "v1/channels?" + queryString + "&limit=1000"
       );
     } catch (error) {
       console.error("Request failed:", error);

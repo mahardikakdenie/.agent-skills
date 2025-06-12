@@ -64,9 +64,9 @@ import {
 import iconCopy from "/public/images/icon-copy.svg";
 import { toastNotification } from "@/lib/toast";
 import { useAccountChannel } from "../../account-channel/hooks";
-import Spinner from "@/components/ui/spinner";
 import toast from "react-hot-toast";
 import { useLoading } from "@/context/loading.context";
+import { ChannelModal } from "./components/add-channel-modal";
 
 const passwordValidationRules = {
   required: (role: string) =>
@@ -95,6 +95,7 @@ const validatePassword = (password: string) => {
 
 const EditUser = ({ params }: { params: { id: string; }; }) => {
   useRequireAuth();
+  const [channelToDelete, setChannelToDelete] = useState<string | null>(null);
   const router = useRouter();
   const { id } = params;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
@@ -107,6 +108,8 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     accountChannels,
     loading: channelsLoading
   } = useAccountChannel();
+
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenUser, setIsModalOpenUser] = useState(false);
@@ -447,6 +450,17 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     }
   };
 
+  const handleDeleteChannel = (channelId: string) => {
+    setChannelToDelete(channelId);
+  };
+
+  const confirmDeleteChannel = () => {
+    if (channelToDelete) {
+      handleDeleteSelectedChannel(channelToDelete);
+      setChannelToDelete(null);
+    }
+  };
+
   const handleDeleteSelectedChannel = async (channelId: string) => {
     try {
       await removeAccountChannel(params.id, channelId);
@@ -457,67 +471,6 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     }
   };
 
-  const ChannelModal = () => (
-    <Dialog open={isChannelModalOpen} onOpenChange={setIsChannelModalOpen}>
-      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
-        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
-          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center justify-between">
-            Select Channel
-            <DialogClose>
-              <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
-                <X className="w-5 h-5" />
-              </Button>
-            </DialogClose>
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="p-4">
-          <div className="grid gap-4">
-            {channelsLoading ? (
-              <div className="flex justify-center items-center py-4">
-                <Spinner />
-                Loading...
-              </div>
-            ) : (
-              <Select
-                onValueChange={(value) => {
-                  const selectedChannel = accountChannels.find(channel => channel.id === value);
-                  if (selectedChannel) {
-                    setSelectedChannels([value]);
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a channel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {accountChannels.map((channel) => (
-                      <SelectItem key={channel.id} value={channel.id}>
-                        {channel.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-        </div>
-
-        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
-          <DialogClose asChild>
-            <Button
-              type="button"
-              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-              onClick={handleAddSelectedChannels}
-            >
-              <Check className="w-4 h-4 mr-2" /> Save
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
 
   useEffect(() => {
     const currentValidations = validatePassword(password);
@@ -567,9 +520,29 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     });
   };
 
+  const channelsMapById = channels.reduce((prev, value) => {
+    const result = {
+      [value.id]: value
+    };
+
+    return {
+      ...prev,
+      ...result,
+    };
+  }, {});
+
+  console.log(channelsMapById);
   return (
     <div className="flex flex-col w-full">
-      <ChannelModal />
+      <ChannelModal
+        isChannelModalOpen={isChannelModalOpen}
+        setIsChannelModalOpen={setIsChannelModalOpen}
+        accountChannels={channels}
+        selectedChannels={selectedChannels}
+        setSelectedChannels={setSelectedChannels}
+        channelsLoading={channelsLoading}
+        handleAddSelectedChannels={handleAddSelectedChannels}
+      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white md:px-6 p-4 flex items-center">
           <div>
@@ -749,9 +722,11 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
                 rules={{ required: "Status is required" }}
                 render={({ field }) => (
                   <Select
-                    {...field}
-                    value={status}
-                    onValueChange={handleChangeStatus}
+                    value={field.value || ""}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      handleChangeStatus(value);
+                    }}
                   >
                     <SelectTrigger
                       className={`w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
@@ -787,7 +762,13 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
                 control={control}
                 rules={{ required: "Role ID is required" }}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value || ""}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setRole(value);
+                    }}
+                  >
                     <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                       <SelectValue placeholder="Select Role" />
                     </SelectTrigger>
@@ -1401,7 +1382,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <div className="text-primary font-bold mb-2">
-                  User's Channels ({channels.length})
+                  User's Channels ({accountChannels.length})
                 </div>
                 <p className="text-sm text-black/60">
                   <i>
@@ -1411,6 +1392,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
               </div>
               <Button
                 color="warning"
+                type="button"
                 className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full w-36"
                 onClick={() => setIsChannelModalOpen(true)}
               >
@@ -1418,7 +1400,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
               </Button>
             </div>
 
-            {accountChannels.length > 0 && (
+            {accountChannels.length > 0 && channels.length > 0 && (
               <div className="w-full bg-white rounded-lg overflow-auto">
                 <Table className="table-search-params">
                   <TableHeader>
@@ -1428,15 +1410,16 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {accountChannels.map((channel) => (
-                      <TableRow key={channel.id}>
-                        <TableCell className="py-1">{channel.name || "-"}</TableCell>
+                    {accountChannels.map((accountChannel) => (
+                      <TableRow key={accountChannel.id}>
+                        <TableCell className="py-1">
+                          {channelsMapById[accountChannel?.channel].name || "-"}
+                        </TableCell>
                         <TableCell className="py-1 text-center">
                           <Button
+                            type="button"
                             className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                            onClick={() => {
-                              setUserChannels(userChannels.filter(c => c.id !== channel.id));
-                            }}
+                            onClick={() => handleDeleteChannel(accountChannel.id)}
                           >
                             <Trash2 className="w-5 h-5" />
                           </Button>
@@ -1449,6 +1432,32 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
             )}
           </div>
 
+          <Dialog open={!!channelToDelete} onOpenChange={(open) => !open && setChannelToDelete(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Channel</DialogTitle>
+              </DialogHeader>
+              <div className="py-3">
+                Are you sure you want to delete this channel?
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setChannelToDelete(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  className="bg-red-500 text-white hover:bg-red-600"
+                  onClick={confirmDeleteChannel}
+                >
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </form >
     </div >

@@ -5,12 +5,12 @@ export interface AccountChannel {
   id: string;
   name: string;
   type: string;
-  channel_id?: string;
+  channel: string;
 }
 
 export const useAccountChannel = () => {
   const userService = new UserService();
-  const [accountChannels, setAccountChannels] = useState<AccountChannel[]>([]);
+  const [accountChannels, setAccountChannels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const getAccountChannels = async (accountId: string) => {
@@ -27,7 +27,7 @@ export const useAccountChannel = () => {
     }
   };
 
-  const addAccountChannel = async (data: { account: string; channel: string }) => {
+  const addAccountChannel = async (data: { account: string; channel: string; }) => {
     try {
       setLoading(true);
       const response = await userService.addAccountChannels(data);
