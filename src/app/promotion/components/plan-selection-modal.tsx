@@ -156,10 +156,6 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     const selectedPlansData: Plan[] = Array.from(localSelectedPlanIds)
       .map((planId) => data.find((plan) => plan.id === planId))
       .filter((plan): plan is Plan => Boolean(plan));
-
-    console.log(
-      "tomL: " + data.map((plan) => localSelectedPlanIds.has(plan.id))
-    );
     setGlobalSelectedPlanIds(localSelectedPlanIds);
     onClose();
     setTimeout(() => {

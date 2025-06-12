@@ -632,10 +632,6 @@ const CreateBillingPage = () => {
                       );
                   }
                   else if (type == "partner") {
-                    // console.log(
-                    //   data.insurance
-                    // )
-                    // console.log(fees)
                     fee = fees[
                       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
                     ]?.fee &&

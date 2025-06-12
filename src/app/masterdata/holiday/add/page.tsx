@@ -47,7 +47,6 @@ const CreateHoliday = () => {
     const handleCreateHoliday = async (data: any) => {
         try {
             setLoading(true);
-            console.log(data)
             var res = await createCalendar({
                 ...data,
                 date: data.startdate,
@@ -99,7 +98,7 @@ const CreateHoliday = () => {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/holiday">Holiday</BreadcrumbLink>
+                                <BreadcrumbLink href="/masterdata/holiday">Holiday</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>

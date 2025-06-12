@@ -305,7 +305,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
   const fetchInsurancesInitial = async (page: number, limit: number) => {
-    // console.log("Ins initial:", page, "with limit:", limit);
     try {
       const response = await insuranceService.getInsurances(page, limit);
       setInsurancesInitial(response);
@@ -317,7 +316,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchInsurances = async (page: number, limit: number) => {
-    // console.log("Fetching insurances for page:", page, "with limit:", limit);
     try {
       const response = await insuranceService.getInsurances(page, limit);
       setInsurances(response);
@@ -330,7 +328,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
 
   const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
-    // console.log("Fetching plans for page:", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlans(responses);
@@ -342,7 +339,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchPlansByProductsInitial = async (productIds: string[], page: number, limit: number) => {
-    // console.log("Plans initial :", page, "with limit:", limit);
     try {
       const responses = await planService.getPlansByProductId(productIds, limit, page);
       setPlansInitial(responses);
@@ -372,7 +368,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const fetchProductsByInsurancesInitial = async (insuranceIds: string[], page: number, limit: number) => {
-    // console.log("Product initial :", page, "with limit:", limit);
     try {
       const allProducts = await productService.getProductByInsuranceId(insuranceIds, limit, page);
       setProductsInitial(allProducts);
@@ -780,7 +775,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleInsurancePerPageChange = async (newInsPerPage: number) => {
-    // console.log("insPerPage: " + newInsPerPage);
     setShowInsPerPage(newInsPerPage);
     setCurrentPageIns(1);
     fetchInsurances(1, newInsPerPage);
@@ -931,7 +925,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
               usage_limit: voucher.usageLimit,
               campaign_id,
             };
-            // console.log("test" + newVoucher.usage_limit);
             await voucherService.createVoucher(newVoucher);
           } catch (voucherError) {
             console.error("Failed to create voucher:", voucherError);
