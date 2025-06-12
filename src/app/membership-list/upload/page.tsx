@@ -11,6 +11,7 @@ import { ChannelService } from "@/services/channel.services";
 import { MembershipService } from "@/services/membership.service";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { hasPermission } from "@/context/auth.context";
 
 const UploadMembership = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -19,10 +20,19 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
   const [ limit, setLimit ] = useState(100);
   const [ file, setFile ] = useState<File | null>(null);
   const [ channel, setChannel ] = useState("");
+  const [ canUploadFirstTime, setCanUploadFirstTime ] = useState(false);
+  const [ action, setAction ] = useState("Feedback");
+  const [ transaction, setTransaction ] = useState("");
+  const [ startDate, setStartDate ] = useState("");
+  const [ endDate, setEndDate ] = useState("");
+  const [ policyTerm, setPolicyTerm ] = useState("");
+  const [ insuredType, setInsuredType ] = useState("");
   const [ channels, setChannels ] = useState<any[]>([]);
   const [ xlsxData, setXlsxData ] = useState<any[]>([]);
   const [ headers, setHeaders ] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const actionOptions = ["Feedback", "First Time"];
+  const insuredTypeOptions = ["Person", "Motorcycle", "Car", "Gadget"];
   
   const channelService = new ChannelService();
   const membershipService = new MembershipService();
@@ -37,6 +47,9 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
     const fetchChannel = async () => {
       setLoading(true);
       try {
+        const hasPermissionUploadFirstTime = await hasPermission("Membership.Membership List.Create");
+        setCanUploadFirstTime(hasPermissionUploadFirstTime);
+
         const result = await channelService.getChannels(page, limit);
         setChannels(result.data);
       } catch (error) {
@@ -127,12 +140,28 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
         return newRow;
       });
   
-      const payload = {
+      const payload: any = {
         is_master_policy: true,
         data: transformedData,
       };
+
+      if (action === "First Time") {
+        delete payload.is_master_policy;
+
+        payload.transaction_id = transaction;
+        payload.channel_id = channel;
+        payload.master_policy_data = {
+          start_date: startDate,
+          end_date: endDate,
+          policy_term: policyTerm,
+          insured_type: insuredType
+        };
+      }
   
-      const response = await membershipService.uploadMembership(channel, payload);
+      let response;
+      if (action === "First Time") response = await membershipService.uploadMembershipFirstTime(payload);
+      else response = await membershipService.uploadMembership(channel, payload);
+
       const successMessage = response?.data?.message || "Data uploaded successfully!";
       alert(successMessage);
       router.push("/membership-list");
@@ -146,56 +175,166 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
   };
       
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-      <div className="flex gap-4 mb-5">
-        <h1 className="text-black font-bold text-2xl mt-2">Upload Data</h1>
-        <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4" ><ChevronLeft className="w-4 h-4" /> Back</div>
-      </div>
-      <div className="flex gap-3 items-center mb-4">
-        <Select value={channel} onValueChange={(value) => setChannel(value)}>
-          <SelectTrigger className="min-w-[180px] w-[180px] ml-auto">
-            <SelectValue placeholder="Select Channel" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {channels.map ((channel, index) => (
-                <SelectItem key={index} value={channel.id}>{channel.name}</SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-
-        <div className="w-full relative">
-          <Input ref={fileInputRef} type="file" accept=".xlsx, .xls" onChange={handleChooseFile}/>
-          <Button type="button" variant="secondary" className="rounded-full absolute right-0 top-0 bg-transparent text-red-500 px-2" onClick={handleClearFile} disabled={!file}>
-            <X className="w-5 h-5" />
-          </Button>
+      <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
+        <div className="flex gap-4 mb-5">
+          <h1 className="text-black font-bold text-2xl mt-2">Upload Data</h1>
+          <div onClick={() => router.back()}
+               className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4">
+            <ChevronLeft className="w-4 h-4"/> Back
+          </div>
         </div>
-        <Button disabled={!file || xlsxData.length > 0} className="btn-primary rounded-full px-5" onClick={handlePreview} >Preview</Button>
-        <Button disabled={xlsxData.length === 0} className="btn-primary rounded-full px-5" onClick={handleUpload} >Upload</Button>
-      </div>
+        {canUploadFirstTime && (
+            <div className="my-3">
+              <div className="flex gap-2 my-2">
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Action
+                  </label>
+                  <Select value={action} onValueChange={(value) => setAction(value)}>
+                    <SelectTrigger className="h-16">
+                      <SelectValue placeholder="Feedback"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {actionOptions.map((act, index) => (
+                            <SelectItem key={index} value={act}>{act}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      <div className="mt-5 overflow-auto">
-        <Table className="min-w-full">
-          <TableHeader>
-            <TableRow>
-              {xlsxData.length > 0 && Object.keys(xlsxData[0]).map((item, i) => (
-                <TableHead key={i} className="whitespace-nowrap">{item}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {xlsxData.length > 0 && xlsxData.map((item, i) => (
-              <TableRow key={i}>
-                {Object.keys(item).map((key, j) => (
-                  <TableCell key={j}>{item[key] !== undefined && item[key] !== null ? item[key] : ""}</TableCell>
+                {action === "First Time" && (
+                    <div className="w-1/2">
+                      <label htmlFor="transactionId" className="block text-sm font-medium text-gray-700 mb-2">
+                        Transaction Id
+                      </label>
+                      <Input
+                          type="text"
+                          id="transactionId"
+                          placeholder="Insert Transaction Id"
+                          onChange={(e) => setTransaction(e.target.value)}
+                          className="mt-1 block w-full placeholder:text-black h-16 border-gray-300 rounded-md shadow-sm"
+                      />
+                    </div>
+                )}
+              </div>
+              {
+                  action === "First Time" && (
+                      <div>
+                        <div className="flex gap-2 my-2">
+                          <div className="w-1/2">
+                            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+                              Start Date
+                            </label>
+                            <Input
+                                type="date"
+                                id="startDate"
+                                placeholder="Choose Date"
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="mt-1 block w-full h-16 border-gray-300 rounded-md shadow-sm"
+                            />
+                          </div>
+
+                          <div className="w-1/2">
+                            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
+                              End Date
+                            </label>
+                            <Input
+                                type="date"
+                                id="endDate"
+                                placeholder="Choose Date"
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="mt-1 block w-full h-16 border-gray-300 rounded-md shadow-sm"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2 my-2">
+                          <div className="w-1/2">
+                            <label htmlFor="policyTerm" className="block text-sm font-medium text-gray-700 mb-2">
+                              Policy Term
+                            </label>
+                            <Input
+                                type="text"
+                                id="policyTerm"
+                                placeholder="Insert Policy Term"
+                                onChange={(e) => setPolicyTerm(e.target.value)}
+                                className="mt-1 block w-full placeholder:text-black h-16 border-gray-300 rounded-md shadow-sm"
+                            />
+                          </div>
+
+                          <div className="w-1/2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Insured Type
+                            </label>
+                            <Select value={insuredType} onValueChange={(value) => setInsuredType(value)}>
+                              <SelectTrigger className="h-16">
+                                <SelectValue placeholder="Select Insured Type"/>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  {insuredTypeOptions.map((insuredType, index) => (
+                                      <SelectItem key={index} value={insuredType}>{insuredType}</SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                  )
+              }
+            </div>
+        )}
+        <div className="flex gap-3 items-center mb-4">
+          <Select value={channel} onValueChange={(value) => setChannel(value)}>
+            <SelectTrigger className="min-w-[180px] w-[180px] ml-auto">
+              <SelectValue placeholder="Select Channel"/>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {channels.map((channel, index) => (
+                    <SelectItem key={index} value={channel.id}>{channel.name}</SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <div className="w-full relative">
+            <Input ref={fileInputRef} type="file" accept=".xlsx, .xls" onChange={handleChooseFile}/>
+            <Button type="button" variant="secondary"
+                    className="rounded-full absolute right-0 top-0 bg-transparent text-red-500 px-2"
+                    onClick={handleClearFile} disabled={!file}>
+              <X className="w-5 h-5"/>
+            </Button>
+          </div>
+          <Button disabled={!file || xlsxData.length > 0} className="btn-primary rounded-full px-5"
+                  onClick={handlePreview}>Preview</Button>
+          <Button disabled={xlsxData.length === 0} className="btn-primary rounded-full px-5"
+                  onClick={handleUpload}>Upload</Button>
+        </div>
+
+        <div className="mt-5 overflow-auto">
+          <Table className="min-w-full">
+            <TableHeader>
+              <TableRow>
+                {xlsxData.length > 0 && Object.keys(xlsxData[0]).map((item, i) => (
+                    <TableHead key={i} className="whitespace-nowrap">{item}</TableHead>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {xlsxData.length > 0 && xlsxData.map((item, i) => (
+                  <TableRow key={i}>
+                    {Object.keys(item).map((key, j) => (
+                        <TableCell key={j}>{item[key] !== undefined && item[key] !== null ? item[key] : ""}</TableCell>
+                    ))}
+                  </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
   );
 };
 
