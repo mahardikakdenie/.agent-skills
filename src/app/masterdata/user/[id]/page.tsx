@@ -47,19 +47,24 @@ import {
 import iconCopy from "/public/images/icon-copy.svg";
 import { toastNotification } from "@/lib/toast";
 import { useAccountChannel } from "../../account-channel/hooks";
+import { useAccountInsurer } from "../../account-insurer/hooks";
 import toast from "react-hot-toast";
 import { useLoading } from "@/context/loading.context";
 import { ChannelModal } from "./components/add-channel-modal";
+import { InsurerModal } from "./components/add-insurer-modal";
 import { passwordValidationRules, validatePassword } from "./utils/password";
 import { UserGroups } from "./components/user-groups";
 import { UserRoles } from "./components/user-roles";
 import { UserChannels } from "./components/user-channels";
+import { UserInsurers } from "./components/user-insurers";
 import { UserForm } from "./components/user-form";
+import { useInsurance } from "../../insurance/hooks";
 
 
 const EditUser = ({ params }: { params: { id: string; }; }) => {
   useRequireAuth();
   const [channelToDelete, setChannelToDelete] = useState<string | null>(null);
+  const [insurerToDelete, setInsurerToDelete] = useState<string | null>(null);
   const router = useRouter();
   const { id } = params;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
@@ -72,12 +77,22 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     loading: channelsLoading
   } = useAccountChannel();
 
+  const {
+    addAccountInsurer,
+    removeAccountInsurer,
+    getAccountInsurers,
+    accountInsurers,
+    loading: insurersLoading,
+  } = useAccountInsurer();
 
+  const { fetchInsurance, insurance } = useInsurance();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenUser, setIsModalOpenUser] = useState(false);
   const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
+  const [isInsurerModalOpen, setIsInsurerModalOpen] = useState(false);
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
+  const [selectedInsurers, setSelectedInsurers] = useState<string[]>([]);
 
   const [dataGroup, setDataGroup] = useState<any[]>([]);
   const [group, setGroup] = useState<GroupResponse[]>([]);
@@ -386,6 +401,8 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
 
   useEffect(() => {
     getAccountChannels(params.id);
+    getAccountInsurers(params.id);
+    fetchInsurance({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -424,6 +441,44 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     } catch (error) {
       console.error("Error removing channel:", error);
       toast.error("Failed to remove channel");
+    }
+  };
+
+  const handleDeleteInsurer = (insurerId: string) => {
+    setInsurerToDelete(insurerId);
+  };
+
+  const confirmDeleteInsurer = () => {
+    if (insurerToDelete) {
+      handleDeleteSelectedInsurer(insurerToDelete);
+      setInsurerToDelete(null);
+    }
+  };
+
+  const handleDeleteSelectedInsurer = async (insurerId: string) => {
+    try {
+      await removeAccountInsurer(params.id, insurerId);
+      toast.success("Insurer removed successfully");
+    } catch (error) {
+      console.error("Error removing insurer:", error);
+      toast.error("Failed to remove insurer");
+    }
+  };
+
+  const handleAddSelectedInsurers = async () => {
+    if (selectedInsurers.length === 0) return;
+
+    try {
+      setLoading(true);
+      await addAccountInsurer({ account: params.id, insurance: selectedInsurers[0] });
+      setSelectedInsurers([]);
+      setIsInsurerModalOpen(false);
+      toast.success("Insurer added successfully");
+    } catch (error) {
+      console.error("Error adding insurer:", error);
+      toast.error("Failed to add insurer");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -498,6 +553,16 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
         setSelectedChannels={setSelectedChannels}
         channelsLoading={channelsLoading}
         handleAddSelectedChannels={handleAddSelectedChannels}
+      />
+      <InsurerModal
+        isInsurerModalOpen={isInsurerModalOpen}
+        setIsInsurerModalOpen={setIsInsurerModalOpen}
+        accountInsurers={accountInsurers}
+        selectedInsurers={selectedInsurers}
+        setSelectedInsurers={setSelectedInsurers}
+        insurersLoading={insurersLoading}
+        handleAddSelectedInsurers={handleAddSelectedInsurers}
+        insurers={insurance}
       />
       <div className="bg-white md:px-6 p-4 flex items-center">
         <div>
@@ -624,6 +689,13 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
           setIsChannelModalOpen={setIsChannelModalOpen}
           handleDeleteChannel={handleDeleteChannel}
         />
+        <UserInsurers
+          accountInsurers={accountInsurers}
+          insurers={insurance}
+          insurersMapById={insurance.reduce((prev, value) => ({ ...prev, [value.id]: value }), {})}
+          setIsInsurerModalOpen={setIsInsurerModalOpen}
+          handleDeleteInsurer={handleDeleteInsurer}
+        />
         <Dialog open={!!channelToDelete} onOpenChange={(open) => !open && setChannelToDelete(null)}>
           <DialogContent>
             <DialogHeader>
@@ -644,6 +716,32 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
                 type="button"
                 className="bg-red-500 text-white hover:bg-red-600"
                 onClick={confirmDeleteChannel}
+              >
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <Dialog open={!!insurerToDelete} onOpenChange={(open) => !open && setInsurerToDelete(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Insurer</DialogTitle>
+            </DialogHeader>
+            <div className="py-3">
+              Are you sure you want to delete this insurer?
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setInsurerToDelete(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500 text-white hover:bg-red-600"
+                onClick={confirmDeleteInsurer}
               >
                 Delete
               </Button>
