@@ -186,7 +186,8 @@ const TransactionsPage = () => {
           </Button>
           <Button
             onClick={() => router.push(`${path}/import`)}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+            className="bg-gray-400 rounded-full hidden"
+            disabled
           >
             <Upload className="w-5 h-5 mr-2" /> Transactions List
           </Button>
