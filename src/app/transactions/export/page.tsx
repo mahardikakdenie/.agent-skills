@@ -32,6 +32,7 @@ const ExportPage = () => {
         const params = {
           page: parsedData.page ?? 1,
           limit: 150,
+          type:"conventional",
           ...(parsedData.search && { keyword: parsedData.search }),
           ...(parsedData.status &&
             parsedData.status !== "All" && { status: parsedData.status }),
@@ -39,7 +40,7 @@ const ExportPage = () => {
 
         const res = await dataService.getTransactionsExport(params);
 
-        setData(res.data);
+        setData(res.data.filter((item: any) => item.status !== "Draft"));
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -199,27 +200,13 @@ const ExportPage = () => {
           <table style={styles.table} ref={reportTemplateRef}>
             <thead>
               <tr>
-                <td style={styles.th} valign="middle">
-                  No.
-                </td>
-                <td style={styles.th} valign="middle">
-                  Insurance Name
-                </td>
-                <td style={styles.th} valign="middle">
-                  Plan Name
-                </td>
-                <td style={styles.th} valign="middle">
-                  Customer Name
-                </td>
-                <td style={styles.th} valign="middle">
-                  Currency
-                </td>
-                <td style={styles.th} valign="middle">
-                  Amount
-                </td>
-                <td style={styles.th} valign="middle">
-                  Status
-                </td>
+                <td style={styles.th} valign="middle">No.</td>
+                <td style={styles.th} valign="middle">Insurance Name</td>
+                <td style={styles.th} valign="middle">Plan Name</td>
+                <td style={styles.th} valign="middle">Customer Name</td>
+                <td style={styles.th} valign="middle">Currency</td>
+                <td style={styles.th} valign="middle">Amount</td>
+                <td style={styles.th} valign="middle">Status</td>
               </tr>
             </thead>
             <tbody>
@@ -271,30 +258,13 @@ const ExportPage = () => {
 
                 return (
                   <tr key={item.id}>
-                    <td style={styles.td} valign="middle">
-                      {rowNumber}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.insurance?.insurance?.id?.name || "-"}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.insurance?.plan?.name
-                        .split("|")
-                        .splice(0, 2)
-                        .join(" - ") || "-"}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.customer?.name || "-"}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.insurance?.currency || "-"}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {formatMoney(totalPremium, "IDR")}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.status || "-"}
-                    </td>
+                    <td style={styles.td} valign="middle">{rowNumber}</td>
+                    <td style={styles.td} valign="middle">{item?.insurance?.insurance?.id?.name || "-"}</td>
+                    <td style={styles.td} valign="middle">{item?.insurance?.plan?.name.split("|").splice(0, 2).join(" - ") || "-"}</td>
+                    <td style={styles.td} valign="middle">{item?.customer?.name || "-"}</td>
+                    <td style={styles.td} valign="middle">{item?.insurance?.currency || "-"}</td>
+                    <td style={styles.td} valign="middle">{formatMoney(totalPremium, "IDR")}</td>
+                    <td style={styles.td} valign="middle">{item?.status || "-"}</td>
                   </tr>
                 );
               })}
