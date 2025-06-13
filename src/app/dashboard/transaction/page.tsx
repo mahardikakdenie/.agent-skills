@@ -15,6 +15,7 @@ import DetailTable from "@/components/ui/recharts/table-policy";
 import DatePickerDropdown from "@/components/ui/date-range-picker";
 import BarChartComp from "@/components/ui/recharts/barchart-horizontal";
 import WithSidebar from "@/hoc/with-sidebar";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const policyColumns = [
   { key: "created_at", label: "Create at" },
@@ -24,6 +25,7 @@ const policyColumns = [
 ];
 
 const DashboardTransaction = () => {
+    useRequireAuth();
     const [transactionStatisticData, setTransactionStatisticData] = useState<Transaction | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<string>("");
     const [productOptions, setProductOptions] = useState<any[]>([]);
