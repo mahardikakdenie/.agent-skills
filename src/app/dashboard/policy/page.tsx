@@ -14,6 +14,7 @@ import LineChart from "@/components/ui/recharts/linechart-policy";
 import DetailTable from "@/components/ui/recharts/table-policy";
 import DatePickerDropdown from "@/components/ui/date-range-picker";
 import WithSidebar from "@/hoc/with-sidebar";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const policyColumns = [
   { key: "number", label: "Number" },
@@ -23,6 +24,7 @@ const policyColumns = [
 ];
 
 const DashboardPolicy = () => {
+    useRequireAuth();
     const [ policiesStatisticData, setPoliciesStatisticData ] = useState<PolicyData | null>(null);
     const [ totalPolicies, setTotalPolicies ] = useState<number>(0);
     const [ totalPremium, setTotalPremium ] = useState<number>(0);
