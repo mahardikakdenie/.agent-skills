@@ -27,8 +27,10 @@ import { useProduct } from "../../masterdata/product/hooks";
 import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { formatMoney } from "@/lib/formatter";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const PartnerComPage = () => {
+  useRequireAuth();
   const { getChannelFees, channelFees, deleteChannelFee } = useBrokerFee();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
