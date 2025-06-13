@@ -38,8 +38,10 @@ import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { useLoading } from "@/context/loading.context";
 import { useProduct } from "../masterdata/product/hooks";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const BillingPage = () => {
+  useRequireAuth();
   const { billingList, getBilling } = useBilling();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);

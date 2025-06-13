@@ -26,8 +26,10 @@ import { useLoading } from "@/context/loading.context";
 import { useProduct } from "../../masterdata/product/hooks";
 import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const BrokerFeePage = () => {
+  useRequireAuth();
   const { getBrokerFees, brokerFees, deleteBrokerFee } = useBrokerFee();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
