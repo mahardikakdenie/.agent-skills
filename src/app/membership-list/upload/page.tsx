@@ -128,7 +128,7 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
         };
   
         const values = Object.values(row);
-        const MAX_COLUMNS = 66;
+        const MAX_COLUMNS = 67;
   
         for (let i = 0; i < MAX_COLUMNS; i++) {
           const colKey = getExcelColumnName(i);
