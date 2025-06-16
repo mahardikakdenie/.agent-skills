@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   ProductCatalogDto,
   ProductCatalogService,
@@ -34,9 +34,9 @@ import noData from "/public/images/no-data.webp";
 import Image from "next/image";
 import { hasPermission } from "@/context/auth.context";
 
-const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
+const ProductCatalogPage = () => {
   useRequireAuth();
-  const { category } = params;
+  const { category } = useParams<{ category: string }>();
   const productCatalogService = new ProductCatalogService();
   const [product, setProducts] = useState<ProductCatalogDto[]>([]);
   const [page, setPage] = useState(1);
@@ -239,58 +239,63 @@ const ProductCatalogPage = ({ params }: { params: { category: string } }) => {
           </TableHeader>
           <TableBody>
             {product.length > 0 ? (
-              product.map((product, index) => (
-                <TableRow key={product.id}>
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2 items-center">
-                      <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                        <Image
-                          src={product.products.insurances.logo_url}
-                          alt=""
-                          width={100}
-                          height={50}
-                          className="w-full h-auto"
-                        />
+              product.map((product, index) => {
+                const logoUrl = product.products.insurances.logo_url || null;
+                return (
+                  <TableRow key={product.id}>
+                    <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2 items-center">
+                        <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
+                          {logoUrl && (
+                            <Image
+                              src={logoUrl}
+                              alt=""
+                              width={100}
+                              height={50}
+                              className="w-full h-auto"
+                            />
+                          )}
+                        </div>
+                        {product.products.insurances.name}
                       </div>
-                      {product.products.insurances.name}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {product.name.split("|").map((item: any, i: any) => (
-                      <div key={i}>{item}</div>
-                    ))}
-                  </TableCell>
-                  <TableCell>{product.products.name}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-4 items-center">
-                      <Button
-                        variant="secondary"
-                        onClick={() => handleViewDetail(product.id)}
-                        className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                      >
-                        View
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleDeletePlan(product.id)}
-                        disabled={!canDelete}
-                        className="text-red-600 px-0"
-                      >
-                        <Trash />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                    </TableCell>
+                    <TableCell>
+                      {product.name.split("|").map((item: any, i: any) => (
+                        <div key={i}>{item}</div>
+                      ))}
+                    </TableCell>
+                    <TableCell>{product.products.name}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-4 items-center">
+                        <Button
+                          variant="secondary"
+                          onClick={() => handleViewDetail(product.id)}
+                          className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
+                        >
+                          View
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleDeletePlan(product.id)}
+                          disabled={!canDelete}
+                          className="text-red-600 px-0"
+                        >
+                          <Trash />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow className="hover:!bg-white">
                 <TableCell colSpan={5}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
+                    <Image alt="no data" src={noData} width={200} />
+                    <div>No transaction data available</div>
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

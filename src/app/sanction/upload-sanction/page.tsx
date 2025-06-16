@@ -168,7 +168,6 @@ const UploadSanctionPage = () => {
                 });
 
                 setCsvData(data);
-                console.log("Parsed CSV data with formatted dates, insurance IDs, and source IDs:", data);
             },
             error: (error) => {
                 console.error("Error parsing CSV:", error);
@@ -272,8 +271,6 @@ const UploadSanctionPage = () => {
                     isPhoneNumberValid
                 );
             });
-
-            console.log("csv data1: " + csvData[0].source_id + "and " + csvData[0].source_name);
 
             if (!isDataValid) {
                 setErrorMessage("Invalid data in the CSV document file.");

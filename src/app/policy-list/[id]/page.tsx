@@ -385,7 +385,6 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
             )}
             {item.profile &&
               Object.keys(item.profile).map((key, i) => {
-                // console.log(key);
                 const formattedKey = key
                   ? key
                       .replace(/_/g, " ")
@@ -407,7 +406,6 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               })}
             {item.other_info &&
               Object.keys(item.other_info).map((key, i) => {
-                // console.log(key);
                 const formattedKey = key
                   ? key
                       .replace(/_/g, " ")

@@ -20,7 +20,6 @@ import Header from "@/components/ui/header";
 
 export default function WithSidebar(Component: React.ComponentType<any>) {
   const WithSidebarWrapper = (props: any) => {
-    const { isLoading } = useLoading();
     const { logout, checkLogin } = useAuth();
     const handleLogout = () => {
       logout();
@@ -29,7 +28,6 @@ export default function WithSidebar(Component: React.ComponentType<any>) {
 
     return (
       <div className="flex h-full">
-        {isLoading && <Loading />}
         <div className="w-full relative flex flex-col h-full">
           <Header />
           <div className="flex min-w-full h-full">

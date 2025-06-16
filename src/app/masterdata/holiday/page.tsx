@@ -24,8 +24,10 @@ import { ChevronLeft, ChevronRight, DeleteIcon, EditIcon, EyeIcon, PlusIcon, Tra
 import { useLoading } from "@/context/loading.context";
 import useCalendar from "./hook";
 import { formatDate } from "@/lib/formatter";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const HolidayPage = () => {
+  useRequireAuth();
   const { getCalendarHoliday, createCalendar, updateCalendar, deleteCalendar, dataCalendar } = useCalendar();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);

@@ -15,7 +15,7 @@ import DetailTable from '@/components/ui/recharts/table-policy';
 import BarChartComp from '@/components/ui/recharts/barchart-vertical';
 import DatePickerDropdown from '@/components/ui/date-range-picker';
 import WithSidebar from '@/hoc/with-sidebar';
-
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const claimColumns = [
   { key: 'created_at', label: 'Created At' },
@@ -27,6 +27,7 @@ const claimColumns = [
 ];
 
 const DashboardClaim = () => {
+    useRequireAuth();
     const [ claimStatisticData, setClaimStatisticData ] = useState<Claim | null>(null);
     const [ totalClaimAmount, setTotalClaimAmount ] = useState<number>(0);
     const [ totalClaimAmountApproved, setTotalClaimAmountApproved ] = useState<number>(0);

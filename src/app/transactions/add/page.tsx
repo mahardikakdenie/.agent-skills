@@ -449,7 +449,7 @@ const AddTransaction = () => {
                   htmlFor="channel_id"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Product Category
+                  Channel Name
                 </label>
                 <Controller
                   name="channel_id"

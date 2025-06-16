@@ -172,13 +172,11 @@ const InvoicePage = () => {
     let grandTotal = 0;
     for (let i = 0; i < insuranceKeyList.length; i++) {
       const insurKey = insuranceKeyList[i];  // Insurance Key 
-      // console.log(insurKey)
       html += `<div style="font-weight: bold; font-size: 16px; margin-top:10px;">${insurKey}</div>`;
 
       let productData = Object.keys(datas[insurKey]);
       for (let jx = 0; jx < productData.length; jx++) {
         const productKey = productData[jx];  // Product Key 
-        // console.log(productKey)   
         html += `
         <table style="width: 100%; border-collapse: collapse;">
           <tr>

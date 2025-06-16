@@ -1,33 +1,36 @@
 "use client";
+
+import { useEffect } from "react";
+import { useParams } from "next/navigation";
 import { useProducts } from "@/app/product-catalog/hooks";
 import WithSidebar from "@/hoc/with-sidebar";
-import { useEffect } from "react";
 
-const PlanBenefit = (props: { params: { id: string } }) => {
+const PlanBenefit = () => {
+  const { id } = useParams();
   const { plan, fetchPlanById } = useProducts();
-  const { id } = props.params;
+
   useEffect(() => {
-    fetchPlanById(id);
+    if (id && typeof id === "string") {
+      fetchPlanById(id);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <h2>Plan Benefit</h2>
       <h1 className="text-primary font-bold mb-4 mt-5">
-        {plan?.name.split("|").map((item: any, i: any) => {
-          return (
-            <span key={i}>
-              {item}
-              <br />
-            </span>
-          );
-        })}
+        {plan?.name.split("|").map((item: string, i: number) => (
+          <span key={i}>
+            {item}
+            <br />
+          </span>
+        ))}
       </h1>
     </div>
   );
 };
 
-const PlanBenebitsWithSidebar = (props: { params: { id: string } }) =>
-  WithSidebar(PlanBenefit)(props);
+const PlanBenefitWithSidebar = (params: any) => WithSidebar(PlanBenefit)(params);
 
-export default PlanBenebitsWithSidebar;
+export default PlanBenefitWithSidebar;
