@@ -31,7 +31,7 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
   const [ xlsxData, setXlsxData ] = useState<any[]>([]);
   const [ headers, setHeaders ] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const actionOptions = ["Feedback", "First Time"];
+  const actionOptions = ["Feedback", "First Time", "First Time - Without Transaction"];
   const insuredTypeOptions = ["Person", "Motorcycle", "Car", "Gadget"];
   
   const channelService = new ChannelService();
@@ -145,7 +145,10 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
         data: transformedData,
       };
 
-      if (action === "First Time") {
+      if (action === "First Time - Without Transaction") {
+        delete payload.is_master_policy;
+        payload.channel_id = channel;
+      } else if (action === "First Time") {
         delete payload.is_master_policy;
 
         payload.transaction_id = transaction;
@@ -159,7 +162,8 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
       }
   
       let response;
-      if (action === "First Time") response = await membershipService.uploadMembershipFirstTime(payload);
+      if (action === "First Time - Without Transaction") response = await membershipService.uploadMembershipFirstTimeWithoutTransaction(payload);
+      else if (action === "First Time") response = await membershipService.uploadMembershipFirstTime(payload);
       else response = await membershipService.uploadMembership(channel, payload);
 
       const successMessage = response?.data?.message || "Data uploaded successfully!";
