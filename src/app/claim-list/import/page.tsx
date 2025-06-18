@@ -189,7 +189,7 @@ const ImportPage = () => {
                 ) : (
                   <>
                     <p className="text-gray-600">
-                      Drag and drop your file here, or{" "}
+                      Drag and drop your file here, or&nbsp;
                       <label className="text-[#F5BA41] cursor-pointer hover:text-[#e6a92d]">
                         browse
                         <input
