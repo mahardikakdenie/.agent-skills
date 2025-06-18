@@ -1,38 +1,19 @@
 "use client";
-import WithSidebar from "@/hoc/with-sidebar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import useRequireAuth from "@/hooks/useRequireAuth";
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import {
-  ProductCatalogDto,
-  ProductCatalogService,
-} from "@/services/product-catalog.service";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useProducts } from "../hooks";
-import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
-
-import noData from "/public/images/no-data.webp";
 import Image from "next/image";
+import WithSidebar from "@/hoc/with-sidebar";
+import noData from "/public/images/no-data.webp";
+import useRequireAuth from "@/hooks/useRequireAuth";
+import { useProducts } from "../hooks";
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
+import { useParams, useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
+import { ProductCatalogDto, ProductCatalogService, } from "@/services/product-catalog.service";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select";
+
 
 const ProductCatalogPage = () => {
   useRequireAuth();
@@ -48,7 +29,6 @@ const ProductCatalogPage = () => {
   const [searchProduct, setSearchProduct] = useState("");
   const { fetchInsurances, insurances } = useProducts();
   const { fetchProducts, products } = useProducts();
-  const [plans, setPlans] = useState<any[]>([]);
 
   const router = useRouter();
 
@@ -77,6 +57,12 @@ const ProductCatalogPage = () => {
   }, [router]);
 
   useEffect(() => {
+    if (searchPlanName || searchInsurer || searchProduct) {
+      setPage(1);
+    }
+  }, [searchPlanName, searchInsurer, searchProduct]);
+
+  useEffect(() => {
     const fetchPlans = async () => {
       try {
         const params = {
@@ -92,7 +78,6 @@ const ProductCatalogPage = () => {
 
         if (response?.data && response?.meta) {
           setProducts(response.data);
-          setPage(response.meta.page);
           setTotalPages(Math.ceil(response.meta.total / rowsPerPage));
           setTotalItems(response.meta.total);
         } else {
@@ -137,24 +122,10 @@ const ProductCatalogPage = () => {
     setSearchInsurer(v);
   };
 
-  const handleSearchProductOnChange = (v: string) => {
-    setSearchProduct(v);
-  };
-
-  const handleClearFilters = () => {
-    setSearchPlanName("");
-    setSearchInsurer("");
-    setSearchProduct("");
-    setPage(1);
-  };
-
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
     setPage(1);
   };
-
-  // const isClearButtonVisible =
-  //   searchPlanName !== "" || searchInsurer !== "" || searchProduct !== "";
 
   const handleDeletePlan = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
@@ -215,14 +186,6 @@ const ProductCatalogPage = () => {
             value={searchPlanName}
             onChange={(e) => setSearchPlanName(e.target.value)}
           />
-          {/* {isClearButtonVisible && (
-            <Button
-              onClick={handleClearFilters}
-              className="text-red-500 bg-transparent border border-red-500 hover:bg-gray-300 rounded h-[56px]"
-            >
-              Clear
-            </Button>
-          )} */}
         </div>
       </div>
 
@@ -230,7 +193,7 @@ const ProductCatalogPage = () => {
         <Table className="table-product-catalog">
           <TableHeader>
             <TableRow>
-              <TableHead className="whitespace-nowrap">No.</TableHead>
+              <TableHead className="whitespace-nowrap !max-w-16 w-16">No.</TableHead>
               <TableHead className="whitespace-nowrap">Insurer</TableHead>
               <TableHead className="min-w-44">Plan Name</TableHead>
               <TableHead className="whitespace-nowrap">Product</TableHead>
@@ -243,7 +206,7 @@ const ProductCatalogPage = () => {
                 const logoUrl = product.products.insurances.logo_url || null;
                 return (
                   <TableRow key={product.id}>
-                    <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                    <TableCell className="!max-w-16 w-16">{(page - 1) * rowsPerPage + index + 1}</TableCell>
                     <TableCell>
                       <div className="flex gap-2 items-center">
                         <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
@@ -266,7 +229,7 @@ const ProductCatalogPage = () => {
                       ))}
                     </TableCell>
                     <TableCell>{product.products.name}</TableCell>
-                    <TableCell>
+                    <TableCell className="w-20">
                       <div className="flex gap-4 items-center">
                         <Button
                           variant="secondary"
