@@ -119,10 +119,12 @@ const BillingPage = () => {
       setSearchType("partner")
     }
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setCompanyDataSource();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchType]);
 
 
@@ -154,6 +156,7 @@ const BillingPage = () => {
   useEffect(() => {
     getCategories();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchChannel]);
 
   const getCategories = async () => {

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { ClaimService } from "@/services/claim.service";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { formatMoneyClaim } from "@/lib/formatter";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -138,6 +138,12 @@ const ClaimsPage = () => {
   }, [router]);
 
   useEffect(() => {
+    if (searchData || searchSlaStatus || date || searchChannel) {
+      setPage(1);
+    }
+  }, [searchData, searchSlaStatus, date, searchChannel]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await claimService.getClaims(
@@ -151,7 +157,7 @@ const ClaimsPage = () => {
           searchChannel// === "All" ? "" : searchChannel,
         );
         setFilteredClaims(res?.data);
-        setPage(res?.page);
+        // setPage(res?.page);
         setTotalPages(res?.pageTotal);
         setTotalItems(res?.total);
         setTotalData(res?.total);

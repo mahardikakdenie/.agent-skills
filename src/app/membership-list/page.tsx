@@ -1,13 +1,17 @@
 "use client";
+import _ from "lodash";
+import Image from "next/image";
 import WithSidebar from "@/hoc/with-sidebar";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import noData from "/public/images/no-data.webp";
 import { useLoading } from "@/context/loading.context";
 import { usePathname, useRouter } from "next/navigation";
 import { ChannelService } from "@/services/channel.services";
 import { MembershipService } from "@/services/membership.service";
-import { ChevronLeft, ChevronRight, Download, Upload } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Upload, Search } from "react-feather";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -33,12 +37,18 @@ const MembershipPage = () => {
   const membershipService = new MembershipService();
 
   useEffect(() => {
+    if (channel || searchData) {
+      setPage(1);
+    }
+  }, [channel, searchData]);
+
+  useEffect(() => {
     const fetchMembership = async () => {
       try {
         const res = await membershipService.getMembership(page, rowsPerPage, searchData, tab === "All" ? "" : tab, channel);
         setMembership(res.data);
         setFilteredMembership(res.data);
-        setPage(res.page);
+        // setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
         setTotalData(res.total);
@@ -55,7 +65,7 @@ const MembershipPage = () => {
     const fetchChannel = async () => {
       setLoading(true);
       try {
-        const result = await channelService.getChannels(page, limit);
+        const result = await channelService.getChannels(1, limit);
         setChannels(result.data);
       } finally {
         setLoading(false);
@@ -64,7 +74,7 @@ const MembershipPage = () => {
   
     fetchChannel();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit]);
+  }, []);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -102,6 +112,10 @@ const MembershipPage = () => {
   const goToDetail = (id: string) => {
     router.push(`${path}/${id}`);
   };
+
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+  }, 100);
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -196,6 +210,15 @@ const MembershipPage = () => {
       </div>
 
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
+        <div className="relative w-full ml-auto mb-2">
+          <Input
+            type="text"
+            placeholder="Search by Policy Number or Member Name"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-3 rounded-md pr-10 w-full h-12"
+          />
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Table className="table-policies">
           <TableHeader>
             <TableRow>
@@ -224,35 +247,46 @@ const MembershipPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredMembership.map((item, index) => {
-              const rowNumber = (page - 1) * rowsPerPage + index + 1;
-              return (
-                <TableRow key={index}>
-                  <TableCell>{rowNumber}</TableCell>
-                  <TableCell className="min-w-[180px]">{item?.number || "-"}</TableCell>
-                  <TableCell className="min-w-[230px]">{item?.profile?.subsidiary || "-"}</TableCell>
-                  <TableCell>{item?.profile?.employee_id || "-"}</TableCell>
-                  <TableCell className="min-w-[240px]">{item?.profile?.employee_name || "-"}</TableCell>
-                  <TableCell className="min-w-[240px]">{item?.profile?.member_name || "-"}</TableCell>
-                  <TableCell className="text-center">{item?.profile?.gender || "-"}</TableCell>
-                  <TableCell>{item?.profile?.date_of_birth || "-"}</TableCell>
-                  <TableCell className="text-center">{item?.profile?.member_status || "-"}</TableCell>
-                  <TableCell>{item?.profile?.marital_status || "-"}</TableCell>
-                  <TableCell>{item?.profile?.plan || "-"}</TableCell>
-                  <TableCell>{item?.profile?.effective_date || "-"}</TableCell>
-                  <TableCell>{item?.profile?.remarks || "-"}</TableCell>
-                  <TableCell>{item?.profile?.bank_name || "-"}</TableCell>
-                  <TableCell>{item?.profile?.branch || "-"}</TableCell>
-                  <TableCell>{item?.profile?.bank_account_number || "-"}</TableCell>
-                  <TableCell className="min-w-[200px]">{item?.profile?.bank_account_name || "-"}</TableCell>
-                  <TableCell>{item?.profile?.email || "-"}</TableCell>
-                  <TableCell>{item?.other_info?.tpa_member_id || "-"}</TableCell>
-                  <TableCell>{item?.created_at ? new Date(item.created_at).toISOString().split("T")[0] : "-"}</TableCell>
-                  <TableCell className="font-semibold"><span className={getStatusColor(item?.status)}>{item?.status || "-"}</span></TableCell>
-                  <TableCell><Button onClick={() => goToDetail(item.id)} className="rounded-full">View</Button></TableCell>
-                </TableRow>
-              );
-            })}
+            {filteredMembership.length > 0 ? (
+              filteredMembership.map((item, index) => {
+                const rowNumber = (page - 1) * rowsPerPage + index + 1;
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{rowNumber}</TableCell>
+                    <TableCell className="min-w-[180px]">{item?.number || "-"}</TableCell>
+                    <TableCell className="min-w-[230px]">{item?.profile?.subsidiary || "-"}</TableCell>
+                    <TableCell>{item?.profile?.employee_id || "-"}</TableCell>
+                    <TableCell className="min-w-[240px]">{item?.profile?.employee_name || "-"}</TableCell>
+                    <TableCell className="min-w-[240px]">{item?.profile?.member_name || "-"}</TableCell>
+                    <TableCell className="text-center">{item?.profile?.gender || "-"}</TableCell>
+                    <TableCell>{item?.profile?.date_of_birth || "-"}</TableCell>
+                    <TableCell className="text-center">{item?.profile?.member_status || "-"}</TableCell>
+                    <TableCell>{item?.profile?.marital_status || "-"}</TableCell>
+                    <TableCell>{item?.profile?.plan || "-"}</TableCell>
+                    <TableCell>{item?.profile?.effective_date || "-"}</TableCell>
+                    <TableCell>{item?.profile?.remarks || "-"}</TableCell>
+                    <TableCell>{item?.profile?.bank_name || "-"}</TableCell>
+                    <TableCell>{item?.profile?.branch || "-"}</TableCell>
+                    <TableCell>{item?.profile?.bank_account_number || "-"}</TableCell>
+                    <TableCell className="min-w-[200px]">{item?.profile?.bank_account_name || "-"}</TableCell>
+                    <TableCell>{item?.profile?.email || "-"}</TableCell>
+                    <TableCell>{item?.other_info?.tpa_member_id || "-"}</TableCell>
+                    <TableCell>{item?.created_at ? new Date(item.created_at).toISOString().split("T")[0] : "-"}</TableCell>
+                    <TableCell className="font-semibold"><span className={getStatusColor(item?.status)}>{item?.status || "-"}</span></TableCell>
+                    <TableCell><Button onClick={() => goToDetail(item.id)} className="rounded-full">View</Button></TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow className="hover:!bg-white">
+                <TableCell colSpan={10}>
+                  <div className="flex flex-col gap-4 items-center justify-center py-14">
+                    <Image alt="no data" src={noData} width={200} />
+                    <div>No membership data available</div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
         
