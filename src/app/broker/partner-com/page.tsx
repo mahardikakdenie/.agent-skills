@@ -28,6 +28,7 @@ import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { formatMoney } from "@/lib/formatter";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import { set } from "lodash";
 
 const PartnerComPage = () => {
   useRequireAuth();
@@ -77,6 +78,7 @@ const PartnerComPage = () => {
 
   const handleChannelChange = (v: string) => {
     setSearchChannel(v);
+    setPage(1);
   };
 
 

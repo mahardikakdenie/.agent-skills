@@ -70,6 +70,12 @@ const PolicyPage = () => {
   const [channels, setChannels] = useState<any[]>([]);
 
   useEffect(() => {
+    if(searchData || searchChannel || searchCategory || date?.from || date?.to) {
+      setPage(1);
+    }
+  }, [searchData, searchChannel, searchCategory, date?.from, date?.to]);
+
+  useEffect(() => {
     setLoading(true);
     policyService
       .getPolicy(
@@ -77,7 +83,7 @@ const PolicyPage = () => {
         rowsPerPage,
         searchData,
         tab == "All" ? "" : tab,
-        searchChannel, // === "All" ? "" : searchChannel,
+        searchChannel,
         searchCategory === "All" ? null : searchCategory,
         date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
         date?.to ? format(date.to, "yyyy-MM-dd") : undefined
@@ -86,7 +92,6 @@ const PolicyPage = () => {
         setLoading(false);
         setPolicies(res.data);
         setFilteredTransactions(res.data);
-        setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
         setTotalData(res.total);
