@@ -2,7 +2,6 @@
 import Image from "next/image";
 import WithSidebar from "@/hoc/with-sidebar";
 import noData from "/public/images/no-data.webp";
-import useRequireAuth from "@/hooks/useRequireAuth";
 import { useProducts } from "../hooks";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
