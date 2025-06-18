@@ -23,6 +23,7 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
   const [ canUploadFirstTime, setCanUploadFirstTime ] = useState(false);
   const [ action, setAction ] = useState("Feedback");
   const [ transaction, setTransaction ] = useState("");
+  const [ chunkNumber, setChunkNumber ] = useState("");
   const [ startDate, setStartDate ] = useState("");
   const [ endDate, setEndDate ] = useState("");
   const [ policyTerm, setPolicyTerm ] = useState("");
@@ -162,9 +163,25 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
       }
   
       let response;
-      if (action === "First Time - Without Transaction") response = await membershipService.uploadMembershipFirstTimeWithoutTransaction(payload);
-      else if (action === "First Time") response = await membershipService.uploadMembershipFirstTime(payload);
-      else response = await membershipService.uploadMembership(channel, payload);
+      if (action === "First Time - Without Transaction") {
+        const chunkSize = Number(chunkNumber);
+        const fullData = payload.data;
+        const chunks = [];
+        for (let i = 0; i < fullData.length; i += chunkSize) {
+          chunks.push(fullData.slice(i, i + chunkSize));
+        }
+
+        for (const chunk of chunks) {
+          const chunkedPayload = { ...payload, data: chunk };
+          await membershipService.uploadMembershipFirstTimeWithoutTransaction(chunkedPayload);
+        }
+
+        response = null;
+      } else if (action === "First Time") {
+        response = await membershipService.uploadMembershipFirstTime(payload);
+      } else {
+        response = await membershipService.uploadMembership(channel, payload);
+      }
 
       const successMessage = response?.data?.message || "Data uploaded successfully!";
       alert(successMessage);
@@ -218,6 +235,22 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
                           id="transactionId"
                           placeholder="Insert Transaction Id"
                           onChange={(e) => setTransaction(e.target.value)}
+                          className="mt-1 block w-full placeholder:text-black h-16 border-gray-300 rounded-md shadow-sm"
+                      />
+                    </div>
+                )}
+
+                {action === "First Time - Without Transaction" && (
+                    <div className="w-1/2">
+                      <label htmlFor="transactionId" className="block text-sm font-medium text-gray-700 mb-2">
+                        Number of Chunk
+                      </label>
+                      <Input
+                          type="number"
+                          min={0}
+                          id="chunkNumber"
+                          placeholder="Insert Number of Chunk"
+                          onChange={(e) => setChunkNumber(e.target.value)}
                           className="mt-1 block w-full placeholder:text-black h-16 border-gray-300 rounded-md shadow-sm"
                       />
                     </div>
