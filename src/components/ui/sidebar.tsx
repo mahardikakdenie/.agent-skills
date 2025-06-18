@@ -77,7 +77,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/dashboard/transaction"
+                  href="/protected/dashboard/transaction"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/transaction/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -90,7 +90,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/dashboard/policy"
+                  href="/protected/dashboard/policy"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/policy/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -103,7 +103,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/dashboard/claim"
+                  href="/protected/dashboard/claim"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/claim/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -119,7 +119,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/transactions"
+                  href="/protected/transactions"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/transactions/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -139,7 +139,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/billing"
+                  href="/protected/billing"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/billing/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -156,7 +156,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/broker/broker-fee"
+                  href="/protected/broker/broker-fee"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/broker/broker-fee/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -173,7 +173,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/broker/partner-com"
+                  href="/protected/broker/partner-com"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/broker/partner-com/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -193,7 +193,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/promotion"
+                  href="/protected/promotion"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/promotion/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -213,7 +213,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/travel"
+                  href="/protected/product-catalog/travel"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/travel/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -230,7 +230,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/personal-accident"
+                  href="/protected/product-catalog/personal-accident"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/personal-accident/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -247,7 +247,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/motor-vehicle"
+                  href="/protected/product-catalog/motor-vehicle"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/motor-vehicle/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -260,7 +260,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/motor-cycle"
+                  href="/protected/product-catalog/motor-cycle"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/motor-cycle/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -273,7 +273,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/airpaz"
+                  href="/protected/product-catalog/airpaz"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/airpaz/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -290,7 +290,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/gadget"
+                  href="/protected/product-catalog/gadget"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/gadget/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -306,7 +306,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/policy-list"
+                  href="/protected/policy-list"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/policy-list/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -323,7 +323,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/endorsement"
+                  href="/protected/endorsement"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/endorsement/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -343,7 +343,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/membership-list"
+                  href="/protected/membership-list"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/membership-list")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -363,7 +363,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/claim-list"
+                  href="/protected/claim-list"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/claim-list/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -380,7 +380,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/claim-history"
+                  href="/protected/claim-history"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/claim-history/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -400,7 +400,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/product-category"
+                  href="/protected/masterdata/product-category"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/product-category/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -417,7 +417,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/insurance"
+                  href="/protected/masterdata/insurance"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/insurance/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -434,7 +434,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/product"
+                  href="/protected/masterdata/product"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/product/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -451,7 +451,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/currency"
+                  href="/protected/masterdata/currency"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/currency/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -468,7 +468,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/channels"
+                  href="/protected/masterdata/channels"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/channels/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -481,7 +481,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/user"
+                  href="/protected/masterdata/user"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/user/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -494,7 +494,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/group"
+                  href="/protected/masterdata/group"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/group/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -507,7 +507,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/roles"
+                  href="/protected/masterdata/roles"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/roles/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -520,7 +520,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/page-management"
+                  href="/protected/masterdata/page-management"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/page-management/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -533,7 +533,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/partner-management"
+                  href="/protected/masterdata/partner-management"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/partner-management/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -546,7 +546,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/email-template"
+                  href="/protected/masterdata/email-template"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/email-template/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -559,7 +559,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/email-tag"
+                  href="/protected/masterdata/email-tag"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/email-tag/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -572,7 +572,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/holiday"
+                  href="/protected/masterdata/holiday"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/holiday/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -588,7 +588,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/sanction"
+                  href="/protected/sanction"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/sanction/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -603,7 +603,7 @@ const Sidebar = () => {
                   Sanction List
                 </Link>
                 <Link
-                  href="/source"
+                  href="/protected/source"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/source/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -623,7 +623,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/report/claim"
+                  href="/protected/report/claim"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/claim/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -640,7 +640,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/report/campaign"
+                  href="/protected/report/campaign"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/campaign/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
@@ -657,7 +657,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/report/performance-report"
+                  href="/protected/report/performance-report"
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/performance-report/*")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
