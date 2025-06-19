@@ -267,7 +267,7 @@ const Users = () => {
                   type="text"
                   placeholder="Search by Name or Email"
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="border p-3 rounded-md pr-10 w-full"
+                  className="border p-3 rounded-md pr-10 w-full h-12"
               />
               <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
             </div>
