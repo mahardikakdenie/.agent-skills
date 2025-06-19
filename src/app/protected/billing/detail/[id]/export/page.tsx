@@ -19,6 +19,7 @@ import { useLoading } from "@/context/loading.context";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
+import { BILLING } from "@/constants/routes";
 
 const ExportDetailBillingPage = () => {const { getBillingById, billing, updateBilling } = useBilling();
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -56,7 +57,7 @@ const ExportDetailBillingPage = () => {const { getBillingById, billing, updateBi
 
   const router = useRouter();
   const handleBack = () => {
-    router.push("/billing");
+    router.push(BILLING);
   };
 
   const handleUpdateToPaid = async () => {
@@ -65,7 +66,7 @@ const ExportDetailBillingPage = () => {const { getBillingById, billing, updateBi
       await updateBilling(id as string, { status: "paid" });
       setLoading(false);
       alert("Billing updated to paid");
-      router.push("/billing");
+      router.push(BILLING);
     } catch (error) {
       setLoading(false);
       console.error("Request failed:", error);
@@ -83,7 +84,7 @@ const ExportDetailBillingPage = () => {const { getBillingById, billing, updateBi
       });
       alert("Billing cancelled");
       setLoading(false);
-      router.push("/billing");
+      router.push(BILLING);
     } catch (error) {
       setLoading(false);
       console.error("Request failed:", error);

@@ -22,6 +22,7 @@ import {
 import { useCurrency } from "./hooks";
 import { CurrenciesService } from "@/services/masterdata/currency.service";
 import { hasPermission } from "@/context/auth.context";
+import { CURRENCY_ADD, CURRENCY_DETAIL_WITH_INSURANCE_ID, FORBIDDEN } from "@/constants/routes";
 
 const Currency = () => {
   const path = usePathname();
@@ -54,7 +55,7 @@ const Currency = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -92,7 +93,7 @@ const Currency = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/edit?insurance-id=${id}`);
+    router.push(CURRENCY_DETAIL_WITH_INSURANCE_ID(id));
   };
 
   const handleDelete = async (id: string) => {
@@ -124,7 +125,7 @@ const Currency = () => {
           Currency
         </h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(CURRENCY_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

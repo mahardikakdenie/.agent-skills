@@ -6,6 +6,7 @@ import { AlertCircle, ChevronLeft, Download, Upload } from "react-feather";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { MembershipService } from "@/services/membership.service";
 import WithSidebar from "@/hoc/with-sidebar";
+import { MEMBERSHIP_LIST } from "@/constants/routes";
 
 const DetailMembership = ({ params }: { params: { id: string } }) => {
     const router = useRouter();
@@ -66,7 +67,7 @@ const DetailMembership = ({ params }: { params: { id: string } }) => {
           </Breadcrumb>
           <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">Detail Membership</h2>
         </div>
-        <a href="/membership-list" className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
+        <a href={MEMBERSHIP_LIST} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
           <ChevronLeft className="w-4 h-4" /> Back
         </a>
       </div>

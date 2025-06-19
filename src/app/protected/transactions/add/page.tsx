@@ -38,6 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toastNotification } from "@/lib/toast";
+import { TRANSACTIONS } from "@/constants/routes";
 
 type RenewalForm = {
   channel_id: string;
@@ -185,7 +186,7 @@ const AddTransaction = () => {
     try {
       await transactionService.createTransactionConventional(request);
       toastNotification("Transaction created successfully!");
-      router.push("/transactions");
+      router.push(TRANSACTIONS);
     } catch (error) {
       toastNotification("Failed to create transaction!", "error");
     }
@@ -399,7 +400,7 @@ const AddTransaction = () => {
           <Breadcrumb className="sm:block hidden">
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/transactions">
+                <BreadcrumbLink href={TRANSACTIONS}>
                   Transaction List
                 </BreadcrumbLink>
               </BreadcrumbItem>

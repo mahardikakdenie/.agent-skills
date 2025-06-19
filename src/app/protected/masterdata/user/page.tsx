@@ -32,6 +32,7 @@ import { hasPermission } from "@/context/auth.context";
 import { Input } from "@/components/ui/input";
 import _ from "lodash";
 import { useUser } from "./hooks";
+import { FORBIDDEN, USER_ADD, USER_DETAIL } from "@/constants/routes";
 
 const Users = () => {
   const path = usePathname();
@@ -74,7 +75,7 @@ const Users = () => {
       setCanCreate(createBtn);
       setCanToggleStatus(canToggleStatus);
       if (!accessMasterData && !accessUser) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -113,7 +114,7 @@ const Users = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(USER_DETAIL(id));
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -226,7 +227,7 @@ const Users = () => {
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(USER_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >

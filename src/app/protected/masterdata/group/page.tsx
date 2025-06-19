@@ -22,6 +22,7 @@ import {
 } from "@/services/masterdata/group.service";
 import { format } from "date-fns";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, GROUP_ADD, GROUP_DETAIL } from "@/constants/routes";
 
 const Group = () => {
   const path = usePathname();
@@ -53,7 +54,7 @@ const Group = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -88,7 +89,7 @@ const Group = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(GROUP_DETAIL(id));
   };
 
   const handleDeleteGroup = async (id: string) => {
@@ -113,7 +114,7 @@ const Group = () => {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Group</h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(GROUP_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

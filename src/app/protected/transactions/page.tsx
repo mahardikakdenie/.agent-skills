@@ -12,6 +12,7 @@ import { ChevronLeft, ChevronRight, Download, Search, Upload, X, } from "react-f
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger, } from "@/components/ui/drewer";
+import { FORBIDDEN, TRANSACTIONS_ADD, TRANSACTIONS_EXPORT, TRANSACTIONS_IMPORT } from "@/constants/routes";
 
 const TransactionsPage = () => {
   const path = usePathname();
@@ -51,7 +52,7 @@ const TransactionsPage = () => {
       setCanEdit(editBtn);
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -157,7 +158,7 @@ const TransactionsPage = () => {
     };
 
     localStorage.setItem("exportTransactionData", JSON.stringify(exportData));
-    router.push(`${path}/export`);
+    router.push(TRANSACTIONS_EXPORT);
   };
 
   return (
@@ -182,13 +183,13 @@ const TransactionsPage = () => {
             </Select>
           </div>
           <Button
-            onClick={() => router.push(`${path}/add`)}
+            onClick={() => router.push(TRANSACTIONS_ADD)}
             className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
           >
             <Upload className="w-5 h-5 mr-2" /> Add Transaction
           </Button>
           <Button
-            onClick={() => router.push(`${path}/import`)}
+            onClick={() => router.push(TRANSACTIONS_IMPORT)}
             className="bg-gray-400 rounded-full hidden"
             disabled
           >

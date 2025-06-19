@@ -16,6 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { usePages } from "../hooks";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PAGE_MANAGEMENT_DETAIL } from "@/constants/routes";
 
 const AddPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -26,7 +27,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -62,7 +63,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       const response = await savePages(data, id);
       if (response.id != null) {
         const id = response.id;
-        router.push(`/masterdata/page-management/${id}`);
+        router.push(PAGE_MANAGEMENT_DETAIL(id));
       }
     } catch (error) {
       setUpdateSuccess(false);

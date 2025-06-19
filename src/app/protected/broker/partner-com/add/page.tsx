@@ -27,11 +27,12 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../../hook";
 import { useLoading } from "@/context/loading.context";
 import { ChannelService } from "@/services/channel.services";
+import { BROKER_PARTNER_COM } from "@/constants/routes";
 
 const CreatePartnerCom = () => {
   const router = useRouter();
   const handleCancel = () => {
-    router.push("/broker/partner-com");
+    router.push(BROKER_PARTNER_COM);
   };
 
   const { createChannelFee } = useBrokerFee();
@@ -52,7 +53,7 @@ const CreatePartnerCom = () => {
         currency: "IDR",
         fee: data.fee
       });
-      router.push("/broker/partner-com");
+      router.push(BROKER_PARTNER_COM);
     } catch (error) {
       console.error(error);
       alert("Failed to create partner com");
@@ -146,7 +147,7 @@ const CreatePartnerCom = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/broker/partner-com">Partner Comm</BreadcrumbLink>
+                <BreadcrumbLink href={BROKER_PARTNER_COM}>Partner Comm</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

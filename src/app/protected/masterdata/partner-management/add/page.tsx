@@ -34,6 +34,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PARTNER_MANAGEMENT, PARTNER_MANAGEMENT_DETAIL } from "@/constants/routes";
 
 const PHONE_CODES = [
   { code: "+62", country: "Indonesia" },
@@ -118,7 +119,7 @@ const AddPartner = () => {
 
   const handleDialogClose = () => {
     setShowSuccessDialog(false);
-    router.push(`/masterdata/partner-management/${newPartnerId}/edit`);
+    router.push(PARTNER_MANAGEMENT_DETAIL(newPartnerId));
   };
 
   return (
@@ -398,7 +399,7 @@ const AddPartner = () => {
           <DialogFooter className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => router.push("/masterdata/partner-management")}
+              onClick={() => router.push(PARTNER_MANAGEMENT)}
             >
               Back to List
             </Button>

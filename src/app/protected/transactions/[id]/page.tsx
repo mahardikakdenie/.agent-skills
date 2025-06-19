@@ -8,6 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { TRANSACTIONS } from "@/constants/routes";
 import WithSidebar from "@/hoc/with-sidebar";
 import { formatMoney } from "@/lib/formatter";
 import { TransactionService } from "@/services/transaction.service";
@@ -87,7 +88,7 @@ const DetailTransaction = ({ params }: { params: { id: string } }) => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/transactions">
+                <BreadcrumbLink href={TRANSACTIONS}>
                   Transactions
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -102,7 +103,7 @@ const DetailTransaction = ({ params }: { params: { id: string } }) => {
           </h2>
         </div>
         <Link
-          href="/transactions"
+          href={TRANSACTIONS}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm"
         >
           <ChevronLeft className="w-4 h-4" />

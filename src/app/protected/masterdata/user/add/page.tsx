@@ -26,6 +26,7 @@ import {
 import Image from "next/image";
 import iconCopy from "/public/images/icon-copy.svg"
 import { toastNotification } from "@/lib/toast";
+import { USER_DETAIL } from "@/constants/routes";
 
 const passwordValidationRules = {
   required: (role: string) =>
@@ -149,7 +150,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       const response = await saveUser(data, id);
       if (response.id != null) {
         const id = response.id;
-        router.push(`/masterdata/user/${id}`);
+        router.push(USER_DETAIL(id));
       }
     } catch (error) {
       setSaveSuccess(false);

@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { PRODUCT_CATALOG_DETAIL } from "@/constants/routes";
 
 const UploadPlanDetail = ({
   params,
@@ -64,7 +65,7 @@ const UploadPlanDetail = ({
     try {
       await uploadPlanDetails(params.id, type, csvData);
       alert("Package uploaded successfully");
-      router.push(`/product-catalog/${params.category}/${params.id}`);
+      router.push(PRODUCT_CATALOG_DETAIL(params.category, params.id));
     } catch (error) {
       console.error(error);
       alert("Failed to upload package");

@@ -21,6 +21,7 @@ import {
   ProductCategoriesService,
 } from "@/services/masterdata/product-category.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PRODUCT_CATEGORY_ADD, PRODUCT_CATEGORY_DETAIL } from "@/constants/routes";
 
 const ProductCategory = () => {
   const path = usePathname();
@@ -48,7 +49,7 @@ const ProductCategory = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -80,7 +81,7 @@ const ProductCategory = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(PRODUCT_CATEGORY_DETAIL(id));
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -104,7 +105,7 @@ const ProductCategory = () => {
           Product Category
         </h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(PRODUCT_CATEGORY_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

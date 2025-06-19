@@ -25,11 +25,12 @@ import { ChevronLeft } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import useHoliday from "../hook";
 import { useLoading } from "@/context/loading.context";
+import { HOLIDAY } from "@/constants/routes";
 
 const CreateHoliday = () => {
     const router = useRouter();
     const handleCancel = () => {
-        router.push("/masterdata/holiday");
+        router.push(HOLIDAY);
     };
 
     const { createCalendar } = useHoliday();
@@ -52,7 +53,7 @@ const CreateHoliday = () => {
                 date: data.startdate,
                 year: new Date(data.startdate).getFullYear().toString()
             });
-            router.push("/masterdata/holiday");
+            router.push(HOLIDAY);
         } catch (error) {
             console.error(error);
             alert("Failed to create holiday");
@@ -98,7 +99,7 @@ const CreateHoliday = () => {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/masterdata/holiday">Holiday</BreadcrumbLink>
+                                <BreadcrumbLink href={HOLIDAY}>Holiday</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>

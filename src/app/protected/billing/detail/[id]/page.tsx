@@ -45,6 +45,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
+import { BILLING, BILLING_DETAIL_EXPORT_WITH_TYPE, BILLING_DETAIL_INVOICE_WITH_TYPE } from "@/constants/routes";
 
 const DetailBillingPage = () => {
   const { getBillingById, billing, updateBilling } = useBilling();
@@ -103,7 +104,7 @@ const DetailBillingPage = () => {
 
   const router = useRouter();
   const handleBack = () => {
-    router.push("/billing");
+    router.push(BILLING);
   };
 
   const handleUpdateToPaid = async () => {
@@ -112,7 +113,7 @@ const DetailBillingPage = () => {
       await updateBilling(id as string, { status: "paid" });
       setLoading(false);
       alert("Status updated to paid");
-      router.push("/billing");
+      router.push(BILLING);
     } catch (error) {
       setLoading(false);
       console.error("Request failed:", error);
@@ -130,7 +131,7 @@ const DetailBillingPage = () => {
       });
       alert("Status update to cancelled");
       setLoading(false);
-      router.push("/billing");
+      router.push(BILLING);
     } catch (error) {
       setLoading(false);
       console.error("Request failed:", error);
@@ -190,7 +191,7 @@ const DetailBillingPage = () => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/billing">Billing</BreadcrumbLink>
+                  <BreadcrumbLink href={BILLING}>Billing</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -211,7 +212,7 @@ const DetailBillingPage = () => {
               Back
             </div>
             <Button
-              onClick={() => router.push(`/billing/detail/${id}/export?type=${billing.data[0].items[0].billings.type}`)}
+              onClick={() => router.push(BILLING_DETAIL_EXPORT_WITH_TYPE(id, billing.data[0].items[0].billings.type))}
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
             >
               <Download className="w-5 h-5 mr-1 " /> Export
@@ -304,7 +305,7 @@ const DetailBillingPage = () => {
                   </Button>
 
                   <Button
-                    onClick={() => router.push(`/billing/detail/${id}/invoice?type=${billing.data[0].items[0].billings.type}`)}
+                    onClick={() => router.push(BILLING_DETAIL_INVOICE_WITH_TYPE(id as string, billing.data[0].items[0].billings.type))}
                     className="rounded-full bg-blue-600 hover:bg-blue-700"
                   >
                     <span className="flex items-center">{billing.data[0].items[0].billings.type == "insurer" ? "📄 View Invoice" : "📄 View Billing Listing"}</span>

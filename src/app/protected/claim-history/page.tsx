@@ -34,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FORBIDDEN } from "@/constants/routes";
 
 const claimService = new ClaimService();
 const ClaimHistoryPage = () => {
@@ -66,7 +67,7 @@ const ClaimHistoryPage = () => {
 
       // Redirect to forbidden page if user has no permission to read
       if(!hasAccess) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

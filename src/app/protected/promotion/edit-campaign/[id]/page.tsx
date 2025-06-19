@@ -31,6 +31,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PROMOTION } from "@/constants/routes";
 
 const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -53,10 +54,10 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = await hasPermission("Promotions.Update");
+      const access: boolean = await hasPermission("Promotions.Update");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -947,7 +948,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             setShowAlert(true);
             setTimeout(() => {
               setShowAlert(false);
-              router.push("/promotion");
+              router.push(PROMOTION);
             }, 2000);
           }
         } else {
@@ -956,7 +957,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
-            router.push("/promotion");
+            router.push(PROMOTION);
           }, 2000);
         }
       } else {
@@ -964,7 +965,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
-          router.push("/promotion");
+          router.push(PROMOTION);
         }, 2000);
       }
     } catch (error) {
@@ -1011,7 +1012,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   };
 
   const handleCancel = () => {
-    router.push("/promotion");
+    router.push(PROMOTION);
   };
 
   const formatDate = (dateString: string) => {

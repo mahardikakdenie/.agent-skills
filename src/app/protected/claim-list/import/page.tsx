@@ -15,6 +15,7 @@ import { toastPromise } from '@/lib/toast';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Check, ChevronLeft, Download, Upload } from "react-feather";
+import { CLAIM_LIST } from "@/constants/routes";
 
 const ImportPage = () => {
   const claimService = new ClaimService();
@@ -109,7 +110,7 @@ const ImportPage = () => {
 
       setUploadStatus("success");
       setTimeout(() => {
-        router.push("/claim-list");
+        router.push(CLAIM_LIST);
       }, 1500);
     } catch (error) {
       setUploadStatus("error");

@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FORBIDDEN } from "@/constants/routes";
 
 const AddEmailTag = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -43,7 +44,7 @@ const AddEmailTag = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

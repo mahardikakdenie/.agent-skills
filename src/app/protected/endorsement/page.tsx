@@ -10,6 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { EndorsementService } from "@/services/endorsement.service";
 import { ChevronLeft, ChevronRight, Download, Search, Upload } from "react-feather";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { ENDORSEMENT_DETAIL, ENDORSEMENT_EXPORT, ENDORSEMENT_UPLOAD } from "@/constants/routes";
 
 const EndorsementPage = () => {
   const router = useRouter();
@@ -58,7 +59,7 @@ const EndorsementPage = () => {
   };
 
   const goToDetail = (endorsementId: string) => {
-    router.push(`${path}/${endorsementId}`);
+    router.push(ENDORSEMENT_DETAIL(endorsementId));
   };
 
   const getStatusColor = (status: string) => {
@@ -82,10 +83,10 @@ const EndorsementPage = () => {
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Endorsement List</h1>
-        <Button onClick={() => router.push(`${path}/upload`)} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full">
+        <Button onClick={() => router.push(ENDORSEMENT_UPLOAD)} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full">
           <Upload className="w-5 h-5 mr-1 " /> Upload
         </Button>
-        <Button onClick={() => router.push(`${path}/export`)} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full">
+        <Button onClick={() => router.push(ENDORSEMENT_EXPORT)} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full">
           <Download className="w-5 h-5 mr-1 " /> Download
         </Button>
       </div>

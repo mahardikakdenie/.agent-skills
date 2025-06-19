@@ -16,6 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useInsurance } from "../hooks";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN } from "@/constants/routes";
 
 const AddInsurance = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -37,7 +38,7 @@ const AddInsurance = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

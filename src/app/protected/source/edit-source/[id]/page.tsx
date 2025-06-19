@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, SOURCE } from "@/constants/routes";
 
 interface Insurance {
     id: string;
@@ -41,7 +42,7 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
         const access = await hasPermission("Sanction.Update");
         setHasAccess(access);
         if (!access) {
-          router.push("/forbidden");
+          router.push(FORBIDDEN);
         }
       };
   
@@ -222,7 +223,7 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
 
                 setTimeout(() => {
                     setShowAlert(false);
-                    router.push("/source");
+                    router.push(SOURCE);
                 }, 2000);
             } else {
                 setErrorMessage('Failed to update source. Please try again.');
@@ -299,7 +300,7 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
     };
 
     const handleCancel = () => {
-        router.push("/source");
+        router.push(SOURCE);
     };
 
 

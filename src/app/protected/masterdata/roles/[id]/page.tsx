@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import React from "react";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, ROLES } from "@/constants/routes";
 
 interface Permission {
   id: string;
@@ -68,7 +69,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -425,7 +426,7 @@ const EditRolesPage = ({ params }: { params: { id: string } }) => {
 
           <div className="flex ml-auto">
             <a
-              href="/masterdata/roles"
+              href={ROLES}
               className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />

@@ -16,6 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useGroup } from "../hooks";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, GROUP_DETAIL } from "@/constants/routes";
 
 const AddGroupPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const AddGroupPage = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -61,7 +62,7 @@ const AddGroupPage = ({ params }: { params: { id: string } }) => {
       const response = await addGroup(data, id);
       if (response.id != null) {
         const id = response.id;
-        router.push(`/masterdata/group/${id}`);
+        router.push(GROUP_DETAIL(id));
       }
     } catch (error) {
       setUpdateSuccess(false);

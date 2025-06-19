@@ -34,6 +34,7 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
+import { FORBIDDEN } from "@/constants/routes";
 
 const ReportClaimPage = () => {
   const claimService = new ClaimService();
@@ -62,7 +63,7 @@ const ReportClaimPage = () => {
       const access = await hasPermission("Report.Read");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

@@ -22,6 +22,7 @@ import {
   ChannelsService,
 } from "@/services/masterdata/channels.service";
 import Spinner from "@/components/ui/spinner";
+import { CHANNELS_ADD, CHANNELS_DETAIL, FORBIDDEN } from "@/constants/routes";
 
 const ChannelsPage = () => {
   const path = usePathname();
@@ -52,7 +53,7 @@ const ChannelsPage = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -88,7 +89,7 @@ const ChannelsPage = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(CHANNELS_DETAIL(id));
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -117,7 +118,7 @@ const ChannelsPage = () => {
           Channels
         </h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(CHANNELS_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

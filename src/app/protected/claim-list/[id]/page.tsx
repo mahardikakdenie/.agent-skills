@@ -37,6 +37,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import ImageOrDefault from "@/components/ui/image-or-default";
+import { CLAIM_LIST, FORBIDDEN } from "@/constants/routes";
 
 interface FieldType {
   name: string;
@@ -69,7 +70,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Claim.Read");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -247,7 +248,7 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/claim-list">List</BreadcrumbLink>
+                <BreadcrumbLink href={CLAIM_LIST}>List</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

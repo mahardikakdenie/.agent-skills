@@ -11,6 +11,7 @@ import { ChannelService } from "@/services/channel.services";
 import { EndorsementService } from "@/services/endorsement.service";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table, } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ENDORSEMENT } from "@/constants/routes";
 
 const UploadEndorsement = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -145,7 +146,7 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
       const response = await endorsementService.uploadEndorsement(params.id, payload);
       const successMessage = response?.data?.message || "Data uploaded successfully!";
       alert(successMessage);
-      router.push(`/endorsement`);
+      router.push(ENDORSEMENT);
     } catch (error: any) {
       console.error("Upload error:", error);
       const errorMessage = error?.response?.data?.message || "Upload failed.";

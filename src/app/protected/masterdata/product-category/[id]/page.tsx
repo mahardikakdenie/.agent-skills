@@ -16,6 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "../hooks";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN } from "@/constants/routes";
 
 const EditProductCategory = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -36,7 +37,7 @@ const EditProductCategory = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

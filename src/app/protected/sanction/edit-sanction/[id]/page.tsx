@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, SANCTION } from "@/constants/routes";
 
 
 interface Source {
@@ -44,7 +45,7 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
         const access = await hasPermission("Sanction.Update");
         setHasAccess(access);
         if (!access) {
-          router.push("/forbidden");
+          router.push(FORBIDDEN);
         }
       };
   
@@ -262,7 +263,7 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
-                router.push("/sanction");
+                router.push(SANCTION);
             }, 2000);
 
 
@@ -285,7 +286,7 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
 
 
     const handleCancel = () => {
-        router.push("/sanction");
+        router.push(SANCTION);
     };
 
     const handleChangeCountry = (value: string) => {

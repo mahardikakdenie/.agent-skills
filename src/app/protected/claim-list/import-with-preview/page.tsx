@@ -53,6 +53,7 @@ import { ChannelsService } from "@/services/masterdata/channels.service"
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { toastPromise, toastNotification } from "@/lib/toast";
 import { capitalizeStringWithChar } from "@/lib/formatter";
+import { CLAIM_LIST } from "@/constants/routes";
 
 const ImportWithPreviewPage = () => {
   const claimService = new ClaimService();
@@ -381,7 +382,7 @@ const ImportWithPreviewPage = () => {
 
       setUploadStatus("success");
       setTimeout(() => {
-        router.push("/claim-list");
+        router.push(CLAIM_LIST);
       }, 1500);
     } catch (error) {
       setUploadStatus("error");

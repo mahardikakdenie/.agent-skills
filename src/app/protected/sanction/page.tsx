@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Trash, X, Search, Upload } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, SANCTION_ADD, SANCTION_DETAIL, SANCTION_UPLOAD } from "@/constants/routes";
 
 const SanctionPage = () => {
     const sanctionService = new SanctionService();
@@ -57,7 +58,7 @@ const SanctionPage = () => {
         setHasAccess(access);
         setCanCreate(createBtn);
         if (!access) {
-          router.push("/forbidden");
+          router.push(FORBIDDEN);
         }
       };
   
@@ -80,7 +81,7 @@ const SanctionPage = () => {
     }, [page, rowsPerPage]);
 
     const handleEditSanction = (id: string) => {
-        router.push("/sanction/edit-sanction/" + id);
+        router.push(SANCTION_DETAIL(id));
     };
 
     const handleViewDetail = async (id: string) => {
@@ -96,11 +97,11 @@ const SanctionPage = () => {
     };
 
     const addNewSanction = () => {
-        router.push("/sanction/add-sanction");
+        router.push(SANCTION_ADD);
     };
 
     const uploadSanction = () => {
-        router.push("/sanction/upload-sanction");
+        router.push(SANCTION_UPLOAD);
     };
 
     const handleSearch = async () => {

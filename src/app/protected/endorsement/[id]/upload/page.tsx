@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useLoading } from "@/context/loading.context";
 import { EndorsementService } from "@/services/endorsement.service";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
+import { ENDORSEMENT_DETAIL } from "@/constants/routes";
 
 const UploadEndorsement = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -89,7 +90,7 @@ const UploadEndorsement = ({ params }: { params: { id: string } }) => {
       const response = await endorsementService.updateEndorsement( params.id, payload );
       const successMessage = response?.data?.message || "Data uploaded successfully!";
       alert(successMessage);
-      router.push(`/endorsement/${params.id}`);
+      router.push(ENDORSEMENT_DETAIL(params.id));
     } catch (error: any) {
       console.error("Upload error:", error);
       const errorMessage = error?.response?.data?.message || "Upload failed.";

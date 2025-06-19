@@ -30,6 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PAGE_MANAGEMENT } from "@/constants/routes";
 
 interface PermissionField {
   id: string;
@@ -45,7 +46,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -109,7 +110,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       await updatePages(data, id);
 
       alert("Data berhasil disimpan!");
-      router.push(`/masterdata/page-management`);
+      router.push(PAGE_MANAGEMENT);
     } catch (error) {
       console.error("Failed to save permissions or update page:", error);
       alert("Terjadi kesalahan saat menyimpan data.");

@@ -20,6 +20,7 @@ import noData from "/public/images/no-data.webp";
 import { ChevronLeft, ChevronRight, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PRODUCT_CATALOG_UPLOAD } from "@/constants/routes";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const path = usePathname();
@@ -54,7 +55,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -127,7 +128,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
       <Button
         className="btn btn-primary"
         disabled={!canEdit}
-        onClick={() => router.push(`${path}/upload`)}
+        onClick={() => router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))}
       >
         <Upload className="w-5 h-5 mr-2" /> Upload Packages
       </Button>

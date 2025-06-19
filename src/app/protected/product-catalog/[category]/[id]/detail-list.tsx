@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { useProducts } from "../../hooks";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -18,9 +18,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Upload } from "react-feather";
+import { PRODUCT_CATALOG_UPLOAD_DETAIL } from "@/constants/routes";
 
 export default function DetailList(props: { id: string }) {
   const { id } = props;
+  const { category } = useParams();
   const [type, setType] = useState("tnc");
   const { getPlanDetails, details } = useProducts();
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function DetailList(props: { id: string }) {
     <>
       <Button
         className="mb-5"
-        onClick={() => router.push(`${path}/upload-detail`)}
+        onClick={() => router.push(PRODUCT_CATALOG_UPLOAD_DETAIL(category as string, id))}
       >
         <Upload className="w-5 h-5 mr-2" />
         Upload Details

@@ -12,6 +12,7 @@ import { MembershipService } from "@/services/membership.service";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { hasPermission } from "@/context/auth.context";
+import { MEMBERSHIP_LIST } from "@/constants/routes";
 
 const UploadMembership = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -185,7 +186,7 @@ const UploadMembership = ({ params }: { params: { id: string } }) => {
 
       const successMessage = response?.data?.message || "Data uploaded successfully!";
       alert(successMessage);
-      router.push("/membership-list");
+      router.push(MEMBERSHIP_LIST);
     } catch (error: any) {
       console.error("Upload error:", error);
       const errorMessage = error?.response?.data?.message || "Upload failed.";

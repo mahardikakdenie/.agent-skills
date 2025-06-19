@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useRole } from "../hooks";
 import { Textarea } from "@/components/ui/textarea";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, ROLES_DETAIL } from "@/constants/routes";
 
 const AddRolesPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -34,7 +35,7 @@ const AddRolesPage = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -77,7 +78,7 @@ const AddRolesPage = ({ params }: { params: { id: string } }) => {
       const response = await addRole(data, id);
       if (response.id != null) {
         const id = response.id;
-        router.push(`/masterdata/roles/${id}`);
+        router.push(ROLES_DETAIL(id));
       }
     } catch (error) {
       setUpdateSuccess(false);

@@ -17,6 +17,7 @@ import logoImg from "/public/images/logo-friendsure-lsh.webp";
 import { useState } from "react";
 import { Eye, EyeOff } from "react-feather";
 import { useLoading } from "@/context/loading.context";
+import { DASHBOARD_TRANSACTION } from "@/constants/routes";
 
 export default function LoginPage() {
   const authService = new AuthService();
@@ -43,7 +44,7 @@ export default function LoginPage() {
       setLoading(false);
     }
 
-    router.push("/dashboard/transaction");
+    router.push(DASHBOARD_TRANSACTION);
   };
 
   return (

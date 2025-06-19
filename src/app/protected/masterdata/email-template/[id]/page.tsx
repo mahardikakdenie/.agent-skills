@@ -43,6 +43,7 @@ import {
 import { Label } from "@radix-ui/react-label";
 import { stateToHTML } from "draft-js-export-html";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { EMAIL_TEMPLATE, FORBIDDEN } from "@/constants/routes";
 
 const EditPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -102,7 +103,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -254,7 +255,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     if (updateSuccess === true) {
       alert("Data has been successfully saved!");
-      router.replace("/masterdata/email-template");
+      router.replace(EMAIL_TEMPLATE);
     } else if (updateSuccess === false) {
       alert("Email Tag has already been used for this Journey!");
     }

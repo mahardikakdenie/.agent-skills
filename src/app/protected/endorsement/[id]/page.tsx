@@ -12,6 +12,7 @@ import { AlertCircle, ChevronLeft, Download, Upload } from "react-feather";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { ENDORSEMENT, ENDORSEMENT_UPLOAD_WITH_ID } from "@/constants/routes";
 
 const DetailEndorsement = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -157,7 +158,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
           </Breadcrumb>
           <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">Detail Endorsement</h2>
         </div>
-        <a href="/endorsement" className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
+        <a href={ENDORSEMENT} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
           <ChevronLeft className="w-4 h-4" /> Back
         </a>
       </div>
@@ -434,7 +435,7 @@ const DetailEndorsement = ({ params }: { params: { id: string } }) => {
                   <Button
                     variant="outline"
                     className="border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white rounded-full px-5 py-2 h-8"
-                    onClick={() => router.push(`/endorsement/${endorsement?.id}/upload`)}
+                    onClick={() => router.push(ENDORSEMENT_UPLOAD_WITH_ID(endorsement.id))}
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Upload

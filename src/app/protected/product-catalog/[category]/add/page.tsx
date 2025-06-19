@@ -32,6 +32,7 @@ import {
   ProductCatalogService,
 } from "@/services/product-catalog.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PRODUCT_CATALOG_CATEGORY } from "@/constants/routes";
 
 const AddPlanPage = ({ params }: { params: { category: string } }) => {
   const router = useRouter();
@@ -49,7 +50,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -132,7 +133,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
   useEffect(() => {
     if (saveSuccess === true) {
       alert("Data berhasil disimpan!");
-      router.push(`/product-catalog/${category}`);
+      router.push(PRODUCT_CATALOG_CATEGORY(category as string));
     } else if (saveSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }
@@ -151,7 +152,7 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={`/product-catalog/${category}`}>
+                  <BreadcrumbLink href={PRODUCT_CATALOG_CATEGORY(category)}>
                     {category
                       .split("-")
                       .map(

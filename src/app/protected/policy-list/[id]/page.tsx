@@ -25,6 +25,7 @@ import { PolicyService } from "@/services/policy.service";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
+import { POLICY_LIST } from "@/constants/routes";
 
 const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const policyService = new PolicyService();
@@ -73,7 +74,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
     try {
       await policyService.renewPolicy(policy.id);
       toastNotification("Policy renewed successfully!");
-      router.push(`/policy-list`);
+      router.push(POLICY_LIST);
     } catch (error) {
       toastNotification("Failed to renew policy!", "error");
     } finally {
@@ -92,7 +93,7 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/policy-list">List</BreadcrumbLink>
+                <BreadcrumbLink href={POLICY_LIST}>List</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

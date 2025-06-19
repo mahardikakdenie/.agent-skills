@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { useLoading } from "@/context/loading.context";
 import { useRouter } from "next/navigation";
+import { PRODUCT_CATALOG_DETAIL } from "@/constants/routes";
 
 const UploadPlanBenefit = ({
   params,
@@ -55,7 +56,7 @@ const UploadPlanBenefit = ({
     try {
       await uploadPlanBenefits(params.id, csvData);
       alert("Package uploaded successfully");
-      router.push(`/product-catalog/${params.category}/${params.id}`);
+      router.push(PRODUCT_CATALOG_DETAIL(params.category, params.id));
     } catch (error) {
       console.error(error);
       alert("Failed to upload package");

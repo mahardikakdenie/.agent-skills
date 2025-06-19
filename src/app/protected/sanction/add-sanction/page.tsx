@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, SANCTION } from "@/constants/routes";
 
 
 interface Source {
@@ -44,7 +45,7 @@ const CreateSanctionPage = () => {
         const access = await hasPermission("Sanction.Create");
         setHasAccess(access);
         if (!access) {
-          router.push("/forbidden");
+          router.push(FORBIDDEN);
         }
       };
   
@@ -213,7 +214,7 @@ const CreateSanctionPage = () => {
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
-                router.push("/sanction");
+                router.push(SANCTION);
             }, 2000);
         } catch (error) {
             console.error('Failed to save sanction:', error);
@@ -267,7 +268,7 @@ const CreateSanctionPage = () => {
                     </div>
                     <div className="flex space-x-4 ml-auto">
                         <div
-                            onClick={() => router.push('/sanction')}
+                            onClick={() => router.push(SANCTION)}
                             className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
                         >
                             <ChevronLeft className="w-4 h-4" />

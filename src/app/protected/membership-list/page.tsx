@@ -13,6 +13,7 @@ import { MembershipService } from "@/services/membership.service";
 import { ChevronLeft, ChevronRight, Download, Upload, Search } from "react-feather";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MEMBERSHIP_LIST_DETAIL, MEMBERSHIP_LIST_EXPORT, MEMBERSHIP_LIST_UPLOAD } from "@/constants/routes";
 
 const MembershipPage = () => {
   const path = usePathname();
@@ -100,15 +101,15 @@ const MembershipPage = () => {
   const handleExport = () => {
     const exportData = {page, limit: rowsPerPage, status: tab === "All" ? "" : tab, channel: channel};
     localStorage.setItem("exportMembershipData", JSON.stringify(exportData));
-    router.push(`${path}/export`);
+    router.push(MEMBERSHIP_LIST_EXPORT);
   };
 
   const handleUpload = () => {
-    router.push(`${path}/upload`);
+    router.push(MEMBERSHIP_LIST_UPLOAD);
   };
   
   const goToDetail = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(MEMBERSHIP_LIST_DETAIL(id));
   };
 
   const handleSearch = _.debounce((keyword: string) => {

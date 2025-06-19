@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Trash, X, Search } from "react-feather";
 import { SanctionService } from "@/services/sanction.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, SOURCE_ADD, SOURCE_DETAIL } from "@/constants/routes";
 
 const SourcePage = () => {
     const sourceService = new SanctionService();
@@ -57,7 +58,7 @@ const SourcePage = () => {
         setHasAccess(access);
         setCanCreate(createBtn);
         if (!access) {
-          router.push("/forbidden");
+          router.push(FORBIDDEN);
         }
       };
   
@@ -80,7 +81,7 @@ const SourcePage = () => {
     }, [page, rowsPerPage]);
 
     const handleEditSource = (id: string) => {
-        router.push("/source/edit-source/" + id);
+        router.push(SOURCE_DETAIL(id));
     };
 
     const handleViewDetail = async (id: string) => {
@@ -96,7 +97,7 @@ const SourcePage = () => {
     };
 
     const addNewSource = () => {
-        router.push("/source/add-source");
+        router.push(SOURCE_ADD);
     };
 
     const handleDelete = (id: string) => {

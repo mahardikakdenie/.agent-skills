@@ -27,8 +27,8 @@ import { useProduct } from "../../masterdata/product/hooks";
 import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { formatMoney } from "@/lib/formatter";
-import useRequireAuth from "@/hooks/useRequireAuth";
 import { set } from "lodash";
+import { BROKER_PARTNER_COM_ADD, BROKER_PARTNER_DETAIL } from "@/constants/routes";
 
 const PartnerComPage = () => {
   const { getChannelFees, channelFees, deleteChannelFee } = useBrokerFee();
@@ -141,7 +141,7 @@ const PartnerComPage = () => {
         </div>
 
         <Button
-          onClick={() => router.push(`/broker/partner-com/add`)}
+          onClick={() => router.push(BROKER_PARTNER_COM_ADD)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <PlusIcon className="w-5 h-5 mr-1 " /> Create Partner Comm
@@ -179,7 +179,7 @@ const PartnerComPage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => router.push(`/broker/partner-com/edit/${item.id}`)}
+                      onClick={() => router.push(BROKER_PARTNER_DETAIL(item.id))}
                     >
                       <EditIcon className="h-4 w-4" />
                     </Button>

@@ -11,6 +11,7 @@ import { ChannelService } from "@/services/channel.services";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PolicyService } from "@/services/policy.service";
+import { POLICY_LIST } from "@/constants/routes";
 
 const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -172,7 +173,7 @@ const ImportPolicyPage = ({ params }: { params: { id: string } }) => {
           const response = await policyService.uploadPolicyDrGadget(channel, formData);
           const successMessage = response?.data?.message || "Data uploaded successfully!";
           alert(successMessage);
-          router.push("/policy-list");
+          router.push(POLICY_LIST);
         } else {
           alert("Fitur Import untuk Partner ini belum didukung");
         }

@@ -44,6 +44,7 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
+import { FORBIDDEN } from "@/constants/routes";
 
 // Replace the Editor import with dynamic import
 const Editor = dynamic(
@@ -128,7 +129,7 @@ const AddPage = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

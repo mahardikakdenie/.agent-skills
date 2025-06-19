@@ -23,6 +23,7 @@ import {
 import { useProduct } from "./hooks";
 import { MdProductService } from "@/services/masterdata/product.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PRODUCT_ADD, PRODUCT_DETAIL_WITH_PARAMS } from "@/constants/routes";
 
 const Product = () => {
   const path = usePathname();
@@ -58,7 +59,7 @@ const Product = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -117,7 +118,7 @@ const Product = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/edit?category-id=${tab}&insurance-id=${id}`);
+    router.push(PRODUCT_DETAIL_WITH_PARAMS(tab, id));
   };
 
   const handleDelete = async (id: string) => {
@@ -148,7 +149,7 @@ const Product = () => {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Product</h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(PRODUCT_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

@@ -43,6 +43,7 @@ import { DateRange } from "react-day-picker";
 import { ProductService } from "@/services/product.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { useLoading } from "@/context/loading.context";
+import { POLICY_LIST_DETAIL, POLICY_LIST_EXPORT, POLICY_LIST_IMPORT } from "@/constants/routes";
 
 const PolicyPage = () => {
   const path = usePathname();
@@ -166,7 +167,7 @@ const PolicyPage = () => {
   };
 
   const goToDetail = (policyId: string) => {
-    router.push(`${path}/${policyId}`);
+    router.push(POLICY_LIST_DETAIL(policyId));
   };
 
   const handleDownloadTemplate = () => {
@@ -179,7 +180,7 @@ const PolicyPage = () => {
   };
 
   const handleImport = () => {
-    router.push(`${path}/import`);
+    router.push(POLICY_LIST_IMPORT);
   };
 
   const handleExport = () => {
@@ -195,7 +196,7 @@ const PolicyPage = () => {
     };
 
     localStorage.setItem("exportPolicyData", JSON.stringify(exportData));
-    router.push(`${path}/export`);
+    router.push(POLICY_LIST_EXPORT);
   };
 
   return (

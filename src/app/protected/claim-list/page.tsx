@@ -61,6 +61,7 @@ import { addDays, format } from "date-fns";
 import React from "react";
 import { DateRange } from "react-day-picker";
 import { ChannelService } from "@/services/channel.services";
+import { CLAIM_LIST_DETAIL, CLAIM_LIST_EXPORT, CLAIM_LIST_IMPORT, CLAIM_LIST_IMPORT_WITH_PREVIEW, FORBIDDEN } from "@/constants/routes";
 
 const ClaimsPage = () => {
   const path = usePathname();
@@ -128,7 +129,7 @@ const ClaimsPage = () => {
       setOpenAllStatus(openAllStatus);
 
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -229,7 +230,7 @@ const ClaimsPage = () => {
   };
 
   const goToDetail = (claimId: string) => {
-    router.push(`${path}/${claimId}`);
+    router.push(CLAIM_LIST_DETAIL(claimId));
   };
 
   const selectChannel = (id: string) => {
@@ -557,7 +558,7 @@ const ClaimsPage = () => {
     };
 
     localStorage.setItem("exportClaimData", JSON.stringify(exportData));
-    router.push(`${path}/export`);
+    router.push(CLAIM_LIST_EXPORT);
   };
 
   return (
@@ -666,14 +667,14 @@ const ClaimsPage = () => {
         </div>
 
         <Button
-          onClick={() => router.push(`${path}/import`)}
+          onClick={() => router.push(CLAIM_LIST_IMPORT)}
           className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
         >
           <Upload className="w-5 h-5 mr-1" /> Import
         </Button>
         {/* New button to redirect to the new import page with preview */}
         <Button
-          onClick={() => router.push(`${path}/import-with-preview`)}
+          onClick={() => router.push(CLAIM_LIST_IMPORT_WITH_PREVIEW)}
           className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
         >
           <Upload className="w-5 h-5 mr-1" /> Import with Preview

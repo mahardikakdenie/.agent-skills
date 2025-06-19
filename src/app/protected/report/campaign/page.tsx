@@ -47,6 +47,7 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
+import { FORBIDDEN } from "@/constants/routes";
 
 interface InsuranceOption {
   id: string;
@@ -115,7 +116,7 @@ const ReportCampaignPage = () => {
       setCanEdit(editBtn);
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

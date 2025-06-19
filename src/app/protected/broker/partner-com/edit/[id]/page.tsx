@@ -26,6 +26,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../../../hook";
 import { useLoading } from "@/context/loading.context";
 import { ChannelService } from "@/services/channel.services";
+import { BROKER_PARTNER_COM } from "@/constants/routes";
 
 const EditPartnerComPage = () => {
   const { id } = useParams();
@@ -57,7 +58,7 @@ const EditPartnerComPage = () => {
 
   const router = useRouter();
   const handleCancel = () => {
-    router.push("/broker/partner-com");
+    router.push(BROKER_PARTNER_COM);
   };
 
   const { setLoading } = useLoading();
@@ -77,7 +78,7 @@ const EditPartnerComPage = () => {
         currency: "IDR",
         fee: data.fee
       });
-      router.push("/broker/partner-com");
+      router.push(BROKER_PARTNER_COM);
 
     } catch (error) {
       console.error(error);
@@ -161,7 +162,7 @@ const EditPartnerComPage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/broker/partner-com">Partner Comm</BreadcrumbLink>
+                <BreadcrumbLink href={BROKER_PARTNER_COM}>Partner Comm</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

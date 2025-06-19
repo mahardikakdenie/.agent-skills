@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FORBIDDEN } from "@/constants/routes";
 
 const AddChannels = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -42,7 +43,7 @@ const AddChannels = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

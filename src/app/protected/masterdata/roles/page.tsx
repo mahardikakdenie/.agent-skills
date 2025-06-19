@@ -19,6 +19,7 @@ import Image from "next/image";
 import { RoleResponse, RoleService } from "@/services/masterdata/roles.service";
 import { format } from "date-fns";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, ROLES_ADD, ROLES_DETAIL } from "@/constants/routes";
 
 const Roles = () => {
   const path = usePathname();
@@ -50,7 +51,7 @@ const Roles = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -85,7 +86,7 @@ const Roles = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(ROLES_DETAIL(id));
   };
 
   const handleDeleteRole = async (id: string) => {
@@ -110,7 +111,7 @@ const Roles = () => {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Roles</h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(ROLES_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

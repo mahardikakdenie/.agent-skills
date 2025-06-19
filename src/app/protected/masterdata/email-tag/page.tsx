@@ -19,6 +19,7 @@ import Image from "next/image";
 import { hasPermission } from "@/context/auth.context";
 import { EmailTagService } from "@/services/masterdata/email-tag.service";
 import { EmailTagResponse } from "@/services/masterdata/mail-template.service";
+import { EMAIL_TAG_ADD, EMAIL_TAG_DETAIL, FORBIDDEN } from "@/constants/routes";
 
 const EmailTag = () => {
   const path = usePathname();
@@ -45,7 +46,7 @@ const EmailTag = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -77,7 +78,7 @@ const EmailTag = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(EMAIL_TAG_DETAIL(id));
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -99,7 +100,7 @@ const EmailTag = () => {
           Email Tag
         </h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(EMAIL_TAG_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

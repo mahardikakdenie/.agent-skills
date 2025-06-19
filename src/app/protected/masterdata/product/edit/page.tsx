@@ -29,6 +29,7 @@ import {
   ProductResponse,
 } from "@/services/masterdata/product.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN } from "@/constants/routes";
 
 const EditProduct = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -53,7 +54,7 @@ const EditProduct = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 

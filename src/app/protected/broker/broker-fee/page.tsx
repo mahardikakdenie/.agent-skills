@@ -26,6 +26,7 @@ import { useLoading } from "@/context/loading.context";
 import { useProduct } from "../../masterdata/product/hooks";
 import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
+import { BROKER_FEE_ADD, BROKER_FEE_DETAIL } from "@/constants/routes";
 
 const BrokerFeePage = () => {
   const { getBrokerFees, brokerFees, deleteBrokerFee } = useBrokerFee();
@@ -92,7 +93,7 @@ const BrokerFeePage = () => {
         </h1>
 
         <Button
-          onClick={() => router.push(`/broker/broker-fee/add`)}
+          onClick={() => router.push(BROKER_FEE_ADD)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <PlusIcon className="w-5 h-5 mr-1 " /> Create Broker Fee
@@ -127,7 +128,7 @@ const BrokerFeePage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => router.push(`/broker/broker-fee/edit/${item.id}`)}
+                      onClick={() => router.push(BROKER_FEE_DETAIL(item.id))}
                     >
                       <EditIcon className="h-4 w-4" />
                     </Button>

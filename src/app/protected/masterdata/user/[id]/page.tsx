@@ -58,6 +58,7 @@ import { UserChannels } from "./components/user-channels";
 import { UserInsurers } from "./components/user-insurers";
 import { UserForm } from "./components/user-form";
 import { useInsurance } from "../../insurance/hooks";
+import { USER } from "@/constants/routes";
 
 
 const EditUser = ({ params }: { params: { id: string; }; }) => {
@@ -216,7 +217,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   useEffect(() => {
     if (updateSuccess === true) {
       alert("Data berhasil disimpan!");
-      router.push(`/masterdata/user`);
+      router.push(USER);
     } else if (updateSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }

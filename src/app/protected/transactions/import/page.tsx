@@ -25,6 +25,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { TRANSACTIONS } from "@/constants/routes";
 
 const UploadTransactions = ({
   params,
@@ -81,7 +82,7 @@ const UploadTransactions = ({
     try {
       await uploadTransactions(params.id, csvData);
       alert("Package uploaded successfully");
-      // router.push(`/product-catalog/${params.category}/${params.id}`);
+      // router.push(PRODUCT_CATALOG_DETAIL(params.category, params.id));
     } catch (error) {
       console.error(error);
       alert("Failed to upload package");
@@ -96,7 +97,7 @@ const UploadTransactions = ({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/transactions">
+                <BreadcrumbLink href={TRANSACTIONS}>
                   Transactions
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -111,7 +112,7 @@ const UploadTransactions = ({
           </h2>
         </div>
         <Link
-          href="/transactions"
+          href={TRANSACTIONS}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm"
         >
           <ChevronLeft className="w-4 h-4" />

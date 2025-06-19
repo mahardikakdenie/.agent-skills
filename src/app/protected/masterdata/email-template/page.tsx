@@ -27,6 +27,7 @@ import {
   MailTemplateService,
 } from "@/services/masterdata/mail-template.service";
 import { capitalizeStringWithChar } from "@/lib/formatter";
+import { EMAIL_TEMPLATE_ADD, EMAIL_TEMPLATE_DETAIL, FORBIDDEN } from "@/constants/routes";
 
 const MailTemplate = () => {
   const path = usePathname();
@@ -61,7 +62,7 @@ const MailTemplate = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -111,7 +112,7 @@ const MailTemplate = () => {
   }, []);
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(EMAIL_TEMPLATE_DETAIL(id));
   };
 
   const handleDelete = async (id: string) => {
@@ -152,7 +153,7 @@ const MailTemplate = () => {
           Mail Template
         </h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(EMAIL_TEMPLATE_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

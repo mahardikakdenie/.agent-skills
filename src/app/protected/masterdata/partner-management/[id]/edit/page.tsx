@@ -35,6 +35,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useLoading } from "@/context/loading.context";
+import { PARTNER_MANAGEMENT } from "@/constants/routes";
 
 interface PartnerFormData {
   name: string;
@@ -105,7 +106,7 @@ const EditPartner = ({ params }: { params: { id: string } }) => {
         }
       } catch (error) {
         console.error("Error initializing data:", error);
-        router.push("/masterdata/partner-management");
+        router.push(PARTNER_MANAGEMENT);
       }
     };
 
@@ -450,7 +451,7 @@ const EditPartner = ({ params }: { params: { id: string } }) => {
           <DialogFooter className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => router.push("/masterdata/partner-management")}
+              onClick={() => router.push(PARTNER_MANAGEMENT)}
             >
               Back to List
             </Button>

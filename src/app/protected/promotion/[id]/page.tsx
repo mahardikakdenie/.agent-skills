@@ -15,6 +15,7 @@ import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import { VoucherService } from "@/services/voucher.services";
+import { PROMOTION_DETAIL } from "@/constants/routes";
 
 const ViewPromotionDetails: React.FC = () => {
   const [promotion, setPromotion] = useState<PromotionDetails | null>(null);
@@ -135,7 +136,7 @@ const ViewPromotionDetails: React.FC = () => {
   }, [id]);
 
   const handleEditCampaign = (id: string) => {
-    router.push("/promotion/edit-campaign/" + id);
+    router.push(PROMOTION_DETAIL(id));
   };
 
   const formatDate = (date: string) => {

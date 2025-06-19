@@ -52,6 +52,7 @@ import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { format } from "date-fns";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, GROUP } from "@/constants/routes";
 
 const EditGroup = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -63,7 +64,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
       const access = await hasPermission("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -430,7 +431,7 @@ const EditGroup = ({ params }: { params: { id: string } }) => {
 
           <div className="flex ml-auto">
             <a
-              href="/masterdata/group"
+              href={GROUP}
               className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />

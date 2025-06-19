@@ -21,6 +21,7 @@ import {
   PagesService,
 } from "@/services/masterdata/page.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, PAGE_MANAGEMENT_ADD, PAGE_MANAGEMENT_DETAIL } from "@/constants/routes";
 
 const Pages = () => {
   const path = usePathname();
@@ -52,7 +53,7 @@ const Pages = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -79,7 +80,7 @@ const Pages = () => {
   }, [page, rowsPerPage]);
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(PAGE_MANAGEMENT_DETAIL(id));
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -106,7 +107,7 @@ const Pages = () => {
           Page Management
         </h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(PAGE_MANAGEMENT_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

@@ -27,11 +27,12 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../../hook";
 import { useLoading } from "@/context/loading.context";
 import { ChannelService } from "@/services/channel.services";
+import { BROKER_FEE } from "@/constants/routes";
 
 const CreateBrokerFee = () => {
   const router = useRouter();
   const handleCancel = () => {
-    router.push("/broker/broker-fee");
+    router.push(BROKER_FEE);
   };
 
   const { createBrokerFee } = useBrokerFee();
@@ -51,7 +52,7 @@ const CreateBrokerFee = () => {
         fee_type: "percentage",
         currency: "IDR",
       });
-      router.push("/broker/broker-fee");
+      router.push(BROKER_FEE);
     } catch (error) {
       console.error(error);
       alert("Failed to create broker fee");
@@ -123,7 +124,7 @@ const CreateBrokerFee = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/broker/broker-fee">Broker Fee</BreadcrumbLink>
+                <BreadcrumbLink href={BROKER_FEE}>Broker Fee</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

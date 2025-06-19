@@ -24,6 +24,7 @@ import { ChevronLeft, ChevronRight, DeleteIcon, EditIcon, EyeIcon, PlusIcon, Tra
 import { useLoading } from "@/context/loading.context";
 import useCalendar from "./hook";
 import { formatDate } from "@/lib/formatter";
+import { HOLIDAY_ADD, HOLIDAY_DETAIL } from "@/constants/routes";
 
 const HolidayPage = () => {
   const { getCalendarHoliday, createCalendar, updateCalendar, deleteCalendar, dataCalendar } = useCalendar();
@@ -194,7 +195,7 @@ const HolidayPage = () => {
         </div>
 
         <Button
-          onClick={() => router.push(`/masterdata/holiday/add`)}
+          onClick={() => router.push(HOLIDAY_ADD)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <PlusIcon className="w-5 h-5 mr-1 " /> Create Holiday
@@ -225,7 +226,7 @@ const HolidayPage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => router.push(`/masterdata/holiday/edit/${item.id}`)}
+                      onClick={() => router.push(HOLIDAY_DETAIL(item.id))}
                     >
                       <EditIcon className="h-4 w-4" />
                     </Button>

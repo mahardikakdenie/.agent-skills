@@ -42,6 +42,7 @@ import {
   isTokenExpired,
 } from "@/context/auth.context";
 import _ from "lodash";
+import { FORBIDDEN, PROMOTION_ADD, PROMOTION_DETAIL } from "@/constants/routes";
 
 const PromotionPage = () => {
   const promotionService = new PromotionService();
@@ -100,7 +101,7 @@ const PromotionPage = () => {
       setCanEdit(editBtn);
       setHasAccess(access);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -145,7 +146,7 @@ const PromotionPage = () => {
   };
 
   const handleEditCampaign = (id: string) => {
-    router.push("/promotion/edit-campaign/" + id);
+    router.push(PROMOTION_DETAIL(id));
   };
 
   const renderStatus = (isActive: any) => (isActive ? "ACTIVE" : "NOT ACTIVE");
@@ -229,7 +230,7 @@ const PromotionPage = () => {
   };
 
   const addNewCampaign = () => {
-    router.push("/promotion/add-campaign");
+    router.push(PROMOTION_ADD);
   };
 
   const handleDelete = (id: string) => {

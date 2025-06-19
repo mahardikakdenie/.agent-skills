@@ -47,6 +47,7 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { ChevronLeft, Trash } from "react-feather";
+import { PROMOTION } from "@/constants/routes";
 
 interface Channel {
   id: string;
@@ -557,7 +558,7 @@ const CreatePromotionPage = () => {
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
-          router.push("/promotion");
+          router.push(PROMOTION);
         }, 2000);
       }
     } catch (error) {
@@ -1039,7 +1040,7 @@ const CreatePromotionPage = () => {
           </div>
           <div className="flex space-x-4 ml-auto">
             <div
-              onClick={() => router.push("/promotion")}
+              onClick={() => router.push(PROMOTION)}
               className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />

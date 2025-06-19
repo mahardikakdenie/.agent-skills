@@ -38,6 +38,7 @@ import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { useLoading } from "@/context/loading.context";
 import { useProduct } from "../masterdata/product/hooks";
+import { BILLING_ADD, BILLING_DETAIL, BILLING_DETAIL_INVOICE_WITH_TYPE } from "@/constants/routes";
 
 const BillingPage = () => {
   const { billingList, getBilling } = useBilling();
@@ -396,7 +397,7 @@ const BillingPage = () => {
         </div>
 
         <Button
-          onClick={() => router.push("/billing/add")}
+          onClick={() => router.push(BILLING_ADD)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <PlusIcon className="w-5 h-5 mr-1 " /> Create Billing
@@ -461,7 +462,7 @@ const BillingPage = () => {
                       size="icon"
                       onClick={() => {
                         localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories }));
-                        router.push(`billing/detail/${billing.id}`);
+                        router.push(BILLING_DETAIL(billing.id));
                       }
                       }
                     >
@@ -477,7 +478,7 @@ const BillingPage = () => {
                       size="icon"
                       onClick={() => {
                         localStorage.setItem("billingDetail", JSON.stringify({ "id": billing.id, "channel": searchChannel, "category": categories }));
-                        router.push(`billing/detail/${billing.id}/invoice?type=${billing.type}`);
+                        router.push(BILLING_DETAIL_INVOICE_WITH_TYPE(billing.id, searchType));
                       }
                       }
                     >

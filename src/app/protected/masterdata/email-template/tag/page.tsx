@@ -14,6 +14,7 @@ import path from "path";
 import { Plus, Trash } from "react-feather";
 import { usePages } from "../hooks";
 import { useEffect } from "react";
+import { EMAIL_TEMPLATE_TAG_ADD, EMAIL_TEMPLATE_TAG_DETAIL } from "@/constants/routes";
 
 const EmailTagPage = () => {
   const { fetchEmailTag, emailTag } = usePages();
@@ -35,7 +36,7 @@ const EmailTagPage = () => {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Email Tags</h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(EMAIL_TEMPLATE_TAG_ADD)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Plus className="w-5 h-5 mr-1 " /> Add New
@@ -60,7 +61,7 @@ const EmailTagPage = () => {
                 <TableCell className="flex gap-2">
                   <Button
                     className="btn btn-primary"
-                    onClick={() => router.push(`${path}/edit/${item.id}`)}
+                    onClick={() => router.push(EMAIL_TEMPLATE_TAG_DETAIL(item.id))}
                   >
                     Edit
                   </Button>

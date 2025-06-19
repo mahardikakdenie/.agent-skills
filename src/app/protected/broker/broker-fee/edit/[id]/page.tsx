@@ -25,6 +25,7 @@ import { ChevronLeft, Check } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../../../hook";
 import { useLoading } from "@/context/loading.context";
+import { BROKER_FEE } from "@/constants/routes";
 
 const EditBrokerFeePage = () => {
   const { id } = useParams();
@@ -54,7 +55,7 @@ const EditBrokerFeePage = () => {
 
   const router = useRouter();
   const handleCancel = () => {
-    router.push("/broker/broker-fee");
+    router.push(BROKER_FEE);
   };
 
   const { setLoading } = useLoading();
@@ -77,7 +78,7 @@ const EditBrokerFeePage = () => {
         fee_type: "percentage",
         currency: "IDR",
       });
-      router.push("/broker/broker-fee");
+      router.push(BROKER_FEE);
 
     } catch (error) {
       console.error(error);
@@ -137,7 +138,7 @@ const EditBrokerFeePage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/broker/broker-fee">Broker Fee</BreadcrumbLink>
+                <BreadcrumbLink href={BROKER_FEE}>Broker Fee</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

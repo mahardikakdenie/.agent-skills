@@ -20,6 +20,7 @@ import {
   InsuranceService,
 } from "@/services/masterdata/insurance.service";
 import { hasPermission } from "@/context/auth.context";
+import { FORBIDDEN, INSURANCE_ADD, INSURANCE_DETAIL } from "@/constants/routes";
 
 const InsurancePage = () => {
   const path = usePathname();
@@ -50,7 +51,7 @@ const InsurancePage = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -85,7 +86,7 @@ const InsurancePage = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}`);
+    router.push(INSURANCE_DETAIL(id));
   };
 
   const handleDelete = async (id: string) => {
@@ -113,7 +114,7 @@ const InsurancePage = () => {
           Insurance
         </h1>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(INSURANCE_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

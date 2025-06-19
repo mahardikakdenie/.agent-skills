@@ -25,6 +25,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { useLoading } from "@/context/loading.context";
 import useCalendar from "../../hook";
 import { formatDate } from "@/lib/formatter";
+import { HOLIDAY } from "@/constants/routes";
 
 const EditHolidayPage = () => {
     const { id } = useParams();
@@ -46,7 +47,7 @@ const EditHolidayPage = () => {
 
     const router = useRouter();
     const handleCancel = () => {
-        router.push("/masterdata/holiday");
+        router.push(HOLIDAY);
     };
 
     const { setLoading } = useLoading();
@@ -65,7 +66,7 @@ const EditHolidayPage = () => {
             await updateCalendar(id as string, {
                 ...data,
             });
-            router.push("/masterdata/holiday");
+            router.push(HOLIDAY);
 
         } catch (error) {
             console.error(error);
@@ -104,7 +105,7 @@ const EditHolidayPage = () => {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/masterdata/holiday">Holiday</BreadcrumbLink>
+                                <BreadcrumbLink href={HOLIDAY}>Holiday</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>

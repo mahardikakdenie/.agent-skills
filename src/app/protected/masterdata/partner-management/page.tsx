@@ -20,6 +20,7 @@ import { User, UserService } from "@/services/masterdata/user.service";
 import { hasPermission } from "@/context/auth.context";
 import { Input } from "@/components/ui/input";
 import _ from "lodash";
+import { FORBIDDEN, PARTNER_MANAGEMENT_ADD, PARTNER_MANAGEMENT_DETAIL } from "@/constants/routes";
 
 const PartnerIntegation = () => {
   const path = usePathname();
@@ -54,7 +55,7 @@ const PartnerIntegation = () => {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push("/forbidden");
+        router.push(FORBIDDEN);
       }
     };
 
@@ -97,7 +98,7 @@ const PartnerIntegation = () => {
   }
 
   const handleEdit = (id: string) => {
-    router.push(`${path}/${id}/edit`);
+    router.push(PARTNER_MANAGEMENT_DETAIL(id));
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -143,7 +144,7 @@ const PartnerIntegation = () => {
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
         <Button
-          onClick={() => router.push(`${path}/add`)}
+          onClick={() => router.push(PARTNER_MANAGEMENT_ADD)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >

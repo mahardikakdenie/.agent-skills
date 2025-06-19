@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
+import { BILLING, BILLING_DETAIL } from "@/constants/routes";
 
 const CreateBillingPage = () => {
   const { channelList, getChannel } = useChannel();
@@ -378,7 +379,7 @@ const CreateBillingPage = () => {
         category: category != "All" ? category : null
       });
       localStorage.setItem("billingPage", JSON.stringify({ type: type, company: company, category: "All" }));
-      router.push("/billing");
+      router.push(BILLING);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -389,7 +390,7 @@ const CreateBillingPage = () => {
   };
 
   const handleCancel = () => {
-    router.push("/billing");
+    router.push(BILLING);
   };
   return (
     <div className="flex flex-col w-full">
@@ -398,7 +399,7 @@ const CreateBillingPage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/billing">Billing</BreadcrumbLink>
+                <BreadcrumbLink href={BILLING}>Billing</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -577,7 +578,7 @@ const CreateBillingPage = () => {
               Billing already exist, click here to view detail{" "}
               <Button
                 onClick={() =>
-                  router.push("/billing/detail/" + existingBillingId)
+                  router.push(BILLING_DETAIL(existingBillingId))
                 }
               >
                 Link
