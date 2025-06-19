@@ -234,7 +234,7 @@ const ClaimHistoryPage = () => {
         </h1>
       </div>
 
-      <div className="flex block bg-white rounded-xl gap-4 mb-3 p-6">
+      <div className="flex bg-white rounded-xl gap-4 mb-3 p-6">
         <div className="flex w-full flex-col">
           <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
             NIK / Passport / Claim Number

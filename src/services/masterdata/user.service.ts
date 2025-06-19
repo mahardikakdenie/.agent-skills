@@ -52,6 +52,7 @@ export class UserService {
   }
 
   async getUser(
+    role?: string,
     page?: number,
     rowsPerPage?: number,
     searchData?: string
@@ -60,6 +61,7 @@ export class UserService {
       page: page,
       pageSize: rowsPerPage,
       search: searchData,
+      role
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
