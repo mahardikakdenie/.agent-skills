@@ -45,7 +45,7 @@ export const Combobox: React.FC<ComboBoxProps> = ({
 
   const selected = options.find((opt) => opt.id === value);
   const optionMatch = options.find(
-    (opt) => opt.name.toLowerCase() === inputValue.toLowerCase()
+    (opt) => opt?.name?.toLowerCase() === inputValue?.toLowerCase()
   );
 
   const handleAddNew = () => {
@@ -109,11 +109,11 @@ export const Combobox: React.FC<ComboBoxProps> = ({
             {options.map((option) => (
               <CommandItem
                 key={option.id}
-                value={option.name}
+                value={option?.name ?? ''}
                 onSelect={() => {
                   onChange(option.id);
                   setOpen(false);
-                  setInputValue(option.name);
+                  setInputValue(option?.name ?? '');
                 }}
               >
                 <Check
@@ -122,7 +122,7 @@ export const Combobox: React.FC<ComboBoxProps> = ({
                     value === option.id ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {option.name}
+                {option?.name ?? ''}
               </CommandItem>
             ))}
           </CommandGroup>
