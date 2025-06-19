@@ -16,6 +16,7 @@ import Image from "next/image";
 import logoImg from "/public/images/logo-friendsure-lsh.webp";
 import { useState } from "react";
 import { Eye, EyeOff } from "react-feather";
+import { useLoading } from "@/context/loading.context";
 
 export default function LoginPage() {
   const authService = new AuthService();
@@ -29,13 +30,17 @@ export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
+  const { setLoading } = useLoading();
   const onSubmit = async (data: any) => {
     try {
+      setLoading(true);
       const token = await authService.login(data);
       login(token.access_token);
     } catch (error) {
       console.error(error);
       return;
+    } finally {
+      setLoading(false);
     }
 
     router.push("/dashboard/transaction");

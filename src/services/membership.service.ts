@@ -153,4 +153,22 @@ export class MembershipService {
       throw error;
     }
   }
+
+  async uploadMembershipFirstTime(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/insured-parties/upload-first-time", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async uploadMembershipFirstTimeWithoutTransaction(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/insured-parties/upload-first-time-without-transaction", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }
