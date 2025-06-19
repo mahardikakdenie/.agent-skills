@@ -59,6 +59,12 @@ const TransactionsPage = () => {
   }, [router]);
 
   useEffect(() => {
+    if(searchData || type) {
+      setPage(1);
+    }
+  }, [searchData , type]);
+
+  useEffect(() => {
     transactionService
       .getTransactions(
         page,
@@ -70,7 +76,6 @@ const TransactionsPage = () => {
       .then((res) => {
         setTransactions(res.data);
         setFilteredTransactions(res.data);
-        setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
         setTotalData(res.total);

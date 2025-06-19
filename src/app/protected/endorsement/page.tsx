@@ -25,11 +25,16 @@ const EndorsementPage = () => {
   const [filteredEndorsement, setFilteredEndorsement] = useState<any[]>([]);
 
   useEffect(() => {
+    if (searchData) {
+      setPage(1);
+    }
+  }, [searchData]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await endorsementService.getEndorsement( page, rowsPerPage, tab === "All" ? "" : tab, searchData );
         setFilteredEndorsement(res.data);
-        setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
         setTotalData(res.total);
@@ -153,12 +158,12 @@ const EndorsementPage = () => {
       </div>
 
       <div className="w-full sm:p-6 p-4 bg-white rounded-lg">
-        <div className="relative w-full ml-auto">
+        <div className="relative w-full ml-auto mb-2">
           <Input
             type="text"
-            placeholder="Search by Name"
+            placeholder="Search by Insured Name"
             onChange={(e) => handleSearch(e.target.value)}
-            className="border p-3 rounded-md pr-10 w-full"
+            className="border p-3 rounded-md pr-10 w-full h-12"
           />
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
@@ -198,7 +203,7 @@ const EndorsementPage = () => {
               <TableRow className="hover:!bg-white">
                 <TableCell colSpan={10}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No transaction data available
+                    <Image alt="no data" src={noData} width={200} /> No endorsement data available
                   </div>
                 </TableCell>
               </TableRow>

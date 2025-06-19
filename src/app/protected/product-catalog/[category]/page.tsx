@@ -162,7 +162,7 @@ const ProductCatalogPage = () => {
             value={searchInsurer}
             onValueChange={handleSearchInsurerOnChange}
           >
-            <SelectTrigger className="h-16">
+            <SelectTrigger className="h-12">
               <SelectValue placeholder="Select Insurer" />
             </SelectTrigger>
             <SelectContent>
@@ -179,7 +179,7 @@ const ProductCatalogPage = () => {
           <Input
             type="text"
             placeholder="Search by Plan Name"
-            className="p-2 border rounded h-16"
+            className="p-2 border rounded h-12"
             value={searchPlanName}
             onChange={(e) => setSearchPlanName(e.target.value)}
           />

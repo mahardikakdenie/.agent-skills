@@ -41,6 +41,7 @@ import {
   hasPermission,
   isTokenExpired,
 } from "@/context/auth.context";
+import _ from "lodash";
 
 const PromotionPage = () => {
   const promotionService = new PromotionService();
@@ -57,8 +58,7 @@ const PromotionPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [filteredPromotion, setFilteredPromotion] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>(""); // State for search input
+  const [searchData, setSearchData] = useState("");
   const [channelNames, setChannelNames] = useState<Map<string, string>>(
     new Map()
   );
@@ -108,9 +108,15 @@ const PromotionPage = () => {
   }, [router]);
 
   useEffect(() => {
+    if(searchData) {
+      setPage(1);
+    }
+  }, [searchData]);
+
+  useEffect(() => {
     if (hasAccess) {
       promotionService
-        .getPromotionCampaign(page, rowsPerPage)
+        .getPromotionCampaign(page, rowsPerPage, searchData)
         .then((res) => {
           setPromotions(res.data);
           setTotalItems(res.total);
@@ -121,7 +127,7 @@ const PromotionPage = () => {
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasAccess, page, rowsPerPage]);
+  }, [hasAccess, page, rowsPerPage, searchData]);
 
   if (hasAccess === null) {
     return <div>Loading...</div>;
@@ -244,22 +250,26 @@ const PromotionPage = () => {
     }
   };
 
-  const handleSearch = async () => {
-    const value = searchTerm.toLowerCase();
-    setSearchTerm(value);
-    setPage(1); // Reset to the first page on a new search
+  // const handleSearch = async () => {
+  //   const value = searchTerm.toLowerCase();
+  //   setSearchTerm(value);
+    
+  //   promotionService
+  //     .getPromotionSearchQuery(searchTerm, 1, rowsPerPage)
+  //     .then((res) => {
+  //       setPromotions(res.data); // Initialize with all sanctions
+  //       setTotalItems(res.total);
+  //       setTotalPages(res.pageTotal);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Failed to query sanction:", error);
+  //     });
+  // };
 
-    promotionService
-      .getPromotionSearchQuery(searchTerm, page, rowsPerPage)
-      .then((res) => {
-        setPromotions(res.data); // Initialize with all sanctions
-        setTotalItems(res.total);
-        setTotalPages(res.pageTotal);
-      })
-      .catch((error) => {
-        console.error("Failed to query sanction:", error);
-      });
-  };
+
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+    }, 100);
 
   return (
     <div className="container mx-auto p-6">
@@ -279,30 +289,18 @@ const PromotionPage = () => {
       <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
         <input
           type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSearch();
-            }
-          }}
+          onChange={(e) => handleSearch(e.target.value)}
           placeholder="Search"
           className="border p-3 rounded-md pr-10 w-full"
         />
-        <button
-          onClick={handleSearch}
-          className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]"
-          type="button"
-        >
-          <Search />
-        </button>
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
       </div>
 
       <div className="bg-white rounded-md p-4 sm:p-6">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center align-middle">
+              <TableHead className="align-middle">
                 Campaign Name
               </TableHead>
               <TableHead className="text-center align-middle">Type</TableHead>
@@ -325,7 +323,7 @@ const PromotionPage = () => {
           <TableBody>
             {promotions.map((promotion) => (
               <TableRow key={promotion.campaign_id}>
-                <TableCell align="center">{promotion.name}</TableCell>
+                <TableCell>{promotion.name}</TableCell>
                 <TableCell align="center">{promotion.type}</TableCell>
                 <TableCell align="center">{promotion.value_currency}</TableCell>
                 <TableCell align="center">
@@ -655,7 +653,7 @@ const PromotionPage = () => {
                     onChange={(e) => {
                       const newRowsPerPage = Number(e.target.value);
                       setRowsPerPage(newRowsPerPage);
-                      setPage(1);
+                      // setPage(1);
                     }}
                   >
                     {[10, 20, 30, 50].map((option) => (
