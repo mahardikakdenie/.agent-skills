@@ -33,6 +33,8 @@ import { hasPermission } from "@/context/auth.context";
 import { Input } from "@/components/ui/input";
 import _ from "lodash";
 import { useUser } from "./hooks";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Controller, useForm} from "react-hook-form";
 
 const Users = () => {
   useRequireAuth();
@@ -58,6 +60,10 @@ const Users = () => {
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const [canToggleStatus, setCanToggleStatus] = useState<boolean>(false);
+  const [canSearchAllAccount, setCanSearchAllAccount] = useState<boolean>(false);
+  const [roleOptions, setRoleOptions] = useState<any[]>([]);
+  const [role, setRole] = useState("User");
+  const { control } = useForm({ shouldUnregister: false, defaultValues: { role } });
 
   const { updateUser } = useUser();
 
@@ -69,12 +75,14 @@ const Users = () => {
       const deleteBtn = await hasPermission("Masterdata.Delete");
       const createBtn = await hasPermission("Masterdata.Create");
       const canToggleStatus = await hasPermission("User.Change Status");
+      const adminReadProfiles = await hasPermission("Profiles.AdminReadProfiles");
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(accessMasterData || accessUser);
       setCanCreate(createBtn);
       setCanToggleStatus(canToggleStatus);
+      setCanSearchAllAccount(adminReadProfiles);
       if (!accessMasterData && !accessUser) {
         router.push("/forbidden");
       }
@@ -86,11 +94,13 @@ const Users = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const result = await userService.getUser(page, rowsPerPage, searchData);
+        const result = await userService.getUser(role, page, rowsPerPage, searchData);
+        const allRoles = await userService.getRole({ page: 1, pageSize: 1000 });
         setUser(result.data);
         setFilteredUser(result.data);
         setTotalPages(result.meta.pageTotal);
         setTotalItems(result.meta.total);
+        setRoleOptions(allRoles.data);
       } catch (error) {
         console.error("Error fetching page:", error);
       } finally {
@@ -100,7 +110,7 @@ const Users = () => {
 
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, searchData]);
+  }, [page, rowsPerPage, searchData, role]);
 
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
@@ -144,6 +154,10 @@ const Users = () => {
         return "text-[#7B5D21]";
     }
   };
+
+  const handleChangeRole = _.debounce((selectedRole: string) => {
+    setRole(selectedRole);
+  }, 100);
 
   const handleStatusChange = (userInfo: User) => {
     setSelectedUserStatus(userInfo);  
@@ -218,14 +232,46 @@ const Users = () => {
         <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
           User
         </h1>
-        <div className="relative max-w-sm w-full ml-auto shadow-sm">
-          <Input
-            type="text"
-            placeholder="Search by Name or Email"
-            onChange={(e) => handleSearch(e.target.value)}
-            className="border p-3 rounded-md pr-10 w-full"
-          />
-          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        <div className="relative w-1/2 ml-auto shadow-sm">
+          <div className="flex justify-end items-center">
+            {canSearchAllAccount && (<div className="mr-3 w-1/2">
+              <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                      <Select
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            handleChangeRole(value);
+                          }}
+                      >
+                        <SelectTrigger className="w-full h-12 shadow border-0 select-status bg-white hover:cursor-pointer py-2">
+                          <SelectValue placeholder="User" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {roleOptions.map((r: any) => (
+                                <SelectItem key={r.id} value={r.name}>
+                                  {r.name}
+                                </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                  )}
+              />
+            </div>)}
+            <div className="w-1/2">
+              <Input
+                  type="text"
+                  placeholder="Search by Name or Email"
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="border p-3 rounded-md pr-10 w-full"
+              />
+              <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+            </div>
+          </div>
         </div>
         <Button
           onClick={() => router.push(`${path}/add`)}
