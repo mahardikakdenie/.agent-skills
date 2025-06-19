@@ -212,7 +212,7 @@ const DetailBillingPage = () => {
               Back
             </div>
             <Button
-              onClick={() => router.push(BILLING_DETAIL_EXPORT_WITH_TYPE(id, billing.data[0].items[0].billings.type))}
+              onClick={() => router.push(BILLING_DETAIL_EXPORT_WITH_TYPE(id as string, billing.data[0].items[0].billings.type))}
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
             >
               <Download className="w-5 h-5 mr-1 " /> Export
