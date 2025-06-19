@@ -48,7 +48,6 @@ const MembershipPage = () => {
         const res = await membershipService.getMembership(page, rowsPerPage, searchData, tab === "All" ? "" : tab, channel);
         setMembership(res.data);
         setFilteredMembership(res.data);
-        // setPage(res.page);
         setTotalPages(res.pageTotal);
         setTotalItems(res.total);
         setTotalData(res.total);
