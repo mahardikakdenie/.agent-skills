@@ -213,7 +213,7 @@ const MembershipPage = () => {
         <div className="relative w-full ml-auto mb-2">
           <Input
             type="text"
-            placeholder="Search by Policy Number or Member Name"
+            placeholder="Search by Policy Number/Member Name/Email/TPA Member ID"
             onChange={(e) => handleSearch(e.target.value)}
             className="border p-3 rounded-md pr-10 w-full h-12"
           />
