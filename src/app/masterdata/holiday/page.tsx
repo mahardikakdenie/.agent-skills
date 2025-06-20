@@ -1,30 +1,15 @@
 "use client";
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableBody,
-  TableCell,
-  TableFooter,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import useCalendar from "./hook";
 import WithSidebar from "@/hoc/with-sidebar";
+import useRequireAuth from "@/hooks/useRequireAuth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, DeleteIcon, EditIcon, EyeIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useLoading } from "@/context/loading.context";
-import useCalendar from "./hook";
 import { formatDate } from "@/lib/formatter";
-import useRequireAuth from "@/hooks/useRequireAuth";
+import { Button } from "@/components/ui/button";
+import { useLoading } from "@/context/loading.context";
+import { ChevronLeft, ChevronRight, EditIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { Table, TableHead, TableRow, TableHeader, TableBody, TableCell, TableFooter, } from "@/components/ui/table";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 
 const HolidayPage = () => {
   useRequireAuth();
@@ -41,7 +26,7 @@ const HolidayPage = () => {
   // const { setLoading } = useLoading();
 
   const [types, setTypes] = useState<any[]>([
-    { name: "All Holiday Type", code: undefined },//code holiday
+    { name: "All Holiday Type", code: undefined },
     { name: "Joint Leave", code: "Joint Leave" },
     { name: "National Holiday", code: "National Holiday" },
   ]);
@@ -84,7 +69,7 @@ const HolidayPage = () => {
 
   const handleRowsPerPageChange = (e: any) => {
     setRowsPerPage(e.target.value);
-    setPage(1); // Reset to first page when rows per page changes
+    setPage(1);
   };
 
   const handleDelete = async (id: string) => {
@@ -117,16 +102,17 @@ const HolidayPage = () => {
     }
   }, [dataCalendar]);
 
-
-
   const handleTypeChange = (v: string) => {
     setSearchType(v);
+    setPage(1);
   };
   const handleYearChange = (v: string) => {
     setSearchYear(v);
+    setPage(1);
   };
   const handleCountryChange = (v: string) => {
     setSearchCountry(v);
+    setPage(1);
   };
 
   return (
@@ -217,7 +203,7 @@ const HolidayPage = () => {
           <TableBody>
             {dataCalendar?.data?.map((item: any, index: any) => (
               <TableRow key={item.id}>
-                <TableCell>{index + 1}</TableCell>
+                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                 <TableCell>{formatDate(item.date, "DD-MM-YYYY")}</TableCell>
                 <TableCell>{item.name}</TableCell>
                 <TableCell>{item.type}</TableCell>
