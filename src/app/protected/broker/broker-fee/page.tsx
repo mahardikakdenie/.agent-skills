@@ -27,6 +27,8 @@ import { useProduct } from "../../masterdata/product/hooks";
 import { ChannelService } from "@/services/channel.services";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import { BROKER_FEE_ADD, BROKER_FEE_DETAIL } from "@/constants/routes";
+import _ from "lodash";
+import { Search } from "react-feather";
 
 const BrokerFeePage = () => {
   const { getBrokerFees, brokerFees, deleteBrokerFee } = useBrokerFee();
@@ -35,12 +37,19 @@ const BrokerFeePage = () => {
   const { setLoading } = useLoading();
   const [totalItems, setTotalItems] = useState(0);
   const totalPages = Math.ceil(totalItems / rowsPerPage);
+  const [searchData, setSearchData] = useState("");
+
+  useEffect(() => {
+    if(searchData) {
+      setPage(1);
+    }
+  }, [searchData]);
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        await getBrokerFees({}, page, rowsPerPage);
+        await getBrokerFees({}, page, rowsPerPage, searchData);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -48,7 +57,7 @@ const BrokerFeePage = () => {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, searchData]);
 
 
   const router = useRouter();
@@ -83,7 +92,10 @@ const BrokerFeePage = () => {
       setTotalItems(brokerFees.meta.total);
     }
   }, [brokerFees]);
-
+  
+  const handleSearch = _.debounce((keyword: string) => {
+  setSearchData(keyword);
+  }, 100);
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -101,6 +113,16 @@ const BrokerFeePage = () => {
 
       </div>
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
+        {/* Search Bar */}
+        <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
+          <input
+            type="text"
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search by Insurance Company Name/Product Name/Plan Name"
+            className="border p-3 rounded-md pr-10 w-full text-sm h-12"
+          />
+            <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Table className="table-transactions">
           <TableHeader>
             <TableRow>

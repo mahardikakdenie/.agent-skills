@@ -9,18 +9,20 @@ const useBrokerFee = () => {
   const getBrokerFees = async (
     where?: any,
     page?: number,
-    pageSize?: number
+    pageSize?: number,
+    searchData?: string
   ) => {
-    const fee = await financeService.getBrokerFee(where, page, pageSize);
+    const fee = await financeService.getBrokerFee(where, page, pageSize, searchData);
     setBrokerFees(fee);
   };
 
   const getChannelFees = async (
     where?: any,
     page?: number,
-    pageSize?: number
+    pageSize?: number,
+    searchData?: string
   ) => {
-    const fee = await financeService.getChannelFee(where, page, pageSize);
+    const fee = await financeService.getChannelFee(where, page, pageSize, searchData);
     setChannelFees(fee);
   };
 

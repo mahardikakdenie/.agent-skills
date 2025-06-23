@@ -37,12 +37,9 @@ export class PromotionService {
       limit: rowsPerPage,
     };
     if (searchData) {
-      params["keyword"] = searchData;
+      params["query"] = searchData;
     }
-    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.httpClientPromotion.get(`/v1/campaign?${queryString}`);
-    // return this.httpClientPromotion.get(`/v1/campaign?page=${page}&limit=${limit}`);
-
+    return this.httpClientPromotion.get(`/v1/campaign/search/query?limit=${rowsPerPage}&page=${page}&query=${searchData}`);
   }
 
   

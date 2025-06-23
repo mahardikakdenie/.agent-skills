@@ -1,22 +1,7 @@
 "use client";
 import WithSidebar from "@/hoc/with-sidebar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drewer";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, } from "@/components/ui/drewer";
 import { PromotionService } from "@/services/promotion.service";
 import { ChannelService } from "@/services/channel.services";
 import { InsuranceService } from "@/services/insurance.services";
@@ -26,21 +11,9 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Edit,
-  Plus,
-  Search,
-  Trash,
-  X,
-} from "react-feather";
+import { ChevronLeft, ChevronRight, Edit, Plus, Search, Trash, X, } from "react-feather";
 import { VoucherService } from "@/services/voucher.services";
-import {
-  clearToken,
-  hasPermission,
-  isTokenExpired,
-} from "@/context/auth.context";
+import { clearToken, hasPermission, isTokenExpired, } from "@/context/auth.context";
 import _ from "lodash";
 import { FORBIDDEN, PROMOTION_ADD, PROMOTION_DETAIL } from "@/constants/routes";
 
@@ -251,26 +224,9 @@ const PromotionPage = () => {
     }
   };
 
-  // const handleSearch = async () => {
-  //   const value = searchTerm.toLowerCase();
-  //   setSearchTerm(value);
-    
-  //   promotionService
-  //     .getPromotionSearchQuery(searchTerm, 1, rowsPerPage)
-  //     .then((res) => {
-  //       setPromotions(res.data); // Initialize with all sanctions
-  //       setTotalItems(res.total);
-  //       setTotalPages(res.pageTotal);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Failed to query sanction:", error);
-  //     });
-  // };
-
-
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
-    }, 100);
+  }, 100);
 
   return (
     <div className="container mx-auto p-6">
@@ -286,18 +242,17 @@ const PromotionPage = () => {
         </Button>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
-        <input
-          type="text"
-          onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Search"
-          className="border p-3 rounded-md pr-10 w-full"
-        />
-          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
-      </div>
-
       <div className="bg-white rounded-md p-4 sm:p-6">
+        {/* Search Bar */}
+        <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
+          <input
+            type="text"
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search by Campaign Name"
+            className="border p-3 rounded-md pr-10 w-full text-sm h-12"
+          />
+            <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -322,7 +277,7 @@ const PromotionPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {promotions.map((promotion) => (
+            {Array.isArray(promotions) && promotions.map((promotion) => (
               <TableRow key={promotion.campaign_id}>
                 <TableCell>{promotion.name}</TableCell>
                 <TableCell align="center">{promotion.type}</TableCell>
