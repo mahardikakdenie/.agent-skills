@@ -61,6 +61,11 @@ const PartnerIntegation = () => {
 
     checkAccess();
   }, [router]);
+  useEffect(() => {
+    if (searchData) {
+      setPage(1);
+    }
+  }, [searchData]);
 
   useEffect(() => {
     const fetchUser = async () => {

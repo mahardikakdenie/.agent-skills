@@ -315,6 +315,7 @@ const ReportCampaignPage = () => {
 
   const handleChangeFilter = (value: string) => {
     setFilterBy(value);
+    setPage(1);
     if (value !== "insurance") {
       setSelectedInsurance(undefined);
       reset({ filter: value, insurance: "" });
@@ -409,8 +410,8 @@ const ReportCampaignPage = () => {
         </div>
       </div>
 
-      <div className="pt-5 md:px-6 p-4 m-5 bg-white">
-        <div>
+      <div className="flex gap-5 p-5 bg-white mb-5 rounded-md">
+        <div className="w-full">
           <label
             htmlFor="sort"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -445,7 +446,7 @@ const ReportCampaignPage = () => {
             )}
           />
         </div>
-        <div className="pt-5">
+        <div className="w-full">
           <label
             htmlFor="filter"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -484,7 +485,7 @@ const ReportCampaignPage = () => {
           />
         </div>
         {filterBy === "insurance" && (
-          <div className="pt-5">
+          <div className="w-full">
             <label
               htmlFor="insurance"
               className="block text-sm font-medium text-gray-700 mb-1"
