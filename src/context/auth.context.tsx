@@ -3,6 +3,8 @@ import React, { createContext, useReducer, useContext, useState } from "react";
 import { CookieService } from "@/services/masterdata/cookie.service";
 import { jwtDecode } from "jwt-decode";
 import { getGlobalToken, setGlobalToken } from "@/lib/token-storage";
+import { useRouter } from "next/navigation";
+import { DASHBOARD_TRANSACTION } from "@/constants/routes";
 
 interface AuthState {
   token: string | null;
@@ -17,7 +19,7 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   checkLogin: () => void;
-  isAuthReady: boolean; // ✨ NEW
+  isAuthReady: boolean;
 }
 
 interface JwtPayload {
@@ -55,17 +57,20 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, { token: null });
-
+  
   const [hasCheckedLogin, setHasCheckedLogin] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
-
+  
+  const router = useRouter();
   const login = async (token: string) => {
     await cookieService.saveCookie({ name: "token", value: token, days: 1 });
     setGlobalToken(token);
     dispatch({ type: "LOGIN", token });
     setIsAuthReady(true);
+    router.push(DASHBOARD_TRANSACTION);
   };
 
   const logout = async () => {
