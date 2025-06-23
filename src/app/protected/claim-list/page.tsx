@@ -564,19 +564,10 @@ const ClaimsPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex flex-wrap justify-end gap-4 pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">
+        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full mr-auto">
           Claim List
         </h1>
 
-        <div className="relative sm:max-w-sm sm:min-w-48 min-w-full ml-auto shadow-sm">
-          <Input
-            type="text"
-            placeholder="Search by Claim ID"
-            onChange={(e) => handleSearch(e.target.value)}
-            className="border p-3 rounded-md pr-10 w-full"
-          />
-          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
-        </div>
         <div className="flex gap-2 sm:w-auto w-full relative">
           <Popover>
             <PopoverTrigger asChild>
@@ -1135,7 +1126,7 @@ const ClaimsPage = () => {
         <div className="w-full flex items-center overflow-auto">
           <div
             onClick={() => selectTab("All")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === "All" && "border-b-[3px] border-primary px-5"
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 whitespace-nowrap ${tab === "All" && "border-b-[3px] border-primary px-5"
               }`}
           >
             <button
@@ -1145,7 +1136,7 @@ const ClaimsPage = () => {
               All Claim
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 whitespace-nowrap ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
                 } ${tab !== "All" && "hidden"}`}
             >
               {totalData}
@@ -1155,7 +1146,7 @@ const ClaimsPage = () => {
             <div
               key={status.id || index}
               onClick={() => selectTab(status.status)}
-              className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 ${tab === status.status && "border-b-[3px] border-primary px-5"
+              className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 whitespace-nowrap ${tab === status.status && "border-b-[3px] border-primary px-5"
                 }`}
             >
               <button
@@ -1178,18 +1169,28 @@ const ClaimsPage = () => {
           ))}
         </div>
       </div>
-      <div className="w-full bg-white rounded-lg">
+      <div className="w-full bg-white rounded-lg p-4">
+        
+        <div className="relative w-full mb-4">
+          <Input
+            type="text"
+            placeholder="Search by Claim ID"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-3 rounded-md pr-10 w-full text-sm h-12"
+          />
+          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Table className="table-claims">
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap py-2">No.</TableHead>
               <TableHead className="py-2">Claim ID</TableHead>
-              <TableHead className="py-2">Customer Name</TableHead>
-              <TableHead className="py-2">Plan Name</TableHead>
+              <TableHead className="py-2 whitespace-nowrap">Customer Name</TableHead>
+              <TableHead className="py-2 whitespace-nowrap">Plan Name</TableHead>
               <TableHead className="whitespace-nowrap py-2">Benefit</TableHead>
               <TableHead className="whitespace-nowrap py-2">Currency</TableHead>
-              <TableHead className="py-2">Requested Amount</TableHead>
-              <TableHead className="py-2">Approved Amount </TableHead>
+              <TableHead className="whitespace-nowrap py-2">Requested Amount</TableHead>
+              <TableHead className="whitespace-nowrap py-2">Approved Amount </TableHead>
               <TableHead className="whitespace-nowrap py-2">Status</TableHead>
               <TableHead className="whitespace-nowrap py-2">Action</TableHead>
             </TableRow>
@@ -1207,18 +1208,16 @@ const ClaimsPage = () => {
                     }`}
                 >
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2 items-center">
+                  <TableCell className="whitespace-nowrap">
                       {claim.number}
-                    </div>
                   </TableCell>
                   <TableCell>
                     {claim?.policy_data?.policy_holder?.name || "-"}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="min-w-72">
                     {claim.package?.plan?.name.split("|").join(" - ") || "-"}
                   </TableCell>
-                  <TableCell>{claim?.benefit?.description_en || "-"}</TableCell>
+                  <TableCell className="min-w-60">{claim?.benefit?.description_en || "-"}</TableCell>
                   <TableCell>{claim?.currency || "-"}</TableCell>
                   <TableCell>
                     {(() => {

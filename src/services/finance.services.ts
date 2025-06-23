@@ -92,10 +92,10 @@ export class FinanceService {
     return this.httpClientCookie.put('/v1/billings/' + id, data);
   }
 
-  async getBrokerFee(where?: any, page?: number, pageSize?: number): Promise<any> {
+  async getBrokerFee(where?: any, page?: number, pageSize?: number, searchData?: string): Promise<any> {
     let qs = '';
     if (page && pageSize) {
-      qs = `?page=${page}&pageSize=${pageSize}`;
+      qs = `?page=${page}&pageSize=${pageSize}&keyword=${searchData || ''}`;
     }
 
     if (Object.keys(where).length > 0) {
@@ -104,10 +104,10 @@ export class FinanceService {
     return this.httpClientCookie.get('/v1/fees/broker' + qs);
   }
 
-  async getChannelFee(where?: any, page?: number, pageSize?: number): Promise<any> {
+  async getChannelFee(where?: any, page?: number, pageSize?: number, searchData?: string): Promise<any> {
     let qs = '';
     if (page && pageSize) {
-      qs = `?page=${page}&pageSize=${pageSize}`;
+      qs = `?page=${page}&pageSize=${pageSize}&keyword=${searchData || ''}`;
     }
 
     if (Object.keys(where).length > 0) {

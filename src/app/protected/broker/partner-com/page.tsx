@@ -29,6 +29,8 @@ import { ProductCategoriesService } from "@/services/masterdata/product-category
 import { formatMoney } from "@/lib/formatter";
 import { set } from "lodash";
 import { BROKER_PARTNER_COM_ADD, BROKER_PARTNER_DETAIL } from "@/constants/routes";
+import { Search } from "react-feather";
+import _ from "lodash";
 
 const PartnerComPage = () => {
   const { getChannelFees, channelFees, deleteChannelFee } = useBrokerFee();
@@ -40,12 +42,19 @@ const PartnerComPage = () => {
   const [channels, setChannels] = useState<any[]>([]);
 
   const [searchChannel, setSearchChannel] = useState("All");//DEFAULT TEMAN 
+  const [searchData, setSearchData] = useState("");
+
+  useEffect(() => {
+    if(searchData) {
+      setPage(1);
+    }
+  }, [searchData]);
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        await getChannelFees({ channelId: searchChannel == "All" ? null : searchChannel }, page, rowsPerPage);
+        await getChannelFees({ channelId: searchChannel == "All" ? null : searchChannel }, page, rowsPerPage, searchData);
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -53,10 +62,9 @@ const PartnerComPage = () => {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, searchChannel]);
+  }, [page, rowsPerPage, searchChannel, searchData]);
 
   const router = useRouter();
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,7 +87,6 @@ const PartnerComPage = () => {
     setSearchChannel(v);
     setPage(1);
   };
-
 
   const handleRowsPerPageChange = (e: any) => {
     setRowsPerPage(e.target.value);
@@ -111,6 +118,9 @@ const PartnerComPage = () => {
     }
   }, [channelFees]);
 
+  const handleSearch = _.debounce((keyword: string) => {
+    setSearchData(keyword);
+  }, 100);
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
@@ -150,6 +160,16 @@ const PartnerComPage = () => {
       </div>
 
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
+        {/* Search Bar */}
+        <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
+          <input
+            type="text"
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search by Insurance Company Name"
+            className="border p-3 rounded-md pr-10 w-full text-sm h-12"
+          />
+            <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+        </div>
         <Table className="table-transactions">
           <TableHeader>
             <TableRow>
