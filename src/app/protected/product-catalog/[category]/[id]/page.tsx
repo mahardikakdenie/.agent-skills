@@ -36,7 +36,7 @@ import { FORBIDDEN, PRODUCT_CATALOG_CATEGORY } from "@/constants/routes";
 const DetaildPage = ({
   params,
 }: {
-  params: { id: string; category: string };
+  params: { id: string; category: string; };
 }) => {
   const router = useRouter();
   const { category, id } = params;
@@ -62,7 +62,7 @@ const DetaildPage = ({
       const deleteBtn = await hasPermission("Product Category.Delete");
       const createBtn = await hasPermission("Product Category.Create");
 
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
@@ -96,6 +96,8 @@ const DetaildPage = ({
       productId: selectedProduct,
       name,
       slug,
+      active_period: "",
+      active_period_unit: "",
     },
   });
 
@@ -118,6 +120,8 @@ const DetaildPage = ({
     setValue("name", plan.name);
     setValue("slug", plan.slug);
     setValue("insuranceId", plan.products.insurances.id);
+    setValue("active_period", plan.active_period || "");
+    setValue("active_period_unit", plan.active_period_unit || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, insurances]);
 
@@ -325,6 +329,71 @@ const DetaildPage = ({
                   {errors.productId && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.productId.message?.toString()}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="active_period"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Active Period
+                  </label>
+                  <Controller
+                    name="active_period"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: "Active Period is required" }}
+                    render={({ field }) => (
+                      <Input
+                        type="number"
+                        id="active_period"
+                        disabled={!canEdit}
+                        placeholder="Active Period"
+                        {...field}
+                        className={`mt-1 block w-full h-16 ${errors.active_period ? "border-red-500" : "border-gray-300"
+                          } rounded-md shadow-sm`}
+                      />
+                    )}
+                  />
+                  {errors.active_period && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.active_period.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="active_period_unit"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Active Period Unit
+                  </label>
+                  <Controller
+                    name="active_period_unit"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: "Active Period Unit is required" }}
+                    render={({ field }) => (
+                      <Select {...field} onValueChange={field.onChange}>
+                        <SelectTrigger className="h-16">
+                          <SelectValue placeholder="Select Unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Units</SelectLabel>
+                            <SelectItem value="day">Days</SelectItem>
+                            <SelectItem value="week">Weeks</SelectItem>
+                            <SelectItem value="month">Months</SelectItem>
+                            <SelectItem value="year">Years</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.active_period_unit && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.active_period_unit.message?.toString()}
                     </p>
                   )}
                 </div>

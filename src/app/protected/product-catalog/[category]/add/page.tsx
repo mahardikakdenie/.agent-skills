@@ -34,7 +34,7 @@ import {
 import { hasPermission } from "@/context/auth.context";
 import { FORBIDDEN, PRODUCT_CATALOG_CATEGORY } from "@/constants/routes";
 
-const AddPlanPage = ({ params }: { params: { category: string } }) => {
+const AddPlanPage = ({ params }: { params: { category: string; }; }) => {
   const router = useRouter();
   const productCatalogService = new ProductCatalogService();
   const { category } = params;
@@ -100,6 +100,8 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
       name,
       currency,
       slug,
+      active_period: "",
+      active_period_unit: "",
     },
     values: {
       insuranceId: selectedInsurance,
@@ -107,6 +109,8 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
       name,
       currency,
       slug,
+      active_period: "",
+      active_period_unit: "",
     },
   });
 
@@ -212,8 +216,8 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                       <SelectValue>
                         {field.value
                           ? insurances.find(
-                              (insurance) => insurance.id === field.value
-                            )?.name
+                            (insurance) => insurance.id === field.value
+                          )?.name
                           : "Choose Insurer"}
                       </SelectValue>
                     </SelectTrigger>
@@ -295,9 +299,8 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                     id="name"
                     placeholder="Insert Plan Name"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
                   />
                 )}
               />
@@ -325,15 +328,78 @@ const AddPlanPage = ({ params }: { params: { category: string } }) => {
                     id="slug"
                     placeholder="Slug"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
                   />
                 )}
               />
               {errors.slug && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.slug.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="active_period"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Active Period
+              </label>
+              <Controller
+                name="active_period"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Active Period is required" }}
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    id="active_period"
+                    placeholder="Active Period"
+                    {...field}
+                    className={`mt-1 block w-full h-16 ${errors.active_period ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                  />
+                )}
+              />
+              {errors.active_period && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.active_period.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="active_period_unit"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Active Period Unit
+              </label>
+              <Controller
+                name="active_period_unit"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Active Period Unit is required" }}
+                render={({ field }) => (
+                  <Select {...field} onValueChange={field.onChange}>
+                    <SelectTrigger className="h-16">
+                      <SelectValue placeholder="Select Unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Units</SelectLabel>
+                        <SelectItem value="day">Days</SelectItem>
+                        <SelectItem value="week">Weeks</SelectItem>
+                        <SelectItem value="month">Months</SelectItem>
+                        <SelectItem value="year">Years</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.active_period_unit && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.active_period_unit.message?.toString()}
                 </p>
               )}
             </div>
