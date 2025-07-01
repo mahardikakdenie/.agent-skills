@@ -10,13 +10,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth.context";
 import { AuthService } from "@/services/auth.service";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import logoImg from "/public/images/logo-friendsure-lsh.webp";
 import { useState } from "react";
 import { Eye, EyeOff } from "react-feather";
 import { useLoading } from "@/context/loading.context";
+import { DASHBOARD_TRANSACTION } from "@/constants/routes";
 
 export default function LoginPage() {
   const authService = new AuthService();
@@ -27,7 +27,6 @@ export default function LoginPage() {
       password: "",
     },
   });
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const { setLoading } = useLoading();
@@ -42,8 +41,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-
-    router.push("/dashboard/transaction");
   };
 
   return (

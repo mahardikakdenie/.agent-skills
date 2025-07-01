@@ -18,6 +18,41 @@ import { Menu } from "react-feather";
 import { Button } from "./button";
 import { usePathname } from "next/navigation";
 import { ChartPie } from "lucide-react";
+import {
+  BILLING,
+  BROKER_FEE,
+  BROKER_PARTNER_COM,
+  CHANNELS,
+  CLAIM_HISTORY,
+  CLAIM_LIST,
+  CURRENCY,
+  DASHBOARD_CLAIM,
+  DASHBOARD_POLICY,
+  DASHBOARD_TRANSACTION,
+  EMAIL_TAG,
+  EMAIL_TEMPLATE,
+  ENDORSEMENT,
+  GROUP,
+  HOLIDAY,
+  INSURANCE,
+  MEMBERSHIP_LIST,
+  PAGE_MANAGEMENT,
+  PARTNER_MANAGEMENT,
+  POLICY_LIST,
+  PRODUCT,
+  PRODUCT_CATALOG_CATEGORY,
+  PRODUCT_CATEGORY,
+  PROMOTION,
+  REPORT_CAMPAIGN,
+  REPORT_CLAIM,
+  REPORT_PERFORMANCE,
+  ROLES,
+  SANCTION,
+  SOURCE,
+  TRANSACTIONS,
+  USER,
+} from "@/constants/routes";
+import { withWildcard } from "@/helpers/route.helper";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -77,8 +112,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/dashboard/transaction"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/transaction/*")
+                  href={DASHBOARD_TRANSACTION}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(DASHBOARD_TRANSACTION))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -90,8 +125,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/dashboard/policy"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/policy/*")
+                  href={DASHBOARD_POLICY}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(DASHBOARD_POLICY))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -103,8 +138,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/dashboard/claim"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/dashboard/claim/*")
+                  href={DASHBOARD_CLAIM}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(DASHBOARD_CLAIM))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -119,8 +154,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/transactions"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/transactions/*")
+                  href={TRANSACTIONS}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(TRANSACTIONS))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -139,8 +174,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/billing"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/billing/*")
+                  href={BILLING}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(BILLING))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -156,8 +191,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/broker/broker-fee"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/broker/broker-fee/*")
+                  href={BROKER_FEE}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(BROKER_FEE))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -173,8 +208,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/broker/partner-com"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/broker/partner-com/*")
+                  href={BROKER_PARTNER_COM}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(BROKER_PARTNER_COM))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -193,8 +228,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/promotion"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/promotion/*")
+                  href={PROMOTION}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PROMOTION))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -213,8 +248,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/travel"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/travel/*")
+                  href={PRODUCT_CATALOG_CATEGORY("travel")}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("travel")))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -230,8 +265,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/personal-accident"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/personal-accident/*")
+                  href={PRODUCT_CATALOG_CATEGORY("personal-accident")}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("personal-accident")))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -247,8 +282,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/motor-vehicle"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/motor-vehicle/*")
+                  href={PRODUCT_CATALOG_CATEGORY("motor-vehicle")}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("motor-vehicle")))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -260,8 +295,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/motor-cycle"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/motor-cycle/*")
+                  href={PRODUCT_CATALOG_CATEGORY("motor-cycle")}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("motor-cycle")))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -273,8 +308,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/airpaz"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/airpaz/*")
+                  href={PRODUCT_CATALOG_CATEGORY("airpaz")}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("airpaz")))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -290,8 +325,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/product-catalog/gadget"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/product-catalog/gadget/*")
+                  href={PRODUCT_CATALOG_CATEGORY("gadget")}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("gadget")))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -306,8 +341,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/policy-list"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/policy-list/*")
+                  href={POLICY_LIST}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(POLICY_LIST))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -323,8 +358,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/endorsement"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/endorsement/*")
+                  href={ENDORSEMENT}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(ENDORSEMENT))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -343,8 +378,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/membership-list"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/membership-list")
+                  href={MEMBERSHIP_LIST}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(MEMBERSHIP_LIST))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -363,8 +398,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/claim-list"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/claim-list/*")
+                  href={CLAIM_LIST}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CLAIM_LIST))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -380,8 +415,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/claim-history"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/claim-history/*")
+                  href={CLAIM_HISTORY}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CLAIM_HISTORY))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -400,8 +435,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/product-category"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/product-category/*")
+                  href={PRODUCT_CATEGORY}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATEGORY))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -417,8 +452,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/insurance"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/insurance/*")
+                  href={INSURANCE}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(INSURANCE))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -434,8 +469,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/product"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/product/*")
+                  href={PRODUCT}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -451,8 +486,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/currency"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/currency/*")
+                  href={CURRENCY}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CURRENCY))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -468,8 +503,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/channels"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/channels/*")
+                  href={CHANNELS}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CHANNELS))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -481,8 +516,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/user"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/user/*")
+                  href={USER}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(USER))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -494,8 +529,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/group"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/group/*")
+                  href={GROUP}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(GROUP))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -507,8 +542,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/roles"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/roles/*")
+                  href={ROLES}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(ROLES))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -520,8 +555,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/page-management"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/page-management/*")
+                  href={PAGE_MANAGEMENT}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PAGE_MANAGEMENT))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -533,8 +568,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/partner-management"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/partner-management/*")
+                  href={PARTNER_MANAGEMENT}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PARTNER_MANAGEMENT))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -546,8 +581,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/email-template"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/email-template/*")
+                  href={EMAIL_TEMPLATE}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(EMAIL_TEMPLATE))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -559,8 +594,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/email-tag"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/email-tag/*")
+                  href={EMAIL_TAG}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(EMAIL_TAG))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -572,8 +607,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/holiday"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/holiday/*")
+                  href={HOLIDAY}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(HOLIDAY))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -601,8 +636,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/sanction"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/sanction/*")
+                  href={SANCTION}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(SANCTION))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -616,8 +651,8 @@ const Sidebar = () => {
                   Sanction List
                 </Link>
                 <Link
-                  href="/source"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/source/*")
+                  href={SOURCE}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(SOURCE))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -636,8 +671,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/report/claim"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/claim/*")
+                  href={REPORT_CLAIM}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_CLAIM))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -653,8 +688,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/report/campaign"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/campaign/*")
+                  href={REPORT_CAMPAIGN}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_CAMPAIGN))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}
@@ -670,8 +705,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/report/performance-report"
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/report/performance-report/*")
+                  href={REPORT_PERFORMANCE}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_PERFORMANCE))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                     }`}

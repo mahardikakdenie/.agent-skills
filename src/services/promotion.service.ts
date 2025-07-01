@@ -1,6 +1,7 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 import { DateRange } from "react-day-picker";
+import qs from "qs";
 
 
 interface PromotionResponse {
@@ -26,12 +27,19 @@ export class PromotionService {
   }
   
 
-  async getPromotionCampaign(page: number, limit: number): Promise<PromotionResponse> {
-    if (page <= 0) {
-      page = 1;
+  async getPromotionCampaign(
+    page?: number,
+    rowsPerPage?: number,
+    searchData?:string,
+  ): Promise<PromotionResponse> {
+    const params: any = {
+      page: page,
+      limit: rowsPerPage,
+    };
+    if (searchData) {
+      params["query"] = searchData;
     }
-    return this.httpClientPromotion.get(`/v1/campaign?page=${page}&limit=${limit}`);
-
+    return this.httpClientPromotion.get(`/v1/campaign/search/query?limit=${rowsPerPage}&page=${page}&query=${searchData}`);
   }
 
   
