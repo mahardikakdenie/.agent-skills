@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { toastNotification } from "@/lib/toast";
+import { MdProductService } from "@/services/masterdata/product.service";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChevronLeft, Upload } from "react-feather";
@@ -12,22 +13,22 @@ import { ChevronLeft, Upload } from "react-feather";
 const HospitalListUploadPage = () => {
   const router = useRouter();
   const { setLoading } = useLoading();
+  const productService = new MdProductService();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "uploading" | "success" | "error"
   >("idle");
   const [dragActive, setDragActive] = useState(false);
-  const [base64String, setBase64String] = useState<string>("");
 
   const handleUpload = async () => {
-    if (uploadStatus === "uploading") return;
+    if (!selectedFile || uploadStatus === "uploading") return;
 
     setUploadStatus("uploading");
     setLoading(true);
 
     try {
-      // TODO: actual upload logic
+      await productService.uploadHospitalList(selectedFile);
       toastNotification("File uploaded successfully! Redirecting to Hospital List...", "success");
 
       setTimeout(() => {
@@ -35,8 +36,8 @@ const HospitalListUploadPage = () => {
         setUploadStatus("idle");
         setLoading(false);
       }, 2000);
-    } catch (error) {
-      toastNotification("Upload failed. Please try again.", "error");
+    } catch (error: any) {
+      toastNotification(error?.response?.data?.message || "Upload failed. Please try again.", "error");
       setUploadStatus("idle");
       setLoading(false);
     }
@@ -64,35 +65,13 @@ const HospitalListUploadPage = () => {
 
   const handleFileSelection = async (file: File) => {
     if (
-      file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
       file.type === "application/vnd.ms-excel"
     ) {
       setSelectedFile(file);
-      try {
-        const base64 = await convertToBase64(file);
-        setBase64String(base64);
-      } catch (error) {
-        console.error("Error converting file to base64:", error);
-        alert("Error processing file");
-      }
     } else {
       alert("Please upload an Excel file (.xlsx or .xls)");
     }
-  };
-
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        // Remove the data:application/[type];base64, prefix
-        const base64Content = base64String.split(",")[1];
-        resolve(base64Content);
-      };
-      reader.onerror = (error) => reject(error);
-    });
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {

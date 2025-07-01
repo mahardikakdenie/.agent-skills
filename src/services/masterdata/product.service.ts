@@ -82,9 +82,6 @@ export class MdProductService {
   constructor() {
     this.httpClient = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
   }
 
@@ -184,5 +181,20 @@ export class MdProductService {
       "/v1/references/type/grab-provider-hospital" +
         (queryString ? `?${queryString}` : "")
     );
+  }
+
+  async uploadHospitalList(file: File): Promise<any> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      return await (this.httpClient as any).post(
+        "/v1/references/upload/grab-provider-hospital",
+        formData,
+      );
+    } catch (error) {
+      console.error("Upload failed:", error);
+      throw error;
+    }
   }
 }
