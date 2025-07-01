@@ -31,6 +31,50 @@ export interface InsurancesResponse {
   };
 }
 
+export interface HospitalReference {
+  fax: string;
+  lat: string;
+  long: string;
+  phone: string;
+  address: string;
+  inpatient: string;
+  name_city: string;
+  type_city: string;
+  outpatient: string;
+  id_provider: number;
+  name_province: string;
+  provider_type: string;
+  type_province: string;
+}
+
+export interface HospitalData {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  code: string | null;
+  type: string;
+  reference: HospitalReference;
+  value: string | null;
+  category: string;
+  deleted_at: string | null;
+  distance: number | null;
+}
+
+export interface HospitalListMeta {
+  total: number;
+  page: number;
+  pageSize: number;
+  pageTotal: number;
+}
+
+export interface HospitalListResponse {
+  message: string;
+  data: HospitalData[];
+  meta: HospitalListMeta;
+}
+
+
 export class MdProductService {
   private httpClient: IHttpClient;
   then: any;
@@ -38,9 +82,6 @@ export class MdProductService {
   constructor() {
     this.httpClient = new AxiosHttpClient({
       baseURL: process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL,
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
   }
 
@@ -130,6 +171,29 @@ export class MdProductService {
       return await this.httpClient.put("v1/products/" + id, data);
     } catch (error) {
       console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getHospitalList(search?: { name?: string }): Promise<HospitalListResponse> {
+    const queryString = new URLSearchParams({ ...search }).toString();
+    return await this.httpClient.get<HospitalListResponse>(
+      "/v1/references/type/grab-provider-hospital" +
+        (queryString ? `?${queryString}` : "")
+    );
+  }
+
+  async uploadHospitalList(file: File): Promise<any> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      return await (this.httpClient as any).post(
+        "/v1/references/upload/grab-provider-hospital",
+        formData,
+      );
+    } catch (error) {
+      console.error("Upload failed:", error);
       throw error;
     }
   }
