@@ -175,11 +175,20 @@ export class MdProductService {
     }
   }
 
-  async getHospitalList(search?: { name?: string }): Promise<HospitalListResponse> {
-    const queryString = new URLSearchParams({ ...search }).toString();
+  async getHospitalList(search?: {
+    name?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<HospitalListResponse> {
+    const params: Record<string, string> = {};
+    if (search?.name) params["name"] = search.name;
+    if (search?.page !== undefined) params["page"] = search.page.toString();
+    if (search?.pageSize !== undefined) params["pageSize"] = search.pageSize.toString();
+
+    const queryString = new URLSearchParams(params).toString();
+
     return await this.httpClient.get<HospitalListResponse>(
-      "/v1/references/type/grab-provider-hospital" +
-        (queryString ? `?${queryString}` : "")
+      "/v1/references/type/grab-provider-hospital" + (queryString ? `?${queryString}` : "")
     );
   }
 
