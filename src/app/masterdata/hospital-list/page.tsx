@@ -32,9 +32,11 @@ const HospitalListPage = () => {
   useEffect(() => {
     const fetchHospitalList = async () => {
       try {
-        const res = await mdProduct.getHospitalList(
-          searchData ? { name: searchData } : undefined
-        );
+        const res = await mdProduct.getHospitalList({
+          name: searchData,
+          page,
+          pageSize: rowsPerPage,
+        });
         setHospitalList(res.data || []);
         setTotalItems(res.meta?.total || 0);
         setTotalPages(res.meta?.pageTotal || 1);
