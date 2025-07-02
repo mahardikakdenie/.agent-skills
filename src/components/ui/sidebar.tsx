@@ -34,6 +34,7 @@ import {
   ENDORSEMENT,
   GROUP,
   HOLIDAY,
+  HOSPITAL_LIST,
   INSURANCE,
   MEMBERSHIP_LIST,
   PAGE_MANAGEMENT,
@@ -620,7 +621,7 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href="/masterdata/hospital-list"
+                  href={HOSPITAL_LIST}
                   className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/hospital-list")
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""

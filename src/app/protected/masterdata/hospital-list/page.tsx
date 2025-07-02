@@ -14,6 +14,8 @@ import WithSidebar from "@/hoc/with-sidebar";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import noData from "/public/images/no-data.webp";
 import { MdProductService, HospitalData } from "@/services/masterdata/product.service";
+import { useLoading } from "@/context/loading.context";
+import { HOSPITAL_LIST_UPLOAD } from "@/constants/routes";
 
 
 const HospitalListPage = () => {
@@ -21,6 +23,7 @@ const HospitalListPage = () => {
   const router = useRouter();
   const path = usePathname();
   const mdProduct = new MdProductService();
+  const { setLoading } = useLoading();
 
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -31,6 +34,7 @@ const HospitalListPage = () => {
 
   useEffect(() => {
     const fetchHospitalList = async () => {
+      setLoading(true)
       try {
         const res = await mdProduct.getHospitalList({
           name: searchData,
@@ -42,6 +46,8 @@ const HospitalListPage = () => {
         setTotalPages(res.meta?.pageTotal || 1);
       } catch (error) {
         console.error("Failed to fetch hospital list:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -68,7 +74,7 @@ const HospitalListPage = () => {
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Hospital List</h1>
         <Button
-          onClick={() => router.push(`${path}/upload`)}
+          onClick={() => router.push(HOSPITAL_LIST_UPLOAD)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Upload className="w-5 h-5 mr-1" /> Upload
