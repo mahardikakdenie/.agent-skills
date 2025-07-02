@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "@/context/auth.context";
 import { LoadingProvider, useLoading } from "@/context/loading.context";
 import Sidebar from "@/components/ui/sidebar";
 import Loading from "./loading";
+import { useNotFound } from "@/context/not-found.context";
 
 function AuthChecker({ children }: { children: React.ReactNode }) {
   const { checkLogin, isAuthReady } = useAuth();
@@ -41,9 +42,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
 function LoadedContent({ children, pathname }: { children: React.ReactNode, pathname: string }) {
   const { isLoading } = useLoading();
+  const isNotFound = useNotFound();
+
   return (
     <>
-      {pathname !== "/" && <Sidebar />}
+      {!isNotFound && pathname !== "/" && <Sidebar />}
       {isLoading && <Loading />}
       <div className="w-full h-screen overflow-auto">
         <AuthProvider>
