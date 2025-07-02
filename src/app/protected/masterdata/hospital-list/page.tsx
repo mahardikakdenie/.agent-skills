@@ -31,6 +31,7 @@ const HospitalListPage = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [hospitalList, setHospitalList] = useState<HospitalData[]>([]);
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
 
   useEffect(() => {
     const fetchHospitalList = async () => {
@@ -44,6 +45,7 @@ const HospitalListPage = () => {
         setHospitalList(res.data || []);
         setTotalItems(res.meta?.total || 0);
         setTotalPages(res.meta?.pageTotal || 1);
+        setHasFetchedOnce(true);
       } catch (error) {
         console.error("Failed to fetch hospital list:", error);
       } finally {
@@ -82,13 +84,13 @@ const HospitalListPage = () => {
       </div>
 
       <div className="w-full sm:p-6 p-4 bg-white rounded-lg">
-        <div className="relative w-full ml-auto">
+        <div className="relative ml-auto">
           <Input
             type="text"
             placeholder="Search"
             onChange={(e) => handleSearch(e.target.value)}
             className="border p-3 rounded-md pr-10 w-full"
-            disabled={hospitalList.length === 0}
+            disabled={!hasFetchedOnce}
           />
           <Search
             className={`absolute top-1/2 right-3 transform -translate-y-1/2 transition-opacity ${
