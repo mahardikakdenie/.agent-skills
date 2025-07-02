@@ -2,13 +2,6 @@
 import axios, { AxiosInstance, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
 import { IHttpClient } from "./http-client-interface";
 import { getGlobalToken } from "./token-storage";
-
-const defaultConfig: CreateAxiosDefaults = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
-
 export class AxiosHttpClient implements IHttpClient {
   private apiClient: AxiosInstance;
   private requestConfig: AxiosRequestConfig | undefined;
@@ -17,7 +10,7 @@ export class AxiosHttpClient implements IHttpClient {
   constructor(requestConfig?: AxiosRequestConfig, isCustomAuthValue: boolean = false) {
     this.requestConfig = requestConfig;
     this.isCustomAuthValue = isCustomAuthValue;
-    this.apiClient = axios.create(defaultConfig);
+    this.apiClient = axios.create();
 
     // Add a response interceptor
     this.apiClient.interceptors.response.use(

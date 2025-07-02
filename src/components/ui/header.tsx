@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import { CHANGE_PASSWORD, LOGIN } from "@/constants/routes";
 
 interface JwtPayload {
   name: string;
@@ -23,7 +24,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    router.push(LOGIN);
   };
 
   return (
@@ -39,7 +40,7 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48 p-4">
               <Link
-                href="/profile/change-password"
+                href={CHANGE_PASSWORD}
                 className="justify-center flex text-sm p-2 bg-gray-300 rounded-full"
               >
                 Change Password
