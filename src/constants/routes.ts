@@ -114,6 +114,10 @@ export const USER = `${MASTERDATA}/user`;
 export const USER_DETAIL = (id: string | number) => `${USER}/${id}`;
 export const USER_ADD = `${USER}/add`;
 
+// Masterdata Hospital List
+export const HOSPITAL_LIST = `${MASTERDATA}/hospital-list`;
+export const HOSPITAL_LIST_UPLOAD = `${HOSPITAL_LIST}/upload`;
+
 // Membership List
 export const MEMBERSHIP_LIST = `${PROTECTED}/membership-list`;
 export const MEMBERSHIP_LIST_EXPORT = `${MEMBERSHIP_LIST}/export`;

@@ -155,14 +155,14 @@ const HospitalListUploadPage = () => {
                         browse
                         <input
                           type="file"
-                          accept=".xlsx, .xls, .csv"
+                          accept=".xlsx, .xls"
                           className="hidden"
                           onChange={handleFileInput}
                         />
                       </label>
                     </p>
                     <p className="text-gray-400 text-sm mt-2">
-                      Supported formats: .xlsx, .xls, .csv
+                      Supported formats: .xlsx, .xls
                     </p>
                   </>
                 )}
