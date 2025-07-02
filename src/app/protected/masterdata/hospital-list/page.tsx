@@ -127,7 +127,7 @@ const HospitalListPage = () => {
                     <TableCell>{renderValue(hospital.name)}</TableCell>
                     <TableCell>{renderValue(hospital.reference.provider_type)}</TableCell>
                     <TableCell>{renderValue(hospital.reference.name_province)}</TableCell>
-                    <TableCell>{renderValue(hospital.reference.type_city)}</TableCell>
+                    <TableCell>{renderValue(hospital.reference.name_city)}</TableCell>
                     <TableCell>{renderValue(hospital.reference.address)}</TableCell>
                     <TableCell>{renderValue(hospital.reference.long)}</TableCell>
                     <TableCell>{renderValue(hospital.reference.lat)}</TableCell>
