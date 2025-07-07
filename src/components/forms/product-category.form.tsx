@@ -15,19 +15,21 @@ import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/app/protected/masterdata/product-category/hooks";
-import { z } from 'zod';
-import validator from 'validator';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from "zod";
+import validator from "validator";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
-  name: z.string()
-    .min(1, 'Category Name harus diisi.')
+  name: z
+    .string()
+    .min(1, "Category Name harus diisi.")
     .transform((val) => validator.escape(val.trim())),
-    
-  icon: z.string()
-    .min(1, 'Category Icon harus diisi.')
+
+  icon: z
+    .string()
+    .min(1, "Category Icon harus diisi.")
     .refine((val) => validator.isURL(val), {
-      message: 'Category Icon harus merupakan sebuah URL valid.',
+      message: "Category Icon harus merupakan sebuah URL valid.",
     })
     .transform((val) => val.trim()),
 });
@@ -59,7 +61,7 @@ const ProductCategoryForm = ({
       name: "",
       icon: "",
     },
-    resolver: zodResolver(schema)
+    resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: any) => {
@@ -83,7 +85,7 @@ const ProductCategoryForm = ({
           const res = await fetchCategoriesById(id);
 
           setValue("name", res.name);
-          setValue("icon", res.icon ?? '');
+          setValue("icon", res.icon ?? "");
         } catch (error) {
           console.error("Error fetching category by ID:", error);
         }
@@ -97,6 +99,10 @@ const ProductCategoryForm = ({
       alert("Data berhasil disimpan!");
 
       router.back();
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } else if (saveSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }
