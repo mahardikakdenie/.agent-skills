@@ -4,16 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import logoImg from "/public/images/logo-friendsure-lsh.webp";
-import iconHome from "/public/images/icon-home.png";
 import iconTransaction from "/public/images/icon-transactions.png";
 import iconCampaigns from "/public/images/icon-campaigns.png";
-import iconTravel from "/public/images/claim-travel.webp";
-import iconPA from "/public/images/claim-pa.webp";
-import iconMobil from "/public/images/mobil.webp";
-import iconMotor from "/public/images/motor.webp";
 import iconPolicy from "/public/images/icon-policy.png";
 import iconClaim from "/public/images/icon-claim.png";
-import logoAirpaz from "/public/images/logo-airpaz.webp";
 import { Menu } from "react-feather";
 import { Button } from "./button";
 import { usePathname } from "next/navigation";
@@ -54,6 +48,7 @@ import {
   USER,
 } from "@/constants/routes";
 import { withWildcard } from "@/helpers/route.helper";
+import ProductCategorySidebar from "../sidebar/product-category.sidebar";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -64,8 +59,6 @@ const Sidebar = () => {
     const cleanSidebar = sidebar.replace('/*', '');
     return pathname === cleanSidebar || pathname.startsWith(cleanSidebar + '/');
   };
-
-
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -244,99 +237,7 @@ const Sidebar = () => {
                   Campaigns
                 </Link>
               </li>
-              <li className="mt-2 text-sm">
-                <strong>Product Category</strong>
-              </li>
-              <li>
-                <Link
-                  href={PRODUCT_CATALOG_CATEGORY("travel")}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("travel")))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image
-                    src={iconTravel}
-                    alt="Travel"
-                    className="w-7 min-w-7"
-                  />
-                  Travel
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={PRODUCT_CATALOG_CATEGORY("personal-accident")}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("personal-accident")))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image
-                    src={iconPA}
-                    alt="Personal Accident"
-                    className="w-7 min-w-7"
-                  />
-                  Personal Accident
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={PRODUCT_CATALOG_CATEGORY("motor-vehicle")}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("motor-vehicle")))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image src={iconMobil} alt="Mobil" className="w-7 min-w-7" />
-                  Mobil
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={PRODUCT_CATALOG_CATEGORY("motor-cycle")}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("motor-cycle")))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image src={iconMotor} alt="Motor" className="w-7 min-w-7" />
-                  Motor
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={PRODUCT_CATALOG_CATEGORY("airpaz")}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("airpaz")))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image
-                    src={logoAirpaz}
-                    alt="Airpaz"
-                    className="w-7 min-w-7"
-                  />
-                  Airpaz
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={PRODUCT_CATALOG_CATEGORY("gadget")}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATALOG_CATEGORY("gadget")))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image src={iconPA} alt="Gadget" className="w-7 min-w-7" />
-                  Gadget
-                </Link>
-              </li>
+              <ProductCategorySidebar isActive={isActive} handleMenuClick={handleMenuClick} />
               <li className="mt-2 text-sm">
                 <strong>Policy</strong>
               </li>
