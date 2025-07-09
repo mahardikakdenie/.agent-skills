@@ -1,4 +1,5 @@
 "use client";
+
 import {
   TableHeader,
   TableRow,
@@ -8,7 +9,7 @@ import {
   Table,
   TableFooter,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PackageDto,
   ProductCatalogService,
@@ -78,7 +79,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
         setPage(response.meta.page);
         setTotalItems(response.meta.total);
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, page, rowsPerPage]);
 
   const handleFilter = () => {
@@ -128,12 +129,13 @@ export default function PackageList(props: Readonly<{ id: string }>) {
       <Button
         className="btn btn-primary"
         disabled={!canEdit}
-        onClick={() => router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))}
+        onClick={() =>
+          router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))
+        }
       >
         <Upload className="w-5 h-5 mr-2" /> Upload Packages
       </Button>
-
-      {category == "personal-accident" ? (
+      {category === "personal-accident" && (
         <div className="w-full py-4 bg-white rounded-lg overflow-aut mb-4 grid sm:grid-cols-2 gap-4">
           <>
             <select
@@ -188,77 +190,69 @@ export default function PackageList(props: Readonly<{ id: string }>) {
             </select>
           </>
         </div>
-      ) : category == "gadget" ? (
-        <>
-          <div className="py-2"></div>
-        </>
-      ) : (
-        <>
-          <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
-            <select
-              value={adultFilter}
-              onChange={(e) => setAdultFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm"
-            >
-              <option value="">All Adults</option>
-              {Array.from(
-                new Set(
-                  packages.map((pkg) => pkg.search_params.adult).filter(Boolean)
-                )
+      )}
+      {category !== "personal-accident" && category !== "gadget" && (
+        <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
+          <select
+            value={adultFilter}
+            onChange={(e) => setAdultFilter(e.target.value)}
+            className="border px-2 py-1 rounded h-[44px] text-sm"
+          >
+            <option value="">All Adults</option>
+            {Array.from(
+              new Set(
+                packages.map((pkg) => pkg.search_params.adult).filter(Boolean)
               )
-                .sort((a, b) => a - b)
-                .map((adult, index) => (
-                  <option key={index} value={adult}>
-                    {adult}
-                  </option>
-                ))}
-            </select>
-
-            <select
-              value={childrenFilter}
-              onChange={(e) => setChildrenFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm"
-            >
-              <option value="">All Children</option>
-              {Array.from(
-                new Set(
-                  packages
-                    .map((pkg) => pkg.search_params.children)
-                    .filter(Boolean)
-                )
+            )
+              .sort((a, b) => a - b)
+              .map((adult, index) => (
+                <option key={index} value={adult}>
+                  {adult}
+                </option>
+              ))}
+          </select>
+          <select
+            value={childrenFilter}
+            onChange={(e) => setChildrenFilter(e.target.value)}
+            className="border px-2 py-1 rounded h-[44px] text-sm"
+          >
+            <option value="">All Children</option>
+            {Array.from(
+              new Set(
+                packages
+                  .map((pkg) => pkg.search_params.children)
+                  .filter(Boolean)
               )
-                .sort((a, b) => a - b)
-                .map((children, index) => (
-                  <option key={index} value={children}>
-                    {children}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </>
+            )
+              .sort((a, b) => a - b)
+              .map((children, index) => (
+                <option key={index} value={children}>
+                  {children}
+                </option>
+              ))}
+          </select>
+        </div>
       )}
       <div className="w-full bg-white rounded-lg overflow-auto">
         <Table className="table-search-params">
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap">No.</TableHead>
-              {category === "personal-accident" ? (
-                <>
+              {category === "personal-accident" && (
+                <React.Fragment>
                   <TableHead>Occupation Class</TableHead>
                   <TableHead>Ages</TableHead>
-                </>
-              ) : category === "gadget" ? (
-                <></>
-              ) : (
-                <>
+                </React.Fragment>
+              )}
+              {category !== "personal-accident" && category !== "gadget" && (
+                <React.Fragment>
                   <TableHead>Type</TableHead>
                   <TableHead>Origin</TableHead>
                   <TableHead>Duration</TableHead>
                   <TableHead>Adult Participant</TableHead>
                   <TableHead>Children Participant</TableHead>
-                </>
+                </React.Fragment>
               )}
-
               <TableHead className="whitespace-nowrap">Currency</TableHead>
               <TableHead>Premium</TableHead>
             </TableRow>
@@ -268,8 +262,8 @@ export default function PackageList(props: Readonly<{ id: string }>) {
               filteredPackages.map((packageData, index) => (
                 <TableRow key={packageData.id}>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  {category == "personal-accident" ? (
-                    <>
+                  {category === "personal-accident" && (
+                    <React.Fragment>
                       <TableCell>
                         {packageData.search_params.occupation_class.join(", ")}
                       </TableCell>
@@ -278,27 +272,26 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                           packageData.search_params.age.slice(-1)[0]
                         }`}
                       </TableCell>
-                    </>
-                  ) : category === "gadget" ? (
-                    <></>
-                  ) : (
-                    <>
-                      <TableCell className="capitalize">
-                        {packageData.search_params.trip}
-                      </TableCell>
-                      <TableCell className="capitalize">
-                        {packageData.search_params.origin}
-                      </TableCell>
-                      <TableCell>
-                        {packageData.search_params.duration_to} days
-                      </TableCell>
-                      <TableCell>{packageData.search_params.adult}</TableCell>
-                      <TableCell>
-                        {packageData.search_params.children}
-                      </TableCell>
-                    </>
+                    </React.Fragment>
                   )}
-
+                  {category !== "personal-accident" &&
+                    category !== "gadget" && (
+                      <React.Fragment>
+                        <TableCell className="capitalize">
+                          {packageData.search_params.trip}
+                        </TableCell>
+                        <TableCell className="capitalize">
+                          {packageData.search_params.origin}
+                        </TableCell>
+                        <TableCell>
+                          {packageData.search_params.duration_to} days
+                        </TableCell>
+                        <TableCell>{packageData.search_params.adult}</TableCell>
+                        <TableCell>
+                          {packageData.search_params.children}
+                        </TableCell>
+                      </React.Fragment>
+                    )}
                   <TableCell>{packageData.currency}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     {formatMoney(packageData.premium, packageData.currency)}
@@ -312,7 +305,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

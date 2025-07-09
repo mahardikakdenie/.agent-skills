@@ -4,6 +4,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { useProducts } from "../../hooks";
@@ -27,17 +28,21 @@ export default function BenefitList(props: { id: string }) {
     <>
       <Button
         className="mb-5"
-        onClick={() => router.push(PRODUCT_CATALOG_UPLOAD_BENEFIT(category as string, id))}
+        onClick={() =>
+          router.push(PRODUCT_CATALOG_UPLOAD_BENEFIT(category as string, id))
+        }
       >
         <Upload className="w-5 h-5 mr-2" />
         Upload Benefits
       </Button>
       <Table className="table-search-params">
-        <TableRow>
-          <TableHead>Benefit</TableHead>
-          <TableHead>Currency</TableHead>
-          <TableHead>Value</TableHead>
-        </TableRow>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Benefit</TableHead>
+            <TableHead>Currency</TableHead>
+            <TableHead>Value</TableHead>
+          </TableRow>
+        </TableHeader>
         <TableBody>
           {benefits.map((benefit: any) => (
             <TableRow key={benefit.id}>
@@ -45,7 +50,7 @@ export default function BenefitList(props: { id: string }) {
               <TableCell>{benefit.currency}</TableCell>
               <TableCell>{benefit.value || benefit.html}</TableCell>
             </TableRow>
-          ))}{" "}
+          ))}
         </TableBody>
       </Table>
     </>
