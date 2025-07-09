@@ -119,6 +119,7 @@ const ProductCategory = () => {
             <TableRow>
               <TableHead className="whitespace-nowrap w-12">No.</TableHead>
               <TableHead className="min-w-36">Category Name</TableHead>
+              <TableHead className="min-w-36">Category Icon</TableHead>
               <TableHead className="whitespace-nowrap w-36">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -134,6 +135,11 @@ const ProductCategory = () => {
                         (word) => word.charAt(0).toUpperCase() + word.slice(1)
                       )
                       .join(" ")}
+                  </TableCell>
+                  <TableCell>
+                    {category.icon && <a href={category.icon} target="_blank" className="text-primary hover:underline">
+                        <Image src={category.icon} alt={category.name} width={50} height={50} />
+                    </a>}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-4 items-center">
