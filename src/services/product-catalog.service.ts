@@ -314,4 +314,13 @@ export class ProductCatalogService {
       throw error;
     }
   }
+
+  async savePackage(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/packages", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }

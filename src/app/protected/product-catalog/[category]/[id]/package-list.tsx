@@ -18,10 +18,10 @@ import { formatMoney } from "@/lib/formatter";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
-import { ChevronLeft, ChevronRight, Upload } from "react-feather";
+import { ChevronLeft, ChevronRight, Plus, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
-import { FORBIDDEN, PRODUCT_CATALOG_UPLOAD } from "@/constants/routes";
+import { FORBIDDEN, PRODUCT_CATALOG_ADD_PACKAGE, PRODUCT_CATALOG_UPLOAD } from "@/constants/routes";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const path = usePathname();
@@ -126,15 +126,26 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
   return (
     <>
-      <Button
-        className="btn btn-primary"
-        disabled={!canEdit}
-        onClick={() =>
-          router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))
-        }
-      >
-        <Upload className="w-5 h-5 mr-2" /> Upload Packages
-      </Button>
+      <div className="flex justify-end gap-x-4">
+        <Button
+          className="btn btn-primary"
+          disabled={!canEdit}
+          onClick={() =>
+            router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))
+          }
+        >
+          <Upload className="w-5 h-5 mr-2" /> Upload Packages
+        </Button>
+        <Button
+          className="bg-[#F5BA41] hover:bg-[#F5BA41]/80 text-black"
+          disabled={!canEdit}
+          onClick={() =>
+            router.push(PRODUCT_CATALOG_ADD_PACKAGE(category as string, id))
+          }
+        >
+          <Plus className="w-5 h-5 mr-2" /> Add Package
+        </Button>
+      </div>
       {category === "personal-accident" && (
         <div className="w-full py-4 bg-white rounded-lg overflow-aut mb-4 grid sm:grid-cols-2 gap-4">
           <>
@@ -191,7 +202,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
           </>
         </div>
       )}
-      {category !== "personal-accident" && category !== "gadget" && (
+      {category === "travel" && (
         <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
           <select
             value={adultFilter}
@@ -244,7 +255,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                   <TableHead>Ages</TableHead>
                 </React.Fragment>
               )}
-              {category !== "personal-accident" && category !== "gadget" && (
+              {category === "travel" && (
                 <React.Fragment>
                   <TableHead>Type</TableHead>
                   <TableHead>Origin</TableHead>
@@ -274,24 +285,23 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                       </TableCell>
                     </React.Fragment>
                   )}
-                  {category !== "personal-accident" &&
-                    category !== "gadget" && (
-                      <React.Fragment>
-                        <TableCell className="capitalize">
-                          {packageData.search_params.trip}
-                        </TableCell>
-                        <TableCell className="capitalize">
-                          {packageData.search_params.origin}
-                        </TableCell>
-                        <TableCell>
-                          {packageData.search_params.duration_to} days
-                        </TableCell>
-                        <TableCell>{packageData.search_params.adult}</TableCell>
-                        <TableCell>
-                          {packageData.search_params.children}
-                        </TableCell>
-                      </React.Fragment>
-                    )}
+                  {category === "travel" && (
+                    <React.Fragment>
+                      <TableCell className="capitalize">
+                        {packageData.search_params.trip}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {packageData.search_params.origin}
+                      </TableCell>
+                      <TableCell>
+                        {packageData.search_params.duration_to} days
+                      </TableCell>
+                      <TableCell>{packageData.search_params.adult}</TableCell>
+                      <TableCell>
+                        {packageData.search_params.children}
+                      </TableCell>
+                    </React.Fragment>
+                  )}
                   <TableCell>{packageData.currency}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     {formatMoney(packageData.premium, packageData.currency)}

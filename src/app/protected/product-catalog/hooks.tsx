@@ -6,6 +6,7 @@ import {
   ProductCatalogService,
   ProductList,
 } from "@/services/product-catalog.service";
+import { ProductConfig, ProductConfigService } from "@/services/product-config.service";
 import { useState } from "react";
 
 export const useProducts = () => {
@@ -15,8 +16,12 @@ export const useProducts = () => {
   const [plans, setPlans] = useState<any[] | null>(null);
   const [benefits, setBenefits] = useState<any[]>([]);
   const [details, setDetails] = useState<any[]>([]);
+  const [productConfig, setProductConfig] = useState<ProductConfig>();
+
   const productCatalogService = new ProductCatalogService();
   const channelService = new ChannelService();
+  const productConfigService = new ProductConfigService();
+
   const fetchProducts = async (params: ProductCatalogRequest) => {
     const data = await productCatalogService.getProducts(params);
     setProducts(data);
@@ -150,6 +155,25 @@ export const useProducts = () => {
     const { data } = await productCatalogService.getPlans(params);
     setPlans(data);
   };
+
+  const savePackage = async (data: any) => {
+    const { data: response } = await productCatalogService.savePackage(data);
+
+    return response;
+  }
+
+  const updatePackage = async (id: string, data: any) => {
+    const { data: response } = await productCatalogService.savePackage(data);
+
+    return response;
+  }
+
+  const fetchProductConfigByType = async(type: string) => {
+    const { data } = await productConfigService.getProductConfigByType(type);
+
+    setProductConfig(data)
+  }
+
   return {
     fetchPlans,
     products,
@@ -175,5 +199,9 @@ export const useProducts = () => {
     getChannels,
     getChannelPlans,
     channelPlans,
+    savePackage,
+    updatePackage,
+    fetchProductConfigByType,
+    productConfig
   };
 };

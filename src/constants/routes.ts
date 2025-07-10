@@ -138,7 +138,7 @@ export const PRODUCT_CATALOG_ADD = (category: string | number) => `${PRODUCT_CAT
 export const PRODUCT_CATALOG_UPLOAD = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/upload`;
 export const PRODUCT_CATALOG_UPLOAD_BENEFIT = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/upload-benefit`;
 export const PRODUCT_CATALOG_UPLOAD_DETAIL = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/upload-detail`;
-
+export const PRODUCT_CATALOG_ADD_PACKAGE = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/add-package`;
 
 // Promotion
 export const PROMOTION = `${PROTECTED}/promotion`;
