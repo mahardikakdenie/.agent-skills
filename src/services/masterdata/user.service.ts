@@ -52,6 +52,23 @@ export class UserService {
   }
 
   async getUser(
+    role?: string,
+    page?: number,
+    rowsPerPage?: number,
+    searchData?: string
+  ): Promise<User> {
+    const params: any = {
+      page: page,
+      pageSize: rowsPerPage,
+      search: searchData,
+      role
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(`/account/?${queryString}`);
+  }
+
+    async getPartner(
     page?: number,
     rowsPerPage?: number,
     searchData?: string
@@ -63,14 +80,13 @@ export class UserService {
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.authHttpClient.get(`/account/?${queryString}`);
+    return this.authHttpClient.get(`/v1/account/partner?${queryString}`);
   }
-
   async getChannel(search: any): Promise<Channel> {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();
       return await this.channelHttpClient.get<Channel>(
-        "v1/channels?" + queryString
+        "v1/channels?" + queryString + "&limit=1000"
       );
     } catch (error) {
       console.error("Request failed:", error);
@@ -148,6 +164,42 @@ export class UserService {
   async removeAccountRoles(id: string): Promise<any> {
     try {
       return await this.authHttpClient.delete("v1/account-roles/" + id);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async changePassword(id: string, data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.put("/v1/account/" + id + "/change-password", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async addAccountChannels(data: any): Promise<any> {
+    try {
+      return await this.authHttpClient.post("v1/account-channels", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async removeAccountChannels(id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.delete("v1/account-channels/" + id);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getAccountChannelsByAccountId(accountId: string): Promise<any> {
+    try {
+      return await this.authHttpClient.get(`/v1/account-channels/account/${accountId}`);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

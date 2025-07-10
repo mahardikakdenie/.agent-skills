@@ -53,14 +53,37 @@ export class FinanceService {
     return this.httpClientCookie.get('/v1/fees/broker-filter/' + qs);
   }
 
+  async getChannelFees(param: { channelId: string, insuranceId?: string, productId?: string, planId?: string; }): Promise<any> {
+    const { channelId, insuranceId, productId, planId } = param;
+
+    let qs = '?channelId=' + channelId;
+    if (insuranceId) {
+      qs += `&insuranceId=${insuranceId}`;
+    }
+    //sementara di hilangkan
+    // if (productId) {
+    //   qs += `&productId=${productId}`;
+    // }
+
+    // if (planId) {
+    //   qs += `&planId=${planId}`;
+    // }
+
+
+    return this.httpClientCookie.get('/v1/fees/channel-filter/' + qs);
+  }
+
   async createBilling(data: any) {
     return this.httpClientCookie.post('/v1/billings', data);
   }
 
-  async getBillingById(id: string, page?: number, pageSize?: number) {
+  async getBillingById(id: string, page?: number, pageSize?: number, groupBy?: string) {
     let qs = '';
     if (page && pageSize) {
       qs = `?page=${page}&pageSize=${pageSize}`;
+    }
+    if (groupBy) {
+      qs += '&groupBy=' + groupBy;
     }
     return this.httpClientCookie.get('/v1/billings/' + id + qs);
   }
@@ -69,16 +92,28 @@ export class FinanceService {
     return this.httpClientCookie.put('/v1/billings/' + id, data);
   }
 
-  async getBrokerFee(where?: any, page?: number, pageSize?: number): Promise<any> {
+  async getBrokerFee(where?: any, page?: number, pageSize?: number, searchData?: string): Promise<any> {
     let qs = '';
     if (page && pageSize) {
-      qs = `?page=${page}&pageSize=${pageSize}`;
+      qs = `?page=${page}&pageSize=${pageSize}&keyword=${searchData || ''}`;
     }
 
     if (Object.keys(where).length > 0) {
       qs += (qs === '' ? '?' : '&') + `${Object.keys(where).map(key => `${key}=${where[key]}`).join('&')}`;
     }
     return this.httpClientCookie.get('/v1/fees/broker' + qs);
+  }
+
+  async getChannelFee(where?: any, page?: number, pageSize?: number, searchData?: string): Promise<any> {
+    let qs = '';
+    if (page && pageSize) {
+      qs = `?page=${page}&pageSize=${pageSize}&keyword=${searchData || ''}`;
+    }
+
+    if (Object.keys(where).length > 0) {
+      qs += (qs === '' ? '?' : '&') + `${Object.keys(where).map(key => `${key}=${where[key]}`).join('&')}`;
+    }
+    return this.httpClientCookie.get('/v1/fees/channel' + qs);
   }
 
   async createBrokerFee(data: any) {
@@ -93,4 +128,13 @@ export class FinanceService {
     return this.httpClientCookie.delete('/v1/fees/broker/' + id);
   }
 
+  async createChannelFee(channelId: string, data: any) {
+    return this.httpClientCookie.post(`/v1/fees/channel/${channelId}`, data);
+  }
+  async updateChannelFee(channelId: string, data: any) {
+    return this.httpClientCookie.put(`/v1/fees/channel/${channelId}`, data);
+  }
+  async deleteChannelFee(id: string) {
+    return this.httpClientCookie.delete('/v1/fees/channel/' + id);
+  }
 }

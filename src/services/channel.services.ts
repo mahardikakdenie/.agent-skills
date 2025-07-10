@@ -26,15 +26,19 @@ export class ChannelService {
 
 
   async getChannels(page?: number, limit?: number): Promise<PromotionResponse> {
-    let query = "";
-    if (page && page <= 0) {
-      page = 1;
+    let params: string[] = [];
+
+    if (page && page > 0) {
+      params.push(`page=${page}`);
     }
 
-    if (page && limit) {
-      query = `?page=${page}&limit=${limit}`;
+    if (limit) {
+      params.push(`limit=${limit}`);
     }
+
+    const query = params.length ? `?${params.join('&')}` : "";
     return this.httpClientChannels.get(`/channels${query}`);
+
 
   }
 

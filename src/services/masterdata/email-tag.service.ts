@@ -37,10 +37,12 @@ export class EmailTagService {
     });
   }
 
-  async getEmailTag(): Promise<any> {
+  async getEmailTag(search: any): Promise<EmailTagResponse> {
     try {
-      const response = await this.httpClient.get("/v1/email-tags");
-      return (response as { data: EmailTagResponse[] }).data;
+      const queryString = new URLSearchParams({ ...search }).toString();
+      return await this.httpClient.get<EmailTagResponse>(
+        "v1/email-tags/?" + queryString
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

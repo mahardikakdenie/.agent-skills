@@ -1,5 +1,6 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
+import { stat } from "fs";
 import qs from "qs";
 import { DateRange } from "react-day-picker";
 
@@ -113,6 +114,27 @@ export interface ClaimChannel {
   form: string;
 }
 
+export interface ClaimHistoryDetail {
+  claimId: string;
+  insuredName: string;
+  status: string;
+  currency: string;
+  paymentType: string;
+  submittedDate: string;
+  claimAmount: number;
+  paid: number;
+  remainingLimit: number;
+  selectedPolicy: string;
+}
+
+export interface ClaimHistorySummary {
+  data: ClaimHistoryDetail[];
+  plans: { planId: string; planName: string }[];
+  policies: { policyId: string; policyNo: string }[];
+  totalLimit: number;
+  totalPaid: number;
+  remainingClaimLimit: number;
+}
 export class ClaimService {
   private httpClient: IHttpClient;
 
@@ -129,10 +151,10 @@ export class ClaimService {
     rowsPerPage: number,
     status: string,
     searchData?: string,
-    searchChannel?: string,
     searchSlaStatus?: any,
     date_from?: string,
-    date_to?: string
+    date_to?: string,
+    channel?: string
   ): Promise<ClaimResponse> {
     const params: any = {
       page: page,
@@ -141,10 +163,6 @@ export class ClaimService {
 
     if (searchData) {
       params["keyword"] = searchData;
-    }
-
-    if (searchChannel) {
-      params["channel"] = searchChannel;
     }
 
     if (searchSlaStatus) {
@@ -181,19 +199,21 @@ export class ClaimService {
       params["date_to"] = date_to;
     }
 
+    params["channel"] = channel;
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/claims?${queryString}`);
   }
 
-  async getClaimsExport(
-    page: number,
-    rowsPerPage: number
-  ): Promise<ClaimResponse> {
-    const params: any = {
-      page: page,
-      limit: 100,
-    };
-
+  async getClaimsExport(params: {
+    page: number;
+    rowsPerPage: number;
+    status?: string;
+    searchData?: string;
+    searchSlaStatus?: any;
+    date_from?: string;
+    date_to?: string;
+    channel?: string;
+  }): Promise<ClaimResponse> {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/claims?${queryString}`);
   }
@@ -206,6 +226,24 @@ export class ClaimService {
     return this.httpClient.get(`/v1/claim-histories?claim=${id}`);
   }
 
+  async getClaimsHistoriesList({
+    searchData,
+    planId,
+    policyId,
+  }: {
+    searchData: string;
+    planId?: string;
+    policyId?: string;
+  }): Promise<{ data: ClaimHistorySummary[] }> {
+    const params: any = {};
+
+    if (planId) params["plan_id"] = planId;
+    if (policyId) params["policy_id"] = policyId;
+    if (searchData) params["search"] = searchData;
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get(`/v1/claims/claim-list-limit?${queryString}`);
+  }
   async updateClaimStatus(
     id: string,
     data: any,
@@ -242,17 +280,81 @@ export class ClaimService {
     rowsPerPage: number,
     output: string,
     date_from?: string,
-    date_to?: string,
+    date_to?: string
   ): Promise<any> {
     const params = {
       page,
       limit: rowsPerPage,
       output,
       ...(date_from && { date_from }),
-      ...(date_to && { date_to })
+      ...(date_to && { date_to }),
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get<any>(`/v1/claims/export?${queryString}`);
   }
+
+  async import(data: {
+    data: string;
+    input: string;
+    channel: string;
+    category: string;
+  }) {
+    const { data: base64String, input, channel, category } = data;
+    return this.httpClient.post(`/v1/claims/import`, {
+      data: base64String,
+      input: "File",
+      channel,
+      category,
+    });
+  }
+
+  async importAsJson(importData: {
+    data: any[];
+    input: string;
+    channel: string;
+    category: string;
+  }) {
+    const { data, input, channel, category } = importData;
+    return await this.httpClient.post(`/v1/claims/import`, {
+      data,
+      input: "Data",
+      channel,
+      category,
+    });
+  }
+
+  async importDataGuide(params: { channel: string; category: string }): Promise<{ data: { data: any }[] }> {
+    const { channel, category } = params;
+    const queryString = qs.stringify({ channel, category }, { arrayFormat: "brackets" });
+
+    return await this.httpClient.get(`/v1/claims/import-data-guide?${queryString}`);
+  }
+
+  async getClaimStatistic(
+    page: number,
+    rowsPerPage: number,
+    filters?: {
+      insurance?: string;
+      product?: string;
+      plan?: string;
+      date_from?: string;
+      date_to?: string;
+    }
+  ): Promise<any> {
+    const params = {
+      page,
+      pageSize: rowsPerPage,
+      sort: 'desc',
+      ...(filters?.insurance && { insurance: filters.insurance }),
+      ...(filters?.product && { product: filters.product }),
+      ...(filters?.plan && { plan: filters.plan }),
+      ...(filters?.date_from && { from: filters.date_from }),
+      ...(filters?.date_to && { to: filters.date_to }),
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get<any>(`/v1/claims/statistic-data?${queryString}`);
+  }
+
 }

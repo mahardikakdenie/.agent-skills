@@ -8,6 +8,8 @@ export interface ProductCategories {
   updated_at: any;
   name: string;
   claim_config: string;
+  icon?: string;
+  display_name?: string;
 }
 
 export class ProductCategoriesService {
@@ -35,6 +37,10 @@ export class ProductCategoriesService {
 
   async getCategoriesById(id: string): Promise<any> {
     return this.httpClient.get("/v1/categories/" + id);
+  }
+
+  async getCategoriesByChannelId(channelId: string): Promise<any> {
+    return this.httpClient.get("/v1/categories/channel/" + channelId);
   }
 
   async deleteCategories(id: string): Promise<any> {

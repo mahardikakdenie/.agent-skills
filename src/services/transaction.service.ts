@@ -10,6 +10,100 @@ interface TransactionResponse {
   pageTotal: number;
   total: number;
 }
+
+export interface Transaction {
+  id: string;
+  status: string;
+  date: string;
+  customer: Customer;
+  insurance: Insurance;
+  discount: {};
+  fees: TransactionFee[];
+  forms: any;
+  participants: Participant[];
+  category: string;
+}
+
+export interface TransactionFee {
+  id?: string;
+  name: string;
+  description?: string;
+  value: number;
+  currency: string;
+  required: boolean;
+  exchange_rates: [];
+}
+
+export interface Customer {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  account: string;
+}
+
+export interface Insurance {
+  id: string;
+  sum_insured: string | null;
+  premium: string;
+  currency: string;
+  quantity: string;
+  plan: {
+    id: string;
+    name: string;
+  };
+  product: {
+    id: string;
+    name: string;
+  };
+  insurance: {
+    name: string;
+    logo_url: string;
+    currencies: [];
+  };
+  original_price: number;
+  discount: number;
+}
+
+export interface Participant {
+  id: string;
+  data: any;
+  number: string;
+}
+
+interface CustomerConventional {
+  type: string;
+  name: string;
+  phone: string;
+  email: string;
+}
+
+interface Agent {
+  name: string;
+  phone_number: string;
+}
+
+interface Pic {
+  name: string;
+  phone_number: string;
+  identification_number: string;
+  npwp_number: string;
+  mailing_address: string;
+}
+
+interface CreateTransactionConventional {
+  customer: CustomerConventional;
+  package_id: string;
+  pic: Pic;
+  agent: Agent;
+  currency: string;
+  premium: number;
+  expiry_date: string;
+  effective_date: string;
+  payment_method: string;
+  participants: string[];
+}
+
 export class TransactionService {
   private httpClient: IHttpClient;
 
@@ -22,15 +116,47 @@ export class TransactionService {
     });
   }
 
-  async getTransactions(
+  async getCustomers(
     page: number,
-    rowsPerPage: number,
-    status: string
+    limit: number,
+    type?: string,
+    name?: string
+  ): Promise<any> {
+    const params = new URLSearchParams();
+
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+
+    if (type) {
+      params.append("type", type);
+    }
+    if (name) {
+      params.append("name", name);
+    }
+
+    return this.httpClient.get(`/v1/customers?${params.toString()}`);
+  }
+
+  async getTransactions(
+    page?: number,
+    rowsPerPage?: number,
+    type?: string,
+    searchData?: string,
+    status?: string
   ): Promise<TransactionResponse> {
     const params: any = {
       page: page,
       limit: rowsPerPage,
+      type: type,
     };
+
+    if (type) {
+      params["type"] = type;
+    }
+
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
 
     if (status) {
       params["status"] = status;
@@ -39,19 +165,12 @@ export class TransactionService {
     return this.httpClient.get(`/v1/transactions?${queryString}`);
   }
 
- async getTransactionsExport(
-    page: number,
-    rowsPerPage: number
-  ): Promise<TransactionResponse> {
-    const response: TransactionResponse = await this.httpClient.get(
-      `/v1/transactions?page=${page}&limit=${rowsPerPage}`
-    );
-    const pageTotal = response.pageTotal || rowsPerPage;
-    const params: any = {
-      page: page,
-      limit: pageTotal,
-    };
-
+  async getTransactionsExport(params: {
+    page: number;
+    rowsPerPage: number;
+    status?: string;
+    keyword?: string;
+  }): Promise<TransactionResponse> {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/transactions?${queryString}`);
   }
@@ -92,5 +211,37 @@ export class TransactionService {
       console.error("Request failed:", error);
       throw error;
     }
+  }
+
+  async getTransactionStatistic(
+    page: number,
+    filters?: {
+      insurance?: string;
+      product?: string;
+      plan?: string;
+      from?: string;
+      to?: string;
+    }
+  ): Promise<any> {
+    const params = {
+      page,
+      sort: "desc",
+      ...(filters?.insurance && { insurance: filters.insurance }),
+      ...(filters?.product && { product: filters.product }),
+      ...(filters?.plan && { plan: filters.plan }),
+      ...(filters?.from && { from: filters.from }),
+      ...(filters?.to && { to: filters.to }),
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.httpClient.get<any>(
+      `/v1/transactions/statistic-data?${queryString}`
+    );
+  }
+
+  async createTransactionConventional(
+    data: CreateTransactionConventional
+  ): Promise<any> {
+    return this.httpClient.post("/v1/transactions/conventional", data);
   }
 }

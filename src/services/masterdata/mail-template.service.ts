@@ -53,6 +53,7 @@ export interface MailTemplateResponse {
   journey: string;
   subject: string;
   content: string;
+  type: string;
   meta: any;
   updated_at: string;
 }
@@ -183,6 +184,7 @@ export class MailTemplateService {
       throw error;
     }
   }
+
   async getInsurance(search: any): Promise<InsurancesResponse> {
     try {
       const queryString = new URLSearchParams({ ...search }).toString();
