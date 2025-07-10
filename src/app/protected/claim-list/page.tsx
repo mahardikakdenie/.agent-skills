@@ -1,66 +1,27 @@
 "use client";
+import _ from "lodash";
+import React from "react";
+import Image from "next/image";
+import noData from "/public/images/no-data.webp";
 import WithSidebar from "@/hoc/with-sidebar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ClaimService } from "@/services/claim.service";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { use, useEffect, useState } from "react";
 import { formatMoneyClaim } from "@/lib/formatter";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  AlertCircle,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Eye,
-  Plus,
-  Search,
-  Trash2,
-  Upload,
-  X,
-} from "react-feather";
-import { Button } from "@/components/ui/button";
-import noData from "/public/images/no-data.webp";
-import Image from "next/image";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { hasPermission } from "@/context/auth.context";
-import _ from "lodash";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { addDays, format } from "date-fns";
-import React from "react";
-import { DateRange } from "react-day-picker";
+import { hasPermission } from "@/context/auth.context";
+import { ClaimService } from "@/services/claim.service";
+import { usePathname, useRouter } from "next/navigation";
 import { ChannelService } from "@/services/channel.services";
+import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import { AlertCircle, Check, ChevronLeft, ChevronRight, Download, Eye, Plus, Search, Trash2, Upload, X, } from "react-feather";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog";
 import { CLAIM_LIST_DETAIL, CLAIM_LIST_EXPORT, CLAIM_LIST_IMPORT, CLAIM_LIST_IMPORT_WITH_PREVIEW, FORBIDDEN } from "@/constants/routes";
 
 const ClaimsPage = () => {
@@ -86,7 +47,6 @@ const ClaimsPage = () => {
   const [numberId, setNumberID] = useState("-");
   const [statusOld, setStatusOld] = useState("-");
   const [notes, setNotes] = useState("");
-  const [docs, setDocs] = useState("");
   const [lackOfDocuments, setLackOfDocuments] = useState("");
   const [amApprovedMsg, setAmApprovedMsg] = useState("");
   const [noteMsg, setNoteMsg] = useState("");
@@ -95,9 +55,7 @@ const ClaimsPage = () => {
   const [currencyApp, setCurrencyApp] = useState(" ");
   const [dataDocument, setDataDocument] = useState<any[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
-  const [finalSelectedDocuments, setFinalSelectedDocuments] = useState<any[]>(
-    []
-  );
+  const [finalSelectedDocuments, setFinalSelectedDocuments] = useState<any[]>([]);
   const [successUpdate, setSuccessUpdate] = useState(false);
   const [selectedClaim, setSelectedClaim] = useState<any>(null);
   const [searchData, setSearchData] = useState("");
@@ -389,13 +347,7 @@ const ClaimsPage = () => {
     lack_of_documents?: string[]
   ) => {
     claimService
-      .updateClaimStatus(
-        claimId,
-        newStatus,
-        amount_approved,
-        note,
-        lack_of_documents
-      )
+      .updateClaimStatus(claimId, newStatus, amount_approved, note, lack_of_documents)
       .then(() => {
         setSuccessUpdate(true);
         alert("Update status successfully.");
@@ -408,8 +360,7 @@ const ClaimsPage = () => {
 
 
   const confirmModal = () => {
-
-    if (selectedClaim.amount && selectedClaim.amount > 0) {//check amount available
+    if (selectedClaim.amount && selectedClaim.amount > 0) {
       if (amountApproved > reqAmountApproved) {
         setAmApprovedMsg(
           "Your approval amount limit cannot exceed the requested amount"
