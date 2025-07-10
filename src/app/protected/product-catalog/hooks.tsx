@@ -1,8 +1,8 @@
 import { ChannelService } from "@/services/channel.services";
 import {
   GetPlansRequest,
+  PackageDto,
   ProductCatalogRequest,
-  ProductcatalogResponse,
   ProductCatalogService,
   ProductList,
 } from "@/services/product-catalog.service";
@@ -17,6 +17,7 @@ export const useProducts = () => {
   const [benefits, setBenefits] = useState<any[]>([]);
   const [details, setDetails] = useState<any[]>([]);
   const [productConfig, setProductConfig] = useState<ProductConfig>();
+  const [packageDetail, setPackageDetail] = useState<PackageDto>();
 
   const productCatalogService = new ProductCatalogService();
   const channelService = new ChannelService();
@@ -163,7 +164,7 @@ export const useProducts = () => {
   }
 
   const updatePackage = async (id: string, data: any) => {
-    const { data: response } = await productCatalogService.savePackage(data);
+    const { data: response } = await productCatalogService.updatePackage(id, data);
 
     return response;
   }
@@ -172,6 +173,12 @@ export const useProducts = () => {
     const { data } = await productConfigService.getProductConfigByType(type);
 
     setProductConfig(data)
+  }
+
+  const fetchPackageById = async (id: string) => {
+    const { data } = await productCatalogService.getPackageById(id);
+
+    setPackageDetail(data);
   }
 
   return {
@@ -202,6 +209,8 @@ export const useProducts = () => {
     savePackage,
     updatePackage,
     fetchProductConfigByType,
-    productConfig
+    productConfig,
+    fetchPackageById,
+    packageDetail
   };
 };

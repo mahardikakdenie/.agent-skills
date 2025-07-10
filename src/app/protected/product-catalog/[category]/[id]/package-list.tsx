@@ -18,10 +18,21 @@ import { formatMoney } from "@/lib/formatter";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
-import { ChevronLeft, ChevronRight, Plus, Upload } from "react-feather";
+import { ChevronLeft, ChevronRight, Plus, Trash, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
-import { FORBIDDEN, PRODUCT_CATALOG_ADD_PACKAGE, PRODUCT_CATALOG_UPLOAD } from "@/constants/routes";
+import {
+  FORBIDDEN,
+  PRODUCT_CATALOG_ADD_PACKAGE,
+  PRODUCT_CATALOG_EDIT_PACKAGE,
+  PRODUCT_CATALOG_UPLOAD,
+} from "@/constants/routes";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const path = usePathname();
@@ -266,6 +277,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
               )}
               <TableHead className="whitespace-nowrap">Currency</TableHead>
               <TableHead>Premium</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -305,6 +317,32 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                   <TableCell>{packageData.currency}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     {formatMoney(packageData.premium, packageData.currency)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-x-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <Button type="button" variant="default" className="rounded-full" onClick={() => router.push(PRODUCT_CATALOG_EDIT_PACKAGE(category as string, id, packageData.id))}>
+                              Edit
+                            </Button>
+                          <TooltipContent>
+                            <p className="text-sm">Edit</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button type="button" variant="destructive">
+                              <Trash className="w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm">Remove</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

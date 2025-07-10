@@ -111,7 +111,7 @@ function generateFormFields(config: Record<string, any>): FormFieldType {
 
 function generateDefaultValues(obj: Record<string, any>): Record<string, any> {
   const defaultValues: Record<string, any> = {
-    premium: "",
+    premium: "0",
     currency: "",
   };
 
@@ -144,6 +144,29 @@ function formatCurrency(value: string) {
   return new Intl.NumberFormat("id-ID").format(Number(numericValue));
 }
 
+function getAttributeWithRangeType(obj: Record<string, any>): string[] {
+  const result: string[] = [];
+  
+  for (const key in obj) {
+    const value = obj[key];
+
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      const hasFrom = 'from' in value;
+      const hasTo = 'to' in value;
+
+      if (hasFrom && hasTo) {
+        result.push(key);
+      }
+
+      // Recursively check nested objects if needed
+      const nested = getAttributeWithRangeType(value);
+      result.push(...nested.map(n => `${key}.${n}`));
+    }
+  }
+
+  return result;
+}
+
 const ProductCategoryPackageForm = ({
   method,
   productCategoryID,
@@ -167,6 +190,8 @@ const ProductCategoryPackageForm = ({
     updatePackage,
     fetchProductConfigByType,
     productConfig,
+    fetchPackageById,
+    packageDetail,
   } = useProducts();
 
   const {
@@ -198,9 +223,12 @@ const ProductCategoryPackageForm = ({
 
       setSchema(newSchema);
       setFormFields(newFormFields);
-      setDefaultValues(newDefaultValues);
+
+      if (method === "create") {
+        setDefaultValues(newDefaultValues);
+      }
     }
-  }, [productConfig]);
+  }, [productConfig, method]);
 
   useEffect(() => {
     if (Object.keys(defaultValues).length > 0) {
@@ -208,14 +236,61 @@ const ProductCategoryPackageForm = ({
     }
   }, [defaultValues, reset]);
 
+  useEffect(() => {
+    if (packageID) {
+      (async () => {
+        await fetchPackageById(packageID);
+      })();
+    }
+  }, [packageID]);
+
+  useEffect(() => {
+    if (packageDetail) {
+      setValue("currency", packageDetail.currency);
+      setValue("premium", formatCurrency(packageDetail.premium.toString()));
+
+      for (const key in packageDetail.search_params) {
+        if (key.includes("_from") || key.includes("_to")) {
+          const keyArray = key.split("_");
+
+          setValue(
+            `${keyArray[0]}.from`,
+            packageDetail.search_params[`${keyArray[0]}_from`].toString()
+          );
+          setValue(
+            `${keyArray[0]}.to`,
+            packageDetail.search_params[`${keyArray[0]}_to`].toString()
+          );
+        } else {
+          let value = packageDetail.search_params[key];
+
+          if (typeof value === 'number') {
+            value = value.toString();
+          }
+
+          setValue(key, value);
+        }
+      }
+    }
+  }, [packageDetail]);
+
   const onSubmit = async (data: any) => {
-    const newSearchParams = { ...data };
+    const attributesWithRange = getAttributeWithRangeType(data);
+    const newSearchParams = { 
+        ...data,
+    };
     delete newSearchParams.premium;
     delete newSearchParams.currency;
+    delete newSearchParams[attributesWithRange[0]];
+
+    if(attributesWithRange.length > 0) {
+        newSearchParams[`${attributesWithRange[0]}_from`] = data[attributesWithRange[0]].from;
+        newSearchParams[`${attributesWithRange[0]}_to`] = data[attributesWithRange[0]].to;
+    }
 
     const mappedData = {
       plan: productCategoryID,
-      premium: data.premium.replace(/\./g, ''),
+      premium: data.premium.replace(/\./g, ""),
       currency: data.currency,
       search_params: newSearchParams,
     };
@@ -232,21 +307,6 @@ const ProductCategoryPackageForm = ({
       setSaveSuccess(false);
     }
   };
-
-  useEffect(() => {
-    // if (id) {
-    // (async () => {
-    // try {
-    // const res = await fetchCategoriesById(id);
-    // setValue("name", res.name);
-    // setValue("icon", res.icon ?? "");
-    // } catch (error) {
-    // console.error("Error fetching category by ID:", error);
-    // }
-    // })();
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [packageID, setValue]);
 
   useEffect(() => {
     if (saveSuccess === true) {
@@ -334,7 +394,7 @@ const ProductCategoryPackageForm = ({
               <Controller
                 name="premium"
                 control={control}
-                defaultValue=""
+                defaultValue="0"
                 render={({ field }) => (
                   <Input
                     type="text"
@@ -438,6 +498,9 @@ const ProductCategoryPackageForm = ({
                     )}
                     {ff.type === "range" && (
                       <div className="flex gap-x-4 items-center">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          From
+                        </label>
                         <div className="w-full">
                           <Controller
                             name={`${ff.name}.from`}
@@ -461,6 +524,9 @@ const ProductCategoryPackageForm = ({
                             {(errors[ff.name] as any)?.from?.message}
                           </p>
                         </div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          To
+                        </label>
                         <div className="w-full">
                           <Controller
                             name={`${ff.name}.to`}
