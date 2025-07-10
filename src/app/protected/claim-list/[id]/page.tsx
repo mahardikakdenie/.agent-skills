@@ -1,43 +1,21 @@
 "use client";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import WithSidebar from "@/hoc/with-sidebar";
-import { ClaimService } from "@/services/claim.service";
+import moment from "moment";
 import Image from "next/image";
+import WithSidebar from "@/hoc/with-sidebar";
 import noData from "/public/images/no-data.webp";
-import { useRouter } from "next/navigation";
+import noImage from "/public/images/no-image.png";
+import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
 import { useState, useEffect } from "react";
 import { ChevronLeft, X } from "react-feather";
-import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
-import noImage from "/public/images/no-image.png";
-import moment from "moment";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
-import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import ImageOrDefault from "@/components/ui/image-or-default";
+import { useParams, useRouter } from "next/navigation";
+import { ClaimService } from "@/services/claim.service";
 import { CLAIM_LIST, FORBIDDEN } from "@/constants/routes";
+import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";
 
 interface FieldType {
   name: string;
@@ -58,28 +36,17 @@ interface FieldType {
   };
 }
 
-const DetailClaim = ({ params }: { params: { id: string } }) => {
+const DetailClaim = () => {
   const router = useRouter();
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [docToOpen, setDocToOpen] = useState<any>(null);
-  const [isViewDocument, setIsViewDocument] = useState(false);
-  const [claimCurrency, setClaimCurrency] = useState<string | undefined>();
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = await hasPermission("Claim.Read");
-      setHasAccess(access);
-      if (!access) {
-        router.push(FORBIDDEN);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-  const [claim, setClaim] = useState<any>(null);
+  const params = useParams()
   const [tab, setTab] = useState("Summary");
+  const [claim, setClaim] = useState<any>(null);
+  const [docToOpen, setDocToOpen] = useState<any>(null);
   const [histories, setHistories] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [isViewDocument, setIsViewDocument] = useState(false);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
   const imageUrl =
     claim?.participant_data?.data?.ktp ||
     claim?.participant_data?.data?.passport ||
@@ -93,6 +60,18 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
     claim?.personal_info?.city,
     claim?.personal_info?.state,
   ];
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = await hasPermission("Claim.Read");
+      setHasAccess(access);
+      if (!access) {
+        router.push(FORBIDDEN);
+      }
+    };
+
+    checkAccess();
+  }, [router]);
 
   useEffect(() => {
     const fetchClaimData = async (id: string) => {
@@ -421,19 +400,19 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                     Customer Name
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.participant_data?.data?.name || "-"}</div>
+                  <div>{claim?.policy_data?.policy_holder?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
                     Phone Number
                   </div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.participant_data?.data?.phone || "-"}</div>
+                  <div>{claim?.policy_data?.policy_holder?.phone || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
                   <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.participant_data?.data?.email || "-"}</div>
+                  <div>{claim?.policy_data?.policy_holder?.email || "-"}</div>
                 </div>
               </div>
               <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
@@ -594,15 +573,13 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                 <TableRow>
                   <TableHead className="whitespace-nowrap w-10">No.</TableHead>
                   <TableHead>File Name</TableHead>
-                  <TableHead className="whitespace-nowrap w-28">
-                    Action
-                  </TableHead>
+                  <TableHead className="whitespace-nowrap w-28">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {documents.length > 0 ? (
                   documents.map((document, index) => (
-                    <TableRow key={document.id}>
+                    <TableRow key={document.id || `doc-${index}`}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 items-center">
@@ -615,42 +592,32 @@ const DetailClaim = ({ params }: { params: { id: string } }) => {
                       </TableCell>
                       <TableCell>
                         <Dialog>
-                          <DialogTrigger>
-                            <Button
-                              className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
-                              onClick={() => viewDocument(document)}
-                            >
-                              View
-                            </Button>
-                          </DialogTrigger>
+                          <DialogTrigger className="bg-[#016DA1] text-white px-4 py-2 rounded-full" onClick={() => viewDocument(document)}>View</DialogTrigger>
                           {isViewDocument && (
                             <DialogContent>
                               <DialogHeader>
                                 <DialogTitle className="text-sm sm:text-base flex items-center">
-                                  {document?.label?.en ||
-                                    document?.label ||
-                                    "-"}
-                                  <DialogClose className="ml-auto">
-                                    <Button
-                                      type="button"
-                                      className="bg-transparent hover:bg-transparent text-black p-0"
-                                    >
+                                  {document?.label?.en || document?.label || "-"}
+                                  <DialogClose className="ml-auto" asChild>
+                                    <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
                                       <X className="w-5 h-5" />
                                     </Button>
                                   </DialogClose>
                                 </DialogTitle>
                               </DialogHeader>
 
-                              {docToOpen.type.toLowerCase() === "fields"
-                                ? docToOpen.fields.map((field: FieldType, index: number) => (
-                                  <div key={index}>
-                                    <div className="text-sm sm:text-base font-semibold" key={field.name}>
-                                      {field?.label_multilanguage?.en || field?.label || "-"}{" "}
+                              <div  className="overflow-auto max-h-[80vh]">
+                                {docToOpen.type.toLowerCase() === "fields"
+                                  ? docToOpen.fields.map((field: FieldType, index: number) => (
+                                    <div key={index}>
+                                      <div className="text-sm sm:text-base font-semibold" key={field.name}>
+                                        {field?.label_multilanguage?.en || field?.label || "-"}{" "}
+                                      </div>
+                                      {renderDocumentsDetails(field)}
                                     </div>
-                                    {renderDocumentsDetails(field)}
-                                  </div>
-                                  ))
-                                : renderDocumentsDetails(docToOpen)}
+                                    ))
+                                  : renderDocumentsDetails(docToOpen)}
+                              </div>
                             </DialogContent>
                           )}
                         </Dialog>
