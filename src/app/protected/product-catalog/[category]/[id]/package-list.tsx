@@ -34,11 +34,122 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useProducts } from "../../hooks";
+import { ProductConfig } from "@/services/product-config.service";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { formatCurrency } from "@/components/forms/product-catalog/package.form";
 
-export default function PackageList(props: Readonly<{ id: string }>) {
-  const path = usePathname();
+type ShownRowType = (string | JSX.Element | number);
+
+function generateHeaders(product: ProductConfig): string[] {
+  const dynamicHeaders = Object.keys(product.search_configs).map((key) =>
+    key
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
+
+  return ["No.", ...dynamicHeaders, "Currency", "Premium", "Action"];
+}
+
+
+function generateRowData(
+  packages: PackageDto[],
+  headers: string[],
+  router: AppRouterInstance,
+  category: string,
+  id: string,
+  deletePackage: (id: string) => Promise<any>,
+  fetchPackages: () => void,
+  canEdit: boolean,
+  canDelete: boolean,
+  searchConfigs: any
+) {
+  return packages.map((pkg, index) => {
+    return headers.map((header) => {
+      switch (header) {
+        case "No.":
+          return index + 1;
+        case "Currency":
+          return pkg.currency;
+        case "Premium":
+          return formatCurrency(pkg.premium.toString());
+        case "Action":
+          return (
+            <div className="flex gap-x-2" key={pkg.id}>
+              <TooltipProvider>
+                <Tooltip>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="rounded-full"
+                    disabled={!canEdit}
+                    onClick={() =>
+                      router.push(
+                        PRODUCT_CATALOG_EDIT_PACKAGE(category, id, pkg.id)
+                      )
+                    }
+                  >
+                    Edit
+                  </Button>
+                  <TooltipContent>
+                    <p className="text-sm">Edit</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      disabled={!canDelete}
+                      onClick={() => {
+                        if (confirm("Are you sure to delete this row?")) {
+                          deletePackage(pkg.id);
+                          alert("Row deleted successfully.");
+                          setTimeout(fetchPackages, 1000);
+                        }
+                      }}
+                    >
+                      <Trash className="w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm">Remove</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          );
+        default: {
+          const key = header.toLowerCase().replace(/\s+/g, "_");
+          const config = searchConfigs[key];
+
+          if (config && config.type === "range") {
+            const from = pkg.search_params[`${key}_from`];
+            const to = pkg.search_params[`${key}_to`];
+
+            return `${from ?? "-"} - ${to ?? "-"}`;
+          }
+
+          const value = pkg.search_params[key];
+
+          if (Array.isArray(value)) {
+            return value.join(", ");
+          } else if (value !== undefined && value !== null) {
+            return String(value);
+          } else {
+            return "-";
+          }
+        }
+      }
+    });
+  });
+}
+
+export default function PackageList(props: Readonly<{ id: string; category: string; }>) {
   const [packages, setPackages] = useState<PackageDto[]>([]);
-  const [filteredPackages, setFilteredPackages] = useState<PackageDto[]>([]);
+  const [filteredPackages, setFilteredPackages] = useState<ShownRowType[][]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(180);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -50,26 +161,31 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   const productCatalogService = new ProductCatalogService();
   const { category } = useParams();
 
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const routerN = useRouter();
 
+  const [tableHeaders, setTableHeaders] = useState<string[]>([]);
+  const { deletePackage, productConfig, fetchProductConfigByType } = useProducts();
+
   const fetchPackages = () => {
     productCatalogService
         .getPackagesByPlanId(id, page, rowsPerPage)
         .then((response) => {
-        const sortedPackages = response.data.sort((a, b) => {
-            const durationA = a.search_params.duration_to;
-            const durationB = b.search_params.duration_to;
-            return durationA - durationB;
-        });
+            const sortedPackages = response.data.sort((a, b) => {
+                const durationA = a.search_params.duration_to;
+                const durationB = b.search_params.duration_to;
+                return durationA - durationB;
+            });
 
-        setPackages(sortedPackages);
-        setFilteredPackages(sortedPackages);
-        setPage(response.meta.page);
-        setTotalItems(response.meta.total);
+            setPackages(sortedPackages);
+            setPage(response.meta.page);
+            setTotalItems(response.meta.total);
+
+            const newFilteredPackages = generateRowData(sortedPackages, tableHeaders, router, category as string, id, deletePackage, fetchPackages, canEdit, canDelete, productConfig?.search_configs);
+
+            setFilteredPackages(newFilteredPackages);
         });
     };
 
@@ -83,8 +199,8 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
-      setHasAccess(access);
       setCanCreate(createBtn);
+
       if (!access) {
         router.push(FORBIDDEN);
       }
@@ -96,7 +212,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
   useEffect(() => {
     fetchPackages();
-  }, [id, page, rowsPerPage]);
+  }, [id, page, rowsPerPage, tableHeaders, canEdit, canDelete, productConfig]);
 
   const handleFilter = () => {
     let filtered = packages;
@@ -126,7 +242,9 @@ export default function PackageList(props: Readonly<{ id: string }>) {
       filtered = filtered.filter((pkg) => pkg.search_params.age == ageFilter);
     }
 
-    setFilteredPackages(filtered);
+    const newFilteredPackages = generateRowData(filtered, tableHeaders, router, category as string, id, deletePackage, fetchPackages, canEdit, canDelete, productConfig?.search_configs);
+
+    setFilteredPackages(newFilteredPackages);
   };
 
   useEffect(() => {
@@ -139,7 +257,22 @@ export default function PackageList(props: Readonly<{ id: string }>) {
     setPage(1);
   };
   const router = useRouter();
-  const { deletePackage } = useProducts();
+
+  useEffect(() => {
+    if(category) {
+        (async () => {
+            await fetchProductConfigByType(category as string);
+        })();
+    }
+  }, [category]);
+
+  useEffect(() => {
+    if(productConfig) {
+        const newTableHeaders = generateHeaders(productConfig);
+        
+        setTableHeaders(newTableHeaders);
+    }
+  }, [productConfig]);
 
   return (
     <>
@@ -155,7 +288,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
         </Button>
         <Button
           className="bg-[#F5BA41] hover:bg-[#F5BA41]/80 text-black"
-          disabled={!canEdit}
+          disabled={!canCreate}
           onClick={() =>
             router.push(PRODUCT_CATALOG_ADD_PACKAGE(category as string, id))
           }
@@ -265,102 +398,18 @@ export default function PackageList(props: Readonly<{ id: string }>) {
         <Table className="table-search-params">
           <TableHeader>
             <TableRow>
-              <TableHead className="whitespace-nowrap">No.</TableHead>
-              {category === "personal-accident" && (
-                <React.Fragment>
-                  <TableHead>Occupation Class</TableHead>
-                  <TableHead>Ages</TableHead>
-                </React.Fragment>
-              )}
-              {category === "travel" && (
-                <React.Fragment>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Origin</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Adult Participant</TableHead>
-                  <TableHead>Children Participant</TableHead>
-                </React.Fragment>
-              )}
-              <TableHead className="whitespace-nowrap">Currency</TableHead>
-              <TableHead>Premium</TableHead>
-              <TableHead>Action</TableHead>
+              {tableHeaders.map((th) => (
+                <TableHead key={th}>{th}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredPackages.length > 0 ? (
-              filteredPackages.map((packageData, index) => (
-                <TableRow key={packageData.id}>
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  {category === "personal-accident" && (
-                    <React.Fragment>
-                      <TableCell>
-                        {packageData.search_params.occupation_class.join(", ")}
-                      </TableCell>
-                      <TableCell>
-                        {`${packageData.search_params.age[0]}-${
-                          packageData.search_params.age.slice(-1)[0]
-                        }`}
-                      </TableCell>
-                    </React.Fragment>
-                  )}
-                  {category === "travel" && (
-                    <React.Fragment>
-                      <TableCell className="capitalize">
-                        {packageData.search_params.trip}
-                      </TableCell>
-                      <TableCell className="capitalize">
-                        {packageData.search_params.origin}
-                      </TableCell>
-                      <TableCell>
-                        {packageData.search_params.duration_to} days
-                      </TableCell>
-                      <TableCell>{packageData.search_params.adult}</TableCell>
-                      <TableCell>
-                        {packageData.search_params.children}
-                      </TableCell>
-                    </React.Fragment>
-                  )}
-                  <TableCell>{packageData.currency}</TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {formatMoney(packageData.premium, packageData.currency)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-x-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <Button type="button" variant="default" className="rounded-full" onClick={() => router.push(PRODUCT_CATALOG_EDIT_PACKAGE(category as string, id, packageData.id))}>
-                              Edit
-                            </Button>
-                          <TooltipContent>
-                            <p className="text-sm">Edit</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button type="button" variant="destructive" onClick={() => {
-                                const confirmation = confirm("Are you sure to delete this row?");
-
-                                if(confirmation) {
-                                    deletePackage(packageData.id);
-
-                                    alert("Row deleted successfully.");
-                                    setTimeout(() => {
-                                        fetchPackages();
-                                    }, 1000);
-                                }
-                            }}>
-                              <Trash className="w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-sm">Remove</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </TableCell>
+              filteredPackages.map((fp, fpIndex) => (
+                <TableRow key={fpIndex}>
+                  {fp.map((fpRow, fpRowIndex) => (
+                    <TableCell key={fpRowIndex}>{fpRow}</TableCell>
+                  ))}
                 </TableRow>
               ))
             ) : (

@@ -408,7 +408,7 @@ const DetaildPage = ({
             </form>
           </div>
           <div className="w-full overflow-auto">
-            <ProductDetatilTab id={id} />
+            <ProductDetatilTab id={id} category={category} />
           </div>
         </div>
       </div>

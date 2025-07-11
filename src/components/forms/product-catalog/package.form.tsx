@@ -138,7 +138,7 @@ function generateDefaultValues(obj: Record<string, any>): Record<string, any> {
   return defaultValues;
 }
 
-function formatCurrency(value: string) {
+export function formatCurrency(value: string) {
   const numericValue = value.replace(/\D/g, "");
 
   return new Intl.NumberFormat("id-ID").format(Number(numericValue));
