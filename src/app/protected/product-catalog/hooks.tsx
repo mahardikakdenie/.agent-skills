@@ -181,6 +181,12 @@ export const useProducts = () => {
     setPackageDetail(data);
   }
 
+  const deletePackage = async (id: string) => {
+    const { data: response } = await productCatalogService.deletePackage(id);
+
+    return response;
+  }
+
   return {
     fetchPlans,
     products,
@@ -211,6 +217,7 @@ export const useProducts = () => {
     fetchProductConfigByType,
     productConfig,
     fetchPackageById,
-    packageDetail
+    packageDetail,
+    deletePackage
   };
 };

@@ -342,4 +342,14 @@ export class ProductCatalogService {
         throw error;
     }
   }
+
+  async deletePackage(id: string): Promise<any> {
+    try {
+        return await this.httpClient.delete(`/v1/packages/${id}`);
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
+    }
+  }
 }

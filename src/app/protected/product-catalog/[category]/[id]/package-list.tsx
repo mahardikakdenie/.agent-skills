@@ -33,6 +33,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useProducts } from "../../hooks";
 
 export default function PackageList(props: Readonly<{ id: string }>) {
   const path = usePathname();
@@ -55,6 +56,24 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const routerN = useRouter();
 
+  const fetchPackages = () => {
+    productCatalogService
+        .getPackagesByPlanId(id, page, rowsPerPage)
+        .then((response) => {
+        const sortedPackages = response.data.sort((a, b) => {
+            const durationA = a.search_params.duration_to;
+            const durationB = b.search_params.duration_to;
+            return durationA - durationB;
+        });
+
+        setPackages(sortedPackages);
+        setFilteredPackages(sortedPackages);
+        setPage(response.meta.page);
+        setTotalItems(response.meta.total);
+        });
+    };
+
+
   useEffect(() => {
     const checkAccess = async () => {
       const access = await hasPermission("Product Category.Read");
@@ -76,21 +95,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   }, [routerN]);
 
   useEffect(() => {
-    productCatalogService
-      .getPackagesByPlanId(id, page, rowsPerPage)
-      .then((response) => {
-        const sortedPackages = response.data.sort((a, b) => {
-          const durationA = a.search_params.duration_to;
-          const durationB = b.search_params.duration_to;
-          return durationA - durationB;
-        });
-
-        setPackages(sortedPackages);
-        setFilteredPackages(sortedPackages);
-        setPage(response.meta.page);
-        setTotalItems(response.meta.total);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchPackages();
   }, [id, page, rowsPerPage]);
 
   const handleFilter = () => {
@@ -134,6 +139,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
     setPage(1);
   };
   const router = useRouter();
+  const { deletePackage } = useProducts();
 
   return (
     <>
@@ -333,7 +339,18 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button type="button" variant="destructive">
+                            <Button type="button" variant="destructive" onClick={() => {
+                                const confirmation = confirm("Are you sure to delete this row?");
+
+                                if(confirmation) {
+                                    deletePackage(packageData.id);
+
+                                    alert("Row deleted successfully.");
+                                    setTimeout(() => {
+                                        fetchPackages();
+                                    }, 1000);
+                                }
+                            }}>
                               <Trash className="w-4" />
                             </Button>
                           </TooltipTrigger>
