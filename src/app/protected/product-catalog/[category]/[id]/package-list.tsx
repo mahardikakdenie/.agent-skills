@@ -211,7 +211,9 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
   }, [routerN]);
 
   useEffect(() => {
-    fetchPackages();
+    if(id !== undefined && page !== undefined && rowsPerPage !== undefined && tableHeaders !== undefined && canEdit !== undefined && canDelete !== undefined && productConfig !== undefined) {
+        fetchPackages();
+    }
   }, [id, page, rowsPerPage, tableHeaders, canEdit, canDelete, productConfig]);
 
   const handleFilter = () => {
