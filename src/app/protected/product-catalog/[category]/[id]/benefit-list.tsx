@@ -10,13 +10,23 @@ import {
 import { useProducts } from "../../hooks";
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Plus, Upload } from "react-feather";
-import { PRODUCT_CATALOG_ADD_BENEFIT, PRODUCT_CATALOG_UPLOAD_BENEFIT } from "@/constants/routes";
+import { Plus, Trash, Upload } from "react-feather";
+import {
+  PRODUCT_CATALOG_ADD_BENEFIT,
+  PRODUCT_CATALOG_EDIT_PACKAGE,
+  PRODUCT_CATALOG_UPLOAD_BENEFIT,
+} from "@/constants/routes";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function BenefitList(props: { id: string }) {
   const { id } = props;
   const { category } = useParams();
-  const { getPlanBenefits, benefits } = useProducts();
+  const { getPlanBenefits, benefits, deleteBenefit } = useProducts();
 
   useEffect(() => {
     (async () => await getPlanBenefits(id))();
@@ -52,6 +62,7 @@ export default function BenefitList(props: { id: string }) {
             <TableHead>Benefit</TableHead>
             <TableHead>Currency</TableHead>
             <TableHead>Value</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -60,6 +71,54 @@ export default function BenefitList(props: { id: string }) {
               <TableCell>{benefit.name}</TableCell>
               <TableCell>{benefit.currency}</TableCell>
               <TableCell>{benefit.value || benefit.html}</TableCell>
+              <TableCell>
+                {benefit.level === 0 && (
+                  <div className="flex gap-x-2">
+                    {/* <Button
+                    type="button"
+                    variant="default"
+                    className="rounded-full"
+                    onClick={() =>
+                      router.push(
+                        PRODUCT_CATALOG_EDIT_PACKAGE(category, id, pkg.id)
+                      )
+                    }
+                  >
+                    Edit
+                  </Button> */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={async () => {
+                              if (confirm("Are you sure to delete this row?")) {
+                                try {
+                                  await deleteBenefit(benefit.id);
+
+                                  alert("Row deleted successfully.");
+
+                                  await getPlanBenefits(id);
+                                } catch (error) {
+                                  console.error(error);
+
+                                  alert("Error while deleting the row.");
+                                }
+                              }
+                            }}
+                          >
+                            <Trash className="w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">Remove</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

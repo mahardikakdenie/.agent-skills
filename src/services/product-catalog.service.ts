@@ -361,4 +361,14 @@ export class ProductCatalogService {
       throw error;
     }
   }
+
+  async deleteBenefit(id: string): Promise<any> {
+    try {
+        return await this.httpClient.delete(`/v1/plan-benefit/${id}`);
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
+    }
+  }
 }

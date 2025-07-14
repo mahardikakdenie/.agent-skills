@@ -91,6 +91,7 @@ export const useProducts = () => {
         " - ".repeat(level) + rest.benefits.description_id ||
         rest.benefits.description_en ||
         rest.benefits.description_multilanguage,
+      level
     });
 
     if (children && children.length > 0) {
@@ -193,6 +194,12 @@ export const useProducts = () => {
     return response;
   }
 
+  const deleteBenefit = async (id: string) => {
+    const { data: response } = await productCatalogService.deleteBenefit(id);
+
+    return response;
+  }
+
   return {
     fetchPlans,
     products,
@@ -225,6 +232,7 @@ export const useProducts = () => {
     fetchPackageById,
     packageDetail,
     deletePackage,
-    saveBenefit
+    saveBenefit,
+    deleteBenefit
   };
 };
