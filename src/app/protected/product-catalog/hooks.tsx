@@ -187,6 +187,12 @@ export const useProducts = () => {
     return response;
   }
 
+  const saveBenefit = async (data: any) => {
+    const { data: response } = await productCatalogService.saveBenefit(data);
+
+    return response;
+  }
+
   return {
     fetchPlans,
     products,
@@ -218,6 +224,7 @@ export const useProducts = () => {
     productConfig,
     fetchPackageById,
     packageDetail,
-    deletePackage
+    deletePackage,
+    saveBenefit
   };
 };

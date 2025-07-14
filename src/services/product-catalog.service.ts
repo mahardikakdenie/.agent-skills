@@ -352,4 +352,13 @@ export class ProductCatalogService {
         throw error;
     }
   }
+
+  async saveBenefit(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/plan-benefit/create", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }
