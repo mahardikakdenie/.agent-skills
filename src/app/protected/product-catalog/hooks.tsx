@@ -1,11 +1,12 @@
 import { ChannelService } from "@/services/channel.services";
 import {
   GetPlansRequest,
+  PackageDto,
   ProductCatalogRequest,
-  ProductcatalogResponse,
   ProductCatalogService,
   ProductList,
 } from "@/services/product-catalog.service";
+import { ProductConfig, ProductConfigService } from "@/services/product-config.service";
 import { useState } from "react";
 
 export const useProducts = () => {
@@ -15,8 +16,13 @@ export const useProducts = () => {
   const [plans, setPlans] = useState<any[] | null>(null);
   const [benefits, setBenefits] = useState<any[]>([]);
   const [details, setDetails] = useState<any[]>([]);
+  const [productConfig, setProductConfig] = useState<ProductConfig>();
+  const [packageDetail, setPackageDetail] = useState<PackageDto>();
+
   const productCatalogService = new ProductCatalogService();
   const channelService = new ChannelService();
+  const productConfigService = new ProductConfigService();
+
   const fetchProducts = async (params: ProductCatalogRequest) => {
     const data = await productCatalogService.getProducts(params);
     setProducts(data);
@@ -85,6 +91,7 @@ export const useProducts = () => {
         " - ".repeat(level) + rest.benefits.description_id ||
         rest.benefits.description_en ||
         rest.benefits.description_multilanguage,
+      level
     });
 
     if (children && children.length > 0) {
@@ -150,6 +157,49 @@ export const useProducts = () => {
     const { data } = await productCatalogService.getPlans(params);
     setPlans(data);
   };
+
+  const savePackage = async (data: any) => {
+    const { data: response } = await productCatalogService.savePackage(data);
+
+    return response;
+  }
+
+  const updatePackage = async (id: string, data: any) => {
+    const { data: response } = await productCatalogService.updatePackage(id, data);
+
+    return response;
+  }
+
+  const fetchProductConfigByType = async(type: string) => {
+    const { data } = await productConfigService.getProductConfigByType(type);
+
+    setProductConfig(data)
+  }
+
+  const fetchPackageById = async (id: string) => {
+    const { data } = await productCatalogService.getPackageById(id);
+
+    setPackageDetail(data);
+  }
+
+  const deletePackage = async (id: string) => {
+    const { data: response } = await productCatalogService.deletePackage(id);
+
+    return response;
+  }
+
+  const saveBenefit = async (data: any) => {
+    const { data: response } = await productCatalogService.saveBenefit(data);
+
+    return response;
+  }
+
+  const deleteBenefit = async (id: string) => {
+    const { data: response } = await productCatalogService.deleteBenefit(id);
+
+    return response;
+  }
+
   return {
     fetchPlans,
     products,
@@ -175,5 +225,14 @@ export const useProducts = () => {
     getChannels,
     getChannelPlans,
     channelPlans,
+    savePackage,
+    updatePackage,
+    fetchProductConfigByType,
+    productConfig,
+    fetchPackageById,
+    packageDetail,
+    deletePackage,
+    saveBenefit,
+    deleteBenefit
   };
 };

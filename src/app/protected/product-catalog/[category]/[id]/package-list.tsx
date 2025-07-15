@@ -1,4 +1,5 @@
 "use client";
+
 import {
   TableHeader,
   TableRow,
@@ -8,7 +9,7 @@ import {
   Table,
   TableFooter,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PackageDto,
   ProductCatalogService,
@@ -17,15 +18,138 @@ import { formatMoney } from "@/lib/formatter";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
-import { ChevronLeft, ChevronRight, Upload } from "react-feather";
+import { ChevronLeft, ChevronRight, Plus, Trash, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
-import { FORBIDDEN, PRODUCT_CATALOG_UPLOAD } from "@/constants/routes";
+import {
+  FORBIDDEN,
+  PRODUCT_CATALOG_ADD_PACKAGE,
+  PRODUCT_CATALOG_EDIT_PACKAGE,
+  PRODUCT_CATALOG_UPLOAD,
+} from "@/constants/routes";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useProducts } from "../../hooks";
+import { ProductConfig } from "@/services/product-config.service";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { formatCurrency } from "@/components/forms/product-catalog/package.form";
 
-export default function PackageList(props: Readonly<{ id: string }>) {
-  const path = usePathname();
+type ShownRowType = (string | JSX.Element | number);
+
+function generateHeaders(product: ProductConfig): string[] {
+  const dynamicHeaders = Object.keys(product.search_configs).map((key) =>
+    key
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
+
+  return ["No.", ...dynamicHeaders, "Currency", "Premium", "Action"];
+}
+
+
+function generateRowData(
+  packages: PackageDto[],
+  headers: string[],
+  router: AppRouterInstance,
+  category: string,
+  id: string,
+  deletePackage: (id: string) => Promise<any>,
+  fetchPackages: () => void,
+  canEdit: boolean,
+  canDelete: boolean,
+  searchConfigs: any
+) {
+  return packages.map((pkg, index) => {
+    return headers.map((header) => {
+      switch (header) {
+        case "No.":
+          return index + 1;
+        case "Currency":
+          return pkg.currency;
+        case "Premium":
+          return formatCurrency(pkg.premium.toString());
+        case "Action":
+          return (
+            <div className="flex gap-x-2" key={pkg.id}>
+              <TooltipProvider>
+                <Tooltip>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="rounded-full"
+                    disabled={!canEdit}
+                    onClick={() =>
+                      router.push(
+                        PRODUCT_CATALOG_EDIT_PACKAGE(category, id, pkg.id)
+                      )
+                    }
+                  >
+                    Edit
+                  </Button>
+                  <TooltipContent>
+                    <p className="text-sm">Edit</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      disabled={!canDelete}
+                      onClick={() => {
+                        if (confirm("Are you sure to delete this row?")) {
+                          deletePackage(pkg.id);
+                          alert("Row deleted successfully.");
+                          setTimeout(fetchPackages, 1000);
+                        }
+                      }}
+                    >
+                      <Trash className="w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm">Remove</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          );
+        default: {
+          const key = header.toLowerCase().replace(/\s+/g, "_");
+          const config = searchConfigs[key];
+
+          if (config && config.type === "range") {
+            const from = pkg.search_params[`${key}_from`];
+            const to = pkg.search_params[`${key}_to`];
+
+            return `${from ?? "-"} - ${to ?? "-"}`;
+          }
+
+          const value = pkg.search_params[key];
+
+          if (Array.isArray(value)) {
+            return value.join(", ");
+          } else if (value !== undefined && value !== null) {
+            return String(value);
+          } else {
+            return "-";
+          }
+        }
+      }
+    });
+  });
+}
+
+export default function PackageList(props: Readonly<{ id: string; category: string; }>) {
   const [packages, setPackages] = useState<PackageDto[]>([]);
-  const [filteredPackages, setFilteredPackages] = useState<PackageDto[]>([]);
+  const [filteredPackages, setFilteredPackages] = useState<ShownRowType[][]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(180);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -37,11 +161,34 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   const productCatalogService = new ProductCatalogService();
   const { category } = useParams();
 
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const routerN = useRouter();
+
+  const [tableHeaders, setTableHeaders] = useState<string[]>([]);
+  const { deletePackage, productConfig, fetchProductConfigByType } = useProducts();
+
+  const fetchPackages = () => {
+    productCatalogService
+        .getPackagesByPlanId(id, page, rowsPerPage)
+        .then((response) => {
+            const sortedPackages = response.data.sort((a, b) => {
+                const durationA = a.search_params.duration_to;
+                const durationB = b.search_params.duration_to;
+                return durationA - durationB;
+            });
+
+            setPackages(sortedPackages);
+            setPage(response.meta.page);
+            setTotalItems(response.meta.total);
+
+            const newFilteredPackages = generateRowData(sortedPackages, tableHeaders, router, category as string, id, deletePackage, fetchPackages, canEdit, canDelete, productConfig?.search_configs);
+
+            setFilteredPackages(newFilteredPackages);
+        });
+    };
+
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -52,8 +199,8 @@ export default function PackageList(props: Readonly<{ id: string }>) {
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
-      setHasAccess(access);
       setCanCreate(createBtn);
+
       if (!access) {
         router.push(FORBIDDEN);
       }
@@ -64,22 +211,10 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   }, [routerN]);
 
   useEffect(() => {
-    productCatalogService
-      .getPackagesByPlanId(id, page, rowsPerPage)
-      .then((response) => {
-        const sortedPackages = response.data.sort((a, b) => {
-          const durationA = a.search_params.duration_to;
-          const durationB = b.search_params.duration_to;
-          return durationA - durationB;
-        });
-
-        setPackages(sortedPackages);
-        setFilteredPackages(sortedPackages);
-        setPage(response.meta.page);
-        setTotalItems(response.meta.total);
-      });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, page, rowsPerPage]);
+    if(id !== undefined && page !== undefined && rowsPerPage !== undefined && tableHeaders !== undefined && canEdit !== undefined && canDelete !== undefined && productConfig !== undefined) {
+        fetchPackages();
+    }
+  }, [id, page, rowsPerPage, tableHeaders, canEdit, canDelete, productConfig]);
 
   const handleFilter = () => {
     let filtered = packages;
@@ -109,7 +244,9 @@ export default function PackageList(props: Readonly<{ id: string }>) {
       filtered = filtered.filter((pkg) => pkg.search_params.age == ageFilter);
     }
 
-    setFilteredPackages(filtered);
+    const newFilteredPackages = generateRowData(filtered, tableHeaders, router, category as string, id, deletePackage, fetchPackages, canEdit, canDelete, productConfig?.search_configs);
+
+    setFilteredPackages(newFilteredPackages);
   };
 
   useEffect(() => {
@@ -123,17 +260,45 @@ export default function PackageList(props: Readonly<{ id: string }>) {
   };
   const router = useRouter();
 
+  useEffect(() => {
+    if(category) {
+        (async () => {
+            await fetchProductConfigByType(category as string);
+        })();
+    }
+  }, [category]);
+
+  useEffect(() => {
+    if(productConfig) {
+        const newTableHeaders = generateHeaders(productConfig);
+        
+        setTableHeaders(newTableHeaders);
+    }
+  }, [productConfig]);
+
   return (
     <>
-      <Button
-        className="btn btn-primary"
-        disabled={!canEdit}
-        onClick={() => router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))}
-      >
-        <Upload className="w-5 h-5 mr-2" /> Upload Packages
-      </Button>
-
-      {category == "personal-accident" ? (
+      <div className="flex justify-end gap-x-4">
+        <Button
+          className="btn btn-primary"
+          disabled={!canEdit}
+          onClick={() =>
+            router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))
+          }
+        >
+          <Upload className="w-5 h-5 mr-2" /> Upload Packages
+        </Button>
+        <Button
+          className="bg-[#F5BA41] hover:bg-[#F5BA41]/80 text-black"
+          disabled={!canCreate}
+          onClick={() =>
+            router.push(PRODUCT_CATALOG_ADD_PACKAGE(category as string, id))
+          }
+        >
+          <Plus className="w-5 h-5 mr-2" /> Add Package
+        </Button>
+      </div>
+      {category === "personal-accident" && (
         <div className="w-full py-4 bg-white rounded-lg overflow-aut mb-4 grid sm:grid-cols-2 gap-4">
           <>
             <select
@@ -188,121 +353,65 @@ export default function PackageList(props: Readonly<{ id: string }>) {
             </select>
           </>
         </div>
-      ) : category == "gadget" ? (
-        <>
-          <div className="py-2"></div>
-        </>
-      ) : (
-        <>
-          <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
-            <select
-              value={adultFilter}
-              onChange={(e) => setAdultFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm"
-            >
-              <option value="">All Adults</option>
-              {Array.from(
-                new Set(
-                  packages.map((pkg) => pkg.search_params.adult).filter(Boolean)
-                )
+      )}
+      {category === "travel" && (
+        <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
+          <select
+            value={adultFilter}
+            onChange={(e) => setAdultFilter(e.target.value)}
+            className="border px-2 py-1 rounded h-[44px] text-sm"
+          >
+            <option value="">All Adults</option>
+            {Array.from(
+              new Set(
+                packages.map((pkg) => pkg.search_params.adult).filter(Boolean)
               )
-                .sort((a, b) => a - b)
-                .map((adult, index) => (
-                  <option key={index} value={adult}>
-                    {adult}
-                  </option>
-                ))}
-            </select>
-
-            <select
-              value={childrenFilter}
-              onChange={(e) => setChildrenFilter(e.target.value)}
-              className="border px-2 py-1 rounded h-[44px] text-sm"
-            >
-              <option value="">All Children</option>
-              {Array.from(
-                new Set(
-                  packages
-                    .map((pkg) => pkg.search_params.children)
-                    .filter(Boolean)
-                )
+            )
+              .sort((a, b) => a - b)
+              .map((adult, index) => (
+                <option key={index} value={adult}>
+                  {adult}
+                </option>
+              ))}
+          </select>
+          <select
+            value={childrenFilter}
+            onChange={(e) => setChildrenFilter(e.target.value)}
+            className="border px-2 py-1 rounded h-[44px] text-sm"
+          >
+            <option value="">All Children</option>
+            {Array.from(
+              new Set(
+                packages
+                  .map((pkg) => pkg.search_params.children)
+                  .filter(Boolean)
               )
-                .sort((a, b) => a - b)
-                .map((children, index) => (
-                  <option key={index} value={children}>
-                    {children}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </>
+            )
+              .sort((a, b) => a - b)
+              .map((children, index) => (
+                <option key={index} value={children}>
+                  {children}
+                </option>
+              ))}
+          </select>
+        </div>
       )}
       <div className="w-full bg-white rounded-lg overflow-auto">
         <Table className="table-search-params">
           <TableHeader>
             <TableRow>
-              <TableHead className="whitespace-nowrap">No.</TableHead>
-              {category === "personal-accident" ? (
-                <>
-                  <TableHead>Occupation Class</TableHead>
-                  <TableHead>Ages</TableHead>
-                </>
-              ) : category === "gadget" ? (
-                <></>
-              ) : (
-                <>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Origin</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Adult Participant</TableHead>
-                  <TableHead>Children Participant</TableHead>
-                </>
-              )}
-
-              <TableHead className="whitespace-nowrap">Currency</TableHead>
-              <TableHead>Premium</TableHead>
+              {tableHeaders.map((th) => (
+                <TableHead key={th}>{th}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredPackages.length > 0 ? (
-              filteredPackages.map((packageData, index) => (
-                <TableRow key={packageData.id}>
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  {category == "personal-accident" ? (
-                    <>
-                      <TableCell>
-                        {packageData.search_params.occupation_class.join(", ")}
-                      </TableCell>
-                      <TableCell>
-                        {`${packageData.search_params.age[0]}-${
-                          packageData.search_params.age.slice(-1)[0]
-                        }`}
-                      </TableCell>
-                    </>
-                  ) : category === "gadget" ? (
-                    <></>
-                  ) : (
-                    <>
-                      <TableCell className="capitalize">
-                        {packageData.search_params.trip}
-                      </TableCell>
-                      <TableCell className="capitalize">
-                        {packageData.search_params.origin}
-                      </TableCell>
-                      <TableCell>
-                        {packageData.search_params.duration_to} days
-                      </TableCell>
-                      <TableCell>{packageData.search_params.adult}</TableCell>
-                      <TableCell>
-                        {packageData.search_params.children}
-                      </TableCell>
-                    </>
-                  )}
-
-                  <TableCell>{packageData.currency}</TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {formatMoney(packageData.premium, packageData.currency)}
-                  </TableCell>
+              filteredPackages.map((fp, fpIndex) => (
+                <TableRow key={fpIndex}>
+                  {fp.map((fpRow, fpRowIndex) => (
+                    <TableCell key={fpRowIndex}>{fpRow}</TableCell>
+                  ))}
                 </TableRow>
               ))
             ) : (
@@ -312,7 +421,7 @@ export default function PackageList(props: Readonly<{ id: string }>) {
                     <Image alt="no data" src={noData} width={200} /> No
                     transaction data available
                   </div>
-                </TableCell>{" "}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

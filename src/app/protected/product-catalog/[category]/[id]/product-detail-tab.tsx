@@ -5,8 +5,9 @@ import BenefitList from "./benefit-list";
 import DetailList from "./detail-list";
 import ChannelList from "./channel-list";
 
-export default function ProductDetatilTab(props: { id: string }) {
-  const { id } = props;
+export default function ProductDetatilTab(props: { id: string; category: string; }) {
+  const { id, category } = props;
+
   return (
     <Tabs defaultValue="packages">
       <TabsList aria-label="Tabs" className="grid w-full grid-cols-4">
@@ -21,7 +22,7 @@ export default function ProductDetatilTab(props: { id: string }) {
             <CardTitle>Packages</CardTitle>
           </CardHeader>
           <CardContent>
-            <PackageList id={id} />
+            <PackageList id={id} category={category} />
           </CardContent>
         </Card>
       </TabsContent>

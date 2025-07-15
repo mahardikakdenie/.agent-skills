@@ -4,7 +4,7 @@ import {
   ProductCatalogDto,
   ProductCatalogService,
 } from "@/services/product-catalog.service";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PackageList from "./package-list";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -36,10 +36,10 @@ import { FORBIDDEN, PRODUCT_CATALOG_CATEGORY } from "@/constants/routes";
 const DetaildPage = ({
   params,
 }: {
-  params: { id: string; category: string; };
+  params: Promise<{ id: string; category: string; }>;
 }) => {
   const router = useRouter();
-  const { category, id } = params;
+  const { category, id } = React.use(params);
   const [selectedInsurance, setSelectedInsurance] = useState<any>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
@@ -135,7 +135,6 @@ const DetaildPage = ({
 
   const onSubmit = async (data: any) => {
     try {
-      const id = params.id;
       await updatePlan(data, id);
       setSaveSuccess(true);
     } catch (error) {
@@ -409,7 +408,7 @@ const DetaildPage = ({
             </form>
           </div>
           <div className="w-full overflow-auto">
-            <ProductDetatilTab id={id} />
+            <ProductDetatilTab id={id} category={category} />
           </div>
         </div>
       </div>

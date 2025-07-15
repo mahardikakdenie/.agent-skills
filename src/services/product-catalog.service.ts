@@ -314,4 +314,61 @@ export class ProductCatalogService {
       throw error;
     }
   }
+
+  async savePackage(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/packages", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async updatePackage(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.put(`/v1/packages/${id}`, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getPackageById(id: string): Promise<any> {
+    try {
+        return await this.httpClient.get(`/v1/packages/${id}`);
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
+    }
+  }
+
+  async deletePackage(id: string): Promise<any> {
+    try {
+        return await this.httpClient.delete(`/v1/packages/${id}`);
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
+    }
+  }
+
+  async saveBenefit(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/plan-benefit/create", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async deleteBenefit(id: string): Promise<any> {
+    try {
+        return await this.httpClient.delete(`/v1/plan-benefit/${id}`);
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
+    }
+  }
 }
