@@ -45,6 +45,8 @@ const BillingPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+
   const totalPages = Math.ceil(totalItems / rowsPerPage);
   const [searchType, setSearchType] = useState("");//DEFAULT PARTNER
   const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
@@ -71,6 +73,9 @@ const BillingPage = () => {
   useEffect(() => {
     if (billingList && billingList.data) {
       setTotalItems(billingList.meta.total);
+      setTotalAmount(billingList.totalAmount);
+    } else {
+      setTotalAmount(0);
     }
   }, [billingList]);
 
@@ -118,12 +123,12 @@ const BillingPage = () => {
       setSearchType("partner")
     }
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setCompanyDataSource();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchType]);
 
 
@@ -155,7 +160,7 @@ const BillingPage = () => {
   useEffect(() => {
     getCategories();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchChannel]);
 
   const getCategories = async () => {
@@ -404,6 +409,7 @@ const BillingPage = () => {
         </Button>
 
       </div>
+      <div className="text-right mb-2">{"Total: IDR	" + formatMoney(totalAmount)}</div>
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
         <Table className="table-transactions">
           <TableHeader>
