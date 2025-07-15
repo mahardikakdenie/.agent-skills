@@ -17,7 +17,7 @@ export const useProducts = () => {
   const [benefits, setBenefits] = useState<any[]>([]);
   const [details, setDetails] = useState<any[]>([]);
   const [productConfig, setProductConfig] = useState<ProductConfig>();
-  const [packageDetail, setPackageDetail] = useState<PackageDto>();
+  const [packageDetail, setPackageDetail] = useState<PackageDto[]>([]);
 
   const productCatalogService = new ProductCatalogService();
   const channelService = new ChannelService();

@@ -245,24 +245,24 @@ const ProductCategoryPackageForm = ({
   }, [packageID]);
 
   useEffect(() => {
-    if (packageDetail) {
-      setValue("currency", packageDetail.currency);
-      setValue("premium", formatCurrency(packageDetail.premium.toString()));
+    if (packageDetail.length > 0) {
+      setValue("currency", packageDetail[0].currency);
+      setValue("premium", formatCurrency(packageDetail[0].premium.toString()));
 
-      for (const key in packageDetail.search_params) {
+      for (const key in packageDetail[0].search_params) {
         if (key.includes("_from") || key.includes("_to")) {
           const keyArray = key.split("_");
 
           setValue(
             `${keyArray[0]}.from`,
-            packageDetail.search_params[`${keyArray[0]}_from`].toString()
+            packageDetail[0].search_params[`${keyArray[0]}_from`].toString()
           );
           setValue(
             `${keyArray[0]}.to`,
-            packageDetail.search_params[`${keyArray[0]}_to`].toString()
+            packageDetail[0].search_params[`${keyArray[0]}_to`].toString()
           );
         } else {
-          let value = packageDetail.search_params[key];
+          let value = packageDetail[0].search_params[key];
 
           if (typeof value === 'number') {
             value = value.toString();

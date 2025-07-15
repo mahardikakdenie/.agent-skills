@@ -1,5 +1,6 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
+import axios from "axios";
 import qs from "qs";
 
 export interface PackageDto {
@@ -335,7 +336,11 @@ export class ProductCatalogService {
 
   async getPackageById(id: string): Promise<any> {
     try {
-        return await this.httpClient.get(`/v1/packages/${id}`);
+        return await axios.get(`${process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL}/v1/packages/${id}`, {
+            headers: {
+                Authorization: `Bearer 6eyw7n4kk9063sivf6ubt8dz5kyhwl`
+            }
+        });
     } catch(error) {
         console.error("Request failed:", error);
 
