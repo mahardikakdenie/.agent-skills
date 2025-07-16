@@ -47,19 +47,9 @@ const DetailClaim = () => {
   const [isViewDocument, setIsViewDocument] = useState(false);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
-  const imageUrl =
-    claim?.participant_data?.data?.ktp ||
-    claim?.participant_data?.data?.passport ||
-    noImage.src;
+  const imageUrl = claim?.participant_data?.data?.ktp || claim?.participant_data?.data?.passport || noImage.src;
 
-  const personalInfo = [
-    claim?.personal_info?.address,
-    claim?.personal_info?.address2,
-    claim?.personal_info?.subdistrict,
-    claim?.personal_info?.district,
-    claim?.personal_info?.city,
-    claim?.personal_info?.state,
-  ];
+  const personalInfo = [ claim?.personal_info?.address, claim?.personal_info?.address2, claim?.personal_info?.subdistrict, claim?.personal_info?.district, claim?.personal_info?.city, claim?.personal_info?.state, ];
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -101,11 +91,7 @@ const DetailClaim = () => {
   }, [params.id]);
 
   if (!claim) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        Loading...
-      </div>
-    );
+    return (<div className="w-full h-full flex justify-center items-center">Loading...</div>);
   }
 
   const downloadDocument = (url: string) => {
@@ -235,16 +221,10 @@ const DetailClaim = () => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-            Detail Claim
-          </h2>
+          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">Detail Claim</h2>
         </div>
-        <div
-          onClick={() => router.back()}
-          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back
+        <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
+          <ChevronLeft className="w-4 h-4" /> Back
         </div>
       </div>
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
@@ -256,13 +236,7 @@ const DetailClaim = () => {
               tab === "Summary" && "border-b-[3px] border-primary"
             }`}
           >
-            <p
-              className={`text-sm mr-3 ${
-                tab === "Summary" && "font-semibold text-primary"
-              }`}
-            >
-              Summary
-            </p>
+            <p className={`text-sm mr-3 ${tab === "Summary" && "font-semibold text-primary"}`}>Summary</p>
           </div>
           <div
             onClick={() => setTab("Documents")}
@@ -271,13 +245,7 @@ const DetailClaim = () => {
               tab === "Documents" && "border-b-[3px] border-primary"
             }`}
           >
-            <p
-              className={`text-sm mr-3 ${
-                tab === "Documents" && "font-semibold text-primary"
-              }`}
-            >
-              Documents
-            </p>
+            <p className={`text-sm mr-3 ${tab === "Documents" && "font-semibold text-primary"}`}>Documents</p>
           </div>
         </div>
 
@@ -333,39 +301,27 @@ const DetailClaim = () => {
               <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
                 <p className="font-semibold">Detail Claim</p>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Claim Number
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Claim Number</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.number || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Customer Name
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Customer Name</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.policy_data?.policy_holder?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Plan Name
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Plan Name</div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>
-                    {claim?.package?.plan?.name.split("|").join(" - ") || "-"}
-                  </div>
+                  <div>{claim?.package?.plan?.name.split("|").join(" - ") || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Benefit
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Benefit</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.benefit?.description_en || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Requested Amount
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Requested Amount</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>
                     {(() => {
@@ -382,30 +338,20 @@ const DetailClaim = () => {
                   </div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Approved Amount
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Approved Amount</div>
                   <div className="max-w-1 w-1">:</div>
-                  <div>
-                    {formatMoneyClaim(
-                      claim.amount_approved != null ? claim.amount_approved : 0
-                    )}
-                  </div>
+                  <div>{formatMoneyClaim(claim.amount_approved != null ? claim.amount_approved : 0)}</div>
                 </div>
               </div>
               <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
                 <p className="font-semibold">Informasi Pemegang Polis</p>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Customer Name
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Customer Name</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.policy_data?.policy_holder?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Phone Number
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Phone Number</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.policy_data?.policy_holder?.phone || "-"}</div>
                 </div>
@@ -425,45 +371,29 @@ const DetailClaim = () => {
                   </div>
                   <div className="w-full flex gap-3 flex-col">
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        No. Polis
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">No. Polis</div>
                       <div className="max-w-1 w-1">:</div>
                       <div>{claim?.policy_data?.number || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        No. Peserta
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">No. Peserta</div>
                       <div className="max-w-1 w-1">:</div>
                       <div>{claim?.participant_data?.number || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        Nama Lengkap
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Nama Lengkap</div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.name ||
-                          claim?.participant_data?.data?.name ||
-                          "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.data?.name || claim?.participant_data?.data?.name || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        Gender
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Gender</div>
                       <div className="max-w-1 w-1">:</div>
                       <div>{claim?.participant_data?.data?.gender || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        Kode Negara
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Kode Negara</div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.country_code || "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.country_code || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
@@ -478,39 +408,20 @@ const DetailClaim = () => {
                           : ""}
                       </div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.passport_no ||
-                          claim?.participant_data?.data?.passport_no ||
-                          claim?.participant_data?.data?.nik ||
-                          "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.data?.passport_no || claim?.participant_data?.data?.passport_no || claim?.participant_data?.data?.nik || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        Kewarganegaraan
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Kewarganegaraan</div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.nationality ||
-                          claim?.participant_data?.data?.nationality ||
-                          "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.data?.nationality || claim?.participant_data?.data?.nationality || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        Tgl. Lahir
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Tgl. Lahir</div>
                       <div className="max-w-1 w-1">:</div>
-                      <div>
-                        {claim?.participant_data?.data?.data?.dob ||
-                          claim?.participant_data?.data?.dob ||
-                          "-"}
-                      </div>
+                      <div>{claim?.participant_data?.data?.data?.dob || claim?.participant_data?.data?.dob || "-"}</div>
                     </div>
                     <div className="flex gap-2 text-sm font-medium">
-                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                        Tempat Lahir
-                      </div>
+                      <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Tempat Lahir</div>
                       <div className="max-w-1 w-1">:</div>
                       <div>{claim?.participant_data?.data?.pob || "-"}</div>
                     </div>
@@ -520,16 +431,12 @@ const DetailClaim = () => {
               <div className="bg-white rounded-md flex flex-col gap-3 p-4 sm:p-6">
                 <p className="font-semibold">Informasi Pribadi</p>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Nomor Handpone
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Nomor Handpone</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.personal_info?.phone || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Alamat
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Alamat</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{personalInfo.filter(Boolean).join(" ") || "-"}</div>
                 </div>
@@ -542,23 +449,17 @@ const DetailClaim = () => {
                   <div>{claim?.bank_info?.account_name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Nama Bank
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Nama Bank</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.bank_info?.bank?.name || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    Cabang Bank
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Cabang Bank</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.bank_info?.branch || "-"}</div>
                 </div>
                 <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
-                    No. Rekening
-                  </div>
+                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">No. Rekening</div>
                   <div className="max-w-1 w-1">:</div>
                   <div>{claim?.bank_info?.account_number || "-"}</div>
                 </div>
@@ -584,10 +485,7 @@ const DetailClaim = () => {
                       <TableCell>
                         <div className="flex gap-2 items-center">
                           {document?.label?.en || document?.label || "-"}{" "}
-                          {document?.insured_type &&
-                            " - " +
-                              document?.insured_type.charAt(0).toUpperCase() +
-                              document?.insured_type.slice(1)}
+                          {document?.insured_type && " - " + document?.insured_type.charAt(0).toUpperCase() + document?.insured_type.slice(1)}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -628,8 +526,7 @@ const DetailClaim = () => {
                   <TableRow className="hover:!bg-white">
                     <TableCell colSpan={9}>
                       <div className="flex flex-col gap-4 items-center justify-center py-14">
-                        <Image alt="no data" src={noData} width={200} /> No
-                        transaction data available
+                        <Image alt="no data" src={noData} width={200} /> No transaction data available
                       </div>
                     </TableCell>{" "}
                   </TableRow>
@@ -643,6 +540,5 @@ const DetailClaim = () => {
   );
 };
 
-const DetailClaimWithSidebar = (params: any) =>
-  WithSidebar(DetailClaim)(params);
+const DetailClaimWithSidebar = (params: any) => WithSidebar(DetailClaim)(params);
 export default DetailClaimWithSidebar;

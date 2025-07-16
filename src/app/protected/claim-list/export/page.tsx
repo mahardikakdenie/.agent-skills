@@ -1,24 +1,23 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import noData from "/public/images/no-data.webp";
-import Image from "next/image";
 import jsPDF from "jspdf";
-import * as XLSX from "xlsx";
-import { useRouter } from "next/navigation";
-import { ChevronLeft, Download } from "react-feather";
-import { Button } from "@/components/ui/button";
-import { ClaimService } from "@/services/claim.service";
-import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
-import Spinner from "@/components/ui/spinner";
-import WithSidebar from "@/hoc/with-sidebar";
-import autoTable from "jspdf-autotable";
 import moment from "moment";
+import * as XLSX from "xlsx";
+import Image from "next/image";
+import autoTable from "jspdf-autotable";
+import WithSidebar from "@/hoc/with-sidebar";
+import Spinner from "@/components/ui/spinner";
+import noData from "/public/images/no-data.webp";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { formatMoneyClaim } from "@/lib/formatter";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, Download } from "react-feather";
+import { ClaimService } from "@/services/claim.service";
 
 const ExportPage = () => {
   const itemService = new ClaimService();
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [totalData, setTotalData] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -108,9 +107,7 @@ const ExportPage = () => {
           item?.benefit?.description_en || "-",
           item?.currency || "-",
           getReqAmount(item),
-          formatMoneyClaim(
-            item.amount_approved != null ? item.amount_approved : 0
-          ),
+          formatMoneyClaim(item.amount_approved != null ? item.amount_approved : 0),
           item.status || "-",
         ]
       }),
@@ -214,91 +211,46 @@ const ExportPage = () => {
     <div className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
       <div className="flex gap-4 mb-5">
         <h1 className="text-black font-bold text-2xl mt-2">Claim List</h1>
-        <div
-          onClick={() => router.back()}
-          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back
+        <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4">
+          <ChevronLeft className="w-4 h-4" />Back
         </div>
 
-        <Button
-          onClick={handleGeneratePdf}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs"
-        >
+        <Button onClick={handleGeneratePdf} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs">
           <Download className="w-5 h-5 mr-1 " /> Generate PDF
         </Button>
 
-        <Button
-          onClick={handleGenerateXlsx}
-          className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs"
-        >
+        <Button onClick={handleGenerateXlsx} className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs">
           <Download className="w-5 h-5 mr-1 " /> Generate XLSX
         </Button>
       </div>
       <div className="w-full bg-white rounded-lg">
         {isLoading ? (
-          <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
-            <Spinner />
-            Loading...
-          </div>
+          <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm"><Spinner /> Loading...</div>
         ) : (
           <table style={styles.table} ref={reportTemplateRef} border={1}>
             <thead>
               <tr>
-                <td style={styles.th} valign="middle">
-                  No.
-                </td>
-                <td style={styles.th} valign="middle">
-                  Claim ID
-                </td>
-                <td style={styles.th} valign="middle">
-                  Customer Name
-                </td>
-                <td style={styles.th} valign="middle">
-                  Plan Name
-                </td>
-                <td style={styles.th} valign="middle">
-                  Benefit
-                </td>
-                <td style={styles.th} valign="middle">
-                  Currency
-                </td>
-                <td style={styles.th} valign="middle">
-                  Requested Amount
-                </td>
-                <td style={styles.th} valign="middle">
-                  Approved Amount{" "}
-                </td>
-                <td style={styles.th} valign="middle">
-                  Status
-                </td>
+                <td style={styles.th} valign="middle">No.</td>
+                <td style={styles.th} valign="middle">Claim ID</td>
+                <td style={styles.th} valign="middle">Customer Name</td>
+                <td style={styles.th} valign="middle">Plan Name</td>
+                <td style={styles.th} valign="middle">Benefit</td>
+                <td style={styles.th} valign="middle">Currency</td>
+                <td style={styles.th} valign="middle">Requested Amount</td>
+                <td style={styles.th} valign="middle">Approved Amount{" "}</td>
+                <td style={styles.th} valign="middle">Status</td>
               </tr>
             </thead>
             <tbody>
               {data.length > 0 ? (
                 data.map((item, index) => (
                   <tr key={item.id}>
-                    <td style={styles.td} valign="middle">
-                      {(page - 1) * rowsPerPage + index + 1}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      <div className="flex gap-2 items-center">
-                        {item.number || "-"}
-                      </div>
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.policy_data?.policy_holder?.name || "-"}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.package?.plan?.name.split("|").join(" - ") || "-"}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.benefit?.description_en || "-"}
-                    </td>
-                    <td style={styles.td} valign="middle">
-                      {item?.currency || "-"}
-                    </td>
+                    <td style={styles.td} valign="middle">{(page - 1) * rowsPerPage + index + 1}</td>
+                    <td style={styles.td} valign="middle"><div className="flex gap-2 items-center">{item.number || "-"}</div></td>
+                    <td style={styles.td} valign="middle">{item?.policy_data?.policy_holder?.name || "-"}</td>
+                    <td style={styles.td} valign="middle">{item?.package?.plan?.name.split("|").join(" - ") || "-"}</td>
+                    <td style={styles.td} valign="middle">{item?.benefit?.description_en || "-"}</td>
+                    <td style={styles.td} valign="middle">{item?.currency || "-"}</td>
                     <td style={styles.td} valign="middle">
                       {(() => {
                         const claimValue = item.claim?.find(
@@ -313,23 +265,16 @@ const ExportPage = () => {
                       })()}
                     </td>
                     <td style={styles.td} valign="middle">
-                      <div className="flex gap-2 items-center">
-                        {formatMoneyClaim(
-                          item.amount_approved != null ? item.amount_approved : 0
-                        )}
-                      </div>
+                      <div className="flex gap-2 items-center">{formatMoneyClaim(item.amount_approved != null ? item.amount_approved : 0)}</div>
                     </td>
-                    <td style={styles.td} valign="middle">
-                      {item.status}
-                    </td>
+                    <td style={styles.td} valign="middle">{item.status}</td>
                   </tr>
                 ))
               ) : (
                 <tr className="hover:!bg-white">
                   <td colSpan={9}>
                     <div className="flex flex-col gap-4 items-center justify-center py-14">
-                      <Image alt="no data" src={noData} width={200} /> No
-                      transaction data available
+                      <Image alt="no data" src={noData} width={200} /> No transaction data available
                     </div>
                   </td>{" "}
                 </tr>

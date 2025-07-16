@@ -384,10 +384,8 @@ const ClaimsPage = () => {
     }
 
     if (
-      (finalSelectedDocuments.length < 1 &&
-        pendingStatus === "Lack of Documents Operator") ||
-      (finalSelectedDocuments.length < 1 &&
-        pendingStatus === "Lack of Documents Insurance")
+      (finalSelectedDocuments.length < 1 && pendingStatus === "Lack of Documents Operator") ||
+      (finalSelectedDocuments.length < 1 && pendingStatus === "Lack of Documents Insurance")
     ) {
       setDocsMsg("Required!");
       return;
@@ -450,8 +448,7 @@ const ClaimsPage = () => {
           .map((a: any) =>
             a.fields.filter(
               (doc: any) =>
-                doc.type.toLowerCase() === "file" ||
-                doc.type.toLowerCase() === "file multiple"
+                doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple"
             )
           )
           .flat()
@@ -515,9 +512,7 @@ const ClaimsPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex flex-wrap justify-end gap-4 pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full mr-auto">
-          Claim List
-        </h1>
+        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full mr-auto">Claim List</h1>
 
         <div className="flex gap-2 sm:w-auto w-full relative">
           <Popover>
@@ -534,8 +529,7 @@ const ClaimsPage = () => {
                 {date?.from ? (
                   date.to ? (
                     <>
-                      {format(date.from, "LLL dd, y")} -
-                      {format(date.to, "LLL dd, y")}
+                      {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
                     </>
                   ) : (
                     format(date.from, "LLL dd, y")
@@ -546,13 +540,7 @@ const ClaimsPage = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                defaultMonth={new Date()}
-                selected={date}
-                onSelect={(range) => setDate(range)}
-                numberOfMonths={2}
-              />
+              <Calendar mode="range" defaultMonth={new Date()} selected={date} onSelect={(range) => setDate(range)} numberOfMonths={2} />
             </PopoverContent>
           </Popover>
           <Button
@@ -569,16 +557,12 @@ const ClaimsPage = () => {
         </div>
 
         <div className="min-w-48">
-          <Select
-            value={searchChannel}
-            onValueChange={handleChannelChange}
-          >
+          <Select value={searchChannel} onValueChange={handleChannelChange}>
             <SelectTrigger className="h-10">
               <SelectValue placeholder="Channel" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {/* <SelectItem value={'All'}>All Channel</SelectItem> */}
                 {
                   channels.map((item, index) => (
                     <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
@@ -590,10 +574,7 @@ const ClaimsPage = () => {
         </div>
 
         <div className="min-w-32">
-          <Select
-            value={searchSlaStatus}
-            onValueChange={handleSearchSlaStatusChange}
-          >
+          <Select value={searchSlaStatus} onValueChange={handleSearchSlaStatusChange}>
             <SelectTrigger className="h-10">
               <SelectValue placeholder="SLA Status" />
             </SelectTrigger>
@@ -608,23 +589,14 @@ const ClaimsPage = () => {
           </Select>
         </div>
 
-        <Button
-          onClick={() => router.push(CLAIM_LIST_IMPORT)}
-          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
-        >
+        <Button onClick={() => router.push(CLAIM_LIST_IMPORT)} className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full">
           <Upload className="w-5 h-5 mr-1" /> Import
         </Button>
         {/* New button to redirect to the new import page with preview */}
-        <Button
-          onClick={() => router.push(CLAIM_LIST_IMPORT_WITH_PREVIEW)}
-          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
-        >
+        <Button onClick={() => router.push(CLAIM_LIST_IMPORT_WITH_PREVIEW)} className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full">
           <Upload className="w-5 h-5 mr-1" /> Import with Preview
         </Button>
-        <Button
-          onClick={handleExport}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
-        >
+        <Button onClick={handleExport} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full">
           <Download className="w-5 h-5 mr-1 " /> Export
         </Button>
       </div>
@@ -632,18 +604,13 @@ const ClaimsPage = () => {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="min-w-96 w-auto max-w-full">
             <p className="text-center">
-              <AlertCircle
-                width={88}
-                height={88}
-                className="mx-auto text-[#F5AB1D]"
-              />
+              <AlertCircle width={88} height={88} className="mx-auto text-[#F5AB1D]" />
             </p>
             <p className="text-center font-bold mb-0 text-sm">Are you sure?</p>
             <div className="flex flex-col gap-4">
               <p className="text-center text-sm">
                 Update <strong>{numberId}</strong> status <br />
-                from <strong>{statusOld}</strong> to
-                <strong>{pendingStatus}</strong>
+                from <strong>{statusOld}</strong> to <strong>{pendingStatus}</strong>
               </p>
               {pendingStatus === "Approved" && (
                 <>
@@ -653,22 +620,16 @@ const ClaimsPage = () => {
                         <div>
                           <p className="text-sm mb-2">Requested Amount</p>
                           <div className="relative">
-                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
-                              {currencyApp}
-                            </span>
+                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">{currencyApp}</span>
                             <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
                               {formatMoneyClaim(reqAmountApproved)}
                             </div>
                           </div>
                         </div>
                         <div>
-                          <p className="text-sm mb-2">
-                            Approved Amount <span className="!text-red-500">*</span>
-                          </p>
+                          <p className="text-sm mb-2">Approved Amount <span className="!text-red-500">*</span></p>
                           <div className="relative">
-                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
-                              {currencyApp}
-                            </span>
+                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">{currencyApp}</span>
                             <Input
                               type="text"
                               value={
@@ -710,9 +671,7 @@ const ClaimsPage = () => {
               {pendingStatus === "Rejected" && (
                 <>
                   <div className="w-full">
-                    <p className="text-sm mb-2">
-                      Reason <span className="!text-red-500">*</span>
-                    </p>
+                    <p className="text-sm mb-2">Reason <span className="!text-red-500">*</span></p>
                     <textarea
                       name=""
                       id=""
@@ -735,9 +694,7 @@ const ClaimsPage = () => {
                 pendingStatus === "Lack of Documents Insurance") && (
                   <>
                     <div className="w-[600px]">
-                      <p className="text-sm mb-2">
-                        Reason <span className="!text-red-500">*</span>
-                      </p>
+                      <p className="text-sm mb-2">Reason <span className="!text-red-500">*</span></p>
                       <textarea
                         name=""
                         id=""
@@ -754,17 +711,11 @@ const ClaimsPage = () => {
                       <p className="text-xs text-red-500">{noteMsg}</p>
                     </div>
                     <div className="w-full">
-                      <p className="text-sm">
-                        Lack of Document Reasons
-                        <span className="!text-red-500">*</span>
-                      </p>
+                      <p className="text-sm">Lack of Document Reasons <span className="!text-red-500">*</span></p>
                       {finalSelectedDocuments.length > 0 && (
                         <ul className="mt-3">
                           {finalSelectedDocuments.map((doc) => (
-                            <li
-                              key={doc.id}
-                              className="flex justify-between items-center mb-2 gap-2"
-                            >
+                            <li key={doc.id} className="flex justify-between items-center mb-2 gap-2">
                               <Input
                                 name="lack_of_documents"
                                 value={
@@ -793,11 +744,7 @@ const ClaimsPage = () => {
                       <Dialog>
                         {filteredClaims.slice(0, 1).map((document) => (
                           <DialogTrigger asChild key={document.id}>
-                            <Button
-                              color="warning"
-                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
-                              onClick={() => handleSelectDocument()}
-                            >
+                            <Button color="warning" className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4" onClick={() => handleSelectDocument()}>
                               <Plus className="w-4 h-4 mr-2" /> Add Document
                             </Button>
                           </DialogTrigger>
@@ -807,10 +754,7 @@ const ClaimsPage = () => {
                             <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
                               Lack of Document Reasons
                               <DialogClose className="ml-auto">
-                                <Button
-                                  type="button"
-                                  className="bg-transparent hover:bg-transparent text-black p-0"
-                                >
+                                <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
                                   <X className="w-5 h-5" />
                                 </Button>
                               </DialogClose>
@@ -821,36 +765,22 @@ const ClaimsPage = () => {
                             <Table className="table-claims">
                               <TableHeader>
                                 <TableRow>
-                                  <TableHead className="whitespace-nowrap py-2 w-10">
-                                    Select
-                                  </TableHead>
-                                  <TableHead className="py-2">
-                                    Document Type
-                                  </TableHead>
+                                  <TableHead className="whitespace-nowrap py-2 w-10">Select</TableHead>
+                                  <TableHead className="py-2">Document Type</TableHead>
                                   <TableHead className="py-2">Criteria</TableHead>
-                                  <TableHead className="py-2">
-                                    Definition
-                                  </TableHead>
-                                  <TableHead className="py-2 text-center">
-                                    Message
-                                  </TableHead>
+                                  <TableHead className="py-2">Definition</TableHead>
+                                  <TableHead className="py-2 text-center">Message</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
                                 {dataDocument.length > 0 ? (
                                   dataDocument
                                     .filter(
-                                      (document) =>
-                                        document.type.toLowerCase() === "file" ||
-                                        document.type.toLowerCase() ===
-                                        "file multiple" ||
-                                        document.type.toLowerCase() === "fields"
+                                      (document) => document.type.toLowerCase() === "file" || document.type.toLowerCase() ===
+                                        "file multiple" || document.type.toLowerCase() === "fields"
                                     )
                                     .map((document) => (
-                                      <TableRow
-                                        key={document.id}
-                                        className="cursor-pointer"
-                                      >
+                                      <TableRow key={document.id} className="cursor-pointer">
                                         <TableCell align="center">
                                           <Input
                                             type="checkbox"
@@ -1020,12 +950,7 @@ const ClaimsPage = () => {
                                   <TableRow className="hover:!bg-white">
                                     <TableCell colSpan={3}>
                                       <div className="flex flex-col gap-4 items-center justify-center py-14">
-                                        <Image
-                                          alt="no data"
-                                          src={noData}
-                                          width={200}
-                                        />
-                                        No transaction data available
+                                        <Image alt="no data" src={noData} width={200} /> No transaction data available
                                       </div>
                                     </TableCell>
                                   </TableRow>
@@ -1036,13 +961,8 @@ const ClaimsPage = () => {
 
                           <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
                             <DialogClose asChild>
-                              <Button
-                                type="button"
-                                className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-                                onClick={handleAddSelectedDocuments}
-                              >
-                                <Check className="w-4 h-4 mr-2" /> Add selected
-                                document
+                              <Button type="button" className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black" onClick={handleAddSelectedDocuments}>
+                                <Check className="w-4 h-4 mr-2" /> Add selected document
                               </Button>
                             </DialogClose>
                           </DialogFooter>
@@ -1053,20 +973,8 @@ const ClaimsPage = () => {
                 )}
 
               <div className="flex gap-4 justify-center">
-                <Button
-                  variant="outline"
-                  onClick={cancelModal}
-                  className="border-[#E83F3F] text-[#E83F3F] rounded-full w-24"
-                >
-                  No
-                </Button>
-                <Button
-                  color="warning"
-                  onClick={confirmModal}
-                  className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black"
-                >
-                  Yes
-                </Button>
+                <Button variant="outline" onClick={cancelModal} className="border-[#E83F3F] text-[#E83F3F] rounded-full w-24">No</Button>
+                <Button color="warning" onClick={confirmModal} className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black">Yes</Button>
               </div>
             </div>
           </DialogContent>
