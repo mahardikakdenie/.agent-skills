@@ -1,30 +1,21 @@
 "use client";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
-import { ClaimService } from "@/services/claim.service";
+import { useState } from "react";
 import { toastPromise } from '@/lib/toast';
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Check, ChevronLeft, Download, Upload } from "react-feather";
+import { Button } from "@/components/ui/button";
 import { CLAIM_LIST } from "@/constants/routes";
+import { ChevronLeft, Upload } from "react-feather";
+import { useLoading } from "@/context/loading.context";
+import { ClaimService } from "@/services/claim.service";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";
 
 const ImportPage = () => {
   const claimService = new ClaimService();
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<
-    "idle" | "uploading" | "success" | "error"
-  >("idle");
+  const [uploadStatus, setUploadStatus] = useState< "idle" | "uploading" | "success" | "error" >("idle");
   const [base64String, setBase64String] = useState<string>("");
 
   const { setLoading } = useLoading();
@@ -45,9 +36,7 @@ const ImportPage = () => {
 
   const handleFileSelection = async (file: File) => {
     if (
-      file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-      file.type === "application/vnd.ms-excel"
+      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type === "application/vnd.ms-excel"
     ) {
       setSelectedFile(file);
       try {
@@ -105,7 +94,7 @@ const ImportPage = () => {
       await toastPromise(uploadPromise, {
         loading: "Uploading file...",
         success: <b>File uploaded successfully!</b>,
-        error: "Upload failed!", // Default fallback error message
+        error: "Upload failed!",
       });
 
       setUploadStatus("success");
@@ -135,30 +124,19 @@ const ImportPage = () => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-            Import Claims
-          </h2>
+          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">Import Claims</h2>
         </div>
 
         <div className="flex ml-auto">
-          <div
-            onClick={() => router.back()}
-            className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
+          <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
+            <ChevronLeft className="w-4 h-4" /> Back
           </div>
-          <Button
-            onClick={handleUpload}
-            disabled={!selectedFile || uploadStatus === "uploading"}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
-          >
+          <Button onClick={handleUpload} disabled={!selectedFile || uploadStatus === "uploading"} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5">
             {uploadStatus === "uploading" ? (
               "Uploading..."
             ) : (
               <>
-                <Upload className="mr-2 w-4 h-4" />
-                Upload
+                <Upload className="mr-2 w-4 h-4" /> Upload
               </>
             )}
           </Button>
@@ -177,33 +155,20 @@ const ImportPage = () => {
             onDrop={handleDrop}
           >
             <div className="flex flex-col items-center justify-center gap-4">
-              <Upload
-                className={`w-12 h-12 ${
-                  selectedFile ? "text-green-500" : "text-gray-400"
-                }`}
-              />
+              <Upload className={`w-12 h-12 ${selectedFile ? "text-green-500" : "text-gray-400" }`} />
               <div className="text-center">
                 {selectedFile ? (
-                  <p className="text-green-500 font-medium">
-                    Selected: {selectedFile.name}
-                  </p>
+                  <p className="text-green-500 font-medium">Selected: {selectedFile.name}</p>
                 ) : (
                   <>
                     <p className="text-gray-600">
                       Drag and drop your file here, or&nbsp;
                       <label className="text-[#F5BA41] cursor-pointer hover:text-[#e6a92d]">
                         browse
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".xlsx,.xls"
-                          onChange={handleFileInput}
-                        />
+                        <input type="file" className="hidden" accept=".xlsx,.xls" onChange={handleFileInput} />
                       </label>
                     </p>
-                    <p className="text-gray-400 text-sm mt-2">
-                      Supported formats: .xlsx, .xls
-                    </p>
+                    <p className="text-gray-400 text-sm mt-2">Supported formats: .xlsx, .xls</p>
                   </>
                 )}
               </div>
