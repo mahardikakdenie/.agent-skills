@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CLAIM_LIST } from "@/constants/routes";
-import { ChevronLeft, Upload } from "react-feather";
+import { ChevronLeft, Download, Upload } from "react-feather";
 import { useEffect, useState, useRef } from "react";
 import { useLoading } from "@/context/loading.context";
 import { ClaimService } from "@/services/claim.service";
@@ -106,6 +106,16 @@ const ImportWithPreviewPage = () => {
       fetchData();
     }
   });
+
+  const handleDownloadTemplate = () => {
+    try {
+      console.log(channelOptions)
+      var c = channelOptions.filter((x) => x.value == selectedChannel)[0];
+      window.open(`/policy_templates/${c.label}_claim_import_template.xlsx`, '_blank');
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
   const checkAllRequiredHeader = () => {
     const filterRequiredHeader = headerGuide.filter(
@@ -263,7 +273,7 @@ const ImportWithPreviewPage = () => {
       selectedChannel && selectedCategory && (selectedChannel !== lastSelectedChannel.current || selectedCategory !== lastSelectedCategory.current)
     ) {
       fetchImportDataGuide(selectedChannel, selectedCategory);
-      
+
       lastSelectedChannel.current = selectedChannel;
       lastSelectedCategory.current = selectedCategory;
     }
@@ -431,11 +441,10 @@ const ImportWithPreviewPage = () => {
             {tableHeader.map((header: string, index: number) => (
               <TableHead
                 key={index}
-                className={`truncate cursor-pointer transition-colors duration-200 border-r ${
-                  !isHeaderValid(header)
-                    ? "text-white bg-red-500 hover:bg-red-400"
-                    : "hover:bg-gray-200"
-                }`}
+                className={`truncate cursor-pointer transition-colors duration-200 border-r ${!isHeaderValid(header)
+                  ? "text-white bg-red-500 hover:bg-red-400"
+                  : "hover:bg-gray-200"
+                  }`}
                 onClick={() => handleClickHeader(index, header)}
               >
                 <div className="flex flex-row gap-3">
@@ -541,6 +550,14 @@ const ImportWithPreviewPage = () => {
           <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
             <ChevronLeft className="w-4 h-4" /> Back
           </div>
+
+          <Button
+            onClick={handleDownloadTemplate}
+            className="bg-[#F5BA41] text-black hover:bg-[#F5BA41] mr-auto  ml-5 rounded-full"
+          >
+            <Download className="w-5 h-5 mr-1 " /> Import Template
+          </Button>
+
           <Button
             onClick={handleUpload}
             disabled={
@@ -581,9 +598,8 @@ const ImportWithPreviewPage = () => {
           </div>
           {selectedCategory && headerGuide.length > 0 ? (
             <div
-              className={`border-2 border-dashed rounded-lg p-8 ${
-                dragActive ? "border-[#F5BA41] bg-[#FDF7E9]" : "border-gray-300"
-              } ${selectedFile ? "border-green-500 bg-green-50" : ""}`}
+              className={`border-2 border-dashed rounded-lg p-8 ${dragActive ? "border-[#F5BA41] bg-[#FDF7E9]" : "border-gray-300"
+                } ${selectedFile ? "border-green-500 bg-green-50" : ""}`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
@@ -637,5 +653,5 @@ const ImportWithPreviewPage = () => {
   );
 };
 
-const ImportWithPreviewPageWithSidebar = (params: any) =>WithSidebar(ImportWithPreviewPage)(params);
+const ImportWithPreviewPageWithSidebar = (params: any) => WithSidebar(ImportWithPreviewPage)(params);
 export default ImportWithPreviewPageWithSidebar;
