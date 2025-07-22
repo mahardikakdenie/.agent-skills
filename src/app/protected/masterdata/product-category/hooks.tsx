@@ -10,11 +10,10 @@ export const useCategories = () => {
   const [productsCategories, setProductsCategories] = useState<
     ProductCategories[]
   >([]);
-  const [categories, setCategories] = useState<any[]>([]);
 
-  const fetchCategories = async (search: any) => {
-    const { data } = await productCategoriesService.getCategories();
-    setCategories(data);
+  const fetchCategories = async (search?: any) => {
+    const result = await productCategoriesService.getCategories();
+    return result;
   };
 
   const fetchCategoriesById = async (id: string) => {
@@ -45,7 +44,6 @@ export const useCategories = () => {
   };
 
   return {
-    categories,
     saveCategories,
     updateCategories,
     deleteCategories,

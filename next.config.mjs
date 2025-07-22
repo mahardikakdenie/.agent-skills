@@ -7,6 +7,9 @@ const nextConfig = {
           'cdn-stg.frndsr.tech',
           'cdn.friendsure.tech',
           'cdn-stg.friendsure.tech',
+          'placehold.co',
+          'storage.googleapis.com',
+          'cdn-stg.friendsureapp.com'
       ],
     },
   };

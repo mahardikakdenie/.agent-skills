@@ -8,6 +8,8 @@ export interface ProductCategories {
   updated_at: any;
   name: string;
   claim_config: string;
+  icon?: string;
+  display_name?: string;
 }
 
 export class ProductCategoriesService {

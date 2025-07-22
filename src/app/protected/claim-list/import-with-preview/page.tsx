@@ -1,59 +1,26 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef, MouseEvent } from "react";
-import { ChevronLeft, Upload } from "react-feather";
 import * as XLSX from "xlsx";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import WithSidebar from "@/hoc/with-sidebar";
 import EditIcon from "@/components/icons/edit.icon";
 import AlertCircleIcon from "@/components/icons/alert-circle-icon";
-
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { CLAIM_LIST } from "@/constants/routes";
+import { ChevronLeft, Download, Upload } from "react-feather";
+import { useEffect, useState, useRef } from "react";
 import { useLoading } from "@/context/loading.context";
-import WithSidebar from "@/hoc/with-sidebar";
 import { ClaimService } from "@/services/claim.service";
+import { capitalizeStringWithChar } from "@/lib/formatter";
+import { toastPromise, toastNotification } from "@/lib/toast";
 import { ChannelsService } from "@/services/masterdata/channels.service"
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
-import { toastPromise, toastNotification } from "@/lib/toast";
-import { capitalizeStringWithChar } from "@/lib/formatter";
-import { CLAIM_LIST } from "@/constants/routes";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription, } from "@/components/ui/dialog";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";
+
 
 const ImportWithPreviewPage = () => {
   const claimService = new ClaimService();
@@ -64,9 +31,7 @@ const ImportWithPreviewPage = () => {
   // States
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<
-    "idle" | "uploading" | "success" | "error"
-  >("idle");
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableHeader, setTableHeader] = useState<any[]>([]);
   const [selectedChannel, setSelectedChannel] = useState<string>("");
@@ -93,7 +58,6 @@ const ImportWithPreviewPage = () => {
   const [newLabelHeader, setNewLabelHeader] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Use useRef to prevent double fetching
   const hasFetchedChannel = useRef(false);
   const hasFetchedCategory = useRef(false);
   useEffect(() => {
@@ -143,6 +107,16 @@ const ImportWithPreviewPage = () => {
     }
   });
 
+  const handleDownloadTemplate = () => {
+    try {
+      console.log(channelOptions)
+      var c = channelOptions.filter((x) => x.value == selectedChannel)[0];
+      window.open(`/policy_templates/${c.label}_claim_import_template.xlsx`, '_blank');
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
   const checkAllRequiredHeader = () => {
     const filterRequiredHeader = headerGuide.filter(
       (header) => header.required
@@ -168,7 +142,6 @@ const ImportWithPreviewPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headerGuide, tableHeader, validatedHeader]);
 
-  // Helper function to parse Excel file into JSON
   const parseExcelFile = (file: File) => {
     return new Promise<any[]>((resolve, reject) => {
       const reader = new FileReader();
@@ -182,7 +155,6 @@ const ImportWithPreviewPage = () => {
           raw: false,
         });
 
-        // Return the formatted data
         resolve(jsonData);
       };
       reader.onerror = (error) => reject(error);
@@ -205,8 +177,7 @@ const ImportWithPreviewPage = () => {
     callback: (data: any) => void
   ) => {
     if (
-      file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
       file.type === "application/vnd.ms-excel" ||
       file.type === "text/csv"
     ) {
@@ -219,7 +190,6 @@ const ImportWithPreviewPage = () => {
         setTableHeader(tableHeader);
         setTableData(tableData);
 
-        // Compare header from the uploaded file with the header from the guide
         callback(tableHeader);
       } catch (error) {
         console.error("Error processing file:", error);
@@ -252,7 +222,6 @@ const ImportWithPreviewPage = () => {
     }
   };
 
-  // Check if the header uploaded matches the header from the guide
   const validateHeaders = (jsonData: any) => {
     const fieldCount: Record<string, number> = {};
     const fieldMap = new Set(headerGuide.map((item) => item.field));
@@ -301,13 +270,10 @@ const ImportWithPreviewPage = () => {
 
   useEffect(() => {
     if (
-      selectedChannel &&
-      selectedCategory &&
-      (selectedChannel !== lastSelectedChannel.current || selectedCategory !== lastSelectedCategory.current)
+      selectedChannel && selectedCategory && (selectedChannel !== lastSelectedChannel.current || selectedCategory !== lastSelectedCategory.current)
     ) {
       fetchImportDataGuide(selectedChannel, selectedCategory);
-      
-      // Update the last selected values to prevent duplicate calls
+
       lastSelectedChannel.current = selectedChannel;
       lastSelectedCategory.current = selectedCategory;
     }
@@ -315,7 +281,6 @@ const ImportWithPreviewPage = () => {
   }, [selectedChannel, selectedCategory]);
 
   const fetchImportDataGuide = async (channelId: string, categoryId: string) => {
-    // Reset the header guide state
     setHeaderGuide([]);
 
     setLoading(true);
@@ -476,11 +441,10 @@ const ImportWithPreviewPage = () => {
             {tableHeader.map((header: string, index: number) => (
               <TableHead
                 key={index}
-                className={`truncate cursor-pointer transition-colors duration-200 border-r ${
-                  !isHeaderValid(header)
-                    ? "text-white bg-red-500 hover:bg-red-400"
-                    : "hover:bg-gray-200"
-                }`}
+                className={`truncate cursor-pointer transition-colors duration-200 border-r ${!isHeaderValid(header)
+                  ? "text-white bg-red-500 hover:bg-red-400"
+                  : "hover:bg-gray-200"
+                  }`}
                 onClick={() => handleClickHeader(index, header)}
               >
                 <div className="flex flex-row gap-3">
@@ -507,14 +471,10 @@ const ImportWithPreviewPage = () => {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div>
-                            {AlertCircleIcon("white", "20", "20", "0 0 24 24")}
-                          </div>
+                          <div>{AlertCircleIcon("white", "20", "20", "0 0 24 24")}</div>
                         </TooltipTrigger>
                         <TooltipContent side="top">
-                          <p className="text-sm">
-                            Edit the column name to resolve the error
-                          </p>
+                          <p className="text-sm">Edit the column name to resolve the error</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -528,9 +488,7 @@ const ImportWithPreviewPage = () => {
           {tableData.map((row: any, index: number) => (
             <TableRow key={index}>
               {row.map((cell: any, cellIndex: number) => (
-                <TableCell key={cellIndex} className="border-r">
-                  {cell}
-                </TableCell>
+                <TableCell key={cellIndex} className="border-r">{cell}</TableCell>
               ))}
             </TableRow>
           ))}
@@ -545,23 +503,16 @@ const ImportWithPreviewPage = () => {
         <DialogContent className="w-[90vw] max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="mb-4">Edit column label</DialogTitle>
-            <DialogDescription>
-              Select a field for this column
-            </DialogDescription>
+            <DialogDescription>Select a field for this column</DialogDescription>
             <div>
-              <Select
-                value={selectedHeader}
-                onValueChange={(value) => setSelectedHeader(value)}
-              >
+              <Select value={selectedHeader} onValueChange={(value) => setSelectedHeader(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder={selectedHeader} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     {headerOptions.map((option, index) => (
-                      <SelectItem key={index} value={option.value}>
-                        {option.label}
-                      </SelectItem>
+                      <SelectItem key={index} value={option.value}>{option.label}</SelectItem>
                     ))}
                   </SelectGroup>
                 </SelectContent>
@@ -569,18 +520,8 @@ const ImportWithPreviewPage = () => {
             </div>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              className="border border-red-500 text-red-500 bg-white hover:bg-red-100"
-              onClick={() => setIsModalEditOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="btn btn-primary"
-              onClick={() => handleConfirmEdit()}
-            >
-              Confirm
-            </Button>
+            <Button className="border border-red-500 text-red-500 bg-white hover:bg-red-100" onClick={() => setIsModalEditOpen(false)}>Cancel</Button>
+            <Button className="btn btn-primary" onClick={() => handleConfirmEdit()}>Confirm</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -602,19 +543,21 @@ const ImportWithPreviewPage = () => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-            Import Claims with Preview
-          </h2>
+          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">Import Claims with Preview</h2>
         </div>
 
         <div className="flex ml-auto">
-          <div
-            onClick={() => router.back()}
-            className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
+          <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
+            <ChevronLeft className="w-4 h-4" /> Back
           </div>
+
+          <Button
+            onClick={handleDownloadTemplate}
+            className="bg-[#F5BA41] text-black hover:bg-[#F5BA41] mr-auto  ml-5 rounded-full"
+          >
+            <Download className="w-5 h-5 mr-1 " /> Import Template
+          </Button>
+
           <Button
             onClick={handleUpload}
             disabled={
@@ -626,8 +569,7 @@ const ImportWithPreviewPage = () => {
               "Uploading..."
             ) : (
               <>
-                <Upload className="mr-2 w-4 h-4" />
-                Upload
+                <Upload className="mr-2 w-4 h-4" /> Upload
               </>
             )}
           </Button>
@@ -638,10 +580,7 @@ const ImportWithPreviewPage = () => {
         <div className="p-4 sm:p-6 bg-white rounded-lg">
           <div className="mb-4">
             <div className="text-xs mb-1.5 font-medium">Select Channel</div>
-            <Select
-              value={selectedChannel}
-              onValueChange={handleSelectChannel}
-            >
+            <Select value={selectedChannel} onValueChange={handleSelectChannel}>
               <SelectTrigger>
                 <SelectValue placeholder="Select option" />
               </SelectTrigger>
@@ -650,10 +589,7 @@ const ImportWithPreviewPage = () => {
           </div>
           <div className="mb-4">
             <div className="text-xs mb-1.5 font-medium">Select Category</div>
-            <Select
-              value={selectedCategory}
-              onValueChange={handleSelectCategory}
-            >
+            <Select value={selectedCategory} onValueChange={handleSelectCategory}>
               <SelectTrigger>
                 <SelectValue placeholder="Select option" />
               </SelectTrigger>
@@ -662,42 +598,29 @@ const ImportWithPreviewPage = () => {
           </div>
           {selectedCategory && headerGuide.length > 0 ? (
             <div
-              className={`border-2 border-dashed rounded-lg p-8 ${
-                dragActive ? "border-[#F5BA41] bg-[#FDF7E9]" : "border-gray-300"
-              } ${selectedFile ? "border-green-500 bg-green-50" : ""}`}
+              className={`border-2 border-dashed rounded-lg p-8 ${dragActive ? "border-[#F5BA41] bg-[#FDF7E9]" : "border-gray-300"
+                } ${selectedFile ? "border-green-500 bg-green-50" : ""}`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
               <div className="flex flex-col items-center justify-center gap-4">
-                <Upload
-                  className={`w-12 h-12 ${
-                    selectedFile ? "text-green-500" : "text-gray-400"
-                  }`}
-                />
+                <Upload className={`w-12 h-12 ${selectedFile ? "text-green-500" : "text-gray-400"}`} />
                 <div className="text-center">
                   {selectedFile && headerGuide.length > 0 ? (
-                    <p className="text-green-500 font-medium">
-                      Selected: {selectedFile.name}
-                    </p>
+                    <p className="text-green-500 font-medium">Selected: {selectedFile.name}</p>
                   ) : (
                     <>
                       <p className="text-gray-600">
                         Drag and drop your file here, or{" "}
                         <label className="text-[#F5BA41] cursor-pointer hover:text-[#e6a92d]">
                           browse
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept=".xlsx,.xls,.csv"
-                            onChange={handleFileInput}
+                          <input type="file" className="hidden" accept=".xlsx,.xls,.csv" onChange={handleFileInput}
                           />
                         </label>
                       </p>
-                      <p className="text-gray-400 text-sm mt-2">
-                        Supported formats: .xlsx, .xls, .csv
-                      </p>
+                      <p className="text-gray-400 text-sm mt-2">Supported formats: .xlsx, .xls, .csv</p>
                     </>
                   )}
                 </div>
@@ -730,6 +653,5 @@ const ImportWithPreviewPage = () => {
   );
 };
 
-const ImportWithPreviewPageWithSidebar = (params: any) =>
-  WithSidebar(ImportWithPreviewPage)(params);
+const ImportWithPreviewPageWithSidebar = (params: any) => WithSidebar(ImportWithPreviewPage)(params);
 export default ImportWithPreviewPageWithSidebar;

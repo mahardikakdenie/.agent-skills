@@ -4,6 +4,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { useProducts } from "../../hooks";
@@ -39,7 +40,9 @@ export default function DetailList(props: { id: string }) {
     <>
       <Button
         className="mb-5"
-        onClick={() => router.push(PRODUCT_CATALOG_UPLOAD_DETAIL(category as string, id))}
+        onClick={() =>
+          router.push(PRODUCT_CATALOG_UPLOAD_DETAIL(category as string, id))
+        }
       >
         <Upload className="w-5 h-5 mr-2" />
         Upload Details
@@ -75,15 +78,17 @@ export default function DetailList(props: { id: string }) {
         </SelectTrigger>
       </Select>
       <Table className="table-search-params">
-        <TableRow>
-          <TableHead>Detail</TableHead>
-        </TableRow>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Detail</TableHead>
+          </TableRow>
+        </TableHeader>
         <TableBody>
           {details.map((detail: any) => (
             <TableRow key={detail.id}>
               <TableCell>{detail.detail}</TableCell>
             </TableRow>
-          ))}{" "}
+          ))}
         </TableBody>
       </Table>
     </>

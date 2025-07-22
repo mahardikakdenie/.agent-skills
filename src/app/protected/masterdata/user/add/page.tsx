@@ -30,7 +30,7 @@ import { USER_DETAIL } from "@/constants/routes";
 
 const passwordValidationRules = {
   required: (role: string) =>
-    role === "admin" ? "Password is required for Admin role" : false,
+    role === "Admin" ? "Password is required for Admin role" : false,
   minLength: {
     value: 8,
     message: "Password must be at least 8 characters",
@@ -147,10 +147,13 @@ const AddUser = ({ params }: { params: { id: string } }) => {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await saveUser(data, id);
+      const payload = { ...data };
+      if (payload.role !== "Admin" && !payload.password?.trim()) {
+        delete payload.password;
+      }
+      const response = await saveUser(payload, id);
       if (response.id != null) {
-        const id = response.id;
-        router.push(USER_DETAIL(id));
+        router.push(USER_DETAIL(response.id));
       }
     } catch (error) {
       setSaveSuccess(false);
@@ -405,7 +408,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 htmlFor="role"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Role
+                Role<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="role"
@@ -443,7 +446,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 htmlFor="channel"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Channel
+                Channel<span className="text-red-500">*</span>
               </label>
               <Controller
                 name="channel"
@@ -482,7 +485,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Password
-                {watch("role") === "admin" && (
+                {watch("role") === "Admin" && (
                   <span className="text-red-500">*</span>
                 )}
               </label>
@@ -493,7 +496,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                 rules={{
                   validate: (value) => {
                     const selectedRole = watch("role");
-                    if (selectedRole === "admin" && !value) {
+                    if (selectedRole === "Admin" && !value) {
                       return passwordValidationRules.required(selectedRole);
                     }
                     if (value) {

@@ -1,5 +1,6 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
+import axios from "axios";
 import qs from "qs";
 
 export interface PackageDto {
@@ -312,6 +313,67 @@ export class ProductCatalogService {
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
+    }
+  }
+
+  async savePackage(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/packages", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async updatePackage(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.put(`/v1/packages/${id}`, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async getPackageById(id: string): Promise<any> {
+    try {
+        return await axios.get(`${process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL}/v1/packages/${id}`, {
+            headers: {
+                Authorization: `Bearer 6eyw7n4kk9063sivf6ubt8dz5kyhwl`
+            }
+        });
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
+    }
+  }
+
+  async deletePackage(id: string): Promise<any> {
+    try {
+        return await this.httpClient.delete(`/v1/packages/${id}`);
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
+    }
+  }
+
+  async saveBenefit(data: any): Promise<any> {
+    try {
+      return await this.httpClient.post("/v1/plan-benefit/create", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async deleteBenefit(id: string): Promise<any> {
+    try {
+        return await this.httpClient.delete(`/v1/plan-benefit/${id}`);
+    } catch(error) {
+        console.error("Request failed:", error);
+
+        throw error;
     }
   }
 }

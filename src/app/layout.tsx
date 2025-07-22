@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import 'react-loading-skeleton/dist/skeleton.css';
 import "./globals.css";
 import ClientLayout from "@/components/ui/ClientLayout";
 import { Toaster } from "react-hot-toast";

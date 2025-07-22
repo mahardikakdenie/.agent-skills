@@ -138,7 +138,10 @@ export const PRODUCT_CATALOG_ADD = (category: string | number) => `${PRODUCT_CAT
 export const PRODUCT_CATALOG_UPLOAD = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/upload`;
 export const PRODUCT_CATALOG_UPLOAD_BENEFIT = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/upload-benefit`;
 export const PRODUCT_CATALOG_UPLOAD_DETAIL = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/upload-detail`;
-
+export const PRODUCT_CATALOG_ADD_PACKAGE = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/add-package`;
+export const PRODUCT_CATALOG_EDIT_PACKAGE = (category: string | number, productId: string | number, packageId: string | number) => `${PRODUCT_CATALOG_DETAIL(category, productId)}/edit-package/${packageId}`;
+export const PRODUCT_CATALOG_ADD_BENEFIT = (category: string | number, id: string | number) => `${PRODUCT_CATALOG_DETAIL(category, id)}/add-benefit`;
+export const PRODUCT_CATALOG_EDIT_BENEFIT = (category: string | number, productId: string | number, packageId: string | number) => `${PRODUCT_CATALOG_DETAIL(category, productId)}/edit-benefit/${packageId}`;
 
 // Promotion
 export const PROMOTION = `${PROTECTED}/promotion`;
