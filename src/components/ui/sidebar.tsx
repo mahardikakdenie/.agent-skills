@@ -45,6 +45,7 @@ import {
   SANCTION,
   SOURCE,
   TRANSACTIONS,
+  UNMATCH_RECON_BILLING,
   USER,
 } from "@/constants/routes";
 import { withWildcard } from "@/helpers/route.helper";
@@ -181,6 +182,23 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Billing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={UNMATCH_RECON_BILLING}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(UNMATCH_RECON_BILLING))
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                    }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Unmatched Billing"
+                    className="w-7 min-w-7"
+                  />
+                  Unmatch Billing
                 </Link>
               </li>
               <li>
