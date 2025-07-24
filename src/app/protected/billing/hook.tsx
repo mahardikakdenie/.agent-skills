@@ -31,6 +31,11 @@ export const useBilling = () => {
   const createBilling = async (data: any) => {
     await billingService.createBilling(data);
   };
+
+  const importBillingTransactions = async (data: any) => {
+    await billingService.importBillingTransactions(data);
+  };
+
   const clearFees = () => {
     setFees([]);
   }
@@ -167,6 +172,10 @@ export const useBilling = () => {
   const updateBilling = async (id: string, data: any) => {
     await billingService.updateBilling(id, data);
   };
+
+  const confirmReconcilliation = async (id:string) => {
+    await billingService.confirmReconcilliation(id);
+  }
   return {
     updateBilling,
     checkDuplicateBilling,
@@ -179,6 +188,8 @@ export const useBilling = () => {
     clearFees,
     fees,
     createBilling,
+    importBillingTransactions,
+    confirmReconcilliation
   };
 };
 

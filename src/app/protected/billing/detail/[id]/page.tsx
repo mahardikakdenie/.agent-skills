@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, Download, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Upload, X } from "lucide-react";
 import { formatDate, formatMoney } from "@/lib/formatter";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -45,10 +45,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
-import { BILLING, BILLING_DETAIL_EXPORT_WITH_TYPE, BILLING_DETAIL_INVOICE_WITH_TYPE } from "@/constants/routes";
+import { BILLING, BILLING_DETAIL_EXPORT_WITH_TYPE, BILLING_DETAIL_IMPORT_WITH_TYPE, BILLING_DETAIL_INVOICE_WITH_TYPE } from "@/constants/routes";
 
 const DetailBillingPage = () => {
-  const { getBillingById, billing, updateBilling } = useBilling();
+  const { getBillingById, billing, updateBilling, confirmReconcilliation } = useBilling();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const { setLoading } = useLoading();
@@ -183,6 +183,30 @@ const DetailBillingPage = () => {
     }
     return "";
   }
+  const getStatusReconcilliationColor = (status: string) => {
+    if (status == "not-matched") {
+      return "#d27979";
+    }
+    else if (status == "matched") {
+      return "#64a864";
+    }
+    return "";
+  }
+
+  const confirmReconcilliationHandler = async (id: string) => {
+    try {
+      setLoading(true);
+      await confirmReconcilliation(id);
+      await getBillingById(id as string, 1, rowsPerPage, "product")
+      setLoading(false);
+      alert("Reconcilliation confirmed successfully");
+    } catch (error) {
+      setLoading(false);
+      console.error("Request failed:", error);
+      alert("Failed to confirm reconcilliation");
+    }
+  }
+
   return (
     billing.data && (
       <div className="flex flex-col w-full">
@@ -195,7 +219,7 @@ const DetailBillingPage = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{billing.data[0].items[0].billings.type == "insurer" ? "Billing Detail" : "Listing Detail"}</BreadcrumbPage>
+                  <BreadcrumbPage>{billing.data[0]?.items[0].billings.type == "insurer" ? "Billing Detail" : "Listing Detail"}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -211,6 +235,11 @@ const DetailBillingPage = () => {
               <ChevronLeft className="w-4 h-4" />
               Back
             </div>
+            {billing.data[0].items[0].billings.status === "pending-reconcilliation" && (
+            <Button onClick={() => router.push(BILLING_DETAIL_IMPORT_WITH_TYPE(id as string, billing.data[0].items[0].billings.type))} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full">
+              <Upload className="w-5 h-5 mr-1" /> Import Reconcilliation
+            </Button>)
+            }
             <Button
               onClick={() => router.push(BILLING_DETAIL_EXPORT_WITH_TYPE(id as string, billing.data[0].items[0].billings.type))}
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
@@ -295,7 +324,7 @@ const DetailBillingPage = () => {
               <div>Company Name: {billing.data[0].items[0].billings.company_name}</div>
               <div>Period: {billing.data[0].items[0].billings.transaction_period}</div> */}
 
-              {billing.data[0].items[0].billings.status === "waiting-for-payment" && (
+              {["waiting-for-payment", "pending-reconcilliation"].includes(billing.data[0].items[0].billings.status) && (
                 <div className="pt-5 flex flex-row gap-3">
                   <Button
                     onClick={() => setOpenUpdateToPaid(true)}
@@ -318,6 +347,15 @@ const DetailBillingPage = () => {
                   >
                     <span className="flex items-center">{billing.data[0].items[0].billings.type == "insurer" ? "✕ Cancel Billing" : "✕ Cancel Listing"}</span>
                   </Button>
+                  { billing.data[0].items[0].status_reconcilliation && billing.data[0].items[0].billings.status === "pending-reconcilliation"  && (
+                  <Button
+                    onClick={() => confirmReconcilliationHandler(billing.data[0].items[0].billings.id)}
+                    variant="destructive"
+                    className="rounded-full  hover:bg-green-700"
+                    style={{ backgroundColor: `#64a864` }}
+                  >
+                    <span className="flex items-center">✓ Confirm Reconcilliation</span>
+                  </Button>)}
                 </div>
               )}
             </div>
@@ -370,6 +408,7 @@ const DetailBillingPage = () => {
                     <TableHead style={{ textAlign: "right", width: "150px" }}>Commision Amount</TableHead>
                     : <TableHead style={{ textAlign: "right", width: "150px" }}>Net Premium</TableHead>}
 
+                  <TableHead style={{ width: "120px" }}>Status Reconcilliation</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -397,6 +436,9 @@ const DetailBillingPage = () => {
                           <TableCell style={{ textAlign: "right" }}> {formatMoney(data.commission_amount ?? 0)} </TableCell>
                           :
                           <TableCell style={{ textAlign: "right" }}> {formatMoney(data.amount - (data.commission_amount ?? 0))} </TableCell>}
+                        <TableCell className={`font-bold`} style={{ color: `${getStatusReconcilliationColor(data.status_reconcilliation)}` }}>
+                          {data.status_reconcilliation?.split("-").map((word: any) =>word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ")}
+                          </TableCell>
                       </TableRow>
                     );
                   })}
