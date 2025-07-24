@@ -24,6 +24,15 @@ export class FinanceService {
     return this.httpClientCookie.get('/v1/billings' + qs);
   }
 
+  async getUnmatchedReconcillBillings(page: number, pageSize: number, query: any = {}): Promise<any> {
+  console.log("🚀 ~ FinanceService ~ getUnmatchedReconcillBillings ~ pageSize:", pageSize)
+
+    // extract object to querystring
+    let qs = `?page=${page}&pageSize=${pageSize}`;
+    if (Object.keys(query).length > 0) qs += `&${Object.keys(query).map(key => `${key}=${query[key]}`).join('&')}`;
+    return await this.httpClientCookie.get('/v1/billings/not-match-reconcilliation' + qs);
+  }
+
   async getVoucherByCode(code: string): Promise<any> {
     return this.httpClientCookie.get('/api/voucher/code/' + code);
   }
