@@ -19,6 +19,7 @@ export const BILLING_ADD = `${BILLING}/add`;
 export const BILLING_DETAIL = (id: string | number) => `${BILLING}/detail/${id}`;
 export const BILLING_DETAIL_INVOICE_WITH_TYPE = (id: string | number, type: string) => `${BILLING_DETAIL(id)}/invoice?type=${type}`;
 export const BILLING_DETAIL_EXPORT_WITH_TYPE = (id: string | number, type: string) => `${BILLING_DETAIL(id)}/export?type=${type}`;
+export const BILLING_DETAIL_IMPORT_WITH_TYPE = (id: string | number, type: string) => `${BILLING_DETAIL(id)}/import?type=${type}`;
 
 // Broker
 export const BROKER = `${PROTECTED}/broker`;

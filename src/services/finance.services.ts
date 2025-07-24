@@ -77,6 +77,20 @@ export class FinanceService {
     return this.httpClientCookie.post('/v1/billings', data);
   }
 
+  async importBillingTransactions(data: any) {
+    try {
+      return new AxiosHttpClient({
+        baseURL: process.env.NEXT_PUBLIC_FINANCE_SERVICE_URL,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }).post("/v1/billings/import/transactions", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }    
+  }
+
   async getBillingById(id: string, page?: number, pageSize?: number, groupBy?: string) {
     let qs = '';
     if (page && pageSize) {
@@ -90,6 +104,10 @@ export class FinanceService {
 
   async updateBilling(id: string, data: any) {
     return this.httpClientCookie.put('/v1/billings/' + id, data);
+  }
+
+  async confirmReconcilliation(id: string) {
+    return this.httpClientCookie.post(`/v1/billings/${id}/confirm-reconcilliation`, {});
   }
 
   async getBrokerFee(where?: any, page?: number, pageSize?: number, searchData?: string): Promise<any> {
