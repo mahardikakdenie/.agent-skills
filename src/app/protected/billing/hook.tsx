@@ -17,6 +17,7 @@ export const useChannel = () => {
 export const useBilling = () => {
   const [billing, setBilling] = useState<any>({});
   const [billingList, setBillingList] = useState<any>({});
+  const [unmatchedReconcillbillingList, setUnmatchedReconcillBillingList] = useState<any>({});
   const [fees, setFees] = useState<any>([]);
   const billingService = new FinanceService();
   const getBilling = async (query: any, page?: number, pageSize?: number) => {
@@ -27,10 +28,25 @@ export const useBilling = () => {
     );
     setBillingList(billings);
   };
-
+  
   const createBilling = async (data: any) => {
     await billingService.createBilling(data);
   };
+  
+  const importBillingTransactions = async (data: any) => {
+    await billingService.importBillingTransactions(data);
+  };
+
+  const getUnmatchedReconcillBilling = async (page: number, pageSize: number, query?: any) => {
+    console.log("🚀 ~ getUnmatchedReconcillBilling ~ page:", page)
+    const unmatchedBillings = await billingService.getUnmatchedReconcillBillings(
+      page ?? 1,
+      pageSize ?? 10,
+      query
+    );
+    setUnmatchedReconcillBillingList(unmatchedBillings);
+  };
+
   const clearFees = () => {
     setFees([]);
   }
@@ -167,11 +183,17 @@ export const useBilling = () => {
   const updateBilling = async (id: string, data: any) => {
     await billingService.updateBilling(id, data);
   };
+
+  const confirmReconcilliation = async (id:string) => {
+    await billingService.confirmReconcilliation(id);
+  }
   return {
     updateBilling,
     checkDuplicateBilling,
     getBillingById,
     getBilling,
+    getUnmatchedReconcillBilling,
+    unmatchedReconcillbillingList,
     billing,
     billingList,
     getFees,
@@ -179,6 +201,8 @@ export const useBilling = () => {
     clearFees,
     fees,
     createBilling,
+    importBillingTransactions,
+    confirmReconcilliation
   };
 };
 

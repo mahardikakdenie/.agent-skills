@@ -370,7 +370,7 @@ const CreateBillingPage = () => {
       await createBilling({
         currency: "IDR",
         billing_details: detail,
-        status: "waiting-for-payment",
+        status: "pending-reconcilliation",
         amount: totalCommission,
         type,
         company,

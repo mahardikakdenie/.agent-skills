@@ -24,6 +24,15 @@ export class FinanceService {
     return this.httpClientCookie.get('/v1/billings' + qs);
   }
 
+  async getUnmatchedReconcillBillings(page: number, pageSize: number, query: any = {}): Promise<any> {
+  console.log("🚀 ~ FinanceService ~ getUnmatchedReconcillBillings ~ pageSize:", pageSize)
+
+    // extract object to querystring
+    let qs = `?page=${page}&pageSize=${pageSize}`;
+    if (Object.keys(query).length > 0) qs += `&${Object.keys(query).map(key => `${key}=${query[key]}`).join('&')}`;
+    return await this.httpClientCookie.get('/v1/billings/not-match-reconcilliation' + qs);
+  }
+
   async getVoucherByCode(code: string): Promise<any> {
     return this.httpClientCookie.get('/api/voucher/code/' + code);
   }
@@ -77,6 +86,20 @@ export class FinanceService {
     return this.httpClientCookie.post('/v1/billings', data);
   }
 
+  async importBillingTransactions(data: any) {
+    try {
+      return new AxiosHttpClient({
+        baseURL: process.env.NEXT_PUBLIC_FINANCE_SERVICE_URL,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }).post("/v1/billings/import/transactions", data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }    
+  }
+
   async getBillingById(id: string, page?: number, pageSize?: number, groupBy?: string) {
     let qs = '';
     if (page && pageSize) {
@@ -90,6 +113,10 @@ export class FinanceService {
 
   async updateBilling(id: string, data: any) {
     return this.httpClientCookie.put('/v1/billings/' + id, data);
+  }
+
+  async confirmReconcilliation(id: string) {
+    return this.httpClientCookie.post(`/v1/billings/${id}/confirm-reconcilliation`, {});
   }
 
   async getBrokerFee(where?: any, page?: number, pageSize?: number, searchData?: string): Promise<any> {
