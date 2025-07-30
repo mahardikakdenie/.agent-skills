@@ -348,14 +348,24 @@ const DetailBillingPage = () => {
                     <span className="flex items-center">{billing.data[0].items[0].billings.type == "insurer" ? "✕ Cancel Billing" : "✕ Cancel Listing"}</span>
                   </Button>
                   { billing.data[0].items[0].status_reconcilliation && billing.data[0].items[0].billings.status === "pending-reconcilliation"  && (
-                  <Button
-                    onClick={() => confirmReconcilliationHandler(billing.data[0].items[0].billings.id)}
-                    variant="destructive"
-                    className="rounded-full  hover:bg-green-700"
-                    style={{ backgroundColor: `#64a864` }}
-                  >
-                    <span className="flex items-center">✓ Confirm Reconcilliation</span>
-                  </Button>)}
+                    (() => {
+                      // Check if at least one item has status_reconcilliation === 'matched'
+                      const hasMatched = billing.data.some((cat: any) =>
+                        cat.items.some((item: any) => item.status_reconcilliation === 'matched')
+                      );
+                      return (
+                        <Button
+                          onClick={() => confirmReconcilliationHandler(billing.data[0].items[0].billings.id)}
+                          variant="destructive"
+                          className="rounded-full  hover:bg-green-700"
+                          style={{ backgroundColor: `#64a864` }}
+                          disabled={!hasMatched}
+                        >
+                          <span className="flex items-center">✓ Confirm Reconcilliation</span>
+                        </Button>
+                      );
+                    })()
+                  )}
                 </div>
               )}
             </div>
