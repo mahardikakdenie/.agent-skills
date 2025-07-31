@@ -582,7 +582,7 @@ const ClaimsPage = () => {
               <SelectGroup>
                 <SelectItem value="All">All Priority</SelectItem>
                 <SelectItem value="On Track">On Track</SelectItem>
-                <SelectItem value="Pending">Due Date</SelectItem>
+                <SelectItem value="Due Date">Due Date</SelectItem>
                 <SelectItem value="Overdue">Overdue</SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -1059,7 +1059,7 @@ const ClaimsPage = () => {
               filteredClaims.map((claim, index) => (
                 <TableRow
                   key={claim.id}
-                  className={`${claim.sla_status === "Pending"
+                  className={`${claim.sla_status === "Due Date"
                     ? "bg-[#FFFEE2]"
                     : claim.sla_status === "Overdue"
                       ? "bg-[#fadede]"
