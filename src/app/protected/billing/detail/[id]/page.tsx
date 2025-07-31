@@ -502,6 +502,7 @@ const DetailBillingPage = () => {
                       <Button
                         type="button"
                         className="bg-transparent hover:bg-transparent text-black p-0"
+                        onClick={() => setOpenUpdateToPaid(false)}
                       >
                         <X className="w-5 h-5" />
                       </Button>
@@ -530,6 +531,7 @@ const DetailBillingPage = () => {
                       <Button
                         type="button"
                         className="bg-transparent hover:bg-transparent text-black p-0"
+                        onClick={() => setOpenCancel(false)}
                       >
                         <X className="w-5 h-5" />
                       </Button>
