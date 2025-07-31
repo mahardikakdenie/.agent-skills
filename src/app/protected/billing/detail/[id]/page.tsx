@@ -328,6 +328,7 @@ const DetailBillingPage = () => {
                 <div className="pt-5 flex flex-row gap-3">
                   <Button
                     onClick={() => setOpenUpdateToPaid(true)}
+                    disabled={billing.data[0].items[0].billings.status !== "waiting-for-payment"}
                     className="rounded-full bg-green-600 hover:bg-green-700"
                   >
                     <span className="flex items-center">✓ Mark as Paid</span>
