@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
 import { POLICY_LIST } from "@/constants/routes";
+import { hasPermission } from "@/context/auth.context";
 
 const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const policyService = new PolicyService();
@@ -34,6 +35,26 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
   const [policy, setPolicy] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submit, setSubmit] = useState(false);
+  const [policyVisibility, setPolicyVisibility] = useState({
+    name: true,
+    email: true,
+    phone: true,
+    status: true,
+  });
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const isHidePolicyEmail = await hasPermission("Policy.View.Policy.HideEmail");
+      const isHidePolicyPhone = await hasPermission("Policy.View.Policy.HidePhone");
+      setPolicyVisibility({
+        name: true,
+        email: !isHidePolicyEmail,
+        phone: !isHidePolicyPhone,
+        status: true,
+      })
+    }
+    checkAccess();
+  }, []);
 
   useEffect(() => {
     if (params.id) {
@@ -116,34 +137,42 @@ const DetailPolicy = ({ params }: { params: { id: string } }) => {
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4 overflow-auto">
           <div className="font-bold text-base">Policy Holder Information</div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
-              Customer Name
+          {policyVisibility.name && 
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+                Customer Name
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{policy?.policy_holder?.name || "-"}</div>
             </div>
-            <div className="max-w-1 w-1">:</div>
-            <div>{policy?.policy_holder?.name || "-"}</div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
-              Phone Number
+          }
+          {policyVisibility.phone && 
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">
+                Phone Number
+              </div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{policy?.policy_holder?.phone || "-"}</div>
             </div>
-            <div className="max-w-1 w-1">:</div>
-            <div>{policy?.policy_holder?.phone || "-"}</div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Email</div>
-            <div className="max-w-1 w-1">:</div>
-            <div>{policy?.policy_holder?.email || "-"}</div>
-          </div>
-          <div className="flex gap-2 text-sm font-medium">
-            <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Status</div>
-            <div className="max-w-1 w-1">:</div>
-            <div className="font-semibold">
-              <span className={getStatusColor(policy.status)}>
-                {policy?.status}
-              </span>
+          }
+          {policyVisibility.email && 
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Email</div>
+              <div className="max-w-1 w-1">:</div>
+              <div>{policy?.policy_holder?.email || "-"}</div>
             </div>
-          </div>
+          }
+          {policyVisibility.status && 
+            <div className="flex gap-2 text-sm font-medium">
+              <div className="sm:min-w-40 sm:w-40 min-w-28 w-28">Status</div>
+              <div className="max-w-1 w-1">:</div>
+              <div className="font-semibold">
+                <span className={getStatusColor(policy.status)}>
+                  {policy?.status}
+                </span>
+              </div>
+            </div>
+          }
           {policy?.status === "Grace Period" && (
             <Button
               className="w-40 bg-[#F5BA41] hover:bg-[#e6a92d] text-black"

@@ -46,6 +46,11 @@ const DetailClaim = () => {
   const [documents, setDocuments] = useState<any[]>([]);
   const [isViewDocument, setIsViewDocument] = useState(false);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [policyVisibility, setPolicyVisibility] = useState({
+    name: true,
+    email: true,
+    phone: true,
+  });
 
   const imageUrl = claim?.participant_data?.data?.ktp || claim?.participant_data?.data?.passport || noImage.src;
 
@@ -54,7 +59,14 @@ const DetailClaim = () => {
   useEffect(() => {
     const checkAccess = async () => {
       const access = await hasPermission("Claim.Read");
+      const isHidePolicyEmail = await hasPermission("Policy.View.Policy.HideEmail");
+      const isHidePolicyPhone = await hasPermission("Policy.View.Policy.HidePhone");
       setHasAccess(access);
+      setPolicyVisibility({
+        name: true,
+        email: !isHidePolicyEmail,
+        phone: !isHidePolicyPhone,
+      })
       if (!access) {
         router.push(FORBIDDEN);
       }
@@ -345,21 +357,27 @@ const DetailClaim = () => {
               </div>
               <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
                 <p className="font-semibold">Informasi Pemegang Polis</p>
-                <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Customer Name</div>
-                  <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.policy_holder?.name || "-"}</div>
-                </div>
-                <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Phone Number</div>
-                  <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.policy_holder?.phone || "-"}</div>
-                </div>
-                <div className="flex gap-2 text-sm font-medium">
-                  <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
-                  <div className="max-w-1 w-1">:</div>
-                  <div>{claim?.policy_data?.policy_holder?.email || "-"}</div>
-                </div>
+                {policyVisibility.name && 
+                  <div className="flex gap-2 text-sm font-medium">
+                    <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Customer Name</div>
+                    <div className="max-w-1 w-1">:</div>
+                    <div>{claim?.policy_data?.policy_holder?.name || "-"}</div>
+                  </div>
+                }
+                {policyVisibility.phone && 
+                  <div className="flex gap-2 text-sm font-medium">
+                    <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Phone Number</div>
+                    <div className="max-w-1 w-1">:</div>
+                    <div>{claim?.policy_data?.policy_holder?.phone || "-"}</div>
+                  </div>
+                }
+                {policyVisibility.email && 
+                  <div className="flex gap-2 text-sm font-medium">
+                    <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Email</div>
+                    <div className="max-w-1 w-1">:</div>
+                    <div>{claim?.policy_data?.policy_holder?.email || "-"}</div>
+                  </div>
+                }
               </div>
               <div className="bg-white flex flex-col gap-3 rounded-md mb-4 sm:p-6 p-4">
                 <p className="font-semibold">Informasi Tertanggung</p>
