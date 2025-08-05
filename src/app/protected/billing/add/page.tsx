@@ -565,7 +565,7 @@ const CreateBillingPage = () => {
 
         <div className="pt-5">
           <Button
-            disabled={type && company && category && month && year ? false : true}
+            disabled={type && company && category && category != 'All' && month && year ? false : true}
             onClick={() => handleGetTransaction()}
             className="ml-auto rounded-full"
           >
