@@ -9,6 +9,7 @@ import { TransactionService } from "@/services/transaction.service";
 import { formatMoney } from "@/lib/formatter";
 import Spinner from "@/components/ui/spinner";
 import WithSidebar from "@/hoc/with-sidebar";
+import { hasPermission } from "@/context/auth.context";
 
 const ExportPage = () => {
   const dataService = new TransactionService();
@@ -16,9 +17,21 @@ const ExportPage = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [isShowOrderId, setIsShowOrderId] = useState<boolean>(false);
+  const [isShowCreatedAt, setIsShowCreatedAt] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
+    const checkAccess = async () => {
+      const withOrderId = await hasPermission("Transactions.Export.withOrderId");
+      const withCreatedAt = await hasPermission("Transactions.Export.withCreatedAt");
+
+      setIsShowOrderId(withOrderId);
+      setIsShowCreatedAt(withCreatedAt);
+
+      await fetchData();
+    };
+
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -46,8 +59,7 @@ const ExportPage = () => {
       }
     };
 
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    checkAccess();
   }, []);
 
   const reportTemplateRef = useRef(null);
@@ -118,6 +130,20 @@ const ExportPage = () => {
             .reduce((a: any, b: any) => a + b, 0);
       }
 
+      let additionColumn = {};
+      if (isShowOrderId) {
+        additionColumn = {
+          ...additionColumn, 
+          "Order Id": item.id,
+        }
+      }
+      if (isShowCreatedAt) {
+        additionColumn = {
+          ...additionColumn, 
+          "Created At": item.created_at,
+        }
+      }
+
       return {
         No: (page - 1) * rowsPerPage + index + 1,
         "Insurance Name": item.insurance?.insurance?.id?.name || "-",
@@ -129,6 +155,7 @@ const ExportPage = () => {
         Currency: item?.insurance.currency || "-",
         Amount: formatMoney(totalPremium, "IDR"),
         Status: item.status || "-",
+        ...additionColumn
       };
     });
 
@@ -205,6 +232,8 @@ const ExportPage = () => {
                 <td style={styles.th} valign="middle">Currency</td>
                 <td style={styles.th} valign="middle">Amount</td>
                 <td style={styles.th} valign="middle">Status</td>
+                {isShowOrderId && <td style={styles.th} valign="middle">Order Id</td>}
+                {isShowCreatedAt && <td style={styles.th} valign="middle">Created At</td>}
               </tr>
             </thead>
             <tbody>
@@ -263,6 +292,8 @@ const ExportPage = () => {
                     <td style={styles.td} valign="middle">{item?.insurance?.currency || "-"}</td>
                     <td style={styles.td} valign="middle">{formatMoney(totalPremium, "IDR")}</td>
                     <td style={styles.td} valign="middle">{item?.status || "-"}</td>
+                    {isShowOrderId && <td style={styles.td} valign="middle">{item?.id || "-"}</td>}
+                    {isShowCreatedAt && <td style={styles.td} valign="middle">{item?.created_at || "-"}</td>}
                   </tr>
                 );
               })}
