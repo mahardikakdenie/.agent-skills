@@ -11,7 +11,7 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import WithSidebar from "@/hoc/with-sidebar";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Check,
   ChevronLeft,
@@ -59,6 +59,7 @@ import { UserInsurers } from "./components/user-insurers";
 import { UserForm } from "./components/user-form";
 import { useInsurance } from "../../insurance/hooks";
 import { USER } from "@/constants/routes";
+import { primaryRoles } from "@/app/protected/masterdata/user/user.const";
 
 
 const EditUser = ({ params }: { params: { id: string; }; }) => {
@@ -114,6 +115,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
 
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const [phoneCode, setPhoneCode] = useState("");
   const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [validations, setValidations] = useState({
@@ -139,12 +141,6 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     channels,
   } = useUser();
 
-  const roles = [
-    { id: "Admin", name: "Admin" },
-    { id: "User", name: "User" },
-    { id: "Partner", name: "Partner" },
-    { id: "Insurer", name: "Insurer" },
-  ];
   const {
     handleSubmit,
     control,
@@ -169,6 +165,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     try {
       const updatedData = {
         ...data,
+        phone_number: `${phoneCode}${data.phone_number}`
       };
       await updateUser(updatedData, id);
       setUpdateSuccess(true);
@@ -189,11 +186,12 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
           const res = await fetchUserById(id);
           setValue("name", res.name);
           setValue("email", res.email);
-          setValue("phone_number", res.phone_number);
+          setValue("phone_number", res.phone_number?.slice(3));
           setValue("password", res.password);
           setValue("status", res.status);
           setValue("role", res.role);
           setValue("channel", res.channel);
+          setPhoneCode(res.phone_number?.slice(0, 3));
           setStatus(res.status);
           setAccountId(res.id);
           setUserGroup(res.account_groups.map((item: any) => item));
@@ -614,11 +612,13 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
           onSubmit={handleSubmit}
           errors={errors}
           watch={watch}
-          roles={roles}
+          roles={primaryRoles}
           channels={channels}
+          phoneCode={phoneCode}
           status={status}
           getStatusColor={getStatusColor}
           handleChangeStatus={handleChangeStatus}
+          setPhoneCode={setPhoneCode}
           setRole={setRole}
           control={control}
           handleSubmit={handleSubmit}
