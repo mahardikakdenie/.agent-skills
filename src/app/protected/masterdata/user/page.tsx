@@ -35,6 +35,7 @@ import { useUser } from "./hooks";
 import { FORBIDDEN, USER_ADD, USER_DETAIL } from "@/constants/routes";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Controller, useForm} from "react-hook-form";
+import { primaryRoles } from "@/app/protected/masterdata/user/user.const";
 
 const Users = () => {
   const path = usePathname();
@@ -99,7 +100,17 @@ const Users = () => {
         setFilteredUser(result.data);
         setTotalPages(result.meta.pageTotal);
         setTotalItems(result.meta.total);
-        setRoleOptions(allRoles.data);
+
+        const seen = new Set(primaryRoles.map(item => item.name));
+        const rolesOptions = [ ...primaryRoles ];
+
+        for (const item of allRoles.data) {
+          if (!seen.has(item.name)) {
+            seen.add(item.name);
+            rolesOptions.push(item);
+          }
+        }
+        setRoleOptions(rolesOptions);
       } catch (error) {
         console.error("Error fetching page:", error);
       } finally {
