@@ -22,14 +22,6 @@ import { Controller, ErrorOption, FieldArray, FieldArrayPath, FieldError, FieldE
 import { Button } from "@/components/ui/button";
 import { useUser } from "../hooks";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogFooter,
