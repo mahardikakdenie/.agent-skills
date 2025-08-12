@@ -117,6 +117,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   const [status, setStatus] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [role, setRole] = useState("");
+  const [channel, setChannel] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [validations, setValidations] = useState({
     minLength: false,
@@ -157,7 +158,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
       password: "",
       status,
       role,
-      channel: "",
+      channel,
     },
   });
 
@@ -620,6 +621,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
           handleChangeStatus={handleChangeStatus}
           setPhoneCode={setPhoneCode}
           setRole={setRole}
+          setChannel={setChannel}
           control={control}
           handleSubmit={handleSubmit}
           showPassword={showPassword}

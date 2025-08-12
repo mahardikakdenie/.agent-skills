@@ -35,8 +35,17 @@ export const useUser = () => {
     return response;
   };
 
+  const getExistingUser = async (data: any) => {
+    return await userService.getExistingUser(data);
+  }
+
   const updateUser = async (data: any, id: string) => {
     const { data: response } = await userService.updateUser(data, id);
+    return response;
+  };
+
+  const updateUserAllData = async (data: any, id: string) => {
+    const { data: response } = await userService.updateUserAllData(data, id);
     return response;
   };
 
@@ -68,11 +77,13 @@ export const useUser = () => {
   return {
     user,
     saveUser,
+    getExistingUser,
     addAccountGroups,
     removeAccountGroups,
     addAccountRoles,
     removeAccountRoles,
     updateUser,
+    updateUserAllData,
     deleteUser,
     fetchUser,
     fetchUserById,

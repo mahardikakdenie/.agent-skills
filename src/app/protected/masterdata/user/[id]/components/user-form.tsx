@@ -22,6 +22,7 @@ interface UserFormProps {
   handleChangeStatus: (value: string) => void;
   setPhoneCode: (value: string) => void;
   setRole: (value: string) => void;
+  setChannel: (value: string) => void;
   showPassword: boolean;
   setShowPassword: (show: boolean) => void;
   setPassword: (password: string) => void;
@@ -45,6 +46,7 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>((
     handleChangeStatus,
     setPhoneCode,
     setRole,
+    setChannel,
     showPassword,
     setShowPassword,
     setPassword,
@@ -280,7 +282,10 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>((
           control={control}
           rules={{ required: "Channel ID is required" }}
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
+            <Select value={field.value} onValueChange={(value) => {
+                field.onChange(value);
+                setChannel(value);
+            }}>
               <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                 <SelectValue placeholder="Select Channel" />
               </SelectTrigger>
