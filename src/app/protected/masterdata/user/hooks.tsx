@@ -18,6 +18,7 @@ export const useUser = () => {
   const fetchChannels = async (search: any) => {
     const { data } = await userService.getChannel(search);
     setChannels(data);
+    return data;
   };
 
   const fetchRole = async (search: any) => {

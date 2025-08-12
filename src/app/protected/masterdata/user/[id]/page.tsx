@@ -108,6 +108,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   const [rowsPerPageGroup, setRowsPerPageRoles] = useState(10);
   const { setLoading } = useLoading();
   const [dataRole, setDataRole] = useState<any[]>([]);
+  const [channelList, setChannelList] = useState<any[] | null>(null);
   const [selectedRole, setSelectedRole] = useState<string[]>([]);
   const [groupRole, setGroupRole] = useState<any[]>([]);
   const [userFilter, setUserFilter] = useState("");
@@ -192,6 +193,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
           setValue("status", res.status);
           setValue("role", res.role);
           setValue("channel", res.channel);
+          setChannel(res.channel);
           setPhoneCode(res.phone_number?.slice(0, 3));
           setStatus(res.status);
           setAccountId(res.id);
@@ -208,7 +210,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   }, [id, setValue]);
 
   useEffect(() => {
-    fetchChannels({});
+    fetchChannels({}).then((data) => setChannelList(data));
     fetchRole({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -614,7 +616,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
           errors={errors}
           watch={watch}
           roles={primaryRoles}
-          channels={channels}
+          channels={channelList || channels}
           phoneCode={phoneCode}
           status={status}
           getStatusColor={getStatusColor}
