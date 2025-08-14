@@ -35,6 +35,7 @@ import { useUser } from "./hooks";
 import { FORBIDDEN, USER_ADD, USER_DETAIL } from "@/constants/routes";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Controller, useForm} from "react-hook-form";
+import { primaryRoles } from "@/app/protected/masterdata/user/user.const";
 
 const Users = () => {
   const path = usePathname();
@@ -46,6 +47,7 @@ const Users = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [triggerRender, setTriggerRender] = useState(0);
   const [searchData, setSearchData] = useState("");
   const [isModalChangeStatusOpen, setIsModalChangeStatusOpen] = useState<boolean>(false);
   const [selectedUserStatus, setSelectedUserStatus] = useState<User>();
@@ -99,7 +101,17 @@ const Users = () => {
         setFilteredUser(result.data);
         setTotalPages(result.meta.pageTotal);
         setTotalItems(result.meta.total);
-        setRoleOptions(allRoles.data);
+
+        const seen = new Set(primaryRoles.map(item => item.name));
+        const rolesOptions = [ ...primaryRoles ];
+
+        for (const item of allRoles.data) {
+          if (!seen.has(item.name)) {
+            seen.add(item.name);
+            rolesOptions.push(item);
+          }
+        }
+        setRoleOptions(rolesOptions);
       } catch (error) {
         console.error("Error fetching page:", error);
       } finally {
@@ -109,7 +121,7 @@ const Users = () => {
 
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, searchData, role]);
+  }, [page, rowsPerPage, searchData, role, triggerRender]);
 
   const handleSearch = _.debounce((keyword: string) => {
     setSearchData(keyword);
@@ -127,13 +139,15 @@ const Users = () => {
     router.push(USER_DETAIL(id));
   };
 
-  const handleDeletePlan = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
+  const handleDeleteUser = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await userService.deleteUser(id);
-        setUser((prevUser) => prevUser.filter((user) => user.id !== id));
-      } catch (error) {
+        toastNotification("Delete user successfully.", "success");
+        setTriggerRender(prev => prev + 1);
+      } catch (error: any) {
         console.error("Failed to delete user:", error);
+        toastNotification(error?.response?.data?.message || "Failed to delete user.", "error");
       }
     }
   };
@@ -166,11 +180,18 @@ const Users = () => {
   const handleUpdateStatus = async () => {
     setLoading(true);
     try {
-      const id = selectedUserStatus ? selectedUserStatus.id : "";
+      let accountId = "";
+      let otherData = {};
+      if (selectedUserStatus) {
+        const { id, ...otherInfo } = selectedUserStatus;
+        accountId = id;
+        otherData = { ...otherInfo };
+      }
       const data = {
+        ...otherData,
         status: selectedUserStatus?.status === "Active" ? "Inactive" : "Active",
       }
-      const updatePromise = updateUser(data, id);
+      const updatePromise = updateUser(data, accountId);
       await toastPromise(updatePromise, {
         loading: "Updating user's status...",
         success: <b>User's status has been successfully updated</b>,
@@ -326,7 +347,7 @@ const Users = () => {
                       <Button
                         variant="ghost"
                         disabled={!canDelete}
-                        onClick={() => handleDeletePlan(user.id)}
+                        onClick={() => handleDeleteUser(user.id)}
                         className="text-red-600 px-0"
                       >
                         <Trash />
@@ -340,7 +361,7 @@ const Users = () => {
                 <TableCell colSpan={7}>
                   <div className="flex flex-col gap-4 items-center justify-center py-14">
                     <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
+                    user data available
                   </div>
                 </TableCell>
               </TableRow>

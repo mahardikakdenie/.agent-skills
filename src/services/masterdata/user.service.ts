@@ -68,6 +68,12 @@ export class UserService {
     return this.authHttpClient.get(`/account/?${queryString}`);
   }
 
+  async getExistingUser(data: any): Promise<User> {
+    const params: any = { page: 1, pageSize: 1, ...data };
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return this.authHttpClient.get(`/account/all-data/pagination?${queryString}`);
+  }
+
     async getPartner(
     page?: number,
     rowsPerPage?: number,
@@ -129,6 +135,15 @@ export class UserService {
   async updateUser(data: any, id: string): Promise<any> {
     try {
       return await this.authHttpClient.put("/account/" + id, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async updateUserAllData(data: any, id: string): Promise<any> {
+    try {
+      return await this.authHttpClient.put("/account/all-data/" + id, data);
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
