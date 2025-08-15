@@ -6,7 +6,7 @@ import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import { PlanService } from "@/services/plan.services";
 import { Transaction, TransactionService } from "@/services/transaction.service";
-import { formatMoney } from "@/lib/formatter";
+import { formatDateTimeWithTZ, formatMoney } from "@/lib/formatter";
 import { Controller, useForm } from "react-hook-form";
 
 import PieChart from "@/components/ui/recharts/piechart";
@@ -17,7 +17,7 @@ import BarChartComp from "@/components/ui/recharts/barchart-horizontal";
 import WithSidebar from "@/hoc/with-sidebar";
 
 const policyColumns = [
-  { key: "created_at", label: "Create at" },
+  { key: "created_at", label: "Created At" },
   { key: "plan_name", label: "Plan Name" },
   { key: "price", label: "Price" },
   { key: "transaction", label: "Transaction" },
@@ -228,7 +228,7 @@ const DashboardTransaction = () => {
     
     const tableData = Array.isArray(transactionStatisticData) ? transactionStatisticData.map((item) => {
         return {
-            created_at: format(new Date(item.created_at), "dd-MM-yyyy"),
+            created_at: formatDateTimeWithTZ(item.created_at),
             plan_name: item.transaction_packages?.[0]?.package_data?.plan?.name,
             price: `${item.transaction_packages?.[0]?.currency} ${formatMoney(item.transaction_packages?.[0]?.price)}`,
             transaction: item.transaction_packages?.[0]?.quantity,

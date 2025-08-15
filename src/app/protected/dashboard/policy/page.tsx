@@ -7,7 +7,7 @@ import { InsuranceService } from "@/services/insurance.services";
 import { ProductService } from "@/services/product.services";
 import { PlanService } from "@/services/plan.services";
 import { Controller, useForm } from "react-hook-form";
-import { numberSimpleFormatter } from "@/lib/formatter";
+import { formatDateTimeWithTZ, numberSimpleFormatter } from "@/lib/formatter";
 
 import PieChart from "@/components/ui/recharts/piechart";
 import LineChart from "@/components/ui/recharts/linechart-policy";
@@ -214,7 +214,7 @@ const DashboardPolicy = () => {
         number: item.number,
         plan_name: item.policy_products?.[0]?.plan_data?.name || "-",
         status: item.status,
-        created_at: format(new Date(item.created_at), "dd-MM-yyyy"),
+        created_at: formatDateTimeWithTZ(item.created_at),
         }))
     : [];
 
