@@ -59,8 +59,8 @@ const DetailClaim = () => {
   useEffect(() => {
     const checkAccess = async () => {
       const access = await hasPermission("Claim.Read");
-      const isHidePolicyEmail = await hasPermission("Policy.View.Policy.HideEmail");
-      const isHidePolicyPhone = await hasPermission("Policy.View.Policy.HidePhone");
+      const isHidePolicyEmail = await hasPermission("Claim.View.Policy.HideEmail");
+      const isHidePolicyPhone = await hasPermission("Claim.View.Policy.HidePhone");
       setHasAccess(access);
       setPolicyVisibility({
         name: true,
