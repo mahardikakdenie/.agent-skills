@@ -6,6 +6,7 @@ import { passwordValidationRules } from "../utils/password";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { forwardRef } from 'react';
+import SelectPhoneCode from "@/components/ui/select-phone-code";
 
 interface UserFormProps {
   control: Control<any>;
@@ -15,10 +16,13 @@ interface UserFormProps {
   watch: (name: string) => any;
   roles: Array<{ id: string; name: string; }>;
   channels: Array<{ id: string; name: string; }>;
+  phoneCode: string;
   status: string;
   getStatusColor: (status: string) => string;
   handleChangeStatus: (value: string) => void;
+  setPhoneCode: (value: string) => void;
   setRole: (value: string) => void;
+  setChannel: (value: string) => void;
   showPassword: boolean;
   setShowPassword: (show: boolean) => void;
   setPassword: (password: string) => void;
@@ -36,10 +40,13 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>((
     watch,
     roles,
     channels,
+    phoneCode,
     status,
     getStatusColor,
     handleChangeStatus,
+    setPhoneCode,
     setRole,
+    setChannel,
     showPassword,
     setShowPassword,
     setPassword,
@@ -125,52 +132,57 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>((
         >
           Phone Number<span className="text-red-500">*</span>
         </label>
-        <Controller
-          name="phone_number"
-          control={control}
-          defaultValue=""
-          rules={{
-            required: "Phone Number is required",
-            pattern: {
-              value: /^\+?[0-9]{10,15}$/,
-              message:
-                "Phone Number must contain 10-15 digits and may start with '+'",
-            },
-            minLength: {
-              value: 10,
-              message: "Phone Number must be at least 10 digits",
-            },
-            maxLength: {
-              value: 15,
-              message: "Phone Number cannot exceed 15 digits",
-            },
-          }}
-          render={({ field }) => (
-            <div>
-              <Input
-                type="text"
-                id="phone_number"
-                placeholder="Insert Phone Number"
-                {...field}
-                onInput={(e) => {
-                  e.currentTarget.value = e.currentTarget.value
-                    .replace(/[^0-9+]/g, "")
-                    .replace(/(?!^)\+/g, "");
-                  field.onChange(e);
-                }}
-                className={`mt-1 block w-full h-12 ${errors.phone_number
-                  ? "border-red-500"
-                  : "border-gray-300"
-                  } rounded-md shadow-sm`}
-              />
-              {errors.phone_number && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.phone_number.message?.toString()}
-                </p>
-              )}
+        <div className="flex gap-2 items-start">
+            <div className="w-24 h-12">
+                <SelectPhoneCode value={phoneCode} onChange={(value) => setPhoneCode(value)} />
             </div>
-          )}
-        />
+            <Controller
+                name="phone_number"
+                control={control}
+                defaultValue=""
+                rules={{
+                    required: "Phone Number is required",
+                    pattern: {
+                        value: /^[0-9]{9,15}$/,
+                        message:
+                            "Phone Number must contain 9-15 digits",
+                    },
+                    minLength: {
+                        value: 9,
+                        message: "Phone Number must be at least 9 digits",
+                    },
+                    maxLength: {
+                        value: 15,
+                        message: "Phone Number cannot exceed 15 digits",
+                    },
+                }}
+                render={({ field }) => (
+                    <div className="w-full">
+                        <Input
+                            type="text"
+                            id="phone_number"
+                            placeholder="Insert Phone Number"
+                            {...field}
+                            onInput={(e) => {
+                                const sanitizedValue = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                e.currentTarget.value = sanitizedValue;
+                                field.onChange(sanitizedValue);
+                            }}
+                            className={`block w-full h-12 ${
+                                errors.phone_number
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                            } rounded-md shadow-sm`}
+                        />
+                        {errors.phone_number && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.phone_number.message?.toString()}
+                            </p>
+                        )}
+                    </div>
+                )}
+            />
+        </div>
       </div>
       <div>
         <label
@@ -270,7 +282,10 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>((
           control={control}
           rules={{ required: "Channel ID is required" }}
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
+            <Select value={field.value} onValueChange={(value) => {
+                field.onChange(value);
+                setChannel(value);
+            }}>
               <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                 <SelectValue placeholder="Select Channel" />
               </SelectTrigger>

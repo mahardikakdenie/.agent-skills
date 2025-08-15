@@ -27,6 +27,10 @@ import Image from "next/image";
 import iconCopy from "/public/images/icon-copy.svg"
 import { toastNotification } from "@/lib/toast";
 import { USER_DETAIL } from "@/constants/routes";
+import { countries, primaryRoles } from "@/app/protected/masterdata/user/user.const";
+import SelectPhoneCode from "@/components/ui/select-phone-code";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import iconWarning from "/public/images/icon-warning.png";
 
 const passwordValidationRules = {
   required: (role: string) =>
@@ -56,13 +60,14 @@ const validatePassword = (password: string) => {
 const AddUser = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const router = useRouter();
-  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
+  const [isErrorCreateUser, setIsErrorCreateUser] = useState<boolean>(false);
   const path = usePathname();
   const [selectedChannel, setSelectedChannel] = useState<any>(null);
   const [selectedRole, setSelectedRole] = useState<any>(null);
-
+  const [errorResponseData, setErrorResponseData] = useState<any>({});
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phoneCode, setPhoneCode] = useState(countries[0].code);
   const [phone_number, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
@@ -70,26 +75,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   const [channel, setChannel] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { saveUser, channels, fetchChannels, fetchRole } = useUser();
-
-  const roles = [
-    {
-      id: "Admin",
-      name: "Admin",
-    },
-    {
-      id: "Partner",
-      name: "Partner",
-    },
-    {
-      id: "User",
-      name: "User",
-    },
-    {
-      id: "Insurer",
-      name: "Insurer",
-    },
-  ];
+  const { saveUser, getExistingUser, updateUserAllData, channels, fetchChannels, fetchRole } = useUser();
   const {
     handleSubmit,
     control,
@@ -146,8 +132,9 @@ const AddUser = ({ params }: { params: { id: string } }) => {
   }, [password]);
 
   const onSubmit = async (data: any) => {
+    let payload: any;
     try {
-      const payload = { ...data };
+      payload = { ...data, phone_number: `${phoneCode}${data.phone_number}` };
       if (payload.role !== "Admin" && !payload.password?.trim()) {
         delete payload.password;
       }
@@ -155,8 +142,13 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       if (response.id != null) {
         router.push(USER_DETAIL(response.id));
       }
-    } catch (error) {
-      setSaveSuccess(false);
+    } catch (error: any) {
+      if (!!error?.response?.data?.customCode) {
+        setIsErrorCreateUser(true);
+        setErrorResponseData({ ...error?.response?.data, detailUser: payload });
+      } else {
+        toastNotification(error?.response?.data?.message || "Failed to create new user", "error");
+      }
     }
   };
 
@@ -201,6 +193,46 @@ const AddUser = ({ params }: { params: { id: string } }) => {
       console.error("Failed to copy password:", err)
       toastNotification("Failed to copy password", "error")
     });
+  }
+
+  const activeOrRecoverUser = async () => {
+    try {
+      const { channel, email, phone_number, role } = errorResponseData.detailUser;
+      const existingUser = await getExistingUser({ channel_id: channel, email, phone_number, role });
+      const userData = existingUser?.data?.[0];
+      const updatedData = { ...userData, status: `Active`, deleted_at: null };
+      await updateUserAllData(updatedData, userData.id);
+      setIsErrorCreateUser(false);
+      router.push(USER_DETAIL(userData.id));
+    } catch (error: any) {
+      toastNotification(error?.response?.data?.message || "Failed to change status user.", "error");
+    }
+  }
+
+  const errorCreateUserModal = () => {
+    return (
+        <Dialog open={isErrorCreateUser}>
+          <DialogContent className="w-[90vw] md:w-[600px]">
+            <DialogHeader className="items-center gap-4">
+              <Image alt="icon warning" src={iconWarning} width={88} />
+              <DialogTitle className="sm:text-center">
+                {errorResponseData?.message || "Error"}
+              </DialogTitle>
+              <DialogDescription className="sm:text-center">
+                Do you want to change the user status to active or just recover the user?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="sm:justify-center gap-4">
+              <Button variant="outline" className="min-w-[108px] rounded-full border border-red-500 text-red-500 hover:bg-red-100 hover:text-red-500" onClick={() => setIsErrorCreateUser(false)}>
+                No
+              </Button>
+              <Button className="btn min-w-[108px] rounded-full bg-[#F5BA41] text-black" onClick={() => activeOrRecoverUser()}>
+                Yes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+    );
   }
 
   return (
@@ -325,53 +357,57 @@ const AddUser = ({ params }: { params: { id: string } }) => {
               >
                 Phone Number<span className="text-red-500">*</span>
               </label>
-              <Controller
-                name="phone_number"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: "Phone Number is required",
-                  pattern: {
-                    value: /^\+?[0-9]{10,15}$/,
-                    message:
-                      "Phone Number must contain 10-15 digits and may start with '+'",
-                  },
-                  minLength: {
-                    value: 10,
-                    message: "Phone Number must be at least 10 digits",
-                  },
-                  maxLength: {
-                    value: 15,
-                    message: "Phone Number cannot exceed 15 digits",
-                  },
-                }}
-                render={({ field }) => (
-                  <div>
-                    <Input
-                      type="text"
-                      id="phone_number"
-                      placeholder="Insert Phone Number"
-                      {...field}
-                      onInput={(e) => {
-                        e.currentTarget.value = e.currentTarget.value
-                          .replace(/[^0-9+]/g, "")
-                          .replace(/(?!^)\+/g, "");
-                        field.onChange(e);
-                      }}
-                      className={`mt-1 block w-full h-12 ${
-                        errors.phone_number
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      } rounded-md shadow-sm`}
-                    />
-                    {errors.phone_number && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.phone_number.message}
-                      </p>
+              <div className="flex gap-2 items-start">
+                <div className="w-24 h-12">
+                  <SelectPhoneCode value={phoneCode} onChange={(value) => setPhoneCode(value)} />
+                </div>
+                <Controller
+                    name="phone_number"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: "Phone Number is required",
+                      pattern: {
+                        value: /^[0-9]{9,15}$/,
+                        message:
+                            "Phone Number must contain 9-15 digits",
+                      },
+                      minLength: {
+                        value: 9,
+                        message: "Phone Number must be at least 9 digits",
+                      },
+                      maxLength: {
+                        value: 15,
+                        message: "Phone Number cannot exceed 15 digits",
+                      },
+                    }}
+                    render={({ field }) => (
+                        <div className="w-full">
+                          <Input
+                              type="text"
+                              id="phone_number"
+                              placeholder="Insert Phone Number"
+                              {...field}
+                              onInput={(e) => {
+                                const sanitizedValue = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                e.currentTarget.value = sanitizedValue;
+                                field.onChange(sanitizedValue);
+                              }}
+                              className={`block w-full h-12 ${
+                                  errors.phone_number
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                              } rounded-md shadow-sm`}
+                          />
+                          {errors.phone_number && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.phone_number.message}
+                              </p>
+                          )}
+                        </div>
                     )}
-                  </div>
-                )}
-              />
+                />
+              </div>
             </div>
             <div>
               <label
@@ -421,7 +457,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {roles.map((role: any) => (
+                        {primaryRoles.map((role: any) => (
                           <SelectItem key={role.id} value={role.name}>
                             {role.name
                               .replace(/-/g, " ")
@@ -611,6 +647,7 @@ const AddUser = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
       </form>
+      {errorCreateUserModal()}
     </div>
   );
 };
