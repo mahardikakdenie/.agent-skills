@@ -283,6 +283,13 @@ const ExportPage = () => {
                       }, 0);
                 }
 
+                let orderId = "";
+                if (item.third_party) {
+                  if (item.third_party?.provider === "DANA") {
+                    orderId = item.third_party?.identifiers?.order_id;
+                  }
+                }
+
                 return (
                   <tr key={item.id}>
                     <td style={styles.td} valign="middle">{rowNumber}</td>
@@ -292,7 +299,7 @@ const ExportPage = () => {
                     <td style={styles.td} valign="middle">{item?.insurance?.currency || "-"}</td>
                     <td style={styles.td} valign="middle">{formatMoney(totalPremium, "IDR")}</td>
                     <td style={styles.td} valign="middle">{item?.status || "-"}</td>
-                    {isShowOrderId && <td style={styles.td} valign="middle">{item?.id || "-"}</td>}
+                    {isShowOrderId && <td style={styles.td} valign="middle">{orderId || "-"}</td>}
                     {isShowCreatedAt && <td style={styles.td} valign="middle">{item?.created_at || "-"}</td>}
                   </tr>
                 );
