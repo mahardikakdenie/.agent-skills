@@ -99,7 +99,7 @@ export class SanctionService {
   }
 
   async getSources(): Promise<any> {
-    return this.httpClientSanction.get('/v1/sources');
+    return this.httpClientSanction.get('/v1/sources/paging?page=1&limit=1000');
   }
 
   async updateSanction(id: string, data: any): Promise<any> {
