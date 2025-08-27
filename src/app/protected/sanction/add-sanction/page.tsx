@@ -169,12 +169,12 @@ const CreateSanctionPage = () => {
         }
 
         // Validate phone number format
-        const phoneNumberPattern = /^\d{10,15}$/;
-        if (!phoneNumberPattern.test(formData.phone_number)) {
-            setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
-            setShowAlert(true);
-            return;
-        }
+        // const phoneNumberPattern = /^\d{10,15}$/;
+        // if (!phoneNumberPattern.test(formData.phone_number)) {
+        //     setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
+        //     setShowAlert(true);
+        //     return;
+        // }
 
         // Validate email format
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
