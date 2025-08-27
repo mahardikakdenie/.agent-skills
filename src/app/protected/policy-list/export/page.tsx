@@ -12,6 +12,8 @@ import Spinner from "@/components/ui/spinner";
 import WithSidebar from "@/hoc/with-sidebar";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
+import { formatDateTimeWithTZ, formatDateTimeUTC7 } from "@/lib/formatter";
+import { hasPermission } from "@/context/auth.context";
 
 const ExportPage = () => {
   const itemService = new PolicyService();
@@ -19,9 +21,18 @@ const ExportPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [isShowCreatedAt, setIsShowCreatedAt] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
+    const checkAccess = async () => {
+      const withCreatedAt = await hasPermission("Policy.Export.withCreatedAt");
+
+      setIsShowCreatedAt(withCreatedAt);
+
+      await fetchData();
+    };
+    
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -59,7 +70,7 @@ const ExportPage = () => {
       }
     };
 
-    fetchData();
+    checkAccess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -89,7 +100,7 @@ const ExportPage = () => {
 
     //new with auto page break
     autoTable(doc, {
-      head: [['No.', 'Customer Name', 'Policy Number', 'Plan Name', 'Status']],
+      head: [['No.', 'Customer Name', 'Policy Number', 'Plan Name', 'Status', 'Created At']],
       body: data.map((item, index) => [
         (page - 1) * rowsPerPage + index + 1,
         item.policy_holder?.name || "-",
@@ -122,15 +133,25 @@ const ExportPage = () => {
       return;
     }
 
-    const sheetData = data.map((item, index) => ({
-      No: (page - 1) * rowsPerPage + index + 1,
-      "Customer Name": item.policy_holder?.name || "-",
-      "Policy Number": item.number || "-",
-      "Plan Name": item?.policy_products?.plan_data?.name
-        .split("|")
-        .join(" - "),
-      Status: item.status || "-",
-    }));
+    const sheetData = data.map((item, index) => {
+      let additionColumn = {};
+      if (isShowCreatedAt) {
+        additionColumn = {
+          ...additionColumn, 
+          "Created At": formatDateTimeWithTZ(formatDateTimeUTC7(item.created_at)),
+        }
+      }
+      return {
+        No: (page - 1) * rowsPerPage + index + 1,
+        "Customer Name": item.policy_holder?.name || "-",
+        "Policy Number": item.number || "-",
+        "Plan Name": item?.policy_products?.plan_data?.name
+          .split("|")
+          .join(" - "),
+        Status: item.status || "-",
+        ...additionColumn
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(sheetData);
 
@@ -229,6 +250,7 @@ const ExportPage = () => {
                 <td style={styles.th} valign="middle">
                   Status
                 </td>
+                {isShowCreatedAt && <td style={styles.th} valign="middle">Created At</td>}
               </tr>
             </thead>
             <tbody>
@@ -258,6 +280,15 @@ const ExportPage = () => {
                     >
                       {item.status || "-"}
                     </td>
+                    {isShowCreatedAt && 
+                      <td
+                        style={styles.td}
+                        valign="middle"
+                        className="whitespace-nowrap"
+                      >
+                        {formatDateTimeWithTZ(formatDateTimeUTC7(item?.created_at)) || "-"}
+                      </td>
+                    }
                   </tr>
                 ))
               ) : (
