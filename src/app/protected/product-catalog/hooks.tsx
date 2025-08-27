@@ -179,7 +179,7 @@ export const useProducts = () => {
   const fetchPackageById = async (id: string) => {
     const { data } = await productCatalogService.getPackageById(id);
 
-    setPackageDetail(data);
+    setPackageDetail(data?.data);
   }
 
   const deletePackage = async (id: string) => {
