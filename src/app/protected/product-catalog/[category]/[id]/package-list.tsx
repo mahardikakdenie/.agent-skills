@@ -14,8 +14,7 @@ import {
   PackageDto,
   ProductCatalogService,
 } from "@/services/product-catalog.service";
-import { formatMoney } from "@/lib/formatter";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { ChevronLeft, ChevronRight, Plus, Trash, Upload } from "react-feather";
@@ -34,21 +33,24 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useProducts } from "../../hooks";
-import { ProductConfig } from "@/services/product-config.service";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { formatCurrency } from "@/components/forms/product-catalog/package.form";
 
 type ShownRowType = (string | JSX.Element | number);
 
-function generateHeaders(product: ProductConfig): string[] {
-  const dynamicHeaders = Object.keys(product.search_configs).map((key) =>
-    key
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-  );
+function generateHeaders(product: any): string[] {
+  let result = ["No.", "Currency", "Premium", "Action"];
+  if (product) {
+    const dynamicHeaders = Object.keys(product.search_configs).map((key) =>
+      key
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    );
+    result = ["No.", ...dynamicHeaders, "Currency", "Premium", "Action"];
+  }
 
-  return ["No.", ...dynamicHeaders, "Currency", "Premium", "Action"];
+  return result;
 }
 
 
@@ -269,11 +271,8 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
   }, [category]);
 
   useEffect(() => {
-    if(productConfig) {
-        const newTableHeaders = generateHeaders(productConfig);
-        
-        setTableHeaders(newTableHeaders);
-    }
+    const newTableHeaders = generateHeaders(productConfig);
+    setTableHeaders(newTableHeaders);
   }, [productConfig]);
 
   return (
@@ -299,7 +298,7 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
         </Button>
       </div>
       {category === "personal-accident" && (
-        <div className="w-full py-4 bg-white rounded-lg overflow-aut mb-4 grid sm:grid-cols-2 gap-4">
+        <div className="w-full pt-4 bg-white rounded-lg overflow-aut grid sm:grid-cols-2 gap-4">
           <>
             <select
               value={occupationClassFilter}
@@ -355,7 +354,7 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
         </div>
       )}
       {category === "travel" && (
-        <div className="w-full p-4 sm:p-6 bg-white rounded-lg overflow-aut mb-4 grid grid-cols-2 gap-4">
+        <div className="w-full pt-4 px-4 sm:pt-6 sm:px-6 bg-white rounded-lg overflow-aut grid grid-cols-2 gap-4">
           <select
             value={adultFilter}
             onChange={(e) => setAdultFilter(e.target.value)}
@@ -396,7 +395,7 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
           </select>
         </div>
       )}
-      <div className="w-full bg-white rounded-lg overflow-auto">
+      <div className="w-full bg-white rounded-lg overflow-auto mt-8">
         <Table className="table-search-params">
           <TableHeader>
             <TableRow>
