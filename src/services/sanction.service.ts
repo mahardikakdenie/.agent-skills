@@ -54,7 +54,7 @@ export class SanctionService {
       page = 1;
     }
     return this.httpClientSanction.get(
-      `/v1/blacklist/search/query?query=${query}&page=${page}&limit=${limit}`);
+      `/v1/blacklist?keyword=${query}&page=${page}&limit=${limit}`);
   }
 
   async getSourceSearchQuery(query: string, page: number, limit: number): Promise<Response> {
@@ -62,7 +62,7 @@ export class SanctionService {
       page = 1;
     }
     return this.httpClientSanction.get(
-      `/v1/sources/search/query?query=${query}&page=${page}&limit=${limit}`);
+      `/v1/sources/paging?keyword=${query}&page=${page}&limit=${limit}`);
   }
 
   async getSanctionList(page: number, limit: number): Promise<Response> {
