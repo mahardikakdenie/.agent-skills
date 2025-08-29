@@ -321,12 +321,10 @@ const CreateSanctionPage = () => {
                                         name="middle_name"
                                         control={control}
                                         defaultValue=""
-                                        rules={{ required: "Middle name is required" }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
                                                 id="middle_name"
-                                                required
                                                 placeholder="Insert Middle Name"
                                                 {...field}
                                                 className={`mt-1 block w-full h-16 ${errors.middle_name ? "border-red-500" : "border-gray-300"
@@ -344,12 +342,10 @@ const CreateSanctionPage = () => {
                                         name="last_name"
                                         control={control}
                                         defaultValue=""
-                                        rules={{ required: "Last name is required" }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
                                                 id="last_name"
-                                                required
                                                 placeholder="Insert Last Name"
                                                 {...field}
                                                 className={`mt-1 block w-full h-16 ${errors.last_name ? "border-red-500" : "border-gray-300"
