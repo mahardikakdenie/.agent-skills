@@ -224,7 +224,7 @@ const UploadSanctionPage = () => {
 
         if (csvData != null) {
             const requiredFields = [
-                'first_name', 'middle_name', 'last_name', 'country',
+                'first_name', 'country',
                 'id_number', 'phone_number', 'email', 'source_type',
                 'blacklist_date', 'blacklist_reason'
             ];
@@ -287,8 +287,8 @@ const UploadSanctionPage = () => {
                     const sanctionData = {
                         id_number: row.id_number.toString(),
                         first_name: row.first_name,
-                        middle_name: row.middle_name || "",
-                        last_name: row.last_name,
+                        middle_name: row.middle_name || null,
+                        last_name: row.last_name || null,
                         phone_number: row.phone_number.toString(),
                         email: row.email,
                         blacklist_reason: row.blacklist_reason,

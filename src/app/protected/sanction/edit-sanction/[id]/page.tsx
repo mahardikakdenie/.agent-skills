@@ -200,7 +200,7 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
 
         // Check for required fields
         if (!formData.blacklist_reason || !formData.country || !formData.date_blacklisted || !formData.email ||
-            !formData.first_name || !formData.id_number || !formData.last_name || !formData.middle_name || !formData.phone_number
+            !formData.first_name || !formData.id_number || !formData.phone_number
             || !formData.source_id) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
@@ -235,8 +235,8 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
         const payload = {
             id_number: formData.id_number,
             first_name: formData.first_name,
-            middle_name: formData.middle_name,
-            last_name: formData.last_name,
+            middle_name: formData.middle_name || null,
+            last_name: formData.last_name || null,
             phone_number: formData.phone_number,
             email: formData.email,
             blacklist_reason: formData.blacklist_reason,
