@@ -237,7 +237,7 @@ const SanctionPage = () => {
                                                             <div className="flex gap-2 text-sm font-medium">
                                                                 <div className="min-w-40 w-40">Name</div>
                                                                 <div className="max-w-1 w-1">:</div>
-                                                                <div>{`${selectedSanction?.first_name}${selectedSanction?.middle_name ? selectedSanction?.middle_name : ''}${selectedSanction?.last_name ? selectedSanction?.last_name : ''}`}</div>
+                                                                <div>{`${selectedSanction?.first_name}${selectedSanction?.middle_name ? ` ${selectedSanction.middle_name}` : ''}${selectedSanction?.last_name ? ` ${selectedSanction.last_name}` : ''}`}</div>
                                                             </div>
                                                             <div className="flex gap-2 text-sm font-bold text-[#016DA1]">
                                                                 <div className="min-w-40 w-40">Personal Details</div>
