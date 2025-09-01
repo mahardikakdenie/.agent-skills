@@ -192,6 +192,7 @@ const SanctionPage = () => {
                             <TableHead>Blacklist Reason</TableHead>
                             <TableHead>Blacklisted Date</TableHead>
                             <TableHead>Country</TableHead>
+                            <TableHead>Created At</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -203,6 +204,7 @@ const SanctionPage = () => {
                                 <TableCell>{sanction.blacklist_reason}</TableCell>
                                 <TableCell>{format(new Date(sanction.date_blacklisted), "dd-MM-yyyy")}</TableCell>
                                 <TableCell>{sanction.country}</TableCell>
+                                <TableCell>{sanction.created_at ? format(new Date(sanction.created_at), "dd-MM-yyyy") : '-'}</TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
                                         <Drawer direction="right">
