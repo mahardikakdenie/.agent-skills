@@ -200,7 +200,7 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
 
         // Check for required fields
         if (!formData.blacklist_reason || !formData.country || !formData.date_blacklisted || !formData.email ||
-            !formData.first_name || !formData.id_number || !formData.last_name || !formData.middle_name || !formData.phone_number
+            !formData.first_name || !formData.id_number || !formData.phone_number
             || !formData.source_id) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
@@ -216,12 +216,12 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
         }
 
         // Validate phone number format
-        const phoneNumberPattern = /^\d{10,15}$/;
-        if (!phoneNumberPattern.test(formData.phone_number)) {
-            setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
-            setShowAlert(true);
-            return;
-        }
+        // const phoneNumberPattern = /^\d{10,15}$/;
+        // if (!phoneNumberPattern.test(formData.phone_number)) {
+        //     setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
+        //     setShowAlert(true);
+        //     return;
+        // }
 
         // Validate email format
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
@@ -235,8 +235,8 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
         const payload = {
             id_number: formData.id_number,
             first_name: formData.first_name,
-            middle_name: formData.middle_name,
-            last_name: formData.last_name,
+            middle_name: formData.middle_name || null,
+            last_name: formData.last_name || null,
             phone_number: formData.phone_number,
             email: formData.email,
             blacklist_reason: formData.blacklist_reason,
@@ -503,12 +503,10 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
                                         name="middle_name"
                                         control={control}
                                         defaultValue=""
-                                        rules={{ required: "Middle name is required" }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
                                                 id="middle_name"
-                                                required
                                                 placeholder="Insert Middle Name"
                                                 {...field}
                                                 className={`mt-1 block w-full h-16 ${errors.middle_name ? "border-red-500" : "border-gray-300"
@@ -526,12 +524,10 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
                                         name="last_name"
                                         control={control}
                                         defaultValue=""
-                                        rules={{ required: "Last name is required" }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
                                                 id="last_name"
-                                                required
                                                 placeholder="Insert Last Name"
                                                 {...field}
                                                 className={`mt-1 block w-full h-16 ${errors.last_name ? "border-red-500" : "border-gray-300"
