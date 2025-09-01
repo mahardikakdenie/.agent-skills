@@ -179,6 +179,7 @@ const SourcePage = () => {
                             <TableHead>Country</TableHead>
                             <TableHead>Source URL</TableHead>
                             <TableHead>Insurance Name</TableHead>
+                            <TableHead>Created At</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -189,6 +190,7 @@ const SourcePage = () => {
                                 <TableCell>{source.country}</TableCell>
                                 <TableCell>{source.source_url}</TableCell>
                                 <TableCell className="whitespace-nowrap">{source.insurance_name}</TableCell>
+                                <TableCell className="whitespace-nowrap">{source.created_at ? format(new Date(source.created_at), "dd-MM-yyyy") : '-'}</TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
 
