@@ -51,6 +51,7 @@ const DetailClaim = () => {
     email: true,
     phone: true,
   });
+  const [danaInfoVisibility, setDanaInfoVisibility] = useState(true);
 
   const imageUrl = claim?.participant_data?.data?.ktp || claim?.participant_data?.data?.passport || noImage.src;
 
@@ -61,12 +62,14 @@ const DetailClaim = () => {
       const access = await hasPermission("Claim.Read");
       const isHidePolicyEmail = await hasPermission("Claim.View.Policy.HideEmail");
       const isHidePolicyPhone = await hasPermission("Claim.View.Policy.HidePhone");
+      const isShowDanaInfo = await hasPermission("Claim.View.ShowDanaInfo");
       setHasAccess(access);
       setPolicyVisibility({
         name: true,
         email: !isHidePolicyEmail,
         phone: !isHidePolicyPhone,
       })
+      setDanaInfoVisibility(isShowDanaInfo);
       if (!access) {
         router.push(FORBIDDEN);
       }
@@ -403,6 +406,13 @@ const DetailClaim = () => {
                       <div className="max-w-1 w-1">:</div>
                       <div>{claim?.participant_data?.data?.data?.name || claim?.participant_data?.data?.name || "-"}</div>
                     </div>
+                    {danaInfoVisibility && 
+                      <div className="flex gap-2 text-sm font-medium">
+                        <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Plat Nomor</div>
+                        <div className="max-w-1 w-1">:</div>
+                        <div>{claim?.participant_data?.data?.data?.licensePlate || claim?.participant_data?.data?.licensePlate || "-"}</div>
+                      </div>
+                    }
                     <div className="flex gap-2 text-sm font-medium">
                       <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">Gender</div>
                       <div className="max-w-1 w-1">:</div>
