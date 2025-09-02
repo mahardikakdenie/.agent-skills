@@ -224,7 +224,8 @@ const UploadSanctionPage = () => {
 
         if (csvData != null) {
             const requiredFields = [
-                'first_name', 'country',
+                // 'first_name', 'country',
+                'first_name',
                 'id_number', 'phone_number', 'email',
                 'blacklist_date', 'blacklist_reason'
             ];
@@ -232,14 +233,14 @@ const UploadSanctionPage = () => {
             const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
             const isDataValid = csvData.every((row: any) => {
-                const isCountryValid = new Set(countryAPI.map((c: any) => c.name.toLowerCase()));
+                // const isCountryValid = new Set(countryAPI.map((c: any) => c.name.toLowerCase()));
                 const isSourceValid = new Set(source.map((s: any) => s.source_name.toLowerCase()));
 
                 return (
                     requiredFields.every(field => row[field] != null && row[field] !== "") &&
                     emailRegex.test(row.email) &&
                     dateRegex.test(row.blacklist_date) &&
-                    isCountryValid.has(row.country.toLowerCase()) &&
+                    // isCountryValid.has(row.country.toLowerCase()) &&
                     isSourceValid.has(row.source_name.toLowerCase())
                 );
             });
@@ -264,7 +265,8 @@ const UploadSanctionPage = () => {
                         email: row.email,
                         blacklist_reason: row.blacklist_reason,
                         source_id: row.source_name ? source.find((s: any) => s.source_name.toLowerCase() === row.source_name.toLowerCase())?.id : null,
-                        country: row.country ? countryAPI.find((c: any) => c.name.toLowerCase() === row.country.toLowerCase())?.id : null,
+                        // country: row.country ? countryAPI.find((c: any) => c.name.toLowerCase() === row.country.toLowerCase())?.id : null,
+                        country: 'IDN',
                         created_at: new Date().toISOString(),
                         date_blacklisted: row.blacklist_date
                     };
