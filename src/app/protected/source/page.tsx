@@ -176,7 +176,7 @@ const SourcePage = () => {
                         <TableRow>
                             <TableHead>Source Name</TableHead>
                             <TableHead>Source Type</TableHead>
-                            <TableHead>Country</TableHead>
+                            {/*<TableHead>Country</TableHead>*/}
                             <TableHead>Source URL</TableHead>
                             <TableHead>Insurance Name</TableHead>
                             <TableHead>Created At</TableHead>
@@ -187,7 +187,7 @@ const SourcePage = () => {
                             <TableRow key={source.id}>
                                 <TableCell>{source.source_name}</TableCell>
                                 <TableCell>{source.source_type}</TableCell>
-                                <TableCell>{source.country}</TableCell>
+                                {/*<TableCell>{source.country}</TableCell>*/}
                                 <TableCell>{source.source_url}</TableCell>
                                 <TableCell className="whitespace-nowrap">{source.insurance_name}</TableCell>
                                 <TableCell className="whitespace-nowrap">{source.created_at ? format(new Date(source.created_at), "dd-MM-yyyy") : '-'}</TableCell>
@@ -232,21 +232,21 @@ const SourcePage = () => {
                                                             <div className="max-w-1 w-1">:</div>
                                                             <div>{selectedSource?.source_type}</div>
                                                         </div>
-                                                        <div className="flex gap-2 text-sm font-medium">
-                                                            <div className="min-w-40 w-40">Country</div>
-                                                            <div className="max-w-1 w-1">:</div>
-                                                            <div>{selectedSource?.country}</div>
-                                                        </div>
-                                                        <div className="flex gap-2 text-sm font-medium">
+                                                        {/*<div className="flex gap-2 text-sm font-medium">*/}
+                                                        {/*    <div className="min-w-40 w-40">Country</div>*/}
+                                                        {/*    <div className="max-w-1 w-1">:</div>*/}
+                                                        {/*    <div>{selectedSource?.country}</div>*/}
+                                                        {/*</div>*/}
+                                                      {selectedSource?.source_url && (<div className="flex gap-2 text-sm font-medium">
                                                             <div className="min-w-40 w-40">Source URL</div>
                                                             <div className="max-w-1 w-1">:</div>
                                                             <div>{selectedSource?.source_url}</div>
-                                                        </div>
-                                                        <div className="flex gap-2 text-sm font-medium">
+                                                        </div>)}
+                                                      {selectedSource?.insurance_name && (<div className="flex gap-2 text-sm font-medium">
                                                             <div className="min-w-40 w-40">Insurance Name</div>
                                                             <div className="max-w-1 w-1">:</div>
                                                             <div>{selectedSource?.insurance_name}</div>
-                                                        </div>
+                                                        </div>)}
                                                         <div className="flex gap-2 text-sm font-medium">
                                                             <div className="min-w-40 w-40">Created Date</div>
                                                             <div className="max-w-1 w-1">:</div>
