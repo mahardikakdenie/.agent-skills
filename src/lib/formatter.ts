@@ -50,3 +50,33 @@ export const formatDate = (
 ): string => {
   return moment(date).format(format);
 };
+
+export const formatDateTimeWithTZ = (dateInput: string | Date) => {
+  const date = new Date(dateInput);
+  const formatter = new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZoneName: "short"
+  });
+
+  const parts = formatter.formatToParts(date);
+  const finalDate = `${parts.find(p => p.type === "day")?.value}-${parts.find(p => p.type === "month")?.value}-${parts.find(p => p.type === "year")?.value}`;
+  const time = `${parts.find(p => p.type === "hour")?.value}:${parts.find(p => p.type === "minute")?.value}:${parts.find(p => p.type === "second")?.value}`;
+  const zone = parts.find(p => p.type === "timeZoneName")?.value || "";
+
+  return `${finalDate} ${time} ${zone}`;
+};
+
+export const formatDateTimeUTC7 = (dateInput: string | Date) => {
+  const timeDate = dateInput
+    ? new Date(dateInput.toString().replace(" ", "T") + "Z")
+    : new Date();
+
+  const local = new Date(timeDate.getTime() + 7 * 60 * 60 * 1000);
+
+  return local.toISOString().replace("Z", "+07:00");
+};

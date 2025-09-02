@@ -152,9 +152,12 @@ const CreateSanctionPage = () => {
         setShowAlert(false);
 
         // Check for required fields
-        if (!formData.blacklist_reason || !formData.country || !formData.date_blacklisted || !formData.email ||
-            !formData.first_name || !formData.id_number || !formData.last_name || !formData.middle_name || !formData.phone_number
-            || !formData.source_id) {
+        // if (!formData.blacklist_reason || !formData.country || !formData.date_blacklisted || !formData.email ||
+        //     !formData.first_name || !formData.id_number || !formData.phone_number
+        //     || !formData.source_id) {
+        if (!formData.blacklist_reason || !formData.date_blacklisted || !formData.email ||
+          !formData.first_name || !formData.id_number || !formData.phone_number
+          || !formData.source_id) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
             return;
@@ -169,12 +172,12 @@ const CreateSanctionPage = () => {
         }
 
         // Validate phone number format
-        const phoneNumberPattern = /^\d{10,15}$/;
-        if (!phoneNumberPattern.test(formData.phone_number)) {
-            setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
-            setShowAlert(true);
-            return;
-        }
+        // const phoneNumberPattern = /^\d{10,15}$/;
+        // if (!phoneNumberPattern.test(formData.phone_number)) {
+        //     setErrorMessage('Phone number must be numeric and between 10 to 15 digits.');
+        //     setShowAlert(true);
+        //     return;
+        // }
 
         // Validate email format
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
@@ -188,13 +191,14 @@ const CreateSanctionPage = () => {
         const payload = {
             id_number: formData.id_number,
             first_name: formData.first_name,
-            middle_name: formData.middle_name,
-            last_name: formData.last_name,
+            middle_name: formData.middle_name || null,
+            last_name: formData.last_name || null,
             phone_number: formData.phone_number,
             email: formData.email,
             blacklist_reason: formData.blacklist_reason,
             source_id: formData.source_id,
-            country: formData.country,
+            // country: formData.country,
+            country: 'IDN',
             date_blacklisted: formData.date_blacklisted,
         };
 
@@ -321,12 +325,10 @@ const CreateSanctionPage = () => {
                                         name="middle_name"
                                         control={control}
                                         defaultValue=""
-                                        rules={{ required: "Middle name is required" }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
                                                 id="middle_name"
-                                                required
                                                 placeholder="Insert Middle Name"
                                                 {...field}
                                                 className={`mt-1 block w-full h-16 ${errors.middle_name ? "border-red-500" : "border-gray-300"
@@ -344,12 +346,10 @@ const CreateSanctionPage = () => {
                                         name="last_name"
                                         control={control}
                                         defaultValue=""
-                                        rules={{ required: "Last name is required" }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
                                                 id="last_name"
-                                                required
                                                 placeholder="Insert Last Name"
                                                 {...field}
                                                 className={`mt-1 block w-full h-16 ${errors.last_name ? "border-red-500" : "border-gray-300"
@@ -365,36 +365,36 @@ const CreateSanctionPage = () => {
                         <div className="mb-8">
                             <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Personal Data</h3>
                             <div className="flex space-x-4 mb-4">
-                                <div className="flex flex-col w-1/2">
-                                    <label htmlFor="country" className="font-normal">Country</label>
-                                    <Controller
-                                        name="country"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Select
-                                                value={field.value}
-                                                onValueChange={(value) => {
-                                                    handleChangeCountry(value);
-                                                    field.onChange(value);
-                                                }}
-                                                disabled={false}
-                                            >
-                                                <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-3 mt-1">
-                                                    <SelectValue placeholder="Select a Country " />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        {countryAPI.map((countryItem) => (
-                                                            <SelectItem key={countryItem.id} value={countryItem.id}>
-                                                                {countryItem.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    />
-                                </div>
+                                {/*<div className="flex flex-col w-1/2">*/}
+                                {/*    <label htmlFor="country" className="font-normal">Country</label>*/}
+                                {/*    <Controller*/}
+                                {/*        name="country"*/}
+                                {/*        control={control}*/}
+                                {/*        render={({ field }) => (*/}
+                                {/*            <Select*/}
+                                {/*                value={field.value}*/}
+                                {/*                onValueChange={(value) => {*/}
+                                {/*                    handleChangeCountry(value);*/}
+                                {/*                    field.onChange(value);*/}
+                                {/*                }}*/}
+                                {/*                disabled={false}*/}
+                                {/*            >*/}
+                                {/*                <SelectTrigger className="w-full h-16 border-gray-300 select-status bg-transparent hover:cursor-pointer py-3 mt-1">*/}
+                                {/*                    <SelectValue placeholder="Select a Country " />*/}
+                                {/*                </SelectTrigger>*/}
+                                {/*                <SelectContent>*/}
+                                {/*                    <SelectGroup>*/}
+                                {/*                        {countryAPI.map((countryItem) => (*/}
+                                {/*                            <SelectItem key={countryItem.id} value={countryItem.id}>*/}
+                                {/*                                {countryItem.name}*/}
+                                {/*                            </SelectItem>*/}
+                                {/*                        ))}*/}
+                                {/*                    </SelectGroup>*/}
+                                {/*                </SelectContent>*/}
+                                {/*            </Select>*/}
+                                {/*        )}*/}
+                                {/*    />*/}
+                                {/*</div>*/}
 
                                 <div className="flex flex-col w-1/2">
                                     <label htmlFor="id_number" className="font-normal">ID Number</label>

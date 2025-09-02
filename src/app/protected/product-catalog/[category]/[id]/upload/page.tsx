@@ -41,6 +41,7 @@ const UploadPackage = ({
     if (file) {
       Papa.parse(file, {
         header: true,
+        skipEmptyLines: true,
         complete: (results) => {
           setCsvData(results.data);
         },

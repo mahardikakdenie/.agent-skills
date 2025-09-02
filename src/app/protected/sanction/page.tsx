@@ -189,9 +189,11 @@ const SanctionPage = () => {
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead>Phone Number</TableHead>
+                            <TableHead>Email</TableHead>
                             <TableHead>Blacklist Reason</TableHead>
                             <TableHead>Blacklisted Date</TableHead>
-                            <TableHead>Country</TableHead>
+                            {/*<TableHead>Country</TableHead>*/}
+                            <TableHead>Created At</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -200,9 +202,11 @@ const SanctionPage = () => {
                             <TableRow key={sanction.id}>
                                 <TableCell>{sanction.first_name} {sanction.middle_name} {sanction.last_name}</TableCell>
                                 <TableCell>{sanction.phone_number}</TableCell>
+                                <TableCell>{sanction.email}</TableCell>
                                 <TableCell>{sanction.blacklist_reason}</TableCell>
                                 <TableCell>{format(new Date(sanction.date_blacklisted), "dd-MM-yyyy")}</TableCell>
-                                <TableCell>{sanction.country}</TableCell>
+                                {/*<TableCell>{sanction.country}</TableCell>*/}
+                                <TableCell>{sanction.created_at ? format(new Date(sanction.created_at), "dd-MM-yyyy") : '-'}</TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
                                         <Drawer direction="right">
@@ -237,7 +241,7 @@ const SanctionPage = () => {
                                                             <div className="flex gap-2 text-sm font-medium">
                                                                 <div className="min-w-40 w-40">Name</div>
                                                                 <div className="max-w-1 w-1">:</div>
-                                                                <div>{selectedSanction?.first_name} {selectedSanction?.middle_name} {selectedSanction?.last_name}</div>
+                                                                <div>{`${selectedSanction?.first_name}${selectedSanction?.middle_name ? ` ${selectedSanction.middle_name}` : ''}${selectedSanction?.last_name ? ` ${selectedSanction.last_name}` : ''}`}</div>
                                                             </div>
                                                             <div className="flex gap-2 text-sm font-bold text-[#016DA1]">
                                                                 <div className="min-w-40 w-40">Personal Details</div>

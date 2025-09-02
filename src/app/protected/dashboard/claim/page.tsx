@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { formatMoney, numberSimpleFormatter } from '@/lib/formatter';
+import { formatDateTimeWithTZ, formatMoney, numberSimpleFormatter } from "@/lib/formatter";
 import { Claim, ClaimService } from '@/services/claim.service';
 import { InsuranceService } from '@/services/insurance.services';
 import { ProductService } from '@/services/product.services';
@@ -236,7 +236,7 @@ const DashboardClaim = () => {
 
     const tableData = Array.isArray(claimStatisticData)
         ? claimStatisticData.map((item) => ({
-            created_at: format(new Date(item.created_at), 'dd-MM-yyyy'),
+            created_at: formatDateTimeWithTZ(item.created_at),
             number: item.number,
             type: item.type,
             amount: `${formatMoney(item.amount)}`,
