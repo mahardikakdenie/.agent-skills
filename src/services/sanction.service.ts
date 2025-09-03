@@ -75,19 +75,19 @@ export class SanctionService {
   }
 
   async getSanctionById(id: string): Promise<Response> {
-    return this.httpClientSanction.get(`/v1/blacklist/${id}?id=${id}`);
+    return this.httpClientSanction.get(`/v1/blacklist/${id}`);
   }
   
   async getSourceById(id: string): Promise<Response> {
-    return this.httpClientSanction.get(`/v1/sources/${id}?id=${id}`);
+    return this.httpClientSanction.get(`/v1/sources/${id}`);
   }
 
   async deleteDiscSanctionById(id: string): Promise<any> {
-    return this.httpClientSanction.delete(`/v1/blacklist/delete/${id}?id=${id}`);
+    return this.httpClientSanction.delete(`/v1/blacklist/delete/${id}`);
   }
   
   async deleteDiscSourceById(id: string): Promise<any> {
-    return this.httpClientSanction.delete(`/v1/sources/delete/${id}?id=${id}`);
+    return this.httpClientSanction.delete(`/v1/sources/delete/${id}`);
   }
 
   async createSanction(data: any): Promise<any> {
@@ -103,11 +103,11 @@ export class SanctionService {
   }
 
   async updateSanction(id: string, data: any): Promise<any> {
-    return this.httpClientSanction.put(`/v1/blacklist/update/${id}?id=${id}`, data);
+    return this.httpClientSanction.put(`/v1/blacklist/update/${id}`, data);
   }
 
   async updateSource(id: string, data: any): Promise<any> {
-    return this.httpClientSanction.put(`/v1/sources/update/${id}?id=${id}`, data);
+    return this.httpClientSanction.put(`/v1/sources/update/${id}`, data);
   }
 
   
