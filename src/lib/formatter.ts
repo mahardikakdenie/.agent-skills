@@ -70,13 +70,3 @@ export const formatDateTimeWithTZ = (dateInput: string | Date) => {
 
   return `${finalDate} ${time} ${zone}`;
 };
-
-export const formatDateTimeUTC7 = (dateInput: string | Date) => {
-  const timeDate = dateInput
-    ? new Date(dateInput.toString().replace(" ", "T") + "Z")
-    : new Date();
-
-  const local = new Date(timeDate.getTime() + 7 * 60 * 60 * 1000);
-
-  return local.toISOString().replace("Z", "+07:00");
-};

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { TransactionService } from "@/services/transaction.service";
-import { formatMoney, formatDateTimeWithTZ, formatDateTimeUTC7 } from "@/lib/formatter";
+import { formatMoney, formatDateTimeWithTZ } from "@/lib/formatter";
 import Spinner from "@/components/ui/spinner";
 import WithSidebar from "@/hoc/with-sidebar";
 import { hasPermission } from "@/context/auth.context";
@@ -161,7 +161,7 @@ const ExportPage = () => {
       if (isShowCreatedAt) {
         additionColumn = {
           ...additionColumn, 
-          "Created At": formatDateTimeWithTZ(formatDateTimeUTC7(item.created_at)),
+          "Created At": formatDateTimeWithTZ(item.created_at),
         }
       }
 
@@ -330,7 +330,7 @@ const ExportPage = () => {
                     <td style={styles.td} valign="middle">{item?.status || "-"}</td>
                     {isShowOrderId && <td style={styles.td} valign="middle">{orderId || "-"}</td>}
                     {isShowRequestId && <td style={styles.td} valign="middle">{requestId || "-"}</td>}
-                    {isShowCreatedAt && <td style={styles.td} valign="middle">{formatDateTimeWithTZ(formatDateTimeUTC7(item?.created_at)) || "-"}</td>}
+                    {isShowCreatedAt && <td style={styles.td} valign="middle">{formatDateTimeWithTZ(item?.created_at) || "-"}</td>}
                   </tr>
                 );
               })}
