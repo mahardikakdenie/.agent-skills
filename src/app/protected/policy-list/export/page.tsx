@@ -12,7 +12,7 @@ import Spinner from "@/components/ui/spinner";
 import WithSidebar from "@/hoc/with-sidebar";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
-import { formatDateTimeWithTZ, formatDateTimeUTC7 } from "@/lib/formatter";
+import { formatDateTimeWithTZ } from "@/lib/formatter";
 import { hasPermission } from "@/context/auth.context";
 
 const ExportPage = () => {
@@ -138,7 +138,7 @@ const ExportPage = () => {
       if (isShowCreatedAt) {
         additionColumn = {
           ...additionColumn, 
-          "Created At": formatDateTimeWithTZ(formatDateTimeUTC7(item.created_at)),
+          "Created At": formatDateTimeWithTZ(item.created_at),
         }
       }
       return {
@@ -286,7 +286,7 @@ const ExportPage = () => {
                         valign="middle"
                         className="whitespace-nowrap"
                       >
-                        {formatDateTimeWithTZ(formatDateTimeUTC7(item?.created_at)) || "-"}
+                        {formatDateTimeWithTZ(item?.created_at) || "-"}
                       </td>
                     }
                   </tr>
