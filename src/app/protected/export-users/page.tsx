@@ -31,7 +31,7 @@ const ExportUsersPage = () => {
               <div className="flex flex-col gap-4 items-center justify-center py-14">
                 <Image alt="no data" src={emptyStateSearchPrompt} width={200} />
                 <div className="text-[#939597] text-base">
-                  No filters yet. Add one to start building your audience.
+                  {!isFiltered ? "No filters yet. Add one to start building your audience." : "No data found"}
                 </div>
               </div>
             </TableCell>
@@ -52,7 +52,7 @@ const ExportUsersPage = () => {
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
-  const [disabled, setDisabled] = useState(true);
+  const [isFiltered, setIsFiltered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSelectMonth, setIsSelectMonth] = useState(false);
   const [placeholderSelectSegment, setPlaceholderSelectSegment] = useState("Select Segment");
@@ -94,6 +94,7 @@ const ExportUsersPage = () => {
       setTotalItems(response.total);
       setPage(response.page);
       setLimit(response.limit);
+      setIsFiltered(true);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -103,7 +104,6 @@ const ExportUsersPage = () => {
 
   const fetchAllDataToDownload = async (selectedChannel: string, selectedFrequentBuyers: boolean, selectedBirthdayMonth: string, currentPage = 1, accumulatedData: any[] = []) => {
     try {
-      setDisabled(true);
       const response: any = await transactionService.getCustomersCampaign(currentPage, 100, selectedChannel, selectedFrequentBuyers, selectedBirthdayMonth);
       if (response && response.data) {
         const newData = response.data || [];
@@ -114,7 +114,6 @@ const ExportUsersPage = () => {
           await fetchAllDataToDownload(selectedChannel, selectedFrequentBuyers, selectedBirthdayMonth, currentPage + 1, updatedData);
         }
       }
-      setDisabled(false);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch data for download:', error);
@@ -135,30 +134,22 @@ const ExportUsersPage = () => {
     const selectedChannel: any = channelList.find((c: any) => c.id === value);
     setChannel(value);
     setChannelName(selectedChannel?.name || "");
-    fetchData(1, limit, value, frequentBuyers, birthdayMonth, true).then();
-    fetchAllDataToDownload(value, frequentBuyers, birthdayMonth).then();
   };
 
   const handleFrequentBuyersChange = (value: boolean) => {
     forPlaceholderSelectSegment(value, birthdayMonth);
     setFrequentBuyers(value);
-    fetchData(1, limit, channel, value, birthdayMonth, true).then();
-    fetchAllDataToDownload(channel, value, birthdayMonth).then();
   };
 
   const handleBirthdayMonthChange = (value: string) => {
     forPlaceholderSelectSegment(frequentBuyers, value);
     setBirthdayMonth(value);
-    fetchData(1, limit, channel, frequentBuyers, value, true).then();
-    fetchAllDataToDownload(channel, frequentBuyers, value).then();
   };
 
   const handleCheckBoxBirthdayMonth = (value: boolean) => {
     if (!value) {
       forPlaceholderSelectSegment(frequentBuyers, "");
       setBirthdayMonth("");
-      fetchData(1, limit, channel, frequentBuyers, "", true).then();
-      fetchAllDataToDownload(channel, frequentBuyers, "").then();
     }
     setIsSelectMonth(value);
   };
@@ -206,6 +197,24 @@ const ExportUsersPage = () => {
     XLSX.writeFile(workbook, `${name}.xlsx`);
   };
 
+  const handleGetFilteredData = () => {
+    fetchData(1, limit, channel, frequentBuyers, birthdayMonth, true).then();
+    fetchAllDataToDownload(channel, frequentBuyers, birthdayMonth).then();
+  };
+
+  const resetAllFilters = () => {
+    forPlaceholderSelectSegment(false, "");
+    setPage(1);
+    setLimit(10);
+    setChannel("");
+    setFrequentBuyers(false);
+    setIsSelectMonth(false);
+    setBirthdayMonth("");
+    setCustomersCampaignData([]);
+    setDataToDownload([]);
+    setIsFiltered(false);
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex flex-wrap justify-start pb-4 items-center">
@@ -213,7 +222,7 @@ const ExportUsersPage = () => {
           Export Users
         </h1>
         <div className="flex space-x-4 ml-auto">
-          <Button disabled={disabled} onClick={handleGenerateXlsx} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs">
+          <Button disabled={dataToDownload.length < 1} onClick={handleGenerateXlsx} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs">
             <Download className="w-5 h-5 mr-1 " /> Generate XLSX
           </Button>
         </div>
@@ -248,12 +257,22 @@ const ExportUsersPage = () => {
             Segment
           </div>
           <div>
-            <div className={`text-sm border rounded-md py-2 px-3 ${channel && !disabled ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={channel && !disabled ? () => setIsModalOpen(true) : () => {}}>{placeholderSelectSegment}</div>
+            <div className="text-sm border rounded-md py-2 px-3 cursor-pointer" onClick={() => setIsModalOpen(true)}>{placeholderSelectSegment}</div>
+          </div>
+        </div>
+        <div className="flex w-[40%] flex-col items-center justify-center">
+          <div className="flex items-center justify-between">
+            <div onClick={resetAllFilters} className="text-sm font-bold text-[#016DA1] hover:text-[#2d9ae6] cursor-pointer mr-3">
+              Reset Filter
+            </div>
+            <Button disabled={!channel && !frequentBuyers && !birthdayMonth} onClick={handleGetFilteredData} className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs">
+              Get Users
+            </Button>
           </div>
         </div>
       </div>
 
-      {isModalOpen && !disabled && (
+      {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent aria-describedby="desc" className="p-0 min-w-96 w-auto max-w-full">
             <DialogTitle className="hidden"></DialogTitle>
@@ -267,19 +286,19 @@ const ExportUsersPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className={disabled ? "cursor-not-allowed" : "cursor-pointer"} onClick={() => handleFrequentBuyersChange(!frequentBuyers)}>
+                  <TableRow className="cursor-pointer" onClick={() => handleFrequentBuyersChange(!frequentBuyers)}>
                     <TableCell align="center">
-                      <Input type="checkbox" disabled={disabled} onChange={() => {}} checked={frequentBuyers} className="w-4 h-4" />
+                      <Input type="checkbox" onChange={() => {}} checked={frequentBuyers} className="w-4 h-4" />
                     </TableCell>
                     <TableCell>
                       Frequent Buyers (≥2 transactions)
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell align="center" className={disabled ? "cursor-not-allowed" : "cursor-pointer"} onClick={() => handleCheckBoxBirthdayMonth(!isSelectMonth)}>
-                      <Input type="checkbox" disabled={disabled} onChange={() => {}} checked={isSelectMonth} className="w-4 h-4" />
+                    <TableCell align="center" className="cursor-pointer" onClick={() => handleCheckBoxBirthdayMonth(!isSelectMonth)}>
+                      <Input type="checkbox" onChange={() => {}} checked={isSelectMonth} className="w-4 h-4" />
                     </TableCell>
-                    <TableCell className={disabled ? "cursor-not-allowed" : "cursor-pointer"} onClick={() => handleCheckBoxBirthdayMonth(!isSelectMonth)}>
+                    <TableCell className="cursor-pointer" onClick={() => handleCheckBoxBirthdayMonth(!isSelectMonth)}>
                       Birthday Month
                     </TableCell>
                     <TableCell>
