@@ -150,6 +150,9 @@ export const PROMOTION = `${PROTECTED}/promotion`;
 export const PROMOTION_DETAIL = (id: string | number) => `${PROMOTION}/edit-campaign/${id}`;
 export const PROMOTION_ADD = `${PROMOTION}/add-campaign`;
 
+// Export Users
+export const EXPORT_USERS = `${PROTECTED}/export-users`;
+
 // Sanction
 export const SANCTION = `${PROTECTED}/sanction`;
 export const SANCTION_DETAIL = (id: string | number) => `${SANCTION}/edit-sanction/${id}`;

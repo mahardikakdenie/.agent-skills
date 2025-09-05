@@ -137,6 +137,19 @@ export class TransactionService {
     return this.httpClient.get(`/v1/customers?${params.toString()}`);
   }
 
+  async getCustomersCampaign(page: number, limit: number, channel: string, frequent_buyers: boolean, birthday_month: string): Promise<any> {
+    const params = new URLSearchParams();
+
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+    params.append("frequent_buyers", `${frequent_buyers}`);
+
+    if (channel) params.append("channel", channel);
+    if (birthday_month) params.append("birthday_month", birthday_month);
+
+    return this.httpClient.get(`/v1/customers/campaign?${params.toString()}`);
+  }
+
   async getTransactions(
     page?: number,
     rowsPerPage?: number,

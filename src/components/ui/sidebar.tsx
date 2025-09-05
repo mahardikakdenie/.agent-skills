@@ -25,7 +25,7 @@ import {
   DASHBOARD_TRANSACTION,
   EMAIL_TAG,
   EMAIL_TEMPLATE,
-  ENDORSEMENT,
+  ENDORSEMENT, EXPORT_USERS,
   GROUP,
   HOLIDAY,
   HOSPITAL_LIST,
@@ -253,6 +253,21 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Campaigns
+                </Link>
+                <Link
+                  href={EXPORT_USERS}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(EXPORT_USERS))
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconTransaction}
+                    alt="Campaigns"
+                    className="w-7 min-w-7"
+                  />
+                  Export Users
                 </Link>
               </li>
               <ProductCategorySidebar isActive={isActive} handleMenuClick={handleMenuClick} />
