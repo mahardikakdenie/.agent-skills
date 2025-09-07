@@ -257,4 +257,22 @@ export class TransactionService {
   ): Promise<any> {
     return this.httpClient.post("/v1/transactions/conventional", data);
   }
+
+  async getCampaignsReport(id: string): Promise<any> {
+    try {
+      return await this.httpClient.get(`/v1/campaigns/report/${id}`);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
+
+  async putCampaignsReport(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.put(`/v1/campaigns/report/${id}`, data);
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
+  }
 }
