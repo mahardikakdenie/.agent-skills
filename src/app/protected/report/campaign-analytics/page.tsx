@@ -1,19 +1,62 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import WithSidebar from "@/hoc/with-sidebar";
 import * as XLSX from "xlsx";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
 import { Mail, Eye, MousePointer, UserMinus, AlertTriangle, Download, Upload } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { PromotionService } from "@/services/promotion.service";
+import { TransactionService } from "@/services/transaction.service";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toastNotification } from "@/lib/toast";
+import { BiMoney } from "react-icons/bi";
 
-const ReportZohoCampaignPage = () => {
+const CampaignAnalyticsPage = () => {
+  const [totalTransaction, setTotalTransaction] = useState(0);
+  const [campaignSummary, setCampaignSummary] = useState<any>({});
   const [campaignData, setCampaignData] = useState<any[]>([]);
   const [clickLinks, setClickLinks] = useState<{ url: string; count: number }[]>([]);
   const [timeData, setTimeData] = useState<any[]>([]);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const reportTemplateRef = useRef<HTMLDivElement>(null);
+
+  const [selectedCampaign, setSelectedCampaign] = useState("");
+  const [campaignList, setCampaignList] = useState([]);
+
+  const promotionService = new PromotionService();
+  const transactionService = new TransactionService();
+
+  useEffect(() => {
+    const fetchCampaignList = async () => {
+      try {
+        const res: any = await promotionService.getPromotionCampaign(1, 1000, "");
+        setCampaignList(res.data.map((c: any) => { return { id: c.campaign_id, name: c.name } }));
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchCampaignList().then();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleViewAnalytics = async () => {
+    try {
+      const res: any = await transactionService.getCampaignsReport(selectedCampaign);
+      if (res?.report?.data) {
+        setTotalTransaction(res.transaction_total);
+        setCampaignSummary(res.report.data.campaignSummary);
+        setCampaignData(res.report.data.campaignData);
+        setClickLinks(res.report.data.clickLinks);
+        setTimeData(res.report.data.timeData);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
 
   const handleExcelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -29,12 +72,21 @@ const ReportZohoCampaignPage = () => {
       }
     };
 
+    const reportSummary: any = getSheet("ReportSummary");
     const delivery: any = getSheet("Campaign Delivery");
     const opens: any = getSheet("Opens");
     const clicks: any = getSheet("Clicks");
     const hardBounces: any = getSheet("Hard Bounces");
     const unsubscribes: any = getSheet("Unsubscribes");
     const complaints: any = getSheet("Complaints");
+
+    // summary sheet
+    const summary: any = {};
+    if (reportSummary.length > 1) {
+      reportSummary.forEach((row: any) => {
+        summary[`${row[0].toLowerCase().trim().replace(/\s+/g, "_")}`] = row[1];
+      });
+    }
 
     // map email → record
     const dataMap: Record<string, any> = {};
@@ -66,7 +118,7 @@ const ReportZohoCampaignPage = () => {
         const email = row[0];
         if (dataMap[email]) {
           dataMap[email].openCount += 1;
-          if (row[3]) openTimes.push(row[3]); // kolom "Open Time"
+          if (row[3]) openTimes.push(row[3]);
         }
       });
     }
@@ -101,11 +153,10 @@ const ReportZohoCampaignPage = () => {
         if (dataMap[email]) {
           dataMap[email].clickCount += 1;
           if (url) urlMap[url] = (urlMap[url] || 0) + 1;
-          if (row[4]) clickTimes.push(row[4]); // kolom "Click Time"
+          if (row[4]) clickTimes.push(row[4]);
         }
       });
     }
-    setClickLinks(Object.entries(urlMap).map(([url, count]) => ({ url, count })));
 
     // unsubscribes
     if (unsubscribes.length > 1) {
@@ -137,8 +188,6 @@ const ReportZohoCampaignPage = () => {
       else rec.status = "unopened";
     });
 
-    setCampaignData(Object.values(dataMap));
-
     // build time series
     const timeBuckets: Record<string, { opens: number; clicks: number }> = {};
     openTimes.forEach((t) => {
@@ -151,7 +200,20 @@ const ReportZohoCampaignPage = () => {
       if (!timeBuckets[hour]) timeBuckets[hour] = { opens: 0, clicks: 0 };
       timeBuckets[hour].clicks += 1;
     });
-    setTimeData(Object.entries(timeBuckets).map(([time, v]) => ({ time, ...v })));
+
+    try {
+      const data = {
+        campaignSummary: summary,
+        campaignData: Object.values(dataMap),
+        clickLinks: Object.entries(urlMap).map(([url, count]) => ({ url, count })),
+        timeData: Object.entries(timeBuckets).map(([time, v]) => ({ time, ...v }))
+      };
+      await transactionService.putCampaignsReport(selectedCampaign, { data });
+      toastNotification("Update campaign report successfully!", "success");
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      toastNotification("Update campaign report failed!", "error");
+    }
   };
 
   // metrics
@@ -200,7 +262,7 @@ const ReportZohoCampaignPage = () => {
 
     try {
       const canvas = await html2canvas(reportTemplateRef.current, {
-        scale: 2, // Higher quality
+        scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff"
@@ -213,8 +275,8 @@ const ReportZohoCampaignPage = () => {
         format: 'a4'
       });
 
-      const imgWidth = 280; // A4 width in mm
-      const pageHeight = 210; // A4 height in mm
+      const imgWidth = 280;
+      const pageHeight = 210;
       const imgHeight = canvas.height * imgWidth / canvas.width;
 
       let heightLeft = imgHeight;
@@ -223,7 +285,6 @@ const ReportZohoCampaignPage = () => {
       pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
-      // Add more pages if the content is too long
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
@@ -241,40 +302,78 @@ const ReportZohoCampaignPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-4xl font-bold text-gray-900">Zoho Campaign Analytics</h1>
-          <div>
-            {campaignData.length > 0 ? (
-              <button
-                onClick={handleGeneratePdf}
-                disabled={isGeneratingPdf}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Download size={18} />
-                {isGeneratingPdf ? "Generating PDF..." : "Download PDF"}
-              </button>
-            ) : (
-              <label htmlFor="excel-upload" className="px-4 py-2 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600 flex items-center gap-2 cursor-pointer">
-                <Upload size={18} />
-                Upload Excel File
-                <input
-                  id="excel-upload"
-                  type="file"
-                  accept=".xls,.xlsx"
-                  onChange={handleExcelUpload}
-                  className="hidden"
-                />
-              </label>
-            )}
+    <div className="flex flex-col w-full p-4 md:p-6">
+      <div className="flex flex-wrap justify-start pb-4 items-center">
+        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">
+          Campaign Analytics
+        </h1>
+        <div className="flex space-x-4 ml-auto">
+          <Button disabled={isGeneratingPdf || campaignData.length < 1} onClick={handleGeneratePdf} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs">
+            <Download className="w-5 h-5 mr-1 " /> {isGeneratingPdf ? "Generating PDF..." : "Download PDF"}
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex bg-white rounded-xl gap-4 mb-3 p-6">
+        <div className="flex w-full flex-col">
+          <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
+            Campaign
+          </div>
+          <div className="relative mb-1.5">
+            <div className="min-w-48">
+              <Select value={selectedCampaign} onValueChange={(value) => setSelectedCampaign(value)}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Select Channel" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {
+                      campaignList.map((item: any, index: number) => (
+                        <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
+                      ))
+                    }
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
+        <div className="pt-4 flex w-[40%] flex-col items-center justify-center">
+          <div className="flex items-center justify-between">
+            <Button disabled={!selectedCampaign} onClick={handleViewAnalytics} className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs">
+              View Analytics
+            </Button>
+            <label htmlFor="excel-upload" className={`ml-3 px-4 py-3 flex items-center gap-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs ${selectedCampaign ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}>
+              <Upload size={18} />
+              Update Campaign
+              <input
+                disabled={!selectedCampaign}
+                id="excel-upload"
+                type="file"
+                accept=".xls,.xlsx"
+                onChange={handleExcelUpload}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
 
+      <div>
         {campaignData.length > 0 && (
           <div ref={reportTemplateRef} className="bg-white p-6 rounded-lg mb-5">
+            <div className="mb-5">
+              <h1 className="text-center text-2xl font-bold">{campaignSummary.campaign_name}</h1>
+              <p className="text-center text-base font-semibold">{campaignSummary.subject}</p>
+            </div>
+
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                <p className="text-sm text-gray-600">Total Transaction</p>
+                <p className="text-3xl font-bold">{totalTransaction}</p>
+                <BiMoney className="h-8 w-8 text-orange-500" />
+              </div>
               <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                 <p className="text-sm text-gray-600">Total Sent</p>
                 <p className="text-3xl font-bold">{totalSent}</p>
@@ -504,6 +603,5 @@ const ReportZohoCampaignPage = () => {
   );
 };
 
-const ReportZohoCampaignWithSidebar = (params: any) =>
-  WithSidebar(ReportZohoCampaignPage)(params);
-export default ReportZohoCampaignWithSidebar;
+const CampaignAnalyticsWithSidebar = (params: any) => WithSidebar(CampaignAnalyticsPage)(params);
+export default CampaignAnalyticsWithSidebar;

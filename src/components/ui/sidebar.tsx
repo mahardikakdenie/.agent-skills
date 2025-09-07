@@ -35,7 +35,7 @@ import {
   PARTNER_MANAGEMENT,
   POLICY_LIST,
   PRODUCT,
-  REPORT_ZOHO_CAMPAIGN,
+  REPORT_CAMPAIGN_ANALYTICS,
   PRODUCT_CATEGORY,
   PROMOTION,
   REPORT_CAMPAIGN,
@@ -640,8 +640,8 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={REPORT_ZOHO_CAMPAIGN}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_ZOHO_CAMPAIGN))
+                  href={REPORT_CAMPAIGN_ANALYTICS}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_CAMPAIGN_ANALYTICS))
                     ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                     : ""
                   }`}
@@ -652,7 +652,7 @@ const Sidebar = () => {
                     alt="Campaign Report"
                     className="w-7 min-w-7"
                   />
-                  Zoho Campaign Report
+                  Campaign Analytics Report
                 </Link>
               </li>
               <li>

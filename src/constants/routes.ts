@@ -177,5 +177,5 @@ export const CLAIM_HISTORY = `${PROTECTED}/claim-history`;
 export const REPORT = `${PROTECTED}/report`;
 export const REPORT_CLAIM = `${REPORT}/claim`;
 export const REPORT_CAMPAIGN = `${REPORT}/campaign`;
-export const REPORT_ZOHO_CAMPAIGN = `${REPORT}/zoho-campaign`;
+export const REPORT_CAMPAIGN_ANALYTICS = `${REPORT}/campaign-analytics`;
 export const REPORT_PERFORMANCE = `${REPORT}/performance-report`;
