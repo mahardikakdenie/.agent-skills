@@ -394,7 +394,7 @@ const CampaignAnalyticsPage = () => {
             <div className="min-w-48">
               <Select value={selectedCampaign} onValueChange={(value) => setSelectedCampaign(value)}>
                 <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Select Channel" />
+                  <SelectValue placeholder="Select Campaign" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
