@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import WithSidebar from "@/hoc/with-sidebar";
 import * as XLSX from "xlsx";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, FunnelChart, LabelList, Funnel } from "recharts";
+import { BarChart, Bar, LineChart, Line, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, FunnelChart, LabelList, Funnel } from "recharts";
 import { Mail, Eye, MousePointer, UserMinus, AlertTriangle, Download, Upload, Target } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -22,6 +22,7 @@ const CampaignAnalyticsPage = () => {
   const [campaignData, setCampaignData] = useState<any[]>([]);
   const [clickLinks, setClickLinks] = useState<{ url: string; count: number }[]>([]);
   const [timeData, setTimeData] = useState<any[]>([]);
+  const [openClickTrend, setOpenClickTrend] = useState<any[]>([]);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const reportTemplateRef = useRef<HTMLDivElement>(null);
 
@@ -50,12 +51,13 @@ const CampaignAnalyticsPage = () => {
       const res: any = await transactionService.getCampaignsReport(selectedCampaign);
       if (res?.report?.data) {
         setTotalTransaction(res.transaction_total);
-        setTotalLeads(res.leads);
+        setTotalLeads(Number(res.report.data.campaignSummary.delivered) + Number(res.report.data.campaignSummary.hard_bounces) + Number(res.report.data.campaignSummary.soft_bounces));
         setTotalPurchased(res.purchased);
         setCampaignSummary(res.report.data.campaignSummary);
         setCampaignData(res.report.data.campaignData);
         setClickLinks(res.report.data.clickLinks);
         setTimeData(res.report.data.timeData);
+        setOpenClickTrend(res.report.data.openClickTrend);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -81,6 +83,7 @@ const CampaignAnalyticsPage = () => {
     const opens: any = getSheet("Opens");
     const clicks: any = getSheet("Clicks");
     const hardBounces: any = getSheet("Hard Bounces");
+    const softBounces: any = getSheet("Soft Bounces");
     const unsubscribes: any = getSheet("Unsubscribes");
     const complaints: any = getSheet("Complaints");
 
@@ -95,9 +98,46 @@ const CampaignAnalyticsPage = () => {
     // map email → record
     const dataMap: Record<string, any> = {};
 
+    // all email: delivered + hard bounces + soft bounces
     // delivery sheet
     if (delivery.length > 1) {
       delivery.slice(1).forEach((row: any) => {
+        const email = row[0];
+        if (!email) return;
+        dataMap[email] = {
+          email,
+          firstName: row[1] || "",
+          lastName: row[2] || "",
+          deliveryTime: row[3] || "",
+          openCount: 0,
+          clickCount: 0,
+          unsubscribes: 0,
+          spam: 0,
+          bounce: 0,
+          status: "unopened"
+        };
+      });
+    }
+    if (hardBounces.length > 1) {
+      hardBounces.slice(1).forEach((row: any) => {
+        const email = row[0];
+        if (!email) return;
+        dataMap[email] = {
+          email,
+          firstName: row[1] || "",
+          lastName: row[2] || "",
+          deliveryTime: row[3] || "",
+          openCount: 0,
+          clickCount: 0,
+          unsubscribes: 0,
+          spam: 0,
+          bounce: 0,
+          status: "unopened"
+        };
+      });
+    }
+    if (softBounces.length > 1) {
+      softBounces.slice(1).forEach((row: any) => {
         const email = row[0];
         if (!email) return;
         dataMap[email] = {
@@ -128,11 +168,16 @@ const CampaignAnalyticsPage = () => {
     }
 
     // clicks
+    const urlMap: Record<string, number> = {};
+    const clickTimes: string[] = [];
     if (clicks.length > 1) {
       clicks.slice(1).forEach((row: any) => {
         const email = row[0];
+        const url = row[3];
         if (dataMap[email]) {
           dataMap[email].clickCount += 1;
+          if (url) urlMap[url] = (urlMap[url] || 0) + 1;
+          if (row[4]) clickTimes.push(row[4]);
         }
       });
     }
@@ -146,18 +191,11 @@ const CampaignAnalyticsPage = () => {
         }
       });
     }
-
-    // clicks
-    const urlMap: Record<string, number> = {};
-    const clickTimes: string[] = [];
-    if (clicks.length > 1) {
-      clicks.slice(1).forEach((row: any) => {
+    if (softBounces.length > 1) {
+      softBounces.slice(1).forEach((row: any) => {
         const email = row[0];
-        const url = row[3];
         if (dataMap[email]) {
-          dataMap[email].clickCount += 1;
-          if (url) urlMap[url] = (urlMap[url] || 0) + 1;
-          if (row[4]) clickTimes.push(row[4]);
+          dataMap[email].bounce = 1;
         }
       });
     }
@@ -205,12 +243,31 @@ const CampaignAnalyticsPage = () => {
       timeBuckets[hour].clicks += 1;
     });
 
+    // build open & click trend
+    const trendMap: Record<string, { date: string; opens: number; clicks: number }> = {};
+    openTimes.forEach((t) => {
+      const d = new Date(t);
+      const key = d.toISOString().split("T")[0];
+      if (!trendMap[key]) trendMap[key] = { date: key, opens: 0, clicks: 0 };
+      trendMap[key].opens += 1;
+    });
+    clickTimes.forEach((t) => {
+      const d = new Date(t);
+      const key = d.toISOString().split("T")[0];
+      if (!trendMap[key]) trendMap[key] = { date: key, opens: 0, clicks: 0 };
+      trendMap[key].clicks += 1;
+    });
+    const trendData = Object.values(trendMap).sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
     try {
       const data = {
         campaignSummary: summary,
         campaignData: Object.values(dataMap),
         clickLinks: Object.entries(urlMap).map(([url, count]) => ({ url, count })),
-        timeData: Object.entries(timeBuckets).map(([time, v]) => ({ time, ...v }))
+        timeData: Object.entries(timeBuckets).map(([time, v]) => ({ time, ...v })),
+        openClickTrend: trendData
       };
       await transactionService.putCampaignsReport(selectedCampaign, { data });
       toastNotification("Update campaign report successfully!", "success");
@@ -221,7 +278,7 @@ const CampaignAnalyticsPage = () => {
   };
 
   // metrics
-  const totalSent = campaignData.length;
+  const totalSent = campaignData.filter(i => i.bounce === 0).length;
   const totalOpens = campaignData.reduce((sum, i) => sum + i.openCount, 0);
   const totalClicks = campaignData.reduce((sum, i) => sum + i.clickCount, 0);
   const totalBounces = campaignData.filter(i => i.bounce > 0).length;
@@ -242,22 +299,23 @@ const CampaignAnalyticsPage = () => {
     { name: "Opened", value: campaignData.filter(i => i.status === "opened").length, color: "#3B82F6" },
     { name: "Unopened", value: campaignData.filter(i => i.status === "unopened").length, color: "#6B7280" },
     { name: "Bounced", value: campaignData.filter(i => i.status === "bounced").length, color: "#EF4444" },
-    { name: "Unsubscribed", value: campaignData.filter(i => i.status === "unsubscribed").length, color: "#F59E0B" },
-    { name: "Spam", value: campaignData.filter(i => i.status === "spam").length, color: "#8B5CF6" }
+    // { name: "Unsubscribed", value: campaignData.filter(i => i.status === "unsubscribed").length, color: "#F59E0B" },
+    // { name: "Spam", value: campaignData.filter(i => i.status === "spam").length, color: "#8B5CF6" }
   ];
 
   const engagementData = [
-    { name: "Total Contacted", value: totalSent, color: "#6B7280" },
-    { name: "Total Clicked", value: totalClicks, color: "#8B5CF6" },
-    { name: "Total Leads", value: totalLeads, color: "#3B82F6" },
-    { name: "Total Purchased with voucher", value: totalPurchased, color: "#10B981" }
-
-    // TODO: notes: temporary change data
-    // { name: "Opens", value: totalOpens, color: "#10B981" },
-    // { name: "Clicks", value: totalClicks, color: "#3B82F6" },
+    { name: "Opens", value: totalOpens, color: "#10B981" },
+    { name: "Clicks", value: totalClicks, color: "#3B82F6" },
     // { name: "Bounces", value: totalBounces, color: "#EF4444" },
     // { name: "Unsubscribes", value: totalUnsubscribes, color: "#F59E0B" },
     // { name: "Spam", value: totalSpam, color: "#8B5CF6" }
+  ];
+
+  const funnelData = [
+    { name: "Total Leads", value: totalLeads, color: "#6B7280" },
+    { name: "Total Contacted", value: totalSent, color: "#3B82F6" },
+    { name: "Total Clicked", value: totalClicks, color: "#8B5CF6" },
+    { name: "Total Purchased with voucher", value: totalPurchased, color: "#10B981" }
   ];
 
   const topPerformers = campaignData
@@ -483,13 +541,14 @@ const CampaignAnalyticsPage = () => {
                 </div>
               </div>
 
+              {/* Funnel Bar */}
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">📈 Engagement</h3>
+                <h3 className="text-xl font-semibold mb-4">📈 Funnel</h3>
                 <ResponsiveContainer width="100%" height={400}>
                   <FunnelChart>
                     <Tooltip />
-                    <Funnel dataKey="value" data={engagementData} isAnimationActive>
-                      {engagementData.map((entry, idx) => (
+                    <Funnel dataKey="value" data={funnelData} isAnimationActive>
+                      {funnelData.map((entry, idx) => (
                         <Cell key={`cell-${idx}`} fill={entry.color} />
                       ))}
                       <LabelList position="right" fill="#111827" stroke="none" dataKey="name" />
@@ -500,7 +559,8 @@ const CampaignAnalyticsPage = () => {
             </div>
 
             {/* Performance Over Time */}
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+            {/*TODO: notes: temporary hidden*/}
+            <div className="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">⏱️ Performance Over Time</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={timeData}>
@@ -540,6 +600,22 @@ const CampaignAnalyticsPage = () => {
               </div>
             </div>
 
+            {/* Opens vs Clicks Trend */}
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+              <h3 className="text-xl font-semibold mb-4">📅 Opens & Clicks Trends</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={openClickTrend}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="opens" stroke="#3B82F6" strokeWidth={2} />
+                  <Line type="monotone" dataKey="clicks" stroke="#10B981" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
             {/* Top Performers */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-semibold mb-4">🏆 Top Performers</h3>
@@ -574,7 +650,7 @@ const CampaignAnalyticsPage = () => {
                   <div className="flex items-start p-3 bg-red-50 rounded-lg">
                     <AlertTriangle className="h-5 w-5 text-red-500 mr-3 mt-0.5" />
                     <div>
-                      <p className="font-medium text-red-900">Hard Bounces ({totalBounces})</p>
+                      <p className="font-medium text-red-900">Bounces ({totalBounces})</p>
                       <p className="text-sm text-red-700">Remove bounced emails from future campaigns</p>
                     </div>
                   </div>
@@ -628,8 +704,11 @@ const CampaignAnalyticsPage = () => {
                   <h4 className="font-medium mb-2">📊 Key Metrics</h4>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Bounce rate: {bounceRate}%</li>
-                    <li>• Unsubscribe rate: {((totalUnsubscribes / totalSent) * 100).toFixed(1)}%</li>
-                    <li>• Spam complaint rate: {((totalSpam / totalSent) * 100).toFixed(1)}%</li>
+
+                    {/*TODO: notes: temporary hidden*/}
+                    <li className="hidden">• Unsubscribe rate: {((totalUnsubscribes / totalSent) * 100).toFixed(1)}%</li>
+                    <li className="hidden">• Spam complaint rate: {((totalSpam / totalSent) * 100).toFixed(1)}%</li>
+
                     <li>• Delivery rate: {(((totalSent - totalBounces) / totalSent) * 100).toFixed(1)}%</li>
                   </ul>
                 </div>
