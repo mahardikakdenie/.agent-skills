@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import WithSidebar from "@/hoc/with-sidebar";
 import * as XLSX from "xlsx";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
-import { Mail, Eye, MousePointer, UserMinus, AlertTriangle, Download, Upload } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, FunnelChart, LabelList, Funnel } from "recharts";
+import { Mail, Eye, MousePointer, UserMinus, AlertTriangle, Download, Upload, Target } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { PromotionService } from "@/services/promotion.service";
@@ -16,6 +16,8 @@ import { BiMoney } from "react-icons/bi";
 
 const CampaignAnalyticsPage = () => {
   const [totalTransaction, setTotalTransaction] = useState(0);
+  const [totalLeads, setTotalLeads] = useState(0);
+  const [totalPurchased, setTotalPurchased] = useState(0);
   const [campaignSummary, setCampaignSummary] = useState<any>({});
   const [campaignData, setCampaignData] = useState<any[]>([]);
   const [clickLinks, setClickLinks] = useState<{ url: string; count: number }[]>([]);
@@ -48,6 +50,8 @@ const CampaignAnalyticsPage = () => {
       const res: any = await transactionService.getCampaignsReport(selectedCampaign);
       if (res?.report?.data) {
         setTotalTransaction(res.transaction_total);
+        setTotalLeads(res.leads);
+        setTotalPurchased(res.purchased);
         setCampaignSummary(res.report.data.campaignSummary);
         setCampaignData(res.report.data.campaignData);
         setClickLinks(res.report.data.clickLinks);
@@ -229,6 +233,9 @@ const CampaignAnalyticsPage = () => {
   const openRate = totalSent ? ((uniqueOpens / totalSent) * 100).toFixed(1) : "0";
   const clickRate = totalSent ? ((uniqueClicks / totalSent) * 100).toFixed(1) : "0";
   const bounceRate = totalSent ? ((totalBounces / totalSent) * 100).toFixed(1) : "0";
+  const contactRate = totalSent ? ((totalSent / totalLeads) * 100).toFixed(1) : "0";
+  const purchaseRate = totalClicks ? ((totalPurchased / totalClicks) * 100).toFixed(1) : "0";
+  const conversionRate = totalLeads ? ((totalPurchased / totalLeads) * 100).toFixed(1) : "0";
 
   const statusData = [
     { name: "Engaged", value: campaignData.filter(i => i.status === "engaged").length, color: "#10B981" },
@@ -240,11 +247,17 @@ const CampaignAnalyticsPage = () => {
   ];
 
   const engagementData = [
-    { name: "Opens", value: totalOpens, color: "#10B981" },
-    { name: "Clicks", value: totalClicks, color: "#3B82F6" },
-    { name: "Bounces", value: totalBounces, color: "#EF4444" },
-    { name: "Unsubscribes", value: totalUnsubscribes, color: "#F59E0B" },
-    { name: "Spam", value: totalSpam, color: "#8B5CF6" }
+    { name: "Total Contacted", value: totalSent, color: "#6B7280" },
+    { name: "Total Clicked", value: totalClicks, color: "#8B5CF6" },
+    { name: "Total Leads", value: totalLeads, color: "#3B82F6" },
+    { name: "Total Purchased with voucher", value: totalPurchased, color: "#10B981" }
+
+    // TODO: notes: temporary change data
+    // { name: "Opens", value: totalOpens, color: "#10B981" },
+    // { name: "Clicks", value: totalClicks, color: "#3B82F6" },
+    // { name: "Bounces", value: totalBounces, color: "#EF4444" },
+    // { name: "Unsubscribes", value: totalUnsubscribes, color: "#F59E0B" },
+    // { name: "Spam", value: totalSpam, color: "#8B5CF6" }
   ];
 
   const topPerformers = campaignData
@@ -363,22 +376,34 @@ const CampaignAnalyticsPage = () => {
         {campaignData.length > 0 && (
           <div ref={reportTemplateRef} className="bg-white p-6 rounded-lg mb-5">
             <div className="mb-5">
-              <h1 className="text-center text-2xl font-bold">{campaignSummary.campaign_name}</h1>
-              <p className="text-center text-base font-semibold">{campaignSummary.subject}</p>
+              <h1 className="text-center text-2xl font-bold">Travel Annual Plan Campaign</h1>
+
+              {/*TODO: notes: temporary static*/}
+              <h1 className="hidden text-center text-2xl font-bold">{campaignSummary.campaign_name}</h1>
+              <p className="hidden text-center text-base font-semibold">{campaignSummary.subject}</p>
+
             </div>
 
             {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <p className="text-sm text-gray-600">Contact Rate</p>
+                <p className="text-3xl font-bold">{contactRate}%</p>
+                <Mail className="h-8 w-8 text-blue-500" />
+              </div>
+
+              {/*TODO: notes: temporary hidden*/}
+              <div className="hidden bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
                 <p className="text-sm text-gray-600">Total Transaction</p>
                 <p className="text-3xl font-bold">{totalTransaction}</p>
                 <BiMoney className="h-8 w-8 text-orange-500" />
               </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+              <div className="hidden bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                 <p className="text-sm text-gray-600">Total Sent</p>
                 <p className="text-3xl font-bold">{totalSent}</p>
                 <Mail className="h-8 w-8 text-blue-500" />
               </div>
+
               <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
                 <p className="text-sm text-gray-600">Open Rate</p>
                 <p className="text-3xl font-bold">{openRate}%</p>
@@ -388,6 +413,16 @@ const CampaignAnalyticsPage = () => {
                 <p className="text-sm text-gray-600">Click Rate</p>
                 <p className="text-3xl font-bold">{clickRate}%</p>
                 <MousePointer className="h-8 w-8 text-purple-500" />
+              </div>
+              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                <p className="text-sm text-gray-600">Purchase Rate</p>
+                <p className="text-3xl font-bold">{purchaseRate}%</p>
+                <BiMoney className="h-8 w-8 text-orange-500" />
+              </div>
+              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#10B981]">
+                <p className="text-sm text-gray-600">Conversion Rate</p>
+                <p className="text-3xl font-bold">{conversionRate}%</p>
+                <Target className="h-8 w-8 text-[#10B981]" />
               </div>
               <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
                 <p className="text-sm text-gray-600">Bounce Rate</p>
@@ -422,15 +457,16 @@ const CampaignAnalyticsPage = () => {
               </div>
 
               {/* Engagement Bar */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
+              {/*TODO: notes: temporary hidden*/}
+              <div className="hidden bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-semibold mb-4">📈 Engagement</h3>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={engagementData}>
+                  <BarChart data={engagementData} layout="vertical" margin={{ top: 20, right: 30, left: 100, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <XAxis type="number" />
+                    <YAxis dataKey="name" type="category" />
                     <Tooltip />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                       {engagementData.map((entry, idx) => (
                         <Cell key={idx} fill={entry.color} />
                       ))}
@@ -445,6 +481,21 @@ const CampaignAnalyticsPage = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h3 className="text-xl font-semibold mb-4">📈 Engagement</h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <FunnelChart>
+                    <Tooltip />
+                    <Funnel dataKey="value" data={engagementData} isAnimationActive>
+                      {engagementData.map((entry, idx) => (
+                        <Cell key={`cell-${idx}`} fill={entry.color} />
+                      ))}
+                      <LabelList position="right" fill="#111827" stroke="none" dataKey="name" />
+                    </Funnel>
+                  </FunnelChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
