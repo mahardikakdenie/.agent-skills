@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useLoading } from "@/context/loading.context";
 import WithSidebar from "@/hoc/with-sidebar";
 import { formatDateTimeWithTZ } from "@/lib/formatter";
-import { ChevronRight } from "react-feather";
+import { Check, ChevronRight, Plus, Trash2, X } from "react-feather";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -12,14 +12,16 @@ import emptyStateSearchPrompt from "/public/images/empty-state-search-prompt.svg
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChannelService } from "@/services/channel.services";
+import { ProductService } from "@/services/product.services";
 import { TransactionService } from "@/services/transaction.service";
 import { ChevronLeft, Download } from "lucide-react";
 import * as XLSX from "xlsx";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const ExportUsersPage = () => {
   const { setLoading } = useLoading();
   const channelService = new ChannelService();
+  const productService = new ProductService();
   const transactionService = new TransactionService();
 
   const renderSearchPromptImage = () => {
@@ -41,54 +43,115 @@ const ExportUsersPage = () => {
     )
   }
 
+  const [selectedFilter, setSelectedFilter] = useState("");
   const [channel, setChannel] = useState("");
+  const [product, setProduct] = useState("");
+  const [plan, setPlan] = useState("");
+  const [frequentBuyersSign, setFrequentBuyersSign] = useState("");
+  const [frequentBuyersValue, setFrequentBuyersValue] = useState(1);
   const [channelName, setChannelName] = useState("");
-  const [frequentBuyers, setFrequentBuyers] = useState(false);
+  const [productName, setProductName] = useState("");
+  const [planName, setPlanName] = useState("");
   const [birthdayMonth, setBirthdayMonth] = useState("");
-  const [channelList, setChannelList] = useState([]);
+  const [channelList, setChannelList] = useState<any[]>([]);
+  const [productList, setProductList] = useState<any[]>([]);
+  const [planList, setPlanList] = useState<any[]>([]);
   const [customersCampaignData, setCustomersCampaignData] = useState([]);
   const [dataToDownload, setDataToDownload] = useState<any[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [isFiltered, setIsFiltered] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSelectMonth, setIsSelectMonth] = useState(false);
-  const [placeholderSelectSegment, setPlaceholderSelectSegment] = useState("Select Segment");
   const monthList = [
-    { id: "1", name: "January" },
-    { id: "2", name: "February" },
-    { id: "3", name: "March" },
-    { id: "4", name: "April" },
-    { id: "5", name: "May" },
-    { id: "6", name: "June" },
-    { id: "7", name: "July" },
-    { id: "8", name: "August" },
-    { id: "9", name: "September" },
+    { id: "01", name: "January" },
+    { id: "02", name: "February" },
+    { id: "03", name: "March" },
+    { id: "04", name: "April" },
+    { id: "05", name: "May" },
+    { id: "06", name: "June" },
+    { id: "07", name: "July" },
+    { id: "08", name: "August" },
+    { id: "09", name: "September" },
     { id: "10", name: "October" },
     { id: "11", name: "November" },
     { id: "12", name: "December" }
   ];
+  const filterOptions = [
+    { name: "Channel", id: "channel_id", active: true },
+    { name: "Product", id: "product_id", active: true },
+    { name: "Plan", id: "plan_id", active: true },
+    { name: "Transaction", id: "frequent_buyers", active: true },
+    { name: "Birthday Month", id: "birthday_month", active: true }
+  ];
 
   useEffect(() => {
-    const fetchChannels = async () => {
+    const fetchChannelList = async (currentPage = 1, accumulatedData: any[] = []) => {
       try {
-        const channelResponse = await channelService.getChannels(undefined, 100);
-        setChannelList(channelResponse.data || []);
+        setLoading(true);
+        const channelResponse = await channelService.getChannels(currentPage, 100);
+
+        if (channelResponse && channelResponse.data) {
+          const newData = channelResponse.data || [];
+          const updatedData = [...accumulatedData, ...newData];
+          setChannelList(updatedData);
+
+          if (currentPage < channelResponse.pageTotal) {
+            await fetchChannelList(currentPage + 1, updatedData);
+          }
+        }
       } catch (error) {
-        console.error('Failed to fetch channels:', error);
+        console.error('Failed to fetch channel:', error);
       }
     };
 
-    fetchChannels().then();
+    const fetchProductList = async (currentPage = 1, accumulatedData: any[] = []) => {
+      try {
+        const productResponse = await productService.get100Products(currentPage);
+
+        if (productResponse && productResponse.data) {
+          const newData = productResponse.data || [];
+          const updatedData = [...accumulatedData, ...newData];
+          setProductList(updatedData);
+
+          if (currentPage < productResponse.meta.pageTotal) {
+            await fetchProductList(currentPage + 1, updatedData);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      }
+    };
+
+    const fetchPlanList = async (currentPage = 1, accumulatedData: any[] = []) => {
+      try {
+        const planResponse = await productService.get100Plans(currentPage);
+
+        if (planResponse && planResponse.data) {
+          const newData = planResponse.data || [];
+          const updatedData = [...accumulatedData, ...newData];
+          setPlanList(updatedData);
+
+          if (currentPage < planResponse.meta.pageTotal) {
+            await fetchPlanList(currentPage + 1, updatedData);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch plan:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChannelList().then(() => fetchProductList().then(() => fetchPlanList().then()));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchData = async (newPage: number, newLimit: number, selectedChannel: string, selectedFrequentBuyers: boolean, selectedBirthdayMonth: string, isFetchAllData: boolean = false) => {
+  const fetchData = async (newPage: number, newLimit: number, selectedChannel: string[], selectedProduct: string[], selectedPlan: string[], selectedFrequentBuyers: string[], selectedBirthdayMonth: string[], isFetchAllData: boolean = false) => {
     try {
       setLoading(true);
-      const response = await transactionService.getCustomersCampaign(newPage, newLimit, selectedChannel, selectedFrequentBuyers, selectedBirthdayMonth);
+      const response = await transactionService.getCustomersCampaign(newPage, newLimit, selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth);
       setCustomersCampaignData(response.data);
       setTotalPages(response.pageTotal);
       setTotalItems(response.total);
@@ -102,32 +165,23 @@ const ExportUsersPage = () => {
     }
   };
 
-  const fetchAllDataToDownload = async (selectedChannel: string, selectedFrequentBuyers: boolean, selectedBirthdayMonth: string, currentPage = 1, accumulatedData: any[] = []) => {
+  const fetchAllDataToDownload = async (selectedChannel: string[], selectedProduct: string[], selectedPlan: string[], selectedFrequentBuyers: string[], selectedBirthdayMonth: string[], currentPage = 1, accumulatedData: any[] = []) => {
     try {
-      const response: any = await transactionService.getCustomersCampaign(currentPage, 100, selectedChannel, selectedFrequentBuyers, selectedBirthdayMonth);
+      const response: any = await transactionService.getCustomersCampaign(currentPage, 1000, selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth);
       if (response && response.data) {
         const newData = response.data || [];
         const updatedData = [...accumulatedData, ...newData];
         setDataToDownload(updatedData);
 
         if (currentPage < response.pageTotal) {
-          await fetchAllDataToDownload(selectedChannel, selectedFrequentBuyers, selectedBirthdayMonth, currentPage + 1, updatedData);
+          await fetchAllDataToDownload(selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth, currentPage + 1, updatedData);
         }
       }
-      setLoading(false);
     } catch (error) {
       console.error('Failed to fetch data for download:', error);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const forPlaceholderSelectSegment = (frequentBuyersValue: boolean, selectedMonth: string) => {
-    let placeholder = "Select Segment";
-
-    if (frequentBuyersValue && selectedMonth) placeholder = `Frequent Buyers (≥2 transactions), Birthday Month (${monthList.find((c: any) => c.id === selectedMonth)?.name})`;
-    else if (frequentBuyersValue) placeholder = "Frequent Buyers (≥2 transactions)";
-    else if (selectedMonth) placeholder = `Birthday Month (${monthList.find((c: any) => c.id === selectedMonth)?.name})`;
-
-    setPlaceholderSelectSegment(placeholder);
   };
 
   const handleChannelChange = (value: string) => {
@@ -136,30 +190,26 @@ const ExportUsersPage = () => {
     setChannelName(selectedChannel?.name || "");
   };
 
-  const handleFrequentBuyersChange = (value: boolean) => {
-    forPlaceholderSelectSegment(value, birthdayMonth);
-    setFrequentBuyers(value);
+  const handleProductChange = (value: string) => {
+    const selectedProduct: any = productList.find((p: any) => p.id === value);
+    setProduct(value);
+    setProductName(selectedProduct?.name || "");
   };
 
-  const handleBirthdayMonthChange = (value: string) => {
-    forPlaceholderSelectSegment(frequentBuyers, value);
-    setBirthdayMonth(value);
-  };
-
-  const handleCheckBoxBirthdayMonth = (value: boolean) => {
-    if (!value) {
-      forPlaceholderSelectSegment(frequentBuyers, "");
-      setBirthdayMonth("");
-    }
-    setIsSelectMonth(value);
+  const handlePlanChange = (value: string) => {
+    const selectedPlan: any = planList.find((p: any) => p.id === value);
+    setPlan(value);
+    setPlanName(selectedPlan?.name || "");
   };
 
   const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth } = processingFilteredUser();
     setLimit(Number(e.target.value));
-    fetchData(1, Number(e.target.value), channel, frequentBuyers, birthdayMonth).then();
+    fetchData(1, Number(e.target.value), selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth).then();
   };
 
   const handlePageChange = (value: boolean) => {
+    const { selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth } = processingFilteredUser();
     let newPage = page;
 
     if (value) {
@@ -170,7 +220,7 @@ const ExportUsersPage = () => {
       setPage((prevState) => prevState - 1);
     }
 
-    fetchData(newPage, limit, channel, frequentBuyers, birthdayMonth).then();
+    fetchData(newPage, limit, selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth).then();
   };
 
   const handleGenerateXlsx = async () => {
@@ -192,24 +242,62 @@ const ExportUsersPage = () => {
 
     const workbook = XLSX.utils.book_new();
     const time = formatDateTimeWithTZ(new Date());
-    const name = `customerData_${channelName}${frequentBuyers ? "_greaterOrEqual2Trx" : ""}${birthdayMonth ? `_${birthdayMonth}` : ""}_${time}`;
-    XLSX.utils.book_append_sheet(workbook, worksheet, "customerData");
+    const name = `filtered_customer_data_${time}`;
+    XLSX.utils.book_append_sheet(workbook, worksheet, "customer_data");
     XLSX.writeFile(workbook, `${name}.xlsx`);
   };
 
   const handleGetFilteredData = () => {
-    fetchData(1, limit, channel, frequentBuyers, birthdayMonth, true).then();
-    fetchAllDataToDownload(channel, frequentBuyers, birthdayMonth).then();
+    const { selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth } = processingFilteredUser();
+    fetchData(1, limit, selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth, true).then();
+    fetchAllDataToDownload(selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth).then();
+  };
+
+  const handleAddFilterData = () => {
+    const filters = [
+      { condition: channel, value: { key_id: "channel_id", label: "Channel", value: channel, valueView: channelName } },
+      { condition: product, value: { key_id: "product_id", label: "Product", value: product, valueView: productName } },
+      { condition: plan, value: { key_id: "plan_id", label: "Plan", value: plan, valueView: planName } },
+      { condition: frequentBuyersSign && frequentBuyersValue, value: { key_id: "frequent_buyers", label: "Transaction", value: `${frequentBuyersSign}|${frequentBuyersValue}`, valueView: `${frequentBuyersSign} ${frequentBuyersValue}` } },
+      { condition: birthdayMonth, value: { key_id: "birthday_month", label: "Birthday Month", value: birthdayMonth, valueView: monthList.find((m: any) => m.id === birthdayMonth)?.name } }
+    ].reduce((acc, item) => {
+      if (item.condition) acc.push(item.value);
+      return acc;
+    }, [...filteredUsers]);
+
+    setFilteredUsers(filters);
+
+    setChannel("");
+    setChannelName("");
+    setProduct("");
+    setProductName("");
+    setPlan("");
+    setPlanName("");
+    setFrequentBuyersSign("");
+    setFrequentBuyersValue(1);
+    setBirthdayMonth("");
+    setSelectedFilter("");
+  };
+
+  const handleDeleteSelectedFilter = (index: number) => {
+    const filters = JSON.parse(JSON.stringify(filteredUsers));
+    filters.splice(index, 1);
+    setFilteredUsers(filters);
+  };
+
+  const processingFilteredUser = () => {
+    const selectedChannel: string[] = filteredUsers.filter(f => f.key_id === "channel_id").map(f => f.value);
+    const selectedProduct: string[] = filteredUsers.filter(f => f.key_id === "product_id").map(f => f.value);
+    const selectedPlan: string[] = filteredUsers.filter(f => f.key_id === "plan_id").map(f => f.value);
+    const selectedFrequentBuyers: string[] = filteredUsers.filter(f => f.key_id === "frequent_buyers").map(f => f.value);
+    const selectedBirthdayMonth: string[] = filteredUsers.filter(f => f.key_id === "birthday_month").map(f => f.value);
+    return { selectedChannel, selectedProduct, selectedPlan, selectedFrequentBuyers, selectedBirthdayMonth };
   };
 
   const resetAllFilters = () => {
-    forPlaceholderSelectSegment(false, "");
     setPage(1);
     setLimit(10);
-    setChannel("");
-    setFrequentBuyers(false);
-    setIsSelectMonth(false);
-    setBirthdayMonth("");
+    setFilteredUsers([]);
     setCustomersCampaignData([]);
     setDataToDownload([]);
     setIsFiltered(false);
@@ -229,80 +317,159 @@ const ExportUsersPage = () => {
       </div>
 
       <div className="flex bg-white rounded-xl gap-4 mb-3 p-6">
-        <div className="flex w-full flex-col">
-          <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
-            Channel
-          </div>
-          <div className="relative mb-1.5">
-            <div className="min-w-48">
-              <Select value={channel} onValueChange={handleChannelChange}>
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Select Channel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {
-                      channelList.map((item: any, index: number) => (
-                        <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
-                      ))
-                    }
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full flex-col">
-          <div className="text-xs mb-1.5 font-medium">
-            Segment
-          </div>
-          <div>
-            <div className="text-sm border rounded-md py-2 px-3 cursor-pointer" onClick={() => setIsModalOpen(true)}>{placeholderSelectSegment}</div>
-          </div>
-        </div>
-        <div className="flex w-[40%] flex-col items-center justify-center">
+        <div className="w-full">
           <div className="flex items-center justify-between">
-            <div onClick={resetAllFilters} className="text-sm font-bold text-[#016DA1] hover:text-[#2d9ae6] cursor-pointer mr-3">
-              Reset Filter
+            <p className="text-sm">Selected Filters</p>
+            <div className="flex flex-col items-center justify-center">
+              <div className="flex items-center justify-between">
+                <div onClick={resetAllFilters} className="text-sm font-bold text-[#016DA1] hover:text-[#2d9ae6] cursor-pointer mr-3">
+                  Reset Filter
+                </div>
+                <Button disabled={filteredUsers.length < 1} onClick={handleGetFilteredData} className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs">
+                  Get Users
+                </Button>
+              </div>
             </div>
-            <Button disabled={!channel && !frequentBuyers && !birthdayMonth} onClick={handleGetFilteredData} className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs">
-              Get Users
-            </Button>
           </div>
-        </div>
-      </div>
+          {filteredUsers.length > 0 && (
+            <ul className="mt-3 max-h-24 overflow-y-auto">
+              {filteredUsers.map((f: any, index: number) => (
+                <li key={index} className="flex justify-between items-center mb-2 gap-2">
+                  <div className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent">{f.label}: {f.valueView}</div>
+                  <Button className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0" onClick={() => handleDeleteSelectedFilter(index)}>
+                    <Trash2 className="w-5 h-5" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
 
-      {isModalOpen && (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent aria-describedby="desc" className="p-0 min-w-96 w-auto max-w-full">
-            <DialogTitle className="hidden"></DialogTitle>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button color="warning" className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4" onClick={() => {}}>
+                <Plus className="w-4 h-4 mr-2" /> Add Filter
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
+              <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                  Filters
+                  <DialogClose className="ml-auto">
+                    <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
+                      <X className="w-5 h-5" />
+                    </Button>
+                  </DialogClose>
+                </DialogTitle>
+              </DialogHeader>
 
-            <div className="h-full overflow-auto max-h-[70vh]">
-              <Table className="table-claims">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="whitespace-nowrap py-2 w-10">Select</TableHead>
-                    <TableHead className="py-2">Segment</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow className="cursor-pointer" onClick={() => handleFrequentBuyersChange(!frequentBuyers)}>
-                    <TableCell align="center">
-                      <Input type="checkbox" onChange={() => {}} checked={frequentBuyers} className="w-4 h-4" />
-                    </TableCell>
-                    <TableCell>
-                      Frequent Buyers (≥2 transactions)
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell align="center" className="cursor-pointer" onClick={() => handleCheckBoxBirthdayMonth(!isSelectMonth)}>
-                      <Input type="checkbox" onChange={() => {}} checked={isSelectMonth} className="w-4 h-4" />
-                    </TableCell>
-                    <TableCell className="cursor-pointer" onClick={() => handleCheckBoxBirthdayMonth(!isSelectMonth)}>
-                      Birthday Month
-                    </TableCell>
-                    <TableCell>
-                      <Select value={birthdayMonth} disabled={!isSelectMonth} onValueChange={handleBirthdayMonthChange}>
+              <div className="p-4 h-full overflow-auto max-h-[70vh]">
+                <div className="relative mb-4">
+                  <div className="min-w-48">
+                    <Select value={selectedFilter} onValueChange={(value) => setSelectedFilter(value)}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue placeholder="Select Filter" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {
+                            filterOptions.map((item: any, index: number) => (
+                              item.active && <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
+                            ))
+                          }
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                {selectedFilter && selectedFilter === "channel_id" && (
+                  <div className="relative mb-4">
+                    <div className="min-w-48">
+                      <Select value={channel} onValueChange={handleChannelChange}>
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Select Channel" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {
+                              channelList.map((item: any, index: number) => (
+                                <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
+                              ))
+                            }
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+                {selectedFilter && selectedFilter === "product_id" && (
+                  <div className="relative mb-4">
+                    <div className="min-w-48">
+                      <Select value={product} onValueChange={handleProductChange}>
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Select Product" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {
+                              productList.map((item: any, index: number) => (
+                                <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
+                              ))
+                            }
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+                {selectedFilter && selectedFilter === "plan_id" && (
+                  <div className="relative mb-4">
+                    <div className="min-w-48">
+                      <Select value={plan} onValueChange={handlePlanChange}>
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Select Plan" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {
+                              planList.map((item: any, index: number) => (
+                                <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
+                              ))
+                            }
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+                {selectedFilter && selectedFilter === "frequent_buyers" && (
+                  <div>
+                    <div className="relative mb-4">
+                      <div className="min-w-48">
+                        <Select value={frequentBuyersSign} onValueChange={(value) => setFrequentBuyersSign(value)}>
+                          <SelectTrigger className="h-10">
+                            <SelectValue placeholder="Select Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem key={1} value="<">{`<`}</SelectItem>
+                              <SelectItem key={2} value=">">{`>`}</SelectItem>
+                              <SelectItem key={3} value="<=">{`<=`}</SelectItem>
+                              <SelectItem key={4} value=">=">{`>=`}</SelectItem>
+                              <SelectItem key={5} value="=">{`=`}</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div>
+                      <Input disabled={!frequentBuyersSign} name="frequentBuyersValue" type="number" min={1} value={frequentBuyersValue} onChange={(e) => setFrequentBuyersValue(Number(e.target.value))} className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent" />
+                    </div>
+                  </div>
+                )}
+                {selectedFilter && selectedFilter === "birthday_month" && (
+                  <div className="relative mb-4">
+                    <div className="min-w-48">
+                      <Select value={birthdayMonth} onValueChange={(value) => setBirthdayMonth(value)}>
                         <SelectTrigger className="h-10">
                           <SelectValue placeholder="Select Month" />
                         </SelectTrigger>
@@ -316,14 +483,22 @@ const ExportUsersPage = () => {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                <DialogClose asChild>
+                  <Button type="button" className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black" onClick={handleAddFilterData}>
+                    <Check className="w-4 h-4 mr-2" /> Add
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
 
       <div className="w-full bg-white rounded-xl p-4">
         {

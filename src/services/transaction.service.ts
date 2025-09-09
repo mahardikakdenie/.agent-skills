@@ -137,15 +137,17 @@ export class TransactionService {
     return this.httpClient.get(`/v1/customers?${params.toString()}`);
   }
 
-  async getCustomersCampaign(page: number, limit: number, channel: string, frequent_buyers: boolean, birthday_month: string): Promise<any> {
+  async getCustomersCampaign(page: number, limit: number, channel: string[], product: string[], plan: string[], frequent_buyers: string[], birthday_month: string[]): Promise<any> {
     const params = new URLSearchParams();
 
     params.append("page", String(page));
     params.append("limit", String(limit));
-    params.append("frequent_buyers", `${frequent_buyers}`);
 
-    if (channel) params.append("channel", channel);
-    if (birthday_month) params.append("birthday_month", birthday_month);
+    if (channel?.length) channel.forEach(ch => params.append("channel", ch));
+    if (product?.length) product.forEach(p => params.append("product", p));
+    if (plan?.length) plan.forEach(pl => params.append("plan", pl));
+    if (frequent_buyers?.length) frequent_buyers.forEach(fb => params.append("frequent_buyers", fb));
+    if (birthday_month?.length) birthday_month.forEach(bm => params.append("birthday_month", bm));
 
     return this.httpClient.get(`/v1/customers/campaign?${params.toString()}`);
   }
