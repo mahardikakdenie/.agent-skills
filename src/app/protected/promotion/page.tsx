@@ -180,21 +180,29 @@ const PromotionPage = () => {
       };
 
       if (promotionData.type === "voucher") {
-        const vouchersResponse = await voucherService.getVoucherByCampaignId(
-          promotionData.campaign_id
-        );
-        setVouchers(vouchersResponse.data);
+        try {
+          const vouchersResponse = await voucherService.getVoucherByCampaignId(
+            promotionData.campaign_id
+          );
+          setVouchers(vouchersResponse.data);
+        } catch (error) {
+          setVouchers([]);
+        }
       }
 
       if (promotionData.type === "embedded") {
-        const embeddedHistory =
-          await promotionService.getPromotionCampaignByIdEmbedded(id);
+        try {
+          const embeddedHistory =
+            await promotionService.getPromotionCampaignByIdEmbedded(id);
           if (embeddedHistory) {
             setEmbeddedDiscount([embeddedHistory]);
           } else {
             setEmbeddedDiscount([]);
           }
+        } catch (error) {
+          setEmbeddedDiscount([]);
         }
+      }
 
       await fetchNames();
     } catch (err) {
@@ -320,7 +328,7 @@ const PromotionPage = () => {
                           </DrawerTitle>
                         </DrawerHeader>
                         <div className="flex flex-col w-full h-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl overflow-y-auto">
-                          <div className="rounded-lg flex flex-col gap-4 text-black">
+                          <div className="max-h-80 overflow-y-auto rounded-lg flex flex-col gap-4 text-black">
                             <div className="flex gap-2 text-sm font-medium">
                               <div className="sm:min-w-40 sm:w-40 min-w-32">
                                 Campaign Name

@@ -199,6 +199,7 @@ const CreateSanctionPage = () => {
             source_id: formData.source_id,
             // country: formData.country,
             country: 'IDN',
+            id_type: 'KTP',
             date_blacklisted: formData.date_blacklisted,
         };
 

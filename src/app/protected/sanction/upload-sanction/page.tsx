@@ -267,6 +267,7 @@ const UploadSanctionPage = () => {
                         source_id: row.source_name ? source.find((s: any) => s.source_name.toLowerCase() === row.source_name.toLowerCase())?.id : null,
                         // country: row.country ? countryAPI.find((c: any) => c.name.toLowerCase() === row.country.toLowerCase())?.id : null,
                         country: 'IDN',
+                        id_type: 'KTP',
                         created_at: new Date().toISOString(),
                         date_blacklisted: row.blacklist_date
                     };

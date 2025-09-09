@@ -25,7 +25,7 @@ import {
   DASHBOARD_TRANSACTION,
   EMAIL_TAG,
   EMAIL_TEMPLATE,
-  ENDORSEMENT,
+  ENDORSEMENT, EXPORT_USERS,
   GROUP,
   HOLIDAY,
   HOSPITAL_LIST,
@@ -35,7 +35,7 @@ import {
   PARTNER_MANAGEMENT,
   POLICY_LIST,
   PRODUCT,
-  PRODUCT_CATALOG_CATEGORY,
+  REPORT_CAMPAIGN_ANALYTICS,
   PRODUCT_CATEGORY,
   PROMOTION,
   REPORT_CAMPAIGN,
@@ -253,6 +253,21 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Campaigns
+                </Link>
+                <Link
+                  href={EXPORT_USERS}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(EXPORT_USERS))
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconTransaction}
+                    alt="Campaigns"
+                    className="w-7 min-w-7"
+                  />
+                  Export Users
                 </Link>
               </li>
               <ProductCategorySidebar isActive={isActive} handleMenuClick={handleMenuClick} />
@@ -621,6 +636,23 @@ const Sidebar = () => {
                     className="w-7 min-w-7"
                   />
                   Campaign Report
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={REPORT_CAMPAIGN_ANALYTICS}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_CAMPAIGN_ANALYTICS))
+                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                    : ""
+                  }`}
+                  onClick={handleMenuClick}
+                >
+                  <Image
+                    src={iconClaim}
+                    alt="Campaign Report"
+                    className="w-7 min-w-7"
+                  />
+                  Campaign Analytics Report
                 </Link>
               </li>
               <li>
