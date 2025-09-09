@@ -56,4 +56,12 @@ export class ProductService {
       `/v1/plans?insuranceId=${insuranceId}&category=${category}`
     );
   }
+
+  async get100Products(page: number): Promise<any> {
+    return this.httpClientCookie.get(`/v1/products?page=${page}&pageSize=100`);
+  }
+
+  async get100Plans(page: number): Promise<any> {
+    return this.httpClientCookie.get(`/v1/plans?page=${page}&pageSize=100`);
+  }
 }

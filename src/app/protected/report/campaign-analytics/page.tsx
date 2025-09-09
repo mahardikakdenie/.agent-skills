@@ -287,7 +287,7 @@ const CampaignAnalyticsPage = () => {
   const uniqueOpens = campaignData.filter(i => i.openCount > 0).length;
   const uniqueClicks = campaignData.filter(i => i.clickCount > 0).length;
 
-  const openRate = totalSent ? ((uniqueOpens / totalSent) * 100).toFixed(1) : "0";
+  const openRate = totalSent ? (((uniqueOpens + uniqueClicks) / totalSent) * 100).toFixed(1) : "0";
   const clickRate = totalSent ? ((uniqueClicks / totalSent) * 100).toFixed(1) : "0";
   const bounceRate = totalSent ? ((totalBounces / totalSent) * 100).toFixed(1) : "0";
   const contactRate = totalSent ? ((totalSent / totalLeads) * 100).toFixed(1) : "0";
