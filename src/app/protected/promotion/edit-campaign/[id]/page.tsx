@@ -32,6 +32,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { hasPermission } from "@/context/auth.context";
 import { FORBIDDEN, PROMOTION } from "@/constants/routes";
+import { useLoading } from "@/context/loading.context";
 
 const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -97,7 +98,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     embedded_discount_plans: [],
     embedded_discount_products: [],
   });
-  const [loading, setLoading] = useState(true);
   const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
   const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -144,6 +144,7 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
   const [selectedPlans, setSelectedPlans] = useState<any[]>([]);
   const [globalSelectedPlanIds, setGlobalSelectedPlanIds] = useState<Set<string>>(new Set());
   const [selectedChannels, setSelectedChannels] = useState<Channel[]>([]);
+  const { setLoading } = useLoading();
 
   const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
     if (!isOpen) return null;
@@ -198,8 +199,9 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (params.id) {
+      setLoading(true);
       promotionService.getPromotionCampaignById(params.id as string)
-        .then((res) => {
+        .then(async (res) => {
           const promotionData: PromotionDetails = res.data[0];
           const formattedStartDate = promotionData.start_date ? formatDate(promotionData.start_date) : "";
           const formattedEndDate = promotionData.end_date ? formatDate(promotionData.end_date) : "";
@@ -214,12 +216,12 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
             end_date: formattedEndDate
           });
 
-          fetchChannelsInitial(1, 50);
-          fetchInsurancesInitial(1, 50);
-          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
-          fetchProductsByInsurancesInitial([], 1, 100);
-          fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
-          fetchPlansByProductsInitial([], 1, 5000);
+          await fetchChannelsInitial(1, 50);
+          await fetchInsurancesInitial(1, 50);
+          await fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
+          await fetchProductsByInsurancesInitial([], 1, 100);
+          await fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
+          await fetchPlansByProductsInitial([], 1, 5000);
 
           const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
           setGlobalSelectedChannels(existingChannelIds);
@@ -1021,7 +1023,6 @@ const EditPromotionPage = ({ params }: { params: { id: string } }) => {
     return isValid(parsedDate) ? format(parsedDate, 'yyyy-MM-dd') : '';
   };
 
-  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="flex flex-col w-full gap-4">
