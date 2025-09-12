@@ -138,12 +138,6 @@ const ExportPage = () => {
 
     const sheetData = data.map((item, index) => {
       let additionColumn = {};
-      if (isShowCreatedAt) {
-        additionColumn = {
-          ...additionColumn, 
-          "Created At": formatDateTimeWithTZ(item.created_at),
-        }
-      }
       if (isShowPremi) {
         const currency = item.declarations?.transaction_data?.insurance?.currency;
         const premium = formatMoney(item.declarations?.transaction_data?.insurance?.premium);
@@ -151,6 +145,12 @@ const ExportPage = () => {
         additionColumn = {
           ...additionColumn, 
           "Premi": item.declarations?.transaction_data?.insurance?.premium? premi : '',
+        }
+      }
+      if (isShowCreatedAt) {
+        additionColumn = {
+          ...additionColumn, 
+          "Created At": formatDateTimeWithTZ(item.created_at),
         }
       }
       return {
