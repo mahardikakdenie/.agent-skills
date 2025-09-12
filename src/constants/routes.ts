@@ -150,6 +150,9 @@ export const PROMOTION = `${PROTECTED}/promotion`;
 export const PROMOTION_DETAIL = (id: string | number) => `${PROMOTION}/edit-campaign/${id}`;
 export const PROMOTION_ADD = `${PROMOTION}/add-campaign`;
 
+// Export Users
+export const EXPORT_USERS = `${PROTECTED}/export-users`;
+
 // Sanction
 export const SANCTION = `${PROTECTED}/sanction`;
 export const SANCTION_DETAIL = (id: string | number) => `${SANCTION}/edit-sanction/${id}`;
@@ -174,4 +177,5 @@ export const CLAIM_HISTORY = `${PROTECTED}/claim-history`;
 export const REPORT = `${PROTECTED}/report`;
 export const REPORT_CLAIM = `${REPORT}/claim`;
 export const REPORT_CAMPAIGN = `${REPORT}/campaign`;
+export const REPORT_CAMPAIGN_ANALYTICS = `${REPORT}/campaign-analytics`;
 export const REPORT_PERFORMANCE = `${REPORT}/performance-report`;

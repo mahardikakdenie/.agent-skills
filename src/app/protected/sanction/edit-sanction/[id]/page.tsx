@@ -199,9 +199,12 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
         setShowAlert(false);
 
         // Check for required fields
-        if (!formData.blacklist_reason || !formData.country || !formData.date_blacklisted || !formData.email ||
-            !formData.first_name || !formData.id_number || !formData.phone_number
-            || !formData.source_id) {
+        // if (!formData.blacklist_reason || !formData.country || !formData.date_blacklisted || !formData.email ||
+        //     !formData.first_name || !formData.id_number || !formData.phone_number
+        //     || !formData.source_id) {
+        if (!formData.blacklist_reason || !formData.date_blacklisted || !formData.email ||
+          !formData.first_name || !formData.id_number || !formData.phone_number
+          || !formData.source_id) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
             return;
@@ -241,7 +244,9 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
             email: formData.email,
             blacklist_reason: formData.blacklist_reason,
             source_id: formData.source_id,
-            country: formData.country,
+            // country: formData.country,
+            country: 'IDN',
+            id_type: 'KTP',
             date_blacklisted: formData.date_blacklisted,
         };
 
@@ -544,36 +549,36 @@ const EditSanctionPage = ({ params }: { params: { id: string } }) => {
                         <div className="mb-8">
                             <h3 className="text-lg font-bold mb-4 text-[#016DA1]">Personal Data</h3>
                             <div className="flex space-x-4 mb-4">
-                                <div className="flex flex-col w-1/2">
-                                    <label htmlFor="country" className="font-normal">Country</label>
-                                    <Controller
-                                        name="country"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Select
-                                                value={field.value}
-                                                onValueChange={(value) => {
-                                                    handleChangeCountry(value);
-                                                    field.onChange(value);
-                                                }}
-                                                disabled={false}
-                                            >
-                                                <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                                                    <SelectValue placeholder="Select a Country " />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        {countryAPI.map((countryItem) => (
-                                                            <SelectItem key={countryItem.id} value={countryItem.id}>
-                                                                {countryItem.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    />
-                                </div>
+                                {/*<div className="flex flex-col w-1/2">*/}
+                                {/*    <label htmlFor="country" className="font-normal">Country</label>*/}
+                                {/*    <Controller*/}
+                                {/*        name="country"*/}
+                                {/*        control={control}*/}
+                                {/*        render={({ field }) => (*/}
+                                {/*            <Select*/}
+                                {/*                value={field.value}*/}
+                                {/*                onValueChange={(value) => {*/}
+                                {/*                    handleChangeCountry(value);*/}
+                                {/*                    field.onChange(value);*/}
+                                {/*                }}*/}
+                                {/*                disabled={false}*/}
+                                {/*            >*/}
+                                {/*                <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">*/}
+                                {/*                    <SelectValue placeholder="Select a Country " />*/}
+                                {/*                </SelectTrigger>*/}
+                                {/*                <SelectContent>*/}
+                                {/*                    <SelectGroup>*/}
+                                {/*                        {countryAPI.map((countryItem) => (*/}
+                                {/*                            <SelectItem key={countryItem.id} value={countryItem.id}>*/}
+                                {/*                                {countryItem.name}*/}
+                                {/*                            </SelectItem>*/}
+                                {/*                        ))}*/}
+                                {/*                    </SelectGroup>*/}
+                                {/*                </SelectContent>*/}
+                                {/*            </Select>*/}
+                                {/*        )}*/}
+                                {/*    />*/}
+                                {/*</div>*/}
                                 <div className="flex flex-col w-1/2">
                                     <label htmlFor="id_number" className="font-normal">ID Number</label>
                                     <Controller

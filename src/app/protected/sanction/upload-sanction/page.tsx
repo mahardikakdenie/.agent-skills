@@ -224,52 +224,24 @@ const UploadSanctionPage = () => {
 
         if (csvData != null) {
             const requiredFields = [
-                'first_name', 'country',
-                'id_number', 'phone_number', 'email', 'source_type',
+                // 'first_name', 'country',
+                'first_name',
+                'id_number', 'phone_number', 'email',
                 'blacklist_date', 'blacklist_reason'
             ];
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
             const isDataValid = csvData.every((row: any) => {
-                // Create a case-insensitive set of valid country names
-                const validCountryNames = new Set(countryAPI.map(country => country.name.toLowerCase()));
-
-                // Create a map of insurance names to IDs for easy lookup
-                const insuranceMap = new Map(insuranceList.map(insurance => [insurance.name.toLowerCase(), insurance.id]));
-
-                // Create a map of sources for easy validation
-                const sourceMap = new Map(source.map(src => [src.source_name.toLowerCase(), src]));
-
-                // Check if the insurance is valid based on the source type
-                const isInsuranceValid = row.source_type !== "insurance" || (row.insurance && insuranceMap.has(row.insurance.toLowerCase()));
-
-                if (isInsuranceValid && row.source_type === "insurance") {
-                    row.insurance_id = insuranceMap.get(row.insurance.toLowerCase()); // Update row with insurance_id
-                }
-
-                // Validate the source_name, insurance, and source_id
-                const sourceEntry = sourceMap.get(row.source_name.toLowerCase());
-
-                // Ensure the csvData source_id matches the fetched source API
-                const isSourceIdValid = sourceEntry && sourceEntry.id === row.source_id;
-
-                // Check that id_number and phone_number are numeric
-                const isIdNumberValid = (typeof row.id_number === 'number' && !isNaN(row.id_number)) ||
-                    (typeof row.id_number === 'string' && /^\d+$/.test(row.id_number));
-                const isPhoneNumberValid = (typeof row.phone_number === 'number' && !isNaN(row.phone_number)) ||
-                    (typeof row.phone_number === 'string' && /^\d+$/.test(row.phone_number));
+                // const isCountryValid = new Set(countryAPI.map((c: any) => c.name.toLowerCase()));
+                const isSourceValid = new Set(source.map((s: any) => s.source_name.toLowerCase()));
 
                 return (
                     requiredFields.every(field => row[field] != null && row[field] !== "") &&
-                    (row.source_type === "insurance" || row.source_type === "government") &&
                     emailRegex.test(row.email) &&
                     dateRegex.test(row.blacklist_date) &&
-                    validCountryNames.has(row.country.toLowerCase()) &&
-                    isInsuranceValid &&
-                    isSourceIdValid &&
-                    isIdNumberValid &&
-                    isPhoneNumberValid
+                    // isCountryValid.has(row.country.toLowerCase()) &&
+                    isSourceValid.has(row.source_name.toLowerCase())
                 );
             });
 
@@ -292,8 +264,10 @@ const UploadSanctionPage = () => {
                         phone_number: row.phone_number.toString(),
                         email: row.email,
                         blacklist_reason: row.blacklist_reason,
-                        source_id: row.source_id,
-                        country: row.country,
+                        source_id: row.source_name ? source.find((s: any) => s.source_name.toLowerCase() === row.source_name.toLowerCase())?.id : null,
+                        // country: row.country ? countryAPI.find((c: any) => c.name.toLowerCase() === row.country.toLowerCase())?.id : null,
+                        country: 'IDN',
+                        id_type: 'KTP',
                         created_at: new Date().toISOString(),
                         date_blacklisted: row.blacklist_date
                     };

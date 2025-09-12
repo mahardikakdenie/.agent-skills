@@ -179,7 +179,8 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
         setShowAlert(false);
 
         // Validations for form fields
-        if (!formData.source_name || !formData.source_type || !formData.source_url || !formData.country) {
+        // if (!formData.source_name || !formData.source_type || !formData.source_url || !formData.country) {
+        if (!formData.source_name || !formData.source_type) {
             setErrorMessage('Please fill in all required fields.');
             setShowAlert(true);
             return;
@@ -192,23 +193,24 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
         }
 
         // Regex to validate URLs that start with https://
-        const urlPattern = /^https:\/\/.+\..+/;
+        // const urlPattern = /^https:\/\/.+\..+/;
 
         // Validate the URL field
-        if (!urlPattern.test(formData.source_url)) {
-            setErrorMessage('URL must start with "https://" and be a valid URL with at least one dot.');
-            setShowAlert(true);
-            return;
-        }
+        // if (!urlPattern.test(formData.source_url)) {
+        //     setErrorMessage('URL must start with "https://" and be a valid URL with at least one dot.');
+        //     setShowAlert(true);
+        //     return;
+        // }
 
 
         const payload = {
             source_name: formData.source_name,
             source_type: formData.source_type,
-            source_url: formData.source_url,
+            source_url: formData.source_url || null,
             insurance_id: formData.source_type === "insurance" ? formData.insurance_id : null,
             insurance_name: source.source_type === "insurance" ? source.insurance_name : null,
-            country: formData.country,
+            // country: formData.country,
+            country: 'IDN'
         };
 
         setLoading(true); // Show loading spinner during the save operation
@@ -375,12 +377,12 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
                                         name="source_url"
                                         control={control}
                                         defaultValue=""
-                                        rules={{ required: "Source URL is required" }}
+                                        // rules={{ required: "Source URL is required" }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
                                                 id="source_url"
-                                                required
+                                                // required
                                                 placeholder="Insert Source URL"
                                                 {...field}
                                                 className={`mt-1 block w-full h-16 ${errors.source_url ? "border-red-500" : "border-gray-300"
@@ -422,36 +424,36 @@ const EditSourcePage = ({ params }: { params: { id: string } }) => {
                                         )}
                                     />
                                 </div>
-                                <div className="flex flex-col w-1/2">
-                                    <label htmlFor="country" className="font-normal">Country</label>
-                                    <Controller
-                                        name="country"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Select
-                                                value={field.value}
-                                                onValueChange={(value) => {
-                                                    handleChangeCountry(value);
-                                                    field.onChange(value);
-                                                }}
-                                                disabled={false}
-                                            >
-                                                <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
-                                                    <SelectValue placeholder="Select a Country " />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        {countryAPI.map((countryItem) => (
-                                                            <SelectItem key={countryItem.id} value={countryItem.id}>
-                                                                {countryItem.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    />
-                                </div>
+                                {/*<div className="flex flex-col w-1/2">*/}
+                                {/*    <label htmlFor="country" className="font-normal">Country</label>*/}
+                                {/*    <Controller*/}
+                                {/*        name="country"*/}
+                                {/*        control={control}*/}
+                                {/*        render={({ field }) => (*/}
+                                {/*            <Select*/}
+                                {/*                value={field.value}*/}
+                                {/*                onValueChange={(value) => {*/}
+                                {/*                    handleChangeCountry(value);*/}
+                                {/*                    field.onChange(value);*/}
+                                {/*                }}*/}
+                                {/*                disabled={false}*/}
+                                {/*            >*/}
+                                {/*                <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">*/}
+                                {/*                    <SelectValue placeholder="Select a Country " />*/}
+                                {/*                </SelectTrigger>*/}
+                                {/*                <SelectContent>*/}
+                                {/*                    <SelectGroup>*/}
+                                {/*                        {countryAPI.map((countryItem) => (*/}
+                                {/*                            <SelectItem key={countryItem.id} value={countryItem.id}>*/}
+                                {/*                                {countryItem.name}*/}
+                                {/*                            </SelectItem>*/}
+                                {/*                        ))}*/}
+                                {/*                    </SelectGroup>*/}
+                                {/*                </SelectContent>*/}
+                                {/*            </Select>*/}
+                                {/*        )}*/}
+                                {/*    />*/}
+                                {/*</div>*/}
                             </div>
 
                             {/* Render Insurance section only when source type is "insurance" */}
