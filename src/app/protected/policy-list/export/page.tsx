@@ -12,7 +12,7 @@ import Spinner from "@/components/ui/spinner";
 import WithSidebar from "@/hoc/with-sidebar";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
-import { formatDateTimeWithTZ } from "@/lib/formatter";
+import { formatDateTimeWithTZ, formatMoney } from "@/lib/formatter";
 import { hasPermission } from "@/context/auth.context";
 
 const ExportPage = () => {
@@ -22,13 +22,16 @@ const ExportPage = () => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [isShowCreatedAt, setIsShowCreatedAt] = useState<boolean>(false);
+  const [isShowPremi, setIsShowPremi] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
     const checkAccess = async () => {
       const withCreatedAt = await hasPermission("Policy.Export.withCreatedAt");
+      const withPremi = await hasPermission("Policy.Export.withPremi");
 
       setIsShowCreatedAt(withCreatedAt);
+      setIsShowPremi(withPremi);
 
       await fetchData();
     };
@@ -135,6 +138,15 @@ const ExportPage = () => {
 
     const sheetData = data.map((item, index) => {
       let additionColumn = {};
+      if (isShowPremi) {
+        const currency = item.declarations?.transaction_data?.insurance?.currency;
+        const premium = formatMoney(item.declarations?.transaction_data?.insurance?.premium);
+        const premi = `${currency} ${premium}`;
+        additionColumn = {
+          ...additionColumn, 
+          "Premi": item.declarations?.transaction_data?.insurance?.premium? premi : '',
+        }
+      }
       if (isShowCreatedAt) {
         additionColumn = {
           ...additionColumn, 
@@ -250,6 +262,7 @@ const ExportPage = () => {
                 <td style={styles.th} valign="middle">
                   Status
                 </td>
+                {isShowPremi && <td style={styles.th} valign="middle">Premi</td>}
                 {isShowCreatedAt && <td style={styles.th} valign="middle">Created At</td>}
               </tr>
             </thead>
@@ -280,6 +293,19 @@ const ExportPage = () => {
                     >
                       {item.status || "-"}
                     </td>
+                    {isShowPremi && 
+                      <td
+                        style={styles.td}
+                        valign="middle"
+                        className="whitespace-nowrap"
+                      >
+                        { 
+                          item.declarations?.transaction_data?.insurance?.premium ? 
+                          `${item.declarations?.transaction_data?.insurance?.currency} ${formatMoney(item.declarations?.transaction_data?.insurance?.premium)}` : 
+                          "-"
+                        }
+                      </td>
+                    }
                     {isShowCreatedAt && 
                       <td
                         style={styles.td}
