@@ -23,15 +23,18 @@ const ExportPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [isShowCreatedAt, setIsShowCreatedAt] = useState<boolean>(false);
   const [isShowPremi, setIsShowPremi] = useState<boolean>(false);
+  const [isShowDanaInfo, setIsShowDanaInfo] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
     const checkAccess = async () => {
       const withCreatedAt = await hasPermission("Policy.Export.withCreatedAt");
       const withPremi = await hasPermission("Policy.Export.withPremi");
+      const withDanaInfo = await hasPermission("Policy.Export.withDanaInfo");
 
       setIsShowCreatedAt(withCreatedAt);
       setIsShowPremi(withPremi);
+      setIsShowDanaInfo(withDanaInfo);
 
       await fetchData();
     };
@@ -139,12 +142,17 @@ const ExportPage = () => {
     const sheetData = data.map((item, index) => {
       let additionColumn = {};
       if (isShowPremi) {
-        const currency = item.declarations?.transaction_data?.insurance?.currency;
         const premium = formatMoney(item.declarations?.transaction_data?.insurance?.premium);
-        const premi = `${currency} ${premium}`;
+        const premi = `${premium}`;
         additionColumn = {
           ...additionColumn, 
           "Premi": item.declarations?.transaction_data?.insurance?.premium? premi : '',
+        }
+      }
+      if (isShowDanaInfo) {
+        additionColumn = {
+          ...additionColumn, 
+          "License Plate": item.participants[0]?.data?.licensePlate,
         }
       }
       if (isShowCreatedAt) {
@@ -262,7 +270,12 @@ const ExportPage = () => {
                 <td style={styles.th} valign="middle">
                   Status
                 </td>
-                {isShowPremi && <td style={styles.th} valign="middle">Premi</td>}
+                  {isShowPremi && <td style={styles.th} valign="middle">Premi</td>}
+                  {isShowDanaInfo &&
+                    <>
+                      <td style={styles.th} valign="middle">License Plate</td>
+                    </>
+                  }
                 {isShowCreatedAt && <td style={styles.th} valign="middle">Created At</td>}
               </tr>
             </thead>
@@ -304,6 +317,15 @@ const ExportPage = () => {
                           `${item.declarations?.transaction_data?.insurance?.currency} ${formatMoney(item.declarations?.transaction_data?.insurance?.premium)}` : 
                           "-"
                         }
+                      </td>
+                    }
+                    {isShowDanaInfo && 
+                      <td
+                        style={styles.td}
+                        valign="middle"
+                        className="whitespace-nowrap"
+                      >
+                        {item.participants[0]?.data?.licensePlate || "-"}
                       </td>
                     }
                     {isShowCreatedAt && 
