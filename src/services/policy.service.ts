@@ -99,10 +99,10 @@ export class PolicyService {
       params["category"] = category;
     }
     if (date_from) {
-      params["from"] = date_from;
+      params["created_from"] = date_from;
     }
     if (date_to) {
-      params["to"] = date_to;
+      params["created_to"] = date_to;
     }
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get(`/v1/policies?${queryString}`);
@@ -141,10 +141,10 @@ export class PolicyService {
       params["category"] = category;
     }
     if (date_from) {
-      params["from"] = date_from;
+      params["created_from"] = date_from;
     }
     if (date_to) {
-      params["to"] = date_to;
+      params["created_to"] = date_to;
     }
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
