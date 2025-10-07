@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/context/auth.context";
 import { usePathname, useRouter } from "next/navigation";
 import { TransactionService } from "@/services/transaction.service";
-import { ChevronLeft, ChevronRight, Download, Search, Upload, X, } from "react-feather";
+import { ChevronLeft, ChevronRight, Download, Search, Upload, X, AlertCircle } from "react-feather";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger, } from "@/components/ui/drewer";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog";
 import { FORBIDDEN, TRANSACTIONS_ADD, TRANSACTIONS_EXPORT, TRANSACTIONS_IMPORT } from "@/constants/routes";
 
 const TransactionsPage = () => {
@@ -32,6 +33,15 @@ const TransactionsPage = () => {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [submitPaid, setSubmitPaid] = useState<boolean>(false);
+  const [openAllStatus, setOpenAllStatus] = useState<boolean>(false);
+
+  //modalstate
+  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notes, setNotes] = useState("");
+  const [noteMsg, setNoteMsg] = useState("");
+  const [successUpdate, setSuccessUpdate] = useState(false);
 
   const types = [
     {
@@ -48,9 +58,11 @@ const TransactionsPage = () => {
     const checkAccess = async () => {
       const access = await hasPermission("Transactions.Read");
       const editBtn = await hasPermission("Transactions.Update");
-
+      const openAllStatus = await hasPermission("Transactions.AllowRefundAndCancel");
+      console.log(openAllStatus)
       setCanEdit(editBtn);
       setHasAccess(access);
+      setOpenAllStatus(openAllStatus);
       if (!access) {
         router.push(FORBIDDEN);
       }
@@ -59,11 +71,12 @@ const TransactionsPage = () => {
     checkAccess();
   }, [router]);
 
+
   useEffect(() => {
-    if(searchData || type) {
+    if (searchData || type) {
       setPage(1);
     }
-  }, [searchData , type]);
+  }, [searchData, type]);
 
   useEffect(() => {
     transactionService
@@ -115,6 +128,10 @@ const TransactionsPage = () => {
         return "text-[#00AB4F]";
       case "Pending":
         return "text-[#CC9B36]";
+      case "Cancelled":
+        return "text-[#939597]";
+      case "Refund":
+        return "text-[#939597]";
       default:
         return "text-[#016DA1]";
     }
@@ -159,6 +176,51 @@ const TransactionsPage = () => {
 
     localStorage.setItem("exportTransactionData", JSON.stringify(exportData));
     router.push(TRANSACTIONS_EXPORT);
+  };
+
+
+  const handleChangeStatus = (data: any, newStatus: string) => {
+    const transactionsId = data.id;
+    setSelectedTransaction(data);
+    setPendingStatus(newStatus);
+    setIsModalOpen(true);
+    setNotes("");
+    setNoteMsg("");
+    setSuccessUpdate(false);
+  };
+
+
+
+  const confirmModal = async () => {
+    // if (
+    //   (notes === "" && pendingStatus === "Refund") ||
+    //   (notes === "" && pendingStatus === "Cancel") ||
+    //   (notes === "" && pendingStatus === "Paid")
+    // ) {
+    //   setNoteMsg("Required!");
+    //   return;
+    // } 
+
+    if (selectedTransaction && pendingStatus) {
+      const res = await transactionService.updateTransactionStatus(selectedTransaction.id, {
+        status: pendingStatus,
+      });
+      setTransactions((prevTransactions) => {
+        return prevTransactions.map((transaction) =>
+          transaction.id === selectedTransaction.id
+            ? { ...transaction, status: pendingStatus }
+            : transaction
+        );
+      });
+      setSuccessUpdate(true);
+      setIsModalOpen(false);
+    }
+  };
+
+  const cancelModal = () => {
+    setIsModalOpen(false);
+    setSelectedTransaction(null);
+    setPendingStatus(null);
   };
 
   return (
@@ -207,9 +269,8 @@ const TransactionsPage = () => {
         <div className="w-full flex items-center overflow-auto">
           <div
             onClick={() => selectTab("All")}
-            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
-              tab === "All" && "border-b-[3px] border-primary md:px-7 px-5"
-            }`}
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${tab === "All" && "border-b-[3px] border-primary md:px-7 px-5"
+              }`}
           >
             <button
               className={`text-sm py-5 mr-3 ${tab === "All" && "text-primary"}`}
@@ -217,9 +278,8 @@ const TransactionsPage = () => {
               All Transaction
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "All" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+                } ${tab !== "All" && "hidden"}`}
             >
               {totalData}
               <span
@@ -230,22 +290,19 @@ const TransactionsPage = () => {
           </div>
           <div
             onClick={() => selectTab("Declaration")}
-            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
-              tab === "Declaration" &&
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${tab === "Declaration" &&
               "border-b-[3px] border-primary md:px-7 px-5"
-            }`}
+              }`}
           >
             <button
-              className={`text-sm py-5 mr-3 ${
-                tab === "Declaration" && "text-primary"
-              }`}
+              className={`text-sm py-5 mr-3 ${tab === "Declaration" && "text-primary"
+                }`}
             >
               Declaration
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Declaration" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+                } ${tab !== "Declaration" && "hidden"}`}
             >
               {totalData}
               <span
@@ -256,21 +313,18 @@ const TransactionsPage = () => {
           </div>
           <div
             onClick={() => selectTab("Paid")}
-            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
-              tab === "Paid" && "border-b-[3px] border-primary md:px-7 px-5"
-            }`}
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${tab === "Paid" && "border-b-[3px] border-primary md:px-7 px-5"
+              }`}
           >
             <button
-              className={`text-sm py-5 mr-3 ${
-                tab === "Paid" && "text-primary"
-              }`}
+              className={`text-sm py-5 mr-3 ${tab === "Paid" && "text-primary"
+                }`}
             >
               Paid
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Paid" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+                } ${tab !== "Paid" && "hidden"}`}
             >
               {totalData}
               <span
@@ -281,21 +335,62 @@ const TransactionsPage = () => {
           </div>
           <div
             onClick={() => selectTab("Pending")}
-            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${
-              tab === "Pending" && "border-b-[3px] border-primary md:px-7 px-5"
-            }`}
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${tab === "Pending" && "border-b-[3px] border-primary md:px-7 px-5"
+              }`}
           >
             <button
-              className={`text-sm py-5 mr-3 ${
-                tab === "Pending" && "text-primary"
-              }`}
+              className={`text-sm py-5 mr-3 ${tab === "Pending" && "text-primary"
+                }`}
             >
               Pending
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${
-                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-              } ${tab !== "Pending" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+                } ${tab !== "Pending" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Refund")}
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${tab === "Refund" && "border-b-[3px] border-primary md:px-7 px-5"
+              }`}
+          >
+            <button
+              className={`text-sm py-5 mr-3 ${tab === "Refund" && "text-primary"
+                }`}
+            >
+              Refund
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+                } ${tab !== "Refund" && "hidden"}`}
+            >
+              {totalData}
+              <span
+                className={`${totalData < 100 && "hidden"}`}
+                style={{ fontSize: "10px" }}
+              ></span>
+            </span>
+          </div>
+          <div
+            onClick={() => selectTab("Cancelled")}
+            className={`cursor-pointer h-full flex items-center justify-center md:px-7 px-5 ${tab === "Cancelled" && "border-b-[3px] border-primary md:px-7 px-5"
+              }`}
+          >
+            <button
+              className={`text-sm py-5 mr-3 ${tab === "Pending" && "text-primary"
+                }`}
+            >
+              Cancelled
+            </button>
+            <span
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+                } ${tab !== "Cancelled" && "hidden"}`}
             >
               {totalData}
               <span
@@ -306,6 +401,28 @@ const TransactionsPage = () => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent className="min-w-96 w-auto max-w-full">
+            <p className="text-center">
+              <AlertCircle width={88} height={88} className="mx-auto text-[#F5AB1D]" />
+            </p>
+            <p className="text-center font-bold mb-0 text-sm">Are you sure?</p>
+            <div className="flex flex-col gap-4">
+              <p className="text-center text-sm">
+                Update <strong>{selectedTransaction?.invoice}</strong> status <br />
+                from <strong>{selectedTransaction?.status ?? ""}</strong> to <strong>{pendingStatus}</strong>
+              </p>
+
+              <div className="flex gap-4 justify-center">
+                <Button variant="outline" onClick={cancelModal} className="border-[#E83F3F] text-[#E83F3F] rounded-full w-24">No</Button>
+                <Button color="warning" onClick={confirmModal} className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black">Yes</Button>
+              </div>
+            </div>
+
+          </DialogContent>
+        </Dialog>
+      )}
       <div className="w-full p-4 md:p-6 bg-white rounded-lg">
         <div className="relative max-w-full w-full mb-4 ml-auto shadow-sm">
           <input
@@ -359,10 +476,10 @@ const TransactionsPage = () => {
                 premiumWithVoucherDiscount =
                   transaction.voucher_info?.data.value_type === "percentage"
                     ? premiumWithEmbeddedDiscount -
-                      (transaction.voucher_info?.data.value / 100) *
-                        premiumWithEmbeddedDiscount
+                    (transaction.voucher_info?.data.value / 100) *
+                    premiumWithEmbeddedDiscount
                     : premiumWithEmbeddedDiscount -
-                      transaction.voucher_info?.data.value;
+                    transaction.voucher_info?.data.value;
               }
 
               let totalPremium = premiumWithVoucherDiscount;
@@ -410,9 +527,53 @@ const TransactionsPage = () => {
                     {formatMoney(Number(totalPremium) || 0, "IDR") || "-"}
                   </TableCell>
                   <TableCell className="font-semibold whitespace-nowrap">
-                    <span className={getStatusColor(transaction.status)}>
+                    {/* <span className={getStatusColor(transaction.status)}>
                       {transaction.status}
-                    </span>
+                    </span> */}
+                    <Select
+                      value={transaction.status}
+                      disabled={!canEdit}
+                      onValueChange={(value) => {
+                        handleChangeStatus(transaction, value);
+                      }}
+                    >
+                      <SelectTrigger
+                        className={`w-[240px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
+                          transaction.status
+                        )}`}
+                      >
+                        <SelectValue>
+                          {transaction.status || "Select Status"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      {
+                        transaction.status === "Pending" ?
+                          <SelectContent className="max-h-48 overflow-auto">
+                            <SelectItem
+                              value="Cancelled"
+                              disabled={
+                                !openAllStatus
+                              }
+                            >
+                              Cancel
+                            </SelectItem>
+                          </SelectContent>
+                          :
+                          transaction.status === "Paid" ?
+                            <SelectContent className="max-h-48 overflow-auto">
+                              <SelectItem
+                                value="Refund"
+                                disabled={
+                                  !openAllStatus
+                                }
+                              >
+                                Refund
+                              </SelectItem>
+                            </SelectContent>
+                            :
+                            ""
+                      }
+                    </Select>
                   </TableCell>
                   <TableCell>
                     <Drawer direction="right">
@@ -490,18 +651,18 @@ const TransactionsPage = () => {
                                 </div>
                                 {transaction.status.toLowerCase() ===
                                   "pending" && (
-                                  <div className="mt-4">
-                                    <Button
-                                      onClick={() =>
-                                        handleUpdateToPaid(transaction.id)
-                                      }
-                                      disabled={!canEdit || submitPaid}
-                                      className="bg-primary text-white px-4 py-2 rounded-full"
-                                    >
-                                      Update to Paid
-                                    </Button>
-                                  </div>
-                                )}
+                                    <div className="mt-4">
+                                      <Button
+                                        onClick={() =>
+                                          handleUpdateToPaid(transaction.id)
+                                        }
+                                        disabled={!canEdit || submitPaid}
+                                        className="bg-primary text-white px-4 py-2 rounded-full"
+                                      >
+                                        Update to Paid
+                                      </Button>
+                                    </div>
+                                  )}
                               </div>
                             </div>
                           </DrawerDescription>
@@ -551,7 +712,7 @@ const TransactionsPage = () => {
           </TableFooter>
         </Table>
       </div>
-    </div>
+    </div >
   );
 };
 

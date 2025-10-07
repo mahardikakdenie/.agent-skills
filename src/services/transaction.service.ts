@@ -202,6 +202,14 @@ export class TransactionService {
     }
   }
 
+  async updateTransactionStatus(id: string, data: any): Promise<any> {
+    try {
+      return await this.httpClient.put("/v1/transactions/update-status/" + id, data);
+    } catch (error: any) {
+      throw new Error(error.response.data.message);
+    }
+  }
+
   async searchTransactions(search: any): Promise<any> {
     let qs = "";
     if (search) {
