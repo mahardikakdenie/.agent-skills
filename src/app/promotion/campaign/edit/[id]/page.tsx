@@ -1,0 +1,1604 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { format, parseISO, isValid } from "date-fns";
+import { FaSave, FaTimes, FaTrash } from "react-icons/fa";
+import { PromotionDetails } from "../../../dto/promotion.details.dto";
+import ChannelSelectionModal from "../../../components/channel-selection-modal";
+import InsuranceSelectionModal from "../../../components/insurance-selection-modal";
+import ProductSelectionModal from "../../../components/product-selection-modal";
+import PlanSelectionModal from "../../../components/plan-selection-modal";
+import { ChevronLeft, Trash } from "react-feather";
+import { FaCheck, FaPlus } from 'react-icons/fa';
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Controller, useForm } from "react-hook-form";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {useAuth} from "@/context/auth.context";
+import AppURL from "@/constants/app-url.const";
+import ApiURL from "@/constants/api-url.const";
+import {channelService, productService, promotionService} from "@/services/api.service";
+
+export default function EditPromotionPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const [type, setType] = useState("");
+  const [name, setName] = useState("");
+  const [value_currency, setValue_currency] = useState("");
+  const [value, setValue] = useState(0);
+  const [start_date, setStart_date] = useState("");
+  const [end_date, setEnd_date] = useState("");
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [canDelete, setCanDelete] = useState<boolean>(false);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+  const { permissionList } = useAuth();
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access: boolean = permissionList.includes("Promotions.Update");
+      setHasAccess(access);
+      if (!access) {
+        router.push(AppURL.forbidden);
+      }
+    };
+
+    checkAccess();
+  }, [router]);
+
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    shouldUnregister: false,
+    defaultValues: {
+      type: type,
+      name: name,
+      value_currency: value_currency,
+      value: value,
+      start_date: start_date,
+      end_date: end_date
+    }
+  });
+
+  const [promotion, setPromotion] = useState<PromotionDetails>({
+    campaign_id: "",
+    name: "",
+    type: "",
+    start_date: "",
+    end_date: "",
+    value: 0,
+    active: true,
+    value_currency: "",
+    minimum_amount: 0,
+    maximum_amount: 0,
+    embedded_discount_channels: [],
+    embedded_discount_insurances: [],
+    embedded_discount_plans: [],
+    embedded_discount_products: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
+  const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [channels, setChannels] = useState<any>(undefined);
+  const [channelsInitial, setChannelsInitial] = useState<any>(undefined);
+  const [insurances, setInsurances] = useState<any>(undefined);
+  const [insurancesInitial, setInsurancesInitial] = useState<any>(undefined);
+  const [selectedInsurances, setSelectedInsurances] = useState<any[]>([]);
+  const [selectedChannelIds, setSelectedChannelIds] = useState<Set<string>>(new Set());
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
+  const [products, setProducts] = useState<any>(undefined);
+  const [productsInitial, setProductsInitial] = useState<any>(undefined);
+  const [plans, setPlans] = useState<any>(undefined);
+  const [plansInitial, setPlansInitial] = useState<any>(undefined);
+  const [hasProducts, setHasProducts] = useState(false);
+  const [hasProductsInitial, setHasProductsInitial] = useState(false);
+  const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [voucherDetails, setVoucherDetails] = useState<any>(null);
+  const [vouchers, setVouchers] = useState<any[]>([]);
+  const [voucherCode, setVoucherCode] = useState<string>('');
+  const [voucherUsageLimit, setVoucherUsageLimit] = useState<number>(1);
+  const [selectedInsuranceIds, setSelectedInsuranceIds] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showPlansPerPage, setShowPlansPerPage] = useState(10);
+  const [currentPagePlan, setCurrentPagePlan] = useState(1);
+  const [totalPlanItems, setTotalPlanItems] = useState(0);
+  const [currentPageIns, setCurrentPageIns] = useState(1);
+  const [currentPageChannels, setCurrentPageChannels] = useState(1);
+  const [showChannelsPerPage, setShowChannelsPerPage] = useState(10);
+  const [globalSelectedChannels, setGlobalSelectedChannels] = useState<Set<string>>(new Set());
+  const [globalSelectedInsuranceIds, setGlobalSelectedInsuranceIds] = useState<Set<string>>(new Set());
+  const [showInsPerPage, setShowInsPerPage] = useState(10);
+  const [showProdPerPage, setShowProdPerPage] = useState(10);
+  const [globalSelectedProdIds, setGlobalSelectedProdIds] = useState<Set<string>>(new Set());
+  const [currentPageProd, setCurrentPageProd] = useState(1);
+  const [totalProductItems, setTotalProductItems] = useState(0);
+  const [totalInsuranceItems, setTotalInsuranceItems] = useState(0);
+  const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
+  const [selectedPlans, setSelectedPlans] = useState<any[]>([]);
+  const [globalSelectedPlanIds, setGlobalSelectedPlanIds] = useState<Set<string>>(new Set());
+  const [selectedChannels, setSelectedChannels] = useState<any[]>([]);
+
+  const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded shadow-md w-1/3">
+          <h2 className="text-lg font-semibold mb-4">Alert</h2>
+          <p>{message}</p>
+          <div className="flex justify-end mt-4">
+            <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
+  useEffect(() => {
+    if (promotion.embedded_discount_insurances.length > 0) {
+      setSelectedInsurances(
+        promotion.embedded_discount_insurances.map(ins => ({
+          id: ins.insurance_id,
+          name: ins.insurance_name,
+        }))
+      );
+    }
+  }, [promotion.embedded_discount_insurances]);
+
+  useEffect(() => {
+    if (promotion.embedded_discount_products.length > 0) {
+      setSelectedProducts(
+        promotion.embedded_discount_products.map(prod => ({
+          product_id: prod.product_id,
+          product_name: prod.product_name,
+        }))
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promotion.embedded_discount_insurances]);
+
+
+  useEffect(() => {
+    if (globalSelectedProdIds.size > 0) {
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
+      setCurrentPagePlan(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promotion.embedded_discount_products]);
+
+  useEffect(() => {
+    if (params.id) {
+      promotionService.get(ApiURL.v1CampaignDetail(params.id as string), { params })
+        .then((response: any) => {
+          const res = response.data;
+          const promotionData: PromotionDetails = res.data[0];
+          const formattedStartDate = promotionData.start_date ? formatDate(promotionData.start_date) : "";
+          const formattedEndDate = promotionData.end_date ? formatDate(promotionData.end_date) : "";
+
+          setPromotion(promotionData);
+          reset({
+            type: promotionData.type,
+            name: promotionData.name,
+            value_currency: promotionData.value_currency,
+            value: promotionData.value,
+            start_date: formattedStartDate,
+            end_date: formattedEndDate
+          });
+
+          fetchChannelsInitial(1, 50);
+          fetchInsurancesInitial(1, 50);
+          fetchProductsByInsurances(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id), 1, 10);
+          fetchProductsByInsurancesInitial([], 1, 100);
+          fetchPlansByProducts(promotionData.embedded_discount_products.map(p => p.product_id), 1, 10);
+          fetchPlansByProductsInitial([], 1, 5000);
+
+          const existingChannelIds = new Set(promotionData.embedded_discount_channels.map(channel => channel.channel_id));
+          setGlobalSelectedChannels(existingChannelIds);
+
+          const existingInsuranceIds = new Set(promotionData.embedded_discount_insurances.map(ins => ins.insurance_id));
+          setGlobalSelectedInsuranceIds(existingInsuranceIds);
+
+          const existingProductIds = new Set(promotionData.embedded_discount_products.map(prod => prod.product_id));
+          setGlobalSelectedProdIds(existingProductIds);
+
+          const existingPlanIds = new Set(promotionData.embedded_discount_plans.map(plans => plans.plan_id));
+          setGlobalSelectedPlanIds(existingPlanIds);
+
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Failed to fetch promotion details:", error);
+          setLoading(false);
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id, reset]);
+
+
+  useEffect(() => {
+    fetchInsurances(currentPage, showInsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchChannelsAfter(currentPageChannels, showChannelsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPageChannels, showChannelsPerPage]);
+
+  useEffect(() => {
+    const existingChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
+
+    // Initialize selectedChannelIds and globalSelectedChannels with the selected channels from the database
+    setSelectedChannelIds(existingChannelIds);
+    setGlobalSelectedChannels(existingChannelIds);
+  }, [promotion.embedded_discount_channels]);
+
+  useEffect(() => {
+    const existingInsuranceIds = new Set(promotion.embedded_discount_insurances.map(ins => ins.insurance_id));
+
+    // Initialize selectedChannelIds and globalSelectedChannels with the selected channels from the database
+    setSelectedInsuranceIds(existingInsuranceIds);
+    setGlobalSelectedInsuranceIds(existingInsuranceIds);
+  }, [promotion.embedded_discount_insurances]);
+
+
+  useEffect(() => {
+    if (globalSelectedInsuranceIds.size > 0) {
+      fetchProductsByInsurances(selectedInsurances.map(ins => ins.id), 1, 10);
+    } else {
+      setProducts(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [globalSelectedInsuranceIds]);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1) {
+      setCurrentPage(page);
+    }
+  };
+
+  const fetchChannelsInitial = async (page: number, limit: number) => {
+    try {
+      const response: any = await channelService.get(ApiURL.v1Channels, { params: { page, limit } });
+      setChannelsInitial(response?.data);
+    } catch (error) {
+      console.error("Failed to fetch channels:", error);
+    }
+  };
+
+  const fetchChannelsAfter = async (page: number, limit: number) => {
+    try {
+      const response: any = await channelService.get(ApiURL.v1Channels, { params: { page, limit } });
+      setChannels(response?.data);
+    } catch (error) {
+      console.error("Failed to fetch channels:", error);
+    }
+  };
+
+
+  const fetchInsurancesInitial = async (page: number, limit: number) => {
+    try {
+      const response: any = await productService.get(ApiURL.v1Insurances, { params: { page, limit } });
+      setInsurancesInitial(response?.data);
+      setTotalInsuranceItems(response.data?.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch insurances:", error);
+      setInsurancesInitial(undefined);
+    }
+  };
+
+  const fetchInsurances = async (page: number, limit: number) => {
+    try {
+      const response: any = await productService.get(ApiURL.v1Insurances, { params: { page, limit } });
+      setInsurances(response?.data);
+      setTotalInsuranceItems(response.data?.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch insurances:", error);
+      setInsurances(undefined);
+    }
+  };
+
+
+  const fetchPlansByProducts = async (productIds: string[], page: number, limit: number) => {
+    try {
+      const responses: any = await productService.get(ApiURL.v1Plans, { params: { productIds, pageSize: limit, page } });
+      setPlans(responses?.data);
+      setTotalPlanItems(responses.data?.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch plans:", error);
+      setPlans(undefined);
+    }
+  };
+
+  const fetchPlansByProductsInitial = async (productIds: string[], page: number, limit: number) => {
+    try {
+      const responses: any = await productService.get(ApiURL.v1Plans, { params: { productIds, pageSize: limit, page } });
+      setPlansInitial(responses?.data);
+      setTotalPlanItems(responses.data?.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch plans:", error);
+      setPlansInitial(undefined);
+    }
+  };
+
+  const fetchProductsByInsurances = async (insuranceIds: string[], page: number, limit: number) => {
+    if (globalSelectedInsuranceIds.size === 0) {
+      setProducts(undefined);
+      setHasProducts(false);
+      return;
+    }
+
+    try {
+      const allProducts: any = await productService.get(ApiURL.v1Products, { params: { insuranceIds, pageSize: limit, page } });
+      setProducts(allProducts?.data);
+      setTotalProductItems(allProducts.data?.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      setProducts(undefined);
+      setHasProducts(false);
+    }
+  };
+
+  const fetchProductsByInsurancesInitial = async (insuranceIds: string[], page: number, limit: number) => {
+    try {
+      const allProducts: any = await productService.get(ApiURL.v1Products, { params: { insuranceIds, pageSize: limit, page } });
+      setProductsInitial(allProducts?.data);
+      setTotalProductItems(allProducts.data?.meta.total);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      setProductsInitial(undefined);
+      setHasProducts(false);
+    }
+  };
+
+  const handleAddPlan = () => {
+    const selectedPlanIds = new Set(promotion.embedded_discount_plans.map(plans => plans.plan_id));
+    setGlobalSelectedPlanIds(selectedPlanIds);
+    setIsPlanModalOpen(true);
+  };
+
+  const isCheckbox = (element: HTMLInputElement | HTMLSelectElement): element is HTMLInputElement => {
+    return element.type === 'checkbox';
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const target = e.target;
+    const { name, value } = target;
+
+    if (isCheckbox(target)) {
+      setPromotion(prevState => ({
+        ...prevState,
+        [name]: target.checked
+      }));
+    } else {
+      setPromotion(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleSelectPlan = (newSelectedPlans: any[]) => {
+    const updatedPlans = [...promotion.embedded_discount_plans];
+
+    newSelectedPlans.forEach(newPlan => {
+      const existingPlan = updatedPlans.find(plan => plan.plan_id === newPlan.id);
+      if (!existingPlan) {
+        updatedPlans.push({ plan_id: newPlan.id, name: newPlan.name }); // Add new plan if not already in the list
+      }
+    });
+
+    setPromotion(prev => ({
+      ...prev,
+      embedded_discount_plans: updatedPlans, // Update promotion with selected plans
+    }));
+
+  };
+
+
+  const handleRemoveArrayItemIns = (arrayName: keyof PromotionDetails, index: number) => {
+    setPromotion(prevState => {
+      const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
+
+      if (arrayName === 'embedded_discount_insurances') {
+        const removedInsuranceId = prevState.embedded_discount_insurances[index].insurance_id;
+
+        setGlobalSelectedInsuranceIds(prevIds => {
+          const newIds = new Set(prevIds);
+          newIds.delete(removedInsuranceId);
+          return newIds;
+        });
+
+        fetchProductsByInsurances(updatedArray.map(ins => ins.insurance_id), 1, showProdPerPage);
+        fetchProductsByInsurancesInitial([], 1, 100);
+        setCurrentPageProd(1);
+
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_products: [],
+          embedded_discount_plans: []
+        };
+      }
+
+      return {
+        ...prevState,
+        [arrayName]: updatedArray,
+      };
+    });
+
+    if (arrayName === 'embedded_discount_insurances') {
+      setSelectedInsurances(prevInsurances =>
+        prevInsurances.filter((_, i) => i !== index)
+      );
+      setSelectedProductIds(new Set());  // Reset selected product IDs
+      setGlobalSelectedProdIds(new Set());
+      setProductsInitial(undefined);
+      setSelectedPlanIds(new Set());     // Reset selected plan IDs
+      setGlobalSelectedPlanIds(new Set());
+      setCurrentPageProd(1);             // Reset pagination for products
+    }
+  };
+
+  const handlePlansPerPageChange = async (newPlansPerPage: number) => {
+    setShowPlansPerPage(newPlansPerPage);
+    setCurrentPagePlan(1);
+    fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, newPlansPerPage);
+  };
+
+  const handlePageChangePlans = (page: number) => {
+    if (page >= 1 && page !== currentPagePlan) {
+      setCurrentPagePlan(page);
+      fetchPlansByProducts(Array.from(globalSelectedProdIds), page, showPlansPerPage);
+    }
+  };
+
+  const handleChannelsPerPageChange = async (newChannelsPerPage: number) => {
+    setShowChannelsPerPage(newChannelsPerPage);
+    setCurrentPageChannels(1);
+    fetchChannelsAfter(1, newChannelsPerPage);
+  };
+
+  const handlePageChangeIns = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageIns(page);
+    }
+  };
+
+  const handlePageChangeChannel = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageChannels(page);
+    }
+  };
+
+  const handleClosePlanModal = () => {
+    setIsPlanModalOpen(false);
+  };
+
+  const handleRemoveArrayItemChan = (arrayName: keyof PromotionDetails, index: number) => {
+    setPromotion(prevState => {
+      const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
+
+      if (arrayName === 'embedded_discount_channels') {
+        // Reset insurances, products, and plans when a channel is removed
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_insurances: [],
+          embedded_discount_products: [],
+          embedded_discount_plans: [],
+        };
+      }
+
+      return {
+        ...prevState,
+        [arrayName]: updatedArray,
+      };
+    });
+
+    if (arrayName === 'embedded_discount_channels') {
+      // Reset global states or selections
+      setSelectedProductIds(new Set());
+      setSelectedPlanIds(new Set());
+      setGlobalSelectedProdIds(new Set());
+      setGlobalSelectedPlanIds(new Set());
+      setGlobalSelectedInsuranceIds(new Set());
+      setSelectedInsuranceIds(new Set());
+      setSelectedInsurances([]);
+      setCurrentPageProd(1);
+    }
+  };
+
+  const handleRemoveProduct = (arrayName: keyof PromotionDetails, index: number) => {
+    setPromotion(prevState => {
+      const updatedArray = (prevState[arrayName] as Array<any>).filter((_, i) => i !== index);
+
+      if (arrayName === 'embedded_discount_products') {
+        const removedProdId = prevState.embedded_discount_products[index].product_id;
+
+        setGlobalSelectedProdIds(prevIds => {
+          const newIds = new Set(prevIds);
+          newIds.delete(removedProdId);
+          return newIds;
+        });
+
+        fetchPlansByProducts(Array.from(globalSelectedProdIds), 1, showPlansPerPage);
+        fetchPlansByProductsInitial([], 1, 5000);
+        setCurrentPagePlan(1);
+
+        return {
+          ...prevState,
+          [arrayName]: updatedArray,
+          embedded_discount_plans: []
+        };
+      }
+
+      return {
+        ...prevState,
+        [arrayName]: updatedArray,
+      };
+    });
+
+    if (arrayName === 'embedded_discount_products') {
+      setSelectedProducts(prevProduct =>
+        prevProduct.filter((_, i) => i !== index)
+      );
+
+      setSelectedPlanIds(new Set());     // Reset selected plan IDs
+      setGlobalSelectedPlanIds(new Set());
+      setPlansInitial(undefined);
+      setCurrentPageProd(1);             // Reset pagination for products
+    }
+  };
+
+  const handleAddVoucher = async (code: string, usageLimit: number) => {
+    if (!code.trim()) return; // Early return if code is empty
+
+    // Check if the voucher already exists
+    const voucherVerify: any = await promotionService.get(ApiURL.v1VoucherCode(code));
+    const { data } = voucherVerify.data;
+
+    if (data.length > 0 && data[0].code != null) {
+      // If voucher exists, set error message and show alert
+      setErrorMessage(`Voucher Code ${code} already exists.`);
+      setShowAlert(true);
+      return; // Exit the function to prevent adding the voucher
+    }
+
+    // If the voucher does not exist, proceed to add it
+    setVouchers(prevVouchers => [
+      ...prevVouchers,
+      { code, usageLimit }
+    ]);
+    setVoucherCode('');
+    setVoucherUsageLimit(1);
+
+  };
+
+  const handleRemoveVoucher = (index: number) => {
+    setVouchers(prevVouchers => prevVouchers.filter((_, i) => i !== index));
+  };
+
+  const handleRemovePlan = (index: number) => {
+    const removedPlanId = promotion.embedded_discount_plans[index].plan_id;
+
+    setPromotion(prevState => {
+      const updatedPlans = prevState.embedded_discount_plans.filter((_, i) => i !== index);
+
+      return {
+        ...prevState,
+        embedded_discount_plans: updatedPlans,
+      };
+    });
+
+    setGlobalSelectedPlanIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      newSelected.delete(removedPlanId);
+      return newSelected;
+    });
+  };
+
+  const handleAddChannel = () => {
+    const selectedChannelIds = new Set(promotion.embedded_discount_channels.map(channel => channel.channel_id));
+    setGlobalSelectedChannels(selectedChannelIds);
+    setIsModalOpen(true);
+  };
+
+
+  const handleAddInsurance = () => {
+    const selectedInsuranceIds = new Set(promotion.embedded_discount_insurances.map(ins => ins.insurance_id));
+    setGlobalSelectedInsuranceIds(selectedInsuranceIds);
+    setIsInsuranceModalOpen(true);
+  };
+
+
+  const handleSelectInsurance = (selectedInsurances: any[]) => {
+    const existingInsurance = promotion.embedded_discount_insurances;
+
+    const updatedInsurances = [...existingInsurance];
+
+    selectedInsurances.forEach(insurance => {
+      const existingInsurance = updatedInsurances.find(c => c.insurance_id === insurance.id);
+      if (!existingInsurance) {
+        updatedInsurances.push({
+          insurance_id: insurance.id,
+          insurance_name: insurance.name
+        });
+      }
+    });
+
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_insurances: updatedInsurances
+    }));
+
+    // Store selected insurance objects (not just IDs)
+    setSelectedInsurances(prevSelected => {
+      const newSelected = [...prevSelected];
+      selectedInsurances.forEach(insurance => {
+        if (!newSelected.find(c => c.id === insurance.id)) {
+          newSelected.push(insurance); // Store the full insurance object
+        }
+      });
+      return newSelected;
+    });
+
+    // Update global selected insurance IDs
+    setGlobalSelectedInsuranceIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedInsurances.forEach(insurance => newSelected.add(insurance.id));
+      return newSelected;
+    });
+
+    const insuranceIdsToFetch = updatedInsurances.map(ins => ins.insurance_id);
+    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, showProdPerPage); // Fetch products based on updated insurance IDs and reset to page 1.
+
+    setIsInsuranceModalOpen(false);
+    setCurrentPageProd(1); // Reset the product modal page to 1 after changing insurances
+  };
+
+
+
+  const handleSelectChannel = (selectedChannelsArray: any[]) => {
+    const existingChannels = promotion.embedded_discount_channels;
+
+    const updatedChannels = [...existingChannels];
+
+    selectedChannelsArray.forEach(channel => {
+      const existingChannel = updatedChannels.find(c => c.channel_id === channel.id);
+      if (!existingChannel) {
+        updatedChannels.push({
+          channel_id: channel.id,
+          channel_name: channel.name,
+        });
+      }
+    });
+
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_channels: updatedChannels,
+    }));
+
+    // Store selected channel objects (not just IDs)
+    setSelectedChannels(prevSelected => {
+      const newSelected = [...prevSelected];
+      selectedChannelsArray.forEach(channel => {
+        if (!newSelected.find(c => c.id === channel.id)) {
+          newSelected.push(channel);
+        }
+      });
+      return newSelected;
+    });
+
+    setGlobalSelectedChannels(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedChannelsArray.forEach(channel => newSelected.add(channel.id));
+      return newSelected;
+    });
+
+    setIsModalOpen(false);
+  };
+
+  const handlePageChangeProd = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageProd(page);
+      fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), page, showProdPerPage);
+    }
+  };
+
+  const handleAddProduct = () => {
+    const selectedProdIds = new Set(promotion.embedded_discount_products.map(products => products.product_id));
+    setGlobalSelectedProdIds(selectedProdIds);
+    setIsProductModalOpen(true);
+  };
+
+  const handleRemoveProd = (prodId: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_products: prevState.embedded_discount_products.filter(product => product.product_id !== prodId)
+    }));
+  };
+
+  const handleRemovePlans = (planId: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      embedded_discount_plans: prevState.embedded_discount_plans.filter(plan => plan.plan_id !== planId)
+    }));
+  };
+
+  const handleSearch = async (query: string) => {
+    try {
+      const res: any = await productService.get(ApiURL.v1Plans, { params: { productIds: Array.from(globalSelectedProdIds), planName: query, page: 1, pageSize: 10 } });
+      const response = res.data;
+      //here
+      setPlans(response);
+      setGlobalSelectedPlanIds(globalSelectedPlanIds);
+      setTotalPlanItems(response.meta.total);
+      setCurrentPagePlan(1);
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
+  };
+
+  const handlePageChangeInsurances = (page: number) => {
+    if (page >= 1) {
+      setCurrentPageIns(page);
+      fetchInsurances(page, showInsPerPage);
+    }
+  };
+
+  const handleInsurancePerPageChange = async (newInsPerPage: number) => {
+    setShowInsPerPage(newInsPerPage);
+    setCurrentPageIns(1);
+    fetchInsurances(1, newInsPerPage);
+  };
+
+  const handleRemoveInsurance = (insuranceId: string) => {
+    setPromotion(prevState => {
+      const updatedInsurances = prevState.embedded_discount_insurances.filter(
+        insurance => insurance.insurance_id !== insuranceId
+      );
+
+      return {
+        ...prevState,
+        embedded_discount_insurances: updatedInsurances,
+        embedded_discount_products: [],  // Clear products
+        embedded_discount_plans: []      // Clear plans
+      };
+    });
+
+    setGlobalSelectedInsuranceIds(prevIds => {
+      const newIds = new Set(prevIds);
+      newIds.delete(insuranceId);
+      return newIds;
+    });
+
+    setSelectedProductIds(new Set());  // Reset selected product IDs
+    setGlobalSelectedProdIds(new Set());
+    setSelectedPlanIds(new Set());     // Reset selected plan IDs
+    setGlobalSelectedPlanIds(new Set());
+    setCurrentPageProd(1);             // Reset pagination for products
+  };
+
+  const handleProdPerPageChange = async (newProdPerPage: number) => {
+    setShowProdPerPage(newProdPerPage);
+    setCurrentPageProd(1);
+    fetchProductsByInsurances(Array.from(globalSelectedInsuranceIds), 1, newProdPerPage);
+  };
+
+  const handleSelectProduct = (selectedProducts: any[]) => {
+    const existingProducts = promotion.embedded_discount_products;
+
+    const updatedProducts = [...existingProducts];
+
+    selectedProducts.forEach(product => {
+      const existingProduct = updatedProducts.find(p => p.product_id === product.id);
+      if (!existingProduct) {
+        updatedProducts.push({
+          product_id: product.id,
+          product_name: product.name
+        });
+      }
+    });
+
+    setPromotion(prevState => {
+      const updatedPlans = prevState.embedded_discount_plans.filter(plan =>
+        updatedProducts.some(prod => prod.product_id === plan.plan_id)
+      );
+
+      return {
+        ...prevState,
+        embedded_discount_products: updatedProducts,
+        embedded_discount_plans: updatedPlans,
+      };
+    });
+
+    const newSelectedIds = new Set<string>(selectedProducts.map(prod => prod.id));
+    setSelectedProductIds(newSelectedIds);
+
+    setSelectedPlanIds(new Set());
+    setGlobalSelectedPlanIds(new Set());
+    setGlobalSelectedProdIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      selectedProducts.forEach(prod => newSelected.add(prod.id));
+      return newSelected;
+    });
+
+  };
+
+
+  const handleSave = async (formData: any) => {
+    // Reset alert messages before validation
+    setErrorMessage('');
+    setAlertMessage('');
+    setShowAlert(false);
+
+    if (!formData.type || !formData.value || !formData.value_currency ||
+      !formData.start_date || !formData.end_date || !formData.name) {
+      setErrorMessage('Please fill in all required fields.');
+      return;
+    }
+
+
+    if (promotion.embedded_discount_insurances.length < 1 || promotion.embedded_discount_products.length < 1 ||
+      promotion.embedded_discount_plans.length < 1 || promotion.embedded_discount_channels.length < 1) {
+      setErrorMessage('Please select at least one data in Channel/Insurance/Product/Plan.');
+      setShowAlert(true);
+      return;
+    }
+
+
+    const startDate = parseISO(formData.start_date);
+    const endDate = parseISO(formData.end_date);
+
+    if (!isValid(startDate) || !isValid(endDate)) {
+      setErrorMessage('Invalid date format. Please use DD-MM-YYYY format.');
+      setShowAlert(true);
+      return;
+    }
+
+    if (startDate > endDate) {
+      setErrorMessage('End date must be later than start date.');
+      setShowAlert(true);
+      return;
+    }
+
+    const payload = {
+      type: formData.type,
+      value: formData.value,
+      start_date: formData.start_date,
+      end_date: formData.end_date,
+      name: formData.name,
+      products: promotion.embedded_discount_products.map(product => ({
+        product_id: product.product_id,
+      })),
+      insurances: promotion.embedded_discount_insurances.map(insurance => ({
+        insurance_id: insurance.insurance_id,
+      })),
+      plans: promotion.embedded_discount_plans.map(plan => ({
+        plan_id: plan.plan_id,
+      })),
+      channels: promotion.embedded_discount_channels.map(channel => ({
+        channel_id: channel.channel_id,
+      })),
+      vouchers: vouchers.map(voucher => ({
+        code: voucher.code,
+        usage_limit: voucher.usageLimit
+      })),
+    };
+
+    try {
+      if (formData.type === "voucher" && !formData.active && vouchers.length > 0) {
+        const campaign_id = params.id;
+
+        for (const voucher of vouchers) {
+          try {
+            const newVoucher = {
+              code: voucher.code,
+              usage_limit: voucher.usageLimit,
+              campaign_id,
+            };
+            await promotionService.post(ApiURL.v1Plans, newVoucher);
+          } catch (voucherError) {
+            console.error("Failed to create voucher:", voucherError);
+            setErrorMessage("Failed to create one or more vouchers.");
+            return;
+          }
+        }
+      }
+
+      // Update the promotion
+      const response: any = await promotionService.put(`${ApiURL.v1CampaignUpdateDetails(params.id)}?id=${params.id}`, payload);
+      const { data } = response.data;
+
+      if (formData.type == "embedded") {
+        if (data != null) {
+          if (data.data?.error?.code === 409) {
+            setErrorMessage("The plan has already been used by another embedded campaign.");
+          } else {
+            setErrorMessage("Promotion updated successfully!");
+            setShowAlert(true);
+            setTimeout(() => {
+              setShowAlert(false);
+              router.push(AppURL.promotionCampaign);
+            }, 2000);
+          }
+        } else {
+          await productService.post(ApiURL.v1PlanSyncEmbeddedDiscounts, {});
+          setErrorMessage("Promotion updated successfully!");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+            router.push(AppURL.promotionCampaign);
+          }, 2000);
+        }
+      } else {
+        setErrorMessage("Promotion updated successfully!");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          router.push(AppURL.promotionCampaign);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Failed to update promotion:", error);
+      setErrorMessage("Failed to update promotion.");
+    }
+  };
+
+  const handleRemoveChannel = (channelId: string) => {
+    setPromotion(prevState => {
+      const updatedChannel = prevState.embedded_discount_channels.filter(
+        channel => channel.channel_id !== channelId
+      );
+
+      return {
+        ...prevState,
+        embedded_discount_channels: updatedChannel,
+        embedded_discount_insurances: [],  // Clear insurances
+        embedded_discount_products: [],  // Clear products
+        embedded_discount_plans: []      // Clear plans
+      };
+    });
+
+    setGlobalSelectedChannels(prevIds => {
+      const newIds = new Set(prevIds);
+      newIds.delete(channelId);
+      return newIds;
+    });
+
+    setSelectedInsuranceIds(new Set());
+    setGlobalSelectedInsuranceIds(new Set());
+    setSelectedProductIds(new Set());  // Reset selected product IDs
+    setGlobalSelectedProdIds(new Set());
+    setSelectedPlanIds(new Set());     // Reset selected plan IDs
+    setGlobalSelectedPlanIds(new Set());
+    setCurrentPageProd(1);             // Reset pagination for products
+  };
+
+  const handleChangeType = (value: string) => {
+    setPromotion(prevState => ({
+      ...prevState,
+      type: value,
+    }));
+  };
+
+  const handleCancel = () => {
+    router.push(AppURL.promotionCampaign);
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const parsedDate = parseISO(dateString);
+    return isValid(parsedDate) ? format(parsedDate, 'yyyy-MM-dd') : '';
+  };
+
+  if (loading) return <p>Loading...</p>;
+
+  return (
+    <div className="flex flex-col w-full gap-4">
+      <form onSubmit={handleSubmit(handleSave)} className="w-full">
+        <div className="bg-white md:px-6 p-4 flex items-center">
+          <div>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink>Campaign</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Edit Campaign</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
+              Edit Campaign
+            </h2>
+          </div>
+          <div className="flex space-x-4 ml-auto">
+            <div
+              onClick={handleCancel}
+              className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </div>
+            <button
+              type="submit"
+              className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2"
+            >
+              <FaCheck className="mr-2" />
+              Save
+            </button>
+          </div>
+        </div>
+
+        <div className="w-full flex flex-col p-4 sm:p-6">
+        <div className="bg-white md:px-6 p-4 grid grid-cols-2 gap-4">
+        {/* Campaign Name and Promotion Type */}
+          <div className="">
+            <label htmlFor="name" className="font-normal">Campaign Name</label>
+            <Controller
+              name="name"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Campaign Name is required" }}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="name"
+                  required
+                  placeholder="Insert Campaign Name"
+                  {...field}
+                  className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm`}
+                />
+              )}
+            />
+          </div>
+
+          <div className="">
+            <label htmlFor="type" className="font-normal">Type</label>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    handleChangeType(value);
+                    field.onChange(value);
+                  }}
+                  disabled={false}
+                >
+                  <SelectTrigger className="w-full h-16 border-gray-300 bg-transparent hover:cursor-pointer py-3 mt-1">
+                    <SelectValue placeholder="Select a Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="embedded">Embedded</SelectItem>
+                      <SelectItem value="voucher">Voucher</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+
+        {/* Currency and Value */}
+          <div className="">
+            <label htmlFor="value_currency" className="font-normal">Currency</label>
+            <Controller
+              name="value_currency"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="value_currency"
+                  required
+                  disabled
+                  {...field}
+                  className={`mt-1 block w-full h-16 ${errors.value_currency ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
+            />
+          </div>
+          <div className="">
+            <label htmlFor="value" className="font-normal">Value</label>
+            <Controller
+              name="value"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="number"
+                  id="value"
+                  required
+                  disabled
+                  {...field}
+                  className={`mt-1 block w-full h-16 ${errors.value ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
+            />
+          </div>
+
+        {/* Start Date and End Date */}
+          <div className="">
+            <label htmlFor="start_date" className="font-normal">Start Date</label>
+            <Controller
+              name="start_date"
+              control={control}
+              defaultValue={promotion.start_date ? formatDate(promotion.start_date) : ""}
+              rules={{ required: "Start date is required" }}
+              render={({ field }) => (
+                <Input
+                  type="date"
+                  id="start_date"
+                  required
+                  placeholder="Insert start date"
+                  {...field}
+                  value={field.value || ""}
+                  className={`mt-1 block w-full h-16 ${errors.start_date ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
+            />
+          </div>
+          <div className="">
+            <label htmlFor="end_date" className="font-normal">End Date</label>
+            <Controller
+              name="end_date"
+              control={control}
+              defaultValue={promotion.end_date ? formatDate(promotion.end_date) : ""}
+              rules={{ required: "End date is required" }}
+              render={({ field }) => (
+                <Input
+                  type="date"
+                  id="end_date"
+                  required
+                  placeholder="Insert end date"
+                  {...field}
+                  value={field.value || ""}
+                  className={`mt-1 block w-full h-16 ${errors.end_date ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
+                />
+              )}
+            />
+          </div>
+
+        <div className="flex flex-col">
+          <label className="font-normal">Status</label>
+          <input
+            type="text"
+            value={promotion.active ? 'Active' : 'Inactive'}
+            readOnly
+            className={`ml-2 p-2 border rounded ${promotion.active ? 'text-green-500' : 'text-red-500'} bg-white`}
+          />
+        </div>
+
+        {/* Channels */}
+        <div className="col-span-2">
+          <label className="font-normal">Channels</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-col p-2">
+                {Array.from(globalSelectedChannels).length > 0 ? (
+                  Array.from(globalSelectedChannels).map((channelId, index) => {
+                    // Look for the channel in both channels?.data and selectedChannels
+                    const channelDetail = channelsInitial?.data.find((c: any) => c.id === channelId) ||
+                      selectedChannels.find(c => c.id === channelId);
+
+                    return (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="whitespace-normal">
+                          {channelDetail ? channelDetail.name : 'Unknown Channel'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItemChan('embedded_discount_channels', index)}
+                          className="text-red-500 ml-auto"
+                        >
+                          <Trash />
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span>No channels added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedChannelIds(globalSelectedChannels);
+                  setIsModalOpen(true);
+                  handleAddChannel(); // Call this function correctly
+                }}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+              >
+                <FaPlus className="mr-2" />
+                Channel
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+
+        {/* Insurances */}
+        <div className="col-span-2">
+          <label className="font-normal">Insurances</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-col p-2">
+                {Array.from(globalSelectedInsuranceIds).length > 0 ? (
+                  Array.from(globalSelectedInsuranceIds).map((insId, index) => {
+                    const insuranceDetail = insurancesInitial?.data.find((c: any) => c.id === insId) ||
+                      selectedInsurances.find(c => c.id === insId);
+                    return (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="whitespace-normal">
+                          {insuranceDetail ? insuranceDetail.name : 'Unknown Insurance'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItemIns('embedded_discount_insurances', index)}
+                          className="text-red-500 ml-auto"
+                        >
+                          <Trash />
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span>No insurances added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedInsuranceIds(globalSelectedInsuranceIds);
+                  setIsInsuranceModalOpen(true);
+                  handleAddInsurance(); // Call this function correctly
+                }}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                disabled={promotion.embedded_discount_channels.length === 0}
+              >
+                <FaPlus className="mr-2" />
+                Insurance
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        {/* Products */}
+        <div className="col-span-2">
+          <label className="font-normal">Products</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-col p-2">
+                {Array.from(globalSelectedProdIds).length > 0 ? (
+                  Array.from(globalSelectedProdIds).map((product, index) => {
+                    const productDetail = productsInitial?.data.find((p: any) => p.id === product) ||
+                      selectedProducts.find(p => p.id === product);
+                    return (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="whitespace-normal">
+                          {productDetail ? productDetail.name : 'Unknown Product'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveProduct('embedded_discount_products', index)}
+                          className="text-red-500 ml-auto"
+                        >
+                          <Trash />
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span>No products added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
+              <button
+                type="button"
+                // onClick={handleAddProduct}
+                onClick={() => {
+                  setSelectedProductIds(globalSelectedProdIds);
+                  setIsProductModalOpen(true);
+                  handleAddProduct(); // Call this function correctly
+                }}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                disabled={promotion.embedded_discount_insurances.length === 0}
+              >
+                <FaPlus className="mr-2" />
+                Product
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+
+        {/* Plans */}
+        <div className="col-span-2">
+          <label className="font-normal">Plans</label>
+          <div className="flex items-start mt-2">
+            <div className="border rounded bg-white overflow-y-auto flex-grow mr-2 h-32">
+              <div className="flex flex-col p-2">
+                {Array.from(globalSelectedPlanIds).length > 0 ? (
+                  Array.from(globalSelectedPlanIds).map((plan, index) => {
+                    const planDetail = plansInitial?.data.find((p: any) => p.id === plan) ||
+                      selectedPlans.find(p => p.id === plan);
+                    return (
+                      <div key={index} className="flex items-center mb-1 mr-1 border border-gray-300 rounded p-1">
+                        <span className="whitespace-normal">
+                          {planDetail ? planDetail.name : 'Unknown Plan'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlan(index)}
+                          className="text-red-500 ml-auto"
+                        >
+                          <Trash />
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span>No plans added</span>
+                )}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex justify-center items-center">
+              <button
+                type="button"
+                // onClick={handleAddPlan}
+                onClick={() => {
+                  setSelectedPlanIds(globalSelectedPlanIds);
+                  setIsPlanModalOpen(true);
+                  handleAddPlan(); // Call this function correctly
+                }}
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 h-10 flex items-center w-40"
+                disabled={promotion.embedded_discount_products.length === 0}
+              >
+                <FaPlus className="mr-2" />
+                Plan
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Vouchers */}
+        {/* <div className="my-4" /> */}
+        <div className="col-span-2">
+          {promotion.type === 'voucher' && (
+            <div>
+              <label className="font-normal">Vouchers</label>
+              {!promotion.active ? (
+                <>
+                  <div className="flex items-center mt-2">
+                    <input
+                      type="text"
+                      value={voucherCode}
+                      onChange={(e) => setVoucherCode(e.target.value)}
+                      className="p-2 border rounded"
+                      placeholder="Enter voucher code"
+                    />
+                    <input
+                      type="number"
+                      value={voucherUsageLimit}
+                      onChange={(e) => setVoucherUsageLimit(Number(e.target.value))}
+                      className="p-2 border rounded ml-2 w-24"
+                      placeholder="Usage limit"
+                      min={1}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddVoucher(voucherCode, voucherUsageLimit)}
+                      className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                      disabled={!voucherCode || voucherUsageLimit <= 0}
+                    >
+                      Add Voucher
+                    </button>
+                  </div>
+                  <div className="mt-4">
+                    {vouchers.map((voucher, index) => (
+                      <div key={index} className="flex items-center mt-2">
+                        <span className="mr-2">{voucher.code} (Usage Limit: {voucher.usageLimit})</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveVoucher(index)}
+                          className="text-red-500"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-red-500">Cannot add vouchers while the promotion is active.</p>
+              )}
+            </div>
+          )}
+        </div>
+
+
+
+        {promotion.type === "voucher" && voucherDetails && (
+          <div className="bg-gray-100 p-4 rounded shadow-md mt-4">
+            <h2 className="text-lg font-semibold">Voucher Details</h2>
+            {Array.isArray(voucherDetails) ? (
+              voucherDetails.map((voucher, index) => (
+                <div key={index} className="mb-4 p-4 bg-white rounded shadow-sm">
+                  <h3 className="text-md font-semibold">Voucher {index + 1}</h3>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Campaign ID:</label>
+                    <span className="w-3/4">{voucher.campaign_id}</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Code:</label>
+                    <span className="w-3/4">{voucher.code}</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Usage Limit:</label>
+                    <span className="w-3/4">{voucher.usage_limit}</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <label className="w-1/4 font-semibold">Used Count:</label>
+                    <span className="w-3/4">{voucher.used_count}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-4 bg-white rounded shadow-sm">
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Campaign ID:</label>
+                  <span className="w-3/4">{voucherDetails.campaign_id}</span>
+                </div>
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Code:</label>
+                  <span className="w-3/4">{voucherDetails.code}</span>
+                </div>
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Usage Limit:</label>
+                  <span className="w-3/4">{voucherDetails.usage_limit}</span>
+                </div>
+                <div className="flex items-center mt-2">
+                  <label className="w-1/4 font-semibold">Used Count:</label>
+                  <span className="w-3/4">{voucherDetails.used_count}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        </div>
+        </div>
+      </form>
+      
+
+      {/* Alert Popup */}
+      {showAlert && (
+        <div className="alert">
+          {alertMessage}
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {errorMessage && (
+        <ErrorModal
+          isOpen={!!errorMessage}
+          message={errorMessage}
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
+
+      {/* Channel Modal */}
+      {isModalOpen && (
+        <ChannelSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelect={handleSelectChannel}
+          channels={channels}
+          onPageChangeChannel={handlePageChangeChannel}
+          selectedChannelIds={selectedChannelIds}
+          showChannelsPerPage={showChannelsPerPage}
+          onChannelsPerPageChange={handleChannelsPerPageChange}
+          globalSelectedChannels={globalSelectedChannels}
+          setGlobalSelectedChannels={setGlobalSelectedChannels}
+          onRemoveChannel={handleRemoveChannel}//
+        />
+      )}
+
+
+      {/* Insurance Modal */}
+      {isInsuranceModalOpen && (
+        <InsuranceSelectionModal
+          isOpen={isInsuranceModalOpen}
+          onClose={() => setIsInsuranceModalOpen(false)}
+          onSelect={handleSelectInsurance}
+          insurances={insurances}
+          initialSelectedInsurances={selectedInsurances}
+          onPageChangeIns={handlePageChangeInsurances}
+          showInsPerPage={showInsPerPage}
+          onInsurancePerPageChange={handleInsurancePerPageChange}
+          globalSelectedInsuranceIds={globalSelectedInsuranceIds}
+          setGlobalSelectedInsuranceIds={setGlobalSelectedInsuranceIds}
+          currentPageIns={currentPageIns}
+          onRemoveInsurance={handleRemoveInsurance}
+        />
+      )}
+
+      {/* Product Modal */}
+      {isProductModalOpen && (
+        <ProductSelectionModal
+          isOpen={isProductModalOpen}
+          onClose={() => setIsProductModalOpen(false)}
+          onSelect={handleSelectProduct}
+          products={products}
+          initialSelectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+          selectedProductIds={selectedProductIds}
+          showProdPerPage={showProdPerPage}
+          onProdPerPageChange={handleProdPerPageChange}
+          globalSelectedProdIds={globalSelectedProdIds}
+          setGlobalSelectedProdIds={setGlobalSelectedProdIds}
+          onPageChangeProd={handlePageChangeProd}
+          currentPageProd={currentPageProd}
+          onRemoveProd={handleRemoveProd}
+        />
+      )}
+
+      {/* Plan Modal */}
+      {isPlanModalOpen && (
+        <PlanSelectionModal
+          isOpen={isPlanModalOpen}
+          onClose={() => setIsPlanModalOpen(false)}
+          onSelect={handleSelectPlan}
+          plans={plans}
+          products={promotion.embedded_discount_products.map(p => ({
+            id: p.product_id,
+            name: p.product_name,
+          }))}
+          preSelectedPlanIds={new Set(promotion.embedded_discount_plans.map(plan => plan.plan_id))}
+          selectedProductIds={new Set(promotion.embedded_discount_products.map(p => p.product_id))}
+          onPageChangePlan={handlePageChangePlans}
+          totalPlanItems={totalPlanItems}
+          pagePlan={currentPagePlan}
+          showPlansPerPage={showPlansPerPage}
+          onPlansPerPageChange={handlePlansPerPageChange}
+          globalSelectedPlanIds={globalSelectedPlanIds}
+          setGlobalSelectedPlanIds={setGlobalSelectedPlanIds}
+          globalSelectedProdIds={globalSelectedProdIds}
+          onRemovePlan={handleRemovePlans}
+          onSearch={handleSearch}
+        />
+      )}
+
+    </div>
+  );
+};

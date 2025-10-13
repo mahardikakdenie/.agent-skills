@@ -1,0 +1,122 @@
+class AppURL {
+  static dashboard = "/dashboard";
+  static policy = "/policy";
+  static claim = "/claim";
+  static transaction = "/transaction";
+  static customer = "/customer";
+  static plan = "/plan";
+  static masterdata = "/masterdata";
+  static configuration = "/configuration";
+  static finance = "/finance";
+  static membership = "/membership";
+  static sanction = "/sanction";
+  static source = "/source";
+  static promotion = "/promotion";
+  static productCategory = "/product-category";
+  static report = "/report";
+  static forbidden = "/forbidden";
+
+  static dashboardHome = `${AppURL.dashboard}/home`;
+  static dashboardTransaction = `${AppURL.dashboard}/transaction`;
+  static dashboardPolicy = `${AppURL.dashboard}/policy`;
+  static dashboardClaim = `${AppURL.dashboard}/claim`;
+  static dashboardInsightReport = `${AppURL.dashboard}/insight-report`;
+  static policyList = `${AppURL.policy}/list`;
+  static endorsement = `${AppURL.policy}/endorsement`;
+  static endorsementList = `${AppURL.endorsement}/list`;
+  static endorsementDetail = `${AppURL.endorsementList}/detail`;
+  static endorsementUpload = `${AppURL.endorsementList}/upload`;
+  static endorsementExport = `${AppURL.endorsementList}/export`;
+  static claimList = `${AppURL.claim}/list`;
+  static claimHistory = `${AppURL.claim}/history`;
+  static transactionList = `${AppURL.transaction}/list`;
+  static transactionRevenue = `${AppURL.transaction}/revenue`;
+  static transactionCountries = `${AppURL.transaction}/countries`;
+  static planList = `${AppURL.plan}/list`;
+  static masterdataProductCategory = `${AppURL.masterdata}/product-category`;
+  static masterdataInsurance = `${AppURL.masterdata}/insurance`;
+  static masterdataProduct = `${AppURL.masterdata}/product`;
+  static masterdataCurrency = `${AppURL.masterdata}/currency`;
+  static masterdataChannel = `${AppURL.masterdata}/channel`;
+  static masterdataUser = `${AppURL.masterdata}/user`;
+  static masterdataGroup = `${AppURL.masterdata}/group`;
+  static masterdataRole = `${AppURL.masterdata}/role`;
+  static masterdataPageManagement = `${AppURL.masterdata}/page-management`;
+  static masterdataPartnerManagement = `${AppURL.masterdata}/partner-management`;
+  static masterdataEmailTemplate = `${AppURL.masterdata}/email-template`;
+  static masterdataEmailTag = `${AppURL.masterdata}/email-tag`;
+  static masterdataHolidayDate = `${AppURL.masterdata}/holiday-date`;
+  static masterdataHospital = `${AppURL.masterdata}/hospital`;
+
+  static configurationSla = `${AppURL.configuration}/sla`;
+  static financeBilling = `${AppURL.finance}/billing`;
+  static financeUnmatchBilling = `${AppURL.finance}/unmatch-billing`;
+  static financeBrokerFee = `${AppURL.finance}/broker-fee`;
+  static financePartnerComm = `${AppURL.finance}/partner-comm`;
+  static membershipList = `${AppURL.membership}/list`;
+  static customerList = `${AppURL.customer}/list`;
+  static promotionCampaign = `${AppURL.promotion}/campaign`;
+  static sanctionList = `${AppURL.sanction}/list`;
+  static sourceList = `${AppURL.source}/list`;
+  static reportClaim = `${AppURL.report}/claim`;
+  static reportCampaign = `${AppURL.report}/campaign`;
+  static reportPerformance = `${AppURL.report}/performance`;
+
+  static policyDetail = `${AppURL.policyList}/detail`;
+  static claimDetail = `${AppURL.claimList}/detail`;
+  static planDetail = `${AppURL.planList}/detail`;
+  static membershipDetail = `${AppURL.membershipList}/detail`;
+  static sanctionDetail = `${AppURL.sanctionList}/detail`;
+  static sourceDetail = `${AppURL.sourceList}/detail`;
+  static financeBillingDetail = `${AppURL.financeBilling}/detail`;
+  static financeBrokerFeeDetail = `${AppURL.financeBrokerFee}/detail`;
+  static financePartnerCommDetail = `${AppURL.financePartnerComm}/detail`;
+  static masterdataProductDetail = `${AppURL.masterdataProduct}/detail`;
+  static masterdataProductCategoryDetail = `${AppURL.masterdataProductCategory}/detail`;
+  static masterdataInsuranceDetail = `${AppURL.masterdataInsurance}/detail`;
+  static masterdataCurrencyDetail = `${AppURL.masterdataCurrency}/detail`;
+  static masterdataChannelDetail = `${AppURL.masterdataChannel}/detail`;
+  static masterdataUserDetail = `${AppURL.masterdataUser}/detail`;
+  static masterdataGroupDetail = `${AppURL.masterdataGroup}/detail`;
+  static masterdataRoleDetail = `${AppURL.masterdataRole}/detail`;
+  static masterdataPageManagementDetail = `${AppURL.masterdataPageManagement}/detail`;
+  static masterdataPartnerManagementDetail = `${AppURL.masterdataPartnerManagement}/detail`;
+  static masterdataEmailTemplateDetail = `${AppURL.masterdataEmailTemplate}/detail`;
+  static masterdataEmailTagDetail = `${AppURL.masterdataEmailTag}/detail`;
+  static masterdataHolidayDateDetail = `${AppURL.masterdataHolidayDate}/detail`;
+  static promotionCampaignDetail = `${AppURL.promotionCampaign}/detail`;
+  static transactionDetail = `${AppURL.transactionList}/detail`;
+
+  static planAdd = `${AppURL.planList}/add`;
+  static customerAdd = `${AppURL.customerList}/add`;
+  static sanctionAdd = `${AppURL.sanctionList}/add`;
+  static sourceAdd = `${AppURL.sourceList}/add`;
+  static transactionAdd = `${AppURL.transactionList}/add`;
+  static financeBillingAdd = `${AppURL.financeBilling}/add`;
+  static financeBrokerFeeAdd = `${AppURL.financeBrokerFee}/add`;
+  static financePartnerCommAdd = `${AppURL.financePartnerComm}/add`;
+  static masterdataProductAdd = `${AppURL.masterdataProduct}/add`;
+  static masterdataProductCategoryAdd = `${AppURL.masterdataProductCategory}/add`;
+  static masterdataInsuranceAdd = `${AppURL.masterdataInsurance}/add`;
+  static masterdataCurrencyAdd = `${AppURL.masterdataCurrency}/add`;
+  static masterdataChannelAdd = `${AppURL.masterdataChannel}/add`;
+  static masterdataUserAdd = `${AppURL.masterdataUser}/add`;
+  static masterdataGroupAdd = `${AppURL.masterdataGroup}/add`;
+  static masterdataRoleAdd = `${AppURL.masterdataRole}/add`;
+  static masterdataPageManagementAdd = `${AppURL.masterdataPageManagement}/add`;
+  static masterdataPartnerManagementAdd = `${AppURL.masterdataPartnerManagement}/add`;
+  static masterdataEmailTemplateAdd = `${AppURL.masterdataEmailTemplate}/add`;
+  static masterdataEmailTagAdd = `${AppURL.masterdataEmailTag}/add`;
+  static masterdataHolidayDateAdd = `${AppURL.masterdataHolidayDate}/add`;
+  static promotionCampaignAdd = `${AppURL.promotionCampaign}/add`;
+
+  static promotionCampaignEdit = `${AppURL.promotionCampaign}/edit`;
+
+  static sanctionUpload = `${AppURL.sanctionList}/upload`;
+
+  static transactionExport = `${AppURL.transactionList}/export`;
+
+  static transactionImport = `${AppURL.transactionList}/import`;
+}
+
+export default AppURL;

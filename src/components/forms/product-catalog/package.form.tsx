@@ -21,7 +21,7 @@ import {
   PRODUCT_CATALOG_CATEGORY,
   PRODUCT_CATALOG_DETAIL,
 } from "@/constants/routes";
-import { useProducts } from "@/app/protected/product-catalog/hooks";
+import { useProducts } from "@/app/product-category/hooks";
 import { FieldArrayInput } from "./field-array-input";
 
 type FormFieldType = {

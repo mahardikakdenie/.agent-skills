@@ -1,4 +1,4 @@
-import { primary, primaryRed } from "@/constants";
+import { primary, primaryRed } from "@/constants/app-common.const";
 import toast from "react-hot-toast";
 
 export const toastNotification = (

@@ -27,7 +27,7 @@ import {
   PRODUCT_CATALOG_CATEGORY,
   PRODUCT_CATALOG_DETAIL,
 } from "@/constants/routes";
-import { useProducts } from "@/app/protected/product-catalog/hooks";
+import { useProducts } from "@/app/product-category/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const schema: z.ZodType<any> = z.lazy(() =>

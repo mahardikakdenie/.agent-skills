@@ -1,19 +1,12 @@
-"use client";
+import React from "react";
 
-import { useSetNotFound } from "@/context/not-found.context";
-import { useEffect } from "react";
+const PageNotFound: React.FC = () => {
+    return (
+        <div className="h-[calc(100vh-50px)] flex flex-col items-center justify-center">
+            <h1 className="font-bold text-3xl">404 - Page Not Found</h1>
+            <p className="mx-5 text-center">Oops! The page you are looking for does not exist.</p>
+        </div>
+    );
+};
 
-export default function NotFound() {
-  const setNotFound = useSetNotFound();
-
-  useEffect(() => {
-    setNotFound(true);
-  }, [setNotFound]);
-  
-  return (
-    <main className="flex gap-4 items-center justify-center min-h-screen bg-black text-white">
-      <h1 className="text-2xl font-bold">404</h1>
-      <p>This page could not be found.</p>
-    </main>
-  );
-}
+export default PageNotFound;

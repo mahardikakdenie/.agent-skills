@@ -1,0 +1,42 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { useAuth } from "@/context/auth.context";
+import { FORBIDDEN } from "@/constants/routes";
+import ProductCategoryPackageForm from "@/components/forms/product-catalog/package.form";
+
+export default function EditProductCatalogPackage({
+  params,
+}: {
+  params: Promise<{
+    id: string;
+    category: string;
+    packageId: string;
+  }>;
+}) {
+  const router = useRouter();
+  const { id, category, packageId } = React.use(params);
+  const { permissionList } = useAuth();
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const access = permissionList.includes("Product Category.Update");
+
+      if (!access) {
+        router.push(FORBIDDEN);
+      }
+    };
+
+    checkAccess();
+  }, [router]);
+
+  return (
+    <ProductCategoryPackageForm
+      method="update"
+      category={category}
+      productCategoryID={id}
+      packageID={packageId}
+    />
+  );
+};
