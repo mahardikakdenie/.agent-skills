@@ -124,9 +124,7 @@ export function useDetailClaim(): useDetailClaimProps {
 
           setFormValue(updatedFormValue);
 
-          console.log(claimForms, "DY: this claim forms 2");
           const parentForms = filterSchemaByNames(claimForms, missingDocs);
-          console.log(parentForms, "DY: this parent");
           setAllClaimForms(parentForms);
         }
       },
