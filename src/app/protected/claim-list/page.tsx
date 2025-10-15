@@ -1,7 +1,6 @@
 "use client";
 import _ from "lodash";
 import React from "react";
-import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import WithSidebar from "@/hoc/with-sidebar";
 import { cn } from "@/lib/utils";
@@ -10,21 +9,455 @@ import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { use, useEffect, useState } from "react";
-import { formatMoneyClaim } from "@/lib/formatter";
+import { useEffect, useState } from "react";
+import { formatMoneyClaim, formatDate } from "@/lib/formatter";
 import { Calendar } from "@/components/ui/calendar";
 import { hasPermission } from "@/context/auth.context";
 import { ClaimService } from "@/services/claim.service";
 import { usePathname, useRouter } from "next/navigation";
 import { ChannelService } from "@/services/channel.services";
-import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { AlertCircle, Check, ChevronLeft, ChevronRight, Download, Eye, Plus, Search, Trash2, Upload, X, } from "react-feather";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog";
-import { CLAIM_LIST_DETAIL, CLAIM_LIST_EXPORT, CLAIM_LIST_IMPORT, CLAIM_LIST_IMPORT_WITH_PREVIEW, FORBIDDEN } from "@/constants/routes";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertCircle,
+  Check,
+  Download,
+  Eye,
+  Plus,
+  Trash2,
+  Upload,
+  X,
+} from "react-feather";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  CLAIM_LIST_DETAIL,
+  CLAIM_LIST_EXPORT,
+  CLAIM_LIST_IMPORT,
+  CLAIM_LIST_IMPORT_WITH_PREVIEW,
+  FORBIDDEN,
+} from "@/constants/routes";
+import { Column, DataTable } from "@/components/ui/DataTable";
+import {
+  ClaimItem,
+  ClaimsTableConfigProps,
+  DocumentItem,
+  DocumentTableConfigProps,
+} from "@/interface";
+import { useAuth } from "@/context/auth.context";
+
+export const createClaimsTableColumns = ({
+  page,
+  rowsPerPage,
+  canEdit,
+  openAllStatus,
+  onStatusChange,
+  onViewDetail,
+  getStatusColor,
+}: ClaimsTableConfigProps): Column<ClaimItem>[] => [
+  {
+    key: "index",
+    header: "No.",
+    render: (_, index) => (page - 1) * rowsPerPage + index + 1,
+  },
+  {
+    key: "number",
+    header: "Claim ID",
+    className: "whitespace-nowrap",
+  },
+  {
+    key: "policy_data.policy_holder.name",
+    header: "Customer Name",
+    className: "whitespace-nowrap",
+  },
+  {
+    key: "package.plan.name",
+    header: "Plan Name",
+    className: "min-w-72",
+    render: (claim) => claim.package?.plan?.name?.split("|").join(" - ") || "-",
+  },
+  {
+    key: "benefit.description_en",
+    header: "Benefit",
+    className: "min-w-60",
+  },
+  {
+    key: "currency",
+    header: "Currency",
+  },
+  {
+    key: "requested_amount",
+    header: "Requested Amount",
+    render: (claim) => {
+      const claimValue = claim.claim?.find(
+        (d: any) => d.type === "Number" && d.name === "claim"
+      )?.value;
+
+      const numericValue = Number(claimValue);
+      return !isNaN(numericValue) ? formatMoneyClaim(numericValue) : "-";
+    },
+  },
+  {
+    key: "amount_approved",
+    header: "Approved Amount",
+    render: (claim) => (
+      <div className="flex gap-2 items-center">
+        {formatMoneyClaim(
+          claim.amount_approved != null ? claim.amount_approved : 0
+        )}
+      </div>
+    ),
+  },
+  {
+    key: "edited_by",
+    header: "Edited By",
+  },
+  {
+    key: "updated_at",
+    header: "Last Modified",
+    render: (claim) =>
+      claim.updated_at
+        ? formatDate(claim.updated_at, "DD/MM/YYYY, HH:mm")
+        : "-",
+  },
+  {
+    key: "status",
+    header: "Status",
+    className: "font-semibold whitespace-nowrap",
+    render: (claim) => (
+      <Select
+        value={claim.status}
+        disabled={!canEdit}
+        onValueChange={(value) => {
+          onStatusChange(claim, value);
+        }}
+      >
+        <SelectTrigger
+          className={`w-[240px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
+            claim.status
+          )}`}
+        >
+          <SelectValue>{claim.status || "Select Status"}</SelectValue>
+        </SelectTrigger>
+        <SelectContent className="max-h-48 overflow-auto">
+          <SelectItem
+            value="Submitted"
+            disabled={
+              (claim.status !== "Draft" && !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Submitted
+          </SelectItem>
+          <SelectItem
+            value="Acknowledged"
+            disabled={
+              (claim.status !== "Submitted" && !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Acknowledged
+          </SelectItem>
+          <SelectItem
+            value="Document Review Operator"
+            disabled={
+              (claim.status !== "Acknowledged" &&
+                claim.status !== "Lack of Documents Operator" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Document Review Operator
+          </SelectItem>
+          <SelectItem
+            value="Reupload Document Review Operator"
+            disabled={
+              (claim.status !== "Lack of Documents Operator" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Reupload Document Review Operator
+          </SelectItem>
+          <SelectItem
+            value="Lack of Documents Operator"
+            disabled={
+              (claim.status !== "Document Review Operator" &&
+                claim.status !== "Reupload Document Review Operator" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Lack of Documents Operator
+          </SelectItem>
+          <SelectItem
+            value="Document Review Insurance"
+            disabled={
+              (claim.status !== "Document Review Operator" &&
+                claim.status !== "Lack of Documents Insurance" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Document Review Insurance
+          </SelectItem>
+          <SelectItem
+            value="Reupload Document Review Insurance"
+            disabled={
+              (claim.status !== "Lack of Documents Insurance" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Reupload Document Review Insurance
+          </SelectItem>
+          <SelectItem
+            value="Lack of Documents Insurance"
+            disabled={
+              (claim.status !== "Document Review Insurance" &&
+                claim.status !== "Reupload Document Review Insurance" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Lack of Documents Insurance
+          </SelectItem>
+          <SelectItem
+            value="Claim Assessment"
+            disabled={
+              (claim.status !== "Document Review" &&
+                claim.status !== "Document Review Insurance" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Claim Assessment
+          </SelectItem>
+          <SelectItem
+            value="Approved"
+            disabled={
+              (claim.status !== "Claim Assessment" && !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Approved
+          </SelectItem>
+          <SelectItem
+            value="Rejected"
+            disabled={
+              (claim.status !== "Claim Assessment" && !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Rejected
+          </SelectItem>
+          <SelectItem
+            value="Paid"
+            disabled={
+              (claim.status !== "Approved" && !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Paid
+          </SelectItem>
+          <SelectItem
+            value="Closed"
+            disabled={
+              (claim.status !== "Paid" &&
+                claim.status !== "Rejected" &&
+                !openAllStatus) ||
+              claim.status == "Closed"
+            }
+          >
+            Closed
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    ),
+  },
+  {
+    key: "action",
+    header: "Action",
+    render: (claim) => (
+      <Button onClick={() => onViewDetail(claim.id)} className="rounded-full">
+        View
+      </Button>
+    ),
+  },
+];
+
+export const createDocumentTableColumns = ({
+  selectedDocuments,
+  onCheckboxChange,
+  onSelectDocument,
+  isDocumentSelected,
+}: DocumentTableConfigProps): Column<DocumentItem>[] => [
+  {
+    key: "select",
+    header: "Select",
+    className: "w-10",
+    render: (document) => (
+      <div className="text-center">
+        <Input
+          type="checkbox"
+          checked={
+            document.type.toLowerCase() === "fields"
+              ? isDocumentSelected(
+                  document?.fields?.filter(
+                    (a: any) => a.type.toLowerCase() === "file"
+                  )?.[0]?.name || ""
+                )
+              : isDocumentSelected(document.name)
+          }
+          onClick={() => {
+            let docName = document.name;
+            if (document.type.toLowerCase() === "fields") {
+              docName =
+                document?.fields?.filter(
+                  (a: any) => a.type.toLowerCase() === "file"
+                )?.[0]?.name || "";
+            }
+            onCheckboxChange(docName);
+          }}
+          className="w-4 h-4 mx-auto"
+        />
+      </div>
+    ),
+  },
+  {
+    key: "document_type",
+    header: "Document Type",
+    render: (document) => (
+      <>
+        {document.type.toLowerCase() === "fields"
+          ? document?.fields?.filter(
+              (a: any) => a.type.toLowerCase() === "file"
+            )?.[0]?.label?.en ||
+            document?.fields?.filter(
+              (a: any) => a.type.toLowerCase() === "file"
+            )?.[0]?.label_multilanguage?.en ||
+            document?.fields?.filter(
+              (a: any) => a.type.toLowerCase() === "file"
+            )?.[0]?.label ||
+            "-"
+          : document?.label?.en ||
+            document?.label_multilanguage?.en ||
+            document?.label ||
+            "-"}
+      </>
+    ),
+  },
+  {
+    key: "criteria",
+    header: "Criteria",
+    render: (document) =>
+      document.type.toLowerCase() === "fields"
+        ? document?.fields?.filter(
+            (a: any) => a.type.toLowerCase() === "file"
+          )?.[0]?.criteria || "-"
+        : document?.criteria || "-",
+  },
+  {
+    key: "definition",
+    header: "Definition",
+    render: (document) =>
+      document.type.toLowerCase() === "fields"
+        ? document?.fields?.filter(
+            (a: any) => a.type.toLowerCase() === "file"
+          )?.[0]?.definition || "-"
+        : document?.definition || "-",
+  },
+  {
+    key: "message",
+    header: "Message",
+    className: "w-24 text-center",
+    render: (document) => (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            className="bg-transparent hover:bg-transparent rounded-full text-blue-500 w-auto p-0 h-6"
+            onClick={onSelectDocument}
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
+          <DialogHeader className="bg-transparent py-3 px-4 sm:px-6">
+            <DialogTitle className="text-sm sm:text-base flex items-center">
+              Message Preview
+              <DialogClose className="ml-auto">
+                <Button
+                  type="button"
+                  className="bg-transparent hover:bg-transparent text-black p-0"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </DialogClose>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col px-4 pb-4">
+            <p className="text-sm">
+              Document type:{" "}
+              {document.type.toLowerCase() === "fields"
+                ? document?.fields?.filter(
+                    (a: any) => a.type.toLowerCase() === "file"
+                  )?.[0]?.name || "-"
+                : document?.name || "-"}
+            </p>
+            <p className="text-sm">
+              Criteria:{" "}
+              {document.type.toLowerCase() === "fields"
+                ? document?.fields?.filter(
+                    (a: any) => a.type.toLowerCase() === "file"
+                  )?.[0]?.criteria || "-"
+                : document?.criteria || "-"}
+            </p>
+            <p className="text-sm">
+              Definition:{" "}
+              {document.type.toLowerCase() === "fields"
+                ? document?.fields?.filter(
+                    (a: any) => a.type.toLowerCase() === "file"
+                  )?.[0]?.definition || "-"
+                : document?.definition || "-"}
+            </p>
+            <hr className="my-4" />
+            <p className="text-sm">
+              "
+              {document.type.toLowerCase() === "fields"
+                ? document?.fields?.filter(
+                    (a: any) => a.type.toLowerCase() === "file"
+                  )?.[0]?.pending_reason_message?.en || "-"
+                : document?.pending_reason_message?.en || "-"}
+              "
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    ),
+  },
+];
 
 const ClaimsPage = () => {
+  const { claims: claimsToken } = useAuth();
   const path = usePathname();
   const claimService = new ClaimService();
   const [claims, setClaims] = useState<any[]>([]);
@@ -55,7 +488,9 @@ const ClaimsPage = () => {
   const [currencyApp, setCurrencyApp] = useState(" ");
   const [dataDocument, setDataDocument] = useState<any[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
-  const [finalSelectedDocuments, setFinalSelectedDocuments] = useState<any[]>([]);
+  const [finalSelectedDocuments, setFinalSelectedDocuments] = useState<any[]>(
+    []
+  );
   const [successUpdate, setSuccessUpdate] = useState(false);
   const [selectedClaim, setSelectedClaim] = useState<any>(null);
   const [searchData, setSearchData] = useState("");
@@ -65,8 +500,13 @@ const ClaimsPage = () => {
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
 
-  const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
-  const [selectedChannel, setSelectedChannel] = useState<any>({ id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88", name: "Teman" });
+  const [searchChannel, setSearchChannel] = useState(
+    "40eee5bf-2b92-4d23-be55-f9caa9d3ea88"
+  ); //DEFAULT TEMAN
+  const [selectedChannel, setSelectedChannel] = useState<any>({
+    id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
+    name: "Teman",
+  });
   const [searchSlaStatus, setSearchSlaStatus] = useState("");
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
@@ -101,6 +541,11 @@ const ClaimsPage = () => {
   }, [searchData, searchSlaStatus, date, searchChannel]);
 
   useEffect(() => {
+    const channelId =
+      claimsToken?.channel ||
+      claimsToken?.account_channels?.[0]?.channel ||
+      searchChannel;
+
     const fetchData = async () => {
       try {
         const res = await claimService.getClaims(
@@ -111,8 +556,10 @@ const ClaimsPage = () => {
           searchSlaStatus === "All" ? "" : searchSlaStatus,
           date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
           date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
-          searchChannel// === "All" ? "" : searchChannel,
+          channelId // === "All" ? "" : searchChannel,
         );
+
+        setSearchChannel(channelId);
         setFilteredClaims(res?.data);
         // setPage(res?.page);
         setTotalPages(res?.pageTotal);
@@ -133,22 +580,25 @@ const ClaimsPage = () => {
     searchData,
     searchSlaStatus,
     date,
-    searchChannel
+    searchChannel,
+    claimsToken,
   ]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const channelService = new ChannelService();
-        const channelResponse = await channelService.getChannels(undefined, 100);
+        const channelResponse = await channelService.getChannels(
+          undefined,
+          100
+        );
         setChannels(channelResponse.data || []);
       } catch (error) {
-        console.error('Failed to fetch channels:', error);
+        console.error("Failed to fetch channels:", error);
       }
     };
 
     fetchData();
-
   }, []);
 
   useEffect(() => {
@@ -347,7 +797,13 @@ const ClaimsPage = () => {
     lack_of_documents?: string[]
   ) => {
     claimService
-      .updateClaimStatus(claimId, newStatus, amount_approved, note, lack_of_documents)
+      .updateClaimStatus(
+        claimId,
+        newStatus,
+        amount_approved,
+        note,
+        lack_of_documents
+      )
       .then(() => {
         setSuccessUpdate(true);
         alert("Update status successfully.");
@@ -357,7 +813,6 @@ const ClaimsPage = () => {
         alert("Failed to update status. Please try again.");
       });
   };
-
 
   const confirmModal = () => {
     if (selectedClaim.amount && selectedClaim.amount > 0) {
@@ -374,7 +829,9 @@ const ClaimsPage = () => {
     }
 
     if (
-      (notes === "" && pendingStatus === "Approved" && selectedChannel.name != "drgadget") ||
+      (notes === "" &&
+        pendingStatus === "Approved" &&
+        selectedChannel.name != "drgadget") ||
       (notes === "" && pendingStatus === "Rejected") ||
       (notes === "" && pendingStatus === "Lack of Documents Operator") ||
       (notes === "" && pendingStatus === "Lack of Documents Insurance")
@@ -384,8 +841,10 @@ const ClaimsPage = () => {
     }
 
     if (
-      (finalSelectedDocuments.length < 1 && pendingStatus === "Lack of Documents Operator") ||
-      (finalSelectedDocuments.length < 1 && pendingStatus === "Lack of Documents Insurance")
+      (finalSelectedDocuments.length < 1 &&
+        pendingStatus === "Lack of Documents Operator") ||
+      (finalSelectedDocuments.length < 1 &&
+        pendingStatus === "Lack of Documents Insurance")
     ) {
       setDocsMsg("Required!");
       return;
@@ -441,21 +900,22 @@ const ClaimsPage = () => {
     const docListFields =
       dataDocument.length > 0
         ? dataDocument
-          .filter(
-            (doc: any) =>
-              doc.type.toLowerCase() === "fields" && doc.fields.length > 0
-          )
-          .map((a: any) =>
-            a.fields.filter(
+            .filter(
               (doc: any) =>
-                doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple"
+                doc.type.toLowerCase() === "fields" && doc.fields.length > 0
             )
-          )
-          .flat()
-          .map((d: any) => ({
-            ...d,
-            nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-",
-          }))
+            .map((a: any) =>
+              a.fields.filter(
+                (doc: any) =>
+                  doc.type.toLowerCase() === "file" ||
+                  doc.type.toLowerCase() === "file multiple"
+              )
+            )
+            .flat()
+            .map((d: any) => ({
+              ...d,
+              nameForUpdateStatus: `${d?.name}-fields.${d?.name}` || "-",
+            }))
         : [];
     const selectedFields = docListFields.filter((doc) =>
       selectedDocuments.includes(doc.name)
@@ -502,17 +962,44 @@ const ClaimsPage = () => {
       sla_status: searchSlaStatus === "All" ? "" : searchSlaStatus,
       date_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
       date_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
-      channel: searchChannel
+      channel: searchChannel,
     };
 
     localStorage.setItem("exportClaimData", JSON.stringify(exportData));
     router.push(CLAIM_LIST_EXPORT);
   };
 
+  const claimsTableColumns = createClaimsTableColumns({
+    page,
+    rowsPerPage,
+    canEdit,
+    openAllStatus,
+    onStatusChange: handleChangeStatus,
+    onViewDetail: goToDetail,
+    getStatusColor,
+  });
+
+  const documentTableColumns = createDocumentTableColumns({
+    selectedDocuments,
+    onCheckboxChange: handleCheckboxChange,
+    onSelectDocument: handleSelectDocument,
+    isDocumentSelected,
+  });
+
+  const getRowClassName = (claim: ClaimItem) => {
+    return claim.sla_status === "Due Date"
+      ? "bg-[#FFFEE2]"
+      : claim.sla_status === "Overdue"
+      ? "bg-[#fadede]"
+      : "";
+  };
+
   return (
     <div className="flex flex-col w-full p-4 md:p-6 ">
       <div className="flex flex-wrap justify-end gap-4 pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full mr-auto">Claim List</h1>
+        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full mr-auto">
+          Claim List
+        </h1>
 
         <div className="flex gap-2 sm:w-auto w-full relative">
           <Popover>
@@ -529,7 +1016,8 @@ const ClaimsPage = () => {
                 {date?.from ? (
                   date.to ? (
                     <>
-                      {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.to, "LLL dd, y")}
                     </>
                   ) : (
                     format(date.from, "LLL dd, y")
@@ -540,7 +1028,13 @@ const ClaimsPage = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="range" defaultMonth={new Date()} selected={date} onSelect={(range) => setDate(range)} numberOfMonths={2} />
+              <Calendar
+                mode="range"
+                defaultMonth={new Date()}
+                selected={date}
+                onSelect={(range) => setDate(range)}
+                numberOfMonths={2}
+              />
             </PopoverContent>
           </Popover>
           <Button
@@ -563,18 +1057,21 @@ const ClaimsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {
-                  channels.map((item, index) => (
-                    <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
-                  ))
-                }
+                {channels.map((item, index) => (
+                  <SelectItem key={index} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
 
         <div className="min-w-32">
-          <Select value={searchSlaStatus} onValueChange={handleSearchSlaStatusChange}>
+          <Select
+            value={searchSlaStatus}
+            onValueChange={handleSearchSlaStatusChange}
+          >
             <SelectTrigger className="h-10">
               <SelectValue placeholder="SLA Status" />
             </SelectTrigger>
@@ -589,14 +1086,23 @@ const ClaimsPage = () => {
           </Select>
         </div>
 
-        <Button onClick={() => router.push(CLAIM_LIST_IMPORT)} className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full">
+        <Button
+          onClick={() => router.push(CLAIM_LIST_IMPORT)}
+          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
+        >
           <Upload className="w-5 h-5 mr-1" /> Import
         </Button>
         {/* New button to redirect to the new import page with preview */}
-        <Button onClick={() => router.push(CLAIM_LIST_IMPORT_WITH_PREVIEW)} className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full">
+        <Button
+          onClick={() => router.push(CLAIM_LIST_IMPORT_WITH_PREVIEW)}
+          className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full"
+        >
           <Upload className="w-5 h-5 mr-1" /> Import with Preview
         </Button>
-        <Button onClick={handleExport} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full">
+        <Button
+          onClick={handleExport}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+        >
           <Download className="w-5 h-5 mr-1 " /> Export
         </Button>
       </div>
@@ -604,74 +1110,88 @@ const ClaimsPage = () => {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="min-w-96 w-auto max-w-full">
             <p className="text-center">
-              <AlertCircle width={88} height={88} className="mx-auto text-[#F5AB1D]" />
+              <AlertCircle
+                width={88}
+                height={88}
+                className="mx-auto text-[#F5AB1D]"
+              />
             </p>
             <p className="text-center font-bold mb-0 text-sm">Are you sure?</p>
             <div className="flex flex-col gap-4">
               <p className="text-center text-sm">
                 Update <strong>{numberId}</strong> status <br />
-                from <strong>{statusOld}</strong> to <strong>{pendingStatus}</strong>
+                from <strong>{statusOld}</strong> to{" "}
+                <strong>{pendingStatus}</strong>
               </p>
               {pendingStatus === "Approved" && (
                 <>
-                  {
-                    selectedClaim.amount && selectedClaim.amount > 0 ?
-                      <>
-                        <div>
-                          <p className="text-sm mb-2">Requested Amount</p>
-                          <div className="relative">
-                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">{currencyApp}</span>
-                            <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
-                              {formatMoneyClaim(reqAmountApproved)}
-                            </div>
+                  {selectedClaim.amount && selectedClaim.amount > 0 ? (
+                    <>
+                      <div>
+                        <p className="text-sm mb-2">Requested Amount</p>
+                        <div className="relative">
+                          <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                            {currencyApp}
+                          </span>
+                          <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
+                            {formatMoneyClaim(reqAmountApproved)}
                           </div>
                         </div>
-                        <div>
-                          <p className="text-sm mb-2">Approved Amount <span className="!text-red-500">*</span></p>
-                          <div className="relative">
-                            <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">{currencyApp}</span>
-                            <Input
-                              type="text"
-                              value={
-                                amountApproved === 0
-                                  ? ""
-                                  : formatMoneyClaim(amountApproved)
-                              }
-                              onChange={handleInputChange}
-                              className="h-12 pl-12"
-                              required
-                            />
-                          </div>
-                          <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm mb-2">
+                          Approved Amount{" "}
+                          <span className="!text-red-500">*</span>
+                        </p>
+                        <div className="relative">
+                          <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                            {currencyApp}
+                          </span>
+                          <Input
+                            type="text"
+                            value={
+                              amountApproved === 0
+                                ? ""
+                                : formatMoneyClaim(amountApproved)
+                            }
+                            onChange={handleInputChange}
+                            className="h-12 pl-12"
+                            required
+                          />
                         </div>
-                      </>
-                      :
-                      ""
-                  }
+                        <p className="text-xs text-red-500 mt-2">
+                          {amApprovedMsg}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    ""
+                  )}
 
-                  {
-                    selectedChannel.name != "drgadget" ?
-                      <textarea
-                        name=""
-                        id=""
-                        rows={4}
-                        value={notes}
-                        onChange={(e) => {
-                          setNotes(e.target.value);
-                        }}
-                        className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                        placeholder="Insert Reason"
-                      ></textarea>
-                      :
-                      ""
-                  }
+                  {selectedChannel.name != "drgadget" ? (
+                    <textarea
+                      name=""
+                      id=""
+                      rows={4}
+                      value={notes}
+                      onChange={(e) => {
+                        setNotes(e.target.value);
+                      }}
+                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                      placeholder="Insert Reason"
+                    ></textarea>
+                  ) : (
+                    ""
+                  )}
                 </>
               )}
 
               {pendingStatus === "Rejected" && (
                 <>
                   <div className="w-full">
-                    <p className="text-sm mb-2">Reason <span className="!text-red-500">*</span></p>
+                    <p className="text-sm mb-2">
+                      Reason <span className="!text-red-500">*</span>
+                    </p>
                     <textarea
                       name=""
                       id=""
@@ -692,289 +1212,139 @@ const ClaimsPage = () => {
 
               {(pendingStatus === "Lack of Documents Operator" ||
                 pendingStatus === "Lack of Documents Insurance") && (
-                  <>
-                    <div className="w-[600px]">
-                      <p className="text-sm mb-2">Reason <span className="!text-red-500">*</span></p>
-                      <textarea
-                        name=""
-                        id=""
-                        rows={4}
-                        value={notes}
-                        onChange={(e) => {
-                          setNotes(e.target.value);
-                          setNoteMsg("");
-                        }}
-                        className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                        placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
-                        required
-                      ></textarea>
-                      <p className="text-xs text-red-500">{noteMsg}</p>
-                    </div>
-                    <div className="w-full">
-                      <p className="text-sm">Lack of Document Reasons <span className="!text-red-500">*</span></p>
-                      {finalSelectedDocuments.length > 0 && (
-                        <ul className="mt-3">
-                          {finalSelectedDocuments.map((doc) => (
-                            <li key={doc.id} className="flex justify-between items-center mb-2 gap-2">
-                              <Input
-                                name="lack_of_documents"
-                                value={
-                                  doc?.label?.en ||
-                                  doc?.label_multilanguage?.en ||
-                                  doc?.label ||
-                                  "-"
-                                }
-                                className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
-                              />
-                              <Button
-                                disabled={!canDelete}
-                                className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
-                                onClick={() =>
-                                  handleDeleteSelectedDocument(doc.name)
-                                }
-                              >
-                                <Trash2 className="w-5 h-5" />
-                              </Button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      <p className="text-xs text-red-500">{docsMsg}</p>
-
-                      <Dialog>
-                        {filteredClaims.slice(0, 1).map((document) => (
-                          <DialogTrigger asChild key={document.id}>
-                            <Button color="warning" className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4" onClick={() => handleSelectDocument()}>
-                              <Plus className="w-4 h-4 mr-2" /> Add Document
+                <>
+                  <div className="w-[600px]">
+                    <p className="text-sm mb-2">
+                      Reason <span className="!text-red-500">*</span>
+                    </p>
+                    <textarea
+                      name=""
+                      id=""
+                      rows={4}
+                      value={notes}
+                      onChange={(e) => {
+                        setNotes(e.target.value);
+                        setNoteMsg("");
+                      }}
+                      className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                      placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
+                      required
+                    ></textarea>
+                    <p className="text-xs text-red-500">{noteMsg}</p>
+                  </div>
+                  <div className="w-full">
+                    <p className="text-sm">
+                      Lack of Document Reasons{" "}
+                      <span className="!text-red-500">*</span>
+                    </p>
+                    {finalSelectedDocuments.length > 0 && (
+                      <ul className="mt-3">
+                        {finalSelectedDocuments.map((doc) => (
+                          <li
+                            key={doc.id}
+                            className="flex justify-between items-center mb-2 gap-2"
+                          >
+                            <Input
+                              name="lack_of_documents"
+                              value={
+                                doc?.label?.en ||
+                                doc?.label_multilanguage?.en ||
+                                doc?.label ||
+                                "-"
+                              }
+                              className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
+                            />
+                            <Button
+                              disabled={!canDelete}
+                              className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                              onClick={() =>
+                                handleDeleteSelectedDocument(doc.name)
+                              }
+                            >
+                              <Trash2 className="w-5 h-5" />
                             </Button>
-                          </DialogTrigger>
+                          </li>
                         ))}
-                        <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
-                          <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
-                            <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
-                              Lack of Document Reasons
-                              <DialogClose className="ml-auto">
-                                <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
-                                  <X className="w-5 h-5" />
-                                </Button>
-                              </DialogClose>
-                            </DialogTitle>
-                          </DialogHeader>
+                      </ul>
+                    )}
+                    <p className="text-xs text-red-500">{docsMsg}</p>
 
-                          <div className="p-4 h-full overflow-auto max-h-[70vh]">
-                            <Table className="table-claims">
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead className="whitespace-nowrap py-2 w-10">Select</TableHead>
-                                  <TableHead className="py-2">Document Type</TableHead>
-                                  <TableHead className="py-2">Criteria</TableHead>
-                                  <TableHead className="py-2">Definition</TableHead>
-                                  <TableHead className="py-2 text-center">Message</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {dataDocument.length > 0 ? (
-                                  dataDocument
-                                    .filter(
-                                      (document) => document.type.toLowerCase() === "file" || document.type.toLowerCase() ===
-                                        "file multiple" || document.type.toLowerCase() === "fields"
-                                    )
-                                    .map((document) => (
-                                      <TableRow key={document.id} className="cursor-pointer">
-                                        <TableCell align="center">
-                                          <Input
-                                            type="checkbox"
-                                            checked={
-                                              document.type.toLowerCase() ===
-                                                "fields"
-                                                ? isDocumentSelected(
-                                                  document?.fields?.filter(
-                                                    (a: any) =>
-                                                      a.type.toLowerCase() ===
-                                                      "file"
-                                                  )?.[0]?.name
-                                                )
-                                                : isDocumentSelected(
-                                                  document.name
-                                                )
-                                            }
-                                            onClick={() => {
-                                              let docName = document.name;
-                                              if (
-                                                document.type.toLowerCase() ===
-                                                "fields"
-                                              )
-                                                docName =
-                                                  document?.fields?.filter(
-                                                    (a: any) =>
-                                                      a.type.toLowerCase() ===
-                                                      "file"
-                                                  )?.[0]?.name;
-                                              handleCheckboxChange(docName);
-                                            }}
-                                            className="w-4 h-4"
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                          {document.type.toLowerCase() ===
-                                            "fields"
-                                            ? document?.fields?.filter(
-                                              (a: any) =>
-                                                a.type.toLowerCase() === "file"
-                                            )?.[0]?.label?.en ||
-                                            document?.fields?.filter(
-                                              (a: any) =>
-                                                a.type.toLowerCase() === "file"
-                                            )?.[0]?.label_multilanguage?.en ||
-                                            document?.fields?.filter(
-                                              (a: any) =>
-                                                a.type.toLowerCase() === "file"
-                                            )?.[0]?.label ||
-                                            "-"
-                                            : document?.label?.en ||
-                                            document?.label_multilanguage?.en ||
-                                            document?.label ||
-                                            "-"}
-                                        </TableCell>
-                                        <TableCell className="">
-                                          {document.type.toLowerCase() ===
-                                            "fields"
-                                            ? document?.fields?.filter(
-                                              (a: any) =>
-                                                a.type.toLowerCase() === "file"
-                                            )?.[0]?.criteria || "-"
-                                            : document?.criteria || "-"}
-                                        </TableCell>
-                                        <TableCell className="">
-                                          {document.type.toLowerCase() ===
-                                            "fields"
-                                            ? document?.fields?.filter(
-                                              (a: any) =>
-                                                a.type.toLowerCase() === "file"
-                                            )?.[0]?.definition || "-"
-                                            : document?.definition || "-"}
-                                        </TableCell>
-                                        <TableCell className="w-24 text-center">
-                                          <Dialog>
-                                            {filteredClaims
-                                              .slice(0, 1)
-                                              .map((document) => (
-                                                <DialogTrigger
-                                                  asChild
-                                                  key={document.id}
-                                                >
-                                                  <Button
-                                                    color="warning"
-                                                    className="bg-trasparent hover:bg-transparent rounded-full text-blue-500 w-auto p-0 h-6"
-                                                    onClick={() =>
-                                                      handleSelectDocument()
-                                                    }
-                                                  >
-                                                    <Eye className="w-4 h-4" />
-                                                  </Button>
-                                                </DialogTrigger>
-                                              ))}
-                                            <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
-                                              <DialogHeader className="bg-transparent py-3 px-4 sm:px-6">
-                                                <DialogTitle className="text-sm sm:text-base flex items-center">
-                                                  Message Preview
-                                                  <DialogClose className="ml-auto">
-                                                    <Button
-                                                      type="button"
-                                                      className="bg-transparent hover:bg-transparent text-black p-0"
-                                                    >
-                                                      <X className="w-5 h-5" />
-                                                    </Button>
-                                                  </DialogClose>
-                                                </DialogTitle>
-                                              </DialogHeader>
-
-                                              <div className="flex flex-col px-4 pb-4">
-                                                <p className="text-sm">
-                                                  Document type:
-                                                  {document.type.toLowerCase() ===
-                                                    "fields"
-                                                    ? document?.fields?.filter(
-                                                      (a: any) =>
-                                                        a.type.toLowerCase() ===
-                                                        "file"
-                                                    )?.[0]?.name || "-"
-                                                    : document?.name || "-"}
-                                                </p>
-                                                <p className="text-sm">
-                                                  Criteria:
-                                                  {document.type.toLowerCase() ===
-                                                    "fields"
-                                                    ? document?.fields?.filter(
-                                                      (a: any) =>
-                                                        a.type.toLowerCase() ===
-                                                        "file"
-                                                    )?.[0]?.criteria || "-"
-                                                    : document?.criteria || "-"}
-                                                </p>
-                                                <p className="text-sm">
-                                                  Definition:
-                                                  {document.type.toLowerCase() ===
-                                                    "fields"
-                                                    ? document?.fields?.filter(
-                                                      (a: any) =>
-                                                        a.type.toLowerCase() ===
-                                                        "file"
-                                                    )?.[0]?.definition || "-"
-                                                    : document?.definition || "-"}
-                                                </p>
-                                                <hr className="my-4" />
-                                                <p className="text-sm">
-                                                  "
-                                                  {document.type.toLowerCase() ===
-                                                    "fields"
-                                                    ? document?.fields?.filter(
-                                                      (a: any) =>
-                                                        a.type.toLowerCase() ===
-                                                        "file"
-                                                    )?.[0]
-                                                      ?.pending_reason_message
-                                                      ?.en || "-"
-                                                    : document
-                                                      ?.pending_reason_message
-                                                      ?.en || "-"}
-                                                  "
-                                                </p>
-                                              </div>
-                                            </DialogContent>
-                                          </Dialog>
-                                        </TableCell>
-                                      </TableRow>
-                                    ))
-                                ) : (
-                                  <TableRow className="hover:!bg-white">
-                                    <TableCell colSpan={3}>
-                                      <div className="flex flex-col gap-4 items-center justify-center py-14">
-                                        <Image alt="no data" src={noData} width={200} /> No transaction data available
-                                      </div>
-                                    </TableCell>
-                                  </TableRow>
-                                )}
-                              </TableBody>
-                            </Table>
-                          </div>
-
-                          <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
-                            <DialogClose asChild>
-                              <Button type="button" className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black" onClick={handleAddSelectedDocuments}>
-                                <Check className="w-4 h-4 mr-2" /> Add selected document
+                    <Dialog>
+                      {filteredClaims.slice(0, 1).map((document) => (
+                        <DialogTrigger asChild key={document.id}>
+                          <Button
+                            color="warning"
+                            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
+                            onClick={() => handleSelectDocument()}
+                          >
+                            <Plus className="w-4 h-4 mr-2" /> Add Document
+                          </Button>
+                        </DialogTrigger>
+                      ))}
+                      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
+                        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+                          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+                            Lack of Document Reasons
+                            <DialogClose className="ml-auto">
+                              <Button
+                                type="button"
+                                className="bg-transparent hover:bg-transparent text-black p-0"
+                              >
+                                <X className="w-5 h-5" />
                               </Button>
                             </DialogClose>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </>
-                )}
+                          </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="p-4 h-full overflow-auto max-h-[70vh]">
+                          <DataTable
+                            data={dataDocument.filter(
+                              (document) =>
+                                document.type.toLowerCase() === "file" ||
+                                document.type.toLowerCase() ===
+                                  "file multiple" ||
+                                document.type.toLowerCase() === "fields"
+                            )}
+                            columns={documentTableColumns}
+                            noDataImage={noData}
+                            noDataText="No document data available"
+                            className="table-claims"
+                          />
+                        </div>
+
+                        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+                          <DialogClose asChild>
+                            <Button
+                              type="button"
+                              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                              onClick={handleAddSelectedDocuments}
+                            >
+                              <Check className="w-4 h-4 mr-2" /> Add selected
+                              document
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </>
+              )}
 
               <div className="flex gap-4 justify-center">
-                <Button variant="outline" onClick={cancelModal} className="border-[#E83F3F] text-[#E83F3F] rounded-full w-24">No</Button>
-                <Button color="warning" onClick={confirmModal} className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black">Yes</Button>
+                <Button
+                  variant="outline"
+                  onClick={cancelModal}
+                  className="border-[#E83F3F] text-[#E83F3F] rounded-full w-24"
+                >
+                  No
+                </Button>
+                <Button
+                  color="warning"
+                  onClick={confirmModal}
+                  className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full w-24 text-black"
+                >
+                  Yes
+                </Button>
               </div>
             </div>
           </DialogContent>
@@ -985,18 +1355,21 @@ const ClaimsPage = () => {
         <div className="w-full flex items-center overflow-auto">
           <div
             onClick={() => selectTab("All")}
-            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 whitespace-nowrap ${tab === "All" && "border-b-[3px] border-primary px-5"
-              }`}
+            className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 whitespace-nowrap ${
+              tab === "All" && "border-b-[3px] border-primary px-5"
+            }`}
           >
             <button
-              className={`text-sm mr-3 min-h-[90px] ${tab === "All" && "text-primary"
-                }`}
+              className={`text-sm mr-3 min-h-[90px] ${
+                tab === "All" && "text-primary"
+              }`}
             >
               All Claim
             </button>
             <span
-              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 whitespace-nowrap ${totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
-                } ${tab !== "All" && "hidden"}`}
+              className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 whitespace-nowrap ${
+                totalData > 9 ? "px-1.5" : totalData > 99 ? "px-0.5" : "px-2"
+              } ${tab !== "All" && "hidden"}`}
             >
               {totalData}
             </span>
@@ -1005,22 +1378,25 @@ const ClaimsPage = () => {
             <div
               key={status.id || index}
               onClick={() => selectTab(status.status)}
-              className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 whitespace-nowrap ${tab === status.status && "border-b-[3px] border-primary px-5"
-                }`}
+              className={`cursor-pointer h-full min-h-16 flex items-center justify-center px-5 whitespace-nowrap ${
+                tab === status.status && "border-b-[3px] border-primary px-5"
+              }`}
             >
               <button
-                className={`text-sm mr-3 min-h-[90px] ${tab === status.status && "text-primary"
-                  }`}
+                className={`text-sm mr-3 min-h-[90px] ${
+                  tab === status.status && "text-primary"
+                }`}
               >
                 {status.status}
               </button>
               <span
-                className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${status.count > 9
-                  ? "px-1.5"
-                  : status.count > 99
+                className={`text-center rounded-full bg-red-600 text-white text-xs py-1 px-2 ${
+                  status.count > 9
+                    ? "px-1.5"
+                    : status.count > 99
                     ? "px-0.5"
                     : "px-2"
-                  } ${tab !== status.status && "hidden"}`}
+                } ${tab !== status.status && "hidden"}`}
               >
                 {totalData}
               </span>
@@ -1028,288 +1404,26 @@ const ClaimsPage = () => {
           ))}
         </div>
       </div>
-      <div className="w-full bg-white rounded-lg p-4">
-        
-        <div className="relative w-full mb-4">
-          <Input
-            type="text"
-            placeholder="Search by Claim ID"
-            onChange={(e) => handleSearch(e.target.value)}
-            className="border p-3 rounded-md pr-10 w-full text-sm h-12"
-          />
-          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
-        </div>
-        <Table className="table-claims">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap py-2">No.</TableHead>
-              <TableHead className="py-2">Claim ID</TableHead>
-              <TableHead className="py-2 whitespace-nowrap">Customer Name</TableHead>
-              <TableHead className="py-2 whitespace-nowrap">Plan Name</TableHead>
-              <TableHead className="whitespace-nowrap py-2">Benefit</TableHead>
-              <TableHead className="whitespace-nowrap py-2">Currency</TableHead>
-              <TableHead className="whitespace-nowrap py-2">Requested Amount</TableHead>
-              <TableHead className="whitespace-nowrap py-2">Approved Amount </TableHead>
-              <TableHead className="whitespace-nowrap py-2">Status</TableHead>
-              <TableHead className="whitespace-nowrap py-2">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredClaims.length > 0 ? (
-              filteredClaims.map((claim, index) => (
-                <TableRow
-                  key={claim.id}
-                  className={`${claim.sla_status === "Due Date"
-                    ? "bg-[#FFFEE2]"
-                    : claim.sla_status === "Overdue"
-                      ? "bg-[#fadede]"
-                      : ""
-                    }`}
-                >
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell className="whitespace-nowrap">
-                      {claim.number}
-                  </TableCell>
-                  <TableCell>
-                    {claim?.policy_data?.policy_holder?.name || "-"}
-                  </TableCell>
-                  <TableCell className="min-w-72">
-                    {claim.package?.plan?.name.split("|").join(" - ") || "-"}
-                  </TableCell>
-                  <TableCell className="min-w-60">{claim?.benefit?.description_en || "-"}</TableCell>
-                  <TableCell>{claim?.currency || "-"}</TableCell>
-                  <TableCell>
-                    {(() => {
-                      const claimValue = claim.claim?.find(
-                        (d: any) => d.type === "Number" && d.name === "claim"
-                      )?.value;
-
-                      const numericValue = Number(claimValue);
-
-                      return !isNaN(numericValue)
-                        ? formatMoneyClaim(numericValue)
-                        : "-";
-                    })()}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2 items-center">
-                      {formatMoneyClaim(
-                        claim.amount_approved != null
-                          ? claim.amount_approved
-                          : 0
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-semibold whitespace-nowrap">
-                    <Select
-                      value={claim.status}
-                      disabled={!canEdit}
-                      onValueChange={(value) => {
-                        handleChangeStatus(claim, value);
-                      }}
-                    >
-                      <SelectTrigger
-                        className={`w-[240px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
-                          claim.status
-                        )}`}
-                      >
-                        <SelectValue>
-                          {claim.status || "Select Status"}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="max-h-48 overflow-auto">
-                        <SelectItem
-                          value="Submitted"
-                          disabled={claim.status !== "Draft" && !openAllStatus || claim.status == "Closed"}
-                        >
-                          Submitted
-                        </SelectItem>
-                        <SelectItem
-                          value="Acknowledged"
-                          disabled={
-                            claim.status !== "Submitted" && !openAllStatus || claim.status == "Closed"
-                          }
-                        >
-                          Acknowledged
-                        </SelectItem>
-                        <SelectItem
-                          value="Document Review Operator"
-                          disabled={
-                            claim.status !== "Acknowledged" &&
-                            claim.status !== "Lack of Documents Operator" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Document Review Operator
-                        </SelectItem>
-                        <SelectItem
-                          value="Reupload Document Review Operator"
-                          disabled={
-                            claim.status !== "Lack of Documents Operator" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Reupload Document Review Operator
-                        </SelectItem>
-                        <SelectItem
-                          value="Lack of Documents Operator"
-                          disabled={
-                            claim.status !== "Document Review Operator" &&
-                            claim.status !==
-                            "Reupload Document Review Operator" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Lack of Documents Operator
-                        </SelectItem>
-                        <SelectItem
-                          value="Document Review Insurance"
-                          disabled={
-                            claim.status !== "Document Review Operator" &&
-                            claim.status !== "Lack of Documents Insurance" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Document Review Insurance
-                        </SelectItem>
-                        <SelectItem
-                          value="Reupload Document Review Insurance"
-                          disabled={
-                            claim.status !== "Lack of Documents Insurance" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Reupload Document Review Insurance
-                        </SelectItem>
-                        <SelectItem
-                          value="Lack of Documents Insurance"
-                          disabled={
-                            claim.status !== "Document Review Insurance" &&
-                            claim.status !==
-                            "Reupload Document Review Insurance" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Lack of Documents Insurance
-                        </SelectItem>
-                        <SelectItem
-                          value="Claim Assessment"
-                          disabled={
-                            claim.status !== "Document Review" &&
-                            claim.status !== "Document Review Insurance" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Claim Assessment
-                        </SelectItem>
-                        <SelectItem
-                          value="Approved"
-                          disabled={
-                            claim.status !== "Claim Assessment" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Approved
-                        </SelectItem>
-                        <SelectItem
-                          value="Rejected"
-                          disabled={
-                            claim.status !== "Claim Assessment" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Rejected
-                        </SelectItem>
-                        <SelectItem
-                          value="Paid"
-                          disabled={
-                            claim.status !== "Approved" && !openAllStatus || claim.status == "Closed"
-                          }
-                        >
-                          Paid
-                        </SelectItem>
-                        <SelectItem
-                          value="Closed"
-                          disabled={
-                            claim.status !== "Paid" &&
-                            claim.status !== "Rejected" &&
-                            !openAllStatus
-                            || claim.status == "Closed"
-                          }
-                        >
-                          Closed
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      onClick={() => goToDetail(claim.id)}
-                      className="rounded-full"
-                    >
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="hover:!bg-white">
-                <TableCell colSpan={10}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={10}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50, 100].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() => setPage((prevState) => prevState - 1)}
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() => setPage((prevState) => prevState + 1)}
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+      <DataTable
+        data={filteredClaims}
+        columns={claimsTableColumns}
+        search={{
+          placeholder: "Search by Claim ID",
+          onSearch: handleSearch,
+        }}
+        pagination={{
+          page,
+          totalPages,
+          rowsPerPage,
+          totalItems,
+          onPageChange: setPage,
+          onRowsPerPageChange: handleRowsPerPageChange,
+        }}
+        noDataImage={noData}
+        noDataText="No transaction data available"
+        className="table-claims"
+        getRowClassName={getRowClassName}
+      />
     </div>
   );
 };

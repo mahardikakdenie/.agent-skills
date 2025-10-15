@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useReducer, useContext, useState } from "react";
+import React, {
+  createContext,
+  useReducer,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import { CookieService } from "@/services/masterdata/cookie.service";
 import { jwtDecode } from "jwt-decode";
 import { getGlobalToken, setGlobalToken } from "@/lib/token-storage";
@@ -20,6 +26,7 @@ interface AuthContextType {
   logout: () => void;
   checkLogin: () => void;
   isAuthReady: boolean;
+  claims: JwtPayload | null;
 }
 
 interface JwtPayload {
@@ -31,6 +38,7 @@ interface JwtPayload {
   channel: string;
   permission_list: string[];
   account_insurers: Insurers[];
+  account_channels?: { channel: string }[];
   iat: number;
   exp: number;
 }
@@ -57,14 +65,32 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(authReducer, { token: null });
-  
+
   const [hasCheckedLogin, setHasCheckedLogin] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
-  
+  const [claims, setClaims] = useState<JwtPayload | null>(null);
+
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchClaims = async () => {
+      try {
+        const claimsData = await getClaims();
+        setClaims(claimsData);
+      } catch (error) {
+        console.error("Failed to get claims:", error);
+      }
+    };
+
+    if (!claims && state.token) {
+      fetchClaims();
+    }
+  }, [claims, state]);
+
   const login = async (token: string) => {
     await cookieService.saveCookie({ name: "token", value: token, days: 1 });
     setGlobalToken(token);
@@ -97,7 +123,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ state, login, logout, checkLogin, isAuthReady }}>
+    <AuthContext.Provider
+      value={{ state, login, logout, checkLogin, isAuthReady, claims }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -130,7 +158,9 @@ export const isTokenExpired = async (): Promise<boolean> => {
 
 export const clearToken = () => setGlobalToken(null);
 
-export const hasPermission = async (requiredPermission: string): Promise<boolean> => {
+export const hasPermission = async (
+  requiredPermission: string
+): Promise<boolean> => {
   const claims = await getClaims();
   return claims?.permission_list?.includes(requiredPermission) || false;
 };
