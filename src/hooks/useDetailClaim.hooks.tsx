@@ -94,7 +94,7 @@ export function useDetailClaim(): useDetailClaimProps {
           const missingDocs = Object.keys(flattenClaimForms)
             .filter(
               (fieldName) =>
-                detailClaim?.lack_of_documents.indexOf(fieldName) > -1
+                detailClaim?.lack_of_documents?.indexOf(fieldName) > -1
             )
             .map((fieldName) => flattenClaimForms[fieldName]);
 
