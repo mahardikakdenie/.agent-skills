@@ -3,6 +3,8 @@ import { IHttpClient } from "@/lib/http-client-interface";
 import { stat } from "fs";
 import qs from "qs";
 import { DateRange } from "react-day-picker";
+import defaultInterceptor, { createApiClient } from "@/lib/interceptor";
+import { ClaimFormsRequest, UpdateClaimGrabRequest } from "@/interface";
 
 interface ClaimResponse {
   data: any;
@@ -324,11 +326,19 @@ export class ClaimService {
     });
   }
 
-  async importDataGuide(params: { channel: string; category: string }): Promise<{ data: { data: any }[] }> {
+  async importDataGuide(params: {
+    channel: string;
+    category: string;
+  }): Promise<{ data: { data: any }[] }> {
     const { channel, category } = params;
-    const queryString = qs.stringify({ channel, category }, { arrayFormat: "brackets" });
+    const queryString = qs.stringify(
+      { channel, category },
+      { arrayFormat: "brackets" }
+    );
 
-    return await this.httpClient.get(`/v1/claims/import-data-guide?${queryString}`);
+    return await this.httpClient.get(
+      `/v1/claims/import-data-guide?${queryString}`
+    );
   }
 
   async getClaimStatistic(
@@ -345,7 +355,7 @@ export class ClaimService {
     const params = {
       page,
       pageSize: rowsPerPage,
-      sort: 'desc',
+      sort: "desc",
       ...(filters?.insurance && { insurance: filters.insurance }),
       ...(filters?.product && { product: filters.product }),
       ...(filters?.plan && { plan: filters.plan }),
@@ -356,5 +366,60 @@ export class ClaimService {
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
     return this.httpClient.get<any>(`/v1/claims/statistic-data?${queryString}`);
   }
-
 }
+
+export const getDetailClaims = (id: string) => {
+  try {
+    const customClient = createApiClient(
+      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
+    );
+    return customClient.get("/v1/claims/" + id);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getFormClaims = (
+  categoryId: string,
+  params?: ClaimFormsRequest
+) => {
+  try {
+    const customClient = createApiClient(
+      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
+    );
+    const queryString = params
+      ? qs.stringify(params, { arrayFormat: "brackets" })
+      : "";
+
+    return customClient.get(
+      `/v1/claim-category-forms/all/${categoryId}?${queryString}`
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putUpdateClaimsGrab = (
+  id: string,
+  params: UpdateClaimGrabRequest
+) => {
+  try {
+    const customClient = createApiClient(
+      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
+    );
+    return customClient.put(`/v1/claims/${id}`, params);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putSubmitClaimsById = (id: string) => {
+  try {
+    const customClient = createApiClient(
+      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
+    );
+    return customClient.put(`/v1/claims/submit/${id}`);
+  } catch (error) {
+    throw error;
+  }
+};
