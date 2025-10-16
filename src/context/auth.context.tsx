@@ -1,16 +1,22 @@
 "use client";
 
-import React, {createContext, useContext, useEffect, useState} from "react";
-import {getCookie, removeAllLocalStorage, removeCookie, setCookie, toastNotification} from "@/helpers/app.helper";
-import {AUTH_TOKEN} from "@/constants/app-common.const";
-import {jwtDecode} from "jwt-decode";
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {authService} from "@/services/api.service";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  getCookie,
+  removeAllLocalStorage,
+  removeCookie,
+  setCookie,
+  toastNotification,
+} from "@/helpers/app.helper";
+import { AUTH_TOKEN } from "@/constants/app-common.const";
+import { jwtDecode } from "jwt-decode";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { authService } from "@/services/api.service";
 import ApiURL from "@/constants/api-url.const";
-import {LoginResponse} from "@/types/common";
-import {AxiosResponse} from "axios";
+import { LoginResponse } from "@/types/common";
+import { AxiosResponse } from "axios";
 import AppMenu from "@/constants/app-menu.const";
-import {authToken} from "@/types/auth-token";
+import { authToken } from "@/types/auth-token";
 
 interface AuthContextType {
   user: any;
@@ -29,7 +35,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 let isOnce = false;
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [isForbidden, setIsForbidden] = useState<boolean>(false);
   const [isNetworkActive, setIsNetworkActive] = useState<boolean>(true);
@@ -77,21 +85,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
       }
     }
     return null;
-  }
+  };
 
   const login = async (data: any) => {
     if (!isOnce) {
       isOnce = true;
       try {
-        const response: AxiosResponse<LoginResponse> = await authService.post(ApiURL.login, { username: data.email, password: data.password });
+        const response: AxiosResponse<LoginResponse> = await authService.post(
+          ApiURL.login,
+          { username: data.email, password: data.password }
+        );
         if (response && response.data && response.data.access_token) {
           const token = response.data.access_token;
           await setCookie(AUTH_TOKEN, token);
-          authToken.token = token
+          authToken.token = token;
           if (token) getUserInformation(token, true);
         }
       } catch (error: any) {
-        toastNotification(error?.response?.data?.message || "Failed to login.", "error");
+        toastNotification(
+          error?.response?.data?.message || "Failed to login.",
+          "error"
+        );
         isOnce = false;
       }
     }
@@ -100,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
   const logout = async () => {
     await removeCookie(AUTH_TOKEN);
     removeAllLocalStorage();
-    authToken.clearToken()
+    authToken.clearToken();
     setUser(null);
     setIsAuthenticated(false);
     isOnce = false;
@@ -110,16 +124,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
   const getUserInformation = (token: string, isLogin: boolean = false) => {
     const decodedToken: any = jwtDecode(token);
     const userdata = JSON.parse(JSON.stringify(decodedToken));
-    userdata.all_channels = [ ...new Set([ ...(decodedToken.channel ? [decodedToken.channel] : []), ...decodedToken.account_channels.map((c: any) => c.channel) ]) ];
-    userdata.all_insurances = [ ...new Set([ ...decodedToken.account_insurers.map((i: any) => i.insurance) ]) ];
+    userdata.all_channels = [
+      ...new Set([
+        ...(decodedToken.channel ? [decodedToken.channel] : []),
+        ...decodedToken.account_channels.map((c: any) => c.channel),
+      ]),
+    ];
+    userdata.all_insurances = [
+      ...new Set([
+        ...decodedToken.account_insurers.map((i: any) => i.insurance),
+      ]),
+    ];
     setUser(userdata);
 
     const permissions: any[] = decodedToken.permission_list || [];
-    const normalizeKey = (value?: string) => value?.toString().toLowerCase().replace(/[\s_-]/g, "") ?? "";
+    const normalizeKey = (value?: string) =>
+      value
+        ?.toString()
+        .toLowerCase()
+        .replace(/[\s_-]/g, "") ?? "";
     const compareKeys = (a: string, b: string) => {
       const normalizedA = normalizeKey(a);
       const normalizedB = normalizeKey(b);
-      return normalizedA === normalizedB || normalizedA.startsWith(normalizedB) || normalizedB.startsWith(normalizedA);
+      return (
+        normalizedA === normalizedB ||
+        normalizedA.startsWith(normalizedB) ||
+        normalizedB.startsWith(normalizedA)
+      );
     };
     const menuAccess = new Set<string>();
     const submenuAccess = new Set<string>();
@@ -130,13 +161,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
       const parts = `${item}`.split(".");
       const rawMenu = parts[0];
       const rawSubmenuParts = parts.slice(1);
-      const submenuCandidates = rawSubmenuParts.length > 0
-          ? [rawSubmenuParts.join("."), rawSubmenuParts.join(""), ...rawSubmenuParts]
+      const submenuCandidates =
+        rawSubmenuParts.length > 0
+          ? [
+              rawSubmenuParts.join("."),
+              rawSubmenuParts.join(""),
+              ...rawSubmenuParts,
+            ]
           : [];
 
       const matchedMenu = rawMenu
-          ? AppMenu.menu.find((menuItem) => compareKeys(menuItem.name, rawMenu))
-          : undefined;
+        ? AppMenu.menu.find((menuItem) => compareKeys(menuItem.name, rawMenu))
+        : undefined;
 
       if (matchedMenu) {
         menuAccess.add(matchedMenu.name);
@@ -144,12 +180,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         if (matchedMenu.submenu?.length) {
           if (submenuCandidates.length) {
             const matchedSubmenu = matchedMenu.submenu.find(
-                (submenuItem: any) => submenuCandidates.some((candidate) => compareKeys(submenuItem.name, candidate))
+              (submenuItem: any) =>
+                submenuCandidates.some((candidate) =>
+                  compareKeys(submenuItem.name, candidate)
+                )
             );
             if (matchedSubmenu) submenuAccess.add(matchedSubmenu.name);
-            else matchedMenu.submenu.forEach((submenuItem: any) => submenuAccess.add(submenuItem.name));
+            else
+              matchedMenu.submenu.forEach((submenuItem: any) =>
+                submenuAccess.add(submenuItem.name)
+              );
           } else {
-            matchedMenu.submenu.forEach((submenuItem: any) => submenuAccess.add(submenuItem.name));
+            matchedMenu.submenu.forEach((submenuItem: any) =>
+              submenuAccess.add(submenuItem.name)
+            );
           }
         }
       }
@@ -161,8 +205,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     if (path.split("/").length < 4) {
       const currentMenuName = findMenuByUrl(path);
       const hasAccessToCurrent = currentMenuName
-          ? submenus.some((submenuName) => compareKeys(submenuName, currentMenuName))
-          : false;
+        ? submenus.some((submenuName) =>
+            compareKeys(submenuName, currentMenuName)
+          )
+        : false;
       if (currentMenuName && !hasAccessToCurrent) setIsForbidden(true);
     }
 
@@ -172,10 +218,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
     if (isLogin) {
       const matchingMenu = AppMenu.menu.find((menuItem) =>
-          menus.some((menuName) => compareKeys(menuName, menuItem.name))
+        menus.some((menuName) => compareKeys(menuName, menuItem.name))
       );
       const matchingSubmenu = matchingMenu?.submenu?.find((submenuItem: any) =>
-          submenus.some((submenuName) => compareKeys(submenuName, submenuItem.name))
+        submenus.some((submenuName) =>
+          compareKeys(submenuName, submenuItem.name)
+        )
       );
 
       if (matchingSubmenu) {
@@ -192,20 +240,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
   const handleResponseError = (error: any) => {
     if (!error.response) setIsNetworkActive(false);
-    else setIsForbidden(ApiURL.errorStatusCodeToGetToken.includes(error?.response?.data?.statusCode));
+    else
+      setIsForbidden(
+        ApiURL.errorStatusCodeToGetToken.includes(
+          error?.response?.data?.statusCode
+        )
+      );
   };
 
   const handleChangeNetwork = (value: boolean) => setIsNetworkActive(value);
 
   return (
-      <AuthContext.Provider value={{ user, menuList, submenuList, permissionList, isAuthenticated, isForbidden, isNetworkActive, login, logout, handleChangeNetwork, handleResponseError }}>
-        {children}
-      </AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        menuList,
+        submenuList,
+        permissionList,
+        isAuthenticated,
+        isForbidden,
+        isNetworkActive,
+        login,
+        logout,
+        handleChangeNetwork,
+        handleResponseError,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) throw new Error("useAuth must be used within an AuthProvider");
+  if (context === undefined)
+    throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };

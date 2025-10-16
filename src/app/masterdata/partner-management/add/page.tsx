@@ -93,17 +93,14 @@ export default function AddPartner() {
     setLoading(true);
     try {
       const userService = new UserService();
-      const response = await userService.saveUser(
-        {
-          name: data.name,
-          email: data.email,
-          phone_number: data.phone_code + data.phone_number, // Combine phone code and number
-          api_key: data.api_key,
-          channel: data.channel,
-          role: "Partner",
-        },
-        ""
-      );
+      const response = await userService.saveUser({
+        name: data.name,
+        email: data.email,
+        phone_number: data.phone_code + data.phone_number, // Combine phone code and number
+        api_key: data.api_key,
+        channel: data.channel,
+        role: "Partner",
+      });
 
       if (response) {
         setNewPartnerId(response.id);
@@ -413,4 +410,4 @@ export default function AddPartner() {
       </Dialog>
     </>
   );
-};
+}
