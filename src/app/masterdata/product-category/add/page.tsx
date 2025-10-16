@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import ProductCategoryForm from "@/components/forms/product-category.form";
 import { useAuth } from "@/context/auth.context";
 
@@ -15,7 +15,7 @@ const AddProductCategory = () => {
       const access = permissionList.includes("Masterdata.Create");
 
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -24,3 +24,5 @@ const AddProductCategory = () => {
 
   return <ProductCategoryForm method="create" />;
 };
+
+export default AddProductCategory;

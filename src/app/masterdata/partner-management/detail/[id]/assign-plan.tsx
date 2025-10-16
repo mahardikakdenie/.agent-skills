@@ -17,7 +17,7 @@ import { ProductCatalogService } from "@/services/product-catalog.service";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { Eye, ChevronLeft, ChevronRight } from "react-feather";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +42,7 @@ const AssignPlan = ({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const productCatalogService = new ProductCatalogService();
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
 
   const [assignedPlans, setAssignedPlans] = useState<any[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);

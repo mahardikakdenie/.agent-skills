@@ -8,16 +8,16 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { usePages } from "../hooks";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, PAGE_MANAGEMENT_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
-export default function AddPage({ params }: { params: { id: string } }) {
+export default function AddPage() {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const { permissionList } = useAuth();
@@ -27,16 +27,14 @@ export default function AddPage({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
     checkAccess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
 
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
 
@@ -58,12 +56,12 @@ export default function AddPage({ params }: { params: { id: string } }) {
     },
   });
 
-  const onSubmit = async (data: any, id: any) => {
+  const onSubmit = async (data: any) => {
     try {
-      const response = await savePages(data, id);
+      const response = await savePages(data);
       if (response.id != null) {
         const id = response.id;
-        router.push(PAGE_MANAGEMENT_DETAIL(id));
+        router.push(`${AppURL.masterdataPageManagementDetail}/${id}`);
       }
     } catch (error) {
       setUpdateSuccess(false);
@@ -165,4 +163,4 @@ export default function AddPage({ params }: { params: { id: string } }) {
       </form>
     </div>
   );
-};
+}

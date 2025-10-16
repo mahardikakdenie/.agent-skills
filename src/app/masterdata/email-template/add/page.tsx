@@ -37,12 +37,9 @@ import {
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { stateToHTML } from "draft-js-export-html";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 const Editor = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
@@ -52,10 +49,9 @@ const Editor = dynamic(
   }
 );
 
-export default function AddPage({ params }: { params: { id: string } }) {
+export default function AddPage() {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const { id } = params;
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
@@ -128,7 +124,7 @@ export default function AddPage({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -172,7 +168,7 @@ export default function AddPage({ params }: { params: { id: string } }) {
     selectedJourneyId,
   ]);
 
-  const onSubmit = async (data: any, id: any) => {
+  const onSubmit = async (data: any) => {
     try {
       const requestData = {
         ...data,
@@ -181,7 +177,7 @@ export default function AddPage({ params }: { params: { id: string } }) {
       };
 
       delete requestData.emailTag;
-      const response = await savePages(requestData, id);
+      const response = await savePages(requestData);
       if (response.id != null) {
         router.back();
       }
@@ -284,12 +280,16 @@ export default function AddPage({ params }: { params: { id: string } }) {
                 >
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="whatsapp" id="whatsapp" />
-                    <Label className="text-sm" htmlFor="whatsapp">WhatsApp</Label>
+                    <Label className="text-sm" htmlFor="whatsapp">
+                      WhatsApp
+                    </Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="email" id="email" />
-                    <Label className="text-sm" htmlFor="email">Email</Label>
-                  </div>                  
+                    <Label className="text-sm" htmlFor="email">
+                      Email
+                    </Label>
+                  </div>
                 </RadioGroup>
               </div>
             </div>
@@ -558,7 +558,9 @@ export default function AddPage({ params }: { params: { id: string } }) {
                 <DialogContent className="dialog-email-template overflow-hidden">
                   <DialogHeader>
                     <DialogTitle>
-                      <VisuallyHidden>This title is provided to prevent DialogTitle warning</VisuallyHidden>
+                      <VisuallyHidden>
+                        This title is provided to prevent DialogTitle warning
+                      </VisuallyHidden>
                     </DialogTitle>
                     <DialogDescription>
                       <div className="bg-primary absolute top-0 left-0 text-white flex items-center w-full py-1 px-5">
@@ -574,27 +576,24 @@ export default function AddPage({ params }: { params: { id: string } }) {
                           </Button>
                         </DialogClose>
                       </div>
-                      {
-                        selectedTemplateType === "email" ? (
-                          <>
-                            <h3 className="text-black text-lg font-semibold mb-2">
-                              {emailTitlePreview}
-                            </h3>
-                            <div className="text-xs">
-                              Friendsure Teknologi Indonesia (no-reply@friendsure.id)
-                            </div>
-                          </>
-                        ) : null
-                      }
+                      {selectedTemplateType === "email" ? (
+                        <>
+                          <h3 className="text-black text-lg font-semibold mb-2">
+                            {emailTitlePreview}
+                          </h3>
+                          <div className="text-xs">
+                            Friendsure Teknologi Indonesia
+                            (no-reply@friendsure.id)
+                          </div>
+                        </>
+                      ) : null}
                       <div className="mt-6 bg-white rounded-lg">
                         <div className="editor-preview">
-                          {
-                            selectedTemplateType === "email" ? (
-                              <div dangerouslySetInnerHTML={{ __html: html }} />
-                            ) : (
-                              <div>{content}</div>
-                            )
-                          }
+                          {selectedTemplateType === "email" ? (
+                            <div dangerouslySetInnerHTML={{ __html: html }} />
+                          ) : (
+                            <div>{content}</div>
+                          )}
                         </div>
                       </div>
                     </DialogDescription>
@@ -607,9 +606,7 @@ export default function AddPage({ params }: { params: { id: string } }) {
               htmlFor="subject"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              {
-                selectedTemplateType === "email" ? "Judul email" : "Judul"
-              }
+              {selectedTemplateType === "email" ? "Judul email" : "Judul"}
               <span className="text-red-500">*</span>
             </label>
             <Controller
@@ -620,7 +617,11 @@ export default function AddPage({ params }: { params: { id: string } }) {
                 <Input
                   {...field}
                   type="text"
-                  placeholder={selectedTemplateType === "email" ? "Insert Judul Email" : "Insert Judul"}
+                  placeholder={
+                    selectedTemplateType === "email"
+                      ? "Insert Judul Email"
+                      : "Insert Judul"
+                  }
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     setEmailTitlePreview(e.target.value);
@@ -635,34 +636,31 @@ export default function AddPage({ params }: { params: { id: string } }) {
             )}
 
             <div className="mt-4">
-              {
-                selectedTemplateType === "email" ? (
-                  <Editor
-                    editorState={editorState}
-                    toolbarClassName="toolbarClassName"
-                    wrapperClassName="wrapperClassName"
-                    editorClassName="editorClassName"
-                    onEditorStateChange={handleEditorChange}
-                  />
-                ) : (
-                  <textarea
-                    name=""
-                    id=""
-                    rows={20}
-                    value={content}
-                    onChange={(e) => {
-                      setContent(e.target.value);
-                    }}
-                    className="w-full text-sm p-2 border border-gray-200 rounded-md"
-                    placeholder="Insert content"
-                  >
-                  </textarea>
-                )
-              }
+              {selectedTemplateType === "email" ? (
+                <Editor
+                  editorState={editorState}
+                  toolbarClassName="toolbarClassName"
+                  wrapperClassName="wrapperClassName"
+                  editorClassName="editorClassName"
+                  onEditorStateChange={handleEditorChange}
+                />
+              ) : (
+                <textarea
+                  name=""
+                  id=""
+                  rows={20}
+                  value={content}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                  }}
+                  className="w-full text-sm p-2 border border-gray-200 rounded-md"
+                  placeholder="Insert content"
+                ></textarea>
+              )}
             </div>
           </div>
         </div>
       </form>
     </div>
   );
-};
+}

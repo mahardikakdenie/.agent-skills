@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -23,13 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
-export default function AddEmailTag({ params }: { params: { id: string } }) {
+export default function AddEmailTag() {
   const router = useRouter();
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
 
   const [tag, setName] = useState("");
   const [journey, setJourney] = useState("");
@@ -44,7 +42,7 @@ export default function AddEmailTag({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 

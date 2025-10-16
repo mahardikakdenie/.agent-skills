@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { ChannelService } from "@/services/channel.services";
 import { UserService } from "@/services/masterdata/user.service";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PARTNER_MANAGEMENT, PARTNER_MANAGEMENT_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 const PHONE_CODES = [
   { code: "+62", country: "Indonesia" },
@@ -55,7 +55,7 @@ interface PartnerFormData {
 
 export default function AddPartner() {
   const router = useRouter();
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
   const [channels, setChannels] = useState<any[]>([]);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [newPartnerId, setNewPartnerId] = useState<string>("");
@@ -118,7 +118,7 @@ export default function AddPartner() {
 
   const handleDialogClose = () => {
     setShowSuccessDialog(false);
-    router.push(PARTNER_MANAGEMENT_DETAIL(newPartnerId));
+    router.push(`${AppURL.masterdataPartnerManagementDetail}/${newPartnerId}`);
   };
 
   return (
@@ -398,7 +398,7 @@ export default function AddPartner() {
           <DialogFooter className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => router.push(PARTNER_MANAGEMENT)}
+              onClick={() => router.push(AppURL.masterdataPartnerManagement)}
             >
               Back to List
             </Button>

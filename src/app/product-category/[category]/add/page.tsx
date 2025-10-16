@@ -22,18 +22,26 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   ProductCatalogDto,
   ProductCatalogService,
 } from "@/services/product-catalog.service";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, PRODUCT_CATALOG_CATEGORY } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
-export default function AddPlanPage({ params }: { params: { category: string; }; }) {
+export default function AddPlanPage() {
   const router = useRouter();
   const productCatalogService = new ProductCatalogService();
-  const { category } = params;
+  const params = useParams();
+  const categoryParam = params.category;
+  const category =
+    typeof categoryParam === "string"
+      ? categoryParam
+      : Array.isArray(categoryParam)
+      ? categoryParam[0]
+      : "";
+
   const [selectedInsurance, setSelectedInsurance] = useState<any>(null);
   const [isInsuranceSelected, setIsInsuranceSelected] = useState(false);
   const [product, setProducts] = useState<ProductCatalogDto[]>([]);
@@ -47,7 +55,7 @@ export default function AddPlanPage({ params }: { params: { category: string; };
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -134,7 +142,7 @@ export default function AddPlanPage({ params }: { params: { category: string; };
   useEffect(() => {
     if (saveSuccess === true) {
       alert("Data berhasil disimpan!");
-      router.push(PRODUCT_CATALOG_CATEGORY(category as string));
+      router.push(AppURL.productCatalogCategory(category as string));
     } else if (saveSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }
@@ -153,11 +161,13 @@ export default function AddPlanPage({ params }: { params: { category: string; };
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={PRODUCT_CATALOG_CATEGORY(category)}>
+                  <BreadcrumbLink
+                    href={AppURL.productCatalogCategory(category)}
+                  >
                     {category
                       .split("-")
                       .map(
-                        (item) =>
+                        (item: string) =>
                           item.charAt(0).toUpperCase() + item.slice(1) + " "
                       )}
                   </BreadcrumbLink>
@@ -213,8 +223,8 @@ export default function AddPlanPage({ params }: { params: { category: string; };
                       <SelectValue>
                         {field.value
                           ? insurances.find(
-                            (insurance) => insurance.id === field.value
-                          )?.name
+                              (insurance) => insurance.id === field.value
+                            )?.name
                           : "Choose Insurer"}
                       </SelectValue>
                     </SelectTrigger>
@@ -296,8 +306,9 @@ export default function AddPlanPage({ params }: { params: { category: string; };
                     id="name"
                     placeholder="Insert Plan Name"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-16 ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
                   />
                 )}
               />
@@ -325,8 +336,9 @@ export default function AddPlanPage({ params }: { params: { category: string; };
                     id="slug"
                     placeholder="Slug"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-16 ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm`}
                   />
                 )}
               />
@@ -354,8 +366,11 @@ export default function AddPlanPage({ params }: { params: { category: string; };
                     id="active_period"
                     placeholder="Active Period"
                     {...field}
-                    className={`mt-1 block w-full h-16 ${errors.active_period ? "border-red-500" : "border-gray-300"
-                      } rounded-md shadow-sm`}
+                    className={`mt-1 block w-full h-16 ${
+                      errors.active_period
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } rounded-md shadow-sm`}
                   />
                 )}
               />
@@ -405,4 +420,4 @@ export default function AddPlanPage({ params }: { params: { category: string; };
       </form>
     </div>
   );
-};
+}

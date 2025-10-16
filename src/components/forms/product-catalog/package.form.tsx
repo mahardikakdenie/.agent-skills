@@ -17,10 +17,7 @@ import { Button } from "@/components/ui/button";
 import { z, ZodSchema, ZodTypeAny } from "zod";
 import validator from "validator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  PRODUCT_CATALOG_CATEGORY,
-  PRODUCT_CATALOG_DETAIL,
-} from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
 import { FieldArrayInput } from "./field-array-input";
 
@@ -336,7 +333,7 @@ const ProductCategoryPackageForm = ({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={PRODUCT_CATALOG_CATEGORY(category)}>
+                  <BreadcrumbLink href={AppURL.productCatalogCategory(category)}>
                     {category
                       .split("-")
                       .map(
@@ -348,7 +345,7 @@ const ProductCategoryPackageForm = ({
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href={PRODUCT_CATALOG_DETAIL(category, productCategoryID)}
+                    href={AppURL.productCatalogDetail(category, productCategoryID)}
                   >
                     Detail Product Catalog
                   </BreadcrumbLink>

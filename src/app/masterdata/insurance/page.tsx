@@ -18,7 +18,7 @@ import {
   Insurance,
   InsuranceService,
 } from "@/services/masterdata/insurance.service";
-import { FORBIDDEN, INSURANCE_ADD, INSURANCE_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {useAuth} from "@/context/auth.context";
 
 export default function InsurancePage() {
@@ -51,7 +51,7 @@ export default function InsurancePage() {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -86,7 +86,7 @@ export default function InsurancePage() {
   }
 
   const handleEdit = (id: string) => {
-    router.push(INSURANCE_DETAIL(id));
+    router.push(`${AppURL.masterdataInsuranceDetail}/${id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -114,7 +114,7 @@ export default function InsurancePage() {
           Insurance
         </h1>
         <Button
-          onClick={() => router.push(INSURANCE_ADD)}
+          onClick={() => router.push(AppURL.masterdataInsuranceAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

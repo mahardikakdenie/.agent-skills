@@ -1,4 +1,3 @@
-import { hasInsurers } from "@/context/auth.context";
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
 
@@ -112,5 +111,4 @@ export class SanctionService {
 
   
 }
-
 

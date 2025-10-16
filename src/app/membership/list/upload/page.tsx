@@ -13,7 +13,7 @@ import ApiURL from "@/constants/api-url.const";
 import {channelService, policyService} from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
 
-export default function UploadMembership({ params }: { params: { id: string } }) {
+export default function UploadMembership() {
   const router = useRouter();
   const { setLoading } = useScreen();
   const [ page, setPage ] = useState(1);

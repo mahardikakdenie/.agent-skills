@@ -20,8 +20,8 @@ export const usePages = () => {
     return response;
   };
 
-  const savePages = async (data: any, id: string) => {
-    const { data: response } = await pagesService.savePages(data, id);
+  const savePages = async (data: any) => {
+    const { data: response } = await pagesService.savePages(data);
     return response;
   };
 

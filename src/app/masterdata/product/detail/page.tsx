@@ -27,10 +27,10 @@ import {
   MdProductService,
   ProductResponse,
 } from "@/services/masterdata/product.service";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {useAuth} from "@/context/auth.context";
 
-export default function EditProduct({ params }: { params: { id: string } }) {
+export default function EditProduct() {
   const router = useRouter();
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const productService = new MdProductService();
@@ -54,7 +54,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 

@@ -2,7 +2,7 @@
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 import { toastNotification } from "@/lib/toast";
 import { MdProductService } from "@/services/masterdata/product.service";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ import { ChevronLeft, Upload } from "react-feather";
 
 export default function HospitalListUploadPage() {
   const router = useRouter();
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
   const productService = new MdProductService();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

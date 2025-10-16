@@ -20,7 +20,7 @@ import {
   PagesService,
 } from "@/services/masterdata/page.service";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, PAGE_MANAGEMENT_ADD, PAGE_MANAGEMENT_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function Pages() {
   const path = usePathname();
@@ -33,7 +33,6 @@ export default function Pages() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const router = useRouter();
-
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -48,12 +47,12 @@ export default function Pages() {
       const deleteBtn = permissionList.includes("Masterdata.Delete");
       const createBtn = permissionList.includes("Masterdata.Create");
 
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -80,7 +79,7 @@ export default function Pages() {
   }, [page, rowsPerPage]);
 
   const handleEdit = (id: string) => {
-    router.push(PAGE_MANAGEMENT_DETAIL(id));
+    router.push(`${AppURL.masterdataPageManagementDetail}/${id}`);
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -107,7 +106,7 @@ export default function Pages() {
           Page Management
         </h1>
         <Button
-          onClick={() => router.push(PAGE_MANAGEMENT_ADD)}
+          onClick={() => router.push(AppURL.masterdataPageManagementAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
@@ -216,4 +215,4 @@ export default function Pages() {
       </div>
     </div>
   );
-};
+}

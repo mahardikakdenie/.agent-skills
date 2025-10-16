@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import ProductCategoryBenefitForm from "@/components/forms/product-catalog/benefit.form";
 
 export default function AddProductCatalogBenefit({
@@ -23,7 +23,7 @@ export default function AddProductCatalogBenefit({
       const access = permissionList.includes("Product Category.Create");
 
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 

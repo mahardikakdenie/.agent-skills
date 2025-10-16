@@ -29,7 +29,7 @@ import {
     InsuranceService,
 } from "@/services/masterdata/insurance.service";
 import { MdProductService } from "@/services/masterdata/product.service";
-import { FORBIDDEN, PRODUCT_ADD, PRODUCT_DETAIL_WITH_PARAMS } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {useAuth} from "@/context/auth.context";
 
 export default function Product() {
@@ -67,7 +67,7 @@ export default function Product() {
             setHasAccess(access);
             setCanCreate(createBtn);
             if (!access) {
-                router.push(FORBIDDEN);
+                router.push(AppURL.forbidden);
             }
         };
 
@@ -126,7 +126,7 @@ export default function Product() {
     }
 
     const handleEdit = (id: string) => {
-        router.push(PRODUCT_DETAIL_WITH_PARAMS(tab, id));
+        router.push(AppURL.masterdataProductDetailWithParams(tab, id));
     };
 
     const handleDelete = async (id: string) => {
@@ -157,7 +157,7 @@ export default function Product() {
             <div className="flex gap-2">
                 <h1 className="text-black font-bold text-2xl mt-2 mb-4">Product</h1>
                 <Button
-                    onClick={() => router.push(PRODUCT_ADD)}
+                    onClick={() => router.push(AppURL.masterdataProductAdd)}
                     disabled={!canCreate}
                     className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
                 >

@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft, Plus, Trash2 } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -29,14 +29,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, PAGE_MANAGEMENT } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
+
+type PageFormValues = {
+  id: string;
+  name: string;
+};
 
 interface PermissionField {
   id: string;
   name: string;
 }
 
-export default function EditPage({ params }: { params: { id: string } }) {
+export default function EditPage() {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const { permissionList } = useAuth();
@@ -46,15 +52,22 @@ export default function EditPage({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
     checkAccess();
   }, [router]);
-  const { id } = params;
+  const params = useParams();
+  const idParam = params.id;
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
 
   const [name, setName] = useState("");
   const [pageData, setPageData] = useState();
@@ -79,7 +92,7 @@ export default function EditPage({ params }: { params: { id: string } }) {
     control,
     setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<PageFormValues>({
     shouldUnregister: false,
     defaultValues: {
       id,
@@ -87,10 +100,8 @@ export default function EditPage({ params }: { params: { id: string } }) {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: PageFormValues) => {
     try {
-      const id = params.id;
-
       const existingPermissions = permission.map((perm) => perm.name);
 
       for (let i = 0; i < permissionFields.length; i++) {
@@ -110,7 +121,7 @@ export default function EditPage({ params }: { params: { id: string } }) {
       await updatePages(data, id);
 
       alert("Data berhasil disimpan!");
-      router.push(PAGE_MANAGEMENT);
+      router.push(AppURL.masterdataPageManagement);
     } catch (error) {
       console.error("Failed to save permissions or update page:", error);
       alert("Terjadi kesalahan saat menyimpan data.");
@@ -355,4 +366,4 @@ export default function EditPage({ params }: { params: { id: string } }) {
       </form>
     </div>
   );
-};
+}

@@ -12,7 +12,7 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 import {
   Select,
   SelectContent,
@@ -21,24 +21,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "next/navigation";
-import { PRODUCT_CATALOG_DETAIL } from "@/constants/routes";
+import { useParams, useRouter } from "next/navigation";
+import AppURL from "@/constants/app-url.const";
 
-export default function UploadPlanDetail({
-  params,
-}: {
-  params: { id: string; category: string };
-}) {
+export default function UploadPlanDetail() {
+  const params = useParams();
+  const idParam = params.id;
+  const categoryParam = params.category;
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+  const category =
+    typeof categoryParam === "string"
+      ? categoryParam
+      : Array.isArray(categoryParam)
+      ? categoryParam[0]
+      : "";
+
   const { plan, fetchPlanById, uploadPlanDetails } = useProducts();
   const [csvData, setCsvData] = useState<any[]>([]);
-  const { isLoading, setLoading } = useLoading();
+  const { isLoading, setLoading } = useScreen();
   const [type, setType] = useState<string>("tnc");
   useEffect(() => {
-    if (params.id) {
-      fetchPlanById(params.id);
+    if (id) {
+      fetchPlanById(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id]);
+  }, [id]);
 
   const [file, setFile] = useState<any>(null);
   const handleChooseFile = (event: any) => {
@@ -62,9 +74,9 @@ export default function UploadPlanDetail({
   const handleUpload = async () => {
     setLoading(true);
     try {
-      await uploadPlanDetails(params.id, type, csvData);
+      await uploadPlanDetails(id, type, csvData);
       alert("Package uploaded successfully");
-      router.push(PRODUCT_CATALOG_DETAIL(params.category, params.id));
+      router.push(AppURL.productCatalogDetail(category, id));
     } catch (error) {
       console.error(error);
       alert("Failed to upload package");
@@ -137,4 +149,4 @@ export default function UploadPlanDetail({
       </div>
     </div>
   );
-};
+}

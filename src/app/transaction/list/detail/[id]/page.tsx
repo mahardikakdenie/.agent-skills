@@ -13,20 +13,30 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
 import ApiURL from "@/constants/api-url.const";
-import {transactionService} from "@/services/api.service";
+import { transactionService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function DetailTransaction({ params }: { params: { id: string } }) {
+export default function DetailTransaction() {
+  const params = useParams();
+  const idParam = params.id;
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+
   const [transaction, setTransaction] = useState<any>(null);
   useEffect(() => {
-    if (params.id) {
+    if (id) {
       transactionService
-        .get(ApiURL.v1TransactionDetails(params.id as string))
+        .get(ApiURL.v1TransactionDetails(id))
         .then((res: any) => {
           setTransaction(res);
         });
     }
-  }, [params.id]);
+  }, [id]);
   if (!transaction) {
     return <div>Loading...</div>;
   }
@@ -147,4 +157,4 @@ export default function DetailTransaction({ params }: { params: { id: string } }
       </div>
     </div>
   );
-};
+}

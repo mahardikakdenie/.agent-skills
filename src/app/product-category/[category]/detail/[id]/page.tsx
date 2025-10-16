@@ -24,7 +24,7 @@ import {
 import { ChevronLeft } from "react-feather";
 import ProductDetatilTab from "./product-detail-tab";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, PRODUCT_CATALOG_CATEGORY } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function DetaildPage({
   params,
@@ -61,7 +61,7 @@ export default function DetaildPage({
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -139,7 +139,7 @@ export default function DetaildPage({
   useEffect(() => {
     if (saveSuccess === true) {
       alert("Data berhasil disimpan!");
-      router.push(PRODUCT_CATALOG_CATEGORY(category));
+      router.push(AppURL.productCatalogCategory(category));
     } else if (saveSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }
@@ -158,7 +158,7 @@ export default function DetaildPage({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={PRODUCT_CATALOG_CATEGORY(category)}>
+                  <BreadcrumbLink href={AppURL.productCatalogCategory(category)}>
                     {category
                       .split("-")
                       .map(

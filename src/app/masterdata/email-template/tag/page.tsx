@@ -12,7 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Plus, Trash } from "react-feather";
 import { usePages } from "../hooks";
 import { useEffect } from "react";
-import { EMAIL_TEMPLATE_TAG_ADD, EMAIL_TEMPLATE_TAG_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function EmailTagPage() {
   const { fetchEmailTag, emailTag } = usePages();
@@ -34,7 +34,7 @@ export default function EmailTagPage() {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Email Tags</h1>
         <Button
-          onClick={() => router.push(EMAIL_TEMPLATE_TAG_ADD)}
+          onClick={() => router.push(AppURL.masterdataEmailTemplateTagAdd)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Plus className="w-5 h-5 mr-1 " /> Add New
@@ -59,7 +59,9 @@ export default function EmailTagPage() {
                 <TableCell className="flex gap-2">
                   <Button
                     className="btn btn-primary"
-                    onClick={() => router.push(EMAIL_TEMPLATE_TAG_DETAIL(item.id))}
+                    onClick={() =>
+                      router.push(`${AppURL.masterdataEmailTemplateTagDetail}/${item.id}`)
+                    }
                   >
                     Edit
                   </Button>

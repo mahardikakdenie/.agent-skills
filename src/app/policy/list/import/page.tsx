@@ -12,7 +12,7 @@ import ApiURL from "@/constants/api-url.const";
 import {channelService, policyServiceFormData} from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
 
-export default function ImportPolicyPage({ params }: { params: { id: string } }) {
+export default function ImportPolicyPage() {
   const router = useRouter();
   const { setLoading } = useScreen();
   const [page, setPage] = useState(1);

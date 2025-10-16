@@ -23,10 +23,7 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import validator from "validator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  PRODUCT_CATALOG_CATEGORY,
-  PRODUCT_CATALOG_DETAIL,
-} from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -280,7 +277,7 @@ const ProductCategoryBenefitForm = ({
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href={PRODUCT_CATALOG_CATEGORY(category)}>
+                    <BreadcrumbLink href={AppURL.productCatalogCategory(category)}>
                       {category
                         .split("-")
                         .map(
@@ -292,7 +289,7 @@ const ProductCategoryBenefitForm = ({
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbLink
-                      href={PRODUCT_CATALOG_DETAIL(category, productCategoryID)}
+                      href={AppURL.productCatalogDetail(category, productCategoryID)}
                     >
                       Detail Product Catalog
                     </BreadcrumbLink>

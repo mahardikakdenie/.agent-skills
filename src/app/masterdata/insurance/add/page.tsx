@@ -8,20 +8,18 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Check, ChevronLeft, Upload } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useInsurance } from "../hooks";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
-export default function AddInsurance({ params }: { params: { id: string } }) {
+export default function AddInsurance() {
   const router = useRouter();
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [country, setCountry] = useState("");
@@ -38,7 +36,7 @@ export default function AddInsurance({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -75,13 +73,11 @@ export default function AddInsurance({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    if (id) {
-      (async () => {
-        await fetchInsurance({});
-      })();
-    }
+    (async () => {
+      await fetchInsurance({});
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     if (saveSuccess === true) {

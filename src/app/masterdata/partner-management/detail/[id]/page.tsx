@@ -33,8 +33,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useLoading } from "@/context/loading.context";
-import { PARTNER_MANAGEMENT } from "@/constants/routes";
+import { useScreen } from "@/context/screen.context";
+import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
 interface PartnerFormData {
   name: string;
@@ -54,10 +55,11 @@ const PHONE_CODES = [
   { code: "+84", country: "Vietnam" },
 ];
 
-export default function EditPartner({ params }: { params: { id: string } }) {
+export default function EditPartner() {
   const router = useRouter();
-  const { id } = params;
-  const { setLoading } = useLoading();
+  const params = useParams();
+  const id = params.id as string;
+  const { setLoading } = useScreen();
   const [channels, setChannels] = useState<any[]>([]);
   const [showApiKey, setShowApiKey] = useState(false);
   const [channelName, setChannelName] = useState("");
@@ -105,7 +107,7 @@ export default function EditPartner({ params }: { params: { id: string } }) {
         }
       } catch (error) {
         console.error("Error initializing data:", error);
-        router.push(PARTNER_MANAGEMENT);
+        router.push(AppURL.masterdataPartnerManagement);
       }
     };
 
@@ -450,7 +452,7 @@ export default function EditPartner({ params }: { params: { id: string } }) {
           <DialogFooter className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => router.push(PARTNER_MANAGEMENT)}
+              onClick={() => router.push(AppURL.masterdataPartnerManagement)}
             >
               Back to List
             </Button>

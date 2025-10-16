@@ -31,14 +31,14 @@ export const useUser = () => {
     return response;
   };
 
-  const saveUser = async (data: any, id: string) => {
-    const response = await userService.saveUser(data, id);
+  const saveUser = async (data: any) => {
+    const response = await userService.saveUser(data);
     return response;
   };
 
   const getExistingUser = async (data: any) => {
     return await userService.getExistingUser(data);
-  }
+  };
 
   const updateUser = async (data: any, id: string) => {
     const { data: response } = await userService.updateUser(data, id);

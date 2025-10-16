@@ -22,9 +22,12 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import ApiURL from "@/constants/api-url.const";
 import { policyService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function DetailEndorsement({ params }: { params: { id: string } }) {
+export default function DetailEndorsement() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
   const [endorsement, setEndorsement] = useState<any>(null);
   const imageUrl = endorsement?.participants?.nric_front || noImage.src;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,10 +44,10 @@ export default function DetailEndorsement({ params }: { params: { id: string } }
       }
     };
 
-    if (params.id) {
-      fetchEndorsementData(params.id as string);
+    if (id) {
+      fetchEndorsementData(id);
     }
-  }, [params.id]);
+  }, [id]);
 
   if (!endorsement) {
     return (<div className="w-full h-full flex justify-center items-center">Loading...</div>);

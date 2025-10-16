@@ -36,10 +36,13 @@ import { useAuth } from "@/context/auth.context";
 import ApiURL from "@/constants/api-url.const";
 import { policyService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function DetailPolicy({ params }: { params: { id: string } }) {
+export default function DetailPolicy() {
     const router = useRouter();
     const { permissionList } = useAuth();
+    const params = useParams();
+    const id = params.id as string;
 
     const [policy, setPolicy] = useState<any>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -66,13 +69,13 @@ export default function DetailPolicy({ params }: { params: { id: string } }) {
     }, []);
 
     useEffect(() => {
-        if (params.id) {
-            policyService.get(ApiURL.v1PolicyDetails(params.id)).then((res: any) => {
+        if (id) {
+            policyService.get(ApiURL.v1PolicyDetails(id)).then((res: any) => {
                 setPolicy(res?.data);
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params.id]);
+    }, [id]);
 
     if (!policy) {
         return (

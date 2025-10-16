@@ -21,16 +21,28 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import {useScreen} from "@/context/screen.context";
+import { useScreen } from "@/context/screen.context";
 import ApiURL from "@/constants/api-url.const";
-import {transactionService} from "@/services/api.service";
+import { transactionService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function UploadTransactions({
-  params,
-}: {
-  params: { id: string; category: string };
-}) {
+export default function UploadTransactions() {
+  const params = useParams();
+  const idParam = params.id;
+  const categoryParam = params.category;
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+  const category =
+    typeof categoryParam === "string"
+      ? categoryParam
+      : Array.isArray(categoryParam)
+      ? categoryParam[0]
+      : "";
   const [csvData, setCsvData] = useState<any[]>([]);
   const { setLoading } = useScreen();
   const [file, setFile] = useState<any>(null);
@@ -52,8 +64,11 @@ export default function UploadTransactions({
     }
   };
 
-  const uploadTransactions = async (id: string, data: any) => {
-    const { data: response } = await transactionService.post(ApiURL.v1TransactionBulkCreateDetails(id), data);
+  const uploadTransactions = async (transactionId: string, data: any) => {
+    const { data: response } = await transactionService.post(
+      ApiURL.v1TransactionBulkCreateDetails(transactionId),
+      data
+    );
     return response;
   };
 
@@ -75,7 +90,7 @@ export default function UploadTransactions({
   const handleUpload = async () => {
     setLoading(true);
     try {
-      await uploadTransactions(params.id, csvData);
+      await uploadTransactions(id, csvData);
       alert("Package uploaded successfully");
       // router.push(PRODUCT_CATALOG_DETAIL(params.category, params.id));
     } catch (error) {
@@ -180,4 +195,4 @@ export default function UploadTransactions({
       </div>
     </div>
   );
-};
+}

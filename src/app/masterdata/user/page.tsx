@@ -31,7 +31,7 @@ import { useAuth } from "@/context/auth.context";
 import { Input } from "@/components/ui/input";
 import _ from "lodash";
 import { useUser } from "./hooks";
-import { FORBIDDEN, USER_ADD, USER_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Controller, useForm} from "react-hook-form";
 import { primaryRoles } from "@/app/masterdata/user/user.const";
@@ -85,7 +85,7 @@ export default function Users() {
       setCanToggleStatus(canToggleStatus);
       setCanSearchAllAccount(adminReadProfiles);
       if (!accessMasterData && !accessUser) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -136,7 +136,7 @@ export default function Users() {
   }
 
   const handleEdit = (id: string) => {
-    router.push(USER_DETAIL(id));
+    router.push(`${AppURL.masterdataUserDetail}/${id}`);
   };
 
   const handleDeleteUser = async (id: string) => {
@@ -194,7 +194,7 @@ export default function Users() {
       const updatePromise = updateUser(data, accountId);
       await toastPromise(updatePromise, {
         loading: "Updating user's status...",
-        success: <b>User's status has been successfully updated</b>,
+        success: <b>User&apos;s status has been successfully updated</b>,
         error: "Update failed!",
       });
     } catch (error: any) {
@@ -294,7 +294,7 @@ export default function Users() {
           </div>
         </div>
         <Button
-          onClick={() => router.push(USER_ADD)}
+          onClick={() => router.push(AppURL.masterdataUserAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >

@@ -2,35 +2,57 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import ApiURL from "@/constants/api-url.const";
-import {policyService} from "@/services/api.service";
+import { policyService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function DetailMembership({ params }: { params: { id: string } }) {
-    const router = useRouter();
-    const [memberships, setMemberships] = useState<any>(null);
+export default function DetailMembership() {
+  const router = useRouter();
+  const params = useParams();
+  const idParam = params.id;
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+
+  const [memberships, setMemberships] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async (id: string) => {
       try {
-        const response =
-          await policyService.get(ApiURL.v1InsuredPartiesDetails(id));
-          setMemberships(response?.data);
+        const response = await policyService.get(
+          ApiURL.v1InsuredPartiesDetails(id)
+        );
+        setMemberships(response?.data);
       } catch (error) {
         console.error("Error fetching endorsement data:", error);
       }
     };
 
-    if (params.id) {
-      fetchData(params.id as string);
+    if (id) {
+      fetchData(id);
     }
-  }, [params.id]);
+  }, [id]);
 
   if (!memberships) {
-    return (<div className="w-full h-full flex justify-center items-center">Loading...</div>);
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        Loading...
+      </div>
+    );
   }
-  
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
@@ -45,7 +67,9 @@ export default function DetailMembership({ params }: { params: { id: string } })
   };
 
   function formatLabel(key: string) {
-    return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+    return key
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
   }
 
   return (
@@ -63,9 +87,14 @@ export default function DetailMembership({ params }: { params: { id: string } })
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">Detail Membership</h2>
+          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+            Detail Membership
+          </h2>
         </div>
-        <a href={AppURL.membershipList} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer">
+        <a
+          href={AppURL.membershipList}
+          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+        >
           <ChevronLeft className="w-4 h-4" /> Back
         </a>
       </div>
@@ -94,50 +123,68 @@ export default function DetailMembership({ params }: { params: { id: string } })
               <div>{memberships?.policies?.policy_holders?.email || "-"}</div>
             </div>
             {memberships?.status && (
-                <div className="flex gap-2 text-sm font-medium">
+              <div className="flex gap-2 text-sm font-medium">
                 <div className="min-w-[160px] w-32">Status</div>
                 <div className="max-w-1 w-1">:</div>
-                <div><span className={getStatusColor(memberships?.status)}>{memberships?.status || "-"}</span></div>
+                <div>
+                  <span className={getStatusColor(memberships?.status)}>
+                    {memberships?.status || "-"}
+                  </span>
                 </div>
+              </div>
             )}
           </div>
         </div>
         <div className="bg-white rounded-md sm:p-6 p-4 mb-4 md:mb-0 h-fit max-h-full overflow-y-auto ">
-            <p className="font-semibold mb-3">Insured Detail</p>
-            <div className="flex flex-col lg:flex-row gap-2 lg:gap-20">
-                {memberships?.profile && (
-                  <div className="flex flex-col gap-3">
-                      <div className="space-y-2 text-sm font-medium">
-                      {Object.entries(memberships.profile)
-                        .filter(([_, value]) => value !== null && value !== undefined && value !== "")
-                        .map(([key, value], id) => (
-                              <div key={id} className="flex gap-2">
-                              <div className="min-w-[160px] capitalize">{formatLabel(key)}</div>
-                              <div className="w-1">:</div>
-                              <div>{String(value)}</div>
-                              </div>
-                          ))}
+          <p className="font-semibold mb-3">Insured Detail</p>
+          <div className="flex flex-col lg:flex-row gap-2 lg:gap-20">
+            {memberships?.profile && (
+              <div className="flex flex-col gap-3">
+                <div className="space-y-2 text-sm font-medium">
+                  {Object.entries(memberships.profile)
+                    .filter(
+                      ([_, value]) =>
+                        value !== null && value !== undefined && value !== ""
+                    )
+                    .map(([key, value], id) => (
+                      <div key={id} className="flex gap-2">
+                        <div className="min-w-[160px] capitalize">
+                          {formatLabel(key)}
+                        </div>
+                        <div className="w-1">:</div>
+                        <div>{String(value)}</div>
                       </div>
-                  </div>
-                )}
-                {memberships?.other_info && (
-                  <div className="flex flex-col gap-3">
-                    <div className="space-y-2 text-sm font-medium">
-                      {Object.entries(memberships.other_info)
-                        .filter(([key, value]) => value !== null && value !== undefined && value !== "" && key !== "email" && key !== "gender")
-                        .map(([key, value], id) => (
-                          <div key={id} className="flex gap-2">
-                            <div className="min-w-[160px] capitalize">{formatLabel(key)}</div>
-                            <div className="w-1">:</div>
-                            <div>{String(value)}</div>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-            </div>
+                    ))}
+                </div>
+              </div>
+            )}
+            {memberships?.other_info && (
+              <div className="flex flex-col gap-3">
+                <div className="space-y-2 text-sm font-medium">
+                  {Object.entries(memberships.other_info)
+                    .filter(
+                      ([key, value]) =>
+                        value !== null &&
+                        value !== undefined &&
+                        value !== "" &&
+                        key !== "email" &&
+                        key !== "gender"
+                    )
+                    .map(([key, value], id) => (
+                      <div key={id} className="flex gap-2">
+                        <div className="min-w-[160px] capitalize">
+                          {formatLabel(key)}
+                        </div>
+                        <div className="w-1">:</div>
+                        <div>{String(value)}</div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
-};
+}

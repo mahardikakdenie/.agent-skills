@@ -21,7 +21,7 @@ import ApiURL from "@/constants/api-url.const";
 import {channelService, policyService} from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
 
-export default function UploadEndorsement({ params }: { params: { id: string } }) {
+export default function UploadEndorsement() {
     const router = useRouter();
     const { setLoading } = useScreen();
     const [xlsxData, setXlsxData] = useState<any[]>([]);

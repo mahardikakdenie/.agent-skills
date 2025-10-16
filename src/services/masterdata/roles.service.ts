@@ -34,13 +34,16 @@ export class RoleService {
   private authHttpClient: IHttpClient;
 
   constructor() {
-    this.authHttpClient = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+    this.authHttpClient = new AxiosHttpClient(
+      {
+        baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+        },
       },
-    }, true);
+      true
+    );
   }
 
   async getRole(page?: number, rowsPerPage?: number): Promise<RoleResponse> {
@@ -66,7 +69,7 @@ export class RoleService {
     }
   }
 
-  async addRole(data: any, id: string): Promise<any> {
+  async addRole(data: any): Promise<any> {
     try {
       return await this.authHttpClient.post("role/", data);
     } catch (error) {

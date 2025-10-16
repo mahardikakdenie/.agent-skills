@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -23,13 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function EditEmailTag({ params }: { params: { id: string } }) {
+export default function EditEmailTag() {
   const router = useRouter();
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
 
   const [tag, setTag] = useState("");
   const [journey, setJourney] = useState("");
@@ -40,12 +41,18 @@ export default function EditEmailTag({ params }: { params: { id: string } }) {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const { permissionList } = useAuth();
 
+  type EmailTagFormValues = {
+    id: string;
+    tag: string;
+    journey: string;
+  };
+
   useEffect(() => {
     const checkAccess = async () => {
       const access = permissionList.includes("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -57,7 +64,7 @@ export default function EditEmailTag({ params }: { params: { id: string } }) {
     control,
     setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<EmailTagFormValues>({
     shouldUnregister: false,
     defaultValues: {
       id,
@@ -83,9 +90,8 @@ export default function EditEmailTag({ params }: { params: { id: string } }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setValue]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: EmailTagFormValues) => {
     try {
-      const id = params.id;
       await updateEmailTag(data, id);
       setUpdateSuccess(true);
     } catch (error) {

@@ -16,11 +16,11 @@ import { Button } from "@/components/ui/button";
 import { useRole } from "../hooks";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, ROLES_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
-export default function AddRolesPage({ params }: { params: { id: string } }) {
+export default function AddRolesPage() {
   const router = useRouter();
-  const { id } = params;
+  const id = "";
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -35,7 +35,7 @@ export default function AddRolesPage({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -75,10 +75,10 @@ export default function AddRolesPage({ params }: { params: { id: string } }) {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await addRole(data, id);
+      const response = await addRole(data);
       if (response.id != null) {
         const id = response.id;
-        router.push(ROLES_DETAIL(id));
+        router.push(`${AppURL.masterdataRoleDetail}/${id}`);
       }
     } catch (error) {
       setUpdateSuccess(false);
@@ -226,4 +226,4 @@ export default function AddRolesPage({ params }: { params: { id: string } }) {
       </form>
     </div>
   );
-};
+}

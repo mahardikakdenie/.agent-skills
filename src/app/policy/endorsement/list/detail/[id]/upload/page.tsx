@@ -10,9 +10,12 @@ import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
 import ApiURL from "@/constants/api-url.const";
 import {policyService} from "@/services/api.service";
+import { useParams } from "next/navigation";
 
-export default function UploadEndorsement({ params }: { params: { id: string } }) {
+export default function UploadEndorsement() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
   const { setLoading } = useScreen();
   const [ xlsxData, setXlsxData ] = useState<any[]>([]);
   const [ file, setFile ] = useState<File | null>(null);
@@ -86,10 +89,10 @@ export default function UploadEndorsement({ params }: { params: { id: string } }
         data: transformedData,
       };
 
-      const response: any = await policyService.put(ApiURL.v1EndorsementUpdtaeStatusBulking(params.id), payload);
+      const response: any = await policyService.put(ApiURL.v1EndorsementUpdtaeStatusBulking(id), payload);
       const successMessage = response?.data?.message || "Data uploaded successfully!";
       alert(successMessage);
-      router.push(`${AppURL.endorsementDetail}/${params.id}`);
+      router.push(`${AppURL.endorsementDetail}/${id}`);
     } catch (error: any) {
       console.error("Upload error:", error);
       const errorMessage = error?.response?.data?.message || "Upload failed.";

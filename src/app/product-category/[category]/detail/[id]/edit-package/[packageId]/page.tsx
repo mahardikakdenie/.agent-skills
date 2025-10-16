@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import ProductCategoryPackageForm from "@/components/forms/product-catalog/package.form";
 
 export default function EditProductCatalogPackage({
@@ -24,7 +24,7 @@ export default function EditProductCatalogPackage({
       const access = permissionList.includes("Product Category.Update");
 
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 

@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Check, ChevronLeft, Plus, Trash2, Upload } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -27,14 +27,12 @@ import {
   MdProductService,
   ProductResponse,
 } from "@/services/masterdata/product.service";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {useAuth} from "@/context/auth.context";
 
-export default function AddProduct({ params }: { params: { id: string } }) {
+export default function AddProduct() {
   const router = useRouter();
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
   const productService = new MdProductService();
   const [productData, setProductData] = useState<ProductResponse[]>([]);
   const [name, setName] = useState("");
@@ -55,7 +53,7 @@ export default function AddProduct({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 

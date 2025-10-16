@@ -19,7 +19,7 @@ import {
   ProductCategories,
   ProductCategoriesService,
 } from "@/services/masterdata/product-category.service";
-import { FORBIDDEN, PRODUCT_CATEGORY_ADD, PRODUCT_CATEGORY_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {useAuth} from "@/context/auth.context";
 
 export default function ProductCategory() {
@@ -49,7 +49,7 @@ export default function ProductCategory() {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -81,7 +81,7 @@ export default function ProductCategory() {
   }
 
   const handleEdit = (id: string) => {
-    router.push(PRODUCT_CATEGORY_DETAIL(id));
+    router.push(`${AppURL.masterdataProductCategoryDetail}/${id}`);
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -105,7 +105,7 @@ export default function ProductCategory() {
           Product Category
         </h1>
         <Button
-          onClick={() => router.push(PRODUCT_CATEGORY_ADD)}
+          onClick={() => router.push(AppURL.masterdataProductCategoryAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

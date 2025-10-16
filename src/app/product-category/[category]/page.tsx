@@ -11,7 +11,7 @@ import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
 import { ProductCatalogDto, ProductCatalogService, } from "@/services/product-catalog.service";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { FORBIDDEN, PRODUCT_CATALOG_ADD, PRODUCT_CATALOG_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function ProductCatalogPage() {
   const { category } = useParams<{ category: string }>();
@@ -47,7 +47,7 @@ export default function ProductCatalogPage() {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -113,7 +113,7 @@ export default function ProductCatalogPage() {
   }, [searchInsurer]);
 
   const handleViewDetail = (id: string) => {
-    router.push(PRODUCT_CATALOG_DETAIL(category, id));
+    router.push(AppURL.productCatalogDetail(category, id));
   };
 
   const handleSearchInsurerOnChange = (v: string) => {
@@ -149,7 +149,7 @@ export default function ProductCatalogPage() {
             .map((item) => item.charAt(0).toUpperCase() + item.slice(1) + " ")}
         </h1>
         <Button
-          onClick={() => router.push(PRODUCT_CATALOG_ADD(category))}
+          onClick={() => router.push(AppURL.productCatalogAdd(category))}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

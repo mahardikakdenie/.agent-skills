@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 
 export default function ChannelAddModal(props: {
   id: string;
@@ -32,7 +32,7 @@ export default function ChannelAddModal(props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [channel, setChannel] = useState<string>("");
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
   const handleAssignPlans = async () => {
     if (channel) {
       setLoading(true);

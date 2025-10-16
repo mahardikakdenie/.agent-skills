@@ -25,7 +25,7 @@ import {
   MailTemplateService,
 } from "@/services/masterdata/mail-template.service";
 import { capitalizeStringWithChar } from "@/lib/formatter";
-import { EMAIL_TEMPLATE_ADD, EMAIL_TEMPLATE_DETAIL, FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function MailTemplate() {
   const path = usePathname();
@@ -61,7 +61,7 @@ export default function MailTemplate() {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -111,7 +111,7 @@ export default function MailTemplate() {
   }, []);
 
   const handleEdit = (id: string) => {
-    router.push(EMAIL_TEMPLATE_DETAIL(id));
+    router.push(`${AppURL.masterdataEmailTemplateDetail}/${id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -152,7 +152,7 @@ export default function MailTemplate() {
           Mail Template
         </h1>
         <Button
-          onClick={() => router.push(EMAIL_TEMPLATE_ADD)}
+          onClick={() => router.push(AppURL.masterdataEmailTemplateAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

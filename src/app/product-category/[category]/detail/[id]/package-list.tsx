@@ -20,12 +20,7 @@ import noData from "/public/images/no-data.webp";
 import { ChevronLeft, ChevronRight, Plus, Trash, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth.context";
-import {
-  FORBIDDEN,
-  PRODUCT_CATALOG_ADD_PACKAGE,
-  PRODUCT_CATALOG_EDIT_PACKAGE,
-  PRODUCT_CATALOG_UPLOAD,
-} from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {
   Tooltip,
   TooltipContent,
@@ -84,7 +79,7 @@ function generateRowData(
                     disabled={!canEdit}
                     onClick={() =>
                       router.push(
-                        PRODUCT_CATALOG_EDIT_PACKAGE(category, id, pkg.id)
+                        AppURL.productCatalogEditPackage(category, id, pkg.id)
                       )
                     }
                   >
@@ -201,7 +196,7 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
       setCanCreate(createBtn);
 
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -282,7 +277,7 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
           className="btn btn-primary"
           disabled={!canEdit}
           onClick={() =>
-            router.push(PRODUCT_CATALOG_UPLOAD(category as string, id))
+            router.push(AppURL.productCatalogUpload(category as string, id))
           }
         >
           <Upload className="w-5 h-5 mr-2" /> Upload Packages
@@ -291,7 +286,7 @@ export default function PackageList(props: Readonly<{ id: string; category: stri
           className="bg-[#F5BA41] hover:bg-[#F5BA41]/80 text-black"
           disabled={!canCreate}
           onClick={() =>
-            router.push(PRODUCT_CATALOG_ADD_PACKAGE(category as string, id))
+            router.push(AppURL.productCatalogAddPackage(category as string, id))
           }
         >
           <Plus className="w-5 h-5 mr-2" /> Add Package

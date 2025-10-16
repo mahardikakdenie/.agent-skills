@@ -25,9 +25,12 @@ import {useAuth} from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import ApiURL from "@/constants/api-url.const";
 import {channelService, productService, promotionService} from "@/services/api.service";
+import { useParams } from "next/navigation";
 
-export default function EditPromotionPage({ params }: { params: { id: string } }) {
+export default function EditPromotionPage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [value_currency, setValue_currency] = useState("");
@@ -184,8 +187,8 @@ export default function EditPromotionPage({ params }: { params: { id: string } }
   }, [promotion.embedded_discount_products]);
 
   useEffect(() => {
-    if (params.id) {
-      promotionService.get(ApiURL.v1CampaignDetail(params.id as string), { params })
+    if (id) {
+      promotionService.get(ApiURL.v1CampaignDetail(id), { params: { id } })
         .then((response: any) => {
           const res = response.data;
           const promotionData: PromotionDetails = res.data[0];
@@ -229,7 +232,7 @@ export default function EditPromotionPage({ params }: { params: { id: string } }
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id, reset]);
+  }, [id, reset]);
 
 
   useEffect(() => {
@@ -906,7 +909,7 @@ export default function EditPromotionPage({ params }: { params: { id: string } }
 
     try {
       if (formData.type === "voucher" && !formData.active && vouchers.length > 0) {
-        const campaign_id = params.id;
+        const campaign_id = id;
 
         for (const voucher of vouchers) {
           try {
@@ -925,7 +928,10 @@ export default function EditPromotionPage({ params }: { params: { id: string } }
       }
 
       // Update the promotion
-      const response: any = await promotionService.put(`${ApiURL.v1CampaignUpdateDetails(params.id)}?id=${params.id}`, payload);
+      const response: any = await promotionService.put(
+        `${ApiURL.v1CampaignUpdateDetails(id)}?id=${id}`,
+        payload
+      );
       const { data } = response.data;
 
       if (formData.type == "embedded") {

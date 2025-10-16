@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
   Check,
@@ -51,9 +51,15 @@ import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { format } from "date-fns";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, GROUP } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function EditGroup({ params }: { params: { id: string } }) {
+type GroupFormValues = {
+  id: string;
+  name: string;
+};
+
+export default function EditGroup() {
   const router = useRouter();
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -64,16 +70,16 @@ export default function EditGroup({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
     checkAccess();
   }, [router]);
 
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
   const groupService = new GroupService();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenUser, setIsModalOpenUser] = useState(false);
@@ -118,7 +124,7 @@ export default function EditGroup({ params }: { params: { id: string } }) {
     control,
     setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<GroupFormValues>({
     shouldUnregister: false,
     defaultValues: {
       id,
@@ -144,7 +150,7 @@ export default function EditGroup({ params }: { params: { id: string } }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: GroupFormValues) => {
     try {
       await updateGroup(data, id);
       setUpdateSuccess(true);
@@ -431,7 +437,7 @@ export default function EditGroup({ params }: { params: { id: string } }) {
 
           <div className="flex ml-auto">
             <a
-              href={GROUP}
+              href={AppURL.masterdataGroup}
               className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />

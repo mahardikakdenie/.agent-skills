@@ -1,53 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { AuthProvider, useAuth } from "@/context/auth.context";
-import { LoadingProvider, useLoading } from "@/context/loading.context";
+import { AuthProvider } from "@/context/auth.context";
+import { ScreenProvider, useScreen } from "@/context/screen.context";
 import Sidebar from "@/components/ui/sidebar";
-import Loading from "./loading";
-import { useNotFound } from "@/context/not-found.context";
 
-function AuthChecker({ children }: { children: React.ReactNode }) {
-  const { checkLogin, isAuthReady } = useAuth();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    // Prevent triggering checkLogin on login page
-    if (pathname === "/") return;
-    checkLogin();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
-
-  // Prevent logout when the page is refreshed
-  if (!isAuthReady && pathname !== "/") {
-    return null;
-  }
-
-  return <>{children}</>;
-}
+const AuthChecker = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   return (
     <div className="flex">
-      <LoadingProvider>
+      <ScreenProvider>
         <LoadedContent pathname={pathname}>
           {children}
         </LoadedContent>
-      </LoadingProvider>
+      </ScreenProvider>
     </div>
   );
 }
 
 function LoadedContent({ children, pathname }: { children: React.ReactNode, pathname: string }) {
-  const { isLoading } = useLoading();
-  const isNotFound = useNotFound();
+  const { isLoading } = useScreen();
+  const shouldShowSidebar = pathname !== "/";
 
   return (
     <>
-      {!isNotFound && pathname !== "/" && <Sidebar />}
-      {isLoading && <Loading />}
+      {shouldShowSidebar && <Sidebar />}
+      {/* Loader handled globally via ScreenProvider */}
       <div className="w-full h-screen overflow-auto">
         <AuthProvider>
           <AuthChecker>{children}</AuthChecker>

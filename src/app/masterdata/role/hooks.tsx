@@ -19,8 +19,8 @@ export const useRole = () => {
     return response;
   };
 
-  const addRole = async (data: any, id: string) => {
-    const { data: response } = await roleService.addRole(data, id);
+  const addRole = async (data: any) => {
+    const { data: response } = await roleService.addRole(data);
     return response;
   };
 

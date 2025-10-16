@@ -38,8 +38,8 @@ export const usePages = () => {
     setProduct(data);
   };
 
-  const savePages = async (data: any, id: string) => {
-    const { data: response } = await mailTemplateService.saveJourney(data, id);
+  const savePages = async (data: any) => {
+    const { data: response } = await mailTemplateService.saveJourney(data);
     return response;
   };
 

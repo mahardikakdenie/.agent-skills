@@ -11,14 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import noData from "/public/images/no-data.webp";
 import { MdProductService, HospitalData } from "@/services/masterdata/product.service";
-import { useLoading } from "@/context/loading.context";
-import { HOSPITAL_LIST_UPLOAD } from "@/constants/routes";
+import { useScreen } from "@/context/screen.context";
+import AppURL from "@/constants/app-url.const";
 
 export default function HospitalListPage() {
   const router = useRouter();
   const path = usePathname();
   const mdProduct = new MdProductService();
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
 
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -71,7 +71,7 @@ export default function HospitalListPage() {
       <div className="flex gap-4 pb-4 items-center">
         <h1 className="text-black font-bold text-2xl mt-2">Hospital List</h1>
         <Button
-          onClick={() => router.push(HOSPITAL_LIST_UPLOAD)}
+          onClick={() => router.push(AppURL.masterdataHospitalUpload)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
           <Upload className="w-5 h-5 mr-1" /> Upload

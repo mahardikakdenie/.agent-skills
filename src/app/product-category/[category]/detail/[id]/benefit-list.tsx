@@ -11,11 +11,7 @@ import { useProducts } from "../../../hooks";
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Plus, Trash, Upload } from "react-feather";
-import {
-  PRODUCT_CATALOG_ADD_BENEFIT,
-  PRODUCT_CATALOG_EDIT_PACKAGE,
-  PRODUCT_CATALOG_UPLOAD_BENEFIT,
-} from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import {
   Tooltip,
   TooltipContent,
@@ -41,7 +37,7 @@ export default function BenefitList(props: { id: string }) {
         <Button
           className="mb-5"
           onClick={() =>
-            router.push(PRODUCT_CATALOG_UPLOAD_BENEFIT(category as string, id))
+            router.push(AppURL.productCatalogUploadBenefit(category as string, id))
           }
         >
           <Upload className="w-5 h-5 mr-2" />
@@ -50,7 +46,7 @@ export default function BenefitList(props: { id: string }) {
         <Button
           className="bg-[#F5BA41] hover:bg-[#F5BA41]/80 text-black"
           onClick={() =>
-            router.push(PRODUCT_CATALOG_ADD_BENEFIT(category as string, id))
+            router.push(AppURL.productCatalogAddBenefit(category as string, id))
           }
         >
           <Plus className="w-5 h-5 mr-2" /> Add Benefit
@@ -80,7 +76,7 @@ export default function BenefitList(props: { id: string }) {
                     className="rounded-full"
                     onClick={() =>
                       router.push(
-                        PRODUCT_CATALOG_EDIT_PACKAGE(category, id, pkg.id)
+                        AppURL.productCatalogEditPackage(category, id, pkg.id)
                       )
                     }
                   >

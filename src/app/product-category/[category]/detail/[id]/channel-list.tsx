@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 import { UserCheck } from "react-feather";
 
 export default function ChannelList(props: { id: string }) {
@@ -42,7 +42,7 @@ export default function ChannelList(props: { id: string }) {
     (async () => await getChannelPlans(id))();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
   const handleUnassignPlan = async () => {
     try {
       setLoading(true);

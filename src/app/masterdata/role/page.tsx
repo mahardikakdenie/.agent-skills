@@ -18,7 +18,7 @@ import Image from "next/image";
 import { RoleResponse, RoleService } from "@/services/masterdata/roles.service";
 import { format } from "date-fns";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, ROLES_ADD, ROLES_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function Roles() {
   const path = usePathname();
@@ -51,7 +51,7 @@ export default function Roles() {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -86,7 +86,7 @@ export default function Roles() {
   }
 
   const handleEdit = (id: string) => {
-    router.push(ROLES_DETAIL(id));
+    router.push(`${AppURL.masterdataRoleDetail}/${id}`);
   };
 
   const handleDeleteRole = async (id: string) => {
@@ -111,7 +111,7 @@ export default function Roles() {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Roles</h1>
         <Button
-          onClick={() => router.push(ROLES_ADD)}
+          onClick={() => router.push(AppURL.masterdataRoleAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

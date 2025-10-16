@@ -22,8 +22,8 @@ export const useGroup = () => {
     return response;
   };
 
-  const addGroup = async (data: any, id: string) => {
-    const { data: response } = await groupService.addGroup(data, id);
+  const addGroup = async (data: any) => {
+    const { data: response } = await groupService.addGroup(data);
     return response;
   };
 

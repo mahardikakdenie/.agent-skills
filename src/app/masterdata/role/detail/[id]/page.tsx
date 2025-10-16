@@ -37,7 +37,16 @@ import {
 } from "@/components/ui/select";
 import React from "react";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, ROLES } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
+
+type RoleFormValues = {
+  id: string;
+  name: string;
+  description: string;
+  menu: string[];
+  permission: string[][];
+};
 
 interface Permission {
   id: string;
@@ -57,7 +66,7 @@ interface MenuPermissionForm {
   isEditable: boolean;
 }
 
-export default function EditRolesPage({ params }: { params: { id: string } }) {
+export default function EditRolesPage() {
   const router = useRouter();
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -68,14 +77,15 @@ export default function EditRolesPage({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
     checkAccess();
   }, [router]);
 
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -98,7 +108,7 @@ export default function EditRolesPage({ params }: { params: { id: string } }) {
     control,
     setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<RoleFormValues>({
     shouldUnregister: false,
     values: {
       id,
@@ -175,7 +185,7 @@ export default function EditRolesPage({ params }: { params: { id: string } }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: RoleFormValues) => {
     try {
       await updateRole(data, id);
       setUpdateSuccess(true);
@@ -425,7 +435,7 @@ export default function EditRolesPage({ params }: { params: { id: string } }) {
 
           <div className="flex ml-auto">
             <a
-              href={ROLES}
+              href={AppURL.masterdataRole}
               className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />

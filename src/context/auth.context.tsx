@@ -114,26 +114,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     userdata.all_insurances = [ ...new Set([ ...decodedToken.account_insurers.map((i: any) => i.insurance) ]) ];
     setUser(userdata);
 
-    const menus: any[] = [];
-    const submenus: any[] = [];
     const permissions: any[] = decodedToken.permission_list || [];
+    const normalizeKey = (value?: string) => value?.toString().toLowerCase().replace(/[\s_-]/g, "") ?? "";
+    const compareKeys = (a: string, b: string) => {
+      const normalizedA = normalizeKey(a);
+      const normalizedB = normalizeKey(b);
+      return normalizedA === normalizedB || normalizedA.startsWith(normalizedB) || normalizedB.startsWith(normalizedA);
+    };
+    const menuAccess = new Set<string>();
+    const submenuAccess = new Set<string>();
 
     permissions.forEach((item: any) => {
-      const menu = item.split(".")[0];
-      const submenu = item.split(".")[1];
-      if (!menus.includes(menu)) menus.push(menu);
-      submenus.push(submenu);
+      if (!item) return;
+
+      const parts = `${item}`.split(".");
+      const rawMenu = parts[0];
+      const rawSubmenuParts = parts.slice(1);
+      const submenuCandidates = rawSubmenuParts.length > 0
+          ? [rawSubmenuParts.join("."), rawSubmenuParts.join(""), ...rawSubmenuParts]
+          : [];
+
+      const matchedMenu = rawMenu
+          ? AppMenu.menu.find((menuItem) => compareKeys(menuItem.name, rawMenu))
+          : undefined;
+
+      if (matchedMenu) {
+        menuAccess.add(matchedMenu.name);
+
+        if (matchedMenu.submenu?.length) {
+          if (submenuCandidates.length) {
+            const matchedSubmenu = matchedMenu.submenu.find(
+                (submenuItem: any) => submenuCandidates.some((candidate) => compareKeys(submenuItem.name, candidate))
+            );
+            if (matchedSubmenu) submenuAccess.add(matchedSubmenu.name);
+            else matchedMenu.submenu.forEach((submenuItem: any) => submenuAccess.add(submenuItem.name));
+          } else {
+            matchedMenu.submenu.forEach((submenuItem: any) => submenuAccess.add(submenuItem.name));
+          }
+        }
+      }
     });
 
-    if (path.split("/").length < 4 && !submenus.includes(findMenuByUrl(path))) setIsForbidden(true);
+    const menus = Array.from(menuAccess);
+    const submenus = Array.from(submenuAccess);
+
+    if (path.split("/").length < 4) {
+      const currentMenuName = findMenuByUrl(path);
+      const hasAccessToCurrent = currentMenuName
+          ? submenus.some((submenuName) => compareKeys(submenuName, currentMenuName))
+          : false;
+      if (currentMenuName && !hasAccessToCurrent) setIsForbidden(true);
+    }
 
     setMenuList(menus);
     setSubmenuList(submenus);
     setPermissionList(permissions);
 
     if (isLogin) {
-      const matchingMenu = AppMenu.menu.find(menuItem => menus.includes(menuItem.name))?.submenu.find(submenuItem => submenus.includes(submenuItem.name));
-      if (!!matchingMenu) {
+      const matchingMenu = AppMenu.menu.find((menuItem) =>
+          menus.some((menuName) => compareKeys(menuName, menuItem.name))
+      );
+      const matchingSubmenu = matchingMenu?.submenu?.find((submenuItem: any) =>
+          submenus.some((submenuName) => compareKeys(submenuName, submenuItem.name))
+      );
+
+      if (matchingSubmenu) {
+        setIsAuthenticated(true);
+        router.push(matchingSubmenu.url);
+      } else if (matchingMenu) {
         setIsAuthenticated(true);
         router.push(matchingMenu.url);
       } else {

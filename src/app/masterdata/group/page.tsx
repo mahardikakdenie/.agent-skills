@@ -21,7 +21,7 @@ import {
 } from "@/services/masterdata/group.service";
 import { format } from "date-fns";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, GROUP_ADD, GROUP_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function Group() {
   const path = usePathname();
@@ -54,7 +54,7 @@ export default function Group() {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -89,7 +89,7 @@ export default function Group() {
   }
 
   const handleEdit = (id: string) => {
-    router.push(GROUP_DETAIL(id));
+    router.push(`${AppURL.masterdataGroupDetail}/${id}`);
   };
 
   const handleDeleteGroup = async (id: string) => {
@@ -114,7 +114,7 @@ export default function Group() {
       <div className="flex gap-2">
         <h1 className="text-black font-bold text-2xl mt-2 mb-4">Group</h1>
         <Button
-          onClick={() => router.push(GROUP_ADD)}
+          onClick={() => router.push(AppURL.masterdataGroupAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

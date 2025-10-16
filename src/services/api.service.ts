@@ -88,4 +88,6 @@ const productService = createApiService(process.env.NEXT_PUBLIC_PRODUCT_SERVICE_
 const promotionService = createApiService(process.env.NEXT_PUBLIC_PROMOTION_SERVICE_URL as string);
 const sanctionService = createApiService(process.env.NEXT_PUBLIC_SANCTION_SERVICE_URL as string);
 const countryService = createApiService(process.env.NEXT_PUBLIC_COUNTRY_SERVICE_URL as string);
-export { authService, claimService, policyService, policyServiceFormData, transactionService, channelService, financeService, financeServiceFormData, helperService, productService, promotionService, sanctionService, countryService };
+const masterdataService = productService;
+const masterdataNotV1Service = masterdataService;
+export { authService, claimService, policyService, policyServiceFormData, transactionService, channelService, financeService, financeServiceFormData, helperService, productService, promotionService, sanctionService, countryService, masterdataService, masterdataNotV1Service };

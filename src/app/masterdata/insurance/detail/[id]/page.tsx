@@ -8,20 +8,21 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useInsurance } from "../../hooks";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
+const EditInsuranceProduct = () => {
   const router = useRouter();
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
 
   const [name] = useState("");
   const [brand, setBrand] = useState("");
@@ -39,7 +40,7 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
       const access = permissionList.includes("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -69,7 +70,6 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
 
   const onSubmit = async (data: any) => {
     try {
-      const id = params.id;
       await updateInsurance(data, id);
       setUpdateSuccess(true);
     } catch (error) {
@@ -280,3 +280,5 @@ const EditInsuranceProduct = ({ params }: { params: { id: string } }) => {
     </div>
   );
 };
+
+export default EditInsuranceProduct;

@@ -23,17 +23,17 @@ import { useState } from "react";
 import { ChevronLeft } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import useHoliday from "../hook";
-import { useLoading } from "@/context/loading.context";
-import { HOLIDAY } from "@/constants/routes";
+import { useScreen } from "@/context/screen.context";
+import AppURL from "@/constants/app-url.const";
 
 export default function CreateHoliday() {
     const router = useRouter();
     const handleCancel = () => {
-        router.push(HOLIDAY);
+        router.push(AppURL.masterdataHolidayDate);
     };
 
     const { createCalendar } = useHoliday();
-    const { setLoading } = useLoading();
+    const { setLoading } = useScreen();
 
     const [types, setTypes] = useState<any[]>([
         { name: "Joint Leave", code: "Joint Leave" },
@@ -52,7 +52,7 @@ export default function CreateHoliday() {
                 date: data.startdate,
                 year: new Date(data.startdate).getFullYear().toString()
             });
-            router.push(HOLIDAY);
+            router.push(AppURL.masterdataHolidayDate);
         } catch (error) {
             console.error(error);
             alert("Failed to create holiday");
@@ -98,7 +98,7 @@ export default function CreateHoliday() {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={HOLIDAY}>Holiday</BreadcrumbLink>
+                                <BreadcrumbLink href={AppURL.masterdataHolidayDate}>Holiday</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>

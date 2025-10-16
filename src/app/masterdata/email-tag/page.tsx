@@ -17,7 +17,7 @@ import Image from "next/image";
 import { useAuth } from "@/context/auth.context";
 import { EmailTagService } from "@/services/masterdata/email-tag.service";
 import { EmailTagResponse } from "@/services/masterdata/mail-template.service";
-import { EMAIL_TAG_ADD, EMAIL_TAG_DETAIL, FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function EmailTag() {
   const path = usePathname();
@@ -45,7 +45,7 @@ export default function EmailTag() {
       setHasAccess(access);
       setCanCreate(createBtn);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -77,7 +77,7 @@ export default function EmailTag() {
   }
 
   const handleEdit = (id: string) => {
-    router.push(EMAIL_TAG_DETAIL(id));
+    router.push(`${AppURL.masterdataEmailTagDetail}/${id}`);
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -99,7 +99,7 @@ export default function EmailTag() {
           Email Tag
         </h1>
         <Button
-          onClick={() => router.push(EMAIL_TAG_ADD)}
+          onClick={() => router.push(AppURL.masterdataEmailTagAdd)}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >

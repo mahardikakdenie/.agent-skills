@@ -24,7 +24,7 @@ export const UserInsurers = ({
     <div className="flex justify-between items-start mb-4">
       <div>
         <div className="text-primary font-bold mb-2">
-          User's Insurers ({accountInsurers.length})
+          User&apos;s Insurers ({accountInsurers.length})
         </div>
         <p className="text-sm text-black/60">
           <i>

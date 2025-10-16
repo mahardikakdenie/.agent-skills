@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -24,12 +24,9 @@ import {
 } from "@/components/ui/select";
 import AppURL from "@/constants/app-url.const";
 
-export default function AddChannels({ params }: { params: { id: string } }) {
+export default function AddChannels() {
   const router = useRouter();
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
-
   const [name, setName] = useState("");
   const [type, setType] = useState("");
 

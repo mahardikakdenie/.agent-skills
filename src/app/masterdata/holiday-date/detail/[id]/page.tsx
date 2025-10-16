@@ -21,10 +21,10 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronLeft, Check } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 import useCalendar from "../../hook";
 import { formatDate } from "@/lib/formatter";
-import { HOLIDAY } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
 export default function EditHolidayPage() {
     const { id } = useParams();
@@ -46,10 +46,10 @@ export default function EditHolidayPage() {
 
     const router = useRouter();
     const handleCancel = () => {
-        router.push(HOLIDAY);
+        router.push(AppURL.masterdataHolidayDate);
     };
 
-    const { setLoading } = useLoading();
+    const { setLoading } = useScreen();
     const [types, setTypes] = useState<any[]>([
         { name: "Joint Leave", code: "Joint Leave" },
         { name: "National Holiday", code: "National Holiday" },
@@ -65,7 +65,7 @@ export default function EditHolidayPage() {
             await updateCalendar(id as string, {
                 ...data,
             });
-            router.push(HOLIDAY);
+            router.push(AppURL.masterdataHolidayDate);
 
         } catch (error) {
             console.error(error);
@@ -104,7 +104,7 @@ export default function EditHolidayPage() {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={HOLIDAY}>Holiday</BreadcrumbLink>
+                                <BreadcrumbLink href={AppURL.masterdataHolidayDate}>Holiday</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>

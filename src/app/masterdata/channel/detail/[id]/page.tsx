@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -24,12 +24,24 @@ import {
 } from "@/components/ui/select";
 import AppURL from "@/constants/app-url.const";
 
-export default function EditChannels({ params }: { params: { id: string } }) {
-  const router = useRouter();
-  const { id } = params;
-  const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
+type ChannelFormValues = {
+  id: string;
+  name: string;
+  type: string;
+};
 
+export default function EditChannels() {
+  const router = useRouter();
+  const params = useParams();
+  const idParam = params.id;
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+
+  const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const [name, setName] = useState("");
   const [type, setType] = useState("");
 
@@ -55,7 +67,7 @@ export default function EditChannels({ params }: { params: { id: string } }) {
     control,
     setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<ChannelFormValues>({
     shouldUnregister: false,
     defaultValues: {
       id,
@@ -64,9 +76,8 @@ export default function EditChannels({ params }: { params: { id: string } }) {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: ChannelFormValues) => {
     try {
-      const id = params.id;
       await updateChannels(data, id);
       setUpdateSuccess(true);
     } catch (error) {
@@ -228,4 +239,4 @@ export default function EditChannels({ params }: { params: { id: string } }) {
       </form>
     </div>
   );
-};
+}

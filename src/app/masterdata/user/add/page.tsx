@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft, Eye, EyeOff, Plus } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -23,12 +23,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import iconCopy from "/public/images/icon-copy.svg"
+import iconCopy from "/public/images/icon-copy.svg";
 import { toastNotification } from "@/lib/toast";
-import { USER_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import { countries, primaryRoles } from "@/app/masterdata/user/user.const";
 import SelectPhoneCode from "@/components/ui/select-phone-code";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import iconWarning from "/public/images/icon-warning.png";
 
 const passwordValidationRules = {
@@ -56,11 +63,9 @@ const validatePassword = (password: string) => {
   };
 };
 
-export default function AddUser({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function AddUser() {
   const router = useRouter();
   const [isErrorCreateUser, setIsErrorCreateUser] = useState<boolean>(false);
-  const path = usePathname();
   const [selectedChannel, setSelectedChannel] = useState<any>(null);
   const [selectedRole, setSelectedRole] = useState<any>(null);
   const [errorResponseData, setErrorResponseData] = useState<any>({});
@@ -74,7 +79,14 @@ export default function AddUser({ params }: { params: { id: string } }) {
   const [channel, setChannel] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { saveUser, getExistingUser, updateUserAllData, channels, fetchChannels, fetchRole } = useUser();
+  const {
+    saveUser,
+    getExistingUser,
+    updateUserAllData,
+    channels,
+    fetchChannels,
+    fetchRole,
+  } = useUser();
   const {
     handleSubmit,
     control,
@@ -84,7 +96,6 @@ export default function AddUser({ params }: { params: { id: string } }) {
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
-      id,
       name,
       email,
       phone_number,
@@ -97,7 +108,6 @@ export default function AddUser({ params }: { params: { id: string } }) {
       channelId: selectedChannel,
     },
     values: {
-      id,
       name,
       email,
       phone_number,
@@ -137,16 +147,19 @@ export default function AddUser({ params }: { params: { id: string } }) {
       if (payload.role !== "Admin" && !payload.password?.trim()) {
         delete payload.password;
       }
-      const response = await saveUser(payload, id);
+      const response = await saveUser(payload);
       if (response.id != null) {
-        router.push(USER_DETAIL(response.id));
+        router.push(`${AppURL.masterdataUserDetail}/${response.id}`);
       }
     } catch (error: any) {
       if (!!error?.response?.data?.customCode) {
         setIsErrorCreateUser(true);
         setErrorResponseData({ ...error?.response?.data, detailUser: payload });
       } else {
-        toastNotification(error?.response?.data?.message || "Failed to create new user", "error");
+        toastNotification(
+          error?.response?.data?.message || "Failed to create new user",
+          "error"
+        );
       }
     }
   };
@@ -156,28 +169,31 @@ export default function AddUser({ params }: { params: { id: string } }) {
     const lowercase = "abcdefghijklmnopqrstuvwxyz";
     const numbers = "0123456789";
     const specialChars = "!@#$%^&*()_+{}[]:;<>,.?/~`-=";
-    
+
     const allChars = uppercase + lowercase + numbers + specialChars;
-    
+
     let password = "";
-    
+
     // Ensure at least one of each required character type
     password += uppercase[Math.floor(Math.random() * uppercase.length)];
     password += lowercase[Math.floor(Math.random() * lowercase.length)];
     password += numbers[Math.floor(Math.random() * numbers.length)];
     password += specialChars[Math.floor(Math.random() * specialChars.length)];
-    
+
     // Fill the rest with random characters
     for (let i = password.length; i < 8; i++) {
       password += allChars[Math.floor(Math.random() * allChars.length)];
     }
-    
+
     // Shuffle the password to ensure randomness
-    return password.split("").sort(() => 0.5 - Math.random()).join("");
+    return password
+      .split("")
+      .sort(() => 0.5 - Math.random())
+      .join("");
   };
 
   const handleGeneratePassword = () => {
-    setValue("password", generateSecurePassword())
+    setValue("password", generateSecurePassword());
   };
 
   const copyPassword = () => {
@@ -186,53 +202,73 @@ export default function AddUser({ params }: { params: { id: string } }) {
       toastNotification("No password to copy", "error");
       return;
     }
-    navigator.clipboard.writeText(password).then(() => {
-      toastNotification("Password copied!", "success")
-    }).catch(err => {
-      console.error("Failed to copy password:", err)
-      toastNotification("Failed to copy password", "error")
-    });
-  }
+    navigator.clipboard
+      .writeText(password)
+      .then(() => {
+        toastNotification("Password copied!", "success");
+      })
+      .catch((err) => {
+        console.error("Failed to copy password:", err);
+        toastNotification("Failed to copy password", "error");
+      });
+  };
 
   const activeOrRecoverUser = async () => {
     try {
-      const { channel, email, phone_number, role } = errorResponseData.detailUser;
-      const existingUser = await getExistingUser({ channel_id: channel, email, phone_number, role });
+      const { channel, email, phone_number, role } =
+        errorResponseData.detailUser;
+      const existingUser = await getExistingUser({
+        channel_id: channel,
+        email,
+        phone_number,
+        role,
+      });
       const userData = existingUser?.data?.[0];
       const updatedData = { ...userData, status: `Active`, deleted_at: null };
       await updateUserAllData(updatedData, userData.id);
       setIsErrorCreateUser(false);
-      router.push(USER_DETAIL(userData.id));
+      router.push(`${AppURL.masterdataUserDetail}/${userData.id}`);
     } catch (error: any) {
-      toastNotification(error?.response?.data?.message || "Failed to change status user.", "error");
+      toastNotification(
+        error?.response?.data?.message || "Failed to change status user.",
+        "error"
+      );
     }
-  }
+  };
 
   const errorCreateUserModal = () => {
     return (
-        <Dialog open={isErrorCreateUser}>
-          <DialogContent className="w-[90vw] md:w-[600px]">
-            <DialogHeader className="items-center gap-4">
-              <Image alt="icon warning" src={iconWarning} width={88} />
-              <DialogTitle className="sm:text-center">
-                {errorResponseData?.message || "Error"}
-              </DialogTitle>
-              <DialogDescription className="sm:text-center">
-                Do you want to change the user status to active or just recover the user?
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="sm:justify-center gap-4">
-              <Button variant="outline" className="min-w-[108px] rounded-full border border-red-500 text-red-500 hover:bg-red-100 hover:text-red-500" onClick={() => setIsErrorCreateUser(false)}>
-                No
-              </Button>
-              <Button className="btn min-w-[108px] rounded-full bg-[#F5BA41] text-black" onClick={() => activeOrRecoverUser()}>
-                Yes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+      <Dialog open={isErrorCreateUser}>
+        <DialogContent className="w-[90vw] md:w-[600px]">
+          <DialogHeader className="items-center gap-4">
+            <Image alt="icon warning" src={iconWarning} width={88} />
+            <DialogTitle className="sm:text-center">
+              {errorResponseData?.message || "Error"}
+            </DialogTitle>
+            <DialogDescription className="sm:text-center">
+              Do you want to change the user status to active or just recover
+              the user?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-4">
+            <Button
+              variant="outline"
+              className="min-w-[108px] rounded-full border border-red-500 text-red-500 hover:bg-red-100 hover:text-red-500"
+              onClick={() => setIsErrorCreateUser(false)}
+            >
+              No
+            </Button>
+            <Button
+              className="btn min-w-[108px] rounded-full bg-[#F5BA41] text-black"
+              onClick={() => activeOrRecoverUser()}
+            >
+              Yes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
-  }
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -358,53 +394,58 @@ export default function AddUser({ params }: { params: { id: string } }) {
               </label>
               <div className="flex gap-2 items-start">
                 <div className="w-24 h-12">
-                  <SelectPhoneCode value={phoneCode} onChange={(value) => setPhoneCode(value)} />
+                  <SelectPhoneCode
+                    value={phoneCode}
+                    onChange={(value) => setPhoneCode(value)}
+                  />
                 </div>
                 <Controller
-                    name="phone_number"
-                    control={control}
-                    defaultValue=""
-                    rules={{
-                      required: "Phone Number is required",
-                      pattern: {
-                        value: /^[0-9]{9,15}$/,
-                        message:
-                            "Phone Number must contain 9-15 digits",
-                      },
-                      minLength: {
-                        value: 9,
-                        message: "Phone Number must be at least 9 digits",
-                      },
-                      maxLength: {
-                        value: 15,
-                        message: "Phone Number cannot exceed 15 digits",
-                      },
-                    }}
-                    render={({ field }) => (
-                        <div className="w-full">
-                          <Input
-                              type="text"
-                              id="phone_number"
-                              placeholder="Insert Phone Number"
-                              {...field}
-                              onInput={(e) => {
-                                const sanitizedValue = e.currentTarget.value.replace(/[^0-9]/g, "");
-                                e.currentTarget.value = sanitizedValue;
-                                field.onChange(sanitizedValue);
-                              }}
-                              className={`block w-full h-12 ${
-                                  errors.phone_number
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                              } rounded-md shadow-sm`}
-                          />
-                          {errors.phone_number && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {errors.phone_number.message}
-                              </p>
-                          )}
-                        </div>
-                    )}
+                  name="phone_number"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: "Phone Number is required",
+                    pattern: {
+                      value: /^[0-9]{9,15}$/,
+                      message: "Phone Number must contain 9-15 digits",
+                    },
+                    minLength: {
+                      value: 9,
+                      message: "Phone Number must be at least 9 digits",
+                    },
+                    maxLength: {
+                      value: 15,
+                      message: "Phone Number cannot exceed 15 digits",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <div className="w-full">
+                      <Input
+                        type="text"
+                        id="phone_number"
+                        placeholder="Insert Phone Number"
+                        {...field}
+                        onInput={(e) => {
+                          const sanitizedValue = e.currentTarget.value.replace(
+                            /[^0-9]/g,
+                            ""
+                          );
+                          e.currentTarget.value = sanitizedValue;
+                          field.onChange(sanitizedValue);
+                        }}
+                        className={`block w-full h-12 ${
+                          errors.phone_number
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md shadow-sm`}
+                      />
+                      {errors.phone_number && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.phone_number.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 />
               </div>
             </div>
@@ -566,9 +607,9 @@ export default function AddUser({ params }: { params: { id: string } }) {
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff size={18} className="text-[#015B86]"/>
+                          <EyeOff size={18} className="text-[#015B86]" />
                         ) : (
-                          <Eye size={18} className="text-[#015B86]"/>
+                          <Eye size={18} className="text-[#015B86]" />
                         )}
                       </button>
                       <button
@@ -576,7 +617,7 @@ export default function AddUser({ params }: { params: { id: string } }) {
                         className="absolute inset-y-0 right-3 flex items-center"
                         onClick={() => copyPassword()}
                       >
-                        <Image alt="copy" src={iconCopy} width={18}/>
+                        <Image alt="copy" src={iconCopy} width={18} />
                       </button>
                     </div>
                     <div className="flex-[1]">
@@ -604,7 +645,9 @@ export default function AddUser({ params }: { params: { id: string } }) {
           <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
             <div className="flex gap-4 items-center">
               <div>
-                <div className="text-primary font-bold mb-2">User&#39;s Group</div>
+                <div className="text-primary font-bold mb-2">
+                  User&#39;s Group
+                </div>
                 <p className="text-sm text-black/60">
                   <i>
                     All the users in the group will have permissions that are
@@ -649,4 +692,4 @@ export default function AddUser({ params }: { params: { id: string } }) {
       {errorCreateUserModal()}
     </div>
   );
-};
+}

@@ -3,9 +3,9 @@ import useCalendar from "./hook";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/formatter";
-import { HOLIDAY_ADD, HOLIDAY_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import { Button } from "@/components/ui/button";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 import { ChevronLeft, ChevronRight, EditIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { Table, TableHead, TableRow, TableHeader, TableBody, TableCell, TableFooter, } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
@@ -14,14 +14,14 @@ export default function HolidayPage() {
   const { getCalendarHoliday, createCalendar, updateCalendar, deleteCalendar, dataCalendar } = useCalendar();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
   const [totalItems, setTotalItems] = useState(0);
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
   const [searchCountry, setSearchCountry] = useState("id");
   const [searchYear, setSearchYear] = useState<string>('');
   const [searchType, setSearchType] = useState<string | undefined>(undefined);
-  // const { setLoading } = useLoading();
+  // const { setLoading } = useScreen();
 
   const [types, setTypes] = useState<any[]>([
     { name: "All Holiday Type", code: undefined },
@@ -180,7 +180,7 @@ export default function HolidayPage() {
         </div>
 
         <Button
-          onClick={() => router.push(HOLIDAY_ADD)}
+          onClick={() => router.push(AppURL.masterdataHolidayDateAdd)}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
           <PlusIcon className="w-5 h-5 mr-1 " /> Create Holiday
@@ -211,7 +211,7 @@ export default function HolidayPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => router.push(HOLIDAY_DETAIL(item.id))}
+                      onClick={() => router.push(`${AppURL.masterdataHolidayDateDetail}/${item.id}`)}
                     >
                       <EditIcon className="h-4 w-4" />
                     </Button>

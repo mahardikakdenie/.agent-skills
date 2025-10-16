@@ -12,24 +12,36 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { useLoading } from "@/context/loading.context";
-import { useRouter } from "next/navigation";
-import { PRODUCT_CATALOG_DETAIL } from "@/constants/routes";
+import { useScreen } from "@/context/screen.context";
+import { useParams, useRouter } from "next/navigation";
+import AppURL from "@/constants/app-url.const";
 
-export default function UploadPlanBenefit({
-  params,
-}: {
-  params: { id: string; category: string };
-}) {
+export default function UploadPlanBenefit() {
+  const params = useParams();
+  const idParam = params.id;
+  const categoryParam = params.category;
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+  const category =
+    typeof categoryParam === "string"
+      ? categoryParam
+      : Array.isArray(categoryParam)
+      ? categoryParam[0]
+      : "";
+
   const { plan, fetchPlanById, uploadPlanBenefits } = useProducts();
   const [csvData, setCsvData] = useState<any[]>([]);
-  const { isLoading, setLoading } = useLoading();
+  const { isLoading, setLoading } = useScreen();
   useEffect(() => {
-    if (params.id) {
-      fetchPlanById(params.id);
+    if (id) {
+      fetchPlanById(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id]);
+  }, [id]);
 
   const [file, setFile] = useState<any>(null);
   const handleChooseFile = (event: any) => {
@@ -53,9 +65,9 @@ export default function UploadPlanBenefit({
   const handleUpload = async () => {
     setLoading(true);
     try {
-      await uploadPlanBenefits(params.id, csvData);
+      await uploadPlanBenefits(id, csvData);
       alert("Package uploaded successfully");
-      router.push(PRODUCT_CATALOG_DETAIL(params.category, params.id));
+      router.push(AppURL.productCatalogDetail(category, id));
     } catch (error) {
       console.error(error);
       alert("Failed to upload package");
@@ -115,4 +127,4 @@ export default function UploadPlanBenefit({
       </div>
     </div>
   );
-};
+}

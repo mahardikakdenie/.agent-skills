@@ -15,11 +15,10 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useGroup } from "../hooks";
 import { useAuth } from "@/context/auth.context";
-import { FORBIDDEN, GROUP_DETAIL } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 
-export default function AddGroupPage({ params }: { params: { id: string } }) {
+export default function AddGroupPage() {
   const router = useRouter();
-
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const { permissionList } = useAuth();
@@ -29,14 +28,13 @@ export default function AddGroupPage({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Create");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
     checkAccess();
   }, [router]);
 
-  const { id } = params;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
 
   const [name, setName] = useState("");
@@ -51,7 +49,6 @@ export default function AddGroupPage({ params }: { params: { id: string } }) {
   } = useForm({
     shouldUnregister: false,
     defaultValues: {
-      id,
       name,
       description,
     },
@@ -59,10 +56,10 @@ export default function AddGroupPage({ params }: { params: { id: string } }) {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await addGroup(data, id);
+      const response = await addGroup(data);
       if (response.id != null) {
         const id = response.id;
-        router.push(GROUP_DETAIL(id));
+        router.push(`${AppURL.masterdataGroupDetail}/${id}`);
       }
     } catch (error) {
       setUpdateSuccess(false);
@@ -199,4 +196,4 @@ export default function AddGroupPage({ params }: { params: { id: string } }) {
       </form>
     </div>
   );
-};
+}

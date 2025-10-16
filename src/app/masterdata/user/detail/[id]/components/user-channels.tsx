@@ -24,7 +24,7 @@ export const UserChannels = ({
     <div className="flex justify-between items-start mb-4">
       <div>
         <div className="text-primary font-bold mb-2">
-          User's Channels ({accountChannels.length})
+          User&apos;s Channels ({accountChannels.length})
         </div>
         <p className="text-sm text-black/60">
           <i>

@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft, Plus, Trash } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
@@ -36,11 +36,9 @@ import AppURL from "@/constants/app-url.const";
 import ApiURL from "@/constants/api-url.const";
 import {productService} from "@/services/api.service";
 
-export default function EditProduct({ params }: { params: { id: string } }) {
+export default function EditProduct() {
   const router = useRouter();
-  const { id } = params;
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
-  const path = usePathname();
   const [currencyData, setCurrencyData] = useState<any[]>([]);
   const [rate, setRate] = useState("");
   const [message, setMessage] = useState("");

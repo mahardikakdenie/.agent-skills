@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { InsurerService } from "@/services/masterdata/insurer.service";
-import { useLoading } from "@/context/loading.context";
+import { useScreen } from "@/context/screen.context";
 
 export const useAccountInsurer = () => {
   const [accountInsurers, setAccountInsurers] = useState<any[]>([]);
   const [insurers, setInsurers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const { setLoading: setGlobalLoading } = useLoading();
+  const { setLoading: setGlobalLoading } = useScreen();
   const insurerService = new InsurerService();
 
   const getAccountInsurers = async (accountId: string) => {

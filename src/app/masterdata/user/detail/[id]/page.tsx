@@ -7,8 +7,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import WithSidebar from "@/hoc/with-sidebar";
-import { useRouter } from "next/navigation";
+// import WithSidebar from "@/hoc/with-sidebar";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { useForm } from "react-hook-form";
@@ -33,25 +33,36 @@ import { toastNotification } from "@/lib/toast";
 import { useAccountChannel } from "./hooks-account-channel";
 import { useAccountInsurer } from "./hooks-account-insurer";
 import toast from "react-hot-toast";
-import { useLoading } from "@/context/loading.context";
 import { ChannelModal } from "./components/add-channel-modal";
 import { InsurerModal } from "./components/add-insurer-modal";
 import { validatePassword } from "./utils/password";
 import { UserGroups } from "./components/user-groups";
 import { UserRoles } from "./components/user-roles";
+
+type UserFormValues = {
+  id: string;
+  name: string;
+  email: string;
+  phone_number: string;
+  password: string;
+  status: string;
+  role: string;
+  channel: string;
+};
 import { UserChannels } from "./components/user-channels";
 import { UserInsurers } from "./components/user-insurers";
 import { UserForm } from "./components/user-form";
 import { useInsurance } from "../../../insurance/hooks";
-import { USER } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import { primaryRoles } from "@/app/masterdata/user/user.const";
+import { useScreen } from "@/context/screen.context";
 
-
-const EditUser = ({ params }: { params: { id: string; }; }) => {
+const EditUser = () => {
   const [channelToDelete, setChannelToDelete] = useState<string | null>(null);
   const [insurerToDelete, setInsurerToDelete] = useState<string | null>(null);
   const router = useRouter();
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null);
   const groupService = new GroupService();
   const {
@@ -59,7 +70,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     removeAccountChannel,
     getAccountChannels,
     accountChannels,
-    loading: channelsLoading
+    loading: channelsLoading,
   } = useAccountChannel();
 
   const {
@@ -91,7 +102,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   const [totalItemsUser, setTotalItemsUser] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [rowsPerPageGroup, setRowsPerPageRoles] = useState(10);
-  const { setLoading } = useLoading();
+  const { setLoading } = useScreen();
   const [dataRole, setDataRole] = useState<any[]>([]);
   const [channelList, setChannelList] = useState<any[] | null>(null);
   const [selectedRole, setSelectedRole] = useState<string[]>([]);
@@ -134,7 +145,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<UserFormValues>({
     shouldUnregister: false,
     defaultValues: {
       id,
@@ -147,12 +158,11 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
       channel,
     },
   });
-
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: UserFormValues) => {
     try {
       const updatedData = {
         ...data,
-        phone_number: `${phoneCode}${data.phone_number}`
+        phone_number: `${phoneCode}${data.phone_number}`,
       };
       await updateUser(updatedData, id);
       setUpdateSuccess(true);
@@ -203,7 +213,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   useEffect(() => {
     if (updateSuccess === true) {
       alert("Data berhasil disimpan!");
-      router.push(USER);
+      router.push(AppURL.masterdataUser);
     } else if (updateSuccess === false) {
       alert("Terjadi kesalahan saat menyimpan data.");
     }
@@ -234,11 +244,16 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   };
 
   const selectRole = (forPage: number = 1, forRowsPerPage: number = 10) => {
-    groupService.getRoles(forPage ? forPage : page, forRowsPerPage ? forRowsPerPage : rowsPerPage).then((res) => {
-      setDataRole(res.data);
-      setTotalItemsUser(res.meta.total);
-      setTotalPages(res.meta.pageTotal);
-    });
+    groupService
+      .getRoles(
+        forPage ? forPage : page,
+        forRowsPerPage ? forRowsPerPage : rowsPerPage
+      )
+      .then((res) => {
+        setDataRole(res.data);
+        setTotalItemsUser(res.meta.total);
+        setTotalPages(res.meta.pageTotal);
+      });
   };
 
   const handleSelectRole = (id: string) => {
@@ -385,8 +400,8 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
   };
 
   useEffect(() => {
-    getAccountChannels(params.id);
-    getAccountInsurers(params.id);
+    getAccountChannels(id);
+    getAccountInsurers(id);
     fetchInsurance({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -396,7 +411,10 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
 
     try {
       setLoading(true);
-      await addAccountChannel({ account: params.id, channel: selectedChannels[0] });
+      await addAccountChannel({
+        account: id,
+        channel: selectedChannels[0],
+      });
       setSelectedChannels([]);
       setIsChannelModalOpen(false);
       toast.success("Channel added successfully");
@@ -421,7 +439,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
 
   const handleDeleteSelectedChannel = async (channelId: string) => {
     try {
-      await removeAccountChannel(params.id, channelId);
+      await removeAccountChannel(id, channelId);
       toast.success("Channel removed successfully");
     } catch (error) {
       console.error("Error removing channel:", error);
@@ -442,7 +460,7 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
 
   const handleDeleteSelectedInsurer = async (insurerId: string) => {
     try {
-      await removeAccountInsurer(params.id, insurerId);
+      await removeAccountInsurer(id, insurerId);
       toast.success("Insurer removed successfully");
     } catch (error) {
       console.error("Error removing insurer:", error);
@@ -455,7 +473,10 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
 
     try {
       setLoading(true);
-      await addAccountInsurer({ account: params.id, insurance: selectedInsurers[0] });
+      await addAccountInsurer({
+        account: id,
+        insurance: selectedInsurers[0],
+      });
       setSelectedInsurers([]);
       setIsInsurerModalOpen(false);
       toast.success("Insurer added successfully");
@@ -466,7 +487,6 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     const currentValidations = validatePassword(password);
@@ -495,7 +515,10 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
     }
 
     // Shuffle the password to ensure randomness
-    return password.split("").sort(() => 0.5 - Math.random()).join("");
+    return password
+      .split("")
+      .sort(() => 0.5 - Math.random())
+      .join("");
   };
 
   const handleGeneratePassword = () => {
@@ -508,17 +531,20 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
       toastNotification("No password to copy", "error");
       return;
     }
-    navigator.clipboard.writeText(password).then(() => {
-      toastNotification("Password copied!", "success");
-    }).catch(err => {
-      console.error("Failed to copy password:", err);
-      toastNotification("Failed to copy password", "error");
-    });
+    navigator.clipboard
+      .writeText(password)
+      .then(() => {
+        toastNotification("Password copied!", "success");
+      })
+      .catch((err) => {
+        console.error("Failed to copy password:", err);
+        toastNotification("Failed to copy password", "error");
+      });
   };
 
   const channelsMapById = channels.reduce((prev, value) => {
     const result = {
-      [value.id]: value
+      [value.id]: value,
     };
 
     return {
@@ -680,11 +706,17 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
         <UserInsurers
           accountInsurers={accountInsurers}
           insurers={insurance}
-          insurersMapById={insurance.reduce((prev, value) => ({ ...prev, [value.id]: value }), {})}
+          insurersMapById={insurance.reduce(
+            (prev, value) => ({ ...prev, [value.id]: value }),
+            {}
+          )}
           setIsInsurerModalOpen={setIsInsurerModalOpen}
           handleDeleteInsurer={handleDeleteInsurer}
         />
-        <Dialog open={!!channelToDelete} onOpenChange={(open) => !open && setChannelToDelete(null)}>
+        <Dialog
+          open={!!channelToDelete}
+          onOpenChange={(open) => !open && setChannelToDelete(null)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete Channel</DialogTitle>
@@ -710,7 +742,10 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <Dialog open={!!insurerToDelete} onOpenChange={(open) => !open && setInsurerToDelete(null)}>
+        <Dialog
+          open={!!insurerToDelete}
+          onOpenChange={(open) => !open && setInsurerToDelete(null)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete Insurer</DialogTitle>
@@ -737,9 +772,10 @@ const EditUser = ({ params }: { params: { id: string; }; }) => {
           </DialogContent>
         </Dialog>
       </div>
-    </div >
+    </div>
   );
 };
 
-const EditUserWithSidebar = (params: any) => WithSidebar(EditUser)(params);
-export default EditUserWithSidebar;
+// const EditUserWithSidebar = (params: any) => WithSidebar(EditUser)(params);
+// export default EditUserWithSidebar;
+export default EditUser;

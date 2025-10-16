@@ -42,12 +42,14 @@ import {
 import { Label } from "@radix-ui/react-label";
 import { stateToHTML } from "draft-js-export-html";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { EMAIL_TEMPLATE, FORBIDDEN } from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
+import { useParams } from "next/navigation";
 
-export default function EditPage({ params }: { params: { id: string } }) {
+export default function EditPage() {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedInsuranceId, setSelectedInsuranceId] = useState("");
@@ -103,7 +105,7 @@ export default function EditPage({ params }: { params: { id: string } }) {
       const access = permissionList.includes("Masterdata.Update");
       setHasAccess(access);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -255,7 +257,7 @@ export default function EditPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (updateSuccess === true) {
       alert("Data has been successfully saved!");
-      router.replace(EMAIL_TEMPLATE);
+      router.replace(AppURL.masterdataEmailTemplate);
     } else if (updateSuccess === false) {
       alert("Email Tag has already been used for this Journey!");
     }
