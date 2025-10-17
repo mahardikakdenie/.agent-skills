@@ -6,16 +6,14 @@ import WithSidebar from "@/hoc/with-sidebar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { formatMoneyClaim, formatDate } from "@/lib/formatter";
+import { formatMoneyClaim } from "@/lib/formatter";
 import { Calendar } from "@/components/ui/calendar";
 import { hasPermission } from "@/context/auth.context";
 import { ClaimService } from "@/services/claim.service";
-import { usePathname, useRouter } from "next/navigation";
-import { ChannelService } from "@/services/channel.services";
+import { useRouter } from "next/navigation";
 import {
   Popover,
   PopoverContent,
@@ -55,33 +53,48 @@ import {
   CLAIM_LIST_IMPORT_WITH_PREVIEW,
   FORBIDDEN,
 } from "@/constants/routes";
-import { Column, DataTable } from "@/components/ui/DataTable";
-import {
-  ClaimItem,
-  ClaimsTableConfigProps,
-  DocumentItem,
-  DocumentTableConfigProps,
-} from "@/interface";
-import { useAuth } from "@/context/auth.context";
+import { DataTable } from "@/components/ui/DataTable";
+import { ClaimItem } from "@/interface";
 import {
   createClaimsTableColumns,
   createDocumentTableColumns,
 } from "@/components/tableConfig/claimTableConfig";
+import useClaims from "@/hooks/useClaims.hooks";
 
 const ClaimsPage = () => {
-  const { claims: claimsToken } = useAuth();
-  const path = usePathname();
-  const claimService = new ClaimService();
-  const [claims, setClaims] = useState<any[]>([]);
-  const [filteredClaims, setFilteredClaims] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
+  const {
+    // Data
+    filteredClaims,
+    totalPages,
+    totalData,
+    channels,
+
+    // States
+    page,
+    rowsPerPage,
+    tab,
+    date,
+    searchSlaStatus,
+    searchChannel,
+    searchData,
+    selectedChannel,
+
+    // Loading
+    isFetching,
+
+    // Methods
+    refetch,
+    setPage,
+    setDate,
+    handleSearch,
+    handleRowsPerPageChange,
+    selectTab,
+    handleSearchSlaStatusChange,
+    handleChannelChange,
+  } = useClaims();
   const router = useRouter();
-  const [tab, setTab] = useState("All");
-  const [totalData, setTotalData] = useState(0);
-  const [channels, setChannels] = useState<any[]>([]);
+
+  const claimService = new ClaimService();
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,35 +105,22 @@ const ClaimsPage = () => {
   const [numberId, setNumberID] = useState("-");
   const [statusOld, setStatusOld] = useState("-");
   const [notes, setNotes] = useState("");
-  const [lackOfDocuments, setLackOfDocuments] = useState("");
   const [amApprovedMsg, setAmApprovedMsg] = useState("");
   const [noteMsg, setNoteMsg] = useState("");
   const [docsMsg, setDocsMsg] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [currencyApp, setCurrencyApp] = useState(" ");
   const [dataDocument, setDataDocument] = useState<any[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [finalSelectedDocuments, setFinalSelectedDocuments] = useState<any[]>(
     []
   );
-  const [successUpdate, setSuccessUpdate] = useState(false);
   const [selectedClaim, setSelectedClaim] = useState<any>(null);
-  const [searchData, setSearchData] = useState("");
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
 
-  const [searchChannel, setSearchChannel] = useState(
-    "40eee5bf-2b92-4d23-be55-f9caa9d3ea88"
-  ); //DEFAULT TEMAN
-  const [selectedChannel, setSelectedChannel] = useState<any>({
-    id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
-    name: "Teman",
-  });
-  const [searchSlaStatus, setSearchSlaStatus] = useState("");
-  const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [claimStatusOptions, setClaimStatusOptions] = useState<any[]>([]);
   const [openAllStatus, setOpenAllStatus] = useState<boolean>(false);
 
@@ -145,109 +145,6 @@ const ClaimsPage = () => {
 
     checkAccess();
   }, [router]);
-
-  useEffect(() => {
-    if (searchData || searchSlaStatus || date || searchChannel) {
-      setPage(1);
-    }
-  }, [searchData, searchSlaStatus, date, searchChannel]);
-
-  useEffect(() => {
-    const channelId =
-      claimsToken?.channel ||
-      claimsToken?.account_channels?.[0]?.channel ||
-      searchChannel;
-
-    const fetchData = async () => {
-      try {
-        const res = await claimService.getClaims(
-          page,
-          rowsPerPage,
-          tab === "All" ? "" : tab,
-          searchData,
-          searchSlaStatus === "All" ? "" : searchSlaStatus,
-          date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-          date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
-          channelId // === "All" ? "" : searchChannel,
-        );
-
-        setSearchChannel(channelId);
-        setFilteredClaims(res?.data);
-        // setPage(res?.page);
-        setTotalPages(res?.pageTotal);
-        setTotalItems(res?.total);
-        setTotalData(res?.total);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    page,
-    rowsPerPage,
-    tab,
-    successUpdate,
-    searchData,
-    searchSlaStatus,
-    date,
-    searchChannel,
-    claimsToken,
-  ]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const channelService = new ChannelService();
-        const channelResponse = await channelService.getChannels(
-          undefined,
-          100
-        );
-        setChannels(channelResponse.data || []);
-      } catch (error) {
-        console.error("Failed to fetch channels:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = claims.filter((claim) =>
-        claim.number.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredClaims(filtered);
-    } else {
-      setFilteredClaims(claims);
-    }
-  }, [searchTerm, claims]);
-
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
-
-  const selectTab = (tab: string) => {
-    setTab(tab);
-    setPage(1);
-  };
-
-  const handleSearch = _.debounce((keyword: string) => {
-    setSearchData(keyword);
-  }, 100);
-
-  const handleSearchSlaStatusChange = (v: string) => {
-    setSearchSlaStatus(v);
-  };
-
-  const handleChannelChange = (v: string) => {
-    setSearchChannel(v);
-
-    var c = channels.filter((x) => x.id == v)[0];
-    setSelectedChannel(c);
-  };
 
   const goToDetail = (claimId: string) => {
     router.push(CLAIM_LIST_DETAIL(claimId));
@@ -347,8 +244,6 @@ const ClaimsPage = () => {
     setIsModalOpen(true);
     setNotes("");
     setNoteMsg("");
-    setLackOfDocuments("");
-    setSuccessUpdate(false);
 
     const reqAmount = filteredClaims
       .map((item) => {
@@ -417,8 +312,8 @@ const ClaimsPage = () => {
         lack_of_documents
       )
       .then(() => {
-        setSuccessUpdate(true);
         alert("Update status successfully.");
+        refetch();
       })
       .catch((error) => {
         console.error("Error updating status:", error);
@@ -470,13 +365,6 @@ const ClaimsPage = () => {
         notes,
         finalSelectedDocuments.map((item) =>
           !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name
-        )
-      );
-      setClaims((prevClaims) =>
-        prevClaims.map((claim) =>
-          claim.id === selectedClaimId
-            ? { ...claim, status: pendingStatus }
-            : claim
         )
       );
       setIsModalOpen(false);
@@ -663,7 +551,10 @@ const ClaimsPage = () => {
         </div>
 
         <div className="min-w-48">
-          <Select value={searchChannel} onValueChange={handleChannelChange}>
+          <Select
+            value={searchChannel || ""}
+            onValueChange={handleChannelChange}
+          >
             <SelectTrigger className="h-10">
               <SelectValue placeholder="Channel" />
             </SelectTrigger>
@@ -1017,6 +908,7 @@ const ClaimsPage = () => {
         </div>
       </div>
       <DataTable
+        loading={isFetching}
         data={filteredClaims}
         columns={claimsTableColumns}
         search={{
@@ -1027,7 +919,7 @@ const ClaimsPage = () => {
           page,
           totalPages,
           rowsPerPage,
-          totalItems,
+          totalItems: totalData,
           onPageChange: setPage,
           onRowsPerPageChange: handleRowsPerPageChange,
         }}

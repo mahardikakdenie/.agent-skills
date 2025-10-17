@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import { ContentLoadingWrapper } from "../Loading/";
 export interface Column<T> {
   key: string;
   header: string;
@@ -102,9 +102,9 @@ export function DataTable<T extends Record<string, any>>({
           {loading ? (
             <TableRow className="hover:!bg-white">
               <TableCell colSpan={columns.length}>
-                <div className="flex justify-center items-center py-14">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                </div>
+                <ContentLoadingWrapper isLoading={loading}>
+                  <div className="h-[300px]"></div>
+                </ContentLoadingWrapper>
               </TableCell>
             </TableRow>
           ) : data.length > 0 ? (
