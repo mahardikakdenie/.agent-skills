@@ -35,6 +35,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { FORBIDDEN } from "@/constants/routes";
+import { formatDate } from "@/lib/formatter";
 
 const ReportClaimPage = () => {
   const claimService = new ClaimService();
@@ -86,8 +87,8 @@ const ReportClaimPage = () => {
             page,
             rowsPerPage,
             "Data",
-            date?.from.toISOString().split("T")[0],
-            date?.to.toISOString().split("T")[0]
+            formatDate(date?.from?.toString(), "YYYY-MM-DD"),
+            formatDate(date?.to?.toString(), "YYYY-MM-DD")
           )
           .then((res) => {
             if (res.data && res.data.length > 0) {
@@ -122,8 +123,8 @@ const ReportClaimPage = () => {
         page,
         rowsPerPage,
         "File",
-        date?.from.toISOString().split("T")[0],
-        date?.to.toISOString().split("T")[0]
+        formatDate(date?.from?.toString(), "YYYY-MM-DD"),
+        formatDate(date?.to?.toString(), "YYYY-MM-DD")
       );
 
       // Create workbook directly from the API response data
