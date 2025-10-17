@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getClaims } from "@/services/claim.service";
+import { ClaimService } from "@/services/claim.service";
+import { ChannelService } from "@/services/channel.services";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { useAuth } from "@/context/auth.context";
 import _ from "lodash";
-import { getChannels } from "@/services/channel.services";
 
 interface UseClaimsProps {
   // Data states
@@ -53,6 +53,9 @@ interface UseClaimsProps {
 export default function useClaims(): UseClaimsProps {
   const { claims: claimsToken } = useAuth();
 
+  const claimService = useMemo(() => new ClaimService(), []);
+  const channelService = useMemo(() => new ChannelService(), []);
+
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [channels, setChannels] = useState<any[]>([]);
@@ -96,7 +99,7 @@ export default function useClaims(): UseClaimsProps {
   } = useQuery({
     queryKey,
     queryFn: () =>
-      getClaims(
+      claimService.getClaims(
         page,
         rowsPerPage,
         tab === "All" ? "" : tab,
@@ -114,13 +117,13 @@ export default function useClaims(): UseClaimsProps {
 
   const { data: channelsData, isFetching: isLoadingChannels } = useQuery({
     queryKey: ["channels"],
-    queryFn: () => getChannels(undefined, 100),
+    queryFn: () => channelService.getChannels(undefined, 100),
     staleTime: 30000,
   });
 
   useEffect(() => {
     if (channelsData?.data) {
-      setChannels(channelsData?.data?.data);
+      setChannels(channelsData?.data);
     }
   }, [channelsData]);
 
@@ -187,10 +190,10 @@ export default function useClaims(): UseClaimsProps {
   }, [handleSearch]);
 
   return {
-    claims: resClaims?.data.data || [],
-    filteredClaims: resClaims?.data.data || [],
-    totalPages: resClaims?.data?.pageTotal || 1,
-    totalData: resClaims?.data?.total || 0,
+    claims: resClaims?.data || [],
+    filteredClaims: resClaims?.data || [],
+    totalPages: resClaims?.pageTotal || 1,
+    totalData: resClaims?.total || 0,
     channels,
 
     page,
