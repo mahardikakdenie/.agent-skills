@@ -161,42 +161,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const parts = `${item}`.split(".");
       const rawMenu = parts[0];
       const rawSubmenuParts = parts.slice(1);
-      const submenuCandidates =
-        rawSubmenuParts.length > 0
+      const submenuCandidates = [
+        rawMenu,
+        ...(rawSubmenuParts.length > 0
           ? [
               rawSubmenuParts.join("."),
               rawSubmenuParts.join(""),
               ...rawSubmenuParts,
             ]
+          : []),
+      ].filter(Boolean);
+
+      const addAllSubmenus = (menuItem: any) => {
+        menuItem.submenu?.forEach((submenuItem: any) =>
+          submenuAccess.add(submenuItem.name)
+        );
+      };
+
+      const matchedMenusByName =
+        rawMenu && rawMenu.length
+          ? AppMenu.menu.filter((menuItem) =>
+              compareKeys(menuItem.name, rawMenu)
+            )
           : [];
 
-      const matchedMenu = rawMenu
-        ? AppMenu.menu.find((menuItem) => compareKeys(menuItem.name, rawMenu))
-        : undefined;
+      matchedMenusByName.forEach((menuItem) => {
+        menuAccess.add(menuItem.name);
 
-      if (matchedMenu) {
-        menuAccess.add(matchedMenu.name);
+        if (menuItem.submenu?.length) {
+          const matchedSubmenuInMenu = menuItem.submenu.find(
+            (submenuItem: any) =>
+              submenuCandidates.some((candidate) =>
+                candidate ? compareKeys(submenuItem.name, candidate) : false
+              )
+          );
 
-        if (matchedMenu.submenu?.length) {
-          if (submenuCandidates.length) {
-            const matchedSubmenu = matchedMenu.submenu.find(
-              (submenuItem: any) =>
-                submenuCandidates.some((candidate) =>
-                  compareKeys(submenuItem.name, candidate)
-                )
-            );
-            if (matchedSubmenu) submenuAccess.add(matchedSubmenu.name);
-            else
-              matchedMenu.submenu.forEach((submenuItem: any) =>
-                submenuAccess.add(submenuItem.name)
-              );
+          if (matchedSubmenuInMenu) {
+            submenuAccess.add(matchedSubmenuInMenu.name);
           } else {
-            matchedMenu.submenu.forEach((submenuItem: any) =>
-              submenuAccess.add(submenuItem.name)
-            );
+            addAllSubmenus(menuItem);
           }
         }
-      }
+      });
+
+      AppMenu.menu.forEach((menuItem) => {
+        if (!menuItem.submenu?.length) return;
+
+        const matchedSubmenu = menuItem.submenu.find((submenuItem: any) =>
+          submenuCandidates.some((candidate) =>
+            candidate ? compareKeys(submenuItem.name, candidate) : false
+          )
+        );
+
+        if (matchedSubmenu) {
+          menuAccess.add(menuItem.name);
+          submenuAccess.add(matchedSubmenu.name);
+        }
+      });
     });
 
     const menus = Array.from(menuAccess);
