@@ -368,6 +368,75 @@ export class ClaimService {
   }
 }
 
+export const getClaims = (
+  page: number,
+  rowsPerPage: number,
+  status: string,
+  searchData?: string,
+  searchSlaStatus?: any,
+  date_from?: string,
+  date_to?: string,
+  channel?: string
+) => {
+  try {
+    const customClient = createApiClient(
+      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
+    );
+
+    const params: any = {
+      page: page,
+      limit: rowsPerPage,
+    };
+
+    if (searchData) {
+      params["keyword"] = searchData;
+    }
+
+    if (searchSlaStatus) {
+      params["sla_status"] = searchSlaStatus;
+    }
+
+    if (status) {
+      if (status !== "Draft") {
+        params["status"] = [status];
+      }
+    } else {
+      params["status"] = [
+        "Submitted",
+        "Acknowledged",
+        "Document Review Operator",
+        "Reupload Document Review Operator",
+        "Lack of Documents Operator",
+        "Document Review Insurance",
+        "Reupload Document Review Insurance",
+        "Lack of Documents Insurance",
+        "Claim Assessment",
+        "Approved",
+        "Rejected",
+        "Paid",
+        "Closed",
+      ];
+    }
+
+    if (date_from) {
+      params["date_from"] = date_from;
+    }
+
+    if (date_to) {
+      params["date_to"] = date_to;
+    }
+
+    if (channel) {
+      params["channel"] = channel;
+    }
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    return customClient.get(`/v1/claims?${queryString}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getDetailClaims = (id: string) => {
   try {
     const customClient = createApiClient(
