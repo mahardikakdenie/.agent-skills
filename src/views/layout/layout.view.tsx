@@ -11,7 +11,6 @@ import Modal from "@/components/modal";
 import Button from "@/components/button";
 import OptimizeImage from "@/components/image";
 import { useAuth } from "@/context/auth.context";
-import CircleMenuIcon from "@/images/circle-menu.icon";
 import {backgroundImageApp, logo, logoHeight, logoWidth, primary10, primaryRed} from "@/constants/app-common.const";
 import Input from "@/components/input";
 import {authService} from "@/services/api.service";
@@ -63,8 +62,6 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
     setPassword("");
     logout();
   }
-
-  const shouldShowCircle = (submenu: any) => submenu.withCircle !== false;
 
   const changePassword = async () => {
     try {
@@ -250,12 +247,13 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                     <div key={menuMobileIndex} className={`${menuMobileIndex !== 0 && "mt-5"}`}>
                       <p className="font-semibold mb-3">{menuMobile.name}</p>
                       {menuMobile.submenu.map((submenuMobile, submenuIndex) => submenuList.includes(submenuMobile.name) && (
-                          <div key={submenuIndex} onClick={() => goToPage(submenuMobile.url)} className={`flex items-center justify-start py-2 px-3 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${path.includes(submenuMobile.url) && "bg-primary-foreground"}`}>
-                            <div className={`flex items-center ${shouldShowCircle(submenuMobile) ? `mr-3.5` : `mr-2.5`}`}>
-                              {shouldShowCircle(submenuMobile) && CircleMenuIcon(undefined, "30", "30", "0 0 26 26")}
-                              <div className={`${shouldShowCircle(submenuMobile) ? "-ml-[26px]" : ""}`}>
-                                {submenuMobile.icon}
-                              </div>
+                          <div
+                              key={submenuIndex}
+                              onClick={() => goToPage(submenuMobile.url)}
+                              className={`flex items-center justify-start py-2 px-3 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${path.includes(submenuMobile.url) && "bg-primary-foreground"}`}
+                          >
+                            <div className="flex items-center mr-3">
+                              {submenuMobile.icon}
                             </div>
                             <p className={`${path.includes(submenuMobile.url) && "font-semibold"}`}>{submenuMobile.name}</p>
                           </div>
@@ -282,12 +280,13 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                       <div key={menuIndex} className="mb-5">
                         <p className="font-semibold mb-3">{menu.name}</p>
                         {menu.submenu.map((submenu, submenuIndex) => submenuList.includes(submenu.name) && (
-                            <div key={submenuIndex} onClick={() => goToPage(submenu.url)} className={`flex items-center justify-start py-1 px-3 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${path.includes(submenu.url) && "bg-primary-foreground"}`}>
-                              <div className={`flex items-center ${shouldShowCircle(submenu) ? `mr-3.5` : `mr-2.5`}`}>
-                                {shouldShowCircle(submenu) && CircleMenuIcon(undefined, "30", "30", "0 0 26 26")}
-                                <div className={`${shouldShowCircle(submenu) ? "-ml-[26px]" : ""}`}>
-                                  {submenu.icon}
-                                </div>
+                            <div
+                                key={submenuIndex}
+                                onClick={() => goToPage(submenu.url)}
+                                className={`flex items-center justify-start py-1 px-3 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${path.includes(submenu.url) && "bg-primary-foreground"}`}
+                            >
+                              <div className="flex items-center mr-3">
+                                {submenu.icon}
                               </div>
                               <p className={`${path.includes(submenu.url) && "font-semibold"}`}>{submenu.name}</p>
                             </div>

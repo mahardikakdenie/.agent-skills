@@ -1,9 +1,19 @@
+import Image, { StaticImageData } from "next/image";
+import { ChartPie } from "lucide-react";
+
 import AppURL from "@/constants/app-url.const";
-import HamburgerIcon from "@/images/hamburger.icon";
-import SecureDoc2Icon from "@/images/secure-doc-2.icon";
-import Revenue2Icon from "@/images/revenue-2.icon";
-import Home2Icon from "@/images/home-2.icon";
-import TaskListIcon from "@/images/task-list.icon";
+import iconTransaction from "/public/images/icon-transactions.png";
+import iconCampaigns from "/public/images/icon-campaigns.png";
+import iconPolicy from "/public/images/icon-policy.png";
+import iconClaim from "/public/images/icon-claim.png";
+
+const renderChartIcon = () => (
+  <ChartPie className="text-primary h-[17px] w-[17px]" strokeWidth={3} />
+);
+
+const renderImageIcon = (src: StaticImageData, alt: string) => (
+  <Image src={src} alt={alt} className="w-7 min-w-7" />
+);
 
 class AppMenu {
   static menu = [
@@ -14,19 +24,19 @@ class AppMenu {
         {
           name: "Transaction",
           url: AppURL.dashboardTransaction,
-          icon: Home2Icon("#FFF", "24", "24", "0 -1 20 20"),
+          icon: renderChartIcon(),
           additionalPages: [],
         },
         {
           name: "Policy",
           url: AppURL.dashboardPolicy,
-          icon: Home2Icon("#FFF", "24", "24", "0 -1 20 20"),
+          icon: renderChartIcon(),
           additionalPages: [],
         },
         {
           name: "Claim",
           url: AppURL.dashboardClaim,
-          icon: Home2Icon("#FFF", "24", "24", "0 -1 20 20"),
+          icon: renderChartIcon(),
           additionalPages: [],
         }
       ]
@@ -38,7 +48,7 @@ class AppMenu {
         {
           name: "Transaction List",
           url: AppURL.transactionList,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconTransaction, "Transaction List"),
           additionalPages: [
             {
               name: "Add Transaction",
@@ -67,7 +77,7 @@ class AppMenu {
         {
           name: "Policy List",
           url: AppURL.policyList,
-          icon: HamburgerIcon("#FFF", "24", "24", "-2 -7 40 40"),
+          icon: renderImageIcon(iconPolicy, "Policy List"),
           additionalPages: [
             {
               name: "Detail Policy",
@@ -78,7 +88,7 @@ class AppMenu {
         {
           name: "Endorsement List",
           url: AppURL.endorsementList,
-          icon: TaskListIcon(undefined, undefined, "#FFF", "32", "32", "2 2 28 28"),
+          icon: renderImageIcon(iconClaim, "Endorsement List"),
           withCircle: false,
           additionalPages: [
             {
@@ -100,7 +110,7 @@ class AppMenu {
         {
           name: "Claim List",
           url: AppURL.claimList,
-          icon: SecureDoc2Icon("#FFF", "24", "24", "10 8 37 37"),
+          icon: renderImageIcon(iconClaim, "Claim List"),
           additionalPages: [
             {
               name: "Detail Claim",
@@ -111,7 +121,7 @@ class AppMenu {
         {
           name: "Claim History",
           url: AppURL.claimHistory,
-          icon: SecureDoc2Icon("#FFF", "24", "24", "10 8 37 37"),
+          icon: renderImageIcon(iconClaim, "Claim History"),
           additionalPages: []
         }
       ],
@@ -123,7 +133,7 @@ class AppMenu {
         {
           name: "Membership List",
           url: AppURL.membershipList,
-          icon: HamburgerIcon("#FFF", "24", "24", "-2 -7 40 40"),
+          icon: renderImageIcon(iconClaim, "Membership List"),
           additionalPages: [
             {
               name: "Membership Detail",
@@ -140,7 +150,7 @@ class AppMenu {
         {
           name: "Sanction List",
           url: AppURL.sanctionList,
-          icon: HamburgerIcon("#FFF", "24", "24", "-2 -7 40 40"),
+          icon: renderImageIcon(iconClaim, "Sanction List"),
           additionalPages: [
             {
               name: "Add Sanction",
@@ -161,7 +171,7 @@ class AppMenu {
         {
           name: "Source List",
           url: AppURL.sourceList,
-          icon: HamburgerIcon("#FFF", "24", "24", "-2 -7 40 40"),
+          icon: renderImageIcon(iconClaim, "Source List"),
           additionalPages: [
             {
               name: "Add Source",
@@ -182,7 +192,7 @@ class AppMenu {
         {
           name: "Campaign",
           url: AppURL.promotionCampaign,
-          icon: HamburgerIcon("#FFF", "24", "24", "-2 -7 40 40"),
+          icon: renderImageIcon(iconCampaigns, "Campaign"),
           additionalPages: [
             {
               name: "Add Campaign",
@@ -203,7 +213,7 @@ class AppMenu {
         {
           name: "Billing",
           url: AppURL.financeBilling,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Billing"),
           additionalPages: [
             {
               name: "Add Billing",
@@ -218,13 +228,13 @@ class AppMenu {
         {
           name: "Unmatch Billing",
           url: AppURL.financeUnmatchBilling,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Unmatch Billing"),
           additionalPages: []
         },
         {
           name: "Broker Fee",
           url: AppURL.financeBrokerFee,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Broker Fee"),
           additionalPages: [
             {
               name: "Add Broker Fee",
@@ -239,7 +249,7 @@ class AppMenu {
         {
           name: "Partner Comm",
           url: AppURL.financePartnerComm,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Partner Comm"),
           additionalPages: [
             {
               name: "Add Partner Comm",
@@ -260,7 +270,7 @@ class AppMenu {
         {
           name: "Product Category",
           url: AppURL.masterdataProductCategory,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Product Category"),
           additionalPages: [
             {
               name: "Add Product Category",
@@ -275,7 +285,7 @@ class AppMenu {
         {
           name: "Insurance",
           url: AppURL.masterdataInsurance,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Insurance"),
           additionalPages: [
             {
               name: "Add Insurance",
@@ -290,7 +300,7 @@ class AppMenu {
         {
           name: "Product",
           url: AppURL.masterdataProduct,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Product"),
           additionalPages: [
             {
               name: "Add Product",
@@ -305,7 +315,7 @@ class AppMenu {
         {
           name: "Currency",
           url: AppURL.masterdataCurrency,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Currency"),
           additionalPages: [
             {
               name: "Add Currency",
@@ -320,7 +330,7 @@ class AppMenu {
         {
           name: "Channel",
           url: AppURL.masterdataChannel,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Channel"),
           additionalPages: [
             {
               name: "Add Channel",
@@ -335,7 +345,7 @@ class AppMenu {
         {
           name: "User",
           url: AppURL.masterdataUser,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "User"),
           additionalPages: [
             {
               name: "Add User",
@@ -350,7 +360,7 @@ class AppMenu {
         {
           name: "Group",
           url: AppURL.masterdataGroup,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Group"),
           additionalPages: [
             {
               name: "Add Group",
@@ -365,7 +375,7 @@ class AppMenu {
         {
           name: "Role",
           url: AppURL.masterdataRole,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Role"),
           additionalPages: [
             {
               name: "Add Role",
@@ -380,7 +390,7 @@ class AppMenu {
         {
           name: "Page Management",
           url: AppURL.masterdataPageManagement,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Page Management"),
           additionalPages: [
             {
               name: "Add Page Management",
@@ -395,7 +405,7 @@ class AppMenu {
         {
           name: "Partner Management",
           url: AppURL.masterdataPartnerManagement,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Partner Management"),
           additionalPages: [
             {
               name: "Add Partner Management",
@@ -410,7 +420,7 @@ class AppMenu {
         {
           name: "Email Template",
           url: AppURL.masterdataEmailTemplate,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Email Template"),
           additionalPages: [
             {
               name: "Add Email Template",
@@ -425,7 +435,7 @@ class AppMenu {
         {
           name: "Email Tag",
           url: AppURL.masterdataEmailTag,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Email Tag"),
           additionalPages: [
             {
               name: "Add Email Tag",
@@ -440,7 +450,7 @@ class AppMenu {
         {
           name: "Holiday Date",
           url: AppURL.masterdataHolidayDate,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Holiday Date"),
           additionalPages: [
             {
               name: "Add Holiday Date",
@@ -455,7 +465,7 @@ class AppMenu {
         {
           name: "Hospital",
           url: AppURL.masterdataHospital,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Hospital"),
           additionalPages: []
         }
       ]
@@ -467,19 +477,19 @@ class AppMenu {
         {
           name: "Claim Report",
           url: AppURL.reportClaim,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Claim Report"),
           additionalPages: []
         },
         {
           name: "Campaign Report",
           url: AppURL.reportCampaign,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Campaign Report"),
           additionalPages: []
         },
         {
           name: "Performance Report",
           url: AppURL.reportPerformance,
-          icon: Revenue2Icon("#FFF", "24", "24", "0 0 36 41"),
+          icon: renderImageIcon(iconClaim, "Performance Report"),
           additionalPages: []
         }
       ]
