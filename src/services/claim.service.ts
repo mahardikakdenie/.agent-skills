@@ -279,12 +279,14 @@ export class ClaimService {
     page: number,
     rowsPerPage: number,
     output: string,
+    channel_id: string,
     date_from?: string,
     date_to?: string
   ): Promise<any> {
     const params = {
       page,
       limit: rowsPerPage,
+      channel_id,
       output,
       ...(date_from && { date_from }),
       ...(date_to && { date_to }),
