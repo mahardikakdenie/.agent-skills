@@ -86,10 +86,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
 
-    if (!claims && state.token) {
+    if (state.token) {
       fetchClaims();
     }
-  }, [claims, state]);
+  }, [state.token]);
 
   const login = async (token: string) => {
     await cookieService.saveCookie({ name: "token", value: token, days: 1 });
