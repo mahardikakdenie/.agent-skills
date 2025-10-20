@@ -51,6 +51,7 @@ interface UseClaimsProps {
 }
 
 export default function useClaims(): UseClaimsProps {
+  const defaultChannel = "40eee5bf-2b92-4d23-be55-f9caa9d3ea88";
   const { claims: claimsToken } = useAuth();
 
   const claimService = useMemo(() => new ClaimService(), []);
@@ -74,7 +75,7 @@ export default function useClaims(): UseClaimsProps {
     searchChannel ||
     claimsToken?.channel ||
     claimsToken?.account_channels?.[0]?.channel ||
-    "40eee5bf-2b92-4d23-be55-f9caa9d3ea88";
+    defaultChannel;
 
   const queryKey = [
     "claims",
@@ -121,6 +122,16 @@ export default function useClaims(): UseClaimsProps {
     staleTime: 30000,
   });
 
+  const tokenChannel = useMemo(() => {
+    if (!claimsToken) return defaultChannel;
+
+    return (
+      claimsToken.channel ||
+      claimsToken.account_channels?.[0]?.channel ||
+      defaultChannel
+    );
+  }, [claimsToken]);
+
   useEffect(() => {
     if (channelsData?.data) {
       setChannels(channelsData?.data);
@@ -128,15 +139,13 @@ export default function useClaims(): UseClaimsProps {
   }, [channelsData]);
 
   useEffect(() => {
-    if (claimsToken && searchChannel === null) {
-      const tokenChannel =
-        claimsToken?.channel ||
-        claimsToken?.account_channels?.[0]?.channel ||
-        "40eee5bf-2b92-4d23-be55-f9caa9d3ea88";
-
-      setSearchChannel(tokenChannel);
+    if (searchChannel === null && channels.length > 0) {
+      const isTokenChannelValid = channels.some(
+        (channel) => channel.id === tokenChannel
+      );
+      setSearchChannel(isTokenChannelValid ? tokenChannel : defaultChannel);
     }
-  }, [claimsToken, searchChannel]);
+  }, [searchChannel, channels, tokenChannel]);
 
   const handleSearch = useMemo(
     () =>
