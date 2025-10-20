@@ -13,7 +13,7 @@ import { ClaimService } from "@/services/claim.service";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Download, X } from "react-feather";
 import { hasPermission } from "@/context/auth.context";
@@ -36,6 +36,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { FORBIDDEN } from "@/constants/routes";
 import { formatDate } from "@/lib/formatter";
+import { ChannelService } from "@/services/channel.services";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 const ReportClaimPage = () => {
   const claimService = new ClaimService();
@@ -49,6 +51,9 @@ const ReportClaimPage = () => {
   const [sortBy, setSortBy] = useState<string>("date");
   const [filterBy, setFilterBy] = useState<string>("all");
   const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [channels, setChannels] = useState<any[]>([]);
+  const [searchChannel, setSearchChannel] = useState("40eee5bf-2b92-4d23-be55-f9caa9d3ea88");//DEFAULT TEMAN
+  const [selectedChannel, setSelectedChannel] = useState<any>({ id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88", name: "Teman" });
   const router = useRouter();
 
   const { handleSubmit, reset, control } = useForm({
@@ -72,6 +77,21 @@ const ReportClaimPage = () => {
   }, [router]);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const channelService = new ChannelService();
+        const channelResponse = await channelService.getChannels(undefined, 100);
+        setChannels(channelResponse.data || []);
+      } catch (error) {
+        console.error('Failed to fetch channels:', error);
+      }
+    };
+
+    fetchData();
+
+  }, []);
+
+  useEffect(() => {
     setPage(1);
   }, [filterBy, sortBy]);
 
@@ -87,6 +107,7 @@ const ReportClaimPage = () => {
             page,
             rowsPerPage,
             "Data",
+            selectedChannel.id,
             formatDate(date?.from?.toString(), "YYYY-MM-DD"),
             formatDate(date?.to?.toString(), "YYYY-MM-DD")
           )
@@ -106,9 +127,11 @@ const ReportClaimPage = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasAccess, page, rowsPerPage, sortBy, date]);
+  }, [hasAccess, page, rowsPerPage, sortBy, date, selectedChannel]);
 
   const handleClear = () => {
+    setSelectedChannel("");
+    setSearchChannel("");
     setDate(undefined);
   };
 
@@ -123,6 +146,7 @@ const ReportClaimPage = () => {
         page,
         rowsPerPage,
         "File",
+        selectedChannel.id,
         formatDate(date?.from?.toString(), "YYYY-MM-DD"),
         formatDate(date?.to?.toString(), "YYYY-MM-DD")
       );
@@ -132,6 +156,13 @@ const ReportClaimPage = () => {
     } catch (error) {
       console.error("Failed to download the report:", error);
     }
+  };
+
+  const handleChannelChange = (v: string) => {
+    setSearchChannel(v);
+
+    var c = channels.filter((x) => x.id == v)[0];
+    setSelectedChannel(c);
   };
 
   return (
@@ -155,6 +186,23 @@ const ReportClaimPage = () => {
         </div>
 
         <div className="flex items-center gap-4">
+          <div className="min-w-48">
+            <Select value={searchChannel} onValueChange={handleChannelChange}>
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder="Channel" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {
+                    channels.map((item, index) => (
+                        <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
+                    ))
+                  }
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="flex gap-2 sm:w-auto w-full relative">
             <Popover>
               <PopoverTrigger asChild>
