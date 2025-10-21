@@ -9,7 +9,6 @@ import { X } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";
-import { ClaimService } from "@/services/claim.service";
 import { CLAIM_LIST, FORBIDDEN } from "@/constants/routes";
 import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 import {
@@ -25,6 +24,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { claimHasValue } from "@/lib/utils";
 import { useDetailClaim } from "@/hooks/useDetailClaim.hooks";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { claimService } from "@/services/api.service";
+import ApiURL from "@/constants/api-url.const";
 
 interface FieldType {
   name: string;
@@ -204,10 +205,9 @@ const DetailClaim = () => {
 
   useEffect(() => {
     const fetchClaimData = async (id: string) => {
-      const claimService = new ClaimService();
       try {
-        const claimHistoriesResponse = await claimService.getClaimsHistories(
-          id
+        const { data: claimHistoriesResponse } = await claimService.get(
+          `${ApiURL.v1ClaimHistories}?claim=${id}`
         );
         if (claimHistoriesResponse && claimHistoriesResponse.data) {
           setHistories(claimHistoriesResponse.data);

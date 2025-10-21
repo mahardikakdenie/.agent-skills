@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { formatMoneyClaim } from "@/lib/formatter";
 import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/context/auth.context";
-import { ClaimService } from "@/services/claim.service";
+import { claimService } from "@/services/api.service";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Popover,
@@ -53,6 +53,7 @@ import {
 } from "@/components/tableConfig/claimTableConfig";
 import useClaims from "@/hooks/useClaims.hooks";
 import AppURL from "@/constants/app-url.const";
+import ApiURL from "@/constants/api-url.const";
 
 const ClaimsPage = () => {
   const path = usePathname();
@@ -87,8 +88,6 @@ const ClaimsPage = () => {
     handleChannelChange,
   } = useClaims();
   const router = useRouter();
-
-  const claimService = new ClaimService();
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -148,13 +147,13 @@ const ClaimsPage = () => {
   };
 
   const selectChannel = (id: string) => {
-    claimService.getClaimChannel(id).then((res) => {
+    claimService.get(ApiURL.v1ClaimChannelFormsAll(id)).then((res) => {
       setDataDocument(res.data);
     });
   };
 
   const selectCategory = (id: string, dataId: string) => {
-    claimService.getClaimCategory(id).then((res) => {
+    claimService.get(ApiURL.v1ClaimCategoryFormsAll(id)).then((res) => {
       const label = filteredClaims?.filter((f: any) => f?.id === dataId)?.[0]
         ?.claim_config;
 
@@ -301,13 +300,12 @@ const ClaimsPage = () => {
     lack_of_documents?: string[]
   ) => {
     claimService
-      .updateClaimStatus(
-        claimId,
-        newStatus,
-        amount_approved,
+      .put(ApiURL.v1ClaimUpdateStatus(claimId), {
+        status: newStatus,
         note,
-        lack_of_documents
-      )
+        amount_approved,
+        lack_of_documents,
+      })
       .then(() => {
         alert("Update status successfully.");
         refetch();
@@ -434,8 +432,10 @@ const ClaimsPage = () => {
   useEffect(() => {
     const fetchClaimsStatus = async () => {
       try {
-        const response = await claimService.getClaimsStatus();
-        const filteredStatus = response.filter(
+        const { data = [] } = await claimService.get(
+          ApiURL.v1ClaimConfigurations
+        );
+        const filteredStatus = data.filter(
           (cs: any) => cs.status !== "Draft"
         );
         setClaimStatusOptions(filteredStatus);

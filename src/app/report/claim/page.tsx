@@ -8,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ClaimService } from "@/services/claim.service";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
@@ -34,6 +33,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { formatDate } from "@/lib/formatter";
 import { ChannelService } from "@/services/channel.services";
+import { claimService } from "@/services/api.service";
+import ApiURL from "@/constants/api-url.const";
+import qs from "qs";
 import {
   Select,
   SelectContent,
@@ -46,7 +48,6 @@ import AppURL from "@/constants/app-url.const";
 import { useAuth } from "@/context/auth.context";
 
 const ReportClaimPage = () => {
-  const claimService = new ClaimService();
   const [claims, setClaims] = useState<any[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [page, setPage] = useState(1);
@@ -74,6 +75,28 @@ const ReportClaimPage = () => {
       sort: "date",
     },
   });
+
+  const requestClaimReport = async (
+    output: "Data" | "File",
+    dateFrom?: string,
+    dateTo?: string
+  ) => {
+    const params = {
+      page,
+      limit: rowsPerPage,
+      channel_id: selectedChannel.id,
+      output,
+      ...(dateFrom && { date_from: dateFrom }),
+      ...(dateTo && { date_to: dateTo }),
+    };
+
+    const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+    const response = await claimService.get(
+      `${ApiURL.v1ClaimsExport}?${queryString}`
+    );
+
+    return response.data;
+  };
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -109,36 +132,38 @@ const ReportClaimPage = () => {
   }, [filterBy, sortBy]);
 
   useEffect(() => {
-    if (date?.from && date?.to) {
+    const fetchClaimReports = async () => {
+      if (!date?.from || !date?.to || !hasAccess) {
+        return;
+      }
+
       setClaims([]);
       setTotalItems(0);
       setTotalPages(1);
 
-      if (hasAccess) {
-        claimService
-          .getClaimReport(
-            page,
-            rowsPerPage,
-            "Data",
-            selectedChannel.id,
-            formatDate(date?.from?.toString(), "YYYY-MM-DD"),
-            formatDate(date?.to?.toString(), "YYYY-MM-DD")
-          )
-          .then((res) => {
-            if (res.data && res.data.length > 0) {
-              // Extract headers from the first item
-              const headerKeys = Object.keys(res.data[0]);
-              setHeaders(headerKeys);
-              setClaims(res.data);
-              setTotalItems(res.total);
-              setTotalPages(res.pageTotal);
-            }
-          })
-          .catch((error) => {
-            console.error("Failed to fetch claim reports:", error);
-          });
+      try {
+        const dateFrom = formatDate(date.from.toString(), "YYYY-MM-DD");
+        const dateTo = formatDate(date.to.toString(), "YYYY-MM-DD");
+        const res = await requestClaimReport("Data", dateFrom, dateTo);
+
+        if (res?.data && res.data.length > 0) {
+          const headerKeys = Object.keys(res.data[0]);
+          setHeaders(headerKeys);
+          setClaims(res.data);
+          setTotalItems(res.total);
+          setTotalPages(res.pageTotal);
+        } else {
+          setHeaders([]);
+          setClaims([]);
+          setTotalItems(0);
+          setTotalPages(1);
+        }
+      } catch (error) {
+        console.error("Failed to fetch claim reports:", error);
       }
-    }
+    };
+
+    fetchClaimReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAccess, page, rowsPerPage, sortBy, date, selectedChannel]);
 
@@ -155,17 +180,14 @@ const ReportClaimPage = () => {
         return;
       }
 
-      const response = await claimService.getClaimReport(
-        page,
-        rowsPerPage,
-        "File",
-        selectedChannel.id,
-        formatDate(date?.from?.toString(), "YYYY-MM-DD"),
-        formatDate(date?.to?.toString(), "YYYY-MM-DD")
-      );
+      const dateFrom = formatDate(date.from.toString(), "YYYY-MM-DD");
+      const dateTo = formatDate(date.to.toString(), "YYYY-MM-DD");
+      const response = await requestClaimReport("File", dateFrom, dateTo);
 
       // Create workbook directly from the API response data
-      window.location = response.file;
+      if (response?.file) {
+        window.location.href = response.file;
+      }
     } catch (error) {
       console.error("Failed to download the report:", error);
     }

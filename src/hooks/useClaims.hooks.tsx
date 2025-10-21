@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ClaimService } from "@/services/claim.service";
 import { ChannelService } from "@/services/channel.services";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { useAuth } from "@/context/auth.context";
 import _ from "lodash";
+import qs from "qs";
+import ApiURL from "@/constants/api-url.const";
+import { claimService } from "@/services/api.service";
 
 interface UseClaimsProps {
   // Data states
@@ -54,7 +56,6 @@ export default function useClaims(): UseClaimsProps {
   const defaultChannel = "40eee5bf-2b92-4d23-be55-f9caa9d3ea88";
   const { user: claimsToken } = useAuth();
 
-  const claimService = useMemo(() => new ClaimService(), []);
   const channelService = useMemo(() => new ChannelService(), []);
 
   const [page, setPage] = useState(1);
@@ -99,17 +100,59 @@ export default function useClaims(): UseClaimsProps {
     isFetching,
   } = useQuery({
     queryKey,
-    queryFn: () =>
-      claimService.getClaims(
+    queryFn: async () => {
+      const params: Record<string, any> = {
         page,
-        rowsPerPage,
-        tab === "All" ? "" : tab,
-        searchData,
-        searchSlaStatus === "All" ? "" : searchSlaStatus,
-        date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-        date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
-        channelId
-      ),
+        limit: rowsPerPage,
+        channel: channelId,
+      };
+
+      if (searchData) {
+        params.keyword = searchData;
+      }
+
+      if (searchSlaStatus) {
+        params.sla_status = searchSlaStatus;
+      }
+
+      const status = tab === "All" ? "" : tab;
+      if (status) {
+        if (status !== "Draft") {
+          params.status = [status];
+        }
+      } else {
+        params.status = [
+          "Submitted",
+          "Acknowledged",
+          "Document Review Operator",
+          "Reupload Document Review Operator",
+          "Lack of Documents Operator",
+          "Document Review Insurance",
+          "Reupload Document Review Insurance",
+          "Lack of Documents Insurance",
+          "Claim Assessment",
+          "Approved",
+          "Rejected",
+          "Paid",
+          "Closed",
+        ];
+      }
+
+      if (date?.from) {
+        params.date_from = format(date.from, "yyyy-MM-dd");
+      }
+
+      if (date?.to) {
+        params.date_to = format(date.to, "yyyy-MM-dd");
+      }
+
+      const queryString = qs.stringify(params, { arrayFormat: "brackets" });
+      const response = await claimService.get(
+        `${ApiURL.v1Claims}?${queryString}`
+      );
+
+      return response.data;
+    },
     enabled: !!channelId,
     staleTime: 30000,
     refetchOnWindowFocus: false,
