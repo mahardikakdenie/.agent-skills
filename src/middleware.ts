@@ -33,6 +33,7 @@ export const config = {
     "/finance/:path*",
     "/product-category/:path*",
     "/masterdata/:path*",
-    "/report/:path*"
+    "/report/:path*",
+    "/export-users/:path*"
   ]
 };
