@@ -209,7 +209,7 @@ export class MailTemplateService {
     }
   }
 
-  async saveJourney(data: any, id: string): Promise<any> {
+  async saveJourney(data: any): Promise<any> {
     try {
       return await this.httpClient.post("v1/email-templates/journey/", data);
     } catch (error) {

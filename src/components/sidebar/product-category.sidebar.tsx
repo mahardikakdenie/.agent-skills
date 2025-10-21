@@ -1,5 +1,5 @@
-import { useCategories } from "@/app/protected/masterdata/product-category/hooks";
-import { PRODUCT_CATALOG_CATEGORY } from "@/constants/routes";
+import { useCategories } from "@/app/masterdata/product-category/hooks";
+import AppURL from "@/constants/app-url.const";
 import { withWildcard } from "@/helpers/route.helper";
 import { ProductCategories } from "@/services/masterdata/product-category.service";
 import Image from "next/image";
@@ -53,9 +53,9 @@ const ProductCategorySidebar = ({
         items.map((item) => (
           <li key={item.id}>
             <Link
-              href={PRODUCT_CATALOG_CATEGORY(item.name)}
+              href={AppURL.productCatalogCategory(item.name)}
               className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
-                isActive(withWildcard(PRODUCT_CATALOG_CATEGORY(item.name)))
+                isActive(withWildcard(AppURL.productCatalogCategory(item.name)))
                   ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
                   : ""
               }`}

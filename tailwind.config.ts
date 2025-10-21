@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
 const config = {
   darkMode: ["class"],
@@ -11,17 +11,9 @@ const config = {
   prefix: "",
   theme: {
     container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      center: true
     },
     extend: {
-      borderColor: {
-        border: 'hsl(var(--border))'
-      },
-
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -29,16 +21,16 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#016DA1",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        warning: {
-          DEFAULT: "#F5BA41",
-          foreground: "hsl(var(--warning-foreground))",
+          DEFAULT: process.env.NEXT_PUBLIC_PRIMARY_BASE || "hsl(var(--primary))",
+          foreground: process.env.NEXT_PUBLIC_PRIMARY_20 || "hsl(var(--primary-foreground))",
+          "light-foreground": process.env.NEXT_PUBLIC_PRIMARY_10 || "hsl(var(--primary-light-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -82,8 +74,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require('@tailwindcss/line-clamp'),
-  ],
-} satisfies Config;
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config
 
-export default config;
+export default config

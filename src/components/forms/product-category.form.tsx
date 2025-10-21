@@ -14,10 +14,10 @@ import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { useCategories } from "@/app/protected/masterdata/product-category/hooks";
 import { z } from "zod";
 import validator from "validator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCategories } from "@/app/masterdata/product-category/hooks";
 
 const schema = z.object({
   name: z
@@ -99,7 +99,7 @@ const ProductCategoryForm = ({
       alert("Data berhasil disimpan!");
 
       router.back();
-      
+
       setTimeout(() => {
         window.location.reload();
       }, 100);

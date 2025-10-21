@@ -59,7 +59,7 @@ export class PagesService {
     }
   }
 
-  async savePages(data: any, id: string): Promise<any> {
+  async savePages(data: any): Promise<any> {
     try {
       return await this.httpClient.post("/pages/", data);
     } catch (error) {

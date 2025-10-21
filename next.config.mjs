@@ -1,18 +1,35 @@
-/** @type {import('next').NextConfig} */
+/** @type {import("next").NextConfig} */
+import JavaScriptObfuscator from "webpack-obfuscator";
 const nextConfig = {
     images: {
-      domains: [
-          'friendsure-spaces.sgp1.digitaloceanspaces.com',
-          'cdn.frndsr.tech',
-          'cdn-stg.frndsr.tech',
-          'cdn.friendsure.tech',
-          'cdn-stg.friendsure.tech',
-          'placehold.co',
-          'storage.googleapis.com',
-          'cdn-stg.friendsureapp.com'
-      ],
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "**",
+                port: "",
+                pathname: "**",
+            },
+        ],
     },
-  };
-  
-  export default nextConfig;
-  
+    reactStrictMode: process.env.NODE_ENV !== 'development',
+    compiler: {
+        removeConsole: process.env.NODE_ENV !== 'development'
+    },
+    webpack: (config, { isServer, dev }) => {
+        if (!isServer && !dev) {
+            config.plugins.push(
+                new JavaScriptObfuscator(
+                    {
+                        rotateStringArray: true,
+                        disableConsoleOutput: true,
+                        selfDefending: true
+                    },
+                    []
+                )
+            );
+        }
+        return config;
+    },
+};
+
+export default nextConfig;
