@@ -109,7 +109,7 @@ export const CustomerAddView = () => {
 
     const handleConfirmSubmit = () => {
         payload.package = selectedPlan?.package_id
-        payload.channel = channel
+        payload.channel = channel ?? ''
         payload.customer.phone = `${selectedAreaPhone}${phoneNumber}`
         payload.category= '71e00391-7dca-4a0c-a42f-d077d08b7ccd'
         setIsSubmitted(true)

@@ -1,16 +1,50 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import WithSidebar from "@/hoc/with-sidebar";
 import * as XLSX from "xlsx";
-import { BarChart, Bar, LineChart, Line, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, FunnelChart, LabelList, Funnel } from "recharts";
-import { Mail, Eye, MousePointer, UserMinus, AlertTriangle, Download, Upload, Target } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  Legend,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+  FunnelChart,
+  LabelList,
+  Funnel,
+} from "recharts";
+import {
+  Mail,
+  Eye,
+  MousePointer,
+  UserMinus,
+  AlertTriangle,
+  Download,
+  Upload,
+  Target,
+} from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { PromotionService } from "@/services/promotion.service";
 import { TransactionService } from "@/services/transaction.service";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toastNotification } from "@/lib/toast";
 import { BiMoney } from "react-icons/bi";
 
@@ -20,7 +54,9 @@ const CampaignAnalyticsPage = () => {
   const [totalPurchased, setTotalPurchased] = useState(0);
   const [campaignSummary, setCampaignSummary] = useState<any>({});
   const [campaignData, setCampaignData] = useState<any[]>([]);
-  const [clickLinks, setClickLinks] = useState<{ url: string; count: number }[]>([]);
+  const [clickLinks, setClickLinks] = useState<
+    { url: string; count: number }[]
+  >([]);
   const [timeData, setTimeData] = useState<any[]>([]);
   const [openClickTrend, setOpenClickTrend] = useState<any[]>([]);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -35,8 +71,16 @@ const CampaignAnalyticsPage = () => {
   useEffect(() => {
     const fetchCampaignList = async () => {
       try {
-        const res: any = await promotionService.getPromotionCampaign(1, 1000, "");
-        setCampaignList(res.data.map((c: any) => { return { id: c.campaign_id, name: c.name } }));
+        const res: any = await promotionService.getPromotionCampaign(
+          1,
+          1000,
+          ""
+        );
+        setCampaignList(
+          res.data.map((c: any) => {
+            return { id: c.campaign_id, name: c.name };
+          })
+        );
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -48,10 +92,16 @@ const CampaignAnalyticsPage = () => {
 
   const handleViewAnalytics = async () => {
     try {
-      const res: any = await transactionService.getCampaignsReport(selectedCampaign);
+      const res: any = await transactionService.getCampaignsReport(
+        selectedCampaign
+      );
       if (res?.report?.data) {
         setTotalTransaction(res.transaction_total);
-        setTotalLeads(Number(res.report.data.campaignSummary.delivered) + Number(res.report.data.campaignSummary.hard_bounces) + Number(res.report.data.campaignSummary.soft_bounces));
+        setTotalLeads(
+          Number(res.report.data.campaignSummary.delivered) +
+            Number(res.report.data.campaignSummary.hard_bounces) +
+            Number(res.report.data.campaignSummary.soft_bounces)
+        );
         setTotalPurchased(res.purchased);
         setCampaignSummary(res.report.data.campaignSummary);
         setCampaignData(res.report.data.campaignData);
@@ -114,7 +164,7 @@ const CampaignAnalyticsPage = () => {
           unsubscribes: 0,
           spam: 0,
           bounce: 0,
-          status: "unopened"
+          status: "unopened",
         };
       });
     }
@@ -132,7 +182,7 @@ const CampaignAnalyticsPage = () => {
           unsubscribes: 0,
           spam: 0,
           bounce: 0,
-          status: "unopened"
+          status: "unopened",
         };
       });
     }
@@ -150,7 +200,7 @@ const CampaignAnalyticsPage = () => {
           unsubscribes: 0,
           spam: 0,
           bounce: 0,
-          status: "unopened"
+          status: "unopened",
         };
       });
     }
@@ -233,18 +283,27 @@ const CampaignAnalyticsPage = () => {
     // build time series
     const timeBuckets: Record<string, { opens: number; clicks: number }> = {};
     openTimes.forEach((t) => {
-      const hour = new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const hour = new Date(t).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
       if (!timeBuckets[hour]) timeBuckets[hour] = { opens: 0, clicks: 0 };
       timeBuckets[hour].opens += 1;
     });
     clickTimes.forEach((t) => {
-      const hour = new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const hour = new Date(t).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
       if (!timeBuckets[hour]) timeBuckets[hour] = { opens: 0, clicks: 0 };
       timeBuckets[hour].clicks += 1;
     });
 
     // build open & click trend
-    const trendMap: Record<string, { date: string; opens: number; clicks: number }> = {};
+    const trendMap: Record<
+      string,
+      { date: string; opens: number; clicks: number }
+    > = {};
     openTimes.forEach((t) => {
       const d = new Date(t);
       const key = d.toISOString().split("T")[0];
@@ -265,9 +324,15 @@ const CampaignAnalyticsPage = () => {
       const data = {
         campaignSummary: summary,
         campaignData: Object.values(dataMap),
-        clickLinks: Object.entries(urlMap).map(([url, count]) => ({ url, count })),
-        timeData: Object.entries(timeBuckets).map(([time, v]) => ({ time, ...v })),
-        openClickTrend: trendData
+        clickLinks: Object.entries(urlMap).map(([url, count]) => ({
+          url,
+          count,
+        })),
+        timeData: Object.entries(timeBuckets).map(([time, v]) => ({
+          time,
+          ...v,
+        })),
+        openClickTrend: trendData,
       };
       await transactionService.putCampaignsReport(selectedCampaign, { data });
       toastNotification("Update campaign report successfully!", "success");
@@ -278,27 +343,57 @@ const CampaignAnalyticsPage = () => {
   };
 
   // metrics
-  const totalSent = campaignData.filter(i => i.bounce === 0).length;
+  const totalSent = campaignData.filter((i) => i.bounce === 0).length;
   const totalOpens = campaignData.reduce((sum, i) => sum + i.openCount, 0);
   const totalClicks = campaignData.reduce((sum, i) => sum + i.clickCount, 0);
-  const totalBounces = campaignData.filter(i => i.bounce > 0).length;
-  const totalUnsubscribes = campaignData.filter(i => i.unsubscribes > 0).length;
-  const totalSpam = campaignData.filter(i => i.spam > 0).length;
-  const uniqueOpens = campaignData.filter(i => i.openCount > 0).length;
-  const uniqueClicks = campaignData.filter(i => i.clickCount > 0).length;
+  const totalBounces = campaignData.filter((i) => i.bounce > 0).length;
+  const totalUnsubscribes = campaignData.filter(
+    (i) => i.unsubscribes > 0
+  ).length;
+  const totalSpam = campaignData.filter((i) => i.spam > 0).length;
+  const uniqueOpens = campaignData.filter((i) => i.openCount > 0).length;
+  const uniqueClicks = campaignData.filter((i) => i.clickCount > 0).length;
 
-  const openRate = totalSent ? (((uniqueOpens + uniqueClicks) / totalSent) * 100).toFixed(1) : "0";
-  const clickRate = totalSent ? ((uniqueClicks / totalSent) * 100).toFixed(1) : "0";
-  const bounceRate = totalSent ? ((totalBounces / totalSent) * 100).toFixed(1) : "0";
-  const contactRate = totalSent ? ((totalSent / totalLeads) * 100).toFixed(1) : "0";
-  const purchaseRate = totalClicks ? ((totalPurchased / totalClicks) * 100).toFixed(1) : "0";
-  const conversionRate = totalLeads ? ((totalPurchased / totalLeads) * 100).toFixed(1) : "0";
+  const openRate = totalSent
+    ? (((uniqueOpens + uniqueClicks) / totalSent) * 100).toFixed(1)
+    : "0";
+  const clickRate = totalSent
+    ? ((uniqueClicks / totalSent) * 100).toFixed(1)
+    : "0";
+  const bounceRate = totalSent
+    ? ((totalBounces / totalSent) * 100).toFixed(1)
+    : "0";
+  const contactRate = totalSent
+    ? ((totalSent / totalLeads) * 100).toFixed(1)
+    : "0";
+  const purchaseRate = totalClicks
+    ? ((totalPurchased / totalClicks) * 100).toFixed(1)
+    : "0";
+  const conversionRate = totalLeads
+    ? ((totalPurchased / totalLeads) * 100).toFixed(1)
+    : "0";
 
   const statusData = [
-    { name: "Engaged", value: campaignData.filter(i => i.status === "engaged").length, color: "#10B981" },
-    { name: "Opened", value: campaignData.filter(i => i.status === "opened").length, color: "#3B82F6" },
-    { name: "Unopened", value: campaignData.filter(i => i.status === "unopened").length, color: "#6B7280" },
-    { name: "Bounced", value: campaignData.filter(i => i.status === "bounced").length, color: "#EF4444" },
+    {
+      name: "Engaged",
+      value: campaignData.filter((i) => i.status === "engaged").length,
+      color: "#10B981",
+    },
+    {
+      name: "Opened",
+      value: campaignData.filter((i) => i.status === "opened").length,
+      color: "#3B82F6",
+    },
+    {
+      name: "Unopened",
+      value: campaignData.filter((i) => i.status === "unopened").length,
+      color: "#6B7280",
+    },
+    {
+      name: "Bounced",
+      value: campaignData.filter((i) => i.status === "bounced").length,
+      color: "#EF4444",
+    },
     // { name: "Unsubscribed", value: campaignData.filter(i => i.status === "unsubscribed").length, color: "#F59E0B" },
     // { name: "Spam", value: campaignData.filter(i => i.status === "spam").length, color: "#8B5CF6" }
   ];
@@ -315,12 +410,19 @@ const CampaignAnalyticsPage = () => {
     { name: "Total Leads", value: totalLeads, color: "#6B7280" },
     { name: "Total Contacted", value: totalSent, color: "#3B82F6" },
     { name: "Total Clicked", value: totalClicks, color: "#8B5CF6" },
-    { name: "Total Purchased with voucher", value: totalPurchased, color: "#10B981" }
+    {
+      name: "Total Purchased with voucher",
+      value: totalPurchased,
+      color: "#10B981",
+    },
   ];
 
   const topPerformers = campaignData
-    .filter(i => i.openCount > 0 || i.clickCount > 0)
-    .sort((a, b) => (b.openCount + b.clickCount * 2) - (a.openCount + a.clickCount * 2))
+    .filter((i) => i.openCount > 0 || i.clickCount > 0)
+    .sort(
+      (a, b) =>
+        b.openCount + b.clickCount * 2 - (a.openCount + a.clickCount * 2)
+    )
     .slice(0, 5);
 
   const handleGeneratePdf = async () => {
@@ -336,30 +438,30 @@ const CampaignAnalyticsPage = () => {
         scale: 2,
         useCORS: true,
         logging: false,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
       });
 
       const imgWidth = 280;
       const pageHeight = 210;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
 
@@ -379,8 +481,13 @@ const CampaignAnalyticsPage = () => {
           Campaign Analytics
         </h1>
         <div className="flex space-x-4 ml-auto">
-          <Button disabled={isGeneratingPdf || campaignData.length < 1} onClick={handleGeneratePdf} className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs">
-            <Download className="w-5 h-5 mr-1 " /> {isGeneratingPdf ? "Generating PDF..." : "Download PDF"}
+          <Button
+            disabled={isGeneratingPdf || campaignData.length < 1}
+            onClick={handleGeneratePdf}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs"
+          >
+            <Download className="w-5 h-5 mr-1 " />{" "}
+            {isGeneratingPdf ? "Generating PDF..." : "Download PDF"}
           </Button>
         </div>
       </div>
@@ -392,17 +499,20 @@ const CampaignAnalyticsPage = () => {
           </div>
           <div className="relative mb-1.5">
             <div className="min-w-48">
-              <Select value={selectedCampaign} onValueChange={(value) => setSelectedCampaign(value)}>
+              <Select
+                value={selectedCampaign}
+                onValueChange={(value) => setSelectedCampaign(value)}
+              >
                 <SelectTrigger className="h-10">
                   <SelectValue placeholder="Select Campaign" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {
-                      campaignList.map((item: any, index: number) => (
-                        <SelectItem key={index} value={item.id}>{item.name}</SelectItem>
-                      ))
-                    }
+                    {campaignList.map((item: any, index: number) => (
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -411,10 +521,21 @@ const CampaignAnalyticsPage = () => {
         </div>
         <div className="pt-4 flex w-[40%] flex-col items-center justify-center">
           <div className="flex items-center justify-between">
-            <Button disabled={!selectedCampaign} onClick={handleViewAnalytics} className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs">
+            <Button
+              disabled={!selectedCampaign}
+              onClick={handleViewAnalytics}
+              className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs"
+            >
               View Analytics
             </Button>
-            <label htmlFor="excel-upload" className={`ml-3 px-4 py-3 flex items-center gap-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs ${selectedCampaign ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}>
+            <label
+              htmlFor="excel-upload"
+              className={`ml-3 px-4 py-3 flex items-center gap-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs ${
+                selectedCampaign
+                  ? "cursor-pointer"
+                  : "opacity-50 cursor-not-allowed"
+              }`}
+            >
               <Upload size={18} />
               Update Campaign
               <input
@@ -434,12 +555,17 @@ const CampaignAnalyticsPage = () => {
         {campaignData.length > 0 && (
           <div ref={reportTemplateRef} className="bg-white p-6 rounded-lg mb-5">
             <div className="mb-5">
-              <h1 className="text-center text-2xl font-bold">Travel Annual Plan Campaign</h1>
+              <h1 className="text-center text-2xl font-bold">
+                Travel Annual Plan Campaign
+              </h1>
 
               {/*TODO: notes: temporary static*/}
-              <h1 className="hidden text-center text-2xl font-bold">{campaignSummary.campaign_name}</h1>
-              <p className="hidden text-center text-base font-semibold">{campaignSummary.subject}</p>
-
+              <h1 className="hidden text-center text-2xl font-bold">
+                {campaignSummary.campaign_name}
+              </h1>
+              <p className="hidden text-center text-base font-semibold">
+                {campaignSummary.subject}
+              </p>
             </div>
 
             {/* Key Metrics */}
@@ -493,10 +619,19 @@ const CampaignAnalyticsPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Campaign Status Pie */}
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">📊 Campaign Status</h3>
+                <h3 className="text-xl font-semibold mb-4">
+                  📊 Campaign Status
+                </h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
-                    <Pie data={statusData} cx="50%" cy="50%" innerRadius={60} outerRadius={120} dataKey="value">
+                    <Pie
+                      data={statusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={120}
+                      dataKey="value"
+                    >
                       {statusData.map((entry, idx) => (
                         <Cell key={idx} fill={entry.color} />
                       ))}
@@ -506,8 +641,14 @@ const CampaignAnalyticsPage = () => {
                 </ResponsiveContainer>
                 <div className="grid grid-cols-2 gap-2 mt-4">
                   {statusData.map((item, index) => (
-                    <div key={index} className="flex items-center text-sm text-gray-600">
-                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: item.color }}></div>
+                    <div
+                      key={index}
+                      className="flex items-center text-sm text-gray-600"
+                    >
+                      <div
+                        className="w-3 h-3 rounded-full mr-2"
+                        style={{ backgroundColor: item.color }}
+                      ></div>
                       {item.name}: {item.value}
                     </div>
                   ))}
@@ -519,7 +660,11 @@ const CampaignAnalyticsPage = () => {
               <div className="hidden bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-semibold mb-4">📈 Engagement</h3>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={engagementData} layout="vertical" margin={{ top: 20, right: 30, left: 100, bottom: 20 }}>
+                  <BarChart
+                    data={engagementData}
+                    layout="vertical"
+                    margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
                     <YAxis dataKey="name" type="category" />
@@ -533,8 +678,14 @@ const CampaignAnalyticsPage = () => {
                 </ResponsiveContainer>
                 <div className="grid grid-cols-2 gap-2 mt-4">
                   {engagementData.map((item, index) => (
-                    <div key={index} className="flex items-center text-sm text-gray-600">
-                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: item.color }}></div>
+                    <div
+                      key={index}
+                      className="flex items-center text-sm text-gray-600"
+                    >
+                      <div
+                        className="w-3 h-3 rounded-full mr-2"
+                        style={{ backgroundColor: item.color }}
+                      ></div>
                       {item.name}: {item.value}
                     </div>
                   ))}
@@ -551,7 +702,12 @@ const CampaignAnalyticsPage = () => {
                       {funnelData.map((entry, idx) => (
                         <Cell key={`cell-${idx}`} fill={entry.color} />
                       ))}
-                      <LabelList position="right" fill="#111827" stroke="none" dataKey="name" />
+                      <LabelList
+                        position="right"
+                        fill="#111827"
+                        stroke="none"
+                        dataKey="name"
+                      />
                     </Funnel>
                   </FunnelChart>
                 </ResponsiveContainer>
@@ -561,7 +717,9 @@ const CampaignAnalyticsPage = () => {
             {/* Performance Over Time */}
             {/*TODO: notes: temporary hidden*/}
             <div className="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
-              <h3 className="text-xl font-semibold mb-4">⏱️ Performance Over Time</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                ⏱️ Performance Over Time
+              </h3>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={timeData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -590,11 +748,17 @@ const CampaignAnalyticsPage = () => {
               {/* Legend */}
               <div className="flex items-center gap-6 justify-center mt-4">
                 <div className="flex items-center text-sm text-gray-600">
-                  <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: "#3B82F6" }}></div>
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{ backgroundColor: "#3B82F6" }}
+                  ></div>
                   Opens
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: "#10B981" }}></div>
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{ backgroundColor: "#10B981" }}
+                  ></div>
                   Clicks
                 </div>
               </div>
@@ -602,7 +766,9 @@ const CampaignAnalyticsPage = () => {
 
             {/* Opens vs Clicks Trend */}
             <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-              <h3 className="text-xl font-semibold mb-4">📅 Opens & Clicks Trends</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                📅 Opens & Clicks Trends
+              </h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={openClickTrend}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -610,8 +776,18 @@ const CampaignAnalyticsPage = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="opens" stroke="#3B82F6" strokeWidth={2} />
-                  <Line type="monotone" dataKey="clicks" stroke="#10B981" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="opens"
+                    stroke="#3B82F6"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="clicks"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -621,37 +797,45 @@ const CampaignAnalyticsPage = () => {
               <h3 className="text-xl font-semibold mb-4">🏆 Top Performers</h3>
               <table className="w-full text-sm">
                 <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2">Contact</th>
-                  <th className="text-center py-2">Opens</th>
-                  <th className="text-center py-2">Clicks</th>
-                </tr>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Contact</th>
+                    <th className="text-center py-2">Opens</th>
+                    <th className="text-center py-2">Clicks</th>
+                  </tr>
                 </thead>
                 <tbody>
-                {topPerformers.map((c, idx) => (
-                  <tr key={idx} className="border-b">
-                    <td className="py-2">
-                      <p className="font-medium">{c.firstName} {c.lastName}</p>
-                      <p className="text-xs text-gray-500">{c.email}</p>
-                    </td>
-                    <td className="text-center">{c.openCount}</td>
-                    <td className="text-center">{c.clickCount}</td>
-                  </tr>
-                ))}
+                  {topPerformers.map((c, idx) => (
+                    <tr key={idx} className="border-b">
+                      <td className="py-2">
+                        <p className="font-medium">
+                          {c.firstName} {c.lastName}
+                        </p>
+                        <p className="text-xs text-gray-500">{c.email}</p>
+                      </td>
+                      <td className="text-center">{c.openCount}</td>
+                      <td className="text-center">{c.clickCount}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
 
             {/* Issues & Actions */}
             <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-              <h3 className="text-xl font-semibold mb-4">⚠️ Issues & Actions</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                ⚠️ Issues & Actions
+              </h3>
               <div className="space-y-4">
                 {totalBounces > 0 && (
                   <div className="flex items-start p-3 bg-red-50 rounded-lg">
                     <AlertTriangle className="h-5 w-5 text-red-500 mr-3 mt-0.5" />
                     <div>
-                      <p className="font-medium text-red-900">Bounces ({totalBounces})</p>
-                      <p className="text-sm text-red-700">Remove bounced emails from future campaigns</p>
+                      <p className="font-medium text-red-900">
+                        Bounces ({totalBounces})
+                      </p>
+                      <p className="text-sm text-red-700">
+                        Remove bounced emails from future campaigns
+                      </p>
                     </div>
                   </div>
                 )}
@@ -659,8 +843,12 @@ const CampaignAnalyticsPage = () => {
                   <div className="flex items-start p-3 bg-yellow-50 rounded-lg">
                     <UserMinus className="h-5 w-5 text-yellow-500 mr-3 mt-0.5" />
                     <div>
-                      <p className="font-medium text-yellow-900">Unsubscribes ({totalUnsubscribes})</p>
-                      <p className="text-sm text-yellow-700">Update subscriber preferences</p>
+                      <p className="font-medium text-yellow-900">
+                        Unsubscribes ({totalUnsubscribes})
+                      </p>
+                      <p className="text-sm text-yellow-700">
+                        Update subscriber preferences
+                      </p>
                     </div>
                   </div>
                 )}
@@ -668,19 +856,31 @@ const CampaignAnalyticsPage = () => {
                   <div className="flex items-start p-3 bg-purple-50 rounded-lg">
                     <AlertTriangle className="h-5 w-5 text-purple-500 mr-3 mt-0.5" />
                     <div>
-                      <p className="font-medium text-purple-900">Spam Reports ({totalSpam})</p>
-                      <p className="text-sm text-purple-700">Review content and sender reputation</p>
+                      <p className="font-medium text-purple-900">
+                        Spam Reports ({totalSpam})
+                      </p>
+                      <p className="text-sm text-purple-700">
+                        Review content and sender reputation
+                      </p>
                     </div>
                   </div>
                 )}
-                {campaignData.filter(i => i.status === "unopened").length > 0 && (
+                {campaignData.filter((i) => i.status === "unopened").length >
+                  0 && (
                   <div className="flex items-start p-3 bg-gray-50 rounded-lg">
                     <Mail className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
                     <div>
                       <p className="font-medium text-gray-900">
-                        Unopened ({campaignData.filter(i => i.status === "unopened").length})
+                        Unopened (
+                        {
+                          campaignData.filter((i) => i.status === "unopened")
+                            .length
+                        }
+                        )
                       </p>
-                      <p className="text-sm text-gray-700">Consider follow-up campaign or subject line optimization</p>
+                      <p className="text-sm text-gray-700">
+                        Consider follow-up campaign or subject line optimization
+                      </p>
                     </div>
                   </div>
                 )}
@@ -689,15 +889,24 @@ const CampaignAnalyticsPage = () => {
 
             {/* Campaign Summary */}
             <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-              <h3 className="text-xl font-semibold mb-4">📋 Campaign Summary</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                📋 Campaign Summary
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <h4 className="font-medium mb-2">🎯 Performance Highlights</h4>
+                  <h4 className="font-medium mb-2">
+                    🎯 Performance Highlights
+                  </h4>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Open rate {openRate}%</li>
                     <li>• Click rate {clickRate}%</li>
-                    <li>• {totalOpens} total opens from {uniqueOpens} recipients</li>
-                    <li>• {totalClicks} total clicks from {uniqueClicks} recipients</li>
+                    <li>
+                      • {totalOpens} total opens from {uniqueOpens} recipients
+                    </li>
+                    <li>
+                      • {totalClicks} total clicks from {uniqueClicks}{" "}
+                      recipients
+                    </li>
                   </ul>
                 </div>
                 <div>
@@ -706,10 +915,22 @@ const CampaignAnalyticsPage = () => {
                     <li>• Bounce rate: {bounceRate}%</li>
 
                     {/*TODO: notes: temporary hidden*/}
-                    <li className="hidden">• Unsubscribe rate: {((totalUnsubscribes / totalSent) * 100).toFixed(1)}%</li>
-                    <li className="hidden">• Spam complaint rate: {((totalSpam / totalSent) * 100).toFixed(1)}%</li>
+                    <li className="hidden">
+                      • Unsubscribe rate:{" "}
+                      {((totalUnsubscribes / totalSent) * 100).toFixed(1)}%
+                    </li>
+                    <li className="hidden">
+                      • Spam complaint rate:{" "}
+                      {((totalSpam / totalSent) * 100).toFixed(1)}%
+                    </li>
 
-                    <li>• Delivery rate: {(((totalSent - totalBounces) / totalSent) * 100).toFixed(1)}%</li>
+                    <li>
+                      • Delivery rate:{" "}
+                      {(((totalSent - totalBounces) / totalSent) * 100).toFixed(
+                        1
+                      )}
+                      %
+                    </li>
                   </ul>
                 </div>
                 <div>
@@ -717,7 +938,9 @@ const CampaignAnalyticsPage = () => {
                   {clickLinks.length > 0 ? (
                     <div className="text-sm">
                       <p className="mb-1">Top clicked link:</p>
-                      <p className="bg-blue-50 p-2 rounded text-xs break-all">{clickLinks[0].url}</p>
+                      <p className="bg-blue-50 p-2 rounded text-xs break-all">
+                        {clickLinks[0].url}
+                      </p>
                       <p>{clickLinks[0].count} unique clicks</p>
                     </div>
                   ) : (
@@ -733,5 +956,4 @@ const CampaignAnalyticsPage = () => {
   );
 };
 
-const CampaignAnalyticsWithSidebar = (params: any) => WithSidebar(CampaignAnalyticsPage)(params);
-export default CampaignAnalyticsWithSidebar;
+export default CampaignAnalyticsPage;

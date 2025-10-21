@@ -5,13 +5,12 @@ import { Form, Field } from "react-final-form";
 import { useParams } from "next/navigation";
 
 import { PageHeader } from "@/components/ui/PageHeader";
-import { CLAIM_LIST } from "@/constants/routes";
-import WithSidebar from "@/hoc/with-sidebar";
 import { Button } from "@/components/ui/button";
 import UploadFile from "@/components/ui/Fields/UploadFile";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 import { useDetailClaim } from "@/hooks/useDetailClaim.hooks";
 import { ClaimFieldInputType } from "@/interface";
+import AppURL from "@/constants/app-url.const";
 
 function UploadData() {
   const params = useParams();
@@ -33,8 +32,8 @@ function UploadData() {
 
   const breadcrumbs = [
     { label: "Claim" },
-    { label: "List", href: CLAIM_LIST },
-    { label: "Detail", href: `${CLAIM_LIST}/${params.id}` },
+    { label: "List", href: AppURL.claimList },
+    { label: "Detail", href: `${AppURL.claimList}/${params.id}` },
     { label: "Upload Data", isCurrentPage: true },
   ];
 
@@ -142,5 +141,4 @@ function UploadData() {
   );
 }
 
-const UploadDataWithSidebar = (params: any) => WithSidebar(UploadData)(params);
-export default UploadDataWithSidebar;
+export default UploadData;

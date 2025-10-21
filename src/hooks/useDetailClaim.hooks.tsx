@@ -47,7 +47,7 @@ type useDetailClaimProps = {
 
 export function useDetailClaim(): useDetailClaimProps {
   const router = useRouter();
-  const { claims } = useAuth();
+  const { user: claims } = useAuth();
 
   const [detailClaim, setDetailClaim] = useState<any>(null);
 

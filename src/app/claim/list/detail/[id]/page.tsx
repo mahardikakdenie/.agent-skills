@@ -9,7 +9,6 @@ import { X } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";
-import { CLAIM_LIST, FORBIDDEN } from "@/constants/routes";
 import { formatMoney, formatMoneyClaim } from "@/lib/formatter";
 import {
   Dialog,
@@ -26,6 +25,7 @@ import { useDetailClaim } from "@/hooks/useDetailClaim.hooks";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 import { claimService } from "@/services/api.service";
 import ApiURL from "@/constants/api-url.const";
+import AppURL from "@/constants/app-url.const";
 
 interface FieldType {
   name: string;
@@ -196,7 +196,7 @@ const DetailClaim = () => {
       });
       setDanaInfoVisibility(isShowDanaInfo);
       if (!access) {
-        router.push(FORBIDDEN);
+        router.push(AppURL.forbidden);
       }
     };
 
@@ -346,7 +346,7 @@ const DetailClaim = () => {
 
   const breadcrumbs = [
     { label: "Claim" },
-    { label: "List", href: CLAIM_LIST },
+    { label: "List", href: AppURL.claimList },
     { label: "Detail", isCurrentPage: true },
   ];
 
@@ -466,7 +466,7 @@ const DetailClaim = () => {
                               className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full w-fit"
                               onClick={() =>
                                 router.push(
-                                  `${CLAIM_LIST}/${claim.id}/upload-data`
+                                  `${AppURL.claimList}/${claim.id}/upload-data`
                                 )
                               }
                             >

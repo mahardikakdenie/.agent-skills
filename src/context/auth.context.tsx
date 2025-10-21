@@ -20,7 +20,7 @@ import { authToken } from "@/types/auth-token";
 import { getGlobalToken } from "@/lib/token-storage";
 
 interface AuthContextType {
-  user: JwtPayload | null;
+  user: JwtPayload;
   menuList: any[];
   submenuList: any[];
   permissionList: any[];
@@ -49,6 +49,9 @@ interface JwtPayload {
   account_channels?: { channel: string }[];
   iat: number;
   exp: number;
+  all_channels: any;
+  all_insurances: any;
+  token: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
