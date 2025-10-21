@@ -52,7 +52,7 @@ interface UseClaimsProps {
 
 export default function useClaims(): UseClaimsProps {
   const defaultChannel = "40eee5bf-2b92-4d23-be55-f9caa9d3ea88";
-  const { claims: claimsToken } = useAuth();
+  const { user: claimsToken } = useAuth();
 
   const claimService = useMemo(() => new ClaimService(), []);
   const channelService = useMemo(() => new ChannelService(), []);

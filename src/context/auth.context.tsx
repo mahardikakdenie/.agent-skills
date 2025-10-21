@@ -17,9 +17,10 @@ import { LoginResponse } from "@/types/common";
 import { AxiosResponse } from "axios";
 import AppMenu from "@/constants/app-menu.const";
 import { authToken } from "@/types/auth-token";
+import { getGlobalToken } from "@/lib/token-storage";
 
 interface AuthContextType {
-  user: any;
+  user: JwtPayload | null;
   menuList: any[];
   submenuList: any[];
   permissionList: any[];
@@ -30,6 +31,24 @@ interface AuthContextType {
   logout: () => void;
   handleChangeNetwork: (value: boolean) => void;
   handleResponseError: (error: any) => void;
+}
+
+interface Insurers {
+  insurance: string;
+}
+
+interface JwtPayload {
+  email: string;
+  phone_number: string;
+  sub: string;
+  name: string;
+  role: string;
+  channel: string;
+  permission_list: string[];
+  account_insurers: Insurers[];
+  account_channels?: { channel: string }[];
+  iat: number;
+  exp: number;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,7 +66,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [permissionList, setPermissionList] = useState<any[]>([]);
   const path = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchTokenAndUserInfo = async () => {
