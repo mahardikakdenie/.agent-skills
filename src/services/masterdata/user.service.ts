@@ -61,7 +61,7 @@ export class UserService {
       page: page,
       pageSize: rowsPerPage,
       search: searchData,
-      role
+      role,
     };
 
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
@@ -71,10 +71,12 @@ export class UserService {
   async getExistingUser(data: any): Promise<User> {
     const params: any = { page: 1, pageSize: 1, ...data };
     const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-    return this.authHttpClient.get(`/account/all-data/pagination?${queryString}`);
+    return this.authHttpClient.get(
+      `/account/all-data/pagination?${queryString}`
+    );
   }
 
-    async getPartner(
+  async getPartner(
     page?: number,
     rowsPerPage?: number,
     searchData?: string
@@ -123,7 +125,7 @@ export class UserService {
     }
   }
 
-  async saveUser(data: any, id: string): Promise<any> {
+  async saveUser(data: any): Promise<any> {
     try {
       return await this.authHttpClient.post("/account/", data);
     } catch (error) {
@@ -187,7 +189,10 @@ export class UserService {
 
   async changePassword(id: string, data: any): Promise<any> {
     try {
-      return await this.authHttpClient.put("/v1/account/" + id + "/change-password", data);
+      return await this.authHttpClient.put(
+        "/v1/account/" + id + "/change-password",
+        data
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;
@@ -214,7 +219,9 @@ export class UserService {
 
   async getAccountChannelsByAccountId(accountId: string): Promise<any> {
     try {
-      return await this.authHttpClient.get(`/v1/account-channels/account/${accountId}`);
+      return await this.authHttpClient.get(
+        `/v1/account-channels/account/${accountId}`
+      );
     } catch (error) {
       console.error("Request failed:", error);
       throw error;

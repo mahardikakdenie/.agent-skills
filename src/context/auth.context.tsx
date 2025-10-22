@@ -1,32 +1,40 @@
 "use client";
-import React, {
-  createContext,
-  useReducer,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
-import { CookieService } from "@/services/masterdata/cookie.service";
-import { jwtDecode } from "jwt-decode";
-import { getGlobalToken, setGlobalToken } from "@/lib/token-storage";
-import { useRouter } from "next/navigation";
-import { DASHBOARD_TRANSACTION } from "@/constants/routes";
 
-interface AuthState {
-  token: string | null;
+import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  getCookie,
+  removeAllLocalStorage,
+  removeCookie,
+  setCookie,
+  toastNotification,
+} from "@/helpers/app.helper";
+import { AUTH_TOKEN } from "@/constants/app-common.const";
+import { jwtDecode } from "jwt-decode";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { authService } from "@/services/api.service";
+import ApiURL from "@/constants/api-url.const";
+import { LoginResponse } from "@/types/common";
+import { AxiosResponse } from "axios";
+import AppMenu from "@/constants/app-menu.const";
+import { authToken } from "@/types/auth-token";
+import { getGlobalToken } from "@/lib/token-storage";
+
+interface AuthContextType {
+  user: JwtPayload;
+  menuList: any[];
+  submenuList: any[];
+  permissionList: any[];
+  isAuthenticated: boolean;
+  isForbidden: boolean;
+  isNetworkActive: boolean;
+  login: (data: any) => void;
+  logout: () => void;
+  handleChangeNetwork: (value: boolean) => void;
+  handleResponseError: (error: any) => void;
 }
 
 interface Insurers {
   insurance: string;
-}
-
-interface AuthContextType {
-  state: AuthState;
-  login: (token: string) => void;
-  logout: () => void;
-  checkLogin: () => void;
-  isAuthReady: boolean;
-  claims: JwtPayload | null;
 }
 
 interface JwtPayload {
@@ -41,90 +49,264 @@ interface JwtPayload {
   account_channels?: { channel: string }[];
   iat: number;
   exp: number;
+  all_channels: any;
+  all_insurances: any;
+  token: string;
 }
 
-const cookieService = new CookieService();
-
-type AuthAction =
-  | { type: "LOGIN"; token: string }
-  | { type: "LOGOUT" }
-  | { type: "CHECK_LOGIN"; token: string | null };
-
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case "LOGIN":
-      return { token: action.token };
-    case "LOGOUT":
-      return { token: null };
-    case "CHECK_LOGIN":
-      return { token: action.token };
-    default:
-      return state;
-  }
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+let isOnce = false;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(authReducer, { token: null });
-
-  const [hasCheckedLogin, setHasCheckedLogin] = useState(false);
-  const [isAuthReady, setIsAuthReady] = useState(false);
-  const [claims, setClaims] = useState<JwtPayload | null>(null);
-
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isForbidden, setIsForbidden] = useState<boolean>(false);
+  const [isNetworkActive, setIsNetworkActive] = useState<boolean>(true);
+  const [user, setUser] = useState<any>(null);
+  const [menuList, setMenuList] = useState<any[]>([]);
+  const [submenuList, setSubmenuList] = useState<any[]>([]);
+  const [permissionList, setPermissionList] = useState<any[]>([]);
+  const path = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchClaims = async () => {
+    const fetchTokenAndUserInfo = async () => {
       try {
-        const claimsData = await getClaims();
-        setClaims(claimsData);
+        const token = await getCookie(AUTH_TOKEN);
+        if (token) getUserInformation(token);
+        setIsAuthenticated(!!token);
       } catch (error) {
-        console.error("Failed to get claims:", error);
+        setIsAuthenticated(false);
       }
     };
+    fetchTokenAndUserInfo().then();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    if (state.token) {
-      fetchClaims();
+  useEffect(() => {
+    setIsForbidden(false);
+    setIsNetworkActive(true);
+  }, [path]);
+
+  const findMenuByUrl = (currentPath: string) => {
+    for (let item of AppMenu.menu) {
+      if (item.url === currentPath) return item.name;
+
+      if (item.submenu) {
+        for (let subItem of item.submenu) {
+          if (subItem.url === currentPath) return subItem.name;
+
+          if (subItem.additionalPages) {
+            for (let page of subItem.additionalPages) {
+              if (page.url === currentPath) return page.name;
+            }
+          }
+        }
+      }
     }
-  }, [state.token]);
+    return null;
+  };
 
-  const login = async (token: string) => {
-    await cookieService.saveCookie({ name: "token", value: token, days: 1 });
-    setGlobalToken(token);
-    dispatch({ type: "LOGIN", token });
-    setIsAuthReady(true);
-    router.push(DASHBOARD_TRANSACTION);
+  const login = async (data: any) => {
+    if (!isOnce) {
+      isOnce = true;
+      try {
+        const response: AxiosResponse<LoginResponse> = await authService.post(
+          ApiURL.login,
+          { username: data.email, password: data.password }
+        );
+        if (response && response.data && response.data.access_token) {
+          const token = response.data.access_token;
+          await setCookie(AUTH_TOKEN, token);
+          authToken.token = token;
+          if (token) getUserInformation(token, true);
+        }
+      } catch (error: any) {
+        toastNotification(
+          error?.response?.data?.message || "Failed to login.",
+          "error"
+        );
+        isOnce = false;
+      }
+    }
   };
 
   const logout = async () => {
-    await cookieService.deleteCookieByKey("token");
-    setGlobalToken(null);
-    dispatch({ type: "LOGOUT" });
-    setIsAuthReady(true);
+    await removeCookie(AUTH_TOKEN);
+    removeAllLocalStorage();
+    authToken.clearToken();
+    setUser(null);
+    setIsAuthenticated(false);
+    isOnce = false;
+    router.push("/");
   };
 
-  const checkLogin = async () => {
-    if (hasCheckedLogin || state.token !== null) return;
-    setHasCheckedLogin(true);
+  const getUserInformation = (token: string, isLogin: boolean = false) => {
+    const decodedToken: any = jwtDecode(token);
+    const userdata = JSON.parse(JSON.stringify(decodedToken));
+    userdata.all_channels = [
+      ...new Set([
+        ...(decodedToken.channel ? [decodedToken.channel] : []),
+        ...decodedToken.account_channels.map((c: any) => c.channel),
+      ]),
+    ];
+    userdata.all_insurances = [
+      ...new Set([
+        ...decodedToken.account_insurers.map((i: any) => i.insurance),
+      ]),
+    ];
+    setUser(userdata);
 
-    const token = await cookieService.getCookieByKey("token");
-    if (token) {
-      setGlobalToken(token);
-      dispatch({ type: "CHECK_LOGIN", token });
-    } else {
-      dispatch({ type: "CHECK_LOGIN", token: null });
+    const permissions: any[] = decodedToken.permission_list || [];
+    const normalizeKey = (value?: string) =>
+      value
+        ?.toString()
+        .toLowerCase()
+        .replace(/[\s_-]/g, "") ?? "";
+    const compareKeys = (a: string, b: string) => {
+      const normalizedA = normalizeKey(a);
+      const normalizedB = normalizeKey(b);
+      return (
+        normalizedA === normalizedB ||
+        normalizedA.startsWith(normalizedB) ||
+        normalizedB.startsWith(normalizedA)
+      );
+    };
+    const menuAccess = new Set<string>();
+    const submenuAccess = new Set<string>();
+
+    permissions.forEach((item: any) => {
+      if (!item) return;
+
+      const parts = `${item}`.split(".");
+      const rawMenu = parts[0];
+      const rawSubmenuParts = parts.slice(1);
+      const submenuCandidates = [
+        rawMenu,
+        ...(rawSubmenuParts.length > 0
+          ? [
+              rawSubmenuParts.join("."),
+              rawSubmenuParts.join(""),
+              ...rawSubmenuParts,
+            ]
+          : []),
+      ].filter(Boolean);
+
+      const addAllSubmenus = (menuItem: any) => {
+        menuItem.submenu?.forEach((submenuItem: any) =>
+          submenuAccess.add(submenuItem.name)
+        );
+      };
+
+      const matchedMenusByName =
+        rawMenu && rawMenu.length
+          ? AppMenu.menu.filter((menuItem) =>
+              compareKeys(menuItem.name, rawMenu)
+            )
+          : [];
+
+      matchedMenusByName.forEach((menuItem) => {
+        menuAccess.add(menuItem.name);
+
+        if (menuItem.submenu?.length) {
+          const matchedSubmenuInMenu = menuItem.submenu.find(
+            (submenuItem: any) =>
+              submenuCandidates.some((candidate) =>
+                candidate ? compareKeys(submenuItem.name, candidate) : false
+              )
+          );
+
+          if (matchedSubmenuInMenu) {
+            submenuAccess.add(matchedSubmenuInMenu.name);
+          } else {
+            addAllSubmenus(menuItem);
+          }
+        }
+      });
+
+      AppMenu.menu.forEach((menuItem) => {
+        if (!menuItem.submenu?.length) return;
+
+        const matchedSubmenu = menuItem.submenu.find((submenuItem: any) =>
+          submenuCandidates.some((candidate) =>
+            candidate ? compareKeys(submenuItem.name, candidate) : false
+          )
+        );
+
+        if (matchedSubmenu) {
+          menuAccess.add(menuItem.name);
+          submenuAccess.add(matchedSubmenu.name);
+        }
+      });
+    });
+
+    const menus = Array.from(menuAccess);
+    const submenus = Array.from(submenuAccess);
+
+    if (path.split("/").length < 4) {
+      const currentMenuName = findMenuByUrl(path);
+      const hasAccessToCurrent = currentMenuName
+        ? submenus.some((submenuName) =>
+            compareKeys(submenuName, currentMenuName)
+          )
+        : false;
+      if (currentMenuName && !hasAccessToCurrent) setIsForbidden(true);
     }
 
-    // Prevent logout when the page is refreshed
-    setIsAuthReady(true);
+    setMenuList(menus);
+    setSubmenuList(submenus);
+    setPermissionList(permissions);
+
+    if (isLogin) {
+      const matchingMenu = AppMenu.menu.find((menuItem) =>
+        menus.some((menuName) => compareKeys(menuName, menuItem.name))
+      );
+      const matchingSubmenu = matchingMenu?.submenu?.find((submenuItem: any) =>
+        submenus.some((submenuName) =>
+          compareKeys(submenuName, submenuItem.name)
+        )
+      );
+
+      if (matchingSubmenu) {
+        setIsAuthenticated(true);
+        router.push(matchingSubmenu.url);
+      } else if (matchingMenu) {
+        setIsAuthenticated(true);
+        router.push(matchingMenu.url);
+      } else {
+        logout().then();
+      }
+    }
   };
+
+  const handleResponseError = (error: any) => {
+    if (!error.response) setIsNetworkActive(false);
+    else
+      setIsForbidden(
+        ApiURL.errorStatusCodeToGetToken.includes(
+          error?.response?.data?.statusCode
+        )
+      );
+  };
+
+  const handleChangeNetwork = (value: boolean) => setIsNetworkActive(value);
 
   return (
     <AuthContext.Provider
-      value={{ state, login, logout, checkLogin, isAuthReady, claims }}
+      value={{
+        user,
+        menuList,
+        submenuList,
+        permissionList,
+        isAuthenticated,
+        isForbidden,
+        isNetworkActive,
+        login,
+        logout,
+        handleChangeNetwork,
+        handleResponseError,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -133,44 +315,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  if (context === undefined)
+    throw new Error("useAuth must be used within an AuthProvider");
   return context;
-};
-
-export const getClaims = async (): Promise<JwtPayload | null> => {
-  const token = getGlobalToken();
-  if (!token) return null;
-
-  try {
-    return jwtDecode<JwtPayload>(token);
-  } catch (error) {
-    console.error("Invalid token:", error);
-    return null;
-  }
-};
-
-export const isTokenExpired = async (): Promise<boolean> => {
-  const claims = await getClaims();
-  if (!claims?.exp) return true;
-  const now = Math.floor(Date.now() / 1000);
-  return now >= claims.exp;
-};
-
-export const clearToken = () => setGlobalToken(null);
-
-export const hasPermission = async (
-  requiredPermission: string
-): Promise<boolean> => {
-  const claims = await getClaims();
-  return claims?.permission_list?.includes(requiredPermission) || false;
-};
-
-export const hasInsurers = async (): Promise<any> => {
-  const claims = await getClaims();
-  return claims?.account_insurers || false;
-};
-
-export const getUserId = async (): Promise<string | null> => {
-  const claims = await getClaims();
-  return claims?.sub || null;
 };

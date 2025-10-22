@@ -60,13 +60,16 @@ export class GroupService {
   private httpClient: IHttpClient;
 
   constructor() {
-    this.httpClient = new AxiosHttpClient({
-      baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+    this.httpClient = new AxiosHttpClient(
+      {
+        baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + process.env.NEXT_PUBLIC_AUTH_TOKEN,
+        },
       },
-    }, true);
+      true
+    );
   }
 
   async getGroup(page?: number, rowsPerPage?: number): Promise<GroupResponse> {
@@ -101,7 +104,7 @@ export class GroupService {
     }
   }
 
-  async addGroup(data: any, id: string): Promise<any> {
+  async addGroup(data: any): Promise<any> {
     try {
       return await this.httpClient.post("v1/group/", data);
     } catch (error) {

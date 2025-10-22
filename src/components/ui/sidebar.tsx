@@ -12,42 +12,7 @@ import { Menu } from "react-feather";
 import { Button } from "./button";
 import { usePathname } from "next/navigation";
 import { ChartPie } from "lucide-react";
-import {
-  BILLING,
-  BROKER_FEE,
-  BROKER_PARTNER_COM,
-  CHANNELS,
-  CLAIM_HISTORY,
-  CLAIM_LIST,
-  CURRENCY,
-  DASHBOARD_CLAIM,
-  DASHBOARD_POLICY,
-  DASHBOARD_TRANSACTION,
-  EMAIL_TAG,
-  EMAIL_TEMPLATE,
-  ENDORSEMENT, EXPORT_USERS,
-  GROUP,
-  HOLIDAY,
-  HOSPITAL_LIST,
-  INSURANCE,
-  MEMBERSHIP_LIST,
-  PAGE_MANAGEMENT,
-  PARTNER_MANAGEMENT,
-  POLICY_LIST,
-  PRODUCT,
-  REPORT_CAMPAIGN_ANALYTICS,
-  PRODUCT_CATEGORY,
-  PROMOTION,
-  REPORT_CAMPAIGN,
-  REPORT_CLAIM,
-  REPORT_PERFORMANCE,
-  ROLES,
-  SANCTION,
-  SOURCE,
-  TRANSACTIONS,
-  UNMATCH_RECON_BILLING,
-  USER,
-} from "@/constants/routes";
+import AppURL from "@/constants/app-url.const";
 import { withWildcard } from "@/helpers/route.helper";
 import ProductCategorySidebar from "../sidebar/product-category.sidebar";
 
@@ -57,8 +22,8 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   const isActive = (sidebar: string) => {
-    const cleanSidebar = sidebar.replace('/*', '');
-    return pathname === cleanSidebar || pathname.startsWith(cleanSidebar + '/');
+    const cleanSidebar = sidebar.replace("/*", "");
+    return pathname === cleanSidebar || pathname.startsWith(cleanSidebar + "/");
   };
 
   const toggleSidebar = () => {
@@ -85,8 +50,9 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={`sidebar relative z-30 h-screen bg-white ${isOpen ? "sm:min-w-72 sm:w-72 min-w-64 w-64" : "min-w-0 w-0"
-          }`}
+        className={`sidebar relative z-30 h-screen bg-white ${
+          isOpen ? "sm:min-w-72 sm:w-72 min-w-64 w-64" : "min-w-0 w-0"
+        }`}
       >
         <Button
           className="absolute left-full top-0 z-10 h-[63px] p-0 min-w-unit-16 px-4 border-0 bg-transparent focus:bg-transparent rounded-none ms-1"
@@ -107,40 +73,52 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={DASHBOARD_TRANSACTION}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(DASHBOARD_TRANSACTION))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.dashboardTransaction}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.dashboardTransaction))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
-                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  <ChartPie
+                    className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]"
+                    strokeWidth={3}
+                  />
                   Transaction
                 </Link>
               </li>
               <li>
                 <Link
-                  href={DASHBOARD_POLICY}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(DASHBOARD_POLICY))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.dashboardPolicy}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.dashboardPolicy))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
-                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  <ChartPie
+                    className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]"
+                    strokeWidth={3}
+                  />
                   Policy
                 </Link>
               </li>
               <li>
                 <Link
-                  href={DASHBOARD_CLAIM}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(DASHBOARD_CLAIM))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.dashboardClaim}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.dashboardClaim))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
-                  <ChartPie className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]" strokeWidth={3} />
+                  <ChartPie
+                    className="text-primary h-[17px] w-[17px] ml-[6px] mr-[5px] my-[5px]"
+                    strokeWidth={3}
+                  />
                   Claim
                 </Link>
               </li>
@@ -149,11 +127,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={TRANSACTIONS}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(TRANSACTIONS))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.transactionList}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.transactionList))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -169,11 +148,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={BILLING}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(BILLING))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.financeBilling}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.financeBilling))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -186,11 +166,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={UNMATCH_RECON_BILLING}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(UNMATCH_RECON_BILLING))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.financeUnmatchBilling}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.financeUnmatchBilling))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -203,11 +184,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={BROKER_FEE}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(BROKER_FEE))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.financeBrokerFee}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.financeBrokerFee))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -220,11 +202,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={BROKER_PARTNER_COM}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(BROKER_PARTNER_COM))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.financePartnerComm}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.financePartnerComm))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -240,11 +223,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={PROMOTION}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PROMOTION))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.promotionCampaign}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.promotionCampaign))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -254,33 +238,22 @@ const Sidebar = () => {
                   />
                   Campaigns
                 </Link>
-                <Link
-                  href={EXPORT_USERS}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(EXPORT_USERS))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                  }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image
-                    src={iconTransaction}
-                    alt="Campaigns"
-                    className="w-7 min-w-7"
-                  />
-                  Export Users
-                </Link>
               </li>
-              <ProductCategorySidebar isActive={isActive} handleMenuClick={handleMenuClick} />
+              <ProductCategorySidebar
+                isActive={isActive}
+                handleMenuClick={handleMenuClick}
+              />
               <li className="mt-2 text-sm">
                 <strong>Policy</strong>
               </li>
               <li>
                 <Link
-                  href={POLICY_LIST}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(POLICY_LIST))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.policyList}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.policyList))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -293,11 +266,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={ENDORSEMENT}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(ENDORSEMENT))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.endorsementList}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.endorsementList))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -313,11 +287,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={MEMBERSHIP_LIST}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(MEMBERSHIP_LIST))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.membershipList}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.membershipList))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -333,11 +308,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={CLAIM_LIST}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CLAIM_LIST))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.claimList}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.claimList))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -350,11 +326,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={CLAIM_HISTORY}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CLAIM_HISTORY))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.claimHistory}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.claimHistory))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -370,11 +347,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={PRODUCT_CATEGORY}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT_CATEGORY))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataProductCategory}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataProductCategory))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -387,11 +365,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={INSURANCE}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(INSURANCE))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataInsurance}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataInsurance))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -404,11 +383,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={PRODUCT}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PRODUCT))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataProduct}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataProduct))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -421,11 +401,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={CURRENCY}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CURRENCY))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataCurrency}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataCurrency))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -438,11 +419,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={CHANNELS}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(CHANNELS))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataChannel}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataChannel))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="User" className="w-7 min-w-7" />
@@ -451,11 +433,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={USER}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(USER))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataUser}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataUser))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="User" className="w-7 min-w-7" />
@@ -464,11 +447,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={GROUP}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(GROUP))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataGroup}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataGroup))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Group" className="w-7 min-w-7" />
@@ -477,11 +461,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={ROLES}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(ROLES))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataRole}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataRole))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Roles" className="w-7 min-w-7" />
@@ -490,11 +475,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={PAGE_MANAGEMENT}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PAGE_MANAGEMENT))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataPageManagement}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataPageManagement))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -503,11 +489,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={PARTNER_MANAGEMENT}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(PARTNER_MANAGEMENT))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataPartnerManagement}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataPartnerManagement))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -516,11 +503,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={EMAIL_TEMPLATE}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(EMAIL_TEMPLATE))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataEmailTemplate}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataEmailTemplate))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -529,11 +517,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={EMAIL_TAG}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(EMAIL_TAG))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataEmailTag}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataEmailTag))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -542,11 +531,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={HOLIDAY}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(HOLIDAY))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataHolidayDate}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataHolidayDate))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -555,11 +545,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={HOSPITAL_LIST}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive("/masterdata/hospital-list")
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.masterdataHospital}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.masterdataHospital))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image src={iconClaim} alt="Page" className="w-7 min-w-7" />
@@ -571,11 +562,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={SANCTION}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(SANCTION))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.sanctionList}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.sanctionList))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -586,11 +578,12 @@ const Sidebar = () => {
                   Sanction List
                 </Link>
                 <Link
-                  href={SOURCE}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(SOURCE))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.sourceList}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.sourceList))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -606,11 +599,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={REPORT_CLAIM}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_CLAIM))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.reportClaim}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.reportClaim))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -623,11 +617,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={REPORT_CAMPAIGN}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_CAMPAIGN))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
+                  href={AppURL.reportCampaign}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.reportCampaign))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
+                  }`}
                   onClick={handleMenuClick}
                 >
                   <Image
@@ -640,28 +635,12 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={REPORT_CAMPAIGN_ANALYTICS}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_CAMPAIGN_ANALYTICS))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
+                  href={AppURL.reportPerformance}
+                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${
+                    isActive(withWildcard(AppURL.reportPerformance))
+                      ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
+                      : ""
                   }`}
-                  onClick={handleMenuClick}
-                >
-                  <Image
-                    src={iconClaim}
-                    alt="Campaign Report"
-                    className="w-7 min-w-7"
-                  />
-                  Campaign Analytics Report
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={REPORT_PERFORMANCE}
-                  className={`hover:text-[#006EA7] flex text-sm items-center gap-2 p-2 ${isActive(withWildcard(REPORT_PERFORMANCE))
-                    ? "font-bold bg-[#CCE2EC] rounded-md hover:text-black"
-                    : ""
-                    }`}
                   onClick={handleMenuClick}
                 >
                   <Image
