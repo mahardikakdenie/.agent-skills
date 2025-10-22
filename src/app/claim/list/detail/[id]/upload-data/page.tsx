@@ -53,7 +53,10 @@ function UploadData() {
             const errors = {} as any;
             claimForms.forEach((claim) => {
               const label =
-                claim.label.en || claim.label_multilanguage.en || "";
+                claim.label.en ||
+                claim?.label_multilanguage?.en ||
+                claim.label ||
+                "";
               if (claim.required && !formValue[claim.name]?.data) {
                 errors[claim.name] = `${label} cannot be empty!`;
               }
@@ -75,7 +78,10 @@ function UploadData() {
                       {({ meta }) => (
                         <UploadFile
                           label={
-                            item.label.en || item.label_multilanguage.en || ""
+                            item.label.en ||
+                            item?.label_multilanguage?.en ||
+                            item.label ||
+                            ""
                           }
                           value={
                             item.type.toLowerCase() ==

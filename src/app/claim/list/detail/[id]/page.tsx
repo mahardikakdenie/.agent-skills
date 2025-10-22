@@ -436,9 +436,11 @@ const DetailClaim = () => {
                           </p>
 
                           <div>
-                            {h?.note && (
-                              <p className="text-xs text-red-500">{h.note}</p>
-                            )}
+                            {h?.note &&
+                              h.status !==
+                                "Reupload Document Review Operator" && (
+                                <p className="text-xs text-red-500">{h.note}</p>
+                              )}
 
                             {showUploadDocument &&
                               getMissingDocuments(h?.lack_of_documents || [])
@@ -451,8 +453,9 @@ const DetailClaim = () => {
                                       key={index}
                                       className="text-xs text-red-500"
                                     >
-                                      {claimForm.label.en ||
-                                        claimForm.label_multilanguage.en ||
+                                      {claimForm?.label.en ||
+                                        claimForm?.label_multilanguage?.en ||
+                                        claimForm.label ||
                                         ""}
                                     </li>
                                   ))}
