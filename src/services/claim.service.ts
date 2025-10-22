@@ -1,10 +1,8 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import { stat } from "fs";
 import qs from "qs";
-import { DateRange } from "react-day-picker";
-import defaultInterceptor, { createApiClient } from "@/lib/interceptor";
 import { ClaimFormsRequest, UpdateClaimGrabRequest } from "@/interface";
+import { claimService } from "./api.service";
 
 interface ClaimResponse {
   data: any;
@@ -372,10 +370,7 @@ export class ClaimService {
 
 export const getDetailClaims = (id: string) => {
   try {
-    const customClient = createApiClient(
-      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
-    );
-    return customClient.get("/v1/claims/" + id);
+    return claimService.get("/v1/claims/" + id);
   } catch (error) {
     throw error;
   }
@@ -386,14 +381,11 @@ export const getFormClaims = (
   params?: ClaimFormsRequest
 ) => {
   try {
-    const customClient = createApiClient(
-      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
-    );
     const queryString = params
       ? qs.stringify(params, { arrayFormat: "brackets" })
       : "";
 
-    return customClient.get(
+    return claimService.get(
       `/v1/claim-category-forms/all/${categoryId}?${queryString}`
     );
   } catch (error) {
@@ -406,10 +398,7 @@ export const putUpdateClaimsGrab = (
   params: UpdateClaimGrabRequest
 ) => {
   try {
-    const customClient = createApiClient(
-      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
-    );
-    return customClient.put(`/v1/claims/${id}`, params);
+    return claimService.put(`/v1/claims/${id}`, params);
   } catch (error) {
     throw error;
   }
@@ -417,10 +406,7 @@ export const putUpdateClaimsGrab = (
 
 export const putSubmitClaimsById = (id: string) => {
   try {
-    const customClient = createApiClient(
-      process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL
-    );
-    return customClient.put(`/v1/claims/submit/${id}`);
+    return claimService.put(`/v1/claims/submit/${id}`);
   } catch (error) {
     throw error;
   }
