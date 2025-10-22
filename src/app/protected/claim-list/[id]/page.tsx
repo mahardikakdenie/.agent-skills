@@ -452,7 +452,8 @@ const DetailClaim = () => {
                                       className="text-xs text-red-500"
                                     >
                                       {claimForm.label.en ||
-                                        claimForm.label_multilanguage.en ||
+                                        claimForm?.label_multilanguage?.en ||
+                                        claimForm.label ||
                                         ""}
                                     </li>
                                   ))}
