@@ -76,7 +76,7 @@ const createApiService = (baseURL: string, isAuthService: boolean = false, isFor
 };
 
 const authService = createApiService(process.env.NEXT_PUBLIC_AUTH_SERVICE_URL as string, true);
-const claimService = createApiService(process.env.NEXT_PUBLIC_CLAIM_SERVICE_URL as string);
+const claimService = createApiService(process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL as string);
 const policyService = createApiService(process.env.NEXT_PUBLIC_POLICY_SERVICE_URL as string);
 const policyServiceFormData = createApiService(process.env.NEXT_PUBLIC_POLICY_SERVICE_URL as string, false, true);
 const transactionService = createApiService(process.env.NEXT_PUBLIC_TRANSACTION_SERVICE_URL as string);
