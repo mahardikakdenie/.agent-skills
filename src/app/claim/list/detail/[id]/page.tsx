@@ -469,7 +469,7 @@ const DetailClaim = () => {
                               className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full w-fit"
                               onClick={() =>
                                 router.push(
-                                  `${AppURL.claimList}/detail/${claim.id}/upload-data`
+                                  `${AppURL.claimDetail}/${claim.id}/upload-data`
                                 )
                               }
                             >
