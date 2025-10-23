@@ -148,7 +148,7 @@ const ClaimsPage = () => {
 
   const selectChannel = (id: string) => {
     claimService.get(ApiURL.v1ClaimChannelFormsAll(id)).then((res) => {
-      setDataDocument(res.data);
+      setDataDocument(res?.data?.data);
     });
   };
 
@@ -156,8 +156,9 @@ const ClaimsPage = () => {
     claimService.get(ApiURL.v1ClaimCategoryFormsAll(id)).then((res) => {
       const label = filteredClaims?.filter((f: any) => f?.id === dataId)?.[0]
         ?.claim_config;
+      const response = res?.data;
 
-      const updatedDataDocument = res.data
+      const updatedDataDocument = response?.data
         .filter(
           (doc: any) =>
             doc.type.toLowerCase() === "file" ||
@@ -175,7 +176,7 @@ const ClaimsPage = () => {
         }));
 
       const updatedDataDocumentFields =
-        res?.data
+        response?.data
           ?.filter(
             (doc: any) =>
               doc?.type?.toLowerCase() === "fields" && doc?.fields?.length > 0
@@ -435,9 +436,7 @@ const ClaimsPage = () => {
         const { data = [] } = await claimService.get(
           ApiURL.v1ClaimConfigurations
         );
-        const filteredStatus = data.filter(
-          (cs: any) => cs.status !== "Draft"
-        );
+        const filteredStatus = data.filter((cs: any) => cs.status !== "Draft");
         setClaimStatusOptions(filteredStatus);
       } catch (error) {
         console.error("Error fetching insurance products:", error);
