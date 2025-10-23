@@ -1,7 +1,10 @@
 import Image, { StaticImageData } from "next/image";
 import { ChartPie } from "lucide-react";
+import type { ReactNode } from "react";
 
 import AppURL from "@/constants/app-url.const";
+import ApiURL from "@/constants/api-url.const";
+import { productService } from "@/services/api.service";
 import iconTransaction from "/public/images/icon-transactions.png";
 import iconCampaigns from "/public/images/icon-campaigns.png";
 import iconPolicy from "/public/images/icon-policy.png";
@@ -15,8 +18,49 @@ const renderImageIcon = (src: StaticImageData, alt: string) => (
   <Image src={src} alt={alt} className="w-7 min-w-7" />
 );
 
+const formatCategoryDisplayName = (value: string | undefined) => {
+  if (!value) return "";
+
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+interface AdditionalPage {
+  name: string;
+  url: string;
+}
+
+interface SubMenuItem {
+  name: string;
+  url: string;
+  icon?: ReactNode;
+  withCircle?: boolean;
+  additionalPages?: AdditionalPage[];
+}
+
+interface MenuItem {
+  name: string;
+  url: string;
+  submenu: SubMenuItem[];
+}
+
+interface ProductCategory {
+  id: string;
+  name: string;
+  icon?: string;
+  display_name?: string;
+  [key: string]: unknown;
+}
+
 class AppMenu {
-  static menu = [
+  private static readonly productCategoryMenuName = "Product Category";
+  private static hasLoadedProductCategories = false;
+  private static loadingProductCategories: Promise<void> | null = null;
+
+  static menu: MenuItem[] = [
     {
       name: "Dashboard",
       url: AppURL.dashboard,
@@ -210,6 +254,11 @@ class AppMenu {
           icon: renderImageIcon(iconTransaction, "Export Users"),
         }
       ]
+    },
+    {
+      name: "Product Category",
+      url: AppURL.productCategory,
+      submenu: [],
     },
     {
       name: "Finance",
@@ -500,6 +549,93 @@ class AppMenu {
       ]
     }
   ];
+
+  static async loadProductCategories(force = false): Promise<void> {
+    if (AppMenu.hasLoadedProductCategories && !force) return;
+    if (AppMenu.loadingProductCategories && !force) {
+      return AppMenu.loadingProductCategories;
+    }
+
+    AppMenu.loadingProductCategories = (async () => {
+      try {
+        const response: any = await productService.get(ApiURL.v1Categories, {
+          params: { limit: 1000 },
+        });
+        const rawCategories =
+          response?.data?.data ?? response?.data ?? response ?? [];
+        const normalizedCategories = Array.isArray(rawCategories)
+          ? rawCategories
+          : [];
+        AppMenu.applyProductCategories(normalizedCategories);
+        AppMenu.hasLoadedProductCategories = true;
+      } catch (error) {
+        console.error(
+          "[AppMenu] Failed to load product categories:",
+          error
+        );
+      } finally {
+        AppMenu.loadingProductCategories = null;
+      }
+    })();
+
+    return AppMenu.loadingProductCategories;
+  }
+
+  private static applyProductCategories(categories: ProductCategory[]) {
+    const productCategoryMenu = AppMenu.menu.find(
+      (item) => item.name === AppMenu.productCategoryMenuName
+    );
+
+    if (!productCategoryMenu) return;
+
+    productCategoryMenu.submenu = categories.map((category) =>
+      AppMenu.mapCategoryToSubmenu(category)
+    );
+  }
+
+  private static mapCategoryToSubmenu(
+    category: ProductCategory
+  ): SubMenuItem {
+    const displayName =
+      category.display_name || formatCategoryDisplayName(category.name);
+    const baseUrl = AppURL.productCatalogCategory(category.name);
+    const detailBaseUrl = `${baseUrl}/detail/`;
+
+    return {
+      name: displayName,
+      url: baseUrl,
+      icon: AppMenu.renderProductCategoryIcon(category.icon, displayName),
+      additionalPages: [
+        {
+          name: "Add Plan",
+          url: AppURL.productCatalogAdd(category.name),
+        },
+        {
+          name: "Detail Product Catalog",
+          url: detailBaseUrl,
+        },
+      ],
+    };
+  }
+
+  private static renderProductCategoryIcon(
+    icon: string | undefined,
+    alt: string
+  ): ReactNode {
+    if (!icon) {
+      return renderImageIcon(iconClaim, alt);
+    }
+
+    return (
+      <Image
+        src={icon}
+        alt={alt}
+        width={28}
+        height={28}
+        className="w-7 min-w-7"
+      />
+    );
+  }
 }
 
 export default AppMenu;
