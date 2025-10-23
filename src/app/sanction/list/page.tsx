@@ -127,7 +127,7 @@ export default function SanctionPage() {
     const handleDelete = async (id: string) => {
         if (window.confirm("Are you sure you want to delete this sanction?")) {
             try {
-                await sanctionService.delete(ApiURL.v1BlacklistDetails(id));
+                await sanctionService.delete(ApiURL.v1BlacklistDeleteDetails(id));
 
                 // Remove the deleted sanction from the state
                 setSanction(sanction.filter((sanctionItem) => sanctionItem.id !== id));

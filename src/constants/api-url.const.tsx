@@ -202,8 +202,10 @@ class ApiURL {
     static blacklist = "/blacklist";
     static v1Blacklist = `/v1${ApiURL.blacklist}`;
     static v1BlacklistUpdate = `${ApiURL.v1Blacklist}/update`;
+    static v1BlacklistDelete = `${ApiURL.v1Blacklist}/delete`;
     static v1BlacklistDetails = (id: string) => { return `${ApiURL.v1Blacklist}/${id}` };
     static v1BlacklistUpdateDetails = (id: string) => { return `${ApiURL.v1BlacklistUpdate}/${id}` };
+    static v1BlacklistDeleteDetails = (id: string) => { return `${ApiURL.v1BlacklistDelete}/${id}` };
 
     static sources = "/sources";
     static v1Sources = `/v1${ApiURL.sources}`;
