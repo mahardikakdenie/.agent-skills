@@ -175,3 +175,47 @@ export const claimHasValue = (document: any): boolean => {
 
   return !!(document.value && document.value !== "" && document.value !== null);
 };
+
+export const calculateTotalPremium = (transaction: any) => {
+  const currencies = transaction?.insurance?.insurance?.currencies || [];
+  const currency = currencies.find(
+    (currency: any) =>
+      currency.currency_from === transaction?.insurance?.currency &&
+      currency.currency_to === "IDR"
+  );
+
+  const convertedPremium =
+    (currency?.value ?? 1) * transaction?.insurance?.premium;
+
+  const discountType =
+    transaction?.insurance?.plan?.premium_discount_type || "";
+  const discountValue =
+    transaction?.insurance?.plan?.premium_discount_value || 0;
+
+  const premiumWithEmbeddedDiscount =
+    discountType === "percentage"
+      ? convertedPremium - (discountValue / 100) * convertedPremium
+      : convertedPremium - discountValue;
+
+  let premiumWithVoucherDiscount = premiumWithEmbeddedDiscount;
+  if (transaction?.voucher_info) {
+    premiumWithVoucherDiscount =
+      transaction.voucher_info?.data.value_type === "percentage"
+        ? premiumWithEmbeddedDiscount -
+          (transaction.voucher_info?.data.value / 100) *
+            premiumWithEmbeddedDiscount
+        : premiumWithEmbeddedDiscount - transaction.voucher_info?.data.value;
+  }
+
+  let totalPremium = premiumWithVoucherDiscount;
+
+  if (transaction?.fees) {
+    totalPremium =
+      premiumWithVoucherDiscount +
+      transaction.fees
+        .map((v: any) => v.value)
+        .reduce((a: any, b: any) => a + b, 0);
+  }
+
+  return totalPremium;
+};
