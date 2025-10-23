@@ -512,8 +512,7 @@ export const LayoutView = ({
                               key={submenuIndex}
                               onClick={() => goToPage(submenu.url)}
                               className={`flex items-center justify-start p-2 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${
-                                path.includes(submenu.url) &&
-                                "bg-primary-foreground"
+                                path == submenu.url && "bg-primary-foreground"
                               }`}
                             >
                               <div className="flex items-center mr-3">
@@ -521,7 +520,7 @@ export const LayoutView = ({
                               </div>
                               <p
                                 className={`${
-                                  path.includes(submenu.url) && "font-semibold"
+                                  path == submenu.url && "font-semibold"
                                 } text-sm`}
                               >
                                 {submenu.name}
