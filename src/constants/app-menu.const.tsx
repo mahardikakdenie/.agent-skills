@@ -203,6 +203,11 @@ class AppMenu {
               url: AppURL.promotionCampaignEdit
             }
           ]
+        },
+        {
+          name: "Export Users",
+          url: AppURL.exportUsers,
+          icon: renderImageIcon(iconTransaction, "Export Users"),
         }
       ]
     },
