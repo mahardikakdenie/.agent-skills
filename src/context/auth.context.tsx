@@ -229,21 +229,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
       });
-
-      AppMenu.menu.forEach((menuItem) => {
-        if (!menuItem.submenu?.length) return;
-
-        const matchedSubmenu = menuItem.submenu.find((submenuItem: any) =>
-          submenuCandidates.some((candidate) =>
-            candidate ? compareKeys(submenuItem.name, candidate) : false
-          )
-        );
-
-        if (matchedSubmenu) {
-          menuAccess.add(menuItem.name);
-          submenuAccess.add(matchedSubmenu.name);
-        }
-      });
     });
 
     const menus = Array.from(menuAccess);
@@ -258,7 +243,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         : false;
       if (currentMenuName && !hasAccessToCurrent) setIsForbidden(true);
     }
-
     setMenuList(menus);
     setSubmenuList(submenus);
     setPermissionList(permissions);
