@@ -8,11 +8,17 @@ export async function middleware(req: NextRequest) {
 
   for (let i = 0; i < AppMenu.menu.length; i++) {
     if (pathname === "/") {
-      url.pathname = AppMenu.menu[0].submenu[0].url;
-      return NextResponse.redirect(url);
+      const firstSubmenu = AppMenu.menu[0]?.submenu?.[0];
+      if (firstSubmenu?.url) {
+        url.pathname = firstSubmenu.url;
+        return NextResponse.redirect(url);
+      }
     } else if (pathname === AppMenu.menu[i].url) {
-      url.pathname = AppMenu.menu[i].submenu[0].url;
-      return NextResponse.redirect(url);
+      const firstSubmenu = AppMenu.menu[i]?.submenu?.[0];
+      if (firstSubmenu?.url) {
+        url.pathname = firstSubmenu.url;
+        return NextResponse.redirect(url);
+      }
     }
   }
 

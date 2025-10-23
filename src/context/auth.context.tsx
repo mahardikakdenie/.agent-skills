@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const fetchTokenAndUserInfo = async () => {
       try {
         const token = await getCookie(AUTH_TOKEN);
-        if (token) getUserInformation(token);
+        if (token) await getUserInformation(token);
         setIsAuthenticated(!!token);
       } catch (error) {
         setIsAuthenticated(false);
@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           const token = response.data.access_token;
           await setCookie(AUTH_TOKEN, token);
           authToken.token = token;
-          if (token) getUserInformation(token, true);
+          if (token) await getUserInformation(token, true);
         }
       } catch (error: any) {
         toastNotification(
@@ -142,7 +142,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     router.push("/");
   };
 
-  const getUserInformation = (token: string, isLogin: boolean = false) => {
+  const getUserInformation = async (
+    token: string,
+    isLogin: boolean = false
+  ) => {
+    await AppMenu.loadProductCategories();
+
     const decodedToken: any = jwtDecode(token);
     const userdata = JSON.parse(JSON.stringify(decodedToken));
     userdata.all_channels = [
@@ -224,21 +229,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
       });
-
-      AppMenu.menu.forEach((menuItem) => {
-        if (!menuItem.submenu?.length) return;
-
-        const matchedSubmenu = menuItem.submenu.find((submenuItem: any) =>
-          submenuCandidates.some((candidate) =>
-            candidate ? compareKeys(submenuItem.name, candidate) : false
-          )
-        );
-
-        if (matchedSubmenu) {
-          menuAccess.add(menuItem.name);
-          submenuAccess.add(matchedSubmenu.name);
-        }
-      });
     });
 
     const menus = Array.from(menuAccess);
@@ -253,7 +243,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         : false;
       if (currentMenuName && !hasAccessToCurrent) setIsForbidden(true);
     }
-
     setMenuList(menus);
     setSubmenuList(submenus);
     setPermissionList(permissions);

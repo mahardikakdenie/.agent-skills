@@ -128,7 +128,7 @@ export const getHeaderPage = (level: number, path: string, exact: boolean) => {
                         return result;
                     }
                 } else {
-                    sm.additionalPages.forEach((ap) => {
+                    sm.additionalPages?.forEach((ap) => {
                         if (level === 3) {
                             if ((exact && ap.url === path) || (!exact && path.includes(ap.url))) {
                                 result.pageName = ap.name;

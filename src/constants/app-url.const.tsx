@@ -155,6 +155,9 @@ class AppURL {
   static promotionCampaignAdd = `${AppURL.promotionCampaign}/add`;
   static promotionCampaignEdit = `${AppURL.promotionCampaign}/edit`;
 
+  // Export Users
+  static exportUsers = "/export-users";
+
   // Report
   static report = "/report";
   static reportClaim = `${AppURL.report}/claim`;
