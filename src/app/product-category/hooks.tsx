@@ -112,8 +112,8 @@ export const useProducts = () => {
     const response: any = await productService.get(
       ApiURL.v1PlanDetailsDetailsType(id, type)
     );
-    setDetails(response?.data);
-    return response?.data;
+    setDetails(response?.data.data);
+    return response?.data.data;
   };
 
   const assignPlans = async (planId: string, channel: string) => {
@@ -144,8 +144,8 @@ export const useProducts = () => {
     const response: any = await channelService.get(ApiURL.v1Channels, {
       params: { page: 1, limit: 100 },
     });
-    setChannels(response?.data);
-    return response?.data;
+    setChannels(response?.data.data);
+    return response?.data.data;
   };
 
   const [channelPlans, setChannelPlans] = useState<any[]>([]);
@@ -153,8 +153,8 @@ export const useProducts = () => {
     const response: any = await productService.get(
       ApiURL.v1PlanDetailsChannels(planId)
     );
-    setChannelPlans(response?.data);
-    return response?.data;
+    setChannelPlans(response?.data.data);
+    return response?.data.data;
   };
 
   const fetchPlans = async (params: any) => {
