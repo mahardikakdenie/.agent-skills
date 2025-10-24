@@ -17,7 +17,7 @@ import { LoginResponse } from "@/types/common";
 import { AxiosResponse } from "axios";
 import AppMenu from "@/constants/app-menu.const";
 import { authToken } from "@/types/auth-token";
-import { getGlobalToken } from "@/lib/token-storage";
+import { setGlobalToken } from "@/lib/token-storage";
 
 interface AuthContextType {
   user: JwtPayload;
@@ -120,6 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           const token = response.data.access_token;
           await setCookie(AUTH_TOKEN, token);
           authToken.token = token;
+          setGlobalToken(token);
           if (token) await getUserInformation(token, true);
         }
       } catch (error: any) {
@@ -136,6 +137,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     await removeCookie(AUTH_TOKEN);
     removeAllLocalStorage();
     authToken.clearToken();
+    setGlobalToken(null);
     setUser(null);
     setIsAuthenticated(false);
     isOnce = false;
@@ -146,6 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     token: string,
     isLogin: boolean = false
   ) => {
+    setGlobalToken(token);
     await AppMenu.loadProductCategories();
 
     const decodedToken: any = jwtDecode(token);

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import ApiURL from "@/constants/api-url.const";
 import { authToken } from "@/types/auth-token";
+import { setGlobalToken } from "@/lib/token-storage";
 
 export function setCookie(name: string, value: string, days: number = 1): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -26,8 +27,12 @@ export function getCookie(name: string): Promise<string | null> {
 
         axios.get(url)
             .then((response) => {
-                if (name === AUTH_TOKEN) authToken.token = response.data.data.value
-                resolve(response.data.data.value || null);
+                const value = response.data.data.value || null;
+                if (name === AUTH_TOKEN) {
+                    if (value) authToken.token = value;
+                    setGlobalToken(value);
+                }
+                resolve(value);
             })
             .catch((error) => {
                 reject(error);
