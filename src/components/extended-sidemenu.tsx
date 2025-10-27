@@ -1,0 +1,56 @@
+import React from "react";
+import AppURL from "@/constants/app-url.const";
+import { useRouter } from "next/navigation";
+
+export interface SubmenuItem {
+  url: string;
+  label: string;
+}
+interface ExtendedSideMenuProps {
+  title?: string;
+  items: SubmenuItem[];
+  activeUrl: string;
+}
+
+const ExtendedSidemenu: React.FC<ExtendedSideMenuProps> = ({
+  title,
+  items,
+  activeUrl,
+}) => {
+  const router = useRouter();
+  return (
+    <div className="hidden md:block md:w-56 md:flex-shrink-0">
+      <div
+        className="sticky flex flex-col bg-white border border-slate-200 rounded-md shadow-sm"
+        style={{
+          top: "calc(var(--fs-navbar-height, 64px) + 1rem)",
+          maxHeight: "calc(100vh - var(--fs-navbar-height, 64px) - 2rem)",
+        }}
+      >
+        <div className="px-4 py-3 border-b border-slate-200">
+          <p className="text-sm font-semibold text-gray-700">{title}</p>
+        </div>
+        <nav className="flex flex-1 flex-col overflow-y-auto">
+          {items.map((item, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() =>
+                router.push(AppURL.productCatalogCategory(item.url))
+              }
+              className={`text-left px-4 py-3 text-sm transition-colors border-b border-slate-200 last:border-b-0 ${
+                activeUrl === item.url
+                  ? "bg-[#E8F4FB] text-primary font-semibold"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+    </div>
+  );
+};
+
+export default ExtendedSidemenu;

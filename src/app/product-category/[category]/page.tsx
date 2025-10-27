@@ -33,6 +33,7 @@ import {
 import AppURL from "@/constants/app-url.const";
 import ApiURL from "@/constants/api-url.const";
 import { productService } from "@/services/api.service";
+import ExtendedSidemenu, { SubmenuItem } from "@/components/extended-sidemenu";
 
 const formatCategoryLabel = (value: string | undefined) => {
   if (!value) return "";
@@ -65,9 +66,7 @@ export default function ProductCatalogPage() {
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const { permissionList } = useAuth();
-  const [subMenuItems, setSubMenuItems] = useState<
-    { id: string; label: string }[]
-  >([]);
+  const [subMenuItems, setSubMenuItems] = useState<SubmenuItem[]>([]);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -149,7 +148,7 @@ export default function ProductCatalogPage() {
           ? rawCategories
           : [];
         const formattedCategories = normalizedCategories.map((item: any) => ({
-          id: item.name,
+          url: item.name,
           label: item.display_name || formatCategoryLabel(item.name),
         }));
         setSubMenuItems(formattedCategories);
@@ -199,39 +198,11 @@ export default function ProductCatalogPage() {
 
   return (
     <div className="flex w-full flex-col md:flex-row md:items-start">
-      <div className="hidden md:block md:w-56 md:flex-shrink-0">
-        <div
-          className="sticky flex flex-col bg-white border border-slate-200 rounded-md shadow-sm"
-          style={{
-            top: "calc(var(--fs-navbar-height, 64px) + 1rem)",
-            maxHeight: "calc(100vh - var(--fs-navbar-height, 64px) - 2rem)",
-          }}
-        >
-          <div className="px-4 py-3 border-b border-slate-200">
-            <p className="text-sm font-semibold text-gray-700">
-              Product Categories
-            </p>
-          </div>
-          <nav className="flex flex-1 flex-col overflow-y-auto">
-            {subMenuItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() =>
-                  router.push(AppURL.productCatalogCategory(item.id))
-                }
-                className={`text-left px-4 py-3 text-sm transition-colors border-b border-slate-200 last:border-b-0 ${
-                  category === item.id
-                    ? "bg-[#E8F4FB] text-primary font-semibold"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
+      <ExtendedSidemenu
+        title="Product Categories"
+        items={subMenuItems}
+        activeUrl={category}
+      />
       <div className="flex flex-col w-full p-4 md:p-6">
         <div className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
           <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
