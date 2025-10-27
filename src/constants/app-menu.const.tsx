@@ -549,6 +549,12 @@ class AppMenu {
           additionalPages: [],
         },
         {
+          name: "Campaign Analytics Report",
+          url: AppURL.reportCampaignAnalytics,
+          icon: renderImageIcon(iconClaim, "Campaign Analytics Report"),
+          additionalPages: [],
+        },
+        {
           name: "Performance Report",
           url: AppURL.reportPerformance,
           icon: renderImageIcon(iconClaim, "Performance Report"),
