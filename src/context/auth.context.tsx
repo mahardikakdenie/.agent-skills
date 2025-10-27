@@ -189,14 +189,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const rawMenu = parts[0];
       const rawSubmenuParts = parts.slice(1);
       const submenuCandidates = [
-        rawMenu,
         ...(rawSubmenuParts.length > 0
           ? [
               rawSubmenuParts.join("."),
               rawSubmenuParts.join(""),
               ...rawSubmenuParts,
             ]
-          : []),
+          : [rawMenu]),
       ].filter(Boolean);
 
       const addAllSubmenus = (menuItem: any) => {
@@ -216,9 +215,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         menuAccess.add(menuItem.name);
 
         if (menuItem.submenu?.length) {
+          const sortedCandidates = [...submenuCandidates].sort(
+            (a, b) => b.length - a.length
+          );
           const matchedSubmenuInMenu = menuItem.submenu.find(
             (submenuItem: any) =>
-              submenuCandidates.some((candidate) =>
+              sortedCandidates.some((candidate) =>
                 candidate ? compareKeys(submenuItem.name, candidate) : false
               )
           );
@@ -244,6 +246,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         : false;
       if (currentMenuName && !hasAccessToCurrent) setIsForbidden(true);
     }
+    console.log("permissions", permissions);
     setMenuList(menus);
     setSubmenuList(submenus);
     setPermissionList(permissions);
