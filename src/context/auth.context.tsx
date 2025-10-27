@@ -246,7 +246,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         : false;
       if (currentMenuName && !hasAccessToCurrent) setIsForbidden(true);
     }
-    console.log("permissions", permissions);
     setMenuList(menus);
     setSubmenuList(submenus);
     setPermissionList(permissions);
