@@ -77,6 +77,21 @@ export const LayoutView = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showDropdown]);
 
+  useEffect(() => {
+    const updateNavbarHeight = () => {
+      if (!navbarRef.current) return;
+      document.documentElement.style.setProperty(
+        "--fs-navbar-height",
+        `${navbarRef.current.offsetHeight}px`
+      );
+    };
+
+    updateNavbarHeight();
+    window.addEventListener("resize", updateNavbarHeight);
+
+    return () => window.removeEventListener("resize", updateNavbarHeight);
+  }, [isMenuOpen, isMobileView, user]);
+
   const toggleModal = () => setMenu(!isMenuOpen);
 
   const goToPage = (url: string) => {
@@ -442,7 +457,7 @@ export const LayoutView = ({
                             key={submenuIndex}
                             onClick={() => goToPage(submenuMobile.url)}
                             className={`flex items-center justify-start py-2 px-3 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${
-                              path.includes(submenuMobile.url) &&
+                              (path.includes(submenuMobile.url) || submenuMobile.additionalPages?.some(page => path.startsWith(page.url))) &&
                               "bg-primary-foreground"
                             }`}
                           >
@@ -451,7 +466,7 @@ export const LayoutView = ({
                             </div>
                             <p
                               className={`${
-                                path.includes(submenuMobile.url) &&
+                                (path.includes(submenuMobile.url) || submenuMobile.additionalPages?.some(page => path.startsWith(page.url))) &&
                                 "font-semibold"
                               } text-sm`}
                             >
@@ -512,7 +527,7 @@ export const LayoutView = ({
                               key={submenuIndex}
                               onClick={() => goToPage(submenu.url)}
                               className={`flex items-center justify-start p-2 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${
-                                path == submenu.url && "bg-primary-foreground"
+                                (path == submenu.url || submenu.additionalPages?.some(page => path.startsWith(page.url))) && "bg-primary-foreground"
                               }`}
                             >
                               <div className="flex items-center mr-3">
@@ -520,7 +535,7 @@ export const LayoutView = ({
                               </div>
                               <p
                                 className={`${
-                                  path == submenu.url && "font-semibold"
+                                  (path == submenu.url || submenu.additionalPages?.some(page => path.startsWith(page.url))) && "font-semibold"
                                 } text-sm`}
                               >
                                 {submenu.name}

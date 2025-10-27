@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { useProducts } from "../hooks";
@@ -8,10 +8,42 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
-import { ProductCatalogDto, ProductCatalogService, } from "@/services/product-catalog.service";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import {
+  ProductCatalogDto,
+  ProductCatalogService,
+} from "@/services/product-catalog.service";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import AppURL from "@/constants/app-url.const";
+import ApiURL from "@/constants/api-url.const";
+import { productService } from "@/services/api.service";
+import ExtendedSidemenu, { SubmenuItem } from "@/components/extended-sidemenu";
+
+const formatCategoryLabel = (value: string | undefined) => {
+  if (!value) return "";
+
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
 
 export default function ProductCatalogPage() {
   const { category } = useParams<{ category: string }>();
@@ -34,6 +66,7 @@ export default function ProductCatalogPage() {
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const { permissionList } = useAuth();
+  const [subMenuItems, setSubMenuItems] = useState<SubmenuItem[]>([]);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -42,7 +75,7 @@ export default function ProductCatalogPage() {
       const deleteBtn = permissionList.includes("Product Category.Delete");
       const createBtn = permissionList.includes("Product Category.Create");
 
-      setCanEdit(editBtn)
+      setCanEdit(editBtn);
       setCanDelete(deleteBtn);
       setHasAccess(access);
       setCanCreate(createBtn);
@@ -104,6 +137,30 @@ export default function ProductCatalogPage() {
   }, []);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response: any = await productService.get(ApiURL.v1Categories, {
+          params: { limit: 1000 },
+        });
+        const rawCategories =
+          response?.data?.data ?? response?.data ?? response ?? [];
+        const normalizedCategories = Array.isArray(rawCategories)
+          ? rawCategories
+          : [];
+        const formattedCategories = normalizedCategories.map((item: any) => ({
+          url: item.name,
+          label: item.display_name || formatCategoryLabel(item.name),
+        }));
+        setSubMenuItems(formattedCategories);
+      } catch (error) {
+        console.error("Failed to fetch product categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
     if (searchInsurer) {
       fetchProducts({
         insuranceId: searchInsurer,
@@ -140,164 +197,183 @@ export default function ProductCatalogPage() {
   };
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
-        <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-          Product Catalog -{" "}
-          {category
-            .split("-")
-            .map((item) => item.charAt(0).toUpperCase() + item.slice(1) + " ")}
-        </h1>
-        <Button
-          onClick={() => router.push(AppURL.productCatalogAdd(category))}
-          disabled={!canCreate}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
-        >
-          <Plus className="w-5 h-5 mr-1 " /> Add Plan
-        </Button>
-      </div>
-
-      <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
-        <div className="flex gap-4 items-center sm:flex-row flex-col">
-          <Select
-            value={searchInsurer}
-            onValueChange={handleSearchInsurerOnChange}
+    <div className="flex w-full flex-col md:flex-row md:items-start">
+      <div className="flex flex-col w-full p-4 md:p-6">
+        <div className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
+          <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+            Product Catalog -{" "}
+            {category
+              .split("-")
+              .map(
+                (item) => item.charAt(0).toUpperCase() + item.slice(1) + " "
+              )}
+          </h1>
+          <Button
+            onClick={() => router.push(AppURL.productCatalogAdd(category))}
+            disabled={!canCreate}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
           >
-            <SelectTrigger className="h-12">
-              <SelectValue placeholder="Select Insurer" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Select Insurer</SelectLabel>
-                {insurances.map((insurance: any) => (
-                  <SelectItem key={insurance.id} value={insurance.id}>
-                    {insurance.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Input
-            type="text"
-            placeholder="Search by Plan Name"
-            className="p-2 border rounded h-12"
-            value={searchPlanName}
-            onChange={(e) => setSearchPlanName(e.target.value)}
-          />
+            <Plus className="w-5 h-5 mr-1 " /> Add Plan
+          </Button>
         </div>
-      </div>
 
-      <div className="w-full p-4 bg-white rounded-lg">
-        <Table className="table-product-catalog">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap !max-w-16 w-16">No.</TableHead>
-              <TableHead className="whitespace-nowrap">Insurer</TableHead>
-              <TableHead className="min-w-44">Plan Name</TableHead>
-              <TableHead className="whitespace-nowrap">Product</TableHead>
-              <TableHead className="whitespace-nowrap">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {product.length > 0 ? (
-              product.map((product, index) => {
-                const logoUrl = product.products.insurances.logo_url || null;
-                return (
-                  <TableRow key={product.id}>
-                    <TableCell className="!max-w-16 w-16">{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2 items-center">
-                        <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                          {logoUrl && (
-                            <Image
-                              src={logoUrl}
-                              alt=""
-                              width={100}
-                              height={50}
-                              className="w-full h-auto"
-                            />
-                          )}
-                        </div>
-                        {product.products.insurances.name}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {product.name.split("|").map((item: any, i: any) => (
-                        <div key={i}>{item}</div>
+        <div className="flex gap-4">
+          <ExtendedSidemenu
+            title="Product Categories"
+            items={subMenuItems}
+            activeUrl={category}
+          />
+          <div className="flex-1 min-w-0">
+            <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
+              <div className="flex gap-4 items-center sm:flex-row flex-col">
+                <Select
+                  value={searchInsurer}
+                  onValueChange={handleSearchInsurerOnChange}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select Insurer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Select Insurer</SelectLabel>
+                      {insurances.map((insurance: any) => (
+                        <SelectItem key={insurance.id} value={insurance.id}>
+                          {insurance.name}
+                        </SelectItem>
                       ))}
-                    </TableCell>
-                    <TableCell>{product.products.name}</TableCell>
-                    <TableCell className="w-20">
-                      <div className="flex gap-4 items-center">
-                        <Button
-                          variant="secondary"
-                          onClick={() => handleViewDetail(product.id)}
-                          className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="text"
+                  placeholder="Search by Plan Name"
+                  className="p-2 border rounded h-12"
+                  value={searchPlanName}
+                  onChange={(e) => setSearchPlanName(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="w-full p-4 bg-white rounded-lg">
+              <Table className="table-product-catalog">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="whitespace-nowrap !max-w-16 w-16">
+                      No.
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">Insurer</TableHead>
+                    <TableHead className="min-w-44">Plan Name</TableHead>
+                    <TableHead className="whitespace-nowrap">Product</TableHead>
+                    <TableHead className="whitespace-nowrap">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {product.length > 0 ? (
+                    product.map((product, index) => {
+                      const logoUrl =
+                        product.products.insurances.logo_url || null;
+                      return (
+                        <TableRow key={product.id}>
+                          <TableCell className="!max-w-16 w-16">
+                            {(page - 1) * rowsPerPage + index + 1}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2 items-center">
+                              <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
+                                {logoUrl && (
+                                  <Image
+                                    src={logoUrl}
+                                    alt=""
+                                    width={100}
+                                    height={50}
+                                    className="w-full h-auto"
+                                  />
+                                )}
+                              </div>
+                              {product.products.insurances.name}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {product.name
+                              .split("|")
+                              .map((item: any, i: any) => (
+                                <div key={i}>{item}</div>
+                              ))}
+                          </TableCell>
+                          <TableCell>{product.products.name}</TableCell>
+                          <TableCell className="w-20">
+                            <div className="flex gap-4 items-center">
+                              <Button
+                                variant="secondary"
+                                onClick={() => handleViewDetail(product.id)}
+                                className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
+                              >
+                                View
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                onClick={() => handleDeletePlan(product.id)}
+                                disabled={!canDelete}
+                                className="text-red-600 px-0"
+                              >
+                                <Trash />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <TableRow className="hover:!bg-white">
+                      <TableCell colSpan={5}>
+                        <div className="flex flex-col gap-4 items-center justify-center py-14">
+                          <Image alt="no data" src={noData} width={200} />
+                          <div>No transaction data available</div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <div className="flex justify-center items-center gap-2 font-normal">
+                        <label htmlFor="rowsPerPage">Showing:</label>
+                        <select
+                          id="rowsPerPage"
+                          className="p-2 border rounded"
+                          value={rowsPerPage}
+                          onChange={handleRowsPerPageChange}
                         >
-                          View
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          onClick={() => handleDeletePlan(product.id)}
-                          disabled={!canDelete}
-                          className="text-red-600 px-0"
+                          {[10, 20, 30, 50].map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        <span className="mr-2">of {totalItems} items</span>
+                        <button
+                          onClick={() => setPage((prevState) => prevState - 1)}
+                          disabled={page === 1}
+                          title="Previous"
                         >
-                          <Trash />
-                        </Button>
+                          <ChevronLeft />
+                        </button>
+                        <button
+                          onClick={() => setPage((prevState) => prevState + 1)}
+                          disabled={page === totalPages}
+                          title="Next"
+                        >
+                          <ChevronRight />
+                        </button>
                       </div>
                     </TableCell>
                   </TableRow>
-                );
-              })
-            ) : (
-              <TableRow className="hover:!bg-white">
-                <TableCell colSpan={5}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} />
-                    <div>No transaction data available</div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={5}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    className="p-2 border rounded"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                  >
-                    {[10, 20, 30, 50].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() => setPage((prevState) => prevState - 1)}
-                    disabled={page === 1}
-                    title="Previous"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() => setPage((prevState) => prevState + 1)}
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
+                </TableFooter>
+              </Table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
+}

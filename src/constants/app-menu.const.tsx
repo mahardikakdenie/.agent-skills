@@ -56,10 +56,6 @@ interface ProductCategory {
 }
 
 class AppMenu {
-  private static readonly productCategoryMenuName = "Product Category";
-  private static hasLoadedProductCategories = false;
-  private static loadingProductCategories: Promise<void> | null = null;
-
   static menu: MenuItem[] = [
     {
       name: "Dashboard",
@@ -82,8 +78,8 @@ class AppMenu {
           url: AppURL.dashboardClaim,
           icon: renderChartIcon(),
           additionalPages: [],
-        }
-      ]
+        },
+      ],
     },
     {
       name: "Transaction",
@@ -96,23 +92,23 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Transaction",
-              url: AppURL.transactionAdd
+              url: AppURL.transactionAdd,
             },
             {
               name: "Detail Transaction",
-              url: AppURL.transactionDetail
+              url: AppURL.transactionDetail,
             },
             {
               name: "Export Transaction",
-              url: AppURL.transactionExport
+              url: AppURL.transactionExport,
             },
             {
               name: "Import Transaction",
-              url: AppURL.transactionImport
-            }
-          ]
-        }
-      ]
+              url: AppURL.transactionImport,
+            },
+          ],
+        },
+      ],
     },
     {
       name: "Policy",
@@ -126,8 +122,8 @@ class AppMenu {
             {
               name: "Detail Policy",
               url: AppURL.policyDetail,
-            }
-          ]
+            },
+          ],
         },
         {
           name: "Endorsement List",
@@ -142,8 +138,8 @@ class AppMenu {
             {
               name: "Endorsement Upload",
               url: AppURL.endorsementUpload,
-            }
-          ]
+            },
+          ],
         },
       ],
     },
@@ -159,15 +155,15 @@ class AppMenu {
             {
               name: "Detail Claim",
               url: AppURL.claimDetail,
-            }
-          ]
+            },
+          ],
         },
         {
           name: "Claim History",
           url: AppURL.claimHistory,
           icon: renderImageIcon(iconClaim, "Claim History"),
-          additionalPages: []
-        }
+          additionalPages: [],
+        },
       ],
     },
     {
@@ -182,10 +178,10 @@ class AppMenu {
             {
               name: "Membership Detail",
               url: AppURL.membershipDetail,
-            }
-          ]
-        }
-      ]
+            },
+          ],
+        },
+      ],
     },
     {
       name: "Sanction",
@@ -203,10 +199,10 @@ class AppMenu {
             {
               name: "Sanction Detail",
               url: AppURL.sanctionDetail,
-            }
-          ]
-        }
-      ]
+            },
+          ],
+        },
+      ],
     },
     {
       name: "Source",
@@ -224,10 +220,10 @@ class AppMenu {
             {
               name: "Source Detail",
               url: AppURL.sourceDetail,
-            }
-          ]
-        }
-      ]
+            },
+          ],
+        },
+      ],
     },
     {
       name: "Promotion",
@@ -240,25 +236,37 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Campaign",
-              url: AppURL.promotionCampaignAdd
+              url: AppURL.promotionCampaignAdd,
             },
             {
               name: "Campaign Detail",
-              url: AppURL.promotionCampaignEdit
-            }
-          ]
+              url: AppURL.promotionCampaignEdit,
+            },
+          ],
         },
         {
           name: "Export Users",
           url: AppURL.exportUsers,
           icon: renderImageIcon(iconTransaction, "Export Users"),
-        }
-      ]
+        },
+      ],
     },
     {
-      name: "Product Category",
-      url: AppURL.productCategory,
-      submenu: [],
+      name: "Product",
+      url: "",
+      submenu: [
+        {
+          name: "Product Catalog",
+          url: AppURL.productCategory,
+          icon: renderImageIcon(iconClaim, "Product Catalog"),
+          additionalPages: [
+            {
+              name: "Detail Product Catalog",
+              url: `${AppURL.productCategory}/`,
+            },
+          ],
+        },
+      ],
     },
     {
       name: "Finance",
@@ -271,19 +279,19 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Billing",
-              url: AppURL.financeBillingAdd
+              url: AppURL.financeBillingAdd,
             },
             {
               name: "Detail Billing",
-              url: AppURL.financeBillingDetail
-            }
-          ]
+              url: AppURL.financeBillingDetail,
+            },
+          ],
         },
         {
           name: "Unmatch Billing",
           url: AppURL.financeUnmatchBilling,
           icon: renderImageIcon(iconClaim, "Unmatch Billing"),
-          additionalPages: []
+          additionalPages: [],
         },
         {
           name: "Broker Fee",
@@ -292,13 +300,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Broker Fee",
-              url: AppURL.financeBrokerFeeAdd
+              url: AppURL.financeBrokerFeeAdd,
             },
             {
               name: "Detail Broker Fee",
-              url: AppURL.financeBrokerFeeDetail
-            }
-          ]
+              url: AppURL.financeBrokerFeeDetail,
+            },
+          ],
         },
         {
           name: "Partner Comm",
@@ -307,15 +315,15 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Partner Comm",
-              url: AppURL.financePartnerCommAdd
+              url: AppURL.financePartnerCommAdd,
             },
             {
               name: "Detail Partner Comm",
-              url: AppURL.financePartnerCommDetail
-            }
-          ]
-        }
-      ]
+              url: AppURL.financePartnerCommDetail,
+            },
+          ],
+        },
+      ],
     },
     {
       name: "Masterdata",
@@ -328,13 +336,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Product Category",
-              url: AppURL.masterdataProductCategoryAdd
+              url: AppURL.masterdataProductCategoryAdd,
             },
             {
               name: "Detail Product Category",
-              url: AppURL.masterdataProductCategoryDetail
-            }
-          ]
+              url: AppURL.masterdataProductCategoryDetail,
+            },
+          ],
         },
         {
           name: "Insurance",
@@ -343,13 +351,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Insurance",
-              url: AppURL.masterdataInsuranceAdd
+              url: AppURL.masterdataInsuranceAdd,
             },
             {
               name: "Detail Insurance",
-              url: AppURL.masterdataInsuranceDetail
-            }
-          ]
+              url: AppURL.masterdataInsuranceDetail,
+            },
+          ],
         },
         {
           name: "Product",
@@ -358,13 +366,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Product",
-              url: AppURL.masterdataProductAdd
+              url: AppURL.masterdataProductAdd,
             },
             {
               name: "Detail Product",
-              url: AppURL.masterdataProductDetail
-            }
-          ]
+              url: AppURL.masterdataProductDetail,
+            },
+          ],
         },
         {
           name: "Currency",
@@ -373,13 +381,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Currency",
-              url: AppURL.masterdataCurrencyAdd
+              url: AppURL.masterdataCurrencyAdd,
             },
             {
               name: "Detail Currency",
-              url: AppURL.masterdataCurrencyDetail
-            }
-          ]
+              url: AppURL.masterdataCurrencyDetail,
+            },
+          ],
         },
         {
           name: "Channel",
@@ -388,13 +396,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Channel",
-              url: AppURL.masterdataChannelAdd
+              url: AppURL.masterdataChannelAdd,
             },
             {
               name: "Detail Channel",
-              url: AppURL.masterdataChannelDetail
-            }
-          ]
+              url: AppURL.masterdataChannelDetail,
+            },
+          ],
         },
         {
           name: "User",
@@ -403,13 +411,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add User",
-              url: AppURL.masterdataUserAdd
+              url: AppURL.masterdataUserAdd,
             },
             {
               name: "Detail User",
-              url: AppURL.masterdataUserDetail
-            }
-          ]
+              url: AppURL.masterdataUserDetail,
+            },
+          ],
         },
         {
           name: "Group",
@@ -418,13 +426,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Group",
-              url: AppURL.masterdataGroupAdd
+              url: AppURL.masterdataGroupAdd,
             },
             {
               name: "Detail Group",
-              url: AppURL.masterdataGroupDetail
-            }
-          ]
+              url: AppURL.masterdataGroupDetail,
+            },
+          ],
         },
         {
           name: "Role",
@@ -433,13 +441,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Role",
-              url: AppURL.masterdataRoleAdd
+              url: AppURL.masterdataRoleAdd,
             },
             {
               name: "Detail Role",
-              url: AppURL.masterdataRoleDetail
-            }
-          ]
+              url: AppURL.masterdataRoleDetail,
+            },
+          ],
         },
         {
           name: "Page Management",
@@ -448,13 +456,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Page Management",
-              url: AppURL.masterdataPageManagementAdd
+              url: AppURL.masterdataPageManagementAdd,
             },
             {
               name: "Detail Page Management",
-              url: AppURL.masterdataPageManagementDetail
-            }
-          ]
+              url: AppURL.masterdataPageManagementDetail,
+            },
+          ],
         },
         {
           name: "Partner Management",
@@ -463,13 +471,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Partner Management",
-              url: AppURL.masterdataPartnerManagementAdd
+              url: AppURL.masterdataPartnerManagementAdd,
             },
             {
               name: "Detail Partner Management",
-              url: AppURL.masterdataPartnerManagementDetail
-            }
-          ]
+              url: AppURL.masterdataPartnerManagementDetail,
+            },
+          ],
         },
         {
           name: "Email Template",
@@ -478,13 +486,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Email Template",
-              url: AppURL.masterdataEmailTemplateAdd
+              url: AppURL.masterdataEmailTemplateAdd,
             },
             {
               name: "Detail Email Template",
-              url: AppURL.masterdataEmailTemplateDetail
-            }
-          ]
+              url: AppURL.masterdataEmailTemplateDetail,
+            },
+          ],
         },
         {
           name: "Email Tag",
@@ -493,13 +501,13 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Email Tag",
-              url: AppURL.masterdataEmailTagAdd
+              url: AppURL.masterdataEmailTagAdd,
             },
             {
               name: "Detail Email Tag",
-              url: AppURL.masterdataEmailTagDetail
-            }
-          ]
+              url: AppURL.masterdataEmailTagDetail,
+            },
+          ],
         },
         {
           name: "Holiday Date",
@@ -508,21 +516,21 @@ class AppMenu {
           additionalPages: [
             {
               name: "Add Holiday Date",
-              url: AppURL.masterdataHolidayDateAdd
+              url: AppURL.masterdataHolidayDateAdd,
             },
             {
               name: "Detail Holiday Date",
-              url: AppURL.masterdataHolidayDateDetail
-            }
-          ]
+              url: AppURL.masterdataHolidayDateDetail,
+            },
+          ],
         },
         {
           name: "Hospital",
           url: AppURL.masterdataHospital,
           icon: renderImageIcon(iconClaim, "Hospital"),
-          additionalPages: []
-        }
-      ]
+          additionalPages: [],
+        },
+      ],
     },
     {
       name: "Report",
@@ -532,91 +540,23 @@ class AppMenu {
           name: "Claim Report",
           url: AppURL.reportClaim,
           icon: renderImageIcon(iconClaim, "Claim Report"),
-          additionalPages: []
+          additionalPages: [],
         },
         {
           name: "Campaign Report",
           url: AppURL.reportCampaign,
           icon: renderImageIcon(iconClaim, "Campaign Report"),
-          additionalPages: []
+          additionalPages: [],
         },
         {
           name: "Performance Report",
           url: AppURL.reportPerformance,
           icon: renderImageIcon(iconClaim, "Performance Report"),
-          additionalPages: []
-        }
-      ]
-    }
-  ];
-
-  static async loadProductCategories(force = false): Promise<void> {
-    if (AppMenu.hasLoadedProductCategories && !force) return;
-    if (AppMenu.loadingProductCategories && !force) {
-      return AppMenu.loadingProductCategories;
-    }
-
-    AppMenu.loadingProductCategories = (async () => {
-      try {
-        const response: any = await productService.get(ApiURL.v1Categories, {
-          params: { limit: 1000 },
-        });
-        const rawCategories =
-          response?.data?.data ?? response?.data ?? response ?? [];
-        const normalizedCategories = Array.isArray(rawCategories)
-          ? rawCategories
-          : [];
-        AppMenu.applyProductCategories(normalizedCategories);
-        AppMenu.hasLoadedProductCategories = true;
-      } catch (error) {
-        console.error(
-          "[AppMenu] Failed to load product categories:",
-          error
-        );
-      } finally {
-        AppMenu.loadingProductCategories = null;
-      }
-    })();
-
-    return AppMenu.loadingProductCategories;
-  }
-
-  private static applyProductCategories(categories: ProductCategory[]) {
-    const productCategoryMenu = AppMenu.menu.find(
-      (item) => item.name === AppMenu.productCategoryMenuName
-    );
-
-    if (!productCategoryMenu) return;
-
-    productCategoryMenu.submenu = categories.map((category) =>
-      AppMenu.mapCategoryToSubmenu(category)
-    );
-  }
-
-  private static mapCategoryToSubmenu(
-    category: ProductCategory
-  ): SubMenuItem {
-    const displayName =
-      category.display_name || formatCategoryDisplayName(category.name);
-    const baseUrl = AppURL.productCatalogCategory(category.name);
-    const detailBaseUrl = `${baseUrl}/detail/`;
-
-    return {
-      name: displayName,
-      url: baseUrl,
-      icon: AppMenu.renderProductCategoryIcon(category.icon, displayName),
-      additionalPages: [
-        {
-          name: "Add Plan",
-          url: AppURL.productCatalogAdd(category.name),
-        },
-        {
-          name: "Detail Product Catalog",
-          url: detailBaseUrl,
+          additionalPages: [],
         },
       ],
-    };
-  }
+    },
+  ];
 
   private static renderProductCategoryIcon(
     icon: string | undefined,

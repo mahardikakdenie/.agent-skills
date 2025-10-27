@@ -149,8 +149,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     isLogin: boolean = false
   ) => {
     setGlobalToken(token);
-    await AppMenu.loadProductCategories();
-
     const decodedToken: any = jwtDecode(token);
     const userdata = JSON.parse(JSON.stringify(decodedToken));
     userdata.all_channels = [
