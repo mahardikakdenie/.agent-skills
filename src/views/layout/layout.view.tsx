@@ -77,6 +77,21 @@ export const LayoutView = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showDropdown]);
 
+  useEffect(() => {
+    const updateNavbarHeight = () => {
+      if (!navbarRef.current) return;
+      document.documentElement.style.setProperty(
+        "--fs-navbar-height",
+        `${navbarRef.current.offsetHeight}px`
+      );
+    };
+
+    updateNavbarHeight();
+    window.addEventListener("resize", updateNavbarHeight);
+
+    return () => window.removeEventListener("resize", updateNavbarHeight);
+  }, [isMenuOpen, isMobileView, user]);
+
   const toggleModal = () => setMenu(!isMenuOpen);
 
   const goToPage = (url: string) => {
