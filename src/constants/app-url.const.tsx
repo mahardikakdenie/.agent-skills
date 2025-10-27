@@ -162,6 +162,7 @@ class AppURL {
   static report = "/report";
   static reportClaim = `${AppURL.report}/claim`;
   static reportCampaign = `${AppURL.report}/campaign`;
+  static reportCampaignAnalytics = `${AppURL.report}/campaign-analytics`;
   static reportPerformance = `${AppURL.report}/performance`;
 
   // Product Catalog
