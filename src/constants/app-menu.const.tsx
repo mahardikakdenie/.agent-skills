@@ -56,10 +56,6 @@ interface ProductCategory {
 }
 
 class AppMenu {
-  private static readonly productCategoryMenuName = "Product Category";
-  private static hasLoadedProductCategories = false;
-  private static loadingProductCategories: Promise<void> | null = null;
-
   static menu: MenuItem[] = [
     {
       name: "Dashboard",
@@ -263,7 +259,12 @@ class AppMenu {
           name: "Product Catalog",
           url: AppURL.productCategory,
           icon: renderImageIcon(iconClaim, "Product Catalog"),
-          additionalPages: [],
+          additionalPages: [
+            {
+              name: "Detail Product Catalog",
+              url: `${AppURL.productCategory}/`,
+            },
+          ],
         },
       ],
     },
@@ -556,69 +557,6 @@ class AppMenu {
       ],
     },
   ];
-
-  static async loadProductCategories(force = false): Promise<void> {
-    if (AppMenu.hasLoadedProductCategories && !force) return;
-    if (AppMenu.loadingProductCategories && !force) {
-      return AppMenu.loadingProductCategories;
-    }
-
-    AppMenu.loadingProductCategories = (async () => {
-      try {
-        const response: any = await productService.get(ApiURL.v1Categories, {
-          params: { limit: 1000 },
-        });
-        const rawCategories =
-          response?.data?.data ?? response?.data ?? response ?? [];
-        const normalizedCategories = Array.isArray(rawCategories)
-          ? rawCategories
-          : [];
-        // AppMenu.applyProductCategories(normalizedCategories);
-        AppMenu.hasLoadedProductCategories = true;
-      } catch (error) {
-        console.error("[AppMenu] Failed to load product categories:", error);
-      } finally {
-        AppMenu.loadingProductCategories = null;
-      }
-    })();
-
-    return AppMenu.loadingProductCategories;
-  }
-
-  private static applyProductCategories(categories: ProductCategory[]) {
-    const productCategoryMenu = AppMenu.menu.find(
-      (item) => item.name === AppMenu.productCategoryMenuName
-    );
-
-    if (!productCategoryMenu) return;
-
-    productCategoryMenu.submenu = categories.map((category) =>
-      AppMenu.mapCategoryToSubmenu(category)
-    );
-  }
-
-  private static mapCategoryToSubmenu(category: ProductCategory): SubMenuItem {
-    const displayName =
-      category.display_name || formatCategoryDisplayName(category.name);
-    const baseUrl = AppURL.productCatalogCategory(category.name);
-    const detailBaseUrl = `${baseUrl}/detail/`;
-
-    return {
-      name: displayName,
-      url: baseUrl,
-      icon: AppMenu.renderProductCategoryIcon(category.icon, displayName),
-      additionalPages: [
-        {
-          name: "Add Plan",
-          url: AppURL.productCatalogAdd(category.name),
-        },
-        {
-          name: "Detail Product Catalog",
-          url: detailBaseUrl,
-        },
-      ],
-    };
-  }
 
   private static renderProductCategoryIcon(
     icon: string | undefined,
