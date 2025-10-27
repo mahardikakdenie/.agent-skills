@@ -261,7 +261,7 @@ class AppMenu {
       submenu: [
         {
           name: "Product Catalog",
-          url: `${AppURL.productCategory}/travel`,
+          url: AppURL.productCategory,
           icon: renderImageIcon(iconClaim, "Product Catalog"),
           additionalPages: [],
         },
