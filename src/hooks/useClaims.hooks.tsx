@@ -111,7 +111,13 @@ export default function useClaims(): UseClaimsProps {
         params.keyword = searchData;
       }
 
-      if (searchSlaStatus) {
+      const normalizedSlaStatus = searchSlaStatus?.trim().toLowerCase();
+      const shouldApplySlaFilter =
+        !!searchSlaStatus &&
+        normalizedSlaStatus !== "all" &&
+        normalizedSlaStatus !== "all priority";
+
+      if (shouldApplySlaFilter) {
         params.sla_status = searchSlaStatus;
       }
 
