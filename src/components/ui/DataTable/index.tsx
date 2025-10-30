@@ -18,6 +18,7 @@ export interface Column<T> {
   header: string;
   render?: (item: T, index: number) => React.ReactNode;
   className?: string;
+  classNameHeading?: string;
 }
 
 export interface DataTableProps<T> {
@@ -90,7 +91,9 @@ export function DataTable<T extends Record<string, any>>({
             {columns.map((column) => (
               <TableHead
                 key={column.key}
-                className={`whitespace-nowrap py-2 ${column.className || ""}`}
+                className={`whitespace-nowrap py-2 ${column.className || ""} ${
+                  column.classNameHeading || ""
+                }`}
               >
                 {column.header}
               </TableHead>
