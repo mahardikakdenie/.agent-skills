@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ChannelService } from "@/services/channel.services";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -10,14 +11,12 @@ import ApiURL from "@/constants/api-url.const";
 import { claimService } from "@/services/api.service";
 
 interface UseClaimsProps {
-  // Data states
   claims: any[];
   filteredClaims: any[];
   totalPages: number;
   totalData: number;
   channels: any[];
 
-  // Filter states
   page: number;
   rowsPerPage: number;
   tab: string;
@@ -27,7 +26,6 @@ interface UseClaimsProps {
   searchChannel: string | null;
   selectedChannel: any;
 
-  // Filter setters/handlers
   setPage: (page: number) => void;
   setRowsPerPage: (rows: number) => void;
   setTab: (tab: string) => void;
@@ -36,14 +34,12 @@ interface UseClaimsProps {
   setDate: (date: DateRange | undefined) => void;
   setSearchChannel: (channel: string) => void;
 
-  // Loading states
   isLoading: boolean;
   isError: boolean;
   error: any;
   isFetching: boolean;
   isLoadingChannels: boolean;
 
-  // Methods
   refetch: () => void;
   handleSearch: (keyword: string) => void;
   handleRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -56,21 +52,146 @@ export default function useClaims(): UseClaimsProps {
   const defaultChannel = "40eee5bf-2b92-4d23-be55-f9caa9d3ea88";
   const { user: claimsToken } = useAuth();
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const channelService = useMemo(() => new ChannelService(), []);
 
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPageState] = useState(() => {
+    return parseInt(searchParams.get("page") || "1", 10);
+  });
+
+  const [rowsPerPage, setRowsPerPageState] = useState(() => {
+    return parseInt(searchParams.get("limit") || "10", 10);
+  });
+
   const [channels, setChannels] = useState<any[]>([]);
 
-  const [tab, setTab] = useState("All");
+  const [tab, setTabState] = useState(() => {
+    return searchParams.get("status") || "All";
+  });
+
   const [searchData, setSearchData] = useState("");
-  const [searchSlaStatus, setSearchSlaStatus] = useState("");
-  const [date, setDate] = useState<DateRange | undefined>(undefined);
-  const [searchChannel, setSearchChannel] = useState<string | null>(null);
+
+  const [searchSlaStatus, setSearchSlaStatusState] = useState(() => {
+    return searchParams.get("sla_status") || "";
+  });
+
+  const [date, setDateState] = useState<DateRange | undefined>(() => {
+    const dateFrom = searchParams.get("date_from");
+    const dateTo = searchParams.get("date_to");
+
+    if (dateFrom || dateTo) {
+      return {
+        from: dateFrom ? new Date(dateFrom) : undefined,
+        to: dateTo ? new Date(dateTo) : undefined,
+      };
+    }
+    return undefined;
+  });
+
+  const [searchChannel, setSearchChannelState] = useState<string | null>(() => {
+    return searchParams.get("channel") || null;
+  });
+
   const [selectedChannel, setSelectedChannel] = useState<any>({
     id: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
     name: "Teman",
   });
+
+  const updateURL = useCallback(
+    (params: Record<string, string | number | undefined>) => {
+      const current = new URLSearchParams(Array.from(searchParams.entries()));
+
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          current.set(key, String(value));
+        } else {
+          current.delete(key);
+        }
+      });
+
+      const search = current.toString();
+      const query = search ? `?${search}` : "";
+
+      router.replace(`${pathname}${query}`, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
+  const setPage = useCallback(
+    (newPage: number) => {
+      setPageState(newPage);
+      updateURL({ page: newPage });
+    },
+    [updateURL]
+  );
+
+  const setRowsPerPage = useCallback(
+    (newRowsPerPage: number) => {
+      setRowsPerPageState(newRowsPerPage);
+      setPageState(1);
+      updateURL({ limit: newRowsPerPage, page: 1 });
+    },
+    [updateURL]
+  );
+
+  const setTab = useCallback(
+    (newTab: string) => {
+      setTabState(newTab);
+      setPageState(1);
+      updateURL({
+        status: newTab === "All" ? undefined : newTab,
+        page: 1,
+      });
+    },
+    [updateURL]
+  );
+
+  const setSearchSlaStatus = useCallback(
+    (newSlaStatus: string) => {
+      setSearchSlaStatusState(newSlaStatus);
+      setPageState(1);
+      updateURL({
+        sla_status:
+          newSlaStatus === "All" || !newSlaStatus ? undefined : newSlaStatus,
+        page: 1,
+      });
+    },
+    [updateURL]
+  );
+
+  const setDate = useCallback(
+    (newDate: DateRange | undefined) => {
+      setDateState(newDate);
+      setPageState(1);
+      updateURL({
+        date_from: newDate?.from
+          ? format(newDate.from, "yyyy-MM-dd")
+          : undefined,
+        date_to: newDate?.to ? format(newDate.to, "yyyy-MM-dd") : undefined,
+        page: 1,
+      });
+    },
+    [updateURL]
+  );
+
+  const setSearchChannel = useCallback(
+    (newChannel: string) => {
+      setSearchChannelState(newChannel);
+      const selectedChannelObj = channels.find((x) => x.id === newChannel);
+      if (selectedChannelObj) {
+        setSelectedChannel(selectedChannelObj);
+      }
+      setPageState(1);
+      updateURL({
+        channel: newChannel,
+        page: 1,
+      });
+    },
+    [channels, updateURL]
+  );
 
   const channelId =
     searchChannel ||
@@ -192,15 +313,22 @@ export default function useClaims(): UseClaimsProps {
       const isTokenChannelValid = channels.some(
         (channel) => channel.id === tokenChannel
       );
-      setSearchChannel(isTokenChannelValid ? tokenChannel : defaultChannel);
+      const defaultChannelToUse = isTokenChannelValid
+        ? tokenChannel
+        : defaultChannel;
+      setSearchChannelState(defaultChannelToUse);
+
+      if (!searchParams.get("channel")) {
+        updateURL({ channel: defaultChannelToUse });
+      }
     }
-  }, [searchChannel, channels, tokenChannel]);
+  }, [searchChannel, channels, tokenChannel, searchParams, updateURL]);
 
   const handleSearch = useMemo(
     () =>
       _.debounce((keyword: string) => {
         setSearchData(keyword);
-        setPage(1);
+        setPageState(1);
       }, 300),
     []
   );
@@ -208,38 +336,36 @@ export default function useClaims(): UseClaimsProps {
   const handleRowsPerPageChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setRowsPerPage(Number(e.target.value));
-      setPage(1);
     },
-    []
+    [setRowsPerPage]
   );
 
-  const selectTab = useCallback((tabName: string) => {
-    setTab(tabName);
-    setPage(1);
-  }, []);
+  const selectTab = useCallback(
+    (tabName: string) => {
+      setTab(tabName);
+    },
+    [setTab]
+  );
 
-  const handleSearchSlaStatusChange = useCallback((v: string) => {
-    setSearchSlaStatus(v);
-    setPage(1);
-  }, []);
+  const handleSearchSlaStatusChange = useCallback(
+    (v: string) => {
+      setSearchSlaStatus(v);
+    },
+    [setSearchSlaStatus]
+  );
 
   const handleChannelChange = useCallback(
     (v: string) => {
       setSearchChannel(v);
-      const selectedChannelObj = channels.find((x) => x.id === v);
-      if (selectedChannelObj) {
-        setSelectedChannel(selectedChannelObj);
-      }
-      setPage(1);
     },
-    [channels]
+    [setSearchChannel]
   );
 
   useEffect(() => {
-    if (searchData || searchSlaStatus || date || searchChannel) {
-      setPage(1);
+    if (searchData) {
+      setPageState(1);
     }
-  }, [searchData, searchSlaStatus, date, searchChannel]);
+  }, [searchData]);
 
   useEffect(() => {
     return () => {
@@ -277,7 +403,6 @@ export default function useClaims(): UseClaimsProps {
     isFetching,
     isLoadingChannels,
 
-    // Methods
     refetch,
     handleSearch,
     handleRowsPerPageChange,
