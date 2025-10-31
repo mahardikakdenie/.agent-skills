@@ -103,7 +103,7 @@ export default function SourcePage() {
     const handleDelete = (id: string) => {
         if (window.confirm("Are you sure you want to delete this source?")) {
             sanctionService
-                .delete(ApiURL.v1SourcesDetails(id))
+                .delete(ApiURL.v1SourcesDeleteDetails(id))
                 .then(() => {
                     const updatedSource = source.filter((item) => item.id !== id);
                     setSource(updatedSource);
