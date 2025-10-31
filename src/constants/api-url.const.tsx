@@ -211,8 +211,10 @@ class ApiURL {
     static v1Sources = `/v1${ApiURL.sources}`;
     static v1SourcesPaging = `${ApiURL.v1Sources}/paging`;
     static v1SourcesUpdate = `${ApiURL.v1Sources}/update`;
+    static v1SourcesDelete = `${ApiURL.v1Sources}/delete`;
     static v1SourcesDetails = (id: string) => { return `${ApiURL.v1Sources}/${id}` };
     static v1SourcesUpdateDetails = (id: string) => { return `${ApiURL.v1SourcesUpdate}/${id}` };
+    static v1SourcesDeleteDetails = (id: string) => { return `${ApiURL.v1SourcesDelete}/${id}` };
 
     static countries = "/countries";
 
