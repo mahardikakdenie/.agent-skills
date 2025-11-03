@@ -69,7 +69,7 @@ export default function ClaimHistoryPage() {
       <div className="flex flex-col gap-4 items-center justify-center py-14">
         <Image alt="no data" src={emptyStateSearchPrompt} width={200} />
         <div className="text-[#939597] text-base">
-          Masukkan KTP / ID / NIK Number untuk melihat histori claim
+          Enter NIK / Passport / Claim Number to view claim history
         </div>
       </div>
     </div>
