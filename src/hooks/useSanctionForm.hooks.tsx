@@ -279,7 +279,7 @@ export function useSanctionForm(
         date_blacklisted: formData.date_blacklisted,
       };
 
-      saveMutation.mutate(payload);
+      saveMutation.mutate(isEdit ? [payload] : payload);
     },
     [saveMutation, isEdit]
   );
