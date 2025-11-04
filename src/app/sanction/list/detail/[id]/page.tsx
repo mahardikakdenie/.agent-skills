@@ -290,7 +290,7 @@ export default function EditSanctionPage() {
       }
       const response: any = await sanctionService.put(
         ApiURL.v1BlacklistUpdateDetails(id),
-        payload
+        [payload]
       );
       const { data } = response;
 
