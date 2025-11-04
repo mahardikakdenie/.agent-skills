@@ -1,386 +1,212 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import React from "react";
 import { FaSave } from "react-icons/fa";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { ChevronLeft } from "react-feather";
-import Papa from "papaparse";
-import {useAuth} from "@/context/auth.context";
-import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import {countryService, productService, sanctionService} from "@/services/api.service";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { useUploadSanction } from "@/hooks/useUploadSanction.hooks";
+import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
+const ErrorModal = ({
+  isOpen,
+  message,
+  onClose,
+}: {
+  isOpen: boolean;
+  message: string;
+  onClose: () => void;
+}) => {
+  if (!isOpen) return null;
 
-interface CountryAPI {
-    id: string;
-    name: string;
-}
-
-interface Insurance {
-    id: string;
-    name: string;
-}
-
-interface Source {
-    id: string;
-    source_name: string;
-    source_type: string;
-    source_url: string;
-    insurance_id: string;
-}
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white p-6 rounded shadow-md w-1/3">
+        <h2 className="text-lg font-semibold mb-4">Alert</h2>
+        <p>{message}</p>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function UploadSanctionPage() {
-    const router = useRouter();
-    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-    const { permissionList } = useAuth();
+  const {
+    hasAccess,
+    showAlert,
+    errorMessage,
+    fileName,
+    isDragging,
 
-    useEffect(() => {
-      const checkAccess = async () => {
-        const access = permissionList.includes("Sanction.Create");
-        setHasAccess(access);
-        if (!access) {
-          router.push(AppURL.forbidden);
-        }
-      };
-  
-      checkAccess();
-    }, [router]);
+    isUploading,
 
-    const [insurance, setInsurance] = useState<Insurance[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [errorSourceName, setErrorSourceName] = useState('');
-    const [error, setError] = useState('');
-    const [csvData, setCsvData] = useState<any[]>([]);
-    const [isDragging, setIsDragging] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [showAlert, setShowAlert] = useState(false);
-    const [fileName, setFileName] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [countryAPI, setCountryAPI] = useState<CountryAPI[]>([]);
-    const [insuranceList, setInsuranceList] = useState<Insurance[]>([]);
-    const [source, setSource] = useState<Source[]>([]);
+    fileInputRef,
 
+    handleFileUpload,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleUpload,
+    setShowAlert,
+    goBack,
+  } = useUploadSanction();
 
-    useEffect(() => {
-        fetchCountry();
-        fetchInsurance();
-        fetchSources();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  if (hasAccess === false) {
+    return null;
+  }
 
-
-    const fetchSources = async () => {
-        try {
-            const response: any = await sanctionService.get(ApiURL.v1Sources);
-            setSource(response.data.data);
-        } catch (error) {
-            console.error("Failed to fetch sources:", error);
-        }
-    };
-
-
-    const fetchInsurance = async () => {
-        try {
-            const response: any = await productService.get(ApiURL.v1Insurances);
-            setInsuranceList(response.data.data);
-        } catch (error) {
-            console.error("Failed to fetch insurances:", error);
-        }
-    };
-
-    const fetchCountry = async () => {
-        try {
-            const response: any = await countryService.get(ApiURL.countries);
-            setCountryAPI(response.data.data);
-        } catch (error) {
-            console.error("Failed to fetch country:", error);
-        }
-    };
-
-    const handleFileParse = (file: File) => {
-        Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (result) => {
-                // Create maps for case-insensitive lookups
-                const insuranceMap = new Map(insuranceList.map(insurance => [insurance.name.toLowerCase(), insurance.id]));
-                const sourceMap = new Map(source.map(src => [src.source_name.toLowerCase(), src.id]));
-
-                const data = result.data.map((row: any) => {
-                    // Create a default data structure for each row
-                    const parsedRow = {
-                        first_name: row.first_name || "",
-                        middle_name: row.middle_name || "",
-                        last_name: row.last_name || "",
-                        country: row.country || "",
-                        id_number: row.id_number || "",
-                        phone_number: row.phone_number || "",
-                        email: row.email || "",
-                        source_type: row.source_type || "",
-                        source_name: row.source_name || "",
-                        insurance: row.insurance || "",
-                        blacklist_date: row.blacklist_date || "",
-                        blacklist_reason: row.blacklist_reason || "",
-                        insurance_id: "", // default empty value
-                        source_id: "", // default empty value
-                    };
-
-                    // Format blacklist_date to YYYY-MM-DD if it exists
-                    if (parsedRow.blacklist_date) {
-                        const date = new Date(parsedRow.blacklist_date);
-                        if (!isNaN(date.getTime())) {
-                            const year = date.getFullYear();
-                            const month = String(date.getMonth() + 1).padStart(2, '0');
-                            const day = String(date.getDate()).padStart(2, '0');
-                            parsedRow.blacklist_date = `${year}-${month}-${day}`;
-                        }
-                    }
-
-                    // Assign insurance_id if the source_type is 'insurance' and insurance name matches
-                    if (parsedRow.source_type === "insurance" && parsedRow.insurance) {
-                        const insuranceId = insuranceMap.get(parsedRow.insurance.toLowerCase());
-                        if (insuranceId) {
-                            parsedRow.insurance_id = insuranceId;
-                        }
-                    }
-
-                    // Assign source_id if the source_name matches
-                    if (parsedRow.source_name) {
-                        const sourceId = sourceMap.get(parsedRow.source_name.toLowerCase());
-                        if (sourceId) {
-                            parsedRow.source_id = sourceId;
-                        }
-                    }
-
-                    return parsedRow;
-                });
-
-                setCsvData(data);
-            },
-            error: (error) => {
-                console.error("Error parsing CSV:", error);
-                setErrorMessage("Failed to parse CSV file.");
-                setShowAlert(true);
-            },
-        });
-    };
-
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file && file.type === "text/csv") {
-            setFileName(file.name);
-            handleFileParse(file);
-
-            // Clear the file input after processing
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
-        } else {
-            setErrorMessage("Please upload a valid CSV file.");
-            setShowAlert(true);
-        }
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(true);
-    };
-
-    const handleDragLeave = () => {
-        setIsDragging(false);
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(false);
-        const file = e.dataTransfer.files[0];
-        if (file && file.type === "text/csv") {
-            setFileName(file.name);
-            handleFileParse(file);
-        } else {
-            setErrorMessage("Please upload a valid CSV file.");
-            setShowAlert(true);
-        }
-    };
-
-    const handleUpload = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setErrorMessage(null);
-        setShowAlert(false);
-        setLoading(true);
-
-        if (csvData != null) {
-            const requiredFields = [
-                // 'first_name', 'country',
-                'first_name',
-                'id_number', 'phone_number', 'email',
-                'blacklist_date', 'blacklist_reason'
-            ];
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-            const isDataValid = csvData.every((row: any) => {
-                // const isCountryValid = new Set(countryAPI.map((c: any) => c.name.toLowerCase()));
-                const isSourceValid = new Set(source.map((s: any) => s.source_name.toLowerCase()));
-
-                return (
-                    requiredFields.every(field => row[field] != null && row[field] !== "") &&
-                    emailRegex.test(row.email) &&
-                    dateRegex.test(row.blacklist_date) &&
-                    // isCountryValid.has(row.country.toLowerCase()) &&
-                    isSourceValid.has(row.source_name.toLowerCase())
-                );
-            });
-
-            if (!isDataValid) {
-                setErrorMessage("Invalid data in the CSV document file.");
-                setShowAlert(true);
-                setLoading(false);
-                return;
-            }
-
-            try {
-                
-                await Promise.all(csvData.map(async (row) => {
-                    // Map csvData fields to PostBlackListDTO structure
-                    const sanctionData = {
-                        id_number: row.id_number.toString(),
-                        first_name: row.first_name,
-                        middle_name: row.middle_name || null,
-                        last_name: row.last_name || null,
-                        phone_number: row.phone_number.toString(),
-                        email: row.email,
-                        blacklist_reason: row.blacklist_reason,
-                        source_id: row.source_name ? source.find((s: any) => s.source_name.toLowerCase() === row.source_name.toLowerCase())?.id : null,
-                        // country: row.country ? countryAPI.find((c: any) => c.name.toLowerCase() === row.country.toLowerCase())?.id : null,
-                        country: 'IDN',
-                        id_type: 'KTP',
-                        created_at: new Date().toISOString(),
-                        date_blacklisted: row.blacklist_date
-                    };
-
-                    await sanctionService.post(ApiURL.v1Blacklist, sanctionData);
-                }));
-
-                // After all sanctions have been created
-                setErrorMessage("Sanction Uploaded!");
-                setShowAlert(true);
-                setTimeout(() => {
-                    setShowAlert(false);
-                    router.push(AppURL.sanctionList);
-                }, 2000);
-
-            } catch (error) {
-                console.error("Failed to create sanction:", error);
-                setErrorMessage("Failed to create sanction. Please try again.");
-                setShowAlert(true);
-            } finally {
-                setLoading(false);
-            }
-        } else {
-            setErrorMessage('Failed to create sanction: CSV file is empty.');
-            setShowAlert(true);
-            setLoading(false);
-        }
-    };
-
-    const ErrorModal = ({ isOpen, message, onClose }: { isOpen: boolean, message: string, onClose: () => void }) => {
-        if (!isOpen) return null;
-
-        return (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                <div className="bg-white p-6 rounded shadow-md w-1/3">
-                    <h2 className="text-lg font-semibold mb-4">Alert</h2>
-                    <p>{message}</p>
-                    <div className="flex justify-end mt-4">
-                        <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded">
-                            Close
-                        </button>
-                    </div>
-                </div>
+  return (
+    <ContentLoadingWrapper isLoading={isUploading}>
+      <div className="flex flex-col w-full gap-4">
+        <form onSubmit={handleUpload}>
+          <div className="bg-white md:px-6 p-4 flex items-center">
+            <div>
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/sanction/list">
+                      Sanction List
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Upload Sanction</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+              <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
+                Upload Blacklist
+              </h2>
             </div>
-        );
-    };
-
-    return (
-        <div className="flex flex-col w-full gap-4">
-            <form onSubmit={handleUpload}>
-                <div className="bg-white md:px-6 p-4 flex items-center">
-                    <div>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink>Sanction List</BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator />
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>Upload Sanction</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
-                        <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-                            Upload Blacklist
-                        </h2>
-                    </div>
-                    <div className="flex space-x-4 ml-auto">
-                        <div
-                            onClick={() => router.push(AppURL.sanctionList)}
-                            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                            Back
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2"
-                        >
-                            {loading ? <span>Saving...</span> : <FaSave className="mr-2" />}
-                            Submit
-                        </button>
-                    </div>
-                </div>
-                {showAlert && (
-                    <ErrorModal isOpen={showAlert} message={errorMessage!} onClose={() => setShowAlert(false)} />
+            <div className="flex space-x-4 ml-auto">
+              <div
+                onClick={goBack}
+                className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </div>
+              <button
+                type="submit"
+                disabled={isUploading}
+                className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2 disabled:opacity-50"
+              >
+                {isUploading ? (
+                  <span>Saving...</span>
+                ) : (
+                  <>
+                    <FaSave className="mr-2" />
+                    Submit
+                  </>
                 )}
+              </button>
+            </div>
+          </div>
 
-                <div
-                    className={`flex flex-col items-center justify-center border-2 border-dashed rounded-md p-6 cursor-pointer 
-                    ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"}`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
+          {showAlert && (
+            <ErrorModal
+              isOpen={showAlert}
+              message={errorMessage || ""}
+              onClose={() => setShowAlert(false)}
+            />
+          )}
+
+          <div className="w-full flex flex-col p-4 sm:p-6">
+            <div className="bg-white md:px-6 p-4">
+              <div
+                className={`flex flex-col items-center justify-center border-2 border-dashed rounded-md p-6 cursor-pointer transition-colors
+              ${
+                isDragging
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-300 bg-white"
+              }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <p className="text-gray-500 mb-4">
+                  Drag and drop your CSV file here, or
+                </p>
+                <label
+                  htmlFor="fileUpload"
+                  className="px-4 py-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full cursor-pointer"
                 >
-                    <p className="text-gray-500 mb-4">Drag and drop your CSV file here, or</p>
-                    <label
-                        htmlFor="fileUpload"
-                        className="px-4 py-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full cursor-pointer"
-                    >
-                        Browse Files
-                    </label>
-                    <input
-                        id="fileUpload"
-                        type="file"
-                        accept=".csv"
-                        onChange={handleFileUpload}
-                        ref={fileInputRef}  // Attach the ref to the file input
-                        className="hidden"
-                    />
+                  Browse Files
+                </label>
+                <input
+                  id="fileUpload"
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileUpload}
+                  ref={fileInputRef}
+                  className="hidden"
+                />
+              </div>
+
+              {fileName && (
+                <div className="mt-4 text-gray-600">
+                  <p>
+                    Selected file:{" "}
+                    <span className="font-semibold">{fileName}</span>
+                  </p>
                 </div>
+              )}
 
-                {fileName && (
-                    <div className="mt-2 text-gray-600">
-                        <p>Selected file: <span className="font-semibold">{fileName}</span></p>
-                    </div>
-                )}
-
-                {showAlert && (
-                    <div className="mt-4 text-red-600">
-                        <p>{errorMessage}</p>
-                    </div>
-                )}
-
-            </form >
-        </div >
-    );
-};
+              <div className="mt-6 p-4 bg-gray-50 rounded-md">
+                <h3 className="text-lg font-semibold mb-2">
+                  CSV Format Requirements
+                </h3>
+                <p className="text-sm text-gray-600 mb-2">
+                  Your CSV file should contain the following columns:
+                </p>
+                <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                  <li>
+                    <strong>first_name</strong> (required)
+                  </li>
+                  <li>
+                    <strong>middle_name</strong> (optional)
+                  </li>
+                  <li>
+                    <strong>last_name</strong> (optional)
+                  </li>
+                  <li>
+                    <strong>id_number</strong> (required)
+                  </li>
+                  <li>
+                    <strong>phone_number</strong> (required)
+                  </li>
+                  <li>
+                    <strong>email</strong> (required, valid email format)
+                  </li>
+                  <li>
+                    <strong>source_name</strong> (required, must match existing
+                    source)
+                  </li>
+                  <li>
+                    <strong>blacklist_date</strong> (required, format:
+                    YYYY-MM-DD)
+                  </li>
+                  <li>
+                    <strong>blacklist_reason</strong> (required)
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </ContentLoadingWrapper>
+  );
+}
