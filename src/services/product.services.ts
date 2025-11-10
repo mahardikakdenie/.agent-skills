@@ -61,7 +61,11 @@ export class ProductService {
     return this.httpClientCookie.get(`/v1/products?page=${page}&pageSize=100`);
   }
 
-  async get100Plans(page: number): Promise<any> {
-    return this.httpClientCookie.get(`/v1/plans?page=${page}&pageSize=100`);
+  async get100Plans(page: number, planName?: string): Promise<any> {
+    let link = `/v1/plans?page=${page}&pageSize=100`;
+    if (planName) {
+      link += `&planName=${planName}`;
+    }
+    return this.httpClientCookie.get(link);
   }
 }
