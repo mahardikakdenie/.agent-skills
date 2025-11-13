@@ -25,9 +25,9 @@ import { ChevronLeft } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../../broker-fee/hook";
 import AppURL from "@/constants/app-url.const";
-import {useScreen} from "@/context/screen.context";
+import { useScreen } from "@/context/screen.context";
 import ApiURL from "@/constants/api-url.const";
-import {channelService} from "@/services/api.service";
+import { channelService } from "@/services/api.service";
 
 export default function CreatePartnerCom() {
   const router = useRouter();
@@ -48,10 +48,11 @@ export default function CreatePartnerCom() {
         product: data.product ? data.product : null,
         plan: data.plan ? data.plan : null,
         insurance: data.insurance == "All" ? null : data.insurance,
-        insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
+        insurance_name: insurances.find((i: any) => i.id === data.insurance)
+          ?.name,
         fee_type: "percentage",
         currency: "IDR",
-        fee: data.fee
+        fee: data.fee,
       });
       router.push(AppURL.financePartnerComm);
     } catch (error) {
@@ -93,16 +94,18 @@ export default function CreatePartnerCom() {
     const fetchData = async () => {
       await getChannels();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }
+    };
     fetchData();
   }, []);
 
   const getChannels = async () => {
     try {
-      const channelResponse = await channelService.get(ApiURL.v1Channels, { params: { page: 1, limit: 100 } });
+      const channelResponse = await channelService.get(ApiURL.v1Channels, {
+        params: { page: 1, limit: 100 },
+      });
       setChannels(channelResponse?.data?.data || []);
     } catch (error) {
-      console.error('Failed to fetch channels:', error);
+      console.error("Failed to fetch channels:", error);
     }
   };
 
@@ -146,7 +149,9 @@ export default function CreatePartnerCom() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financePartnerComm}>Partner Comm</BreadcrumbLink>
+                <BreadcrumbLink href={AppURL.financePartnerComm}>
+                  Partner Comm
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -179,7 +184,6 @@ export default function CreatePartnerCom() {
 
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
-
           <div>
             <label
               htmlFor="channel"
@@ -193,11 +197,13 @@ export default function CreatePartnerCom() {
               control={control}
               rules={{ required: "Channel Name is required" }}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={(val) => {
-                  setValue("insurance", "All");
-                  field.onChange(val);
-
-                }}>
+                <Select
+                  value={field.value}
+                  onValueChange={(val) => {
+                    setValue("insurance", "All");
+                    field.onChange(val);
+                  }}
+                >
                   <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                     <SelectValue placeholder="Select Channel " />
                   </SelectTrigger>
@@ -232,9 +238,11 @@ export default function CreatePartnerCom() {
               control={control}
               rules={{ required: "Insurance Name is required" }}
               render={({ field }) => (
-                <Select value={field.value}
+                <Select
+                  value={field.value}
                   disabled={!watchChannel}
-                  onValueChange={field.onChange}>
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                     <SelectValue placeholder="Select Insurance " />
                   </SelectTrigger>
@@ -289,4 +297,4 @@ export default function CreatePartnerCom() {
       </div>
     </div>
   );
-};
+}

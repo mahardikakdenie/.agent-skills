@@ -24,7 +24,7 @@ import { ChevronLeft, Check } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../../hook";
 import AppURL from "@/constants/app-url.const";
-import {useScreen} from "@/context/screen.context";
+import { useScreen } from "@/context/screen.context";
 
 export default function EditBrokerFeePage() {
   const { id } = useParams();
@@ -58,7 +58,7 @@ export default function EditBrokerFeePage() {
   };
 
   const { setLoading } = useScreen();
-  const [searchType, setSearchType] = useState("");//DEFAULT PARTNER
+  const [searchType, setSearchType] = useState(""); //DEFAULT PARTNER
   const [types, setTypes] = useState<any[]>([
     { name: "Partner", code: "partner" },
     { name: "Insurer", code: "insurer" },
@@ -70,15 +70,15 @@ export default function EditBrokerFeePage() {
       setLoading(true);
       await updateBrokerFee(id as string, {
         ...data,
-        insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
-        product_name: products?.find((i) => i.id === data.product)?.name,
-        plan_name: plans?.find((i) => i.id === data.plan)?.name,
+        insurance_name: insurances.find((i: any) => i.id === data.insurance)
+          ?.name,
+        product_name: products?.find((i: any) => i.id === data.product)?.name,
+        plan_name: plans?.find((i: any) => i.id === data.plan)?.name,
         broker: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
         fee_type: "percentage",
         currency: "IDR",
       });
       router.push(AppURL.financeBrokerFee);
-
     } catch (error) {
       console.error(error);
       alert("Failed to update broker fee");
@@ -137,7 +137,9 @@ export default function EditBrokerFeePage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financeBrokerFee}>Broker Fee</BreadcrumbLink>
+                <BreadcrumbLink href={AppURL.financeBrokerFee}>
+                  Broker Fee
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -300,4 +302,4 @@ export default function EditBrokerFeePage() {
       </div>
     </div>
   );
-};
+}
