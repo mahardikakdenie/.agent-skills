@@ -24,9 +24,9 @@ import { ChevronLeft, Check } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../../../broker-fee/hook";
 import ApiURL from "@/constants/api-url.const";
-import {channelService} from "@/services/api.service";
+import { channelService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
-import {useScreen} from "@/context/screen.context";
+import { useScreen } from "@/context/screen.context";
 
 export default function EditPartnerComPage() {
   const { id } = useParams();
@@ -73,13 +73,13 @@ export default function EditPartnerComPage() {
         product: data.product ? data.product : null,
         plan: data.plan ? data.plan : null,
         insurance: data.insurance == "All" ? null : data.insurance,
-        insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
+        insurance_name: insurances.find((i: any) => i.id === data.insurance)
+          ?.name,
         fee_type: "percentage",
         currency: "IDR",
-        fee: data.fee
+        fee: data.fee,
       });
       router.push(AppURL.financePartnerComm);
-
     } catch (error) {
       console.error(error);
       alert("Failed to update partner com");
@@ -124,13 +124,14 @@ export default function EditPartnerComPage() {
 
   const getChannels = async () => {
     try {
-      const channelResponse: any = await channelService.get(ApiURL.v1Channels, { params: { page: 1, limit: 10000 } });
+      const channelResponse: any = await channelService.get(ApiURL.v1Channels, {
+        params: { page: 1, limit: 10000 },
+      });
       setChannels(channelResponse?.data?.data || []);
     } catch (error) {
-      console.error('Failed to fetch channels:', error);
+      console.error("Failed to fetch channels:", error);
     }
   };
-
 
   useEffect(() => {
     setLoading(true);
@@ -139,7 +140,7 @@ export default function EditPartnerComPage() {
     });
     getChannels().then((x) => {
       fetchInsurances({ channelId: watchChannel });
-    })
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -147,7 +148,10 @@ export default function EditPartnerComPage() {
     if (channelFees && channelFees.data[0]) {
       setValue("id", channelFees.data[0].id);
       setValue("channel", channelFees.data[0].channel);
-      setValue("insurance", channelFees.data[0].insurance ? channelFees.data[0].insurance : "All");
+      setValue(
+        "insurance",
+        channelFees.data[0].insurance ? channelFees.data[0].insurance : "All"
+      );
       // setValue("product", brokerFees.data[0].product);
       // setValue("plan", brokerFees.data[0].plan);
       setValue("fee", channelFees.data[0].fee);
@@ -161,7 +165,9 @@ export default function EditPartnerComPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financePartnerComm}>Partner Comm</BreadcrumbLink>
+                <BreadcrumbLink href={AppURL.financePartnerComm}>
+                  Partner Comm
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -194,7 +200,6 @@ export default function EditPartnerComPage() {
 
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
-
           <div>
             <label
               htmlFor="channel"
@@ -208,11 +213,13 @@ export default function EditPartnerComPage() {
               control={control}
               rules={{ required: "Channel Name is required" }}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={(val) => {
-                  setValue("insurance", "All");
-                  field.onChange(val);
-
-                }}>
+                <Select
+                  value={field.value}
+                  onValueChange={(val) => {
+                    setValue("insurance", "All");
+                    field.onChange(val);
+                  }}
+                >
                   <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                     <SelectValue placeholder="Select Channel " />
                   </SelectTrigger>
@@ -301,4 +308,4 @@ export default function EditPartnerComPage() {
       </div>
     </div>
   );
-};
+}
