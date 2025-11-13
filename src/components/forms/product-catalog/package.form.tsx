@@ -20,6 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
 import { FieldArrayInput } from "./field-array-input";
+import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
 type FormFieldType = {
   label: string;
@@ -143,21 +144,20 @@ export function formatCurrency(value: string) {
 
 function getAttributeWithRangeType(obj: Record<string, any>): string[] {
   const result: string[] = [];
-  
+
   for (const key in obj) {
     const value = obj[key];
 
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      const hasFrom = 'from' in value;
-      const hasTo = 'to' in value;
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      const hasFrom = "from" in value;
+      const hasTo = "to" in value;
 
       if (hasFrom && hasTo) {
         result.push(key);
       }
 
-      // Recursively check nested objects if needed
       const nested = getAttributeWithRangeType(value);
-      result.push(...nested.map(n => `${key}.${n}`));
+      result.push(...nested.map((n) => `${key}.${n}`));
     }
   }
 
@@ -181,15 +181,18 @@ const ProductCategoryPackageForm = ({
   const [schema, setSchema] = useState<ZodSchema<any>>();
   const [defaultValues, setDefaultValues] = useState<Record<string, any>>({});
   const [formFields, setFormFields] = useState<FormFieldType>([]);
+  const [fetchedPackageDetail, setFetchedPackageDetail] = useState<any>(null);
 
   const {
     savePackage,
     updatePackage,
-    fetchProductConfigByType,
     productConfig,
-    fetchPackageById,
-    packageDetail,
-  } = useProducts();
+    isLoadingSavePackage,
+    isLoadingUpdatePackage,
+  } = useProducts({
+    category,
+    packageId: packageID,
+  });
 
   const {
     handleSubmit,
@@ -201,14 +204,6 @@ const ProductCategoryPackageForm = ({
     defaultValues,
     resolver: schema ? zodResolver(schema) : undefined,
   });
-
-  useEffect(() => {
-    if (category) {
-      (async () => {
-        await fetchProductConfigByType(category);
-      })();
-    }
-  }, [category]);
 
   useEffect(() => {
     if (productConfig) {
@@ -234,34 +229,40 @@ const ProductCategoryPackageForm = ({
   }, [defaultValues, reset]);
 
   useEffect(() => {
-    if (packageID) {
-      (async () => {
-        await fetchPackageById(packageID);
-      })();
-    }
-  }, [packageID]);
+    if (fetchedPackageDetail) {
+      const packageData = Array.isArray(fetchedPackageDetail)
+        ? fetchedPackageDetail[0]
+        : fetchedPackageDetail;
 
-  useEffect(() => {
-    if (packageDetail.length > 0) {
-      setValue("currency", packageDetail[0].currency);
-      setValue("premium", formatCurrency(packageDetail[0].premium.toString()));
+      if (!packageData) return;
 
-      for (const key in packageDetail[0].search_params) {
+      setValue("currency", packageData.currency || "");
+      setValue(
+        "premium",
+        formatCurrency(packageData.premium?.toString() || "0")
+      );
+
+      for (const key in packageData.search_params) {
         if (key.includes("_from") || key.includes("_to")) {
           const keyArray = key.split("_");
+          const baseKey = keyArray[0];
 
-          setValue(
-            `${keyArray[0]}.from`,
-            packageDetail[0].search_params[`${keyArray[0]}_from`].toString()
-          );
-          setValue(
-            `${keyArray[0]}.to`,
-            packageDetail[0].search_params[`${keyArray[0]}_to`].toString()
-          );
+          if (key.includes("_from")) {
+            setValue(
+              `${baseKey}.from`,
+              packageData.search_params[key]?.toString() || ""
+            );
+          }
+          if (key.includes("_to")) {
+            setValue(
+              `${baseKey}.to`,
+              packageData.search_params[key]?.toString() || ""
+            );
+          }
         } else {
-          let value = packageDetail[0].search_params[key];
+          let value = packageData.search_params[key];
 
-          if (typeof value === 'number') {
+          if (typeof value === "number") {
             value = value.toString();
           }
 
@@ -269,20 +270,22 @@ const ProductCategoryPackageForm = ({
         }
       }
     }
-  }, [packageDetail]);
+  }, [fetchedPackageDetail, setValue]);
 
   const onSubmit = async (data: any) => {
     const attributesWithRange = getAttributeWithRangeType(data);
-    const newSearchParams = { 
-        ...data,
+    const newSearchParams = {
+      ...data,
     };
     delete newSearchParams.premium;
     delete newSearchParams.currency;
     delete newSearchParams[attributesWithRange[0]];
 
-    if(attributesWithRange.length > 0) {
-        newSearchParams[`${attributesWithRange[0]}_from`] = data[attributesWithRange[0]].from;
-        newSearchParams[`${attributesWithRange[0]}_to`] = data[attributesWithRange[0]].to;
+    if (attributesWithRange.length > 0) {
+      newSearchParams[`${attributesWithRange[0]}_from`] =
+        data[attributesWithRange[0]].from;
+      newSearchParams[`${attributesWithRange[0]}_to`] =
+        data[attributesWithRange[0]].to;
     }
 
     const mappedData = {
@@ -294,269 +297,267 @@ const ProductCategoryPackageForm = ({
 
     try {
       if (method === "update" && packageID) {
-        await updatePackage(packageID, mappedData);
+        await updatePackage({ id: packageID, data: mappedData });
       } else {
         await savePackage(mappedData);
       }
 
       setSaveSuccess(true);
     } catch (error) {
+      console.error("Failed to save package:", error);
       setSaveSuccess(false);
     }
   };
 
   useEffect(() => {
     if (saveSuccess === true) {
-      alert("Data berhasil disimpan!");
-
       router.back();
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    } else if (saveSuccess === false) {
-      alert("Terjadi kesalahan saat menyimpan data.");
     }
-
     setSaveSuccess(null);
   }, [saveSuccess, router]);
 
   return (
-    <div className="flex flex-col w-full">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="bg-white md:px-6 p-4 flex items-center">
-          <div>
-            <Breadcrumb className="sm:block hidden">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink>Product Catalog</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink href={AppURL.productCatalogCategory(category)}>
-                    {category
-                      .split("-")
-                      .map(
-                        (item) =>
-                          item.charAt(0).toUpperCase() + item.slice(1) + " "
-                      )}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    href={AppURL.productCatalogDetail(category, productCategoryID)}
-                  >
-                    Detail Product Catalog
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>
-                    {method === "create" ? "Add" : "Edit"} Package
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-              {method === "create" ? "Add" : "Edit"} Package
-            </h2>
-          </div>
-          <div className="flex ml-auto">
-            <div
-              onClick={() => router.back()}
-              className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back
-            </div>
-            <Button
-              type="submit"
-              className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
-            >
-              <Check className="mr-2 w-4 h-4" />
-              Save
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="p-4 sm:p-6 bg-white rounded-lg flex flex-col gap-4">
+    <ContentLoadingWrapper
+      isLoading={isLoadingSavePackage || isLoadingUpdatePackage}
+    >
+      <div className="flex flex-col w-full">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="bg-white md:px-6 p-4 flex items-center">
             <div>
-              <label
-                htmlFor="premium"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Premium
-              </label>
-              <Controller
-                name="premium"
-                control={control}
-                defaultValue="0"
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="premium"
-                    placeholder="Insert Premium"
-                    value={field.value}
-                    onChange={(e) => {
-                      const formatted = formatCurrency(e.target.value);
-
-                      field.onChange(formatted);
-                    }}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.premium ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.premium && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.premium.message as string}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="currency"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Currency
-              </label>
-              <Controller
-                name="currency"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    id="currency"
-                    placeholder="Insert Currency"
-                    {...field}
-                    className={`mt-1 block w-full h-12 ${
-                      errors.currency ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm`}
-                  />
-                )}
-              />
-              {errors.currency && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.currency.message as string}
-                </p>
-              )}
-            </div>
-            {formFields.map((ff) => {
-              if (ff.type === "array" || ff.type === "table") {
-                return (
-                  <FieldArrayInput
-                    key={ff.name}
-                    control={control}
-                    errors={errors}
-                    label={ff.label}
-                    name={ff.name}
-                  />
-                );
-              } else if (
-                ff.type === "string" ||
-                ff.type === "number" ||
-                ff.type === "range"
-              ) {
-                return (
-                  <div key={ff.name}>
-                    <label
-                      htmlFor={ff.name}
-                      className="block text-sm font-medium text-gray-700 mb-2"
+              <Breadcrumb className="sm:block hidden">
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink>Product Catalog</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink
+                      href={`${AppURL.productCategory}?category=${category}`}
                     >
-                      {ff.label}
-                    </label>
-                    {(ff.type === "string" || ff.type === "number") && (
-                      <div>
-                        <Controller
-                          name={ff.name}
-                          control={control}
-                          defaultValue=""
-                          render={({ field }) => (
-                            <Input
-                              type="text"
-                              id={ff.name}
-                              placeholder={`Insert ${ff.label}`}
-                              {...field}
-                              className={`mt-1 block w-full h-12 ${
-                                errors[ff.name]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-md shadow-sm`}
-                            />
-                          )}
-                        />
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors[ff.name]?.message as string}
-                        </p>
-                      </div>
-                    )}
-                    {ff.type === "range" && (
-                      <div className="flex gap-x-4 items-center">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          From
-                        </label>
-                        <div className="w-full">
-                          <Controller
-                            name={`${ff.name}.from`}
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                              <Input
-                                type="text"
-                                id={`${ff.name}.from`}
-                                placeholder="From"
-                                {...field}
-                                className={`mt-1 block w-full h-12 ${
-                                  (errors[ff.name] as any)?.from
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md shadow-sm`}
-                              />
-                            )}
-                          />
-                          <p className="text-red-500 text-xs mt-1">
-                            {(errors[ff.name] as any)?.from?.message}
-                          </p>
-                        </div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          To
-                        </label>
-                        <div className="w-full">
-                          <Controller
-                            name={`${ff.name}.to`}
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                              <Input
-                                type="text"
-                                id={`${ff.name}.to`}
-                                placeholder="To"
-                                {...field}
-                                className={`mt-1 block w-full h-12 ${
-                                  (errors[ff.name] as any)?.to
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md shadow-sm`}
-                              />
-                            )}
-                          />
-                          <p className="text-red-500 text-xs mt-1">
-                            {(errors[ff.name] as any)?.to?.message}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              }
-            })}
+                      {category
+                        .split("-")
+                        .map(
+                          (item) =>
+                            item.charAt(0).toUpperCase() + item.slice(1) + " "
+                        )}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink
+                      href={`${AppURL.productCatalogDetail}?category=${category}&id=${productCategoryID}`}
+                    >
+                      Detail Product Catalog
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>
+                      {method === "create" ? "Add" : "Edit"} Package
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+              <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+                {method === "create" ? "Add" : "Edit"} Package
+              </h2>
+            </div>
+            <div className="flex ml-auto">
+              <div
+                onClick={() => router.back()}
+                className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </div>
+              <Button
+                type="submit"
+                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
+              >
+                <Check className="mr-2 w-4 h-4" />
+                Save
+              </Button>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
+          <div className="flex flex-col w-full p-4 md:p-6 gap-4">
+            <div className="p-4 sm:p-6 bg-white rounded-lg flex flex-col gap-4">
+              <div>
+                <label
+                  htmlFor="premium"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Premium
+                </label>
+                <Controller
+                  name="premium"
+                  control={control}
+                  defaultValue="0"
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      id="premium"
+                      placeholder="Insert Premium"
+                      value={field.value}
+                      onChange={(e) => {
+                        const formatted = formatCurrency(e.target.value);
+
+                        field.onChange(formatted);
+                      }}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.premium ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                    />
+                  )}
+                />
+                {errors.premium && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.premium.message as string}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="currency"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Currency
+                </label>
+                <Controller
+                  name="currency"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      id="currency"
+                      placeholder="Insert Currency"
+                      {...field}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.currency ? "border-red-500" : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                    />
+                  )}
+                />
+                {errors.currency && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.currency.message as string}
+                  </p>
+                )}
+              </div>
+              {formFields.map((ff) => {
+                if (ff.type === "array" || ff.type === "table") {
+                  return (
+                    <FieldArrayInput
+                      key={ff.name}
+                      control={control}
+                      errors={errors}
+                      label={ff.label}
+                      name={ff.name}
+                    />
+                  );
+                } else if (
+                  ff.type === "string" ||
+                  ff.type === "number" ||
+                  ff.type === "range"
+                ) {
+                  return (
+                    <div key={ff.name}>
+                      <label
+                        htmlFor={ff.name}
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        {ff.label}
+                      </label>
+                      {(ff.type === "string" || ff.type === "number") && (
+                        <div>
+                          <Controller
+                            name={ff.name}
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                              <Input
+                                type="text"
+                                id={ff.name}
+                                placeholder={`Insert ${ff.label}`}
+                                {...field}
+                                className={`mt-1 block w-full h-12 ${
+                                  errors[ff.name]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md shadow-sm`}
+                              />
+                            )}
+                          />
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors[ff.name]?.message as string}
+                          </p>
+                        </div>
+                      )}
+                      {ff.type === "range" && (
+                        <div className="flex gap-x-4 items-center">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            From
+                          </label>
+                          <div className="w-full">
+                            <Controller
+                              name={`${ff.name}.from`}
+                              control={control}
+                              defaultValue=""
+                              render={({ field }) => (
+                                <Input
+                                  type="text"
+                                  id={`${ff.name}.from`}
+                                  placeholder="From"
+                                  {...field}
+                                  className={`mt-1 block w-full h-12 ${
+                                    (errors[ff.name] as any)?.from
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-md shadow-sm`}
+                                />
+                              )}
+                            />
+                            <p className="text-red-500 text-xs mt-1">
+                              {(errors[ff.name] as any)?.from?.message}
+                            </p>
+                          </div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            To
+                          </label>
+                          <div className="w-full">
+                            <Controller
+                              name={`${ff.name}.to`}
+                              control={control}
+                              defaultValue=""
+                              render={({ field }) => (
+                                <Input
+                                  type="text"
+                                  id={`${ff.name}.to`}
+                                  placeholder="To"
+                                  {...field}
+                                  className={`mt-1 block w-full h-12 ${
+                                    (errors[ff.name] as any)?.to
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-md shadow-sm`}
+                                />
+                              )}
+                            />
+                            <p className="text-red-500 text-xs mt-1">
+                              {(errors[ff.name] as any)?.to?.message}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              })}
+            </div>
+          </div>
+        </form>
+      </div>
+    </ContentLoadingWrapper>
   );
 };
 

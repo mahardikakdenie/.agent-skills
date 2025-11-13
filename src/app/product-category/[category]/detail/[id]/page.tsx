@@ -25,22 +25,19 @@ import { ChevronLeft } from "react-feather";
 import ProductDetatilTab from "./product-detail-tab";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
+import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
 export default function DetaildPage({
   params,
 }: {
-  params: Promise<{ id: string; category: string; }>;
+  params: Promise<{ id: string; category: string }>;
 }) {
   const router = useRouter();
   const { category, id } = React.use(params);
   const [selectedInsurance, setSelectedInsurance] = useState<any>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
-  const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
   const [name, setName] = useState("");
-
-  const [currency, setCurrency] = useState("");
-
   const [slug, setSlug] = useState("");
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -69,14 +66,19 @@ export default function DetaildPage({
   }, [router]);
 
   const {
-    fetchInsurances,
+    isLoadingPlan,
+    isLoadingUpdatePlan,
     insurances,
-    products,
-    fetchProducts,
     updatePlan,
-    fetchPlanById,
     plan,
-  } = useProducts();
+    fetchProducts,
+    getProductByCategoryId,
+  } = useProducts({
+    planId: id,
+    category,
+  });
+
+  const products = getProductByCategoryId();
 
   const {
     handleSubmit,
@@ -96,26 +98,18 @@ export default function DetaildPage({
   });
 
   useEffect(() => {
-    if (id) {
-      (async () => {
-        await fetchInsurances({});
-        await fetchPlanById(id);
-      })();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  useEffect(() => {
     if (plan === null || insurances.length === 0) {
       return;
     }
 
-    fetchProducts({ insuranceId: plan.products.insurances.id });
-    setValue("name", plan.name);
-    setValue("slug", plan.slug);
-    setValue("insuranceId", plan.products.insurances.id);
-    setValue("active_period", plan.active_period || "");
-    setValue("active_period_unit", plan.active_period_unit || "");
+    if (plan) {
+      fetchProducts({ insuranceId: plan.products.insurances.id });
+      setValue("name", plan.name);
+      setValue("slug", plan.slug);
+      setValue("insuranceId", plan.products.insurances.id);
+      setValue("active_period", plan.active_period || "");
+      setValue("active_period_unit", plan.active_period_unit || "");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, insurances]);
 
@@ -123,28 +117,20 @@ export default function DetaildPage({
     if (plan === null && products.length === 0) {
       return;
     }
-    setValue("productId", plan.product);
+
+    if (plan) {
+      setValue("productId", plan.product);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, products]);
 
   const onSubmit = async (data: any) => {
     try {
-      await updatePlan(data, id);
-      setSaveSuccess(true);
+      await updatePlan({ data, id });
     } catch (error) {
-      setSaveSuccess(false);
+      console.log(error, "DY: error update plan");
     }
   };
-
-  useEffect(() => {
-    if (saveSuccess === true) {
-      alert("Data berhasil disimpan!");
-      router.push(AppURL.productCatalogCategory(category));
-    } else if (saveSuccess === false) {
-      alert("Terjadi kesalahan saat menyimpan data.");
-    }
-    setSaveSuccess(null);
-  }, [saveSuccess, router, category]);
 
   return (
     <>
@@ -158,7 +144,9 @@ export default function DetaildPage({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={AppURL.productCatalogCategory(category)}>
+                  <BreadcrumbLink
+                    href={AppURL.productCatalogCategoryV2(category)}
+                  >
                     {category
                       .split("-")
                       .map(
@@ -186,146 +174,151 @@ export default function DetaildPage({
           </div>
         </div>
         <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Plan Name
-                  </label>
-                  <Controller
-                    name="name"
-                    control={control}
-                    defaultValue=""
-                    rules={{ required: "Plan Name is required" }}
-                    render={({ field }) => (
-                      <Input
-                        type="text"
-                        id="name"
-                        disabled={!canEdit}
-                        placeholder="Plan Name"
-                        {...field}
-                        className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+          <ContentLoadingWrapper
+            isLoading={isLoadingUpdatePlan || isLoadingPlan}
+          >
+            <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Plan Name
+                    </label>
+                    <Controller
+                      name="name"
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: "Plan Name is required" }}
+                      render={({ field }) => (
+                        <Input
+                          type="text"
+                          id="name"
+                          disabled={!canEdit}
+                          placeholder="Plan Name"
+                          {...field}
+                          className={`mt-1 block w-full h-16 ${
+                            errors.name ? "border-red-500" : "border-gray-300"
                           } rounded-md shadow-sm`}
-                      />
+                        />
+                      )}
+                    />
+                    {errors.name && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.name.message}
+                      </p>
                     )}
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.name.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Slug
-                  </label>
-                  <Controller
-                    name="slug"
-                    control={control}
-                    defaultValue=""
-                    rules={{ required: "Slug is required" }}
-                    render={({ field }) => (
-                      <Input
-                        type="text"
-                        id="slug"
-                        disabled={!canEdit}
-                        placeholder="Slug"
-                        {...field}
-                        className={`mt-1 block w-full h-16 ${errors.name ? "border-red-500" : "border-gray-300"
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Slug
+                    </label>
+                    <Controller
+                      name="slug"
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: "Slug is required" }}
+                      render={({ field }) => (
+                        <Input
+                          type="text"
+                          id="slug"
+                          disabled={!canEdit}
+                          placeholder="Slug"
+                          {...field}
+                          className={`mt-1 block w-full h-16 ${
+                            errors.name ? "border-red-500" : "border-gray-300"
                           } rounded-md shadow-sm`}
-                      />
+                        />
+                      )}
+                    />
+                    {errors.slug && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.slug.message}
+                      </p>
                     )}
-                  />
-                  {errors.slug && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.slug.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="insuranceId"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Insurance
-                  </label>
-                  <Controller
-                    name="insuranceId"
-                    disabled={!canEdit}
-                    control={control}
-                    rules={{ required: "Insurance ID is required" }}
-                    render={({ field }) => (
-                      <Select {...field}>
-                        <SelectTrigger className="h-16">
-                          <SelectValue placeholder="Select Insurance" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Insurances</SelectLabel>
-                            {insurances.map((insurance: any) => (
-                              <SelectItem
-                                key={insurance.id}
-                                value={insurance.id}
-                              >
-                                {insurance.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="insuranceId"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Insurance
+                    </label>
+                    <Controller
+                      name="insuranceId"
+                      disabled={!canEdit}
+                      control={control}
+                      rules={{ required: "Insurance ID is required" }}
+                      render={({ field }) => (
+                        <Select {...field}>
+                          <SelectTrigger className="h-16">
+                            <SelectValue placeholder="Select Insurance" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Insurances</SelectLabel>
+                              {insurances.map((insurance: any) => (
+                                <SelectItem
+                                  key={insurance.id}
+                                  value={insurance.id}
+                                >
+                                  {insurance.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.insuranceId && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.insuranceId.message?.toString()}
+                      </p>
                     )}
-                  />
-                  {errors.insuranceId && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.insuranceId.message?.toString()}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="productId"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Product
-                  </label>
-                  <Controller
-                    name="productId"
-                    disabled={!canEdit}
-                    control={control}
-                    defaultValue=""
-                    rules={{ required: "Product ID is required" }}
-                    render={({ field }) => (
-                      <Select {...field} onValueChange={field.onChange}>
-                        <SelectTrigger className="h-16">
-                          <SelectValue placeholder="Select Product" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Products</SelectLabel>
-                            {products.map((product: any) => (
-                              <SelectItem key={product.id} value={product.id}>
-                                {product.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="productId"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Product
+                    </label>
+                    <Controller
+                      name="productId"
+                      disabled={!canEdit}
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: "Product ID is required" }}
+                      render={({ field }) => (
+                        <Select {...field} onValueChange={field.onChange}>
+                          <SelectTrigger className="h-16">
+                            <SelectValue placeholder="Select Product" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Products</SelectLabel>
+                              {products.map((product: any) => (
+                                <SelectItem key={product.id} value={product.id}>
+                                  {product.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.productId && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.productId.message?.toString()}
+                      </p>
                     )}
-                  />
-                  {errors.productId && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.productId.message?.toString()}
-                    </p>
-                  )}
-                </div>
-                <div>
+                  </div>
+                  {/* <div>
                   <label
                     htmlFor="active_period"
                     className="block text-sm font-medium text-gray-700 mb-1"
@@ -344,8 +337,11 @@ export default function DetaildPage({
                         disabled={!canEdit}
                         placeholder="Active Period"
                         {...field}
-                        className={`mt-1 block w-full h-16 ${errors.active_period ? "border-red-500" : "border-gray-300"
-                          } rounded-md shadow-sm`}
+                        className={`mt-1 block w-full h-16 ${
+                          errors.active_period
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md shadow-sm`}
                       />
                     )}
                   />
@@ -389,18 +385,19 @@ export default function DetaildPage({
                       {errors.active_period_unit.message?.toString()}
                     </p>
                   )}
+                </div> */}
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={!canEdit}
-                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
+                <button
+                  type="submit"
+                  disabled={!canEdit}
+                  className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+                >
+                  Submit
+                </button>
+              </form>
+            </div>
+          </ContentLoadingWrapper>
           <div className="w-full overflow-auto">
             <ProductDetatilTab id={id} category={category} />
           </div>
@@ -408,4 +405,4 @@ export default function DetaildPage({
       </div>
     </>
   );
-};
+}

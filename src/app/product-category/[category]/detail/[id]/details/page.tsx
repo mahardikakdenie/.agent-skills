@@ -1,19 +1,14 @@
 "use client";
 
 import { useProducts } from "@/app/product-category/hooks";
-import { useEffect } from "react";
 import { useParams } from "next/navigation";
 
 export default function PlanDetail() {
   const { id } = useParams();
-  const { plan, fetchPlanById } = useProducts();
 
-  useEffect(() => {
-    if (id && typeof id === "string") {
-      fetchPlanById(id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  const { plan } = useProducts({
+    planId: id as string,
+  });
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
@@ -28,4 +23,4 @@ export default function PlanDetail() {
       </h1>
     </div>
   );
-};
+}

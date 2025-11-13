@@ -170,6 +170,9 @@ class AppURL {
   static productCatalogCategory(category: string) {
     return `${AppURL.productCategory}/${category}`;
   }
+  static productCatalogCategoryV2(category: string) {
+    return `${AppURL.productCategory}?category=${category}`;
+  }
   static productCatalogAdd(category: string) {
     return `${AppURL.productCatalogCategory(category)}/add`;
   }

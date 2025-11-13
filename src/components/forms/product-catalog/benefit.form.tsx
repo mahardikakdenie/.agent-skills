@@ -26,6 +26,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ContentLoadingWrapper } from "../../ui/Loading/index";
+import { toastNotification } from "@/lib/toast";
 
 const schema: z.ZodType<any> = z.lazy(() =>
   z
@@ -168,9 +170,7 @@ const RecursiveBenefitForm = ({ name }: { name: string }) => {
         <Card key={field.id}>
           <CardHeader className="p-4 pb-0">
             <div className="flex justify-between">
-              <p>
-                Sub-{tierLevel}
-              </p>
+              <p>Sub-{tierLevel}</p>
               <Button
                 type="button"
                 variant="destructive"
@@ -215,9 +215,7 @@ const ProductCategoryBenefitForm = ({
 
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
 
-  const {
-    saveBenefit
-  } = useProducts();
+  const { saveBenefit, isLoadingSaveBenefit } = useProducts();
 
   const form = useForm<SchemaType>({
     defaultValues,
@@ -234,99 +232,98 @@ const ProductCategoryBenefitForm = ({
     };
 
     try {
-        if(method === 'update' && benefitID) {
-            //
-        } else {
-            await saveBenefit(mappedData);
-        }
+      if (method === "update" && benefitID) {
+        //
+      } else {
+        await saveBenefit(mappedData);
+      }
 
-        setSaveSuccess(true)
-    } catch(error) {
-        console.error(error);
+      setSaveSuccess(true);
+    } catch (error) {
+      console.error(error);
 
-        setSaveSuccess(false)
+      setSaveSuccess(false);
     }
   };
 
   useEffect(() => {
     if (saveSuccess === true) {
-      alert("Data berhasil disimpan!");
-
       router.back();
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    } else if (saveSuccess === false) {
-      alert("Terjadi kesalahan saat menyimpan data.");
     }
 
     setSaveSuccess(null);
   }, [saveSuccess, router]);
 
   return (
-    <div className="flex flex-col w-full">
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="bg-white md:px-6 p-4 flex items-center">
-            <div>
-              <Breadcrumb className="sm:block hidden">
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink>Product Catalog</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href={AppURL.productCatalogCategory(category)}>
-                      {category
-                        .split("-")
-                        .map(
-                          (item) =>
-                            item.charAt(0).toUpperCase() + item.slice(1) + " "
+    <ContentLoadingWrapper isLoading={isLoadingSaveBenefit}>
+      <div className="flex flex-col w-full">
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="bg-white md:px-6 p-4 flex items-center">
+              <div>
+                <Breadcrumb className="sm:block hidden">
+                  <BreadcrumbList>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink>Product Catalog</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href={AppURL.productCatalogCategoryV2(category)}
+                      >
+                        {category
+                          .split("-")
+                          .map(
+                            (item) =>
+                              item.charAt(0).toUpperCase() + item.slice(1) + " "
+                          )}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href={AppURL.productCatalogDetail(
+                          category,
+                          productCategoryID
                         )}
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink
-                      href={AppURL.productCatalogDetail(category, productCategoryID)}
-                    >
-                      Detail Product Catalog
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>
-                      {method === "create" ? "Add" : "Edit"} Benefit
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-              <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-                {method === "create" ? "Add" : "Edit"} Benefit
-              </h2>
-            </div>
-            <div className="flex ml-auto">
-              <div
-                onClick={() => router.back()}
-                className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Back
+                      >
+                        Detail Product Catalog
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage>
+                        {method === "create" ? "Add" : "Edit"} Benefit
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+                <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+                  {method === "create" ? "Add" : "Edit"} Benefit
+                </h2>
               </div>
-              <Button
-                type="submit"
-                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
-              >
-                <Check className="mr-2 w-4 h-4" />
-                Save
-              </Button>
+              <div className="flex ml-auto">
+                <div
+                  onClick={() => router.back()}
+                  className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back
+                </div>
+                <Button
+                  type="submit"
+                  className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
+                >
+                  <Check className="mr-2 w-4 h-4" />
+                  Save
+                </Button>
+              </div>
             </div>
-          </div>
-          <RecursiveBenefitForm name="" />
-        </form>
-      </FormProvider>
-    </div>
+            <RecursiveBenefitForm name="" />
+          </form>
+        </FormProvider>
+      </div>
+    </ContentLoadingWrapper>
   );
 };
 

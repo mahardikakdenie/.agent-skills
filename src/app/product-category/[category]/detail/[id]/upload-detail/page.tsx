@@ -12,7 +12,6 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { useScreen } from "@/context/screen.context";
 import {
   Select,
   SelectContent,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useParams, useRouter } from "next/navigation";
 import AppURL from "@/constants/app-url.const";
+import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
 export default function UploadPlanDetail() {
   const params = useParams();
@@ -41,16 +41,11 @@ export default function UploadPlanDetail() {
       ? categoryParam[0]
       : "";
 
-  const { plan, fetchPlanById, uploadPlanDetails } = useProducts();
+  const { plan, uploadPlanDetails, isLoadingUploadPlanDetails } = useProducts({
+    planId: id,
+  });
   const [csvData, setCsvData] = useState<any[]>([]);
-  const { isLoading, setLoading } = useScreen();
   const [type, setType] = useState<string>("tnc");
-  useEffect(() => {
-    if (id) {
-      fetchPlanById(id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
 
   const [file, setFile] = useState<any>(null);
   const handleChooseFile = (event: any) => {
@@ -72,81 +67,79 @@ export default function UploadPlanDetail() {
 
   const router = useRouter();
   const handleUpload = async () => {
-    setLoading(true);
     try {
-      await uploadPlanDetails(id, type, csvData);
-      alert("Package uploaded successfully");
+      await uploadPlanDetails({ id, type, data: csvData });
       router.push(AppURL.productCatalogDetail(category, id));
     } catch (error) {
       console.error(error);
-      alert("Failed to upload package");
     }
-    setLoading(false);
   };
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-      <h1>Upload Plan Details</h1>
-      <h1 className="text-primary font-bold mb-4">
-        {plan?.name.split("|").map((item: any, i: any) => {
-          return (
-            <span key={i}>
-              {item}
-              <br />
-            </span>
-          );
-        })}
-      </h1>
-      <Select value={type} onValueChange={setType}>
-        <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mb-5">
-          <SelectValue content="Detail Type" />
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="tnc">Terms and Conditions</SelectItem>
-              <SelectItem value="how-to-claim">Cara Klaim</SelectItem>
-              <SelectItem value="exception">Pengecualian</SelectItem>
-              <SelectItem value="persentase">Persentase</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </SelectTrigger>
-      </Select>
-      <Input type="file" onChange={handleChooseFile} />
-      <Button
-        disabled={!!!file || csvData.length > 0}
-        className="btn-primary mt-5"
-        onClick={handlePreview}
-      >
-        Preview
-      </Button>
-      <Button
-        disabled={csvData.length === 0}
-        className="btn-primary mt-5 ml-2"
-        onClick={handleUpload}
-      >
-        Upload
-      </Button>
+    <ContentLoadingWrapper isLoading={isLoadingUploadPlanDetails}>
+      <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
+        <h1>Upload Plan Details</h1>
+        <h1 className="text-primary font-bold mb-4">
+          {plan?.name.split("|").map((item: any, i: any) => {
+            return (
+              <span key={i}>
+                {item}
+                <br />
+              </span>
+            );
+          })}
+        </h1>
+        <Select value={type} onValueChange={setType}>
+          <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2 mb-5">
+            <SelectValue content="Detail Type" />
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="tnc">Terms and Conditions</SelectItem>
+                <SelectItem value="how-to-claim">Cara Klaim</SelectItem>
+                <SelectItem value="exception">Pengecualian</SelectItem>
+                <SelectItem value="persentase">Persentase</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </SelectTrigger>
+        </Select>
+        <Input type="file" onChange={handleChooseFile} />
+        <Button
+          disabled={!!!file || csvData.length > 0}
+          className="btn-primary mt-5"
+          onClick={handlePreview}
+        >
+          Preview
+        </Button>
+        <Button
+          disabled={csvData.length === 0}
+          className="btn-primary mt-5 ml-2"
+          onClick={handleUpload}
+        >
+          Upload
+        </Button>
 
-      <div className="mt-5 overflow-auto">
-        <Table className="min-w-full">
-          <TableHeader>
-            <TableRow>
-              {csvData.length > 0 &&
-                Object.keys(csvData[0]).map((item, i) => (
-                  <TableHead key={i}>{item}</TableHead>
-                ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {csvData.length > 0 &&
-              csvData.map((item, i) => (
-                <TableRow key={i}>
-                  {Object.values(item).map((value: any, j) => (
-                    <TableCell key={j}>{value}</TableCell>
+        <div className="mt-5 overflow-auto">
+          <Table className="min-w-full">
+            <TableHeader>
+              <TableRow>
+                {csvData.length > 0 &&
+                  Object.keys(csvData[0]).map((item, i) => (
+                    <TableHead key={i}>{item}</TableHead>
                   ))}
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {csvData.length > 0 &&
+                csvData.map((item, i) => (
+                  <TableRow key={i}>
+                    {Object.values(item).map((value: any, j) => (
+                      <TableCell key={j}>{value}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
+    </ContentLoadingWrapper>
   );
 }

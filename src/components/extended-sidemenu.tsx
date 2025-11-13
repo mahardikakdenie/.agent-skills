@@ -56,9 +56,7 @@ const ExtendedSidemenu: React.FC<ExtendedSideMenuProps> = ({
               <button
                 key={index}
                 type="button"
-                onClick={() =>
-                  router.push(AppURL.productCatalogCategory(item.url))
-                }
+                onClick={() => router.push(item.url)}
                 className={`text-left px-4 py-3 text-sm transition-colors border-b border-slate-200 last:border-b-0 ${
                   activeUrl === item.url
                     ? "bg-[#E8F4FB] text-primary font-semibold"

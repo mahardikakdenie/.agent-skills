@@ -25,9 +25,11 @@ export default function DetailList(props: { id: string }) {
   const { id } = props;
   const { category } = useParams();
   const [type, setType] = useState("tnc");
-  const { getPlanDetails, details } = useProducts();
+  const { getPlanDetails, details } = useProducts({
+    planId: id,
+  });
   useEffect(() => {
-    (async () => await getPlanDetails(id, type))();
+    (async () => await getPlanDetails(type))();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
