@@ -1,46 +1,187 @@
 "use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+
+import { useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
 import { productService } from "@/services/api.service";
 import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DataTable } from "@/components/ui/DataTable";
+import ExtendedSidemenu from "@/components/extended-sidemenu";
+import {
+  createProductCatalogTableColumns,
+  ProductCatalogTableData,
+} from "@/components/tableConfig/productCatalogTableConfig";
+import { useProducts } from "./hooks";
 
 export default function ProductCategoryPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ["product-categories-redirect"],
+    queryFn: async () => {
+      const response: any = await productService.get(ApiURL.v1Categories, {
+        params: { limit: 1000 },
+      });
+      const rawCategories =
+        response?.data?.data ?? response?.data ?? response ?? [];
+      return Array.isArray(rawCategories) ? rawCategories : [];
+    },
+    enabled: !category,
+    staleTime: 10 * 60 * 1000,
+  });
 
   useEffect(() => {
-    const fetchAndRedirect = async () => {
-      try {
-        const response: any = await productService.get(ApiURL.v1Categories, {
-          params: { limit: 1000 },
-        });
+    if (!category && categoriesData && categoriesData.length > 0) {
+      const firstCategory = categoriesData[0];
+      router.push(`${AppURL.productCategory}?category=${firstCategory.name}`);
+    }
+  }, [category, categoriesData, router]);
 
-        const rawCategories =
-          response?.data?.data ?? response?.data ?? response ?? [];
-        const normalizedCategories = Array.isArray(rawCategories)
-          ? rawCategories
-          : [];
+  if (!category) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading categories...</p>
+        </div>
+      </div>
+    );
+  }
 
-        if (normalizedCategories.length > 0) {
-          const firstCategory = normalizedCategories[0];
-          const categoryName = firstCategory.name;
-          router.push(`${AppURL.productCategory}/${categoryName}`);
-        } else {
-          console.error("No categories found");
-        }
-      } catch (error) {
-        console.error("Failed to fetch product categories:", error);
-      }
-    };
+  return <ProductCatalogContent category={category} />;
+}
 
-    fetchAndRedirect();
-  }, [router]);
+interface ProductCatalogContentProps {
+  category: string;
+}
+
+function ProductCatalogContent({ category }: ProductCatalogContentProps) {
+  const router = useRouter();
+
+  const {
+    catalogPlans,
+    totalPages,
+    totalItems,
+    subMenuItems,
+    insurances,
+    isLoadingCatalogPlans,
+    page,
+    rowsPerPage,
+    setPage,
+    searchPlanName,
+    setSearchPlanName,
+    searchInsurer,
+    canCreate,
+    canDelete,
+    handleDeletePlan,
+    handleViewDetail,
+    handleSearchInsurerOnChange,
+    handleRowsPerPageChange,
+  } = useProducts({ category });
+
+  const productCatalogTableColumns = useMemo(
+    () =>
+      createProductCatalogTableColumns({
+        page,
+        rowsPerPage,
+        onViewDetail: handleViewDetail,
+        onDelete: handleDeletePlan,
+        canDelete,
+      }),
+    [page, rowsPerPage, handleViewDetail, handleDeletePlan, canDelete]
+  );
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading categories...</p>
+    <div className="flex w-full flex-col md:flex-row md:items-start">
+      <div className="flex flex-col w-full p-4 md:p-6">
+        <div className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
+          <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+            Product Catalog -{" "}
+            {category
+              .split("-")
+              .map(
+                (item) => item.charAt(0).toUpperCase() + item.slice(1) + " "
+              )}
+          </h1>
+          <Button
+            onClick={() => router.push(AppURL.productCatalogAdd(category))}
+            disabled={!canCreate}
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+          >
+            <Plus className="w-5 h-5 mr-1 " /> Add Plan
+          </Button>
+        </div>
+
+        <div className="flex gap-4">
+          <ExtendedSidemenu
+            title="Product Categories"
+            items={subMenuItems}
+            activeUrl={`${AppURL.productCategory}?category=${category}`}
+          />
+          <div className="flex-1 min-w-0">
+            <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
+              <div className="flex gap-4 items-center sm:flex-row flex-col">
+                <Select
+                  value={searchInsurer}
+                  onValueChange={handleSearchInsurerOnChange}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select Insurer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Select Insurer</SelectLabel>
+                      {insurances.map((insurance: any) => (
+                        <SelectItem key={insurance.id} value={insurance.id}>
+                          {insurance.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="text"
+                  placeholder="Search by Plan Name"
+                  className="p-2 border rounded h-12"
+                  value={searchPlanName}
+                  onChange={(e) => setSearchPlanName(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <DataTable
+              loading={isLoadingCatalogPlans}
+              data={catalogPlans as ProductCatalogTableData[]}
+              columns={productCatalogTableColumns}
+              pagination={{
+                page,
+                totalPages,
+                totalItems,
+                rowsPerPage,
+                onPageChange: setPage,
+                onRowsPerPageChange: handleRowsPerPageChange,
+                rowsPerPageOptions: [10, 20, 30, 50],
+              }}
+              noDataText="No product catalog data available"
+              className="table-product-catalog"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

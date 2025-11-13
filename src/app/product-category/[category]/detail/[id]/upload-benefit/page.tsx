@@ -33,15 +33,12 @@ export default function UploadPlanBenefit() {
       ? categoryParam[0]
       : "";
 
-  const { plan, fetchPlanById, uploadPlanBenefits } = useProducts();
+  const { plan, uploadPlanBenefits } = useProducts({
+    planId: id,
+    category,
+  });
   const [csvData, setCsvData] = useState<any[]>([]);
   const { isLoading, setLoading } = useScreen();
-  useEffect(() => {
-    if (id) {
-      fetchPlanById(id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
 
   const [file, setFile] = useState<any>(null);
   const handleChooseFile = (event: any) => {
@@ -65,7 +62,7 @@ export default function UploadPlanBenefit() {
   const handleUpload = async () => {
     setLoading(true);
     try {
-      await uploadPlanBenefits(id, csvData);
+      await uploadPlanBenefits({ id, data: csvData });
       alert("Package uploaded successfully");
       router.push(AppURL.productCatalogDetail(category, id));
     } catch (error) {

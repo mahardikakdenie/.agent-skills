@@ -20,16 +20,20 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function BenefitList(props: { id: string }) {
+  const router = useRouter();
+
   const { id } = props;
   const { category } = useParams();
-  const { getPlanBenefits, benefits, deleteBenefit } = useProducts();
+  const { benefits, deleteBenefit, refetchBenefits } = useProducts({
+    planId: id,
+    category: category as string,
+  });
 
   useEffect(() => {
-    (async () => await getPlanBenefits(id))();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const router = useRouter();
+    if (id) {
+      refetchBenefits();
+    }
+  }, [id, refetchBenefits]);
 
   return (
     <>
@@ -37,7 +41,9 @@ export default function BenefitList(props: { id: string }) {
         <Button
           className="mb-5"
           onClick={() =>
-            router.push(AppURL.productCatalogUploadBenefit(category as string, id))
+            router.push(
+              AppURL.productCatalogUploadBenefit(category as string, id)
+            )
           }
         >
           <Upload className="w-5 h-5 mr-2" />
@@ -94,8 +100,6 @@ export default function BenefitList(props: { id: string }) {
                                   await deleteBenefit(benefit.id);
 
                                   alert("Row deleted successfully.");
-
-                                  await getPlanBenefits(id);
                                 } catch (error) {
                                   console.error(error);
 

@@ -25,7 +25,7 @@ import { ChevronLeft } from "react-feather";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import useBrokerFee from "../hook";
 import AppURL from "@/constants/app-url.const";
-import {useScreen} from "@/context/screen.context";
+import { useScreen } from "@/context/screen.context";
 
 export default function CreateBrokerFee() {
   const router = useRouter();
@@ -43,9 +43,10 @@ export default function CreateBrokerFee() {
         ...data,
         product: data.product ? data.product : null,
         plan: data.plan ? data.plan : null,
-        insurance_name: insurances.find((i) => i.id === data.insurance)?.name,
-        product_name: products?.find((i) => i.id === data.product)?.name,
-        plan_name: plans?.find((i) => i.id === data.plan)?.name,
+        insurance_name: insurances.find((i: any) => i.id === data.insurance)
+          ?.name,
+        product_name: products?.find((i: any) => i.id === data.product)?.name,
+        plan_name: plans?.find((i: any) => i.id === data.plan)?.name,
         broker: "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
         fee_type: "percentage",
         currency: "IDR",
@@ -89,7 +90,7 @@ export default function CreateBrokerFee() {
       fetchInsurances({});
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }
+    };
     fetchData();
   }, []);
 
@@ -122,7 +123,9 @@ export default function CreateBrokerFee() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financeBrokerFee}>Broker Fee</BreadcrumbLink>
+                <BreadcrumbLink href={AppURL.financeBrokerFee}>
+                  Broker Fee
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -155,7 +158,6 @@ export default function CreateBrokerFee() {
 
       <div className="flex flex-col w-full p-4 md:p-6 gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
-
           <div>
             <label
               htmlFor="insurance"
@@ -169,8 +171,7 @@ export default function CreateBrokerFee() {
               control={control}
               rules={{ required: "Insurance Name is required" }}
               render={({ field }) => (
-                <Select value={field.value}
-                  onValueChange={field.onChange}>
+                <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                     <SelectValue placeholder="Select Insurance " />
                   </SelectTrigger>
@@ -236,7 +237,11 @@ export default function CreateBrokerFee() {
               name="plan"
               control={control}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={!watchProduct}
+                >
                   <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
                     <SelectValue placeholder="Select Plan " />
                   </SelectTrigger>
@@ -287,4 +292,4 @@ export default function CreateBrokerFee() {
       </div>
     </div>
   );
-};
+}
