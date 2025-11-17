@@ -1,198 +1,710 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { format } from "date-fns";
+import {
+  channelService,
+  financeService,
+  financeServiceFormData,
+  productService,
+  transactionService,
+} from "@/services/api.service";
 import ApiURL from "@/constants/api-url.const";
-import {channelService, financeService, financeServiceFormData, transactionService} from "@/services/api.service";
+import { toastNotification } from "@/lib/toast";
 
-export const useChannel = () => {
-  const [channel, setChannel] = useState<string>("");
-  const [channelList, setChannelList] = useState<any[]>([]);
-  const getChannel = async () => {
-    const channels: any = await channelService.get(ApiURL.v1Channels, { params: { page: 1, limit: 10000 } });
-    setChannelList(channels?.data?.data);
-  };
-  return { getChannel, channel, channelList };
-};
+interface UseBillingProps {
+  billings: any[];
+  billing: any;
+  unmatchedReconcillBillings: any[];
+  categories: any[];
+  channels: any[];
+  insurances: any[];
+  totalPages: number;
+  totalItems: number;
+  totalAmount: number;
 
-export const useBilling = () => {
-  const [billing, setBilling] = useState<any>({});
-  const [billingList, setBillingList] = useState<any>({});
-  const [unmatchedReconcillbillingList, setUnmatchedReconcillBillingList] = useState<any>({});
-  const [fees, setFees] = useState<any>([]);
-  const getBilling = async (query: any, page?: number, pageSize?: number) => {
-    const billings: any = await financeService.get(ApiURL.v1Billings, { params: { page: page ?? 1, pageSize: pageSize ?? 10, ...query } });
-    setBillingList(billings?.data);
-  };
-  
-  const createBilling = async (data: any) => {
-    await financeService.post(ApiURL.v1Billings, data);
-  };
-  
-  const importBillingTransactions = async (data: any) => {
-    await financeServiceFormData.post(ApiURL.v1BillingsImportTransaction, data);
-  };
+  page: number;
+  rowsPerPage: number;
+  searchType: string;
+  searchChannel: string;
+  searchCategory: string;
+  date: Date | null;
 
-  const getUnmatchedReconcillBilling = async (page: number, pageSize: number, query?: any) => {
-    const unmatchedBillings: any = await financeService.get(ApiURL.v1BillingsNotMatchReconciliation, { params: { page: page ?? 1, pageSize: pageSize ?? 10, ...query } });
-    setUnmatchedReconcillBillingList(unmatchedBillings?.data);
-  };
+  setPage: (page: number) => void;
+  setRowsPerPage: (rows: number) => void;
+  setSearchType: (type: string) => void;
+  setSearchChannel: (channel: string) => void;
+  setSearchCategory: (category: string) => void;
+  setDate: (date: Date | null) => void;
 
-  const clearFees = () => {
-    setFees([]);
-  }
+  isLoadingBillings: boolean;
+  isLoadingBilling: boolean;
+  isLoadingCategories: boolean;
+  isLoadingChannels: boolean;
+  isLoadingInsurances: boolean;
+  isLoadingUnmatchedReconcillBillings: boolean;
+  isFetchingBillings: boolean;
 
-  const getFees = async (
+  createBilling: (data: any) => Promise<void>;
+  updateBilling: (id: string, data: any) => Promise<void>;
+  importBillingTransactions: (data: any) => Promise<void>;
+  confirmReconciliation: (id: string) => Promise<void>;
+
+  handleRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleTypeChange: (type: string) => void;
+  handleChannelChange: (channel: string) => void;
+  handleCategoryChange: (category: string) => void;
+  handleDateChange: (date: Date | null) => void;
+
+  useFees: (
     insuranceId: string,
     productId?: string,
     planId?: string
   ) => {
-    if (!insuranceId) {
-      return;
-    }
-    const response: any = await financeService.get(ApiURL.v1FeesBrokerFilter, { params: { insuranceId, productId, planId } });
-    const feesResponse: any = response?.data;
-
-    if (feesResponse && feesResponse.data.length > 0) {
-      // check if fee exist i fees state
-      let checkFeesExist: { [key: string]: any } = {};
-      checkFeesExist[
-        `${feesResponse.data[0]?.insurance}-${productId}-${planId}`
-      ] = {
-        insurance: feesResponse.data[0].insurance,
-        fee: feesResponse.data[0].fee,
-        fee_type: feesResponse.data[0].fee_type,
-      };
-      // update fees state
-      setFees((fee: any) => {
-        return {
-          ...fee,
-          [`${feesResponse.data[0]?.insurance}-${productId}-${planId}`]: {
-            insurance: feesResponse.data[0].insurance,
-            fee: feesResponse.data[0].fee,
-            fee_type: feesResponse.data[0].fee_type,
-          },
-        };
-      });
-    } else {
-      setFees((fee: any) => {
-        return {
-          ...fee,
-          [`${insuranceId}-${productId}-${planId}`]: {
-            insurance: "",
-            fee: 0,
-            fee_type: "",
-          },
-        };
-      });
-    }
+    data: any;
+    isLoading: boolean;
+    refetch: () => void;
   };
-
-  const getChannelFees = async (
+  useChannelFees: (
     channelId: string,
     insuranceId?: string,
     productId?: string,
     planId?: string
   ) => {
-    if (!channelId) {
-      return;
-    }
-    if (!insuranceId) {
-      return;
-    }
-    const response: any = await financeService.get(ApiURL.v1FeesChannelFilter, { params: { channelId, insuranceId } });
-    const feesResponse: any = response?.data;
+    data: any;
+    isLoading: boolean;
+    refetch: () => void;
+  };
+  checkDuplicateBilling: (
+    type: string,
+    company: string,
+    period: string
+  ) => Promise<any>;
 
-    if (feesResponse && feesResponse.data.length > 0) {
-      // check if fee exist i fees state
-      let checkFeesExist: { [key: string]: any } = {};
-      checkFeesExist[
-        `${feesResponse.data[0]?.channel}-${insuranceId}-${productId}-${planId}`
-      ] = {
-        channel: channelId,
-        insurance: feesResponse.data[0].insurance,
-        fee: feesResponse.data[0].fee,
-        fee_type: feesResponse.data[0].fee_type,
+  refetchBillings: () => void;
+  refetchBilling: () => void;
+
+  transactions: any[];
+  transactionsMeta: any;
+  isLoadingTransactions: boolean;
+
+  fetchTransactions: (params: {
+    type: string;
+    company: string;
+    category: string;
+    from: string;
+    to: string;
+    page: number;
+    limit: number;
+  }) => Promise<void>;
+
+  fetchBillingDetails: (
+    id: string,
+    params?: {
+      page?: number;
+      limit?: number;
+      groupBy?: string;
+    }
+  ) => Promise<void>;
+}
+
+interface UseBillingHookProps {
+  billingId?: string;
+  groupBy?: string;
+}
+
+export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
+  const { billingId, groupBy } = props || {};
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const defaultChannel = "40eee5bf-2b92-4d23-be55-f9caa9d3ea88";
+
+  const [page, setPageState] = useState(() => {
+    return parseInt(searchParams.get("page") || "1", 10);
+  });
+
+  const [rowsPerPage, setRowsPerPageState] = useState(() => {
+    return parseInt(searchParams.get("limit") || "10", 10);
+  });
+
+  const [searchType, setSearchTypeState] = useState(() => {
+    return searchParams.get("type") || "partner";
+  });
+
+  const [searchChannel, setSearchChannelState] = useState(() => {
+    return searchParams.get("channel") || defaultChannel;
+  });
+
+  const [searchCategory, setSearchCategoryState] = useState(() => {
+    return searchParams.get("category") || "All";
+  });
+
+  const [date, setDateState] = useState<Date | null>(() => {
+    const dateParam = searchParams.get("date");
+    return dateParam ? new Date(dateParam) : null;
+  });
+
+  const [transactionParams, setTransactionParams] = useState<any>(null);
+
+  const [billingDetailsParams, setBillingDetailsParams] = useState<any>(null);
+
+  const updateURL = useCallback(
+    (params: Record<string, string | number | undefined>) => {
+      const current = new URLSearchParams(Array.from(searchParams.entries()));
+
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          current.set(key, String(value));
+        } else {
+          current.delete(key);
+        }
+      });
+
+      const search = current.toString();
+      const query = search ? `?${search}` : "";
+
+      router.replace(`${pathname}${query}`, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
+  const setPage = useCallback(
+    (newPage: number) => {
+      setPageState(newPage);
+      updateURL({ page: newPage });
+    },
+    [updateURL]
+  );
+
+  const setRowsPerPage = useCallback(
+    (newRowsPerPage: number) => {
+      setRowsPerPageState(newRowsPerPage);
+      setPageState(1);
+      updateURL({ limit: newRowsPerPage, page: 1 });
+    },
+    [updateURL]
+  );
+
+  const setSearchType = useCallback(
+    (newType: string) => {
+      setSearchTypeState(newType);
+      setPageState(1);
+      updateURL({ type: newType, page: 1 });
+    },
+    [updateURL]
+  );
+
+  const setSearchChannel = useCallback(
+    (newChannel: string) => {
+      setSearchChannelState(newChannel);
+      setPageState(1);
+      updateURL({ channel: newChannel, page: 1 });
+    },
+    [updateURL]
+  );
+
+  const setSearchCategory = useCallback(
+    (newCategory: string) => {
+      setSearchCategoryState(newCategory);
+      setPageState(1);
+      updateURL({
+        category: newCategory === "All" ? undefined : newCategory,
+        page: 1,
+      });
+    },
+    [updateURL]
+  );
+
+  const setDate = useCallback(
+    (newDate: Date | null) => {
+      setDateState(newDate);
+      setPageState(1);
+      updateURL({
+        date: newDate ? format(newDate, "yyyy-MM") : undefined,
+        page: 1,
+      });
+    },
+    [updateURL]
+  );
+
+  const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
+    queryKey: ["channels"],
+    queryFn: async () => {
+      const response = await channelService.get(ApiURL.v1Channels, {
+        params: { page: 1, limit: 100 },
+      });
+      return response?.data?.data || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
+    queryKey: ["insurances"],
+    queryFn: async () => {
+      const response = await productService.get(ApiURL.v1Insurances, {
+        params: {},
+      });
+      return response?.data?.data || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await productService.get(ApiURL.v1Categories);
+      return response?.data?.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const queryKey = useMemo(
+    () => [
+      "billings",
+      page,
+      rowsPerPage,
+      searchType,
+      searchChannel,
+      searchCategory,
+      date?.toISOString(),
+    ],
+    [page, rowsPerPage, searchType, searchChannel, searchCategory, date]
+  );
+
+  const {
+    data: billingsData,
+    isLoading: isLoadingBillings,
+    isFetching: isFetchingBillings,
+    refetch: refetchBillings,
+  } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const query: { [key: string]: any } = {
+        type: searchType,
+        company: searchChannel,
+        page,
+        pageSize: rowsPerPage,
       };
-      // update fees state
-      setFees((fee: any) => {
+
+      if (date) {
+        const startDate = format(
+          new Date(date.getFullYear(), date.getMonth(), 1),
+          "yyyy-MM-dd"
+        );
+        const endDate = format(
+          new Date(date.getFullYear(), date.getMonth() + 1, 0),
+          "yyyy-MM-dd"
+        );
+        query.startDate = startDate;
+        query.endDate = endDate;
+      }
+
+      if (searchCategory !== "All") {
+        query.category = searchCategory;
+      }
+
+      const response = await financeService.get(ApiURL.v1Billings, {
+        params: query,
+      });
+
+      return response?.data;
+    },
+    enabled: !!searchType && !!searchChannel,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+  });
+
+  const {
+    data: billingData,
+    isLoading: isLoadingBilling,
+    refetch: refetchBilling,
+  } = useQuery({
+    queryKey: ["billing", billingId, billingDetailsParams],
+    queryFn: async () => {
+      if (!billingId) return null;
+
+      const params: any = {
+        page: billingDetailsParams?.page || page,
+        pageSize: billingDetailsParams?.limit || rowsPerPage,
+      };
+
+      if (billingDetailsParams?.groupBy) {
+        params.groupBy = billingDetailsParams.groupBy;
+      }
+
+      const response = await financeService.get(
+        ApiURL.v1BillingDetails(billingId),
+        { params }
+      );
+      return response?.data;
+    },
+    enabled: !!billingId,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const {
+    data: unmatchedReconcillBillingsData,
+    isLoading: isLoadingUnmatchedReconcillBillings,
+  } = useQuery({
+    queryKey: ["unmatched-reconcill-billings", page, rowsPerPage],
+    queryFn: async () => {
+      const response = await financeService.get(
+        ApiURL.v1BillingsNotMatchReconciliation,
+        { params: { page, pageSize: rowsPerPage } }
+      );
+      return response?.data?.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const {
+    data: transactionsData,
+    isLoading: isLoadingTransactions,
+    refetch: refetchTransactions,
+  } = useQuery({
+    queryKey: ["billing-transactions", transactionParams],
+    queryFn: async () => {
+      if (!transactionParams) return { data: [], meta: {} };
+
+      const { type, company, category, from, to, page, limit } =
+        transactionParams;
+
+      const search: any = {
+        status: "Declaration",
+        page,
+        limit,
+        from,
+        to,
+      };
+
+      if (type === "insurer") {
+        search.insurance = company;
+      } else if (type === "partner") {
+        search.channel = company;
+      }
+
+      if (category !== "All") {
+        search.category = category;
+      }
+
+      const response = await transactionService.get(ApiURL.v1Transactions, {
+        params: search,
+      });
+
+      return response?.data || { data: [], meta: {} };
+    },
+    enabled: !!transactionParams,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+  });
+
+  const createBillingMutation = useMutation({
+    mutationFn: async (data: any) => {
+      await financeService.post(ApiURL.v1Billings, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["billings"] });
+      toastNotification("Billing created successfully", "success");
+    },
+    onError: (error: any) => {
+      toastNotification(error?.message || "Failed to create billing", "error");
+    },
+  });
+
+  const updateBillingMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      await financeService.put(ApiURL.v1BillingDetails(id), data);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["billings"] });
+      queryClient.invalidateQueries({ queryKey: ["billing", variables.id] });
+      toastNotification("Billing updated successfully", "success");
+    },
+    onError: (error: any) => {
+      toastNotification(error?.message || "Failed to update billing", "error");
+    },
+  });
+
+  const importBillingTransactionsMutation = useMutation({
+    mutationFn: async (data: any) => {
+      await financeServiceFormData.post(
+        ApiURL.v1BillingsImportTransaction,
+        data
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["billings"] });
+      toastNotification(
+        "Billing transactions imported successfully",
+        "success"
+      );
+    },
+    onError: (error: any) => {
+      toastNotification(
+        error?.message || "Failed to import billing transactions",
+        "error"
+      );
+    },
+  });
+
+  const confirmReconciliationMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await financeService.post(
+        ApiURL.v1BillingDetailsConfirmReconciliation(id)
+      );
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["billings"] });
+      queryClient.invalidateQueries({ queryKey: ["billing", id] });
+      toastNotification("Reconciliation confirmed successfully", "success");
+    },
+    onError: (error: any) => {
+      toastNotification(
+        error?.message || "Failed to confirm reconciliation",
+        "error"
+      );
+    },
+  });
+
+  const useFees = (
+    insuranceId: string,
+    productId?: string,
+    planId?: string
+  ) => {
+    const { data, isLoading, refetch } = useQuery({
+      queryKey: ["broker-fees", insuranceId, productId, planId],
+      queryFn: async () => {
+        if (!insuranceId) return null;
+
+        const response: any = await financeService.get(
+          ApiURL.v1FeesBrokerFilter,
+          { params: { insuranceId, productId, planId } }
+        );
+        const feesResponse: any = response?.data;
+
+        if (feesResponse && feesResponse.data.length > 0) {
+          return {
+            insurance: feesResponse.data[0].insurance,
+            fee: feesResponse.data[0].fee,
+            fee_type: feesResponse.data[0].fee_type,
+          };
+        }
+
         return {
-          ...fee,
-          [`${feesResponse.data[0]?.channel}-${insuranceId}-${productId}-${planId}`]: {
+          insurance: "",
+          fee: 0,
+          fee_type: "",
+        };
+      },
+      enabled: !!insuranceId,
+      staleTime: 5 * 60 * 1000,
+    });
+
+    return { data, isLoading, refetch };
+  };
+
+  const useChannelFees = (
+    channelId: string,
+    insuranceId?: string,
+    productId?: string,
+    planId?: string
+  ) => {
+    const { data, isLoading, refetch } = useQuery({
+      queryKey: ["channel-fees", channelId, insuranceId, productId, planId],
+      queryFn: async () => {
+        if (!channelId || !insuranceId) return null;
+
+        const response: any = await financeService.get(
+          ApiURL.v1FeesChannelFilter,
+          { params: { channelId, insuranceId } }
+        );
+        const feesResponse: any = response?.data;
+
+        if (feesResponse && feesResponse.data.length > 0) {
+          return {
             channel: channelId,
             insurance: feesResponse.data[0].insurance,
             fee: feesResponse.data[0].fee,
             fee_type: feesResponse.data[0].fee_type,
-          },
-        };
-      });
-    } else {
-      setFees((fee: any) => {
+          };
+        }
+
         return {
-          ...fee,
-          [`${channelId}-${insuranceId}-${productId}-${planId}`]: {
-            channel: "",
-            insurance: "",
-            fee: 0,
-            fee_type: "",
-          },
+          channel: "",
+          insurance: "",
+          fee: 0,
+          fee_type: "",
         };
+      },
+      enabled: !!channelId && !!insuranceId,
+      staleTime: 5 * 60 * 1000,
+    });
+
+    return { data, isLoading, refetch };
+  };
+
+  const checkDuplicateBilling = useCallback(
+    async (type: string, company: string, period: string) => {
+      const result = await financeService.get(ApiURL.v1Billings, {
+        params: {
+          page: 1,
+          pageSize: 10,
+          type,
+          company,
+          transaction_period: period,
+        },
       });
-    }
-  };
+      return result?.data;
+    },
+    []
+  );
 
-  const getBillingById = async (
-    id: string,
-    page?: number,
-    pageSize?: number,
-    groupBy?: string
-  ) => {
-    const billing: any = await financeService.get(ApiURL.v1BillingDetails(id), { params: { page, pageSize, groupBy } });
-    setBilling(billing?.data);
-  };
+  const handleRowsPerPageChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number(e.target.value));
+    },
+    [setRowsPerPage]
+  );
 
-  const checkDuplicateBilling = async (
-    type: string,
-    company: string,
-    period: string
-  ) => {
-    const result = await financeService.get(ApiURL.v1Billings, { params: { page: 1, pageSize: 10, type, company, transaction_period: period } });
-    return result?.data;
-  };
+  const handleTypeChange = useCallback(
+    (type: string) => {
+      setSearchType(type);
 
-  const updateBilling = async (id: string, data: any) => {
-    await financeService.put(ApiURL.v1BillingDetails(id), data);
-  };
+      if (type === "insurer" && insurancesData && insurancesData.length > 0) {
+        setSearchChannel(insurancesData[0].id);
+      } else if (
+        type === "partner" &&
+        channelsData &&
+        channelsData.length > 0
+      ) {
+        setSearchChannel(channelsData[0].id);
+      }
 
-  const confirmReconcilliation = async (id:string) => {
-    await financeService.post(ApiURL.v1BillingDetailsConfirmReconciliation(id));
-  }
+      setSearchCategory("All");
+    },
+    [
+      setSearchType,
+      setSearchChannel,
+      setSearchCategory,
+      insurancesData,
+      channelsData,
+    ]
+  );
+
+  const handleChannelChange = useCallback(
+    (channel: string) => {
+      setSearchChannel(channel);
+      setSearchCategory("All");
+    },
+    [setSearchChannel, setSearchCategory]
+  );
+
+  const handleCategoryChange = useCallback(
+    (category: string) => {
+      setSearchCategory(category);
+    },
+    [setSearchCategory]
+  );
+
+  const handleDateChange = useCallback(
+    (newDate: Date | null) => {
+      setDate(newDate);
+    },
+    [setDate]
+  );
+
+  const fetchTransactions = useCallback(
+    async (params: {
+      type: string;
+      company: string;
+      category: string;
+      from: string;
+      to: string;
+      page: number;
+      limit: number;
+    }) => {
+      setTransactionParams(params);
+      await refetchTransactions();
+    },
+    [refetchTransactions]
+  );
+
+  const fetchBillingDetails = useCallback(
+    async (
+      id: string,
+      params?: {
+        page?: number;
+        limit?: number;
+        groupBy?: string;
+      }
+    ) => {
+      setBillingDetailsParams(params);
+      await refetchBilling();
+    },
+    [refetchBilling]
+  );
+
   return {
-    updateBilling,
+    billings: billingsData?.data || [],
+    billing: billingData,
+    unmatchedReconcillBillings: unmatchedReconcillBillingsData || [],
+    categories: categoriesData || [],
+    channels: channelsData || [],
+    insurances: insurancesData || [],
+    totalPages: billingsData?.meta
+      ? Math.ceil(billingsData.meta.total / rowsPerPage)
+      : 1,
+    totalItems: billingsData?.meta?.total || 0,
+    totalAmount: billingsData?.totalAmount || 0,
+
+    page,
+    rowsPerPage,
+    searchType,
+    searchChannel,
+    searchCategory,
+    date,
+
+    setPage,
+    setRowsPerPage,
+    setSearchType,
+    setSearchChannel,
+    setSearchCategory,
+    setDate,
+
+    isLoadingBillings,
+    isLoadingBilling,
+    isLoadingCategories,
+    isLoadingChannels,
+    isLoadingInsurances,
+    isLoadingUnmatchedReconcillBillings,
+    isFetchingBillings,
+    isLoadingTransactions,
+
+    createBilling: createBillingMutation.mutateAsync,
+    updateBilling: async (id: string, data: any) =>
+      updateBillingMutation.mutateAsync({ id, data }),
+    importBillingTransactions: importBillingTransactionsMutation.mutateAsync,
+    confirmReconciliation: confirmReconciliationMutation.mutateAsync,
+
+    handleRowsPerPageChange,
+    handleTypeChange,
+    handleChannelChange,
+    handleCategoryChange,
+    handleDateChange,
+
+    useFees,
+    useChannelFees,
     checkDuplicateBilling,
-    getBillingById,
-    getBilling,
-    getUnmatchedReconcillBilling,
-    unmatchedReconcillbillingList,
-    billing,
-    billingList,
-    getFees,
-    getChannelFees,
-    clearFees,
-    fees,
-    createBilling,
-    importBillingTransactions,
-    confirmReconcilliation
-  };
-};
 
-export const useTransaction = () => {
-  const [transactionList, setTransactionList] = useState<any>({});
-  const getTransactions = async (search: any) => {
-    const transaction = await transactionService.get(ApiURL.v1Transactions, { params: { ...search } });
-    setTransactionList(transaction?.data);
-  };
+    refetchBillings,
+    refetchBilling,
 
-  return {
-    getTransactions,
-    transactionList,
-    setTransactionList,
+    transactions: transactionsData?.data || [],
+    transactionsMeta: transactionsData?.meta || {},
+    fetchTransactions,
+    fetchBillingDetails,
   };
 };

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Select,
   SelectContent,
@@ -6,24 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import WithSidebar from "@/hoc/with-sidebar";
 import { useEffect, useMemo, useState } from "react";
-import { useBilling, useChannel, useTransaction } from "../hook";
-import { useProduct } from "../../../masterdata/product/hooks";
-import { useScreen } from "@/context/screen.context";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { useBilling } from "../hook";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { formatDate, formatMoney } from "@/lib/formatter";
+import { CheckIcon, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -34,197 +21,193 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
 import AppURL from "@/constants/app-url.const";
+import { DataTable } from "@/components/ui/DataTable";
+import { createBillingTransactionTableColumns } from "@/components/tableConfig/billingTransactionTableConfig";
+import { financeService } from "@/services/api.service";
+import ApiURL from "@/constants/api-url.const";
+import { generateYears, generateMonths } from "@/lib/utils";
 
 const CreateBillingPage = () => {
-  const { channelList, getChannel } = useChannel();
-  const { fetchInsurances, insurances } = useProduct();
-  const [categories, setCategories] = useState<any[]>([]);
-  const { transactionList, getTransactions, setTransactionList } =
-    useTransaction();
+  const router = useRouter();
+
   const {
-    getFees,
-    getChannelFees,
-    fees,
-    clearFees,
+    channels,
+    insurances,
+    categories,
+    transactions,
+    isLoadingTransactions,
+    fetchTransactions,
     createBilling,
     checkDuplicateBilling,
   } = useBilling();
+
   const [type, setType] = useState<string>("");
   const [company, setCompany] = useState<string>("");
   const [companyName, setCompanyName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
-  const [list, setList] = useState<any[]>([]);
-  const { setLoading } = useScreen();
-  const [month, setMonth] = useState<any>(null);
+  const [month, setMonth] = useState<string>("");
   const [year, setYear] = useState<string>("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(1);
+
   const [billingNotExist, setBillingNotExist] = useState(true);
   const [existingBillingId, setExistingBillingId] = useState<string>("");
-  const processedTransactionList = useMemo(() => {
-    if (!transactionList.data) {
-      return [];
-    }
-    return transactionList.data.map((data: any) => {
-      const premium = parseFloat(data.insurance.premium);
-      const currency = data.insurance.currency;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingFees, setIsLoadingFees] = useState(false);
+
+  const [feesMap, setFeesMap] = useState<any>({});
+
+  const companies = type === "insurer" ? insurances : channels;
+
+  const months = generateMonths();
+
+  const years = generateYears();
+
+  const processedTransactions = useMemo(() => {
+    return transactions.map((transaction: any) => {
+      const premium = parseFloat(transaction.insurance.premium);
+      const currency = transaction.insurance.currency;
       let newPremium = premium;
-      if (type == "partner") {
-        if (
-          !fees[
-            `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-          ]
-        ) {
-          getChannelFees(
-            company,
-            data.insurance?.insurance?.id?.id,
-            data.insurance?.product?.id,
-            data.insurance?.plan?.id
-          );
-        }
-      } else if (type == "insurer") {
-        if (
-          !fees[
-            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-          ]
-        ) {
-          getFees(
-            data.insurance?.insurance?.id?.id,
-            data.insurance?.product?.id,
-            data.insurance?.plan?.id
-          );
-        }
-      }
-      if (currency !== "IDR" && data.insurance.insurance.currencies) {
-        const currencyData = data.insurance.insurance.currencies.find(
+
+      if (currency !== "IDR" && transaction.insurance.insurance.currencies) {
+        const currencyData = transaction.insurance.insurance.currencies.find(
           (c: any) => c.currency_from === currency && c.currency_to === "IDR"
         );
-
         newPremium = premium * (currencyData?.value ?? 1);
       }
-      data.currency = currency;
+
+      const insuranceId = transaction.insurance?.insurance?.id?.id;
+      const productId = transaction.insurance?.product?.id;
+      const planId = transaction.insurance?.plan?.id;
+
+      const feeKey =
+        type === "partner"
+          ? `${company}-${insuranceId}-${productId}-${planId}`
+          : `${insuranceId}-${productId}-${planId}`;
+
       return {
-        ...data,
+        ...transaction,
         newPremium,
+        currency,
+        feeKey,
+        insuranceId,
+        productId,
+        planId,
       };
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transactionList]);
-
-  const handleRowsPerPageChange = (e: any) => {
-    setPage(1);
-    setRowsPerPage(e.target.value);
-  };
-  useEffect(() => {
-    if (type === "insurer") {
-      (async () => {
-        setLoading(true);
-        setList([]);
-        await fetchInsurances("");
-        setLoading(false);
-      })();
-    } else if (type === "partner") {
-      (async () => {
-        setLoading(true);
-        setList([]);
-        await getChannel();
-        setLoading(false);
-      })();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
+  }, [transactions, type, company]);
 
   useEffect(() => {
-    if (type === "insurer") {
-      setList(insurances);
-    } else if (type === "partner") {
-      setList(channelList);
-    }
-  }, [type, channelList, insurances]);
+    if (!processedTransactions.length || !type) return;
 
-  const handleChangeType = (value: string) => {
-    setType(value);
-  };
+    const fetchAllFees = async () => {
+      setIsLoadingFees(true);
+      const newFeesMap: any = {};
 
-  useEffect(() => {
-    getCategories();
-  }, []);
+      try {
+        const uniqueFeeKeys = new Set<string>();
+        const feeRequests: Array<{
+          key: string;
+          insuranceId: string;
+          productId: string;
+          planId: string;
+        }> = [];
 
-  const getCategories = async () => {
-    try {
-      const productCategoriesService = new ProductCategoriesService();
-      const categoriesResponse = await productCategoriesService.getCategories();
-      setCategories(categoriesResponse);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
-  };
+        processedTransactions.forEach((transaction: any) => {
+          if (!uniqueFeeKeys.has(transaction.feeKey)) {
+            uniqueFeeKeys.add(transaction.feeKey);
+            feeRequests.push({
+              key: transaction.feeKey,
+              insuranceId: transaction.insuranceId,
+              productId: transaction.productId,
+              planId: transaction.planId,
+            });
+          }
+        });
 
-  const months = [
-    {
-      value: "1",
-      name: "January",
-    },
-    {
-      value: "2",
-      name: "February",
-    },
-    {
-      value: "3",
-      name: "March",
-    },
-    {
-      value: "4",
-      name: "April",
-    },
-    {
-      value: "5",
-      name: "May",
-    },
-    {
-      value: "6",
-      name: "June",
-    },
-    {
-      value: "7",
-      name: "July",
-    },
-    {
-      value: "8",
-      name: "August",
-    },
-    {
-      value: "9",
-      name: "September",
-    },
-    {
-      value: "10",
-      name: "October",
-    },
-    {
-      value: "11",
-      name: "November",
-    },
-    {
-      value: "12",
-      name: "December",
-    },
-  ];
+        const feePromises = feeRequests.map(async (req) => {
+          try {
+            if (type === "partner") {
+              const response: any = await financeService.get(
+                ApiURL.v1FeesChannelFilter,
+                {
+                  params: {
+                    channelId: company,
+                    insuranceId: req.insuranceId,
+                  },
+                }
+              );
+              const feesResponse: any = response?.data;
 
-  const handleChangeYear = (e: any) => {
-    setYear(e.target.value);
-  };
+              if (feesResponse && feesResponse.data.length > 0) {
+                return {
+                  key: req.key,
+                  fee: {
+                    channel: company,
+                    insurance: feesResponse.data[0].insurance,
+                    fee: feesResponse.data[0].fee,
+                    fee_type: feesResponse.data[0].fee_type,
+                  },
+                };
+              }
+            } else if (type === "insurer") {
+              const response: any = await financeService.get(
+                ApiURL.v1FeesBrokerFilter,
+                {
+                  params: {
+                    insuranceId: req.insuranceId,
+                    productId: req.productId,
+                    planId: req.planId,
+                  },
+                }
+              );
+              const feesResponse: any = response?.data;
 
-  // useEffect(() => {
-  //   handleGetTransaction();
-  // }, [rowsPerPage]);
+              if (feesResponse && feesResponse.data.length > 0) {
+                return {
+                  key: req.key,
+                  fee: {
+                    insurance: feesResponse.data[0].insurance,
+                    fee: feesResponse.data[0].fee,
+                    fee_type: feesResponse.data[0].fee_type,
+                  },
+                };
+              }
+            }
+
+            return {
+              key: req.key,
+              fee: { insurance: "", fee: 0, fee_type: "" },
+            };
+          } catch (error) {
+            console.error(`Error fetching fee for ${req.key}:`, error);
+            return {
+              key: req.key,
+              fee: { insurance: "", fee: 0, fee_type: "" },
+            };
+          }
+        });
+
+        const results = await Promise.all(feePromises);
+
+        results.forEach((result) => {
+          if (result) {
+            newFeesMap[result.key] = result.fee;
+          }
+        });
+
+        setFeesMap(newFeesMap);
+      } catch (error) {
+        console.error("Error fetching fees:", error);
+      } finally {
+        setIsLoadingFees(false);
+      }
+    };
+
+    fetchAllFees();
+  }, [processedTransactions, type, company]);
 
   const handleGetTransaction = async () => {
-    setTransactionList({});
-    clearFees();
-    if (!month && !year && !company && !type) {
+    if (!month || !year || !company || !type || !category) {
       alert("Please fill all fields");
       return;
     }
@@ -233,146 +216,69 @@ const CreateBillingPage = () => {
       const billing = await checkDuplicateBilling(
         type,
         company,
-        `${year}-${month}`
+        `${year}-${month.padStart(2, "0")}`
       );
+
       if (billing.data.length) {
         setBillingNotExist(false);
         setExistingBillingId(billing.data[0].id);
         return;
       }
+
       setBillingNotExist(true);
       setExistingBillingId("");
+
+      await fetchTransactions({
+        type,
+        company,
+        category,
+        from: `${year}-${month.padStart(2, "0")}-01`,
+        to: `${year}-${month.padStart(2, "0")}-31`,
+        page: 1,
+        limit: 100000000,
+      });
     } catch (error: any) {
       alert(error.message);
-      return;
-    }
-    const search = {
-      status: "Declaration",
-      limit: rowsPerPage,
-    };
-
-    let companySearch;
-    if (type === "insurer") {
-      companySearch = {
-        insurance: company,
-        ...search,
-      };
-    } else if (type === "partner") {
-      companySearch = {
-        channel: company,
-        ...search,
-      };
-    }
-    try {
-      setLoading(true);
-      await getTransactions({
-        ...companySearch,
-        category: category != "All" ? category : null,
-        from: `${year}-${month}-01`,
-        to: `${year}-${month}-31`,
-        page: page,
-        limit: 100000000, // untuk sementara
-      });
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
     }
   };
 
-  const handlePaging = (page: number) => {
-    setPage(page);
-    (async () => {
-      const search = {
-        status: "Declaration",
-        limit: rowsPerPage,
-      };
-
-      let companySearch;
-      if (type === "insurer") {
-        companySearch = {
-          insurance: company,
-          ...search,
-        };
-      } else if (type === "partner") {
-        companySearch = {
-          channel: company,
-          ...search,
-        };
-      }
-      await getTransactions({
-        ...companySearch,
-        category: category != "All" ? category : null,
-        from: `${year}-${month}-01`,
-        to: `${year}-${month}-31`,
-        page: page,
-        limit: 100000000, //untuk sementara
-      });
-    })();
-  };
-
-  const router = useRouter();
   const handleCreateBilling = async () => {
-    if (!processedTransactionList.length) {
+    if (!processedTransactions.length) {
       alert("No transaction to create billing");
       return;
     }
-    const detail = [];
-    let totalCommission = 0;
-    for (let data of processedTransactionList) {
-      let commission;
-      let commission_percentage;
-      if (type == "insurer") {
-        commission =
-          ((fees[
-            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-          ]?.fee ?? 0) /
-            100) *
-          data.newPremium;
 
-        commission_percentage =
-          fees[
-            `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-          ]?.fee ?? 0;
-      } else if (type == "partner") {
-        commission =
-          ((fees[
-            `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-          ]?.fee ?? 0) /
-            100) *
-          data.newPremium;
+    setIsSubmitting(true);
 
-        commission_percentage =
-          fees[
-            `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-          ]?.fee ?? 0;
-      }
-
-      detail.push({
-        transaction: data.id,
-        invoice_no: data.invoice ?? "",
-        transaction_no: data.invoice ?? "",
-        product: data.insurance.product.id,
-        plan: data.insurance.plan.id,
-        amount: data.newPremium,
-        commission_percentage: commission_percentage,
-        commission_amount: commission,
-        details: {
-          plan_name: data.insurance.plan.name,
-          product_name: data.insurance.product.name,
-          transaction_date: data.created_at,
-          insurance_name: data.insurance?.insurance?.id?.name,
-        },
-        category: category != "All" ? category : null,
-      });
-      if (type === "insurer") {
-        totalCommission += commission!;
-      } else if (type === "partner") {
-        totalCommission += commission!; //data.newPremium;
-      }
-    }
     try {
-      setLoading(true);
+      const detail = processedTransactions.map((transaction: any) => {
+        const feePercentage = feesMap[transaction.feeKey]?.fee ?? 0;
+        const commission = (feePercentage / 100) * transaction.newPremium;
+
+        return {
+          transaction: transaction.id,
+          invoice_no: transaction.invoice ?? "",
+          transaction_no: transaction.invoice ?? "",
+          product: transaction.insurance.product.id,
+          plan: transaction.insurance.plan.id,
+          amount: transaction.newPremium,
+          commission_percentage: feePercentage,
+          commission_amount: commission,
+          details: {
+            plan_name: transaction.insurance.plan.name,
+            product_name: transaction.insurance.product.name,
+            transaction_date: transaction.created_at,
+            insurance_name: transaction.insurance?.insurance?.id?.name,
+          },
+          category: category !== "All" ? category : null,
+        };
+      });
+
+      const totalCommission = detail.reduce(
+        (sum, item) => sum + item.commission_amount,
+        0
+      );
+
       await createBilling({
         currency: "IDR",
         billing_details: detail,
@@ -381,26 +287,25 @@ const CreateBillingPage = () => {
         type,
         company,
         company_name: companyName,
-        transaction_period: `${year}-${month}`,
-        category: category != "All" ? category : null,
+        transaction_period: `${year}-${month.padStart(2, "0")}`,
+        category: category !== "All" ? category : null,
       });
-      localStorage.setItem(
-        "billingPage",
-        JSON.stringify({ type: type, company: company, category: "All" })
-      );
-      router.push(AppURL.financeBilling);
-      setLoading(false);
+
+      router.push(`${AppURL.financeBilling}?type=${type}&channel=${company}`);
     } catch (error) {
       console.error(error);
-      setLoading(false);
+      alert("Failed to create billing");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  const handleCancel = () => {
-    router.push(AppURL.financeBilling);
-  };
+  const columns = createBillingTransactionTableColumns({
+    type,
+    fees: feesMap,
+    company,
+  });
+
   return (
     <div className="flex flex-col w-full">
       <div className="bg-white md:px-6 p-4 flex items-center">
@@ -424,7 +329,7 @@ const CreateBillingPage = () => {
         </div>
         <div className="flex space-x-4 ml-auto">
           <div
-            onClick={handleCancel}
+            onClick={() => router.push(AppURL.financeBilling)}
             className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -432,344 +337,204 @@ const CreateBillingPage = () => {
           </div>
 
           <Button
-            onClick={() => handleCreateBilling()}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
-          >
-            <CheckIcon className="w-5 h-5 mr-1 " /> Create Billing
-          </Button>
-        </div>
-      </div>
-
-      <div className="pt-5 md:px-6 p-4 m-5 bg-white">
-        <label
-          htmlFor="type"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Choose Type
-        </label>
-        <div>
-          <Select
-            value={type}
-            onValueChange={(value) => {
-              handleChangeType(value);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={"partner"}>Partner</SelectItem>
-              <SelectItem value={"insurer"}>Insurer</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="pt-5 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="type"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              {type == "insurer"
-                ? "Choose Insurance Company"
-                : "Choose Partner"}
-            </label>
-            <Select
-              value={company}
-              onValueChange={(value) => {
-                const selectedCompany = list.find((item) => item.id === value);
-                setCompany(value);
-                setCompanyName(selectedCompany?.name || "");
-                setCategory("All");
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose" />
-              </SelectTrigger>
-              <SelectContent>
-                {list &&
-                  list.map((data) => {
-                    return (
-                      <SelectItem key={data.id} value={data.id}>
-                        {data.name}
-                      </SelectItem>
-                    );
-                  })}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Choose Category
-            </label>
-            <Select
-              value={category}
-              onValueChange={(value) => {
-                const selectedCategory = categories.find(
-                  (item) => item.id === value
-                );
-                setCategory(value);
-                if (type && company && category && month && year) {
-                  setTransactionList({});
-                }
-                // setCategoryName(selectedCategory?.name || "");
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose" />
-              </SelectTrigger>
-              <SelectContent>
-                {/* <SelectItem key={-1} value={"All"}>
-                All Category
-              </SelectItem> */}
-                {categories &&
-                  categories.map((data) => {
-                    return (
-                      <SelectItem key={data.id} value={data.id}>
-                        {data.name}
-                      </SelectItem>
-                    );
-                  })}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="pt-5 bg-white rounded-lg flex-col gap-4 grid sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="type"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Choose Month
-            </label>
-            <Select value={month} onValueChange={setMonth}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose Month" />
-              </SelectTrigger>
-              <SelectContent>
-                {months &&
-                  months.map((data) => {
-                    return (
-                      <SelectItem key={data.value} value={data.value}>
-                        {data.name}
-                      </SelectItem>
-                    );
-                  })}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label
-              htmlFor="type"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Choose Year
-            </label>
-            <Input
-              type="text"
-              value={year}
-              placeholder="Year"
-              onChange={handleChangeYear}
-            />
-          </div>
-        </div>
-
-        <div className="pt-5">
-          <Button
+            onClick={handleCreateBilling}
             disabled={
-              type && company && category && month && year ? false : true
+              !processedTransactions.length || isSubmitting || isLoadingFees
             }
-            onClick={() => handleGetTransaction()}
-            className="ml-auto rounded-full"
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full disabled:opacity-50"
           >
-            Get Transactions
+            <CheckIcon className="w-5 h-5 mr-1" />
+            {isSubmitting ? "Creating..." : "Create Billing"}
           </Button>
         </div>
-        <div className="pt-5">
-          <Alert hidden={billingNotExist} variant={"destructive"}>
-            <AlertDescription>
-              Billing already exist, click here to view detail{" "}
-              <Button
-                onClick={() =>
-                  router.push(
-                    `${AppURL.financeBillingDetail}/${existingBillingId}`
-                  )
-                }
+      </div>
+
+      <div className="pt-5 md:px-6 p-4 m-5 bg-white rounded-lg">
+        <div className="space-y-5">
+          <div>
+            <label
+              htmlFor="type"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Choose Type
+            </label>
+            <Select
+              value={type}
+              onValueChange={(value) => {
+                setType(value);
+                setCompany("");
+                setCompanyName("");
+                setCategory("");
+                setFeesMap({});
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="partner">Partner</SelectItem>
+                <SelectItem value="insurer">Insurer</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="company"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Link
-              </Button>
-            </AlertDescription>
-          </Alert>
+                {type === "insurer"
+                  ? "Choose Insurance Company"
+                  : "Choose Partner"}
+              </label>
+              <Select
+                value={company}
+                disabled={!type}
+                onValueChange={(value) => {
+                  const selectedCompany = companies.find(
+                    (item) => item.id === value
+                  );
+                  setCompany(value);
+                  setCompanyName(selectedCompany?.name || "");
+                  setCategory("");
+                  setFeesMap({});
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose Company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {companies.map((data) => (
+                    <SelectItem key={data.id} value={data.id}>
+                      {data.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Choose Category
+              </label>
+              <Select
+                value={category}
+                disabled={!company}
+                onValueChange={setCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((data) => (
+                    <SelectItem key={data.id} value={data.id}>
+                      {data.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="month"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Choose Month
+              </label>
+              <Select value={month} onValueChange={setMonth}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose Month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((data) => (
+                    <SelectItem key={data.value} value={data.value}>
+                      {data.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="year"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Choose Year
+              </label>
+              <Select value={year} onValueChange={setYear}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((y) => (
+                    <SelectItem key={y} value={y}>
+                      {y}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Button
+              disabled={!type || !company || !category || !month || !year}
+              onClick={handleGetTransaction}
+              className="rounded-full disabled:opacity-50"
+            >
+              Get Transactions
+            </Button>
+          </div>
+
+          {isLoadingFees && (
+            <Alert>
+              <AlertDescription>
+                Loading fee information for {processedTransactions.length}{" "}
+                transactions...
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {!billingNotExist && (
+            <Alert variant="destructive">
+              <AlertDescription>
+                Billing already exists.{" "}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-white underline"
+                  onClick={() =>
+                    router.push(
+                      `${AppURL.financeBillingDetail}/${existingBillingId}?channel=${company}&type=${type}`
+                    )
+                  }
+                >
+                  Click here to view detail
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       </div>
-      <div>
-        <div className="p-4 md:p-6 m-5 bg-white rounded-lg overflow-x-auto">
-          <Table className="table-claims w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Transaction Number</TableHead>
-                <TableHead>Plan Name</TableHead>
-                {type === "partner" ? (
-                  <TableHead>Insurance Company Name</TableHead>
-                ) : (
-                  ""
-                )}
-                <TableHead>Transaction Date</TableHead>
-                <TableHead>Currency</TableHead>
-                <TableHead style={{ textAlign: "right" }}>Amount</TableHead>
-                {type === "insurer" ? (
-                  <TableHead>Commision Percentage</TableHead>
-                ) : (
-                  ""
-                )}
-                {type === "insurer" ? (
-                  <TableHead>Commision Amount</TableHead>
-                ) : (
-                  ""
-                )}
-                {/* <TableHead>Commision Percentage</TableHead>
-                <TableHead className="text-right">Commision Amount</TableHead> */}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {processedTransactionList &&
-                processedTransactionList.map((data: any) => {
-                  let fee;
-                  if (type == "insurer") {
-                    fee =
-                      fees[
-                        `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                      ]?.fee &&
-                      formatMoney(
-                        ((fees[
-                          `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                        ]?.fee ?? 0) /
-                          100) *
-                          data.newPremium
-                      );
-                  } else if (type == "partner") {
-                    fee =
-                      fees[
-                        `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                      ]?.fee &&
-                      formatMoney(
-                        ((fees[
-                          `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                        ]?.fee ?? 0) /
-                          100) *
-                          data.newPremium
-                      );
-                  }
-                  return (
-                    <TableRow key={data.id}>
-                      <TableCell>{data.invoice}</TableCell>
-                      <TableCell>
-                        {data.insurance?.plan?.name.split("|").join("\n")}
-                      </TableCell>
-                      {type === "partner" ? (
-                        <TableCell>
-                          {data.insurance?.insurance?.id?.name}
-                        </TableCell>
-                      ) : (
-                        ""
-                      )}
-                      <TableCell>
-                        {formatDate(data.created_at, "YYYY-MM-DD")}
-                      </TableCell>
-                      <TableCell>{data.currency}</TableCell>
-                      <TableCell className="text-right w-1">
-                        {formatMoney(data.newPremium)}
-                      </TableCell>
-                      {
-                        type === "insurer" ? (
-                          <TableCell className="w-1">
-                            {type === "insurer" &&
-                            fees[
-                              `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                            ]?.fee
-                              ? fees[
-                                  `${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                                ]?.fee ?? 0
-                              : 0}
-                          </TableCell>
-                        ) : (
-                          ""
-                        )
 
-                        // <TableCell className="w-1">
-                        //   {type === "partner" &&
-                        //     fees[
-                        //       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                        //     ]?.fee
-                        //     ? fees[
-                        //       `${company}-${data.insurance?.insurance?.id?.id}-${data.insurance?.product?.id}-${data.insurance?.plan?.id}`
-                        //     ]?.fee ?? 0
-                        //     : 0}
-                        // </TableCell>
-                      }
-                      {
-                        type === "insurer" ? (
-                          <TableCell className="text-right w-1">
-                            {fee}
-                          </TableCell>
-                        ) : (
-                          ""
-                        )
-                        // <TableCell className="text-right w-1">{fee}</TableCell>
-                      }
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={10}>
-                  <div className="flex justify-center items-center gap-2 font-normal">
-                    <label htmlFor="rowsPerPage">Showing:</label>
-                    {/* <select
-                      id="rowsPerPage"
-                      value={rowsPerPage}
-                      onChange={handleRowsPerPageChange}
-                      className="p-2 border rounded"
-                    >
-                      {[10, 20, 30, 50, 100].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select> */}
-                    <span className="mr-2">
-                      {transactionList?.data?.length} of {transactionList.total}{" "}
-                      items
-                    </span>
-                    <button
-                      onClick={() => handlePaging(page - 1)}
-                      disabled={page === 1}
-                      title="Prev"
-                    >
-                      <ChevronLeft />
-                    </button>
-                    <button
-                      onClick={() => handlePaging(page + 1)}
-                      disabled={page === transactionList.pageTotal}
-                      title="Next"
-                    >
-                      <ChevronRight />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </div>
+      <div className="p-4 md:p-6 m-5 bg-white rounded-lg">
+        <DataTable
+          data={processedTransactions}
+          columns={columns}
+          loading={isLoadingTransactions || isLoadingFees}
+          noDataText="No transactions available. Please select filters and click 'Get Transactions'"
+          className="table-claims"
+        />
       </div>
     </div>
   );
 };
 
-// const CreateBillingWithSidebar = (params: any) =>
-//   WithSidebar(CreateBillingPage)(params);
 export default CreateBillingPage;
