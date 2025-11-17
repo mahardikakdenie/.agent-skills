@@ -2,6 +2,27 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { CookieService } from "@/services/masterdata/cookie.service";
 import { ClaimFieldInputType, ClaimForm } from "@/interface";
+import dayjs from "dayjs";
+
+export const generateYears = (startYear: number = 2014): string[] => {
+  const currentYear = dayjs().year();
+  const years: string[] = [];
+
+  for (let year = startYear; year <= currentYear; year++) {
+    years.push(year.toString());
+  }
+
+  return years;
+};
+
+export const generateMonths = (
+  format: string = "MMMM"
+): Array<{ value: string; name: string }> => {
+  return Array.from({ length: 12 }, (_, i) => ({
+    value: (i + 1).toString(),
+    name: dayjs().month(i).format(format),
+  }));
+};
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

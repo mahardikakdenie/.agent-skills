@@ -1,77 +1,122 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
-import { useBilling } from "../../../hook";
-import { formatMoney } from "@/lib/formatter";
-import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, Download, Printer } from "lucide-react";
+import { useBilling } from "@/app/finance/billing/hook";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { ChevronLeft, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {useScreen} from "@/context/screen.context";
+import { useScreen } from "@/context/screen.context";
 import ApiURL from "@/constants/api-url.const";
-import {helperService} from "@/services/api.service";
+import { helperService } from "@/services/api.service";
 
 export default function InvoicePage() {
-  const { getBillingById, billing } = useBilling();
   const { id } = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const invoiceRef = useRef<HTMLDivElement>(null);
   const { setLoading } = useScreen();
-  const [type, setType] = useState('');
+
+  const type = searchParams.get("type") || "insurer";
+
+  const { billing, isLoadingBilling, fetchBillingDetails } = useBilling({
+    billingId: id as string,
+  });
+
+  const [invoiceHTML, setInvoiceHTML] = useState<string>("");
 
   useEffect(() => {
-    const searchParam = new URLSearchParams(window.location.search);
-    let t = searchParam.get("type") ?? "";
-    if (type == "partner") {
-      getBillingById(id as string, 1, 100, "");
-    } else if (type == "insurer") {
-      getBillingById(id as string, 1, 100, "product");
+    if (id && type) {
+      if (type === "partner") {
+        fetchBillingDetails(id as string, {
+          page: 1,
+          limit: 10000,
+        });
+      } else if (type === "insurer") {
+        fetchBillingDetails(id as string, {
+          page: 1,
+          limit: 10000,
+          groupBy: "product",
+        });
+      }
     }
-    setType(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, type]);
+  }, [id, type, fetchBillingDetails]);
 
   useEffect(() => {
-    if (type == "partner") {
-      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: billing.data[0].billings.company, category: billing.data[0].billings.category }));
-    } else if (type == "insurer") {
-      localStorage.setItem("billingPage", JSON.stringify({ type: type, company: billing.data[0].items[0].billings.company, category: billing.data[0].items[0].billings.category }));
-    }
-  }, [billing]);
+    if (!billing?.data?.length) return;
 
-  const handleDownloadPDF = async () => {
-    if (!invoiceRef.current) return;
-    const htmlContent = invoiceRef.current.innerHTML;
-    setLoading(true);
     try {
-      const response: any = await helperService.post(ApiURL.v1Html2pdfGeneratePdfService, {
-        content: htmlContent,
-        filename: 'policies/' +(type == "partner" ? billing.data[0].billings.billing_no : billing.data[0].items[0].billings.billing_no)
-      });
-      window.open(response.data.file.url, "_blank");
+      const html = generateInvoiceHTML();
+      setInvoiceHTML(html);
+      saveBillingToLocalStorage();
     } catch (error) {
-      alert("Failed to download PDF");
-      console.error(error);
+      console.error("Error generating invoice HTML:", error);
     }
-    setLoading(false);
+  }, [billing, type]);
+
+  const saveBillingToLocalStorage = () => {
+    if (!billing?.data?.[0]) return;
+
+    if (type === "partner") {
+      const billingInfo = billing.data[0]?.billings;
+      if (billingInfo) {
+        localStorage.setItem(
+          "billingPage",
+          JSON.stringify({
+            type: type,
+            company: billingInfo.company,
+            category: billingInfo.category,
+          })
+        );
+      }
+    } else if (type === "insurer") {
+      const billingInfo = billing.data[0]?.items?.[0]?.billings;
+      if (billingInfo) {
+        localStorage.setItem(
+          "billingPage",
+          JSON.stringify({
+            type: type,
+            company: billingInfo.company,
+            category: billingInfo.category,
+          })
+        );
+      }
+    }
+  };
+
+  const generateInvoiceHTML = () => {
+    if (type === "partner") {
+      return generateInvoiceHTMLPartner();
+    } else if (type === "insurer") {
+      return generateInvoiceHTMLInsurer();
+    }
+    return "";
   };
 
   const getHeaderHtml = () => {
-    let d = {
+    let d: any = {
       billing_no: "",
       created_at: "",
       company_name: "",
       transaction_period: "",
       total: 0,
       total_commission: 0,
-      status: ""
+      status: "",
+      currency: "IDR",
     };
-    if (type == "insurer") {
+
+    if (type === "insurer") {
       d = billing.data[0].items[0].billings ?? {};
-    }
-    else if (type == "partner") {
+    } else if (type === "partner") {
       d = billing.data[0].billings ?? {};
     }
 
-
-    const status = d.status.split("-").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ")
+    const status = d.status
+      .split("-")
+      .map(
+        (word: any) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join(" ");
 
     const headerHtml = `
     <div id="headerText" style="padding: 60px;">
@@ -79,14 +124,20 @@ export default function InvoicePage() {
         <table style="width: 100%; border-bottom: 1px solid #eee; border-collapse: collapse;">
           <tr>
             <td style="vertical-align: top;">
-              <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${type == "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"}</h1>
+              <h1 style="font-size: 28px; font-weight: bold; color: #333; margin: 0 0 10px 0;">${
+                type === "insurer" ? "INVOICE" : "BILLING TRANSACTION LIST"
+              }</h1>
               <p style="color: #666; margin: 5px 0;">PT. Teman Pialang Asuransi</p>
               <p style="color: #777; margin: 5px 0;">Jakarta, Indonesia</p>
             </td>
             <td style="vertical-align: top; text-align: right;">
               <img src="https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png" alt="PT.Teman Pialang Asuransi" style="height: 48px; margin-bottom: 16px;margin-left:auto;">
-              <p style="color: #666; margin: 5px 0;">Invoice #${d.billing_no}</p>
-              <p style="color: #777; margin: 5px 0;">Date: ${new Date(d.created_at).toLocaleDateString()}</p>
+              <p style="color: #666; margin: 5px 0;">Invoice #${
+                d.billing_no
+              }</p>
+              <p style="color: #777; margin: 5px 0;">Date: ${new Date(
+                d.created_at
+              ).toLocaleDateString()}</p>
             </td>
           </tr>
         </table>
@@ -96,25 +147,28 @@ export default function InvoicePage() {
             <td style="vertical-align: top; width: 50%;">
               <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">Bill To:</div>
               <div style="color: #666; margin: 5px 0;">${d.company_name}</div>
-              <div style="color: #777; margin: 5px 0;">Period: ${d.transaction_period}</div>
+              <div style="color: #777; margin: 5px 0;">Period: ${
+                d.transaction_period
+              }</div>
             </td>
             <td style="vertical-align: top; width: 50%; text-align: right;">
-              <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">${type == "partner" ? "Amount Due" : "Amount Due"}</div>
+              <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">Amount Due</div>
               <div style="font-size: 24px; font-weight: bold; color: #333; margin: 5px 0;"> 
-                ${type == "partner" ?
-        (billing.data[0].billings.currency) + " " + formatMoney(d.total - d.total_commission)
-        :
-        (billing.data[0].items[0].billings.currency) + " " + formatMoney(d.total_commission)}
+                ${
+                  type === "partner"
+                    ? d.currency +
+                      " " +
+                      formatMoney(d.total - d.total_commission)
+                    : d.currency + " " + formatMoney(d.total_commission)
+                }
               </div>
               <div style="color: #777; margin: 5px 0;">Status: ${status}</div>
               <div style="color: #777; margin: 5px 0;">Total Transactions: ${getTotalTransaction()} </div>
             </td>
           </tr>
-        </table> 
-         `;
+        </table>`;
     return headerHtml;
-  }
-
+  };
 
   const footerHtml = `
     <div style="page-break-before: always;"></div>
@@ -144,14 +198,14 @@ export default function InvoicePage() {
       }
     }
     return totalTransaction;
-  }
+  };
 
   const generateInvoiceHTMLPartner = () => {
     let datas: { [key: string]: any } = {};
 
     billing.data.forEach((item: any) => {
       const insuranceName = item.details.insurance_name;
-      const productId = item.details.product_name; //item.product;
+      const productId = item.details.product_name;
 
       if (!datas[insuranceName]) {
         datas[insuranceName] = {};
@@ -169,12 +223,12 @@ export default function InvoicePage() {
     let insuranceKeyList = Object.keys(datas);
     let grandTotal = 0;
     for (let i = 0; i < insuranceKeyList.length; i++) {
-      const insurKey = insuranceKeyList[i];  // Insurance Key 
+      const insurKey = insuranceKeyList[i];
       html += `<div style="font-weight: bold; font-size: 16px; margin-top:10px;">${insurKey}</div>`;
 
       let productData = Object.keys(datas[insurKey]);
       for (let jx = 0; jx < productData.length; jx++) {
-        const productKey = productData[jx];  // Product Key 
+        const productKey = productData[jx];
         html += `
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
@@ -184,7 +238,7 @@ export default function InvoicePage() {
         </table>
         `;
         let subTotal = 0;
-        let commission = 0;
+
         html += `  
           <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px; font-size: 14px;">
             <thead>
@@ -197,16 +251,27 @@ export default function InvoicePage() {
               </tr>
             </thead>
             <tbody>`;
+
         for (let k = 0; k < datas[insurKey][productKey].length; k++) {
           const d = datas[insurKey][productKey][k];
           subTotal += parseInt(d.amount) - parseInt(d.commission_amount ?? "0");
-          commission += parseInt(d.amount);
+
           html += `<tr>
-                <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.invoice_no}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.details?.plan_name.split('|')[0]}</td>
-                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount)}</td>
-                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${d.commission_percentage ?? 0}%</td>
-                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount - (d.commission_amount ?? 0))}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #eee;">${
+                  d.invoice_no
+                }</td>
+                <td style="padding: 12px; border-bottom: 1px solid #eee;">${
+                  d.details?.plan_name.split("|")[0]
+                }</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(
+                  d.amount
+                )}</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${
+                  d.commission_percentage ?? 0
+                }%</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(
+                  d.amount - (d.commission_amount ?? 0)
+                )}</td>
               </tr>`;
         }
         grandTotal += subTotal;
@@ -229,7 +294,9 @@ export default function InvoicePage() {
           <tbody>
             <tr style="font-weight: bold;">
               <td colspan="2" style="padding: 12px; text-align: right; width: 100%"><div>Grand Total:</div></td>
-              <td style="padding: 12px; text-align: right;"><div> ${formatMoney(grandTotal)}</div></td>
+              <td style="padding: 12px; text-align: right;"><div> ${formatMoney(
+                grandTotal
+              )}</div></td>
             </tr>
           </tbody>
           </table>`;
@@ -251,7 +318,6 @@ export default function InvoicePage() {
         </tr>
       </table>`;
 
-      let subTotal = 0;
       let subTotalCommision = 0;
       html += `  
           <table style="width: 100%; border-collapse: collapse; margin-top: 10px;margin-bottom: 20px; font-size: 14px;">
@@ -265,26 +331,37 @@ export default function InvoicePage() {
             </tr>
           </thead>
           <tbody>`;
+
       for (let j = 0; j < datas[i].items.length; j++) {
         const d = datas[i].items[j];
-        subTotal += parseInt(d.amount);
         subTotalCommision += parseInt(d.commission_amount);
         html += ` 
               <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #eee;">${d.invoice_no}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #eee; ">${d.details?.plan_name.split('|')[0]}</td>
-                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.amount)}</td>
-                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${d.commission_percentage ?? 0}%</td>
-                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(d.commission_amount)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #eee;">${
+                  d.invoice_no
+                }</td>
+                <td style="padding: 12px; border-bottom: 1px solid #eee; ">${
+                  d.details?.plan_name.split("|")[0]
+                }</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(
+                  d.amount
+                )}</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${
+                  d.commission_percentage ?? 0
+                }%</td>
+                <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee;">${formatMoney(
+                  d.commission_amount
+                )}</td>
               </tr>
               `;
-
       }
 
       html += ` 
             <tr style="font-weight: bold;">
               <td colspan="4" style="padding: 12px; text-align: right;"><div>Total:</div></td>
-              <td style="padding: 12px; text-align: right;"><div>${formatMoney(subTotalCommision)}</div></td>
+              <td style="padding: 12px; text-align: right;"><div>${formatMoney(
+                subTotalCommision
+              )}</div></td>
             </tr> 
           </tbody>
         </table>`;
@@ -296,7 +373,9 @@ export default function InvoicePage() {
           <tbody>
             <tr style="font-weight: bold;">
               <td colspan="3" style="padding: 12px; text-align: right; width: 100%"><div>Grand Total:</div></td>
-              <td style="padding: 12px; text-align: right;"><div> ${formatMoney(billing.data[0].items[0].billings.amount)}</div></td>
+              <td style="padding: 12px; text-align: right;"><div> ${formatMoney(
+                billing.data[0].items[0].billings.amount
+              )}</div></td>
             </tr>
           </tbody>
         </table>`;
@@ -305,50 +384,80 @@ export default function InvoicePage() {
     return html;
   };
 
-  const handleBack = () => {
-    window.history.back();
+  const formatMoney = (value: any) => {
+    const num = parseFloat(value) || 0;
+    return new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(num);
   };
 
-  //RETURN if no get data
-  if (!billing.data?.[0]) return null;
+  const handleDownloadPDF = async () => {
+    if (!invoiceRef.current) return;
+
+    const htmlContent = invoiceRef.current.innerHTML;
+    const billingNo =
+      type === "partner"
+        ? billing.data[0].billings.billing_no
+        : billing.data[0].items[0].billings.billing_no;
+
+    setLoading(true);
+
+    try {
+      const response: any = await helperService.post(
+        ApiURL.v1Html2pdfGeneratePdfService,
+        {
+          content: htmlContent,
+          filename: `policies/${billingNo}`,
+        }
+      );
+      window.open(response.data.file.url, "_blank");
+    } catch (error) {
+      console.error("Failed to download PDF:", error);
+      alert("Failed to download PDF");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  if (isLoadingBilling) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg">Loading invoice...</div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div className="p-4 w-full">
-        <div className="print:hidden mb-4 flex justify-end gap-2">
-          <div
-            onClick={handleBack}
-            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </div>
-
-          <Button
-            onClick={() => handleDownloadPDF()}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
-          >
-            <Download className="w-5 h-5 mr-1 " /> Download PDF
-          </Button>
-
+    <div className="p-4 w-full">
+      <div className="print:hidden mb-4 flex justify-end gap-2">
+        <div
+          onClick={handleBack}
+          className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Back
         </div>
 
-        <div
-          className="bg-white shadow-md"
-          style={{ fontSize: "14px" }}
-          ref={invoiceRef}
-          dangerouslySetInnerHTML={{
-            __html:
-              billing.data.length > 0 ?
-                type == "partner" ?
-                  generateInvoiceHTMLPartner()
-                  : type == "insurer" ?
-                    generateInvoiceHTMLInsurer()
-                    : ""
-                : ""
-          }}
-        />
+        <Button
+          onClick={handleDownloadPDF}
+          disabled={!invoiceHTML}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full disabled:opacity-50"
+        >
+          <Download className="w-5 h-5 mr-1" /> Download PDF
+        </Button>
       </div>
-    </>
+
+      <div
+        className="bg-white shadow-md"
+        style={{ fontSize: "14px" }}
+        ref={invoiceRef}
+        dangerouslySetInnerHTML={{ __html: invoiceHTML }}
+      />
+    </div>
   );
-};
+}
