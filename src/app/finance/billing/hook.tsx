@@ -16,6 +16,7 @@ interface UseBillingProps {
   billings: any[];
   billing: any;
   unmatchedReconcillBillings: any[];
+  unmatchedReconcillBillingsMeta: any;
   categories: any[];
   channels: any[];
   insurances: any[];
@@ -348,6 +349,7 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   const {
     data: unmatchedReconcillBillingsData,
     isLoading: isLoadingUnmatchedReconcillBillings,
+    refetch: refetchUnmatchedReconcillBillings,
   } = useQuery({
     queryKey: ["unmatched-reconcill-billings", page, rowsPerPage],
     queryFn: async () => {
@@ -355,7 +357,7 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
         ApiURL.v1BillingsNotMatchReconciliation,
         { params: { page, pageSize: rowsPerPage } }
       );
-      return response?.data?.data || [];
+      return response?.data;
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -650,7 +652,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   return {
     billings: billingsData?.data || [],
     billing: billingData,
-    unmatchedReconcillBillings: unmatchedReconcillBillingsData || [],
+    unmatchedReconcillBillings: unmatchedReconcillBillingsData?.data || [],
+    unmatchedReconcillBillingsMeta: unmatchedReconcillBillingsData?.meta || {},
     categories: categoriesData || [],
     channels: channelsData || [],
     insurances: insurancesData || [],

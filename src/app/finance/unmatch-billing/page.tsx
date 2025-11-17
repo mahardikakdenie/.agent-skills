@@ -1,150 +1,134 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { useBilling } from "../billing/hook";
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatMoney } from "@/lib/formatter";
-import {useScreen} from "@/context/screen.context";
+import { DataTable, Column } from "@/components/ui/DataTable";
 
-export default function BillingPage() {
-  const [searchType, setSearchType] = useState("partner");
-  const { unmatchedReconcillbillingList, getUnmatchedReconcillBilling } = useBilling();
-  console.log("🚀 ~ BillingPage ~ unmatchedReconcillbillingList:", unmatchedReconcillbillingList)
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
+export default function UnmatchedBillingPage() {
+  const {
+    unmatchedReconcillBillings,
+    unmatchedReconcillBillingsMeta,
+    isLoadingUnmatchedReconcillBillings,
+    page,
+    rowsPerPage,
+    setPage,
+    setRowsPerPage,
+  } = useBilling();
 
+  const totalItems = unmatchedReconcillBillingsMeta?.total || 0;
   const totalPages = Math.ceil(totalItems / rowsPerPage);
-  const { setLoading } = useScreen();
 
-  const handleRowsPerPageChange = (e: any) => {
-    setRowsPerPage(e.target.value);
+  const getStatusColor = (status: string) => {
+    if (status === "not-found-in-system") return "red";
+    if (status === "not-found-in-excel") return "orange";
+
+    return "inherit";
   };
 
+  const formatStatus = (status: string) => {
+    return (status?.split("-") || [])
+      .map(
+        (word: string) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join(" ");
+  };
 
-  useEffect(() => {
-    if (unmatchedReconcillbillingList && unmatchedReconcillbillingList.data) {
-      setTotalItems(unmatchedReconcillbillingList.meta.total);
-    } 
-  }, [unmatchedReconcillbillingList]);
+  const columns: Column<any>[] = [
+    {
+      key: "index",
+      header: "No.",
+      render: (_, index) => (page - 1) * rowsPerPage + index + 1,
+    },
+    {
+      key: "billings.billing_no",
+      header: "Billing No.",
+    },
+    {
+      key: "transaction_no",
+      header: "Transaction Number",
+    },
+    {
+      key: "plan_name",
+      header: "Plan Name",
+      render: (item) => item.details?.plan_name || item.plan_name || "-",
+    },
+    {
+      key: "transaction_date",
+      header: "Transaction Date",
+      render: (item) =>
+        item.details?.transaction_date || item.created_at || "-",
+    },
+    {
+      key: "billings.currency",
+      header: "Currency",
+      className: "w-[50px]",
+    },
+    {
+      key: "amount",
+      header: "Amount",
+      classNameHeading: "text-right",
+      className: "text-right w-[50px]",
+      render: (item) => {
+        const status = item.status_reconcilliation;
+        const billingType = item.billings?.type;
+        const amount = parseFloat(item.amount || "0");
+        const commissionAmount = parseFloat(item.commission_amount || "0");
 
-  useEffect(() => {
-    getUnmatchedReconcillBilling(page, rowsPerPage,);
-  }, [page, rowsPerPage]);
+        let displayAmount = "-";
 
+        if (status === "not-found-in-system") {
+          displayAmount = formatMoney(amount);
+        } else if (status === "not-found-in-excel") {
+          if (billingType === "insurer") {
+            displayAmount = formatMoney(commissionAmount);
+          } else if (billingType === "partner") {
+            displayAmount = formatMoney(amount - commissionAmount);
+          }
+        }
 
+        return displayAmount;
+      },
+    },
+    {
+      key: "status_reconcilliation",
+      header: "Status",
+      className: "w-[100px]",
+      render: (item) => {
+        const status = item.status_reconcilliation;
+        const formattedStatus = formatStatus(status);
+
+        return (
+          <span style={{ color: getStatusColor(status) }}>
+            {formattedStatus}
+          </span>
+        );
+      },
+    },
+  ];
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6 ">
+    <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex flex-wrap justify-start gap-4 pb-4 items-center">
         <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
           Unmatched Reconciliation Billing List
         </h1>
-
       </div>
-      <div className="w-full p-4 md:p-6 bg-white rounded-lg">
-        <Table className="table-transactions">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap">No.</TableHead>
-              <TableHead>Billing No.</TableHead>
-              <TableHead>Transaction Number</TableHead>
-              <TableHead>Plan Name</TableHead>
-              <TableHead>Transaction Date</TableHead>
-              <TableHead style={{ width: "50px" }}>Currency</TableHead>
-              <TableHead style={{ width: "50px", textAlign: "right" }}>Amount</TableHead>
-              <TableHead style={{ width: "100px" }}>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {unmatchedReconcillbillingList.data?.map((billing: any, index: number) => (
-              <TableRow key={index}>
-                <TableCell className="whitespace-nowrap">{index + 1}</TableCell>
-                <TableCell>{billing.billings.billing_no}</TableCell>
-                <TableCell>{billing.transaction_no}</TableCell>
-                <TableCell>{billing.details?.plan_name || billing.plan_name}</TableCell>
-                <TableCell>{billing.details?.transaction_date || billing.created_at}</TableCell>
-                <TableCell>{billing.billings?.currency}</TableCell>
-                {/* <TableCell>{billing.status_reconcilliation}</TableCell> */}
 
-                <TableCell style={{ textAlign: "right" }}>
-                  {billing.status_reconcilliation === "not-found-in-system"
-                    ? formatMoney(billing.amount)
-                    : billing.status_reconcilliation === "not-found-in-excel"
-                    ? billing.billings?.type === "insurer"
-                      ? formatMoney(billing.commission_amount ?? 0)
-                      : billing.billings?.type === "partner"
-                      ? formatMoney((+billing.amount || 0) - (+billing.commission_amount || 0))
-                      : "-"
-                    : "-"}
-                </TableCell>
-                <TableCell
-                  style={{
-                    color:
-                      billing.status_reconcilliation === "not-found-in-system"
-                        ? "red"
-                        : billing.status_reconcilliation === "not-found-in-excel"
-                        ? "orange"
-                        : "inherit",
-                  }}
-                >
-                  {(billing.status_reconcilliation?.split("-") || [])
-                    .map(
-                      (word: string) =>
-                        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                    )
-                    .join(" ")}
-                </TableCell>
-
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={10}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50, 100].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() => setPage((prevState) => prevState - 1)}
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() => setPage((prevState) => prevState + 1)}
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+      <DataTable
+        data={unmatchedReconcillBillings || []}
+        columns={columns}
+        loading={isLoadingUnmatchedReconcillBillings}
+        pagination={{
+          page,
+          totalPages,
+          rowsPerPage,
+          totalItems,
+          onPageChange: setPage,
+          onRowsPerPageChange: (e) => setRowsPerPage(parseInt(e.target.value)),
+        }}
+        noDataText="No unmatched transactions found"
+      />
     </div>
   );
-};
+}
