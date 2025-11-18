@@ -43,8 +43,8 @@ export default function DashboardClaim() {
   const [ productOptions, setProductOptions ] = useState<{ label: string; value: string }[]>([]);
   const [ selectedPlan, setSelectedPlan ] = useState<string>('');
   const [ planOptions, setPlanOptions ] = useState<{ label: string; value: string }[]>([]);
-  const [ from, setFrom ] = useState('');
-  const [ to, setTo ] = useState('');
+  const [ from, setFrom ] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [ to, setTo ] = useState(format(new Date(), 'yyyy-MM-dd'));
 
   const {
     control,
