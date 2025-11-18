@@ -33,8 +33,8 @@ export const DashboardPolicy = () => {
   const [insuranceOptions, setInsuranceOptions] = useState<any[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string>("");
   const [planOptions, setPlanOptions] = useState<any[]>([]);
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [from, setFrom] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
 
   const handleDateChange = (startDate: string, endDate: string) => {
     setFrom(startDate);
