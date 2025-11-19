@@ -244,7 +244,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: allPlansData, isLoading: isLoadingAllPlans } = useQuery({
+  const { data: allPlansData, isFetching: isLoadingAllPlans } = useQuery({
     queryKey: ["all-plans", searchProduct],
     queryFn: async () => {
       const response: any = await productService.get(ApiURL.v1Plans, {
