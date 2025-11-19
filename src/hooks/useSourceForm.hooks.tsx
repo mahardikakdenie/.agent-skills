@@ -114,7 +114,9 @@ export function useSourceForm(
       return response.data.data[0];
     },
     enabled: isEdit && !!sourceId,
-    staleTime: 30000,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
 

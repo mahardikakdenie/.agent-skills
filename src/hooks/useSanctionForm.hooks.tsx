@@ -138,8 +138,9 @@ export function useSanctionForm(
       return response.data.data[0];
     },
     enabled: isEdit && !!sanctionId,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
   });
 
   useEffect(() => {

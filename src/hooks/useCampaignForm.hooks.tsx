@@ -367,8 +367,9 @@ export function useCampaignForm(
       return response.data?.data?.[0];
     },
     enabled: isEdit && !!campaignId,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
   });
 
   useEffect(() => {
