@@ -1,28 +1,37 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import AppURL from "@/constants/app-url.const";
-import ProductCategoryForm from "@/components/forms/product-category.form";
-import { useAuth } from "@/context/auth.context";
+import { useProductCategoryForm } from "@/hooks/useProductCategoryForm.hooks";
+import { ProductCategoryForm } from "@/components/forms/ProductCategoryForm";
 
-const AddProductCategory = () => {
-  const router = useRouter();
-  const { permissionList } = useAuth();
+export default function AddProductCategoryPage() {
+  const {
+    handleSubmit,
+    control,
+    errors,
+    watch,
+    showAlert,
+    errorMessage,
+    isLoadingDetail,
+    isSaving,
+    handleSave,
+    setShowAlert,
+    goBack,
+  } = useProductCategoryForm("create");
 
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = permissionList.includes("Masterdata.Create");
-
-      if (!access) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-
-  return <ProductCategoryForm method="create" />;
-};
-
-export default AddProductCategory;
+  return (
+    <ProductCategoryForm
+      handleSubmit={handleSubmit}
+      control={control}
+      errors={errors}
+      watch={watch}
+      showAlert={showAlert}
+      errorMessage={errorMessage}
+      isEdit={false}
+      isLoadingDetail={isLoadingDetail}
+      isSaving={isSaving}
+      onSave={handleSave}
+      onBack={goBack}
+      onCloseAlert={() => setShowAlert(false)}
+    />
+  );
+}

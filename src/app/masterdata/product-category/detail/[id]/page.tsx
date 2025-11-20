@@ -1,32 +1,48 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
-import AppURL from "@/constants/app-url.const";
-import ProductCategoryForm from "@/components/forms/product-category.form";
-import {useAuth} from "@/context/auth.context";
+import { useEffect } from "react";
+import { useParams } from "next/navigation";
+import { useProductCategoryForm } from "@/hooks/useProductCategoryForm.hooks";
+import { ProductCategoryForm } from "@/components/forms/ProductCategoryForm";
 
-export default function EditProductCategory({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const router = useRouter();
+export default function EditProductCategoryPage() {
+  const { id } = useParams();
 
-  const { id } = React.use(params);
-  const { permissionList } = useAuth();
+  const {
+    handleSubmit,
+    control,
+    errors,
+    watch,
+    showAlert,
+    errorMessage,
+    isLoadingDetail,
+    isSaving,
+    handleSave,
+    setShowAlert,
+    goBack,
+    loadCategoryDetail,
+  } = useProductCategoryForm("edit");
 
   useEffect(() => {
-    const checkAccess = async () => {
-      const access = permissionList.includes("Masterdata.Update");
+    if (id) {
+      loadCategoryDetail(id as string);
+    }
+  }, [id, loadCategoryDetail]);
 
-      if (!access) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-
-  return <ProductCategoryForm method="update" id={id} />;
-};
+  return (
+    <ProductCategoryForm
+      handleSubmit={handleSubmit}
+      control={control}
+      errors={errors}
+      watch={watch}
+      showAlert={showAlert}
+      errorMessage={errorMessage}
+      isEdit={true}
+      isLoadingDetail={isLoadingDetail}
+      isSaving={isSaving}
+      onSave={handleSave}
+      onBack={goBack}
+      onCloseAlert={() => setShowAlert(false)}
+    />
+  );
+}
