@@ -88,6 +88,9 @@ export default function CampaignForm({ mode, campaignId }: CampaignFormProps) {
     handlePageChangeInsurances,
     handleInsurancePerPageChange,
 
+    handleChangeVoucherLimit,
+    handleVoucherLimitBlur,
+
     products,
     isProductModalOpen,
     selectedProductIds,
@@ -717,13 +720,55 @@ export default function CampaignForm({ mode, campaignId }: CampaignFormProps) {
                           />
                           <input
                             type="number"
-                            value={voucherUsageLimit}
-                            onChange={(e) =>
-                              setVoucherUsageLimit(Number(e.target.value))
+                            value={
+                              voucherUsageLimit === 0 ? "" : voucherUsageLimit
                             }
+                            onKeyDown={(e) => {
+                              const currentValue = (
+                                e.target as HTMLInputElement
+                              ).value;
+
+                              if (
+                                e.key === "0" &&
+                                (currentValue === "" ||
+                                  currentValue === "0" ||
+                                  e.currentTarget.selectionStart === 0)
+                              ) {
+                                e.preventDefault();
+                                return;
+                              }
+
+                              if (
+                                currentValue.length >= 5 &&
+                                e.key !== "Backspace" &&
+                                e.key !== "Delete" &&
+                                e.key !== "ArrowLeft" &&
+                                e.key !== "ArrowRight"
+                              ) {
+                                e.preventDefault();
+                                return;
+                              }
+
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                ![
+                                  "Backspace",
+                                  "Delete",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Tab",
+                                ].includes(e.key)
+                              ) {
+                                e.preventDefault();
+                                return;
+                              }
+                            }}
+                            onChange={(e) =>
+                              handleChangeVoucherLimit(e.target.value)
+                            }
+                            onBlur={handleVoucherLimitBlur}
                             className="p-2 border rounded ml-2 w-24"
                             placeholder="Usage limit"
-                            min={1}
                           />
                           <button
                             type="button"

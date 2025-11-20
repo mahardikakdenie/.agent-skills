@@ -134,6 +134,8 @@ interface UseCampaignFormProps {
   setVoucherUsageLimit: (limit: number) => void;
   handleAddVoucher: (code: string, usageLimit: number) => void;
   handleRemoveVoucher: (index: number) => void;
+  handleChangeVoucherLimit: (value: string) => void;
+  handleVoucherLimitBlur: () => void;
 
   isLoadingCurrency: boolean;
   isLoadingDetail: boolean;
@@ -1146,6 +1148,34 @@ export function useCampaignForm(
     setCampaignId(id);
   }, []);
 
+  const handleChangeVoucherLimit = (value: string) => {
+    if (value === "") {
+      setVoucherUsageLimit(0);
+      return;
+    }
+
+    if (!/^\d+$/.test(value)) {
+      return;
+    }
+
+    if (value.length > 5) {
+      return;
+    }
+
+    if (value.startsWith("0")) {
+      return;
+    }
+
+    const numValue = parseInt(value, 10);
+    setVoucherUsageLimit(numValue);
+  };
+
+  const handleVoucherLimitBlur = () => {
+    if (voucherUsageLimit < 1) {
+      setVoucherUsageLimit(1);
+    }
+  };
+
   return {
     handleSubmit,
     control,
@@ -1247,6 +1277,9 @@ export function useCampaignForm(
     setVoucherUsageLimit,
     handleAddVoucher,
     handleRemoveVoucher,
+
+    handleChangeVoucherLimit,
+    handleVoucherLimitBlur,
 
     isLoadingCurrency,
     isLoadingDetail,

@@ -239,13 +239,12 @@ export function usePartnerCommForm(
         router.push(AppURL.financePartnerComm);
       }, 2000);
     },
-    onError: (error) => {
-      console.error("Failed to save partner comm:", error);
-      setErrorMessage(
-        isEdit
-          ? "Failed to update partner comm. Please try again."
-          : "Failed to create partner comm. Please try again."
-      );
+    onError: (error: any) => {
+      const defaultMessage = isEdit
+        ? "Failed to update partner comm. Please try again."
+        : "Failed to create partner comm. Please try again.";
+      const errorMessage = error?.response?.data?.message || defaultMessage;
+      setErrorMessage(errorMessage);
       setShowAlert(true);
     },
   });
