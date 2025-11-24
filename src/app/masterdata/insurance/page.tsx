@@ -51,23 +51,21 @@ export default function InsurancePage() {
         </Button>
       </div>
 
-      <div className="w-full p-4 bg-white rounded-lg">
-        <DataTable
-          loading={isLoading}
-          data={insurances}
-          columns={insuranceTableColumns}
-          pagination={{
-            page,
-            totalPages,
-            totalItems,
-            rowsPerPage,
-            onPageChange: setPage,
-            onRowsPerPageChange: (e) => setRowsPerPage(+e.target.value || 0),
-          }}
-          className="insurance-table"
-          noDataText="No insurance data available"
-        />
-      </div>
+      <DataTable
+        loading={isLoading}
+        data={insurances}
+        columns={insuranceTableColumns}
+        pagination={{
+          page,
+          totalPages,
+          totalItems,
+          rowsPerPage,
+          onPageChange: setPage,
+          onRowsPerPageChange: (e) => setRowsPerPage(+e.target.value || 0),
+        }}
+        className="insurance-table"
+        noDataText="No insurance data available"
+      />
     </div>
   );
 }
