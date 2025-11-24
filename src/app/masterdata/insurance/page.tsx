@@ -1,111 +1,40 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
-import noData from "/public/images/no-data.webp";
-import Image from "next/image";
-import {
-  Insurance,
-  InsuranceService,
-} from "@/services/masterdata/insurance.service";
-import AppURL from "@/constants/app-url.const";
-import {useAuth} from "@/context/auth.context";
+import { Plus } from "react-feather";
+import { DataTable } from "@/components/ui/DataTable";
+import { useInsurance } from "@/hooks/useIsurance.hooks";
+import { createInsuranceTableColumns } from "@/components/tableConfig/insuranceTableConfig";
 
 export default function InsurancePage() {
-  const path = usePathname();
-  const insuranceService = new InsuranceService();
-  const [insurance, setInsurance] = useState<Insurance[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const {
+    insurances,
+    totalPages,
+    totalItems,
+    page,
+    rowsPerPage,
+    hasAccess,
+    canEdit,
+    canCreate,
+    canDelete,
+    isLoading,
+    setPage,
+    setRowsPerPage,
+    handleEdit,
+    handleDelete,
+    addNewInsurance,
+  } = useInsurance();
 
-  const router = useRouter();
-
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [canCreate, setCanCreate] = useState<boolean>(false);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
-  const { permissionList } = useAuth();
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = permissionList.includes("Masterdata.Read");
-      const editBtn = permissionList.includes("Masterdata.Update");
-      const deleteBtn = permissionList.includes("Masterdata.Delete");
-      const createBtn = permissionList.includes("Masterdata.Create");
-
-      setCanEdit(editBtn);
-      setCanDelete(deleteBtn);
-      setHasAccess(access);
-      setCanCreate(createBtn);
-      if (!access) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-
-  useEffect(() => {
-    const fetchInsurance = async () => {
-      setLoading(true);
-      try {
-        const result = await insuranceService.getInsurance(page, rowsPerPage);
-        setInsurance(result.data);
-        setTotalPages(result.meta.pageTotal);
-        setTotalItems(result.meta.total);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInsurance();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage]);
-
-  if (loading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        Loading...
-      </div>
-    );
+  if (hasAccess === false) {
+    return null;
   }
 
-  const handleEdit = (id: string) => {
-    router.push(`${AppURL.masterdataInsuranceDetail}/${id}`);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
-      try {
-        await insuranceService.deleteInsurance(id);
-        setInsurance((prevInsurance) =>
-          prevInsurance.filter((insurance) => insurance.id !== id)
-        );
-      } catch (error) {
-        console.error("Failed to delete insurance:", error);
-      }
-    }
-  };
-
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
+  const insuranceTableColumns = createInsuranceTableColumns({
+    handleEdit,
+    handleDelete,
+    canEdit,
+    canDelete,
+  });
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
@@ -114,7 +43,7 @@ export default function InsurancePage() {
           Insurance
         </h1>
         <Button
-          onClick={() => router.push(AppURL.masterdataInsuranceAdd)}
+          onClick={addNewInsurance}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
@@ -123,109 +52,22 @@ export default function InsurancePage() {
       </div>
 
       <div className="w-full p-4 bg-white rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead className="min-w-36">Category Name</TableHead>
-              <TableHead className="text-center">Logo File</TableHead>
-              <TableHead className="whitespace-nowrap w-36">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {insurance.length > 0 ? (
-              insurance.map((insurance, index) => (
-                <TableRow key={insurance.id}>
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>{insurance.name}</TableCell>
-                  <TableCell>
-                    <div className="flex justify-center gap-3">
-                      <Image
-                        src={insurance?.logo_url || "/images/no-image.png"}
-                        alt=""
-                        className="max-w-20 w-auto h-auto max-h-12"
-                        height={50}
-                        width={100}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-4 items-center">
-                      <Button
-                        variant="secondary"
-                        disabled={!canEdit}
-                        onClick={() => handleEdit(insurance.id)}
-                        className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        disabled={!canDelete}
-                        onClick={() => handleDelete(insurance.id)}
-                        className="text-red-600 px-0"
-                      >
-                        <Trash />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="hover:!bg-white">
-                <TableCell colSpan={5}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={8}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) => Math.max(prevState - 1, 1))
-                    }
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) =>
-                        Math.min(prevState + 1, totalPages)
-                      )
-                    }
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
+        <DataTable
+          loading={isLoading}
+          data={insurances}
+          columns={insuranceTableColumns}
+          pagination={{
+            page,
+            totalPages,
+            totalItems,
+            rowsPerPage,
+            onPageChange: setPage,
+            onRowsPerPageChange: (e) => setRowsPerPage(+e.target.value || 0),
+          }}
+          className="insurance-table"
+          noDataText="No insurance data available"
+        />
       </div>
     </div>
   );
-};
+}
