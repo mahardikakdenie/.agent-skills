@@ -45,15 +45,13 @@ export default function ProductCategoryPage() {
         </Button>
       </div>
 
-      <div className="w-full p-4 bg-white rounded-lg">
-        <DataTable
-          loading={isLoading}
-          data={categories}
-          columns={productCategoryTableColumns}
-          className="product-category-table"
-          noDataText="No product category data available"
-        />
-      </div>
+      <DataTable
+        loading={isLoading}
+        data={categories}
+        columns={productCategoryTableColumns}
+        className="product-category-table"
+        noDataText="No product category data available"
+      />
     </div>
   );
 }
