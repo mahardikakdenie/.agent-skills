@@ -47,23 +47,21 @@ export default function Currency() {
         </Button>
       </div>
 
-      <div className="w-full p-4 bg-white rounded-lg">
-        <DataTable
-          loading={isLoading}
-          data={insurances}
-          columns={currencyTableColumns}
-          pagination={{
-            page,
-            totalPages,
-            totalItems,
-            rowsPerPage,
-            onPageChange: setPage,
-            onRowsPerPageChange: (e) => setRowsPerPage(+e.target.value || 0),
-          }}
-          className="currency-table"
-          noDataText="No currency data available"
-        />
-      </div>
+      <DataTable
+        loading={isLoading}
+        data={insurances}
+        columns={currencyTableColumns}
+        pagination={{
+          page,
+          totalPages,
+          totalItems,
+          rowsPerPage,
+          onPageChange: setPage,
+          onRowsPerPageChange: (e) => setRowsPerPage(+e.target.value || 0),
+        }}
+        className="currency-table"
+        noDataText="No currency data available"
+      />
     </div>
   );
 }
