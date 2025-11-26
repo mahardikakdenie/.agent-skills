@@ -1,229 +1,71 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
 
-import noData from "/public/images/no-data.webp";
-import Image from "next/image";
-import { useAuth } from "@/context/auth.context";
-import { useScreen } from "@/context/screen.context";
-import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import {channelService} from "@/services/api.service";
+import { Button } from "@/components/ui/button";
+import { Plus } from "react-feather";
+import { DataTable } from "@/components/ui/DataTable";
+import { useChannel } from "@/hooks/useChannel.hooks";
+import { createChannelTableColumns } from "@/components/tableConfig/channelTableConfig";
 
 export default function ChannelsPage() {
-  const path = usePathname();
-  const [channel, setChannel] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const {
+    channels,
+    totalPages,
+    totalItems,
+    page,
+    rowsPerPage,
+    hasAccess,
+    canEdit,
+    canCreate,
+    canDelete,
+    isLoading,
+    setPage,
+    setRowsPerPage,
+    handleEdit,
+    handleDelete,
+    addNewChannel,
+  } = useChannel();
 
-  const router = useRouter();
+  if (hasAccess === false) {
+    return null;
+  }
 
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [canCreate, setCanCreate] = useState<boolean>(false);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
-  const { permissionList } = useAuth();
-  const { setLoading } = useScreen();
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = permissionList.includes("Masterdata.Read");
-      const editBtn = permissionList.includes("Masterdata.Update");
-      const deleteBtn = permissionList.includes("Masterdata.Delete");
-      const createBtn = permissionList.includes("Masterdata.Create");
-
-      setCanEdit(editBtn);
-      setCanDelete(deleteBtn);
-      setHasAccess(access);
-      setCanCreate(createBtn);
-      if (!access) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-
-  useEffect(() => {
-    const fetchChannels = async () => {
-      setLoading(true);
-      try {
-        const res: any = await channelService.get(ApiURL.v1Channels, { params: { page, limit: rowsPerPage } });
-        const response = res.data;
-        setChannel(response.data);
-        setTotalPages(response.pageTotal);
-        setTotalItems(response.total);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchChannels();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage]);
-
-  const handleEdit = (id: string) => {
-    router.push(`${AppURL.masterdataChannelDetail}/${id}`);
-  };
-
-  const handleDeletePlan = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
-      try {
-        await channelService.delete(ApiURL.v1ChannelDetails(id));
-        setChannel((prevChannels) =>
-          prevChannels.filter((channel) => channel.id !== id)
-        );
-        window.location.reload();
-      } catch (error) {
-        console.error("Failed to delete channel:", error);
-      }
-    }
-  };
-
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
+  const channelTableColumns = createChannelTableColumns({
+    handleEdit,
+    handleDelete,
+    canEdit,
+    canDelete,
+  });
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2 sm:flex-row flex-col pb-4">
+      <div className="flex gap-2 pb-4 items-center">
         <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
           Channels
         </h1>
         <Button
-          onClick={() => router.push(AppURL.masterdataChannelAdd)}
+          onClick={addNewChannel}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
         >
-          <Plus className="w-5 h-5 mr-1 " /> Add New
+          <Plus className="w-5 h-5 mr-1" /> Add New
         </Button>
       </div>
 
-      <div className="w-full p-4 bg-white rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead className="min-w-36">Channels Name</TableHead>
-              <TableHead className="min-w-36">Type</TableHead>
-              <TableHead className="whitespace-nowrap w-36">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {channel.length > 0 ? (
-              channel.map((channel, index) => (
-                <TableRow key={channel.id}>
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell>
-                    {channel.name
-                      .split("-")
-                      .map(
-                        (word: any) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")}
-                  </TableCell>
-                  <TableCell>
-                    {channel.type
-                      .split("-")
-                      .map(
-                        (word: any) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-4 items-center">
-                      <Button
-                        variant="secondary"
-                        disabled={!canEdit}
-                        onClick={() => handleEdit(channel.id)}
-                        className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        disabled={!canDelete}
-                        onClick={() => handleDeletePlan(channel.id)}
-                        className="text-red-600 px-0"
-                      >
-                        <Trash />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="hover:!bg-white">
-                <TableCell colSpan={5}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={8}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) => Math.max(prevState - 1, 1))
-                    }
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) =>
-                        Math.min(prevState + 1, totalPages)
-                      )
-                    }
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+      <DataTable
+        loading={isLoading}
+        data={channels}
+        columns={channelTableColumns}
+        pagination={{
+          page,
+          totalPages,
+          totalItems,
+          rowsPerPage,
+          onPageChange: setPage,
+          onRowsPerPageChange: (e) => setRowsPerPage(+e.target.value || 0),
+        }}
+        className="channel-table"
+        noDataText="No channel data available"
+      />
     </div>
   );
-};
+}
