@@ -1,9 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import { useCurrencyForm } from "@/hooks/useCurrencyForm.hooks";
 import { CurrencyForm } from "@/components/forms/CurrencyForm";
+import { useParams } from "next/navigation";
 
-export default function AddCurrency() {
+export default function EditCurrency() {
+  const params = useParams();
+
   const {
     handleSubmit,
     control,
@@ -28,8 +32,22 @@ export default function AddCurrency() {
     handleDeleteCurrency,
     setShowAlert,
     goBack,
-    setValue,
-  } = useCurrencyForm("create");
+    loadCurrencyDetail,
+  } = useCurrencyForm("edit");
+  const idParam = params.id;
+
+  const id =
+    typeof idParam === "string"
+      ? idParam
+      : Array.isArray(idParam)
+      ? idParam[0]
+      : "";
+
+  useEffect(() => {
+    if (id) {
+      loadCurrencyDetail(id);
+    }
+  }, [loadCurrencyDetail, id]);
 
   return (
     <CurrencyForm
@@ -44,7 +62,7 @@ export default function AddCurrency() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      isEdit={false}
+      isEdit={true}
       isLoadingInsurances={isLoadingInsurances}
       isLoadingTypeCurrencies={isLoadingTypeCurrencies}
       isLoadingCurrencies={isLoadingCurrencies}
@@ -57,7 +75,6 @@ export default function AddCurrency() {
       onDeleteCurrency={handleDeleteCurrency}
       onBack={goBack}
       onCloseAlert={() => setShowAlert(false)}
-      onInsuranceChange={(value) => setValue("insurance", value)}
     />
   );
 }
