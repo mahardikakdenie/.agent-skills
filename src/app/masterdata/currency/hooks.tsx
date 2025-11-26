@@ -20,11 +20,14 @@ export const useCurrency = () => {
       pageSize: 100,
       insuranceId: insurance ? insurance : undefined,
       categoryId: categories ? categories : undefined,
-      category: search ? search : undefined
+      category: search ? search : undefined,
     };
 
-    const { data } = await productService.get(ApiURL.v1InsuranceDetailsCurrency(insurance), { params });
-    console.log(1, data)
+    const { data } = await productService.get(
+      ApiURL.v1InsuranceDetailsCurrency(insurance),
+      { params }
+    );
+    console.log(1, data);
     setCurrencies(data);
   };
 
@@ -35,7 +38,10 @@ export const useCurrency = () => {
   };
 
   const saveCurrency = async (data: any, id: string) => {
-    const { data: response } = await productService.post(ApiURL.v1InsuranceDetailsCurrency(id), data);
+    const { data: response } = await productService.post(
+      ApiURL.v1InsuranceDetailsCurrency(id),
+      data
+    );
     return response;
   };
 
@@ -44,31 +50,43 @@ export const useCurrency = () => {
     idInsurance: string,
     idCurrency: string
   ) => {
-    const { data: response } = await productService.put(ApiURL.v1InsuranceDetailsCurrencyDetails(idInsurance, idCurrency), data);
+    const { data: response } = await productService.put(
+      ApiURL.v1InsuranceDetailsCurrencyDetails(idInsurance, idCurrency),
+      data
+    );
     return response;
   };
 
   const deleteCurrency = async (idInsurance: string, idCurrency: string) => {
-    const { data: response } = await productService.delete(ApiURL.v1InsuranceDetailsCurrencyDetails(idInsurance, idCurrency));
+    const { data: response } = await productService.delete(
+      ApiURL.v1InsuranceDetailsCurrencyDetails(idInsurance, idCurrency)
+    );
     return response;
   };
 
   const fetchCategories = async (search: any) => {
-    const { data } = await productService.get(ApiURL.v1Categories, { params: { ...search } });
+    const { data } = await productService.get(ApiURL.v1Categories, {
+      params: { ...search },
+    });
     console.log(3, data);
     setCategories(data);
   };
 
   const fetchInsurances = async (search: any) => {
-    const { data } = await productService.get(ApiURL.v1Insurances, { params: { ...search } });
+    const { data } = await productService.get(ApiURL.v1Insurances, {
+      params: { ...search },
+    });
     console.log(4, data);
-    setInsurances(data);
+    setInsurances(data?.data);
   };
 
   const fetchTypeCurrencies = async (search: any) => {
-    const { data } = await productService.get(ApiURL.v1ReferencesTypeCurrencies, { params: { ...search } });
+    const { data } = await productService.get(
+      ApiURL.v1ReferencesTypeCurrencies,
+      { params: { ...search } }
+    );
     console.log(5, data);
-    setTypeCurrencies(data);
+    setTypeCurrencies(data?.data);
   };
 
   return {
