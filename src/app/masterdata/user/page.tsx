@@ -1,13 +1,18 @@
 "use client";
+
+import Image from "next/image";
+import { Plus, Search } from "react-feather";
+import { DataTable } from "@/components/ui/DataTable";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -16,214 +21,157 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Controller, useForm } from "react-hook-form";
 import iconWarning from "/public/images/icon-warning.png";
-import { toastPromise, toastNotification } from "@/lib/toast";
-import { ChevronLeft, ChevronRight, Plus, Search, Trash } from "react-feather";
-
-import noData from "/public/images/no-data.webp";
-import Image from "next/image";
-import { User, UserService } from "@/services/masterdata/user.service";
-import { useAuth } from "@/context/auth.context";
-import { Input } from "@/components/ui/input";
-import _ from "lodash";
-import { useUser } from "./hooks";
-import AppURL from "@/constants/app-url.const";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Controller, useForm} from "react-hook-form";
-import { primaryRoles } from "@/app/masterdata/user/user.const";
+import { useUsers } from "@/hooks/useUsers.hooks";
+import { createUsersTableColumns } from "@/components/tableConfig/usersTableConfig";
 
 export default function Users() {
-  const path = usePathname();
-  const userService = new UserService();
-  const [user, setUser] = useState<User[]>([]);
-  const [filteredUser, setFilteredUser] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [triggerRender, setTriggerRender] = useState(0);
-  const [searchData, setSearchData] = useState("");
-  const [isModalChangeStatusOpen, setIsModalChangeStatusOpen] = useState<boolean>(false);
-  const [selectedUserStatus, setSelectedUserStatus] = useState<User>();
+  const {
+    users,
+    totalPages,
+    totalItems,
+    page,
+    rowsPerPage,
+    roleFilter,
+    roleOptions,
+    selectedUserStatus,
+    isModalChangeStatusOpen,
+    hasAccess,
+    canEdit,
+    canCreate,
+    canDelete,
+    canToggleStatus,
+    canSearchAllAccount,
+    isLoading,
+    setPage,
+    setRowsPerPage,
+    setRoleFilter,
+    setSearchQuery,
+    setIsModalChangeStatusOpen,
+    handleEdit,
+    handleDelete,
+    handleStatusChange,
+    handleUpdateStatus,
+    addNewUser,
+  } = useUsers();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { control } = useForm({
+    shouldUnregister: false,
+    defaultValues: { role: roleFilter },
+  });
 
-  const router = useRouter();
-
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [canCreate, setCanCreate] = useState<boolean>(false);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
-  const [canToggleStatus, setCanToggleStatus] = useState<boolean>(false);
-  const [canSearchAllAccount, setCanSearchAllAccount] = useState<boolean>(false);
-  const [roleOptions, setRoleOptions] = useState<any[]>([]);
-  const [role, setRole] = useState("User");
-  const { control } = useForm({ shouldUnregister: false, defaultValues: { role } });
-
-  const { updateUser } = useUser();
-  const { permissionList } = useAuth();
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const accessMasterData = permissionList.includes("Masterdata.Read");
-      const accessUser = permissionList.includes("Userdata.Read");
-      const editBtn = permissionList.includes("Masterdata.Update");
-      const deleteBtn = permissionList.includes("Masterdata.Delete");
-      const createBtn = permissionList.includes("Masterdata.Create");
-      const canToggleStatus = permissionList.includes("User.Change Status");
-      const adminReadProfiles = permissionList.includes("Profiles.AdminReadProfiles");
-
-      setCanEdit(editBtn);
-      setCanDelete(deleteBtn);
-      setHasAccess(accessMasterData || accessUser);
-      setCanCreate(createBtn);
-      setCanToggleStatus(canToggleStatus);
-      setCanSearchAllAccount(adminReadProfiles);
-      if (!accessMasterData && !accessUser) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const result = await userService.getUser(role, page, rowsPerPage, searchData);
-        const allRoles = await userService.getRole({ page: 1, pageSize: 1000 });
-        setUser(result.data);
-        setFilteredUser(result.data);
-        setTotalPages(result.meta.pageTotal);
-        setTotalItems(result.meta.total);
-
-        const seen = new Set(primaryRoles.map(item => item.name));
-        const rolesOptions = [ ...primaryRoles ];
-
-        for (const item of allRoles.data) {
-          if (!seen.has(item.name)) {
-            seen.add(item.name);
-            rolesOptions.push(item);
-          }
-        }
-        setRoleOptions(rolesOptions);
-      } catch (error) {
-        console.error("Error fetching page:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, searchData, role, triggerRender]);
-
-  const handleSearch = _.debounce((keyword: string) => {
-    setSearchData(keyword);
-  }, 100);
-
-  if (loading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        Loading...
-      </div>
-    );
+  if (hasAccess === false) {
+    return null;
   }
 
-  const handleEdit = (id: string) => {
-    router.push(`${AppURL.masterdataUserDetail}/${id}`);
-  };
+  const userTableColumns = createUsersTableColumns({
+    page,
+    rowsPerPage,
+    handleEdit,
+    handleDelete,
+    handleStatusChange,
+    canEdit,
+    canDelete,
+    canToggleStatus,
+  });
 
-  const handleDeleteUser = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        await userService.deleteUser(id);
-        toastNotification("Delete user successfully.", "success");
-        setTriggerRender(prev => prev + 1);
-      } catch (error: any) {
-        console.error("Failed to delete user:", error);
-        toastNotification(error?.response?.data?.message || "Failed to delete user.", "error");
-      }
-    }
-  };
+  return (
+    <div className="flex flex-col w-full p-4 md:p-6">
+      <div className="flex gap-4 pb-4 items-center">
+        <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
+          User
+        </h1>
 
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
+        <div className="relative w-1/2 ml-auto shadow-sm">
+          <div className="flex justify-end items-center">
+            {canSearchAllAccount && (
+              <div className="mr-3 w-1/2">
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setRoleFilter(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full h-12 shadow border-0 select-status bg-white hover:cursor-pointer py-2">
+                        <SelectValue placeholder="User" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {roleOptions.map((r: any) => (
+                            <SelectItem key={r.id} value={r.name}>
+                              {r.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+            )}
+            <div className="w-1/2">
+              <Input
+                type="text"
+                placeholder="Search by Name or Email"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="border p-3 rounded-md pr-10 w-full h-12"
+              />
+              <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
+            </div>
+          </div>
+        </div>
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Inactive":
-        return "text-gray-400 font-normal";
-      case "Active":
-        return "text-[#00AB4F]";
-      default:
-        return "text-[#7B5D21]";
-    }
-  };
+        <Button
+          onClick={addNewUser}
+          disabled={!canCreate}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+        >
+          <Plus className="w-5 h-5 mr-1" /> Add New
+        </Button>
+      </div>
 
-  const handleChangeRole = _.debounce((selectedRole: string) => {
-    setRole(selectedRole);
-  }, 100);
+      <DataTable
+        loading={isLoading}
+        data={users}
+        columns={userTableColumns}
+        pagination={{
+          page,
+          totalPages,
+          totalItems,
+          rowsPerPage,
+          onPageChange: setPage,
+          onRowsPerPageChange: (e) => setRowsPerPage(+e.target.value || 0),
+        }}
+        className="user-table"
+        noDataText="No user data available"
+      />
 
-  const handleStatusChange = (userInfo: User) => {
-    setSelectedUserStatus(userInfo);  
-    setIsModalChangeStatusOpen(true);
-  };
-  
-  const handleUpdateStatus = async () => {
-    setLoading(true);
-    try {
-      let accountId = "";
-      let otherData = {};
-      if (selectedUserStatus) {
-        const { id, ...otherInfo } = selectedUserStatus;
-        accountId = id;
-        otherData = { ...otherInfo };
-      }
-      const data = {
-        ...otherData,
-        status: selectedUserStatus?.status === "Active" ? "Inactive" : "Active",
-      }
-      const updatePromise = updateUser(data, accountId);
-      await toastPromise(updatePromise, {
-        loading: "Updating user's status...",
-        success: <b>User&apos;s status has been successfully updated</b>,
-        error: "Update failed!",
-      });
-    } catch (error: any) {
-      toastNotification(
-        error.message,
-        "error"
-      );
-    } finally {
-      setLoading(false);
-      setIsModalChangeStatusOpen(false);
-      window.location.reload();
-    }
-  };
-
-  const renderChangeStatusModal = () => {
-    return (
-      <Dialog open={isModalChangeStatusOpen}>
+      <Dialog
+        open={isModalChangeStatusOpen}
+        onOpenChange={setIsModalChangeStatusOpen}
+      >
         <DialogContent className="w-[90vw] md:w-[600px]">
           <DialogHeader className="items-center gap-4">
-            <Image
-              alt="icon warning"
-              src={iconWarning}
-              width={88}
-            />
+            <Image alt="icon warning" src={iconWarning} width={88} />
             <DialogTitle className="sm:text-center">
-              {`Are you sure to ${selectedUserStatus?.status === "Active" ? "deactivate" : "activate"} the user account?`}
+              {`Are you sure to ${
+                selectedUserStatus?.status === "Active"
+                  ? "deactivate"
+                  : "activate"
+              } the user account?`}
             </DialogTitle>
             <DialogDescription className="sm:text-center">
-              {`Once ${selectedUserStatus?.status === "Active" ? "deactivated" : "activated"}, the user will no longer have access to the portal.`}
+              {`Once ${
+                selectedUserStatus?.status === "Active"
+                  ? "deactivated"
+                  : "activated"
+              }, the user will no longer have access to the portal.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center gap-4">
@@ -236,183 +184,13 @@ export default function Users() {
             </Button>
             <Button
               className="btn min-w-[108px] rounded-full bg-[#F5BA41] text-black"
-              onClick={() => handleUpdateStatus()}
+              onClick={handleUpdateStatus}
             >
               Yes
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    );
-  }
-
-  return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-4 pb-4 items-center">
-        <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
-          User
-        </h1>
-        <div className="relative w-1/2 ml-auto shadow-sm">
-          <div className="flex justify-end items-center">
-            {canSearchAllAccount && (<div className="mr-3 w-1/2">
-              <Controller
-                  name="role"
-                  control={control}
-                  render={({ field }) => (
-                      <Select
-                          value={field.value}
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            handleChangeRole(value);
-                          }}
-                      >
-                        <SelectTrigger className="w-full h-12 shadow border-0 select-status bg-white hover:cursor-pointer py-2">
-                          <SelectValue placeholder="User" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {roleOptions.map((r: any) => (
-                                <SelectItem key={r.id} value={r.name}>
-                                  {r.name}
-                                </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                  )}
-              />
-            </div>)}
-            <div className="w-1/2">
-              <Input
-                  type="text"
-                  placeholder="Search by Name or Email"
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="border p-3 rounded-md pr-10 w-full h-12"
-              />
-              <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
-            </div>
-          </div>
-        </div>
-        <Button
-          onClick={() => router.push(AppURL.masterdataUserAdd)}
-          disabled={!canCreate}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
-        >
-          <Plus className="w-5 h-5 mr-1 " /> Add New
-        </Button>
-      </div>
-
-      <div className="w-full p-4 bg-white rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone Number</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="whitespace-nowrap w-36">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUser.length > 0 ? (
-              filteredUser.map((user, index) => (
-                <TableRow key={user.id}>
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {user.name || "-"}
-                  </TableCell>
-                  <TableCell>{user.email || "-"}</TableCell>
-                  <TableCell>{user.phone_number || "-"}</TableCell>
-                  <TableCell>{user.role || "-"}</TableCell>
-                  <TableCell>
-                    <Switch
-                      disabled={!canToggleStatus}
-                      checked={user.status === "Active"}
-                      onCheckedChange={() => handleStatusChange(user)}
-                      aria-readonly
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-4 items-center">
-                      <Button
-                        variant="secondary"
-                        disabled={!canEdit}
-                        onClick={() => handleEdit(user.id)}
-                        className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        disabled={!canDelete}
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-600 px-0"
-                      >
-                        <Trash />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="hover:!bg-white">
-                <TableCell colSpan={7}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    user data available
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={8}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) => Math.max(prevState - 1, 1))
-                    }
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) =>
-                        Math.min(prevState + 1, totalPages)
-                      )
-                    }
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
-      {renderChangeStatusModal()}
     </div>
   );
-};
+}
