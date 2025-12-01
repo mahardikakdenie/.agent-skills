@@ -128,6 +128,23 @@ const ReportClaimPage = () => {
   }, []);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const channelService = new ChannelService();
+        const channelResponse = await channelService.getChannels(
+          undefined,
+          100
+        );
+        setChannels(channelResponse.data || []);
+      } catch (error) {
+        console.error("Failed to fetch channels:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     setPage(1);
   }, [filterBy, sortBy]);
 
@@ -221,6 +238,23 @@ const ReportClaimPage = () => {
         </div>
 
         <div className="flex items-center gap-4">
+          <div className="min-w-48">
+            <Select value={searchChannel} onValueChange={handleChannelChange}>
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder="Channel" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {channels.map((item, index) => (
+                    <SelectItem key={index} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="min-w-48">
             <Select value={searchChannel} onValueChange={handleChannelChange}>
               <SelectTrigger className="h-10">
