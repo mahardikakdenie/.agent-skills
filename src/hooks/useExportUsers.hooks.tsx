@@ -480,10 +480,6 @@ export function useExportUsers(): UseExportUsersProps {
     [handlePlanChange]
   );
 
-  console.log(isLoadingChannels, "DY: isLoadingChannels");
-  console.log(isLoadingProducts, "DY: isLoadingProducts");
-  console.log(isLoadingPlans, "DY: isLoadingPlans");
-
   return {
     customers: customersData || [],
     totalPages,

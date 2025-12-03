@@ -169,8 +169,6 @@ export function useProductForm(
       categories.length > 0 &&
       selectedCategoryId
     ) {
-      console.log("✅ Step 1: Setting category", selectedCategoryId);
-
       setValue("category", selectedCategoryId, {
         shouldValidate: true,
         shouldDirty: true,
@@ -189,8 +187,6 @@ export function useProductForm(
       insurances.length > 0 &&
       selectedInsuranceId
     ) {
-      console.log("✅ Step 2: Setting insurance", selectedInsuranceId);
-
       setValue("insurance", selectedInsuranceId, {
         shouldValidate: true,
         shouldDirty: true,
@@ -209,7 +205,6 @@ export function useProductForm(
       existingProducts &&
       existingProducts.length > 0
     ) {
-      console.log("✅ Step 3: Setting products", existingProducts);
       const updateFormValue = existingProducts.map((item: any) => ({
         id: item.id,
         name: item.name,
@@ -348,14 +343,11 @@ export function useProductForm(
 
   const loadProductDetail = useCallback(
     (categoryId: string, insuranceId: string) => {
-      console.log("🔄 loadProductDetail called:", { categoryId, insuranceId });
-
       if (
         categoryId === selectedCategoryId &&
         insuranceId === selectedInsuranceId &&
         categorySetRef.current
       ) {
-        console.log("⏭️  Same IDs, skipping reset");
         return;
       }
 

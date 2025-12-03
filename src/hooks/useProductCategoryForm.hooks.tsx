@@ -191,12 +191,6 @@ export function useProductCategoryForm(
     setCategoryId(id);
   }, []);
 
-  console.log("DY: useProductCategoryForm render", {
-    watchName: watch("name"),
-    watchIcon: watch("icon"),
-    categoryDetail,
-  });
-
   return {
     handleSubmit,
     control,

@@ -181,8 +181,6 @@ export function useUserForm(
 
   useEffect(() => {
     if (userDetail && isEdit) {
-      console.log("✅DY: Setting form with user:", userDetail);
-
       const formData = {
         name: userDetail.name || "",
         email: userDetail.email || "",
@@ -193,17 +191,12 @@ export function useUserForm(
         channel: userDetail.channel || "",
       };
 
-      console.log("📝DY: Form data to reset:", formData);
-
       reset(formData);
 
       setTimeout(() => {
         const currentChannel = watch("channel");
-        console.log("🔍DY: Current channel value:", currentChannel);
-        console.log("🔍DY: Expected channel value:", userDetail.channel);
 
         if (currentChannel !== userDetail.channel) {
-          console.log("⚠️DY: Channel mismatch, forcing setValue");
           setValue("channel", userDetail.channel, {
             shouldValidate: true,
             shouldDirty: true,
@@ -330,8 +323,6 @@ export function useUserForm(
       setAlertMessage("");
       setShowAlert(false);
 
-      console.log(formData, "DY: form data to save");
-
       if (
         !formData.name ||
         !formData.email ||
@@ -404,7 +395,6 @@ export function useUserForm(
   }, [router]);
 
   const loadUserDetail = useCallback((id: string) => {
-    console.log("🔄 loadUserDetail called:", { id });
     setUserId(id);
   }, []);
 
@@ -450,31 +440,6 @@ export function useUserForm(
         return "text-[#7B5D21]";
     }
   }, []);
-
-  console.log("🔍DY: useUserForm render:", {
-    mode,
-    isEdit,
-    userId,
-    accountId,
-    loading: {
-      detail: isLoadingDetail,
-      channels: isLoadingChannels,
-      groups: isLoadingGroups,
-      roles: isLoadingRoles,
-    },
-    data: {
-      channelsCount: channels?.data.length,
-      userGroupsCount: userGroups.length,
-      groupRolesCount: groupRoles.length,
-    },
-    formValues: {
-      name: watch("name"),
-      email: watch("email"),
-      status: watch("status"),
-      channel: watch("channel"),
-      role: watch("role"),
-    },
-  });
 
   return {
     handleSubmit,

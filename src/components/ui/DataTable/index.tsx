@@ -60,7 +60,6 @@ export function DataTable<T extends Record<string, any>>({
       return column.render(item, index);
     }
 
-    // DY: Handle nested object properties like "policy_data.policy_holder.name"
     const getValue = (obj: any, path: string) => {
       return path.split(".").reduce((current, key) => current?.[key], obj);
     };
