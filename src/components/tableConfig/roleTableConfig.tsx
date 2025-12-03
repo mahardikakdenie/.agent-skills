@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Trash } from "react-feather";
 import { format } from "date-fns";
 
-interface GroupTableConfigProps {
+interface RoleTableConfigProps {
   page: number;
   rowsPerPage: number;
   handleEdit: (id: string) => void;
@@ -12,14 +12,14 @@ interface GroupTableConfigProps {
   canDelete: boolean;
 }
 
-export const createGroupTableColumns = ({
+export const createRoleTableColumns = ({
   page,
   rowsPerPage,
   handleEdit,
   handleDelete,
   canEdit,
   canDelete,
-}: GroupTableConfigProps): Column<any>[] => [
+}: RoleTableConfigProps): Column<any>[] => [
   {
     key: "index",
     header: "No.",
@@ -27,25 +27,19 @@ export const createGroupTableColumns = ({
   },
   {
     key: "name",
-    header: "Group Name",
+    header: "Roles",
     render: (item) => item.name || "-",
   },
   {
-    key: "users",
-    header: "Users",
-    render: (item) => item._count?.account_groups || 0,
+    key: "description",
+    header: "Platform",
+    render: (item) => item.description || "-",
   },
   {
     key: "updated_at",
     header: "Last Activity",
     render: (item) =>
       item.updated_at ? format(new Date(item.updated_at), "dd-MM-yyyy") : "N/A",
-  },
-  {
-    key: "created_at",
-    header: "Created at",
-    render: (item) =>
-      item.created_at ? format(new Date(item.created_at), "dd-MM-yyyy") : "N/A",
   },
   {
     key: "action",

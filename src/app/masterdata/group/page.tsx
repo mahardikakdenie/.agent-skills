@@ -30,6 +30,8 @@ export default function GroupPage() {
   }
 
   const groupTableColumns = createGroupTableColumns({
+    page,
+    rowsPerPage,
     handleEdit,
     handleDelete,
     canEdit,
