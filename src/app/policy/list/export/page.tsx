@@ -21,6 +21,7 @@ import autoTable from "jspdf-autotable";
 import moment from "moment";
 import ApiURL from "@/constants/api-url.const";
 import {policyService} from "@/services/api.service";
+import {useAuth} from "@/context/auth.context";
 
 export default function ExportPage() {
     const [data, setData] = useState<any[]>([]);
@@ -28,8 +29,21 @@ export default function ExportPage() {
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const router = useRouter();
+    const { permissionList } = useAuth();
+    const [isShowPremi, setIsShowPremi] = useState<boolean>(false);
+    const [isShowDanaInfo, setIsShowDanaInfo] = useState<boolean>(false);
 
     useEffect(() => {
+        const checkAccess = async () => {
+            const withPremi = permissionList.includes("Policy.Export.withPremi");
+            const withDanaInfo = permissionList.includes("Policy.Export.withDanaInfo");
+
+            setIsShowPremi(withPremi);
+            setIsShowDanaInfo(withDanaInfo);
+
+            await fetchData();
+        };
+
         const fetchData = async () => {
             setIsLoading(true);
             try {
@@ -68,7 +82,7 @@ export default function ExportPage() {
             }
         };
 
-        fetchData();
+        checkAccess();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -131,15 +145,39 @@ export default function ExportPage() {
             return;
         }
 
-        const sheetData = data.map((item, index) => ({
-            No: (page - 1) * rowsPerPage + index + 1,
-            "Customer Name": item.policy_holder?.name || "-",
-            "Policy Number": item.number || "-",
-            "Plan Name": item?.policy_products?.plan_data?.name
-                .split("|")
-                .join(" - "),
-            Status: item.status || "-",
-        }));
+        const sheetData = data.map((item, index) => {
+            let additionColumn = {};
+            
+            if (isShowPremi) {
+                additionColumn = {
+                    ...additionColumn,
+                    "Premium": item.declarations?.transaction_data?.insurance?.premium || "-",
+                }
+            }
+            
+            if (isShowDanaInfo) {
+                let thisParty = item.declarations?.transaction_data?.third_party;
+                if (thisParty) {
+                    if (thisParty?.provider === "DANA") {
+                        additionColumn = {
+                            ...additionColumn,
+                            "Order Id": thisParty?.identifiers?.order_id,
+                            "Request Id": thisParty?.identifiers?.request_id,
+                        }
+                    }
+                }
+            }
+
+            return {
+                "No": index + 1,
+                "Customer Name": item.policy_holder?.name || "-",
+                "Policy Number": item.number || "-",
+                "Plan Name": item.policy_products?.plan_data?.name?.split("|").join(" - ") || "-",
+                "Status": item.status || "-",
+                "Issued Date": !!item.created_at ? moment(item.created_at).format("LL") : "-",
+                ...additionColumn
+            };
+        });
 
         const worksheet = XLSX.utils.json_to_sheet(sheetData);
 
@@ -238,6 +276,13 @@ export default function ExportPage() {
                             <td style={styles.th} valign="middle">
                                 Status
                             </td>
+                                {isShowPremi && <td style={styles.th} valign="middle">Premium</td>}
+                                {isShowDanaInfo && (
+                                    <>
+                                        <td style={styles.th} valign="middle">Order Id</td>
+                                        <td style={styles.th} valign="middle">Request Id</td>
+                                    </>
+                                )}
                         </tr>
                         </thead>
                         <tbody>
@@ -267,6 +312,28 @@ export default function ExportPage() {
                                     >
                                         {item.status || "-"}
                                     </td>
+                                    {isShowPremi &&
+                                        <td style={styles.td} valign="middle">
+                                            {item.declarations?.transaction_data?.insurance?.premium || "-"}
+                                        </td>
+                                    }
+                                    {isShowDanaInfo && (
+                                        item.declarations?.transaction_data?.third_party?.provider === 'DANA' ? (
+                                            <>
+                                                <td style={styles.td} valign="middle">
+                                                    {item.declarations?.transaction_data?.third_party?.identifiers?.order_id || "-"}
+                                                </td>
+                                                <td style={styles.td} valign="middle">
+                                                    {item.declarations?.transaction_data?.third_party?.identifiers?.request_id || "-"}
+                                                </td>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td style={styles.td} valign="middle">-</td>
+                                                <td style={styles.td} valign="middle">-</td>
+                                            </>
+                                        )
+                                    )}
                                 </tr>
                             ))
                         ) : (
