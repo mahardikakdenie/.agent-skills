@@ -384,14 +384,11 @@ export function useRoleForm(
         const updateFormValue = [...permissionFields];
         updateFormValue[index].isEditable = true;
         setPermissionFields(updateFormValue);
-
-        setValue(`menu.${index}`, updateFormValue[index].menuId);
-        setValue(`permission.${index}`, updateFormValue[index].permission);
       } catch (error) {
         console.error("Failed to edit permission:", error);
       }
     },
-    [permissionFields, permissionOptions, setValue, roleService]
+    [permissionFields, permissionOptions, roleService]
   );
 
   const handleBulkDeleteRolePermission = useCallback(

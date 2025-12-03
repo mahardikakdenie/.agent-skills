@@ -18,15 +18,16 @@ export default function AddRolePage() {
     isLoadingMenus,
     isSaving,
     handleSave,
-    goBack,
-    onAddPermission,
-    onDeletePermission,
-    onSaveRolePermission,
-    onBulkEditPermission,
-    onBulkDeleteRolePermission,
-    onTickPermission,
+    loadRoleDetail,
+    handleAddPermission,
+    handleDeletePermission,
+    handleSaveRolePermission,
+    handleBulkEditPermission,
+    handleBulkDeleteRolePermission,
+    handleTickPermission,
     selectMenu,
     setPermissionFields,
+    goBack,
   } = useRoleForm("create");
 
   return (
@@ -48,12 +49,12 @@ export default function AddRolePage() {
       onSave={handleSave}
       onBack={goBack}
       loadRoleDetail={() => {}}
-      onAddPermission={onAddPermission}
-      onDeletePermission={onDeletePermission}
-      onSaveRolePermission={onSaveRolePermission}
-      onBulkEditPermission={onBulkEditPermission}
-      onBulkDeleteRolePermission={onBulkDeleteRolePermission}
-      onTickPermission={onTickPermission}
+      onAddPermission={handleAddPermission}
+      onDeletePermission={handleDeletePermission}
+      onSaveRolePermission={handleSaveRolePermission}
+      onBulkEditPermission={handleBulkEditPermission}
+      onBulkDeleteRolePermission={handleBulkDeleteRolePermission}
+      onTickPermission={handleTickPermission}
       selectMenu={selectMenu}
       setPermissionFields={setPermissionFields}
     />
