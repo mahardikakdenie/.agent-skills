@@ -1,14 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { RoleService } from "@/services/masterdata/roles.service";
+import { PagesService } from "@/services/masterdata/page.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
+import toast from "react-hot-toast";
 
-export function useRole() {
+export function usePageManagement() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const roleService = new RoleService();
+  const pagesService = new PagesService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -39,14 +40,14 @@ export function useRole() {
   }, [router, permissionList]);
 
   const {
-    data: rolesResponse,
+    data: pagesResponse,
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: ["roles", page, rowsPerPage],
+    queryKey: ["pages", page, rowsPerPage],
     queryFn: async () => {
-      const response = await roleService.getRole(page, rowsPerPage);
+      const response = await pagesService.getPages(page, rowsPerPage);
       return response;
     },
     enabled: hasAccess === true,
@@ -56,29 +57,30 @@ export function useRole() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await roleService.deleteRole(id);
+      return await pagesService.deletePages(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] });
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
+      toast.success("Page deleted successfully");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Delete failed:", error);
-      alert("Failed to delete role");
+      toast.error(error?.response?.data?.message || "Failed to delete page");
     },
   });
 
   const handleEdit = (id: string) => {
-    router.push(`${AppURL.masterdataRoleDetail}/${id}`);
+    router.push(`${AppURL.masterdataPageManagementDetail}/${id}`);
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this role?")) {
+    if (window.confirm("Are you sure you want to delete this page?")) {
       await deleteMutation.mutateAsync(id);
     }
   };
 
-  const addNewRole = () => {
-    router.push(AppURL.masterdataRoleAdd);
+  const addNewPage = () => {
+    router.push(AppURL.masterdataPageManagementAdd);
   };
 
   const setRowsPerPage = useCallback((newRowsPerPage: number) => {
@@ -87,9 +89,9 @@ export function useRole() {
   }, []);
 
   return {
-    roles: rolesResponse?.data || [],
-    totalPages: rolesResponse?.meta?.pageTotal || 1,
-    totalItems: rolesResponse?.meta?.total || 0,
+    pages: pagesResponse?.data || [],
+    totalPages: pagesResponse?.meta?.pageTotal || 1,
+    totalItems: pagesResponse?.meta?.total || 0,
     page,
     rowsPerPage,
     hasAccess,
@@ -103,7 +105,7 @@ export function useRole() {
     setRowsPerPage,
     handleEdit,
     handleDelete,
-    addNewRole,
+    addNewPage,
     isDeleting: deleteMutation.isPending,
   };
 }
