@@ -1,137 +1,44 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Search, Trash } from "react-feather";
-
-import noData from "/public/images/no-data.webp";
-import Image from "next/image";
-import { User, UserService } from "@/services/masterdata/user.service";
-import { useAuth } from "@/context/auth.context";
+import { Plus, Search } from "react-feather";
 import { Input } from "@/components/ui/input";
-import _ from "lodash";
-import AppURL from "@/constants/app-url.const";
+import { DataTable } from "@/components/ui/DataTable";
+import { usePartnerManagement } from "@/hooks/usePartnerManagement.hooks";
+import { createPartnerTableColumns } from "@/components/tableConfig/partnerManagmentTableConfig";
 
-export default function PartnerIntegation() {
-  const path = usePathname();
-  const userService = new UserService();
-  const [user, setUser] = useState<User[]>([]);
-  const [filteredUser, setFilteredUser] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchData, setSearchData] = useState("");
+export default function PartnerIntegration() {
+  const {
+    partners,
+    totalPages,
+    totalItems,
+    page,
+    rowsPerPage,
+    hasAccess,
+    canEdit,
+    canCreate,
+    canDelete,
+    isLoading,
+    setPage,
+    handleSearch,
+    handleEdit,
+    handleDelete,
+    addNewPartner,
+    handleRowsPerPageChange,
+  } = usePartnerManagement();
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const router = useRouter();
-
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [canCreate, setCanCreate] = useState<boolean>(false);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
-  const { permissionList } = useAuth();
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = permissionList.includes("Masterdata.Read");
-      const editBtn = permissionList.includes("Masterdata.Update");
-      const deleteBtn = permissionList.includes("Masterdata.Delete");
-      const createBtn = permissionList.includes("Masterdata.Create");
-
-      setCanEdit(editBtn);
-      setCanDelete(deleteBtn);
-      setHasAccess(access);
-      setCanCreate(createBtn);
-      if (!access) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-  useEffect(() => {
-    if (searchData) {
-      setPage(1);
-    }
-  }, [searchData]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const result = await userService.getPartner(
-          page,
-          rowsPerPage,
-          searchData
-        );
-        setUser(result.data);
-        setFilteredUser(result.data);
-        setTotalPages(result.meta.pageTotal);
-        setTotalItems(result.meta.total);
-      } catch (error) {
-        console.error("Error fetching page:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, searchData]);
-
-  const handleSearch = _.debounce((keyword: string) => {
-    setSearchData(keyword);
-  }, 100);
-
-  if (loading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        Loading...
-      </div>
-    );
+  if (hasAccess === false) {
+    return null;
   }
 
-  const handleEdit = (id: string) => {
-    router.push(`${AppURL.masterdataPartnerManagementDetail}/${id}`);
-  };
-
-  const handleDeletePlan = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
-      try {
-        await userService.deleteUser(id);
-        setUser((prevUser) => prevUser.filter((user) => user.id !== id));
-      } catch (error) {
-        console.error("Failed to delete user:", error);
-      }
-    }
-  };
-
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Inactive":
-        return "text-gray-400 font-normal";
-      case "Active":
-        return "text-[#00AB4F]";
-      default:
-        return "text-[#7B5D21]";
-    }
-  };
+  const partnerTableColumns = createPartnerTableColumns({
+    handleEdit,
+    handleDelete,
+    canEdit,
+    canDelete,
+    page,
+    rowsPerPage,
+  });
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
@@ -149,121 +56,29 @@ export default function PartnerIntegation() {
           <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
         <Button
-          onClick={() => router.push(AppURL.masterdataPartnerManagementAdd)}
+          onClick={addNewPartner}
           disabled={!canCreate}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
         >
-          <Plus className="w-5 h-5 mr-1 " /> Add New
+          <Plus className="w-5 h-5 mr-1" /> Add New
         </Button>
       </div>
 
-      <div className="w-full p-4 bg-white rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone Number</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="whitespace-nowrap w-36">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUser.length > 0 ? (
-              filteredUser.map((user, index) => (
-                <TableRow key={user.id}>
-                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {user.name || "-"}
-                  </TableCell>
-                  <TableCell>{user.email || "-"}</TableCell>
-                  <TableCell>{user.phone_number || "-"}</TableCell>
-                  <TableCell>{user.role || "-"}</TableCell>
-                  <TableCell className="font-semibold whitespace-nowrap">
-                    <span className={getStatusColor(user.status)}>
-                      {user.status || "-"}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-4 items-center">
-                      <Button
-                        variant="secondary"
-                        disabled={!canEdit}
-                        onClick={() => handleEdit(user.id)}
-                        className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        disabled={!canDelete}
-                        onClick={() => handleDeletePlan(user.id)}
-                        className="text-red-600 px-0"
-                      >
-                        <Trash />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="hover:!bg-white">
-                <TableCell colSpan={7}>
-                  <div className="flex flex-col gap-4 items-center justify-center py-14">
-                    <Image alt="no data" src={noData} width={200} /> No
-                    transaction data available
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={8}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={handleRowsPerPageChange}
-                    className="p-2 border rounded"
-                  >
-                    {[10, 20, 30, 50].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) => Math.max(prevState - 1, 1))
-                    }
-                    disabled={page === 1}
-                    title="Prev"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setPage((prevState) =>
-                        Math.min(prevState + 1, totalPages)
-                      )
-                    }
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+      <DataTable
+        loading={isLoading}
+        data={partners}
+        columns={partnerTableColumns}
+        pagination={{
+          page,
+          totalPages,
+          totalItems,
+          rowsPerPage,
+          onPageChange: setPage,
+          onRowsPerPageChange: handleRowsPerPageChange,
+        }}
+        className="partner-management-table"
+        noDataText="No partner data available"
+      />
     </div>
   );
-};
+}
