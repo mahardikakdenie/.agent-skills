@@ -34,7 +34,6 @@ export default function AddPartner() {
       isSaving={isSaving}
       onSave={handleSave}
       onBack={goBack}
-      loadPartnerDetail={() => {}}
       generateApiKey={generateApiKey}
     />
   );
