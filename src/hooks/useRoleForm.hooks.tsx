@@ -143,8 +143,6 @@ export function useRoleForm(
 
   useEffect(() => {
     if (roleDetail && isEdit) {
-      console.log("✅DY: Setting form with role:", roleDetail);
-
       reset({
         name: roleDetail.name || "",
         description: roleDetail.description || "",
