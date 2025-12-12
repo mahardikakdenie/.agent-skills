@@ -8,6 +8,12 @@ export interface EmailTagResponse {
   created_at: string;
   updated_at: any;
   tag: string;
+  meta?: {
+    page: number;
+    pageSize: number;
+    pageTotal: number;
+    total: number;
+  };
 }
 
 export interface MailTemplateResponse {
