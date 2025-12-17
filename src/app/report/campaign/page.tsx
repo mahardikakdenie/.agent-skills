@@ -1,283 +1,61 @@
 "use client";
-import * as XLSX from "xlsx";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
-import { format, startOfMonth, endOfMonth } from "date-fns";
-import { Controller, useForm } from "react-hook-form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Download, X } from "react-feather";
-import { Button } from "@/components/ui/button";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { DateRange } from "react-day-picker";
-import {useAuth} from "@/context/auth.context";
-import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import {productService, promotionService} from "@/services/api.service";
 
-interface InsuranceOption {
-  id: string;
-  name: string;
-}
+import React from "react";
+import { format } from "date-fns";
+import { Download, X } from "react-feather";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DataTable } from "@/components/ui/DataTable";
+import { useCampaignReport } from "@/hooks/useCampaignReport.hooks";
+import { createCampaignReportTableColumns } from "@/components/tableConfig/campaignReportTableConfig";
 
 export default function ReportCampaignPage() {
-  const [promotions, setPromotions] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
-  const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [sortBy, setSortBy] = useState<string>("date");
-  const [filterBy, setFilterBy] = useState<string>("all");
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: startOfMonth(new Date()),
-    to: endOfMonth(new Date()),
-  });
-  const [insuranceOptions, setInsuranceOptions] = useState<InsuranceOption[]>([]);
-  const [selectedInsurance, setSelectedInsurance] = useState<string | undefined>(undefined);
-  const router = useRouter();
-  const { permissionList } = useAuth();
+  const {
+    promotions,
+    insuranceOptions,
+    totalItems,
+    totalPages,
+    page,
+    rowsPerPage,
+    date,
+    sortBy,
+    filterBy,
+    selectedInsurance,
+    isLoadingReports,
+    setPage,
+    handleSortChange,
+    handleFilterChange,
+    handleInsuranceChange,
+    handleDateChange,
+    handleClear,
+    handleRowsPerPageChange,
+    handleDownloadReport,
+  } = useCampaignReport();
 
-  const { handleSubmit, reset, control } = useForm({
-    shouldUnregister: false,
-    defaultValues: {
-      filter: "all",
-      sort: "date",
-      insurance: "",
-    },
-  });
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = permissionList.includes("Report.Read");
-      const deleteBtn = permissionList.includes("Report.Delete");
-      const editBtn = permissionList.includes("Report.Update");
-
-      setCanDelete(deleteBtn);
-      setCanEdit(editBtn);
-      setHasAccess(access);
-      if (!access) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [filterBy, sortBy]);
-
-  useEffect(() => {
-    if (filterBy == "insurance") {
-      fetchInsuranceOptions();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterBy]);
-
-  useEffect(() => {
-    setPromotions([]);
-    setTotalItems(0);
-    setTotalPages(1);
-
-    if (hasAccess) {
-      if (
-        filterBy === "insurance" &&
-        selectedInsurance !== undefined &&
-        selectedInsurance !== ""
-      ) {
-        // Fetch promotion report based on selected insurance
-        promotionService.get(ApiURL.v1CampaignReportInsurance, {
-            params: {
-              page,
-              limit: rowsPerPage,
-              sort: sortBy,
-              insurance: selectedInsurance,
-              dateFrom: date?.from,
-              dateTo: date?.to
-            }
-          })
-          .then((res: any) => {
-            setPromotions(res.data?.data);
-            setTotalItems(res.data?.total);
-            setTotalPages(res.data?.pageTotal);
-          })
-          .catch((error) => {
-            console.error("Failed to fetch promotion reports:", error);
-          });
-      } else {
-        // Fetch promotion report based on the selected filter (non-insurance)
-        promotionService.get(ApiURL.v1CampaignReport, {
-            params: {
-              page,
-              limit: rowsPerPage,
-              sort: sortBy,
-              filter: filterBy,
-              dateFrom: date?.from,
-              dateTo: date?.to
-            }
-          })
-          .then((res: any) => {
-            setPromotions(res.data?.data);
-            setTotalItems(res.data?.total);
-            setTotalPages(res.data?.pageTotal);
-          })
-          .catch((error) => {
-            console.error("Failed to fetch promotion reports:", error);
-          });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasAccess, page, rowsPerPage, sortBy, filterBy, selectedInsurance, date]);
-
-  const fetchInsuranceOptions = async () => {
-    try {
-      const options: any = await productService.get(ApiURL.v1Insurances);
-      const formattedOptions: InsuranceOption[] = options.data.data.map(
-        (insurance: { id: string; name: string }) => ({
-          id: insurance.id,
-          name: insurance.name,
-        })
-      );
-      setInsuranceOptions(formattedOptions);
-    } catch (error) {
-      console.error("Failed to fetch insurance options:", error);
-    }
-  };
-
-  if (hasAccess === null) {
-    return <div>Loading...</div>;
-  }
-
-  const handleClear = () => {
-    setDate(undefined);
-  };
-
-  const handleDownloadReport = async () => {
-    try {
-      if (
-        filterBy === "insurance" &&
-        selectedInsurance !== undefined &&
-        selectedInsurance !== ""
-      ) {
-        const response: any =
-          await promotionService.get(ApiURL.v1CampaignReportExportInsurance, {
-            params: {
-              sort: sortBy,
-              insurance: selectedInsurance,
-              dateFrom: date?.from,
-              dateTo: date?.to
-            }
-          });
-
-        // Transform data for Excel
-        const reportData = response.data.data.map((promotion: any) => ({
-          "Campaign Name": promotion.campaign_name || "",
-          Type: promotion.type || "",
-          "Insurance Company Name": promotion.insurance_name || "N/A",
-          "Plan Name": promotion.plan_name || "N/A",
-          "Transaction Amount": promotion.total_transaction_amount || 0,
-          "Discount Amount":
-            promotion.total_transaction_amount -
-              promotion.total_discount_amount || 0,
-          "Transaction Amount after Discount":
-            promotion.total_discount_amount || 0,
-        }));
-
-        // Create a new workbook and add data
-        const worksheet = XLSX.utils.json_to_sheet(reportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Campaign Report");
-
-        // Generate Excel file
-        const excelBuffer = XLSX.write(workbook, {
-          bookType: "xlsx",
-          type: "array",
-        });
-
-        const blob = new Blob([excelBuffer], {
-          type: "application/octet-stream",
-        });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "Campaign_Report.xlsx");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } else {
-        const response: any =
-          await promotionService.get(ApiURL.v1CampaignReportExport, {
-            params: {
-              sort: sortBy,
-              insurance: selectedInsurance,
-              dateFrom: date?.from,
-              dateTo: date?.to
-            }
-          });
-
-        // Transform data for Excel
-        const reportData = response.data.data.map((promotion: any) => ({
-          "Campaign Name": promotion.campaign_name || "",
-          Type: promotion.type || "",
-          "Insurance Company Name": promotion.insurance_name || "N/A",
-          "Plan Name": promotion.plan_name || "N/A",
-          Currency: promotion.currency || "N/A",
-          "Transaction Amount": promotion.total_transaction_amount || 0,
-          "Discount Amount":
-            promotion.total_transaction_amount -
-              promotion.total_discount_amount || 0,
-          "Transaction Amount after Discount":
-            promotion.total_discount_amount || 0,
-        }));
-
-        // Create a new workbook and add data
-        const worksheet = XLSX.utils.json_to_sheet(reportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Campaign Report");
-
-        // Generate Excel file
-        const excelBuffer = XLSX.write(workbook, {
-          bookType: "xlsx",
-          type: "array",
-        });
-
-        const blob = new Blob([excelBuffer], {
-          type: "application/octet-stream",
-        });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "Campaign_Report.xlsx");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }
-    } catch (error) {
-      console.error("Failed to download the report:", error);
-    }
-  };
-
-  const handleChangeFilter = (value: string) => {
-    setFilterBy(value);
-    setPage(1);
-    if (value !== "insurance") {
-      setSelectedInsurance(undefined);
-      reset({ filter: value, insurance: "" });
-    } else {
-      reset({ filter: value });
-    }
-  };
-
-  const handleChangeSort = (value: string) => {
-    setSortBy(value);
-  };
+  const campaignReportTableColumns = createCampaignReportTableColumns();
 
   return (
     <div className="container mx-auto p-6">
@@ -299,9 +77,7 @@ export default function ReportCampaignPage() {
           </h2>
         </div>
 
-        {/* Container for Date Picker and Download Button */}
         <div className="flex items-center gap-4">
-          {/* Date Picker */}
           <div className="flex gap-2 sm:w-auto w-full relative">
             <Popover>
               <PopoverTrigger asChild>
@@ -333,7 +109,7 @@ export default function ReportCampaignPage() {
                   mode="range"
                   defaultMonth={new Date()}
                   selected={date}
-                  onSelect={(range) => setDate(range)}
+                  onSelect={(range) => handleDateChange(range)}
                   numberOfMonths={2}
                 />
               </PopoverContent>
@@ -351,9 +127,9 @@ export default function ReportCampaignPage() {
             </Button>
           </div>
 
-          {/* Download Report Button */}
           <Button
             onClick={handleDownloadReport}
+            disabled={isLoadingReports}
             className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full flex items-center"
           >
             <Download className="w-5 h-5 mr-1" /> Download Report
@@ -369,33 +145,20 @@ export default function ReportCampaignPage() {
           >
             Sort By
           </label>
-          <Controller
-            name="sort"
-            control={control}
-            render={({ field }) => (
-              <Select
-                value={field.value || sortBy}
-                onValueChange={(value) => {
-                  handleChangeSort(value);
-                  field.onChange(value);
-                }}
-                required
-              >
-                <SelectTrigger
-                  id="sort"
-                  className="w-full h-10 border-gray-300 bg-transparent py-2"
-                >
-                  <SelectValue placeholder="Select a Sort" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="date">Date</SelectItem>
-                    <SelectItem value="insurance">Insurance</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
+          <Select value={sortBy} onValueChange={handleSortChange}>
+            <SelectTrigger
+              id="sort"
+              className="w-full h-10 border-gray-300 bg-transparent py-2"
+            >
+              <SelectValue placeholder="Select a Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="date">Date</SelectItem>
+                <SelectItem value="insurance">Insurance</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <div className="w-full">
           <label
@@ -404,36 +167,22 @@ export default function ReportCampaignPage() {
           >
             Filter By
           </label>
-          <Controller
-            name="filter"
-            control={control}
-            defaultValue={filterBy}
-            render={({ field }) => (
-              <Select
-                value={filterBy}
-                onValueChange={(value) => {
-                  handleChangeFilter(value);
-                  field.onChange(value);
-                }}
-                required
-              >
-                <SelectTrigger
-                  id="filter"
-                  className="w-full h-10 border-gray-300 bg-transparent py-2"
-                >
-                  <SelectValue placeholder="Select a Filter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="embedded">Embedded</SelectItem>
-                    <SelectItem value="voucher">Voucher</SelectItem>
-                    <SelectItem value="insurance">Insurance</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
+          <Select value={filterBy} onValueChange={handleFilterChange}>
+            <SelectTrigger
+              id="filter"
+              className="w-full h-10 border-gray-300 bg-transparent py-2"
+            >
+              <SelectValue placeholder="Select a Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="embedded">Embedded</SelectItem>
+                <SelectItem value="voucher">Voucher</SelectItem>
+                <SelectItem value="insurance">Insurance</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         {filterBy === "insurance" && (
           <div className="w-full">
@@ -443,137 +192,45 @@ export default function ReportCampaignPage() {
             >
               Select Insurance
             </label>
-            <Controller
-              name="insurance"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={field.value || selectedInsurance}
-                  onValueChange={(value) => {
-                    setSelectedInsurance(value); // Update the selected insurance
-                    field.onChange(value); // Update the form value
-                  }}
-                  required
-                >
-                  <SelectTrigger
-                    id="insurance"
-                    className="w-full h-10 border-gray-300 bg-transparent py-2"
-                  >
-                    <SelectValue placeholder="Select an Insurance" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {insuranceOptions.map((insurance) => (
-                        <SelectItem key={insurance.id} value={insurance.id}>
-                          {insurance.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
+            <Select
+              value={selectedInsurance}
+              onValueChange={handleInsuranceChange}
+            >
+              <SelectTrigger
+                id="insurance"
+                className="w-full h-10 border-gray-300 bg-transparent py-2"
+              >
+                <SelectValue placeholder="Select an Insurance" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {insuranceOptions.map((insurance) => (
+                    <SelectItem key={insurance.id} value={insurance.id}>
+                      {insurance.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         )}
       </div>
 
-      <div className="bg-white rounded-md p-4 sm:p-6">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead style={{ textAlign: "center" }}>
-                Campaign Name
-              </TableHead>
-              <TableHead style={{ textAlign: "center" }}>Type</TableHead>
-              <TableHead style={{ textAlign: "center" }}>
-                Insurance Company Name
-              </TableHead>
-              <TableHead style={{ textAlign: "center" }}>Plan Name</TableHead>
-              <TableHead style={{ textAlign: "center" }}>
-                Transaction Amount
-              </TableHead>
-              <TableHead style={{ textAlign: "center" }}>
-                Discount Amount
-              </TableHead>
-              <TableHead style={{ textAlign: "center" }}>
-                Transaction Amount after Discount
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {promotions.map((promotion, index) => (
-              <TableRow key={`${index}-${promotion.campaign_id}`}>
-                <TableCell align="center">{promotion.campaign_name}</TableCell>
-                <TableCell align="center">{promotion.type}</TableCell>
-                <TableCell align="center">{promotion.insurance_name}</TableCell>
-                <TableCell align="center">{promotion.plan_name}</TableCell>
-                <TableCell align="center">
-                  {promotion.currency}{" "}
-                  {Number(promotion.total_transaction_amount).toLocaleString()}
-                </TableCell>
-                <TableCell align="center">
-                  {promotion.currency}{" "}
-                  {Number(
-                    promotion.total_transaction_amount -
-                      promotion.total_discount_amount
-                  ).toLocaleString()}
-                </TableCell>
-                <TableCell align="center">
-                  {Number(promotion.total_discount_amount).toLocaleString()}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={8}>
-                <div className="flex justify-center items-center gap-2 font-normal">
-                  <label htmlFor="rowsPerPage">Showing:</label>
-                  <select
-                    id="rowsPerPage"
-                    className="p-2 border rounded"
-                    value={rowsPerPage}
-                    onChange={(e) => {
-                      const newRowsPerPage = Number(e.target.value);
-                      setRowsPerPage(newRowsPerPage);
-                      setPage(1);
-                    }}
-                  >
-                    {[10, 20, 30, 50].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mr-2">of {totalItems} items</span>
-                  <button
-                    onClick={() => {
-                      if (page > 1) {
-                        setPage(page - 1);
-                      }
-                    }}
-                    disabled={page === 1}
-                    title="Previous"
-                  >
-                    <ChevronLeft />
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (page < totalPages) {
-                        setPage(page + 1);
-                      }
-                    }}
-                    disabled={page === totalPages}
-                    title="Next"
-                  >
-                    <ChevronRight />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+      <DataTable
+        loading={isLoadingReports}
+        data={promotions}
+        columns={campaignReportTableColumns}
+        pagination={{
+          page,
+          totalPages,
+          totalItems,
+          rowsPerPage,
+          onPageChange: setPage,
+          onRowsPerPageChange: handleRowsPerPageChange,
+        }}
+        className="campaign-report-table"
+        noDataText="No campaign report data available"
+      />
     </div>
   );
-};
+}

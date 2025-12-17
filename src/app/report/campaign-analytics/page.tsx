@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import * as XLSX from "xlsx";
+import React, { useRef, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -34,8 +33,6 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { PromotionService } from "@/services/promotion.service";
-import { TransactionService } from "@/services/transaction.service";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -45,302 +42,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toastNotification } from "@/lib/toast";
 import { BiMoney } from "react-icons/bi";
+import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { useCampaignAnalytics } from "@/hooks/useCampaignAnalytics.hooks";
 
 const CampaignAnalyticsPage = () => {
-  const [totalTransaction, setTotalTransaction] = useState(0);
-  const [totalLeads, setTotalLeads] = useState(0);
-  const [totalPurchased, setTotalPurchased] = useState(0);
-  const [campaignSummary, setCampaignSummary] = useState<any>({});
-  const [campaignData, setCampaignData] = useState<any[]>([]);
-  const [clickLinks, setClickLinks] = useState<
-    { url: string; count: number }[]
-  >([]);
-  const [timeData, setTimeData] = useState<any[]>([]);
-  const [openClickTrend, setOpenClickTrend] = useState<any[]>([]);
+  const {
+    campaignList,
+    selectedCampaign,
+    totalTransaction,
+    totalLeads,
+    totalPurchased,
+    campaignSummary,
+    campaignData,
+    clickLinks,
+    timeData,
+    openClickTrend,
+    isLoadingCampaigns,
+    isLoadingAnalytics,
+    isUpdatingCampaign,
+    setSelectedCampaign,
+    handleViewAnalytics,
+    handleExcelUpload,
+  } = useCampaignAnalytics();
+
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const reportTemplateRef = useRef<HTMLDivElement>(null);
-
-  const [selectedCampaign, setSelectedCampaign] = useState("");
-  const [campaignList, setCampaignList] = useState([]);
-
-  const promotionService = new PromotionService();
-  const transactionService = new TransactionService();
-
-  useEffect(() => {
-    const fetchCampaignList = async () => {
-      try {
-        const res: any = await promotionService.getPromotionCampaign(
-          1,
-          1000,
-          ""
-        );
-        setCampaignList(
-          res.data.map((c: any) => {
-            return { id: c.campaign_id, name: c.name };
-          })
-        );
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchCampaignList().then();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleViewAnalytics = async () => {
-    try {
-      const res: any = await transactionService.getCampaignsReport(
-        selectedCampaign
-      );
-      if (res?.report?.data) {
-        setTotalTransaction(res.transaction_total);
-        setTotalLeads(
-          Number(res.report.data.campaignSummary.delivered) +
-            Number(res.report.data.campaignSummary.hard_bounces) +
-            Number(res.report.data.campaignSummary.soft_bounces)
-        );
-        setTotalPurchased(res.purchased);
-        setCampaignSummary(res.report.data.campaignSummary);
-        setCampaignData(res.report.data.campaignData);
-        setClickLinks(res.report.data.clickLinks);
-        setTimeData(res.report.data.timeData);
-        setOpenClickTrend(res.report.data.openClickTrend);
-      }
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
-  const handleExcelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const data = new Uint8Array(await file.arrayBuffer());
-    const workbook = XLSX.read(data, { type: "array" });
-
-    const getSheet = (name: string) => {
-      try {
-        return XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1 });
-      } catch {
-        return [];
-      }
-    };
-
-    const reportSummary: any = getSheet("ReportSummary");
-    const delivery: any = getSheet("Campaign Delivery");
-    const opens: any = getSheet("Opens");
-    const clicks: any = getSheet("Clicks");
-    const hardBounces: any = getSheet("Hard Bounces");
-    const softBounces: any = getSheet("Soft Bounces");
-    const unsubscribes: any = getSheet("Unsubscribes");
-    const complaints: any = getSheet("Complaints");
-
-    // summary sheet
-    const summary: any = {};
-    if (reportSummary.length > 1) {
-      reportSummary.forEach((row: any) => {
-        summary[`${row[0].toLowerCase().trim().replace(/\s+/g, "_")}`] = row[1];
-      });
-    }
-
-    // map email → record
-    const dataMap: Record<string, any> = {};
-
-    // all email: delivered + hard bounces + soft bounces
-    // delivery sheet
-    if (delivery.length > 1) {
-      delivery.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (!email) return;
-        dataMap[email] = {
-          email,
-          firstName: row[1] || "",
-          lastName: row[2] || "",
-          deliveryTime: row[3] || "",
-          openCount: 0,
-          clickCount: 0,
-          unsubscribes: 0,
-          spam: 0,
-          bounce: 0,
-          status: "unopened",
-        };
-      });
-    }
-    if (hardBounces.length > 1) {
-      hardBounces.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (!email) return;
-        dataMap[email] = {
-          email,
-          firstName: row[1] || "",
-          lastName: row[2] || "",
-          deliveryTime: row[3] || "",
-          openCount: 0,
-          clickCount: 0,
-          unsubscribes: 0,
-          spam: 0,
-          bounce: 0,
-          status: "unopened",
-        };
-      });
-    }
-    if (softBounces.length > 1) {
-      softBounces.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (!email) return;
-        dataMap[email] = {
-          email,
-          firstName: row[1] || "",
-          lastName: row[2] || "",
-          deliveryTime: row[3] || "",
-          openCount: 0,
-          clickCount: 0,
-          unsubscribes: 0,
-          spam: 0,
-          bounce: 0,
-          status: "unopened",
-        };
-      });
-    }
-
-    // opens
-    const openTimes: string[] = [];
-    if (opens.length > 1) {
-      opens.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (dataMap[email]) {
-          dataMap[email].openCount += 1;
-          if (row[3]) openTimes.push(row[3]);
-        }
-      });
-    }
-
-    // clicks
-    const urlMap: Record<string, number> = {};
-    const clickTimes: string[] = [];
-    if (clicks.length > 1) {
-      clicks.slice(1).forEach((row: any) => {
-        const email = row[0];
-        const url = row[3];
-        if (dataMap[email]) {
-          dataMap[email].clickCount += 1;
-          if (url) urlMap[url] = (urlMap[url] || 0) + 1;
-          if (row[4]) clickTimes.push(row[4]);
-        }
-      });
-    }
-
-    // bounces
-    if (hardBounces.length > 1) {
-      hardBounces.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (dataMap[email]) {
-          dataMap[email].bounce = 1;
-        }
-      });
-    }
-    if (softBounces.length > 1) {
-      softBounces.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (dataMap[email]) {
-          dataMap[email].bounce = 1;
-        }
-      });
-    }
-
-    // unsubscribes
-    if (unsubscribes.length > 1) {
-      unsubscribes.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (dataMap[email]) {
-          dataMap[email].unsubscribes = 1;
-        }
-      });
-    }
-
-    // complaints/spam
-    if (complaints.length > 1) {
-      complaints.slice(1).forEach((row: any) => {
-        const email = row[0];
-        if (dataMap[email]) {
-          dataMap[email].spam = 1;
-        }
-      });
-    }
-
-    // set status
-    Object.values(dataMap).forEach((rec: any) => {
-      if (rec.bounce > 0) rec.status = "bounced";
-      else if (rec.unsubscribes > 0) rec.status = "unsubscribed";
-      else if (rec.spam > 0) rec.status = "spam";
-      else if (rec.clickCount > 0) rec.status = "engaged";
-      else if (rec.openCount > 0) rec.status = "opened";
-      else rec.status = "unopened";
-    });
-
-    // build time series
-    const timeBuckets: Record<string, { opens: number; clicks: number }> = {};
-    openTimes.forEach((t) => {
-      const hour = new Date(t).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      if (!timeBuckets[hour]) timeBuckets[hour] = { opens: 0, clicks: 0 };
-      timeBuckets[hour].opens += 1;
-    });
-    clickTimes.forEach((t) => {
-      const hour = new Date(t).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      if (!timeBuckets[hour]) timeBuckets[hour] = { opens: 0, clicks: 0 };
-      timeBuckets[hour].clicks += 1;
-    });
-
-    // build open & click trend
-    const trendMap: Record<
-      string,
-      { date: string; opens: number; clicks: number }
-    > = {};
-    openTimes.forEach((t) => {
-      const d = new Date(t);
-      const key = d.toISOString().split("T")[0];
-      if (!trendMap[key]) trendMap[key] = { date: key, opens: 0, clicks: 0 };
-      trendMap[key].opens += 1;
-    });
-    clickTimes.forEach((t) => {
-      const d = new Date(t);
-      const key = d.toISOString().split("T")[0];
-      if (!trendMap[key]) trendMap[key] = { date: key, opens: 0, clicks: 0 };
-      trendMap[key].clicks += 1;
-    });
-    const trendData = Object.values(trendMap).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-    try {
-      const data = {
-        campaignSummary: summary,
-        campaignData: Object.values(dataMap),
-        clickLinks: Object.entries(urlMap).map(([url, count]) => ({
-          url,
-          count,
-        })),
-        timeData: Object.entries(timeBuckets).map(([time, v]) => ({
-          time,
-          ...v,
-        })),
-        openClickTrend: trendData,
-      };
-      await transactionService.putCampaignsReport(selectedCampaign, { data });
-      toastNotification("Update campaign report successfully!", "success");
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-      toastNotification("Update campaign report failed!", "error");
-    }
-  };
 
   // metrics
   const totalSent = campaignData.filter((i) => i.bounce === 0).length;
@@ -522,24 +249,24 @@ const CampaignAnalyticsPage = () => {
         <div className="pt-4 flex w-[40%] flex-col items-center justify-center">
           <div className="flex items-center justify-between">
             <Button
-              disabled={!selectedCampaign}
+              disabled={!selectedCampaign || isLoadingAnalytics}
               onClick={handleViewAnalytics}
               className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs"
             >
-              View Analytics
+              {isLoadingAnalytics ? "Loading..." : "View Analytics"}
             </Button>
             <label
               htmlFor="excel-upload"
               className={`ml-3 px-4 py-3 flex items-center gap-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs ${
-                selectedCampaign
+                selectedCampaign && !isUpdatingCampaign
                   ? "cursor-pointer"
                   : "opacity-50 cursor-not-allowed"
               }`}
             >
               <Upload size={18} />
-              Update Campaign
+              {isUpdatingCampaign ? "Updating..." : "Update Campaign"}
               <input
-                disabled={!selectedCampaign}
+                disabled={!selectedCampaign || isUpdatingCampaign}
                 id="excel-upload"
                 type="file"
                 accept=".xls,.xlsx"
@@ -551,7 +278,10 @@ const CampaignAnalyticsPage = () => {
         </div>
       </div>
 
-      <div>
+      <ContentLoadingWrapper
+        isLoading={isLoadingAnalytics}
+        loadingText="Loading analytics..."
+      >
         {campaignData.length > 0 && (
           <div ref={reportTemplateRef} className="bg-white p-6 rounded-lg mb-5">
             <div className="mb-5">
@@ -559,7 +289,6 @@ const CampaignAnalyticsPage = () => {
                 Travel Annual Plan Campaign
               </h1>
 
-              {/*TODO: notes: temporary static*/}
               <h1 className="hidden text-center text-2xl font-bold">
                 {campaignSummary.campaign_name}
               </h1>
@@ -568,7 +297,6 @@ const CampaignAnalyticsPage = () => {
               </p>
             </div>
 
-            {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                 <p className="text-sm text-gray-600">Contact Rate</p>
@@ -576,7 +304,6 @@ const CampaignAnalyticsPage = () => {
                 <Mail className="h-8 w-8 text-blue-500" />
               </div>
 
-              {/*TODO: notes: temporary hidden*/}
               <div className="hidden bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
                 <p className="text-sm text-gray-600">Total Transaction</p>
                 <p className="text-3xl font-bold">{totalTransaction}</p>
@@ -615,9 +342,7 @@ const CampaignAnalyticsPage = () => {
               </div>
             </div>
 
-            {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {/* Campaign Status Pie */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-semibold mb-4">
                   📊 Campaign Status
@@ -655,8 +380,6 @@ const CampaignAnalyticsPage = () => {
                 </div>
               </div>
 
-              {/* Engagement Bar */}
-              {/*TODO: notes: temporary hidden*/}
               <div className="hidden bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-semibold mb-4">📈 Engagement</h3>
                 <ResponsiveContainer width="100%" height={300}>
@@ -692,7 +415,6 @@ const CampaignAnalyticsPage = () => {
                 </div>
               </div>
 
-              {/* Funnel Bar */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-semibold mb-4">📈 Funnel</h3>
                 <ResponsiveContainer width="100%" height={400}>
@@ -714,8 +436,6 @@ const CampaignAnalyticsPage = () => {
               </div>
             </div>
 
-            {/* Performance Over Time */}
-            {/*TODO: notes: temporary hidden*/}
             <div className="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">
                 ⏱️ Performance Over Time
@@ -745,7 +465,6 @@ const CampaignAnalyticsPage = () => {
                 </AreaChart>
               </ResponsiveContainer>
 
-              {/* Legend */}
               <div className="flex items-center gap-6 justify-center mt-4">
                 <div className="flex items-center text-sm text-gray-600">
                   <div
@@ -764,7 +483,6 @@ const CampaignAnalyticsPage = () => {
               </div>
             </div>
 
-            {/* Opens vs Clicks Trend */}
             <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">
                 📅 Opens & Clicks Trends
@@ -792,7 +510,6 @@ const CampaignAnalyticsPage = () => {
               </ResponsiveContainer>
             </div>
 
-            {/* Top Performers */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-semibold mb-4">🏆 Top Performers</h3>
               <table className="w-full text-sm">
@@ -820,7 +537,6 @@ const CampaignAnalyticsPage = () => {
               </table>
             </div>
 
-            {/* Issues & Actions */}
             <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
               <h3 className="text-xl font-semibold mb-4">
                 ⚠️ Issues & Actions
@@ -887,7 +603,6 @@ const CampaignAnalyticsPage = () => {
               </div>
             </div>
 
-            {/* Campaign Summary */}
             <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
               <h3 className="text-xl font-semibold mb-4">
                 📋 Campaign Summary
@@ -914,7 +629,6 @@ const CampaignAnalyticsPage = () => {
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Bounce rate: {bounceRate}%</li>
 
-                    {/*TODO: notes: temporary hidden*/}
                     <li className="hidden">
                       • Unsubscribe rate:{" "}
                       {((totalUnsubscribes / totalSent) * 100).toFixed(1)}%
@@ -951,7 +665,7 @@ const CampaignAnalyticsPage = () => {
             </div>
           </div>
         )}
-      </div>
+      </ContentLoadingWrapper>
     </div>
   );
 };
