@@ -1,5 +1,12 @@
 "use client";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 import { useEffect } from "react";
 
 export default function LookerReport() {
@@ -39,8 +46,9 @@ export default function LookerReport() {
           height="800px"
           frameBorder="0"
           allowFullScreen
+          loading="lazy"
         ></iframe>
       </div>
     </div>
   );
-};
+}
