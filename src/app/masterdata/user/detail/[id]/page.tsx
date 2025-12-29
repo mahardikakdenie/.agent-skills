@@ -66,14 +66,21 @@ export default function EditUser() {
     loadAccountInsurers,
   } = useAccountInsurer();
 
-  // ✅ Use useInsurance hook to fetch all insurances
-  const { insurances, isLoading: isLoadingInsurances } = useInsurance();
+  const {
+    insurances,
+    isLoading: isLoadingInsurances,
+    setRowsPerPage,
+  } = useInsurance();
 
   useEffect(() => {
     if (id) {
       loadUserDetail(id);
     }
   }, [id, loadUserDetail]);
+
+  useEffect(() => {
+    setRowsPerPage(1000);
+  }, []);
 
   useEffect(() => {
     if (accountId) {
