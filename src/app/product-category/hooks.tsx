@@ -52,6 +52,9 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const [detailsPage, setDetailsPage] = useState(1);
   const [detailsRowsPerPage, setDetailsRowsPerPage] = useState(50);
+  const [formattedCategories, setFormattedCategories] = useState<SubmenuItem[]>(
+    []
+  );
 
   const canRead = permissionList.includes("Product Category.Read");
   const canEdit = permissionList.includes("Product Category.Update");
@@ -305,7 +308,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     });
 
   const { data: categoriesData } = useQuery({
-    queryKey: ["product-categories"],
+    queryKey: ["product-categories-catalog"],
     queryFn: async () => {
       const response: any = await productService.get(ApiURL.v1Categories, {
         params: { limit: 1000 },
@@ -316,14 +319,18 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
         ? rawCategories
         : [];
 
-      return normalizedCategories.map((item: any) => ({
+      const formatted = normalizedCategories.map((item: any) => ({
         id: item.id,
         url: `${AppURL.productCategory}?category=${item.name}`,
-        label: item.display_name || formatCategoryLabel(item.name),
+        label: item?.display_name || formatCategoryLabel(item.name),
         slug: item.name,
       }));
+
+      setFormattedCategories(formatted);
+      return formatted;
     },
     staleTime: 10 * 60 * 1000,
+    refetchOnMount: "always",
   });
 
   const savePlanMutation = useMutation({
@@ -715,7 +722,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   );
 
   const getProductCategoryId = useCallback((): string | null => {
-    const foundCategory = categoriesData?.find((item: SubmenuItem) => {
+    const foundCategory = formattedCategories?.find((item: SubmenuItem) => {
       return item.slug === category;
     });
 
@@ -724,7 +731,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     }
 
     return null;
-  }, [category, categoriesData]);
+  }, [category, formattedCategories]);
 
   const getProductByCategoryId = useCallback((): any[] => {
     const categoryId = getProductCategoryId();
@@ -759,7 +766,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     packagesTotalItems: packagesData?.meta?.total || 0,
     packageDetail: packageData,
     productConfig: productConfigData,
-    subMenuItems: (categoriesData as SubmenuItem[]) || [],
+    subMenuItems: formattedCategories,
 
     isLoadingProducts,
     isLoadingInsurances,

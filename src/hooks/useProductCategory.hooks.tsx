@@ -65,7 +65,7 @@ export function useProductCategory(): UseProductCategoryProps {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["product-categories"],
+    queryKey: ["product-categories-masterdata"],
     queryFn: async () => {
       const result = await productCategoryService.getCategories();
       return result;
@@ -80,7 +80,9 @@ export function useProductCategory(): UseProductCategoryProps {
       await productCategoryService.deleteCategories(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-categories"] });
+      queryClient.invalidateQueries({
+        queryKey: ["product-categories-masterdata"],
+      });
     },
     onError: (error) => {
       console.error("Failed to delete category:", error);
