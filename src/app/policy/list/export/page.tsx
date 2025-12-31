@@ -82,8 +82,6 @@ export default function ExportPage() {
 
           const res = await policyService.get(ApiURL.v1Policies, { params });
 
-          console.log(res, `DY: this is response for page ${currentPage}`);
-
           if (res?.data?.data) {
             allData = [...allData, ...res.data.data];
             totalRecords = res.data.total || 0;
@@ -92,9 +90,6 @@ export default function ExportPage() {
           currentPage++;
         } while (allData.length < totalRecords && totalRecords > 0);
 
-        console.log(
-          `DY: Fetched ${allData.length} out of ${totalRecords} total records`
-        );
         setData(allData);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -188,6 +183,9 @@ export default function ExportPage() {
                   ...additionColumn,
                   "Order Id": thisParty?.identifiers?.order_id,
                   "Request Id": thisParty?.identifiers?.request_id,
+                  "License Plate":
+                    item.declarations?.transaction_data?.participants[0]?.data
+                      ?.plat_number || "-",
                 };
               }
             }
@@ -334,6 +332,9 @@ export default function ExportPage() {
                     <td style={styles.th} valign="middle">
                       Request Id
                     </td>
+                    <td style={styles.th} valign="middle">
+                      License Plate
+                    </td>
                   </>
                 )}
               </tr>
@@ -383,9 +384,16 @@ export default function ExportPage() {
                             {item.declarations?.transaction_data?.third_party
                               ?.identifiers?.request_id || "-"}
                           </td>
+                          <td style={styles.td} valign="middle">
+                            {item.declarations?.transaction_data
+                              ?.participants[0]?.data?.plat_number || "-"}
+                          </td>
                         </>
                       ) : (
                         <>
+                          <td style={styles.td} valign="middle">
+                            -
+                          </td>
                           <td style={styles.td} valign="middle">
                             -
                           </td>
