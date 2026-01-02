@@ -185,7 +185,10 @@ export default function ExportPage() {
                   "Request Id": thisParty?.identifiers?.request_id,
                   "License Plate":
                     item.declarations?.transaction_data?.participants[0]?.data
-                      ?.plat_number || "-",
+                      ?.licensePlate ||
+                    item.declarations?.transaction_data?.participants[0]?.data
+                      ?.plat_number ||
+                    "-",
                 };
               }
             }
@@ -386,7 +389,10 @@ export default function ExportPage() {
                           </td>
                           <td style={styles.td} valign="middle">
                             {item.declarations?.transaction_data
-                              ?.participants[0]?.data?.plat_number || "-"}
+                              ?.participants[0]?.data?.licensePlate ||
+                              item.declarations?.transaction_data
+                                ?.participants[0]?.data?.plat_number ||
+                              "-"}
                           </td>
                         </>
                       ) : (
