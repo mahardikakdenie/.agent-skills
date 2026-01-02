@@ -69,22 +69,26 @@ export default function ExportPage() {
         let totalRecords = 0;
 
         do {
-          const params = {
-            page: currentPage,
-            limit: rowsPerPage,
-            keyword: searchData ? searchData : undefined,
-            status: status && status !== "All" ? status : undefined,
-            channel: channel ? channel : undefined,
-            category: category && category !== "All" ? category : undefined,
-            from: date_from ? date_from : undefined,
-            to: date_to ? date_to : undefined,
-          };
+          try {
+            const params = {
+              page: currentPage,
+              limit: rowsPerPage,
+              keyword: searchData ? searchData : undefined,
+              status: status && status !== "All" ? status : undefined,
+              channel: channel ? channel : undefined,
+              category: category && category !== "All" ? category : undefined,
+              created_from: date_from ? date_from : undefined,
+              created_to: date_to ? date_to : undefined,
+            };
 
-          const res = await policyService.get(ApiURL.v1Policies, { params });
+            const res = await policyService.get(ApiURL.v1Policies, { params });
 
-          if (res?.data?.data) {
-            allData = [...allData, ...res.data.data];
-            totalRecords = res.data.total || 0;
+            if (res?.data?.data) {
+              allData = [...allData, ...res.data.data];
+              totalRecords = res.data.total || 0;
+            }
+          } catch (pageError) {
+            console.error(`DY: Error fetching page ${currentPage}:`, pageError);
           }
 
           currentPage++;
