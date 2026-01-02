@@ -200,7 +200,7 @@ export default function ExportPage() {
               "-",
             Status: item.status || "-",
             "Issued Date": !!item.created_at
-              ? moment(item.created_at).format("LL")
+              ? moment(item.created_at).format("LL HH:mm:ss")
               : "-",
             ...additionColumn,
           };
