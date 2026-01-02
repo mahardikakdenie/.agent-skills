@@ -98,8 +98,8 @@ export default function usePolicies(): UsePoliciesProps {
         status: tab !== "All" ? tab : undefined,
         channel: searchChannel || undefined,
         category: searchCategory !== "All" ? searchCategory : undefined,
-        from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-        to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+        created_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
+        created_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
       };
 
       const response = await policyService.get(ApiURL.v1Policies, { params });
