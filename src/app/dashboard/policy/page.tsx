@@ -16,6 +16,7 @@ import LineChart from "@/components/ui/recharts/linechart-policy";
 import DetailTable from "@/components/ui/recharts/table-policy";
 import DatePickerDropdown from "@/components/ui/date-range-picker";
 import usePolicyDashboard from "@/hooks/usePolicyDashboard.hooks";
+import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
 const policyColumns = [
   { key: "number", label: "Number" },
@@ -164,45 +165,50 @@ export default function DashboardPolicy() {
           <DatePickerDropdown onDateChange={handleDateChange} />
         </div>
       </div>
-      <div className="grid grid-cols-12 gap-4 mb-4">
-        <div className="col-span-4 grid gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-              <p className="text-3xl font-bold text-center mb-1">
-                {totalPolicies}
-              </p>
-              <h5 className="text-xs">Total Policies</h5>
+      <ContentLoadingWrapper
+        isLoading={isLoadingStatistics}
+        loadingText="Loading policy statistics..."
+      >
+        <div className="grid grid-cols-12 gap-4 mb-4">
+          <div className="col-span-4 grid gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+                <p className="text-3xl font-bold text-center mb-1">
+                  {totalPolicies}
+                </p>
+                <h5 className="text-xs">Total Policies</h5>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+                <p className="text-3xl font-bold text-center mb-1">
+                  {numberSimpleFormatter(totalPremium)}
+                </p>
+                <h5 className="text-xs">Total GWP</h5>
+              </div>
             </div>
-            <div className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-              <p className="text-3xl font-bold text-center mb-1">
-                {numberSimpleFormatter(totalPremium)}
-              </p>
-              <h5 className="text-xs">Total GWP</h5>
+            <div className="bg-white p-5 rounded-md shadow-sm">
+              <h5 className="font-semibold">Policy Type</h5>
+              <div className="w-full h-[300px]">
+                <PieChart data={pieChartData} />
+              </div>
             </div>
           </div>
-          <div className="bg-white p-5 rounded-md shadow-sm">
-            <h5 className="font-semibold">Policy Type</h5>
-            <div className="w-full h-[300px]">
-              <PieChart data={pieChartData} />
+          <div className="col-span-8">
+            <div className="bg-white py-5 rounded-md shadow-sm w-full">
+              <h5 className="font-semibold mb-3 pl-5">
+                Daily Policy Counts Trends
+              </h5>
+              <div className="h-[400px]">
+                <LineChart data={lineChartData} />
+              </div>
             </div>
           </div>
         </div>
-        <div className="col-span-8">
-          <div className="bg-white py-5 rounded-md shadow-sm w-full">
-            <h5 className="font-semibold mb-3 pl-5">
-              Daily Policy Counts Trends
-            </h5>
-            <div className="h-[400px]">
-              <LineChart data={lineChartData} />
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="bg-white p-5 rounded-md shadow-sm w-full table-policy">
-        <h5 className="font-semibold mb-3">Detail Policy</h5>
-        <DetailTable data={tableData} columns={policyColumns} />
-      </div>
+        <div className="bg-white p-5 rounded-md shadow-sm w-full table-policy">
+          <h5 className="font-semibold mb-3">Detail Policy</h5>
+          <DetailTable data={tableData} columns={policyColumns} />
+        </div>
+      </ContentLoadingWrapper>
     </div>
   );
 }

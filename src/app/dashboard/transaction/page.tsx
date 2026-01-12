@@ -16,6 +16,7 @@ import DetailTable from "@/components/ui/recharts/table-policy";
 import DatePickerDropdown from "@/components/ui/date-range-picker";
 import BarChartComp from "@/components/ui/recharts/barchart-horizontal";
 import useTransactionDashboard from "@/hooks/useTransactionDashboard.hooks";
+import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
 const policyColumns = [
   { key: "created_at", label: "Created At" },
@@ -163,40 +164,47 @@ export default function DashboardTransaction() {
           <DatePickerDropdown onDateChange={handleDateChange} />
         </div>
       </div>
-      <div className="grid grid-cols-12 gap-4 mb-4">
-        <div className="col-span-6">
-          <div className="bg-white py-5 rounded-md shadow-sm w-full">
-            <h5 className="font-semibold mb-3 pl-5">Daily Sales Performance</h5>
-            <div className="h-[400px]">
-              <LineChart data={lineChartData} />
+      <ContentLoadingWrapper
+        isLoading={isLoadingStatistics}
+        loadingText="Loading transaction statistics..."
+      >
+        <div className="grid grid-cols-12 gap-4 mb-4">
+          <div className="col-span-6">
+            <div className="bg-white py-5 rounded-md shadow-sm w-full">
+              <h5 className="font-semibold mb-3 pl-5">
+                Daily Sales Performance
+              </h5>
+              <div className="h-[400px]">
+                <LineChart data={lineChartData} />
+              </div>
+            </div>
+          </div>
+          <div className="col-span-6">
+            <div className="bg-white pt-5 rounded-md shadow-sm">
+              <h5 className="font-semibold pl-5">Daily GWP Performance</h5>
+              <div className="w-full h-[431px]">
+                <BarChartComp data={barChartData} />
+              </div>
             </div>
           </div>
         </div>
-        <div className="col-span-6">
-          <div className="bg-white pt-5 rounded-md shadow-sm">
-            <h5 className="font-semibold pl-5">Daily GWP Performance</h5>
-            <div className="w-full h-[431px]">
-              <BarChartComp data={barChartData} />
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-1">
+            <div className="bg-white p-5 rounded-md shadow-sm">
+              <h5 className="font-semibold">Total Sales by Plan Name</h5>
+              <div className="w-full h-[403px]">
+                <PieChart data={pieChartData} />
+              </div>
+            </div>
+          </div>
+          <div className="col-span-2">
+            <div className="bg-white p-5 rounded-md shadow-sm w-full table-transaction min-h-[466px]">
+              <h5 className="font-semibold mb-3">Latest Transactions</h5>
+              <DetailTable data={tableData} columns={policyColumns} />
             </div>
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-1">
-          <div className="bg-white p-5 rounded-md shadow-sm">
-            <h5 className="font-semibold">Total Sales by Plan Name</h5>
-            <div className="w-full h-[403px]">
-              <PieChart data={pieChartData} />
-            </div>
-          </div>
-        </div>
-        <div className="col-span-2">
-          <div className="bg-white p-5 rounded-md shadow-sm w-full table-transaction min-h-[466px]">
-            <h5 className="font-semibold mb-3">Latest Transactions</h5>
-            <DetailTable data={tableData} columns={policyColumns} />
-          </div>
-        </div>
-      </div>
+      </ContentLoadingWrapper>
     </div>
   );
 }
