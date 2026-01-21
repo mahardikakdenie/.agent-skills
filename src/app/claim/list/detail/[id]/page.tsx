@@ -182,10 +182,10 @@ const DetailClaim = () => {
     const checkAccess = async () => {
       const access = permissionList.includes("Claim.Read");
       const isHidePolicyEmail = permissionList.includes(
-        "Claim.View.Policy.HideEmail"
+        "Claim.View.Policy.HideEmail",
       );
       const isHidePolicyPhone = permissionList.includes(
-        "Claim.View.Policy.HidePhone"
+        "Claim.View.Policy.HidePhone",
       );
       const isShowDanaInfo = permissionList.includes("Claim.View.ShowDanaInfo");
       setHasAccess(access);
@@ -207,7 +207,7 @@ const DetailClaim = () => {
     const fetchClaimData = async (id: string) => {
       try {
         const { data: claimHistoriesResponse } = await claimService.get(
-          `${ApiURL.v1ClaimHistories}?claim=${id}`
+          `${ApiURL.v1ClaimHistories}?claim=${id}`,
         );
         if (claimHistoriesResponse && claimHistoriesResponse.data) {
           setHistories(claimHistoriesResponse.data);
@@ -284,29 +284,32 @@ const DetailClaim = () => {
 
   const renderDocumentsDetails = (documentObject: any) => {
     const documentType = documentObject.type.toLowerCase();
+
+    const isPreviewableImage = (url: string) => {
+      const extension = url?.split(".").at(-1)?.toLowerCase();
+      return ["jpg", "jpeg", "png"].includes(extension || "");
+    };
     if (documentType === "file") {
+      const canPreview =
+        documentObject?.value && isPreviewableImage(documentObject.value);
+
       return (
         <div>
-          {documentObject?.value?.split(".").at(-1) === "pdf" ? (
-            <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400 p-5">
-              The document cannot be previewed, please download if you want to
-              see it
+          {canPreview ? (
+            <div className="max-h-[70vh] overflow-auto text-center">
+              <Image
+                className="mx-auto w-full h-full"
+                src={documentObject.value}
+                alt={documentObject.label?.en || "-"}
+                width={200}
+                height={100}
+              />
             </div>
           ) : (
-            <div className="max-h-[70vh] overflow-auto text-center">
-              {documentObject?.value ? (
-                <Image
-                  className="mx-auto w-full h-full"
-                  src={documentObject.value}
-                  alt={documentObject.label?.en || "-"}
-                  width={200}
-                  height={100}
-                />
-              ) : (
-                <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">
-                  No image available
-                </div>
-              )}
+            <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400 p-5">
+              {documentObject?.value
+                ? "The document cannot be previewed, please download if you want to see it"
+                : "No file available"}
             </div>
           )}
           <div className="w-full flex items-center justify-center mt-3">
@@ -317,6 +320,54 @@ const DetailClaim = () => {
               Download
             </Button>
           </div>
+        </div>
+      );
+    }
+
+    if (documentType === "multiple file") {
+      const files = Array.isArray(documentObject?.value)
+        ? documentObject.value
+        : [];
+
+      if (files.length === 0) {
+        return (
+          <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400">
+            No files available
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex flex-col gap-4">
+          {files.map((fileUrl: string, index: number) => {
+            const canPreview = isPreviewableImage(fileUrl);
+
+            return (
+              <div key={index} className="border rounded-md p-4">
+                {canPreview ? (
+                  <div className="max-h-[70vh] overflow-auto text-center">
+                    <Image
+                      className="mx-auto w-full h-full"
+                      src={fileUrl}
+                      alt={`${documentObject.label?.en || documentObject.label || "File"} ${index + 1}`}
+                      width={200}
+                      height={100}
+                    />
+                  </div>
+                ) : (
+                  <div className="text-center w-full h-[300px] border rounded-md flex items-center justify-center text-gray-400 p-5">
+                    The document cannot be previewed, please download if you
+                    want to see it
+                  </div>
+                )}
+                <div className="w-full flex items-center justify-center mt-3">
+                  <Button onClick={() => downloadDocument(fileUrl)}>
+                    Download File
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       );
     }
@@ -407,7 +458,7 @@ const DetailClaim = () => {
                         className="flex items-center"
                       >
                         {JourneyVerticalImage(
-                          historyIndex !== 0 ? "#C4C4C4" : undefined
+                          historyIndex !== 0 ? "#C4C4C4" : undefined,
                         )}
                         <div className="ml-5 flex flex-col gap-2">
                           <p className="text-sm font-semibold">
@@ -423,14 +474,14 @@ const DetailClaim = () => {
                                     year: "numeric",
                                     month: "long",
                                     day: "numeric",
-                                  }
+                                  },
                                 )} ${new Date(h.created_at).toLocaleTimeString(
                                   "en-US",
                                   {
                                     hour: "numeric",
                                     minute: "numeric",
                                     hour12: true,
-                                  }
+                                  },
                                 )}`
                               : "-"}
                           </p>
@@ -447,7 +498,7 @@ const DetailClaim = () => {
                                 .length > 0 && (
                                 <ul className="list-disc ml-5">
                                   {getMissingDocuments(
-                                    h?.lack_of_documents || []
+                                    h?.lack_of_documents || [],
                                   ).map((claimForm, index) => (
                                     <li
                                       key={index}
@@ -469,7 +520,7 @@ const DetailClaim = () => {
                               className="bg-[#016DA1] text-white hover:bg-[#0482C2] rounded-full w-fit"
                               onClick={() =>
                                 router.push(
-                                  `${AppURL.claimDetail}/${claim.id}/upload-data`
+                                  `${AppURL.claimDetail}/${claim.id}/upload-data`,
                                 )
                               }
                             >
@@ -525,7 +576,7 @@ const DetailClaim = () => {
                     <div>
                       {(() => {
                         const claimValue = claim?.claim?.find(
-                          (d: any) => d.type === "Number" && d.name === "claim"
+                          (d: any) => d.type === "Number" && d.name === "claim",
                         )?.value;
 
                         const numericValue = Number(claimValue);
@@ -545,7 +596,7 @@ const DetailClaim = () => {
                       {formatMoneyClaim(
                         claim?.amount_approved != null
                           ? claim?.amount_approved
-                          : 0
+                          : 0,
                       )}
                     </div>
                   </div>
@@ -663,13 +714,13 @@ const DetailClaim = () => {
                           {claim?.participant_data?.data?.data?.passport_no
                             ? "No. Passport"
                             : claim?.participant_data?.data?.passport_no
-                            ? "No. Passport"
-                            : claim?.participant_data?.data?.nik
-                            ? "NIK"
-                            : claim?.participant_data?.data
-                                ?.identification_number
-                            ? "No. Identitas"
-                            : ""}
+                              ? "No. Passport"
+                              : claim?.participant_data?.data?.nik
+                                ? "NIK"
+                                : claim?.participant_data?.data
+                                      ?.identification_number
+                                  ? "No. Identitas"
+                                  : ""}
                         </div>
                         <div className="max-w-1 w-1">:</div>
                         <div>
