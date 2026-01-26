@@ -39,7 +39,7 @@ interface UsePartnerManagementFormProps {
 }
 
 export function usePartnerManagementForm(
-  mode: "create" | "edit" = "create"
+  mode: "create" | "edit" = "create",
 ): UsePartnerManagementFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -83,7 +83,7 @@ export function usePartnerManagementForm(
   const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["channels-list"],
     queryFn: async () => {
-      const response = await channelService.getChannels();
+      const response = await channelService.getChannels(1, 9999);
       return response.data || [];
     },
     staleTime: 300000,
@@ -113,12 +113,12 @@ export function usePartnerManagementForm(
       toast.success(
         isEdit
           ? "Partner Updated Successfully!"
-          : "Partner Created Successfully!"
+          : "Partner Created Successfully!",
       );
 
       if (!isEdit && response?.id) {
         router.push(
-          `${AppURL.masterdataPartnerManagementDetail}/${response.id}`
+          `${AppURL.masterdataPartnerManagementDetail}/${response.id}`,
         );
       }
     },
@@ -126,7 +126,7 @@ export function usePartnerManagementForm(
       console.error("Save failed:", error);
       toast.error(
         error?.response?.data?.message ||
-          "Failed to save partner. Please try again."
+          "Failed to save partner. Please try again.",
       );
     },
   });
@@ -155,7 +155,7 @@ export function usePartnerManagementForm(
 
       await saveMutation.mutateAsync(formData);
     },
-    [saveMutation]
+    [saveMutation],
   );
 
   const loadPartnerDetail = useCallback((id: string) => {
