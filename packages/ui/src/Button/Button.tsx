@@ -1,52 +1,47 @@
-"use client";
+'use client';
 
-import { cva, type VariantProps } from "class-variance-authority";
-import { clsx } from "clsx";
-import { forwardRef, type ButtonHTMLAttributes } from "react";
-import { Box } from "../Box";
+import { cva, type VariantProps } from 'class-variance-authority';
+import { clsx } from 'clsx';
+import { forwardRef, type ButtonHTMLAttributes } from 'react';
+
+import { Box } from '../Box';
 
 const buttonVariants = cva(
   // Base styles
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         primary:
-          "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-60)] focus-visible:ring-[var(--color-primary)]",
-        secondary:
-          "bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500",
+          'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-60)] focus-visible:ring-[var(--color-primary)]',
+        secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500',
         danger:
-          "bg-[var(--color-danger)] text-white hover:bg-[var(--color-danger-60)] focus-visible:ring-[var(--color-danger)]",
+          'bg-[var(--color-danger)] text-white hover:bg-[var(--color-danger-60)] focus-visible:ring-[var(--color-danger)]',
         outline:
-          "border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-10)] focus-visible:ring-[var(--color-primary)]",
+          'border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-10)] focus-visible:ring-[var(--color-primary)]',
         ghost:
-          "text-[var(--color-primary)] hover:bg-[var(--color-primary-10)] focus-visible:ring-[var(--color-primary)]",
+          'text-[var(--color-primary)] hover:bg-[var(--color-primary-10)] focus-visible:ring-[var(--color-primary)]',
       },
       size: {
-        sm: "h-9 px-3 text-sm",
-        md: "h-11 px-5 text-base",
-        lg: "h-13 px-7 text-lg",
+        sm: 'h-9 px-3 text-sm',
+        md: 'h-11 px-5 text-base',
+        lg: 'h-13 px-7 text-lg',
       },
     },
     defaultVariants: {
-      variant: "primary",
-      size: "md",
+      variant: 'primary',
+      size: 'md',
     },
   },
 );
 
 export interface ButtonProps
-  extends
-    ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   loading?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    { className, variant, size, loading, disabled, children, ...props },
-    ref,
-  ) => {
+  ({ className, variant, size, loading, disabled, children, ...props }, ref) => {
     return (
       <Box
         as="button"
@@ -89,4 +84,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 
-Button.displayName = "Button";
+Button.displayName = 'Button';

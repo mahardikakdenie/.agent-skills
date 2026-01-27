@@ -22,7 +22,7 @@ This guide shows you how to use the `@repo/config` Tailwind configuration in you
 Replace your existing CSS imports with:
 
 ```css
-@import "@repo/config/tailwind.css";
+@import '@repo/config/tailwind.css';
 ```
 
 That's it! You can now use all the custom colors in your components.
@@ -36,9 +36,7 @@ That's it! You can now use all the custom colors in your components.
 export default function Home() {
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-4xl font-bold text-primary mb-8">
-        Welcome to Friendsure
-      </h1>
+      <h1 className="text-4xl font-bold text-primary mb-8">Welcome to Friendsure</h1>
 
       {/* Primary Button */}
       <button className="bg-primary hover:bg-primary-60 text-white px-6 py-3 rounded-lg transition-colors">

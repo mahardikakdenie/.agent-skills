@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   type ComponentPropsWithoutRef,
@@ -8,7 +8,7 @@ import {
   type ReactElement,
   type ReactNode,
   forwardRef,
-} from "react";
+} from 'react';
 
 type AsProp<T extends ElementType> = {
   as?: T;
@@ -16,7 +16,7 @@ type AsProp<T extends ElementType> = {
 
 type PropsToOmit<T extends ElementType, P> = keyof (AsProp<T> & P);
 
-type PolymorphicRef<T extends ElementType> = ComponentPropsWithRef<T>["ref"];
+type PolymorphicRef<T extends ElementType> = ComponentPropsWithRef<T>['ref'];
 
 type PolymorphicComponentProps<T extends ElementType, P = {}> = P &
   AsProp<T> &
@@ -26,19 +26,16 @@ export type BoxOwnProps = {
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
-  "data-testid"?: string;
+  'data-testid'?: string;
 };
 
-export type BoxProps<T extends ElementType = "div"> = PolymorphicComponentProps<
-  T,
-  BoxOwnProps
->;
+export type BoxProps<T extends ElementType = 'div'> = PolymorphicComponentProps<T, BoxOwnProps>;
 
-const BoxImpl = <T extends ElementType = "div">(
+const BoxImpl = <T extends ElementType = 'div'>(
   { as, className, style, children, ...props }: BoxProps<T>,
   ref: PolymorphicRef<T>,
 ) => {
-  const Component = as ?? "div";
+  const Component = as ?? 'div';
 
   return (
     <Component ref={ref} className={className} style={style} {...props}>
@@ -47,7 +44,7 @@ const BoxImpl = <T extends ElementType = "div">(
   );
 };
 
-type BoxComponent = <T extends ElementType = "div">(
+type BoxComponent = <T extends ElementType = 'div'>(
   props: BoxProps<T> & { ref?: PolymorphicRef<T> },
 ) => ReactElement | null;
 
@@ -58,4 +55,4 @@ export const Box = forwardRef(
   ) => ReactElement | null,
 ) as BoxComponent;
 
-(Box as { displayName?: string }).displayName = "Box";
+(Box as { displayName?: string }).displayName = 'Box';

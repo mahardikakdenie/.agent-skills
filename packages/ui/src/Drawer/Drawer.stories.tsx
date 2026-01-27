@@ -1,12 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import {
-  useState,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-} from "react";
-import { Box } from "../Box";
-import { Button } from "../Button";
-import { Input } from "../Input";
+import type { Meta, StoryObj } from '@storybook/react';
+import { useState, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { Input } from '../Input';
 import {
   Drawer,
   DrawerBody,
@@ -18,41 +15,41 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "./Drawer";
+} from './Drawer';
 
 type DrawerRootProps = ComponentPropsWithoutRef<typeof Drawer>;
 type DrawerContentProps = ComponentPropsWithoutRef<typeof DrawerContent>;
 
-type Direction = NonNullable<DrawerRootProps["direction"]>;
+type Direction = NonNullable<DrawerRootProps['direction']>;
 
-const directions: Direction[] = ["left", "right", "top", "bottom"];
+const directions: Direction[] = ['left', 'right', 'top', 'bottom'];
 
 const meta = {
-  title: "Components/Drawer",
+  title: 'Components/Drawer',
   component: Drawer,
   parameters: {
-    layout: "fullscreen",
+    layout: 'fullscreen',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     shouldScaleBackground: {
-      control: "boolean",
-      description: "Scales the background content when the drawer is open",
+      control: 'boolean',
+      description: 'Scales the background content when the drawer is open',
     },
     defaultOpen: {
-      control: "boolean",
-      description: "Whether the drawer should be open on initial render",
+      control: 'boolean',
+      description: 'Whether the drawer should be open on initial render',
     },
     direction: {
-      control: "inline-radio",
+      control: 'inline-radio',
       options: directions,
-      description: "Which side the drawer should slide from",
+      description: 'Which side the drawer should slide from',
     },
   },
   args: {
     shouldScaleBackground: true,
     defaultOpen: false,
-    direction: "left",
+    direction: 'left',
   },
 } satisfies Meta<typeof Drawer>;
 
@@ -61,29 +58,22 @@ type Story = StoryObj<typeof meta>;
 
 function DrawerCanvas({ children }: { children: ReactNode }) {
   return (
-    <Box className="flex min-h-screen items-center justify-center bg-gray-50 p-8">
-      {children}
-    </Box>
+    <Box className="flex min-h-screen items-center justify-center bg-gray-50 p-8">{children}</Box>
   );
 }
 
-function renderBasicDrawer(
-  rootProps: DrawerRootProps,
-  contentProps: DrawerContentProps = {},
-) {
+function renderBasicDrawer(rootProps: DrawerRootProps, contentProps: DrawerContentProps = {}) {
   const { children, ...restContentProps } = contentProps;
 
-  const direction = rootProps.direction ?? "left";
-  const showHandle = direction === "bottom" || direction === "top";
+  const direction = rootProps.direction ?? 'left';
+  const showHandle = direction === 'bottom' || direction === 'top';
 
   const defaultContent = (
     <>
       {showHandle && <DrawerHandle />}
       <DrawerHeader>
         <DrawerTitle>Policy summary</DrawerTitle>
-        <DrawerDescription>
-          Review the plan details before confirming changes.
-        </DrawerDescription>
+        <DrawerDescription>Review the plan details before confirming changes.</DrawerDescription>
       </DrawerHeader>
       <DrawerBody className="px-4 pb-4">
         <Box className="flex flex-col gap-3 text-sm text-gray-600">
@@ -116,9 +106,7 @@ function renderBasicDrawer(
         <DrawerTrigger asChild>
           <Button>View policy summary</Button>
         </DrawerTrigger>
-        <DrawerContent {...restContentProps}>
-          {children ?? defaultContent}
-        </DrawerContent>
+        <DrawerContent {...restContentProps}>{children ?? defaultContent}</DrawerContent>
       </Drawer>
     </DrawerCanvas>
   );
@@ -142,9 +130,7 @@ export const ScrollableContent: Story = {
         <>
           <DrawerHeader>
             <DrawerTitle>Driver list</DrawerTitle>
-            <DrawerDescription>
-              Review all drivers attached to your policy.
-            </DrawerDescription>
+            <DrawerDescription>Review all drivers attached to your policy.</DrawerDescription>
           </DrawerHeader>
           <DrawerBody className="px-4 pb-4">
             <Box className="flex flex-col gap-3 text-sm text-gray-600">
@@ -154,9 +140,7 @@ export const ScrollableContent: Story = {
                   className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2"
                 >
                   <Box>
-                    <Box className="font-medium text-gray-900">
-                      Driver {index + 1}
-                    </Box>
+                    <Box className="font-medium text-gray-900">Driver {index + 1}</Box>
                     <Box className="text-xs text-gray-500">Active</Box>
                   </Box>
                   <Button size="sm" variant="secondary">
@@ -220,7 +204,7 @@ export const Positions: Story = {
     <DrawerCanvas>
       <Box className="flex flex-wrap items-center justify-center gap-3">
         {directions.map((direction) => {
-          const showHandle = direction === "bottom" || direction === "top";
+          const showHandle = direction === 'bottom' || direction === 'top';
 
           return (
             <Drawer key={direction} direction={direction} shouldScaleBackground>
@@ -233,9 +217,7 @@ export const Positions: Story = {
                 {showHandle && <DrawerHandle />}
                 <DrawerHeader>
                   <DrawerTitle className="capitalize">{direction} drawer</DrawerTitle>
-                  <DrawerDescription>
-                    This drawer slides in from the {direction}.
-                  </DrawerDescription>
+                  <DrawerDescription>This drawer slides in from the {direction}.</DrawerDescription>
                 </DrawerHeader>
                 <DrawerBody className="px-4 pb-4 text-sm text-gray-700">
                   Use the direction prop to place drawers on any side.
@@ -263,9 +245,7 @@ export const Controlled: Story = {
       <DrawerCanvas>
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <Button variant="secondary">
-              {open ? "Hide details" : "Show details"}
-            </Button>
+            <Button variant="secondary">{open ? 'Hide details' : 'Show details'}</Button>
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader>

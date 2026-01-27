@@ -10,4 +10,4 @@ export {
   type BreadcrumbSeparatorProps,
   BreadcrumbEllipsis,
   type BreadcrumbEllipsisProps,
-} from "./Breadcrumb";
+} from './Breadcrumb';

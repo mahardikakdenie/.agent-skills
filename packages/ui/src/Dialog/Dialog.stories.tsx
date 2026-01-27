@@ -1,13 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import {
-  useId,
-  useState,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-} from "react";
-import { Box } from "../Box";
-import { Button } from "../Button";
-import { Input } from "../Input";
+import type { Meta, StoryObj } from '@storybook/react';
+import { useId, useState, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { Input } from '../Input';
 import {
   Dialog,
   DialogBody,
@@ -18,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./Dialog";
+} from './Dialog';
 
 type DialogRootProps = ComponentPropsWithoutRef<typeof Dialog>;
 
@@ -26,26 +22,26 @@ type RenderOptions = {
   body?: ReactNode;
   contentClassName?: string;
   description?: string;
-  size?: ComponentPropsWithoutRef<typeof DialogContent>["size"];
+  size?: ComponentPropsWithoutRef<typeof DialogContent>['size'];
   title?: string;
   triggerLabel?: string;
 };
 
 const meta = {
-  title: "Components/Dialog",
+  title: 'Components/Dialog',
   component: Dialog,
   parameters: {
-    layout: "fullscreen",
+    layout: 'fullscreen',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     defaultOpen: {
-      control: "boolean",
-      description: "Whether the dialog is open on initial render",
+      control: 'boolean',
+      description: 'Whether the dialog is open on initial render',
     },
     modal: {
-      control: "boolean",
-      description: "When false, focus is not trapped while the dialog is open",
+      control: 'boolean',
+      description: 'When false, focus is not trapped while the dialog is open',
     },
   },
   args: {
@@ -69,20 +65,20 @@ function renderDialog(rootProps: DialogRootProps, options: RenderOptions = {}) {
   const {
     body,
     contentClassName,
-    description = "Review the changes below before continuing.",
+    description = 'Review the changes below before continuing.',
     size,
-    title = "Update policy",
-    triggerLabel = "Open dialog",
+    title = 'Update policy',
+    triggerLabel = 'Open dialog',
   } = options;
 
   const defaultBody = (
     <DialogBody className="flex flex-col gap-3 text-sm text-gray-700">
       <Box>
-        You are about to apply updates to your auto policy. These changes will
-        take effect immediately.
+        You are about to apply updates to your auto policy. These changes will take effect
+        immediately.
       </Box>
       <Box className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-gray-800">
-        Next billing date: Feb 5, 2026 • Estimated premium: $118/mo
+        Next billing date: Feb 5, 2026 ï¿½ Estimated premium: $118/mo
       </Box>
     </DialogBody>
   );
@@ -130,10 +126,10 @@ export const NonModal: Story = {
   },
   render: (args: DialogRootProps) =>
     renderDialog(args, {
-      title: "Non-modal dialog",
+      title: 'Non-modal dialog',
       description:
-        "Use non-modal dialogs for lightweight flows that should not fully block the page.",
-      triggerLabel: "Open non-modal",
+        'Use non-modal dialogs for lightweight flows that should not fully block the page.',
+      triggerLabel: 'Open non-modal',
     }),
 };
 
@@ -141,11 +137,11 @@ export const Sizes: Story = {
   render: () => {
     const sizeConfigs: Array<{
       label: string;
-      size: ComponentPropsWithoutRef<typeof DialogContent>["size"];
+      size: ComponentPropsWithoutRef<typeof DialogContent>['size'];
     }> = [
-      { label: "Small", size: "28rem" },
-      { label: "Medium", size: "40rem" },
-      { label: "Large", size: "56rem" },
+      { label: 'Small', size: '28rem' },
+      { label: 'Medium', size: '40rem' },
+      { label: 'Large', size: '56rem' },
     ];
 
     return (
@@ -188,9 +184,9 @@ export const Sizes: Story = {
 export const ScrollableContent: Story = {
   render: (args: DialogRootProps) =>
     renderDialog(args, {
-      size: "48rem",
-      title: "Policy changes",
-      description: "Review each change before approving the update.",
+      size: '48rem',
+      title: 'Policy changes',
+      description: 'Review each change before approving the update.',
       body: (
         <DialogBody className="flex flex-col gap-4">
           <Box className="text-sm text-gray-700">
@@ -202,8 +198,8 @@ export const ScrollableContent: Story = {
                 key={index}
                 className="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-800"
               >
-                Coverage update {index + 1}: Enhanced roadside assistance with
-                extended towing radius.
+                Coverage update {index + 1}: Enhanced roadside assistance with extended towing
+                radius.
               </Box>
             ))}
           </Box>
@@ -218,29 +214,20 @@ export const FormDialog: Story = {
     const emailId = useId();
 
     return renderDialog(args, {
-      size: "44rem",
-      title: "Update contact details",
-      description:
-        "Make sure your contact details are accurate for policy notifications.",
-      triggerLabel: "Edit contact",
+      size: '44rem',
+      title: 'Update contact details',
+      description: 'Make sure your contact details are accurate for policy notifications.',
+      triggerLabel: 'Edit contact',
       body: (
         <DialogBody className="flex flex-col gap-4">
           <Box className="grid gap-2">
-            <Box
-              as="label"
-              htmlFor={nameId}
-              className="text-sm font-medium text-gray-800"
-            >
+            <Box as="label" htmlFor={nameId} className="text-sm font-medium text-gray-800">
               Full name
             </Box>
             <Input id={nameId} placeholder="Alex Johnson" />
           </Box>
           <Box className="grid gap-2">
-            <Box
-              as="label"
-              htmlFor={emailId}
-              className="text-sm font-medium text-gray-800"
-            >
+            <Box as="label" htmlFor={emailId} className="text-sm font-medium text-gray-800">
               Email address
             </Box>
             <Input id={emailId} type="email" placeholder="alex@example.com" />
@@ -262,9 +249,7 @@ export const Controlled: Story = {
       <DialogCanvas>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="secondary">
-              {open ? "Close dialog" : "Open controlled dialog"}
-            </Button>
+            <Button variant="secondary">{open ? 'Close dialog' : 'Open controlled dialog'}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -274,7 +259,7 @@ export const Controlled: Story = {
               </DialogDescription>
             </DialogHeader>
             <DialogBody className="text-sm text-gray-700">
-              Open state:{" "}
+              Open state:{' '}
               <Box as="span" className="font-semibold">
                 {String(open)}
               </Box>

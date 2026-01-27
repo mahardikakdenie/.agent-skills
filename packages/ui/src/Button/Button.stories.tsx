@@ -1,36 +1,37 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Button } from "./Button";
-import { Box } from "../Box";
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { Box } from '../Box';
+import { Button } from './Button';
 
 const meta = {
-  title: "Components/Button",
+  title: 'Components/Button',
   component: Button,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: "select",
-      options: ["primary", "secondary", "danger", "outline", "ghost"],
-      description: "The visual style variant of the button",
+      control: 'select',
+      options: ['primary', 'secondary', 'danger', 'outline', 'ghost'],
+      description: 'The visual style variant of the button',
     },
     size: {
-      control: "select",
-      options: ["sm", "md", "lg"],
-      description: "The size of the button",
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'The size of the button',
     },
     loading: {
-      control: "boolean",
-      description: "Shows a loading spinner when true",
+      control: 'boolean',
+      description: 'Shows a loading spinner when true',
     },
     disabled: {
-      control: "boolean",
-      description: "Disables the button when true",
+      control: 'boolean',
+      description: 'Disables the button when true',
     },
     children: {
-      control: "text",
-      description: "The content of the button",
+      control: 'text',
+      description: 'The content of the button',
     },
   },
 } satisfies Meta<typeof Button>;
@@ -41,23 +42,23 @@ type Story = StoryObj<typeof meta>;
 // Primary variant stories
 export const Primary: Story = {
   args: {
-    variant: "primary",
-    children: "Primary Button",
+    variant: 'primary',
+    children: 'Primary Button',
   },
 };
 
 export const PrimaryLoading: Story = {
   args: {
-    variant: "primary",
-    children: "Loading...",
+    variant: 'primary',
+    children: 'Loading...',
     loading: true,
   },
 };
 
 export const PrimaryDisabled: Story = {
   args: {
-    variant: "primary",
-    children: "Disabled",
+    variant: 'primary',
+    children: 'Disabled',
     disabled: true,
   },
 };
@@ -65,15 +66,15 @@ export const PrimaryDisabled: Story = {
 // Secondary variant stories
 export const Secondary: Story = {
   args: {
-    variant: "secondary",
-    children: "Secondary Button",
+    variant: 'secondary',
+    children: 'Secondary Button',
   },
 };
 
 export const SecondaryLoading: Story = {
   args: {
-    variant: "secondary",
-    children: "Loading...",
+    variant: 'secondary',
+    children: 'Loading...',
     loading: true,
   },
 };
@@ -81,15 +82,15 @@ export const SecondaryLoading: Story = {
 // Danger variant stories
 export const Danger: Story = {
   args: {
-    variant: "danger",
-    children: "Delete",
+    variant: 'danger',
+    children: 'Delete',
   },
 };
 
 export const DangerLoading: Story = {
   args: {
-    variant: "danger",
-    children: "Deleting...",
+    variant: 'danger',
+    children: 'Deleting...',
     loading: true,
   },
 };
@@ -97,15 +98,15 @@ export const DangerLoading: Story = {
 // Outline variant stories
 export const Outline: Story = {
   args: {
-    variant: "outline",
-    children: "Outline Button",
+    variant: 'outline',
+    children: 'Outline Button',
   },
 };
 
 export const OutlineLoading: Story = {
   args: {
-    variant: "outline",
-    children: "Loading...",
+    variant: 'outline',
+    children: 'Loading...',
     loading: true,
   },
 };
@@ -113,15 +114,15 @@ export const OutlineLoading: Story = {
 // Ghost variant stories
 export const Ghost: Story = {
   args: {
-    variant: "ghost",
-    children: "Ghost Button",
+    variant: 'ghost',
+    children: 'Ghost Button',
   },
 };
 
 export const GhostLoading: Story = {
   args: {
-    variant: "ghost",
-    children: "Loading...",
+    variant: 'ghost',
+    children: 'Loading...',
     loading: true,
   },
 };
@@ -129,31 +130,31 @@ export const GhostLoading: Story = {
 // Size variants
 export const SmallSize: Story = {
   args: {
-    size: "sm",
-    children: "Small Button",
+    size: 'sm',
+    children: 'Small Button',
   },
 };
 
 export const MediumSize: Story = {
   args: {
-    size: "md",
-    children: "Medium Button",
+    size: 'md',
+    children: 'Medium Button',
   },
 };
 
 export const LargeSize: Story = {
   args: {
-    size: "lg",
-    children: "Large Button",
+    size: 'lg',
+    children: 'Large Button',
   },
 };
 
 // Interactive playground
 export const Playground: Story = {
   args: {
-    variant: "primary",
-    size: "md",
-    children: "Click me!",
+    variant: 'primary',
+    size: 'md',
+    children: 'Click me!',
     loading: false,
     disabled: false,
   },

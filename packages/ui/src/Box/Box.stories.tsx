@@ -1,29 +1,30 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Box } from "./Box";
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { Box } from './Box';
 
 const baseCardClassName =
-  "w-[340px] rounded-lg border border-gray-200 bg-white p-4 text-gray-900 shadow-sm";
+  'w-[340px] rounded-lg border border-gray-200 bg-white p-4 text-gray-900 shadow-sm';
 
 const meta = {
-  title: "Components/Box",
+  title: 'Components/Box',
   component: Box,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     as: {
-      control: "select",
-      options: ["div", "section", "article", "button", "a", "span"],
-      description: "Render Box as a different HTML element",
+      control: 'select',
+      options: ['div', 'section', 'article', 'button', 'a', 'span'],
+      description: 'Render Box as a different HTML element',
     },
     className: {
-      control: "text",
-      description: "Tailwind or custom classes",
+      control: 'text',
+      description: 'Tailwind or custom classes',
     },
     children: {
-      control: "text",
-      description: "Box content",
+      control: 'text',
+      description: 'Box content',
     },
   },
 } satisfies Meta<typeof Box>;
@@ -33,9 +34,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    as: "div",
+    as: 'div',
     className: baseCardClassName,
-    children: "Default Box rendered as a div.",
+    children: 'Default Box rendered as a div.',
   },
 };
 
@@ -114,9 +115,8 @@ export const LayoutComposition: Story = {
 
 export const Playground: Story = {
   args: {
-    as: "div",
+    as: 'div',
     className: baseCardClassName,
-    children: "Playground Box",
+    children: 'Playground Box',
   },
 };
-

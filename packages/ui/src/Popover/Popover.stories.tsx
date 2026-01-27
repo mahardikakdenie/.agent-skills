@@ -1,33 +1,29 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
-import { Button } from "../Button";
-import { Box } from "../Box";
-import { Input } from "../Input";
-import {
-  Popover,
-  PopoverArrow,
-  PopoverContent,
-  PopoverTrigger,
-} from "./Popover";
+import type { Meta, StoryObj } from '@storybook/react';
+import { useState, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { Input } from '../Input';
+import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from './Popover';
 
 type PopoverRootProps = ComponentPropsWithoutRef<typeof Popover>;
 type PopoverContentProps = ComponentPropsWithoutRef<typeof PopoverContent>;
 
 const meta = {
-  title: "Components/Popover",
+  title: 'Components/Popover',
   component: Popover,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     defaultOpen: {
-      control: "boolean",
-      description: "Whether the popover should be open on initial render",
+      control: 'boolean',
+      description: 'Whether the popover should be open on initial render',
     },
     modal: {
-      control: "boolean",
-      description: "When true, interaction outside is disabled while open",
+      control: 'boolean',
+      description: 'When true, interaction outside is disabled while open',
     },
   },
   args: {
@@ -47,10 +43,7 @@ function PopoverCanvas({ children }: { children: ReactNode }) {
   );
 }
 
-function renderBasicPopover(
-  rootProps: PopoverRootProps,
-  contentProps: PopoverContentProps = {},
-) {
+function renderBasicPopover(rootProps: PopoverRootProps, contentProps: PopoverContentProps = {}) {
   const { children, ...restContentProps } = contentProps;
 
   const defaultContent = (
@@ -70,9 +63,7 @@ function renderBasicPopover(
         <PopoverTrigger asChild>
           <Button variant="secondary">Policy details</Button>
         </PopoverTrigger>
-        <PopoverContent {...restContentProps}>
-          {children ?? defaultContent}
-        </PopoverContent>
+        <PopoverContent {...restContentProps}>{children ?? defaultContent}</PopoverContent>
       </Popover>
     </PopoverCanvas>
   );
@@ -112,12 +103,7 @@ export const WithArrow: Story = {
 
 export const SideVariants: Story = {
   render: () => {
-    const sides: PopoverContentProps["side"][] = [
-      "top",
-      "right",
-      "bottom",
-      "left",
-    ];
+    const sides: PopoverContentProps['side'][] = ['top', 'right', 'bottom', 'left'];
 
     return (
       <PopoverCanvas>
@@ -130,9 +116,7 @@ export const SideVariants: Story = {
                 </Button>
               </PopoverTrigger>
               <PopoverContent side={side} sideOffset={10}>
-                <Box className="text-sm text-gray-700">
-                  Positioned on the {side} side.
-                </Box>
+                <Box className="text-sm text-gray-700">Positioned on the {side} side.</Box>
                 <PopoverArrow />
               </PopoverContent>
             </Popover>
@@ -145,7 +129,7 @@ export const SideVariants: Story = {
 
 export const AlignVariants: Story = {
   render: () => {
-    const aligns: PopoverContentProps["align"][] = ["start", "center", "end"];
+    const aligns: PopoverContentProps['align'][] = ['start', 'center', 'end'];
 
     return (
       <PopoverCanvas>
@@ -158,9 +142,7 @@ export const AlignVariants: Story = {
                 </Button>
               </PopoverTrigger>
               <PopoverContent align={align} sideOffset={8}>
-                <Box className="text-sm text-gray-700">
-                  Alignment set to {align}.
-                </Box>
+                <Box className="text-sm text-gray-700">Alignment set to {align}.</Box>
                 <PopoverArrow />
               </PopoverContent>
             </Popover>
@@ -222,9 +204,7 @@ export const Controlled: Story = {
       <PopoverCanvas>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button variant="secondary">
-              {open ? "Hide summary" : "Show summary"}
-            </Button>
+            <Button variant="secondary">{open ? 'Hide summary' : 'Show summary'}</Button>
           </PopoverTrigger>
           <PopoverContent sideOffset={8}>
             <Box className="flex flex-col gap-3">

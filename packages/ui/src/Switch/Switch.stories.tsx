@@ -1,9 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { clsx } from "clsx";
-import { useId, useState, type ReactNode } from "react";
-import { Box } from "../Box";
-import { Button } from "../Button";
-import { Switch, type SwitchProps } from "./Switch";
+import type { Meta, StoryObj } from '@storybook/react';
+import { clsx } from 'clsx';
+import { useId, useState, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { Switch, type SwitchProps } from './Switch';
 
 type SwitchFieldProps = SwitchProps & {
   label: ReactNode;
@@ -17,69 +18,69 @@ type PreferenceOption = {
   description: string;
 };
 
-const switchSizes = ["sm", "md", "lg"] as const;
-const switchVariants = ["default", "danger"] as const;
+const switchSizes = ['sm', 'md', 'lg'] as const;
+const switchVariants = ['default', 'danger'] as const;
 
 const preferenceOptions: PreferenceOption[] = [
   {
-    value: "claims",
-    label: "Claims alerts",
-    description: "Get notified whenever a claim status changes.",
+    value: 'claims',
+    label: 'Claims alerts',
+    description: 'Get notified whenever a claim status changes.',
   },
   {
-    value: "billing",
-    label: "Billing reminders",
-    description: "Receive reminders before payments are due.",
+    value: 'billing',
+    label: 'Billing reminders',
+    description: 'Receive reminders before payments are due.',
   },
   {
-    value: "offers",
-    label: "Product offers",
-    description: "Hear about new coverage options and discounts.",
+    value: 'offers',
+    label: 'Product offers',
+    description: 'Hear about new coverage options and discounts.',
   },
 ];
 
 const meta = {
-  title: "Components/Switch",
+  title: 'Components/Switch',
   component: Switch,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: "select",
+      control: 'select',
       options: switchVariants,
-      description: "Visual variant",
+      description: 'Visual variant',
     },
     size: {
-      control: "select",
+      control: 'select',
       options: switchSizes,
-      description: "Switch size",
+      description: 'Switch size',
     },
     checked: {
-      control: "boolean",
-      description: "Controlled checked state",
+      control: 'boolean',
+      description: 'Controlled checked state',
     },
     defaultChecked: {
-      control: "boolean",
-      description: "Initial checked state for uncontrolled usage",
+      control: 'boolean',
+      description: 'Initial checked state for uncontrolled usage',
     },
     disabled: {
-      control: "boolean",
-      description: "Disables interactions",
+      control: 'boolean',
+      description: 'Disables interactions',
     },
     required: {
-      control: "boolean",
-      description: "Marks the field as required",
+      control: 'boolean',
+      description: 'Marks the field as required',
     },
     onCheckedChange: {
-      action: "checkedChange",
-      description: "Callback fired when the checked state changes",
+      action: 'checkedChange',
+      description: 'Callback fired when the checked state changes',
     },
   },
   args: {
-    variant: "default",
-    size: "md",
+    variant: 'default',
+    size: 'md',
     defaultChecked: false,
     disabled: false,
     required: false,
@@ -113,7 +114,7 @@ function SwitchField({
       as="label"
       htmlFor={id}
       className={clsx(
-        "flex w-full items-start justify-between gap-4 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700",
+        'flex w-full items-start justify-between gap-4 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700',
         containerClassName,
       )}
     >
@@ -135,7 +136,7 @@ function SwitchField({
 function ControlledDemo(args: SwitchProps) {
   const [checked, setChecked] = useState(false);
 
-  const statusLabel = checked ? "Enabled" : "Disabled";
+  const statusLabel = checked ? 'Enabled' : 'Disabled';
 
   return (
     <SwitchCanvas>
@@ -198,7 +199,7 @@ function PreferenceGroupDemo(args: SwitchProps) {
           ))}
         </Box>
         <Box className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-          Enabled: {enabledList.length > 0 ? enabledList.join(", ") : "None"}
+          Enabled: {enabledList.length > 0 ? enabledList.join(', ') : 'None'}
         </Box>
       </Box>
     </SwitchCanvas>
@@ -317,8 +318,8 @@ export const PreferenceGroup: Story = {
 
 export const Playground: Story = {
   args: {
-    variant: "default",
-    size: "md",
+    variant: 'default',
+    size: 'md',
     defaultChecked: false,
     disabled: false,
   },

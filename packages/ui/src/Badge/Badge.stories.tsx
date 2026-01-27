@@ -1,17 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import {
-  AlertCircle,
-  AlertTriangle,
-  CircleDot,
-  ShieldCheck,
-  Tag,
-} from "lucide-react";
-import type { ComponentType } from "react";
-import { Badge, type BadgeProps } from "./Badge";
-import { Box } from "../Box";
+import type { Meta, StoryObj } from '@storybook/react';
+import { AlertCircle, AlertTriangle, CircleDot, ShieldCheck, Tag } from 'lucide-react';
+import type { ComponentType } from 'react';
 
-type BadgeVariant = NonNullable<BadgeProps["variant"]>;
-type BadgeSize = NonNullable<BadgeProps["size"]>;
+import { Box } from '../Box';
+import { Badge, type BadgeProps } from './Badge';
+
+type BadgeVariant = NonNullable<BadgeProps['variant']>;
+type BadgeSize = NonNullable<BadgeProps['size']>;
 
 const variantIcons: Record<BadgeVariant, ComponentType<{ className?: string }>> = {
   default: Tag,
@@ -22,26 +17,26 @@ const variantIcons: Record<BadgeVariant, ComponentType<{ className?: string }>> 
 };
 
 const meta = {
-  title: "Components/Badge",
+  title: 'Components/Badge',
   component: Badge,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: "select",
-      options: ["default", "secondary", "danger", "warning", "outline"],
-      description: "The visual style variant of the badge",
+      control: 'select',
+      options: ['default', 'secondary', 'danger', 'warning', 'outline'],
+      description: 'The visual style variant of the badge',
     },
     size: {
-      control: "select",
-      options: ["sm", "md", "lg"],
-      description: "The size of the badge",
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'The size of the badge',
     },
     children: {
-      control: "text",
-      description: "The content of the badge",
+      control: 'text',
+      description: 'The content of the badge',
     },
   },
 } satisfies Meta<typeof Badge>;
@@ -50,7 +45,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function renderBadge(args: BadgeProps, label: string) {
-  const variant: BadgeVariant = args.variant ?? "default";
+  const variant: BadgeVariant = args.variant ?? 'default';
   const Icon = variantIcons[variant];
 
   return (
@@ -65,91 +60,91 @@ function renderBadge(args: BadgeProps, label: string) {
 
 export const Default: Story = {
   args: {
-    variant: "default",
-    size: "md",
-    children: "Default",
+    variant: 'default',
+    size: 'md',
+    children: 'Default',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Default")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Default')),
 };
 
 export const Secondary: Story = {
   args: {
-    variant: "secondary",
-    children: "Secondary",
+    variant: 'secondary',
+    children: 'Secondary',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Secondary")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Secondary')),
 };
 
 export const Danger: Story = {
   args: {
-    variant: "danger",
-    children: "Danger",
+    variant: 'danger',
+    children: 'Danger',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Danger")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Danger')),
 };
 
 export const Warning: Story = {
   args: {
-    variant: "warning",
-    children: "Warning",
+    variant: 'warning',
+    children: 'Warning',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Warning")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Warning')),
 };
 
 export const Outline: Story = {
   args: {
-    variant: "outline",
-    children: "Outline",
+    variant: 'outline',
+    children: 'Outline',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Outline")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Outline')),
 };
 
 export const SmallSize: Story = {
   args: {
-    size: "sm",
-    children: "Small",
+    size: 'sm',
+    children: 'Small',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Small")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Small')),
 };
 
 export const MediumSize: Story = {
   args: {
-    size: "md",
-    children: "Medium",
+    size: 'md',
+    children: 'Medium',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Medium")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Medium')),
 };
 
 export const LargeSize: Story = {
   args: {
-    size: "lg",
-    children: "Large",
+    size: 'lg',
+    children: 'Large',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Large")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Large')),
 };
 
 export const TextOnly: Story = {
   args: {
-    variant: "secondary",
-    children: "No icon",
+    variant: 'secondary',
+    children: 'No icon',
   },
   render: (args) => (
     <Badge {...args}>
-      <Box as="span">{String(args.children ?? "No icon")}</Box>
+      <Box as="span">{String(args.children ?? 'No icon')}</Box>
     </Badge>
   ),
 };
 
 export const Numeric: Story = {
   args: {
-    variant: "default",
-    children: "12",
+    variant: 'default',
+    children: '12',
   },
   render: (args) => (
     <Box className="flex items-center gap-2">
       <Badge {...args}>
         <Box as="span" className="tabular-nums">
-          {String(args.children ?? "12")}
+          {String(args.children ?? '12')}
         </Box>
       </Badge>
       <Badge variant="danger" size={args.size}>
@@ -163,22 +158,16 @@ export const Numeric: Story = {
 
 export const Playground: Story = {
   args: {
-    variant: "default",
-    size: "md",
-    children: "Playground",
+    variant: 'default',
+    size: 'md',
+    children: 'Playground',
   },
-  render: (args) => renderBadge(args, String(args.children ?? "Playground")),
+  render: (args) => renderBadge(args, String(args.children ?? 'Playground')),
 };
 
 export const AllVariants: Story = {
   render: () => {
-    const variants: BadgeVariant[] = [
-      "default",
-      "secondary",
-      "danger",
-      "warning",
-      "outline",
-    ];
+    const variants: BadgeVariant[] = ['default', 'secondary', 'danger', 'warning', 'outline'];
 
     return (
       <Box className="flex flex-wrap items-center gap-2">
@@ -201,7 +190,7 @@ export const AllVariants: Story = {
 
 export const AllSizes: Story = {
   render: () => {
-    const sizes: BadgeSize[] = ["sm", "md", "lg"];
+    const sizes: BadgeSize[] = ['sm', 'md', 'lg'];
 
     return (
       <Box className="flex items-center gap-2">

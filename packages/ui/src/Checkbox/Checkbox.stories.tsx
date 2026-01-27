@@ -1,10 +1,11 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import type { CheckedState } from "@radix-ui/react-checkbox";
-import { clsx } from "clsx";
-import { useId, useState, type ReactNode } from "react";
-import { Box } from "../Box";
-import { Button } from "../Button";
-import { Checkbox, type CheckboxProps } from "./Checkbox";
+import type { CheckedState } from '@radix-ui/react-checkbox';
+import type { Meta, StoryObj } from '@storybook/react';
+import { clsx } from 'clsx';
+import { useId, useState, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { Checkbox, type CheckboxProps } from './Checkbox';
 
 type CheckboxFieldProps = CheckboxProps & {
   label: ReactNode;
@@ -18,70 +19,70 @@ type NotificationOption = {
   description: string;
 };
 
-const checkboxSizes = ["sm", "md", "lg"] as const;
-const checkboxVariants = ["default", "danger"] as const;
+const checkboxSizes = ['sm', 'md', 'lg'] as const;
+const checkboxVariants = ['default', 'danger'] as const;
 
 const notificationOptions: NotificationOption[] = [
   {
-    value: "claims",
-    label: "Claims alerts",
-    description: "Get notified when a claim status changes.",
+    value: 'claims',
+    label: 'Claims alerts',
+    description: 'Get notified when a claim status changes.',
   },
   {
-    value: "billing",
-    label: "Billing reminders",
-    description: "Receive reminders before payments are due.",
+    value: 'billing',
+    label: 'Billing reminders',
+    description: 'Receive reminders before payments are due.',
   },
   {
-    value: "offers",
-    label: "Product offers",
-    description: "Hear about new coverage options and discounts.",
+    value: 'offers',
+    label: 'Product offers',
+    description: 'Hear about new coverage options and discounts.',
   },
 ];
 
 const meta = {
-  title: "Components/Checkbox",
+  title: 'Components/Checkbox',
   component: Checkbox,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: "select",
+      control: 'select',
       options: checkboxVariants,
-      description: "Visual variant",
+      description: 'Visual variant',
     },
     size: {
-      control: "select",
+      control: 'select',
       options: checkboxSizes,
-      description: "Checkbox size",
+      description: 'Checkbox size',
     },
     checked: {
-      control: "select",
-      options: [false, true, "indeterminate"],
-      description: "Controlled checked state",
+      control: 'select',
+      options: [false, true, 'indeterminate'],
+      description: 'Controlled checked state',
     },
     defaultChecked: {
-      control: "boolean",
-      description: "Initial checked state for uncontrolled usage",
+      control: 'boolean',
+      description: 'Initial checked state for uncontrolled usage',
     },
     disabled: {
-      control: "boolean",
-      description: "Disables interactions",
+      control: 'boolean',
+      description: 'Disables interactions',
     },
     required: {
-      control: "boolean",
-      description: "Marks the field as required",
+      control: 'boolean',
+      description: 'Marks the field as required',
     },
     onCheckedChange: {
-      action: "checkedChange",
-      description: "Callback fired when the checked state changes",
+      action: 'checkedChange',
+      description: 'Callback fired when the checked state changes',
     },
   },
   args: {
-    variant: "default",
-    size: "md",
+    variant: 'default',
+    size: 'md',
     defaultChecked: false,
     disabled: false,
     required: false,
@@ -114,9 +115,9 @@ function CheckboxField({
     <Box
       as="label"
       htmlFor={id}
-      className={clsx("flex items-start gap-3 text-sm text-gray-700", containerClassName)}
+      className={clsx('flex items-start gap-3 text-sm text-gray-700', containerClassName)}
     >
-      <Checkbox id={id} className={clsx("mt-0.5", className)} {...props} />
+      <Checkbox id={id} className={clsx('mt-0.5', className)} {...props} />
       <Box className="flex flex-col gap-1">
         <Box as="span" className="font-medium text-gray-900">
           {label}
@@ -132,10 +133,10 @@ function CheckboxField({
 }
 
 function IndeterminateDemo(args: CheckboxProps) {
-  const [checked, setChecked] = useState<CheckedState>("indeterminate");
+  const [checked, setChecked] = useState<CheckedState>('indeterminate');
 
   const statusLabel =
-    checked === "indeterminate" ? "Indeterminate" : checked ? "Checked" : "Unchecked";
+    checked === 'indeterminate' ? 'Indeterminate' : checked ? 'Checked' : 'Unchecked';
 
   return (
     <CheckboxCanvas>
@@ -154,11 +155,7 @@ function IndeterminateDemo(args: CheckboxProps) {
           <Button size="sm" variant="secondary" onClick={() => setChecked(true)}>
             Checked
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setChecked("indeterminate")}
-          >
+          <Button size="sm" variant="outline" onClick={() => setChecked('indeterminate')}>
             Indeterminate
           </Button>
         </Box>
@@ -171,7 +168,7 @@ function IndeterminateDemo(args: CheckboxProps) {
 }
 
 function GroupSelectionDemo(args: CheckboxProps) {
-  const [selected, setSelected] = useState<string[]>(["claims", "billing"]);
+  const [selected, setSelected] = useState<string[]>(['claims', 'billing']);
 
   const handleCheckedChange = (value: string) => (nextChecked: CheckedState) => {
     setSelected((previous) => {
@@ -200,7 +197,7 @@ function GroupSelectionDemo(args: CheckboxProps) {
           ))}
         </Box>
         <Box className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-          Selected: {selected.join(", ")}
+          Selected: {selected.join(', ')}
         </Box>
       </Box>
     </CheckboxCanvas>
@@ -316,8 +313,8 @@ export const GroupSelection: Story = {
 
 export const Playground: Story = {
   args: {
-    variant: "default",
-    size: "md",
+    variant: 'default',
+    size: 'md',
     defaultChecked: false,
     disabled: false,
   },

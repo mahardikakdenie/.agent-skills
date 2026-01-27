@@ -12,4 +12,4 @@ export {
   DialogDescription,
   dialogOverlayBaseClassName,
   dialogContentBaseClassName,
-} from "./Dialog";
+} from './Dialog';

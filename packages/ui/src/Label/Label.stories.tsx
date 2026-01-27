@@ -1,35 +1,36 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { clsx } from "clsx";
-import { useId, type ReactNode } from "react";
-import { Box } from "../Box";
-import { Checkbox } from "../Checkbox";
-import { Input } from "../Input";
-import { Switch } from "../Switch";
-import { Label } from "./Label";
+import type { Meta, StoryObj } from '@storybook/react';
+import { clsx } from 'clsx';
+import { useId, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Checkbox } from '../Checkbox';
+import { Input } from '../Input';
+import { Switch } from '../Switch';
+import { Label } from './Label';
 
 const meta = {
-  title: "Components/Label",
+  title: 'Components/Label',
   component: Label,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     children: {
-      control: "text",
-      description: "Label content",
+      control: 'text',
+      description: 'Label content',
     },
     htmlFor: {
-      control: "text",
-      description: "Associates the label with a form control id",
+      control: 'text',
+      description: 'Associates the label with a form control id',
     },
     className: {
-      control: "text",
-      description: "Additional CSS classes",
+      control: 'text',
+      description: 'Additional CSS classes',
     },
   },
   args: {
-    children: "Email address",
+    children: 'Email address',
   },
 } satisfies Meta<typeof Label>;
 
@@ -47,11 +48,11 @@ function LabelCanvas({ children }: { children: ReactNode }) {
 function TextFieldDemo({
   label,
   description,
-  variant = "default",
+  variant = 'default',
 }: {
   label: ReactNode;
   description?: ReactNode;
-  variant?: "default" | "error" | "success";
+  variant?: 'default' | 'error' | 'success';
 }) {
   const id = useId();
 
@@ -203,7 +204,7 @@ export const FormLayout: Story = {
 
 export const Playground: Story = {
   args: {
-    children: "Interactive label",
+    children: 'Interactive label',
   },
   render: (args) => {
     const id = useId();
@@ -212,11 +213,7 @@ export const Playground: Story = {
     return (
       <LabelCanvas>
         <Box className="flex w-[380px] flex-col gap-2">
-          <Label
-            {...args}
-            htmlFor={controlId}
-            className={clsx("text-gray-900", args.className)}
-          />
+          <Label {...args} htmlFor={controlId} className={clsx('text-gray-900', args.className)} />
           <Input id={controlId} placeholder="Use controls to change the label" />
         </Box>
       </LabelCanvas>

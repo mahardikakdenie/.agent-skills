@@ -17,7 +17,7 @@ npm install -D tailwindcss@next
 In your app's main CSS file (e.g., `app/globals.css` or `styles/globals.css`):
 
 ```css
-@import "@repo/config/tailwind.css";
+@import '@repo/config/tailwind.css';
 ```
 
 ## Available Colors

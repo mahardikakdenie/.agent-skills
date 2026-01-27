@@ -1,13 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import {
-  useId,
-  useState,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-} from "react";
-import { clsx } from "clsx";
-import { Box } from "../Box";
-import { Button } from "../Button";
+import type { Meta, StoryObj } from '@storybook/react';
+import { clsx } from 'clsx';
+import { useId, useState, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
 import {
   Select,
   SelectContent,
@@ -17,7 +13,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "./Select";
+} from './Select';
 
 type SelectRootProps = ComponentPropsWithoutRef<typeof Select>;
 
@@ -29,81 +25,81 @@ type Option = {
 };
 
 const billingOptions: Option[] = [
-  { value: "monthly", label: "Monthly" },
-  { value: "quarterly", label: "Quarterly" },
-  { value: "annual", label: "Annual (save 12%)" },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'quarterly', label: 'Quarterly' },
+  { value: 'annual', label: 'Annual (save 12%)' },
 ];
 
 const coverageOptions: Option[] = [
-  { value: "basic", label: "Basic coverage" },
-  { value: "standard", label: "Standard coverage" },
-  { value: "premium", label: "Premium coverage", disabled: true },
+  { value: 'basic', label: 'Basic coverage' },
+  { value: 'standard', label: 'Standard coverage' },
+  { value: 'premium', label: 'Premium coverage', disabled: true },
 ];
 
 const roadsideOptions: Option[] = [
-  { value: "none", label: "No roadside assistance" },
-  { value: "standard", label: "Standard roadside assistance" },
-  { value: "plus", label: "Roadside Plus", description: "Adds concierge towing" },
+  { value: 'none', label: 'No roadside assistance' },
+  { value: 'standard', label: 'Standard roadside assistance' },
+  { value: 'plus', label: 'Roadside Plus', description: 'Adds concierge towing' },
 ];
 
 const locationOptions = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Florida",
-  "Georgia",
-  "Illinois",
-  "Maryland",
-  "Minnesota",
-  "New Jersey",
-  "New York",
-  "North Carolina",
-  "Ohio",
-  "Pennsylvania",
-  "Texas",
-  "Utah",
-  "Virginia",
-  "Washington",
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Florida',
+  'Georgia',
+  'Illinois',
+  'Maryland',
+  'Minnesota',
+  'New Jersey',
+  'New York',
+  'North Carolina',
+  'Ohio',
+  'Pennsylvania',
+  'Texas',
+  'Utah',
+  'Virginia',
+  'Washington',
 ];
 
 const meta = {
-  title: "Components/Select",
+  title: 'Components/Select',
   component: Select,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     defaultValue: {
-      control: "select",
+      control: 'select',
       options: billingOptions.map((option) => option.value),
-      description: "Initial selected value for uncontrolled usage",
+      description: 'Initial selected value for uncontrolled usage',
     },
     disabled: {
-      control: "boolean",
-      description: "Disables the select trigger",
+      control: 'boolean',
+      description: 'Disables the select trigger',
     },
     required: {
-      control: "boolean",
-      description: "Marks the field as required",
+      control: 'boolean',
+      description: 'Marks the field as required',
     },
     dir: {
-      control: "inline-radio",
-      options: ["ltr", "rtl"],
-      description: "Reading direction",
+      control: 'inline-radio',
+      options: ['ltr', 'rtl'],
+      description: 'Reading direction',
     },
     onValueChange: {
-      action: "valueChange",
-      description: "Callback fired when the value changes",
+      action: 'valueChange',
+      description: 'Callback fired when the value changes',
     },
   },
   args: {
     disabled: false,
     required: false,
-    dir: "ltr",
+    dir: 'ltr',
   },
 } satisfies Meta<typeof Select>;
 
@@ -149,7 +145,7 @@ function LabeledSelect({
         )}
       </Box>
       <Select {...props}>
-        <SelectTrigger id={id} className={clsx("w-full", triggerClassName)}>
+        <SelectTrigger id={id} className={clsx('w-full', triggerClassName)}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         {children}
@@ -169,9 +165,7 @@ function renderOptions(options: Option[]) {
     >
       <Box className="flex flex-col">
         <Box className="text-sm">{option.label}</Box>
-        {option.description && (
-          <Box className="text-xs text-gray-500">{option.description}</Box>
-        )}
+        {option.description && <Box className="text-xs text-gray-500">{option.description}</Box>}
       </Box>
     </SelectItem>
   ));
@@ -194,7 +188,7 @@ export const Default: Story = {
 
 export const WithDefaultValue: Story = {
   args: {
-    defaultValue: "annual",
+    defaultValue: 'annual',
   },
   render: (args: SelectRootProps) => (
     <SelectCanvas>
@@ -265,7 +259,7 @@ export const DisabledSelect: Story = {
 
 export const DisabledOptions: Story = {
   args: {
-    defaultValue: "standard",
+    defaultValue: 'standard',
   },
   render: (args: SelectRootProps) => (
     <SelectCanvas>
@@ -292,11 +286,7 @@ export const ScrollableOptions: Story = {
       >
         <SelectContent>
           {locationOptions.map((option) => (
-            <SelectItem
-              key={option}
-              value={option.toLowerCase()}
-              textValue={option}
-            >
+            <SelectItem key={option} value={option.toLowerCase()} textValue={option}>
               {option}
             </SelectItem>
           ))}
@@ -308,7 +298,7 @@ export const ScrollableOptions: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    const [value, setValue] = useState("monthly");
+    const [value, setValue] = useState('monthly');
 
     return (
       <SelectCanvas>
@@ -323,19 +313,19 @@ export const Controlled: Story = {
             <SelectContent>{renderOptions(billingOptions)}</SelectContent>
           </LabeledSelect>
           <Box className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-            Selected value:{" "}
+            Selected value:{' '}
             <Box as="span" className="font-semibold text-gray-900">
               {value}
             </Box>
           </Box>
           <Box className="flex flex-wrap gap-2">
-            <Button size="sm" variant="secondary" onClick={() => setValue("monthly")}>
+            <Button size="sm" variant="secondary" onClick={() => setValue('monthly')}>
               Monthly
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => setValue("quarterly")}>
+            <Button size="sm" variant="secondary" onClick={() => setValue('quarterly')}>
               Quarterly
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => setValue("annual")}>
+            <Button size="sm" variant="secondary" onClick={() => setValue('annual')}>
               Annual
             </Button>
           </Box>
@@ -347,7 +337,7 @@ export const Controlled: Story = {
 
 export const Playground: Story = {
   args: {
-    defaultValue: "monthly",
+    defaultValue: 'monthly',
     disabled: false,
     required: false,
   },

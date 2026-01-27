@@ -1,18 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import * as React from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { Box } from "../Box";
-import { Button } from "../Button";
-import { Checkbox } from "../Checkbox";
-import { Input } from "../Input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../Select";
-import { Textarea } from "../Textarea";
+import type { Meta, StoryObj } from '@storybook/react';
+import * as React from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { Checkbox } from '../Checkbox';
+import { Input } from '../Input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../Select';
+import { Textarea } from '../Textarea';
 import {
   Form,
   FormControl,
@@ -21,15 +16,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./Form";
+} from './Form';
 
 const meta = {
-  title: "Components/Form",
+  title: 'Components/Form',
   component: Form,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof Form>;
 
 export default meta;
@@ -70,14 +65,14 @@ type AnatomyValues = {
 
 function FieldAnatomyForm() {
   const form = useForm<AnatomyValues>({
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      email: "",
-      nickname: "Jay",
+      email: '',
+      nickname: 'Jay',
     },
   });
 
-  const email = useWatch({ control: form.control, name: "email" });
+  const email = useWatch({ control: form.control, name: 'email' });
   const hasEmail = Boolean(email && email.length > 3);
   const hasEmailError = Boolean(form.formState.errors.email);
 
@@ -96,10 +91,10 @@ function FieldAnatomyForm() {
             control={form.control}
             name="email"
             rules={{
-              required: "Email is required.",
+              required: 'Email is required.',
               pattern: {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Enter a valid email address.",
+                message: 'Enter a valid email address.',
               },
             }}
             render={({ field, fieldState }) => (
@@ -109,15 +104,13 @@ function FieldAnatomyForm() {
                   <Input
                     type="email"
                     placeholder="jane.doe@example.com"
-                    variant={fieldState.error ? "error" : "default"}
+                    variant={fieldState.error ? 'error' : 'default'}
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  We send updates about the status of this request.
-                </FormDescription>
+                <FormDescription>We send updates about the status of this request.</FormDescription>
                 <FormMessage>
-                  {!hasEmailError && hasEmail ? "Looks good — we can reach you." : null}
+                  {!hasEmailError && hasEmail ? 'Looks good — we can reach you.' : null}
                 </FormMessage>
               </FormItem>
             )}
@@ -151,21 +144,21 @@ type ValidationValues = {
 
 function ValidationForm() {
   const form = useForm<ValidationValues>({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      email: "jane@",
-      policyNumber: "",
+      email: 'jane@',
+      policyNumber: '',
     },
   });
 
   React.useEffect(() => {
-    form.setError("email", {
-      type: "manual",
-      message: "Enter a valid email address.",
+    form.setError('email', {
+      type: 'manual',
+      message: 'Enter a valid email address.',
     });
-    form.setError("policyNumber", {
-      type: "manual",
-      message: "Policy number is required.",
+    form.setError('policyNumber', {
+      type: 'manual',
+      message: 'Policy number is required.',
     });
   }, [form]);
 
@@ -187,11 +180,7 @@ function ValidationForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    variant={fieldState.error ? "error" : "default"}
-                    {...field}
-                  />
+                  <Input type="email" variant={fieldState.error ? 'error' : 'default'} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -206,7 +195,7 @@ function ValidationForm() {
                 <FormControl>
                   <Input
                     placeholder="ABC-102938"
-                    variant={fieldState.error ? "error" : "default"}
+                    variant={fieldState.error ? 'error' : 'default'}
                     {...field}
                   />
                 </FormControl>
@@ -237,13 +226,13 @@ type CaseStudyValues = {
 
 function CaseStudyFormExample() {
   const form = useForm<CaseStudyValues>({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      policyType: "auto",
-      details: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      policyType: 'auto',
+      details: '',
       updates: true,
     },
   });
@@ -267,14 +256,14 @@ function CaseStudyFormExample() {
               <FormField
                 control={form.control}
                 name="firstName"
-                rules={{ required: "First name is required." }}
+                rules={{ required: 'First name is required.' }}
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>First name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Jane"
-                        variant={fieldState.error ? "error" : "default"}
+                        variant={fieldState.error ? 'error' : 'default'}
                         {...field}
                       />
                     </FormControl>
@@ -285,14 +274,14 @@ function CaseStudyFormExample() {
               <FormField
                 control={form.control}
                 name="lastName"
-                rules={{ required: "Last name is required." }}
+                rules={{ required: 'Last name is required.' }}
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Last name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Doe"
-                        variant={fieldState.error ? "error" : "default"}
+                        variant={fieldState.error ? 'error' : 'default'}
                         {...field}
                       />
                     </FormControl>
@@ -305,10 +294,10 @@ function CaseStudyFormExample() {
               control={form.control}
               name="email"
               rules={{
-                required: "Email is required.",
+                required: 'Email is required.',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Enter a valid email address.",
+                  message: 'Enter a valid email address.',
                 },
               }}
               render={({ field, fieldState }) => (
@@ -318,13 +307,11 @@ function CaseStudyFormExample() {
                     <Input
                       type="email"
                       placeholder="jane.doe@example.com"
-                      variant={fieldState.error ? "error" : "default"}
+                      variant={fieldState.error ? 'error' : 'default'}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    We will only use this for policy updates.
-                  </FormDescription>
+                  <FormDescription>We will only use this for policy updates.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -338,7 +325,7 @@ function CaseStudyFormExample() {
             <FormField
               control={form.control}
               name="policyType"
-              rules={{ required: "Choose a policy type." }}
+              rules={{ required: 'Choose a policy type.' }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Policy type</FormLabel>
@@ -354,9 +341,7 @@ function CaseStudyFormExample() {
                       <SelectItem value="travel">Travel</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    Choose the line of business you want to update.
-                  </FormDescription>
+                  <FormDescription>Choose the line of business you want to update.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -364,14 +349,14 @@ function CaseStudyFormExample() {
             <FormField
               control={form.control}
               name="details"
-              rules={{ required: "Share a brief summary of the request." }}
+              rules={{ required: 'Share a brief summary of the request.' }}
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Request summary</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Example: update my deductible and add rental coverage."
-                      variant={fieldState.error ? "error" : "default"}
+                      variant={fieldState.error ? 'error' : 'default'}
                       {...field}
                     />
                   </FormControl>
@@ -384,13 +369,13 @@ function CaseStudyFormExample() {
               name="updates"
               render={({ field }) => (
                 <FormItem className="flex items-start gap-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    className="mt-1"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
+                  <FormControl>
+                    <Checkbox
+                      className="mt-1"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                   <Box className="space-y-1">
                     <FormLabel>Send progress updates</FormLabel>
                     <FormDescription>
@@ -422,20 +407,17 @@ type InlineValues = {
 
 function InlineForm() {
   const form = useForm<InlineValues>({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      policyId: "",
-      zipCode: "",
-      claimType: "auto",
+      policyId: '',
+      zipCode: '',
+      claimType: 'auto',
     },
   });
 
   return (
     <Form {...form}>
-      <FormCard
-        title="Quick intake layout"
-        subtitle="Compact grid layout with inline actions."
-      >
+      <FormCard title="Quick intake layout" subtitle="Compact grid layout with inline actions.">
         <Box
           as="form"
           className="flex flex-col gap-5"
@@ -445,14 +427,14 @@ function InlineForm() {
             <FormField
               control={form.control}
               name="policyId"
-              rules={{ required: "Policy ID is required." }}
+              rules={{ required: 'Policy ID is required.' }}
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Policy ID</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="POL-23049"
-                      variant={fieldState.error ? "error" : "default"}
+                      variant={fieldState.error ? 'error' : 'default'}
                       {...field}
                     />
                   </FormControl>
@@ -463,14 +445,14 @@ function InlineForm() {
             <FormField
               control={form.control}
               name="zipCode"
-              rules={{ required: "ZIP code is required." }}
+              rules={{ required: 'ZIP code is required.' }}
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>ZIP code</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="94107"
-                      variant={fieldState.error ? "error" : "default"}
+                      variant={fieldState.error ? 'error' : 'default'}
                       {...field}
                     />
                   </FormControl>

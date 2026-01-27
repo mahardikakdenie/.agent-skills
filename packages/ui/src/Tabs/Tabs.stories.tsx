@@ -1,18 +1,15 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import {
-  useState,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-} from "react";
-import { clsx } from "clsx";
-import { Badge } from "../Badge";
-import { Box } from "../Box";
-import { Button } from "../Button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./Tabs";
+import type { Meta, StoryObj } from '@storybook/react';
+import { clsx } from 'clsx';
+import { useState, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+
+import { Badge } from '../Badge';
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
 
 type TabsRootProps = ComponentPropsWithoutRef<typeof Tabs>;
 
-const tabValues = ["overview", "benefits", "billing"] as const;
+const tabValues = ['overview', 'benefits', 'billing'] as const;
 type TabValue = (typeof tabValues)[number];
 
 type RenderOptions = {
@@ -23,40 +20,39 @@ type RenderOptions = {
 };
 
 const meta = {
-  title: "Components/Tabs",
+  title: 'Components/Tabs',
   component: Tabs,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     defaultValue: {
-      control: "select",
+      control: 'select',
       options: tabValues,
-      description: "The tab that is active on initial render",
+      description: 'The tab that is active on initial render',
     },
     orientation: {
-      control: "inline-radio",
-      options: ["horizontal", "vertical"],
-      description: "The orientation of the tab list",
+      control: 'inline-radio',
+      options: ['horizontal', 'vertical'],
+      description: 'The orientation of the tab list',
     },
     activationMode: {
-      control: "inline-radio",
-      options: ["automatic", "manual"],
-      description:
-        "Whether tabs activate on focus (automatic) or only on click/Enter (manual)",
+      control: 'inline-radio',
+      options: ['automatic', 'manual'],
+      description: 'Whether tabs activate on focus (automatic) or only on click/Enter (manual)',
     },
     dir: {
-      control: "inline-radio",
-      options: ["ltr", "rtl"],
-      description: "Reading direction",
+      control: 'inline-radio',
+      options: ['ltr', 'rtl'],
+      description: 'Reading direction',
     },
   },
   args: {
-    defaultValue: "overview",
-    orientation: "horizontal",
-    activationMode: "automatic",
-    dir: "ltr",
+    defaultValue: 'overview',
+    orientation: 'horizontal',
+    activationMode: 'automatic',
+    dir: 'ltr',
   },
 } satisfies Meta<typeof Tabs>;
 
@@ -78,18 +74,10 @@ type ContentCardProps = {
   className?: string;
 };
 
-function ContentCard({
-  title,
-  description,
-  children,
-  className,
-}: ContentCardProps) {
+function ContentCard({ title, description, children, className }: ContentCardProps) {
   return (
     <Box
-      className={clsx(
-        "w-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm",
-        className,
-      )}
+      className={clsx('w-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm', className)}
     >
       <Box className="flex flex-col gap-2">
         <Box as="h4" className="text-base font-semibold text-gray-900">
@@ -102,28 +90,24 @@ function ContentCard({
   );
 }
 
-function renderPolicyTabs(
-  rootProps: TabsRootProps,
-  options: RenderOptions = {},
-) {
-  const { disabledTab, listClassName, rootClassName, contentClassName } =
-    options;
+function renderPolicyTabs(rootProps: TabsRootProps, options: RenderOptions = {}) {
+  const { disabledTab, listClassName, rootClassName, contentClassName } = options;
 
   return (
     <TabsCanvas>
       <Tabs
         {...rootProps}
-        className={clsx("w-[640px]", rootClassName)}
-        defaultValue={rootProps.defaultValue ?? "overview"}
+        className={clsx('w-[640px]', rootClassName)}
+        defaultValue={rootProps.defaultValue ?? 'overview'}
       >
         <TabsList className={listClassName}>
-          <TabsTrigger value="overview" disabled={disabledTab === "overview"}>
+          <TabsTrigger value="overview" disabled={disabledTab === 'overview'}>
             Overview
           </TabsTrigger>
-          <TabsTrigger value="benefits" disabled={disabledTab === "benefits"}>
+          <TabsTrigger value="benefits" disabled={disabledTab === 'benefits'}>
             Benefits
           </TabsTrigger>
-          <TabsTrigger value="billing" disabled={disabledTab === "billing"}>
+          <TabsTrigger value="billing" disabled={disabledTab === 'billing'}>
             Billing
           </TabsTrigger>
         </TabsList>
@@ -147,18 +131,10 @@ function renderPolicyTabs(
             description="These add-ons are currently enabled on your policy."
           >
             <Box className="mt-4 grid grid-cols-2 gap-3 text-sm text-gray-700">
-              <Box className="rounded-lg border border-gray-200 p-3">
-                Roadside assistance
-              </Box>
-              <Box className="rounded-lg border border-gray-200 p-3">
-                Rental reimbursement
-              </Box>
-              <Box className="rounded-lg border border-gray-200 p-3">
-                Glass coverage
-              </Box>
-              <Box className="rounded-lg border border-gray-200 p-3">
-                Accident forgiveness
-              </Box>
+              <Box className="rounded-lg border border-gray-200 p-3">Roadside assistance</Box>
+              <Box className="rounded-lg border border-gray-200 p-3">Rental reimbursement</Box>
+              <Box className="rounded-lg border border-gray-200 p-3">Glass coverage</Box>
+              <Box className="rounded-lg border border-gray-200 p-3">Accident forgiveness</Box>
             </Box>
           </ContentCard>
         </TabsContent>
@@ -171,9 +147,7 @@ function renderPolicyTabs(
             <Box className="mt-5 flex items-center justify-between gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
               <Box>
                 <Box className="text-sm font-medium text-gray-900">$118.00</Box>
-                <Box className="text-xs text-gray-600">
-                  Auto-pay • Visa ending in 4242
-                </Box>
+                <Box className="text-xs text-gray-600">Auto-pay ï¿½ Visa ending in 4242</Box>
               </Box>
               <Button size="sm" variant="secondary">
                 Update payment
@@ -192,7 +166,7 @@ export const Default: Story = {
 
 export const DefaultBillingTab: Story = {
   args: {
-    defaultValue: "billing",
+    defaultValue: 'billing',
   },
   render: (args: TabsRootProps) => renderPolicyTabs(args),
 };
@@ -200,27 +174,27 @@ export const DefaultBillingTab: Story = {
 export const DisabledTab: Story = {
   render: (args: TabsRootProps) =>
     renderPolicyTabs(args, {
-      disabledTab: "benefits",
+      disabledTab: 'benefits',
     }),
 };
 
 export const ManualActivation: Story = {
   args: {
-    activationMode: "manual",
+    activationMode: 'manual',
   },
   render: (args: TabsRootProps) => renderPolicyTabs(args),
 };
 
 export const VerticalOrientation: Story = {
   args: {
-    orientation: "vertical",
+    orientation: 'vertical',
   },
   render: (args: TabsRootProps) =>
     renderPolicyTabs(args, {
-      rootClassName: "flex w-[760px] gap-6",
+      rootClassName: 'flex w-[760px] gap-6',
       listClassName:
-        "h-auto min-w-[200px] flex-col items-stretch justify-start gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2",
-      contentClassName: "mt-0 flex-1",
+        'h-auto min-w-[200px] flex-col items-stretch justify-start gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2',
+      contentClassName: 'mt-0 flex-1',
     }),
 };
 
@@ -250,13 +224,9 @@ export const WithBadges: Story = {
         </TabsList>
 
         <TabsContent value="overview">
-          <ContentCard
-            title="Highlights"
-            description="Key updates since your last renewal."
-          >
+          <ContentCard title="Highlights" description="Key updates since your last renewal.">
             <Box className="mt-4 text-sm text-gray-700">
-              We lowered your deductible and added roadside assistance at no
-              additional cost.
+              We lowered your deductible and added roadside assistance at no additional cost.
             </Box>
           </ContentCard>
         </TabsContent>
@@ -267,10 +237,7 @@ export const WithBadges: Story = {
           />
         </TabsContent>
         <TabsContent value="billing">
-          <ContentCard
-            title="Payment status"
-            description="A payment is due in 3 days."
-          />
+          <ContentCard title="Payment status" description="A payment is due in 3 days." />
         </TabsContent>
       </Tabs>
     </TabsCanvas>
@@ -279,7 +246,7 @@ export const WithBadges: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    const [value, setValue] = useState<TabValue>("overview");
+    const [value, setValue] = useState<TabValue>('overview');
 
     const handleValueChange = (nextValue: string) => {
       setValue(nextValue as TabValue);
@@ -287,11 +254,7 @@ export const Controlled: Story = {
 
     return (
       <TabsCanvas>
-        <Tabs
-          value={value}
-          onValueChange={handleValueChange}
-          className="w-[640px]"
-        >
+        <Tabs value={value} onValueChange={handleValueChange} className="w-[640px]">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="benefits">Benefits</TabsTrigger>
@@ -299,20 +262,14 @@ export const Controlled: Story = {
           </TabsList>
 
           <TabsContent value="overview">
-            <ContentCard
-              title="Controlled tabs"
-              description={`The active tab is "${value}".`}
-            >
+            <ContentCard title="Controlled tabs" description={`The active tab is "${value}".`}>
               <Box className="mt-4 text-sm text-gray-700">
                 This story keeps the active tab in React state.
               </Box>
             </ContentCard>
           </TabsContent>
           <TabsContent value="benefits">
-            <ContentCard
-              title="Benefits"
-              description="State is shared across all tabs."
-            />
+            <ContentCard title="Benefits" description="State is shared across all tabs." />
           </TabsContent>
           <TabsContent value="billing">
             <ContentCard
@@ -325,4 +282,3 @@ export const Controlled: Story = {
     );
   },
 };
-

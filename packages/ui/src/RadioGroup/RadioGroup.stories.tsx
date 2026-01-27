@@ -1,18 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { clsx } from "clsx";
-import {
-  useId,
-  useState,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-} from "react";
-import { Box } from "../Box";
-import { Button } from "../Button";
-import {
-  RadioGroup,
-  RadioGroupItem,
-  type RadioGroupItemProps,
-} from "./RadioGroup";
+import type { Meta, StoryObj } from '@storybook/react';
+import { clsx } from 'clsx';
+import { useId, useState, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+
+import { Box } from '../Box';
+import { Button } from '../Button';
+import { RadioGroup, RadioGroupItem, type RadioGroupItemProps } from './RadioGroup';
 
 type RadioGroupRootProps = ComponentPropsWithoutRef<typeof RadioGroup>;
 
@@ -30,106 +22,106 @@ type RadioOptionProps = RadioGroupItemProps &
     id?: string;
   };
 
-const radioSizes = ["sm", "md", "lg"] as const;
+const radioSizes = ['sm', 'md', 'lg'] as const;
 
 const billingOptions: Option[] = [
   {
-    value: "monthly",
-    label: "Monthly",
-    description: "Lower upfront cost with more frequent payments.",
+    value: 'monthly',
+    label: 'Monthly',
+    description: 'Lower upfront cost with more frequent payments.',
   },
   {
-    value: "quarterly",
-    label: "Quarterly",
-    description: "A balanced option for budgeting.",
+    value: 'quarterly',
+    label: 'Quarterly',
+    description: 'A balanced option for budgeting.',
   },
   {
-    value: "annual",
-    label: "Annual (save 12%)",
-    description: "Pay once and lock in the best available rate.",
+    value: 'annual',
+    label: 'Annual (save 12%)',
+    description: 'Pay once and lock in the best available rate.',
   },
 ];
 
 const coverageOptions: Option[] = [
   {
-    value: "basic",
-    label: "Basic coverage",
-    description: "Meets state minimums and core protections.",
+    value: 'basic',
+    label: 'Basic coverage',
+    description: 'Meets state minimums and core protections.',
   },
   {
-    value: "standard",
-    label: "Standard coverage",
-    description: "Adds collision and comprehensive protection.",
+    value: 'standard',
+    label: 'Standard coverage',
+    description: 'Adds collision and comprehensive protection.',
   },
   {
-    value: "premium",
-    label: "Premium coverage",
-    description: "Includes concierge claims support and rental upgrades.",
+    value: 'premium',
+    label: 'Premium coverage',
+    description: 'Includes concierge claims support and rental upgrades.',
     disabled: true,
   },
 ];
 
 const cancellationOptions: Option[] = [
   {
-    value: "switching",
+    value: 'switching',
     label: "I'm switching providers",
-    description: "You already have another policy lined up.",
+    description: 'You already have another policy lined up.',
   },
   {
-    value: "too-expensive",
+    value: 'too-expensive',
     label: "It's too expensive",
     description: "You're looking for a lower premium right now.",
   },
   {
-    value: "sold-vehicle",
-    label: "I sold the vehicle",
-    description: "The insured vehicle is no longer in your name.",
+    value: 'sold-vehicle',
+    label: 'I sold the vehicle',
+    description: 'The insured vehicle is no longer in your name.',
   },
 ];
 
 const meta = {
-  title: "Components/RadioGroup",
+  title: 'Components/RadioGroup',
   component: RadioGroup,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     defaultValue: {
-      control: "select",
+      control: 'select',
       options: coverageOptions.map((option) => option.value),
-      description: "Initial selected value for uncontrolled usage",
+      description: 'Initial selected value for uncontrolled usage',
     },
     value: {
-      control: "select",
+      control: 'select',
       options: coverageOptions.map((option) => option.value),
-      description: "Controlled selected value",
+      description: 'Controlled selected value',
     },
     dir: {
-      control: "inline-radio",
-      options: ["ltr", "rtl"],
-      description: "Reading direction",
+      control: 'inline-radio',
+      options: ['ltr', 'rtl'],
+      description: 'Reading direction',
     },
     disabled: {
-      control: "boolean",
-      description: "Disables all options",
+      control: 'boolean',
+      description: 'Disables all options',
     },
     required: {
-      control: "boolean",
-      description: "Marks the group as required",
+      control: 'boolean',
+      description: 'Marks the group as required',
     },
     loop: {
-      control: "boolean",
-      description: "Whether keyboard navigation loops at the ends",
+      control: 'boolean',
+      description: 'Whether keyboard navigation loops at the ends',
     },
     onValueChange: {
-      action: "valueChange",
-      description: "Callback fired when selection changes",
+      action: 'valueChange',
+      description: 'Callback fired when selection changes',
     },
   },
   args: {
-    defaultValue: "standard",
-    dir: "ltr",
+    defaultValue: 'standard',
+    dir: 'ltr',
     disabled: false,
     required: false,
     loop: true,
@@ -164,11 +156,11 @@ function RadioOption({
     <Box
       as="label"
       htmlFor={id}
-      className={clsx("flex items-start gap-3 text-sm text-gray-700", containerClassName)}
+      className={clsx('flex items-start gap-3 text-sm text-gray-700', containerClassName)}
     >
-      <RadioGroupItem id={id} value={value} className={clsx("mt-0.5", className)} {...props} />
+      <RadioGroupItem id={id} value={value} className={clsx('mt-0.5', className)} {...props} />
       <Box className="flex flex-col gap-1">
-        <Box as="span" className={clsx("font-medium text-gray-900", labelClassName)}>
+        <Box as="span" className={clsx('font-medium text-gray-900', labelClassName)}>
           {label}
         </Box>
         {description && <Box className="text-xs text-gray-500">{description}</Box>}
@@ -183,7 +175,7 @@ type RadioFieldsetProps = RadioGroupRootProps & {
   options: Option[];
   groupClassName?: string;
   itemProps?: Partial<RadioGroupItemProps>;
-  defaultValueStrategy?: "first" | "none";
+  defaultValueStrategy?: 'first' | 'none';
 };
 
 function RadioFieldset({
@@ -194,13 +186,13 @@ function RadioFieldset({
   itemProps,
   required,
   defaultValue,
-  defaultValueStrategy = "first",
+  defaultValueStrategy = 'first',
   value,
   className: rootClassName,
   ...rootProps
 }: RadioFieldsetProps) {
   const legendId = useId();
-  const shouldFallbackToFirst = defaultValueStrategy !== "none";
+  const shouldFallbackToFirst = defaultValueStrategy !== 'none';
   const resolvedDefaultValue =
     defaultValue ?? (shouldFallbackToFirst ? options[0]?.value : undefined);
   const defaultValueProp = value === undefined ? resolvedDefaultValue : undefined;
@@ -212,7 +204,11 @@ function RadioFieldset({
     >
       <Box as="legend" id={legendId} className="text-sm font-semibold text-gray-900">
         {legend}
-        {required && <Box as="span" className="ml-1 text-[var(--color-danger)]">*</Box>}
+        {required && (
+          <Box as="span" className="ml-1 text-[var(--color-danger)]">
+            *
+          </Box>
+        )}
       </Box>
       {description && <Box className="text-xs text-gray-500">{description}</Box>}
 
@@ -221,7 +217,7 @@ function RadioFieldset({
         defaultValue={defaultValueProp}
         value={value}
         required={required}
-        className={clsx("mt-1", groupClassName, rootClassName)}
+        className={clsx('mt-1', groupClassName, rootClassName)}
         {...rootProps}
       >
         {options.map((option) => (
@@ -254,7 +250,7 @@ export const Default: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    const [value, setValue] = useState<string>("standard");
+    const [value, setValue] = useState<string>('standard');
 
     return (
       <RadioCanvas>
@@ -268,7 +264,10 @@ export const Controlled: Story = {
             defaultValueStrategy="none"
           />
           <Box className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-            Selected: <Box as="span" className="font-semibold text-gray-900">{value}</Box>
+            Selected:{' '}
+            <Box as="span" className="font-semibold text-gray-900">
+              {value}
+            </Box>
           </Box>
           <Box className="flex flex-wrap gap-2">
             {coverageOptions.map((option) => (
@@ -329,7 +328,7 @@ export const Variants: Story = {
           description="Use the default variant for most choices."
           options={coverageOptions}
           defaultValue="standard"
-          itemProps={{ variant: "default" }}
+          itemProps={{ variant: 'default' }}
         />
         <RadioFieldset
           {...args}
@@ -337,7 +336,7 @@ export const Variants: Story = {
           description="Use the danger variant for destructive flows."
           options={cancellationOptions}
           defaultValue="too-expensive"
-          itemProps={{ variant: "danger" }}
+          itemProps={{ variant: 'danger' }}
         />
       </Box>
     </RadioCanvas>
@@ -384,7 +383,7 @@ export const Required: Story = {
 
 export const Playground: Story = {
   args: {
-    defaultValue: "standard",
+    defaultValue: 'standard',
     disabled: false,
     required: false,
   },
@@ -399,5 +398,3 @@ export const Playground: Story = {
     </RadioCanvas>
   ),
 };
-
-

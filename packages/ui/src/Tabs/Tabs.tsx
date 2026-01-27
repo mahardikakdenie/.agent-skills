@@ -1,29 +1,25 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { clsx } from "clsx";
+import * as TabsPrimitive from '@radix-ui/react-tabs';
+import { clsx } from 'clsx';
+import * as React from 'react';
 
 const Tabs = TabsPrimitive.Root;
 
 const tabsListBaseClassName =
-  "inline-flex h-10 items-center justify-start rounded-lg bg-gray-100 p-1 text-gray-600 data-[orientation=vertical]:h-auto data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch";
+  'inline-flex h-10 items-center justify-start rounded-lg bg-gray-100 p-1 text-gray-600 data-[orientation=vertical]:h-auto data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch';
 
 const tabsTriggerBaseClassName =
-  "inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm";
+  'inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm';
 
 const tabsContentBaseClassName =
-  "mt-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  'mt-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-white';
 
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (
-  <TabsPrimitive.List
-    ref={ref}
-    className={clsx(tabsListBaseClassName, className)}
-    {...props}
-  />
+  <TabsPrimitive.List ref={ref} className={clsx(tabsListBaseClassName, className)} {...props} />
 ));
 TabsList.displayName = TabsPrimitive.List.displayName;
 

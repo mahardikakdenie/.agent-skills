@@ -1,6 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { ChevronRight, FileText, Folder, Home, Settings, Slash } from "lucide-react";
-import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import type { Meta, StoryObj } from '@storybook/react';
+import { ChevronRight, FileText, Folder, Home, Settings, Slash } from 'lucide-react';
+import { forwardRef, type ComponentPropsWithoutRef } from 'react';
+
+import { Box } from '../Box';
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -10,20 +12,19 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   type BreadcrumbProps,
-} from "./Breadcrumb";
-import { Box } from "../Box";
+} from './Breadcrumb';
 
 const meta = {
-  title: "Components/Breadcrumb",
+  title: 'Components/Breadcrumb',
   component: Breadcrumb,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     className: {
-      control: "text",
-      description: "Optional className applied to the breadcrumb nav",
+      control: 'text',
+      description: 'Optional className applied to the breadcrumb nav',
     },
   },
 } satisfies Meta<typeof Breadcrumb>;
@@ -31,10 +32,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const StoryAnchor = forwardRef<HTMLAnchorElement, ComponentPropsWithoutRef<"a">>(
-  (props, ref) => <Box as="a" ref={ref} {...props} />,
-);
-StoryAnchor.displayName = "StoryAnchor";
+const StoryAnchor = forwardRef<HTMLAnchorElement, ComponentPropsWithoutRef<'a'>>((props, ref) => (
+  <Box as="a" ref={ref} {...props} />
+));
+StoryAnchor.displayName = 'StoryAnchor';
 
 function renderBreadcrumb(args: BreadcrumbProps, content: React.ReactNode) {
   return (
@@ -203,7 +204,7 @@ export const AsChildLink: Story = {
 
 export const Playground: Story = {
   args: {
-    className: "",
+    className: '',
   },
   render: (args) =>
     renderBreadcrumb(
