@@ -1,5 +1,5 @@
 {
-  "name": "friendsure-workspace",
+  "name": "frontend-workspace",
   "private": true,
   "scripts": {
     "build": "turbo run build",

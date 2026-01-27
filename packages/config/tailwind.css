@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  /* Primary colors (Blue) */
+  --color-primary-10: #cce2ec;
+  --color-primary-20: #aacee0;
+  --color-primary-40: #569ec0;
+  --color-primary-50: #016da1;
+  --color-primary-60: #015b86;
+  --color-primary-80: #013751;
+  --color-primary-100: #001620;
+  --color-primary: #016da1;
+
+  /* Danger colors (Red) */
+  --color-danger-10: #ffcdcc;
+  --color-danger-20: #feabaa;
+  --color-danger-40: #fe5755;
+  --color-danger-50: #fd0300;
+  --color-danger-60: #d30300;
+  --color-danger-80: #7f0200;
+  --color-danger-100: #330100;
+  --color-danger: #fd0300;
+
+  /* Warning colors (Yellow) */
+  --color-warning-10: #fdf1d9;
+  --color-warning-20: #fce8c0;
+  --color-warning-40: #f8d180;
+  --color-warning-50: #f7c661;
+  --color-warning-60: #cc9b36;
+  --color-warning-80: #7b5d21;
+  --color-warning-100: #312500;
+  --color-warning: #f7c661;
+}
+
+@utility icon-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+@utility icon-md {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@utility icon-lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
