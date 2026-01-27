@@ -11,6 +11,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { Input } from "./Input";
+import { Box } from "../Box";
 
 const meta = {
   title: "Components/Input",
@@ -179,7 +180,7 @@ export const Playground: Story = {
 // Showcase all variants
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-col gap-4 w-80">
+    <Box className="flex w-80 flex-col gap-4">
       <Input placeholder="Default variant" leftIcon={<Search size={20} />} />
       <Input
         variant="error"
@@ -191,25 +192,25 @@ export const AllVariants: Story = {
         placeholder="Success variant"
         leftIcon={<User size={20} />}
       />
-    </div>
+    </Box>
   ),
 };
 
 // Showcase all sizes
 export const AllSizes: Story = {
   render: () => (
-    <div className="flex flex-col gap-4 w-80">
+    <Box className="flex w-80 flex-col gap-4">
       <Input size="sm" placeholder="Small" leftIcon={<Search size={16} />} />
       <Input size="md" placeholder="Medium" leftIcon={<Search size={20} />} />
       <Input size="lg" placeholder="Large" leftIcon={<Search size={24} />} />
-    </div>
+    </Box>
   ),
 };
 
 // Icon positions
 export const IconPositions: Story = {
   render: () => (
-    <div className="flex flex-col gap-4 w-80">
+    <Box className="flex w-80 flex-col gap-4">
       <Input placeholder="Left icon" leftIcon={<Search size={20} />} />
       <Input placeholder="Right icon" rightIcon={<Eye size={20} />} />
       <Input
@@ -217,7 +218,7 @@ export const IconPositions: Story = {
         leftIcon={<Lock size={20} />}
         rightIcon={<EyeOff size={20} />}
       />
-    </div>
+    </Box>
   ),
 };
 
@@ -227,23 +228,23 @@ export const PasswordWithToggle: Story = {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-      <div className="w-80">
+      <Box className="w-80">
         <Input
           type={showPassword ? "text" : "password"}
           placeholder="Enter your password"
           leftIcon={<Lock size={20} />}
           rightIcon={
-            <button
+            <Box as="button"
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="cursor-pointer"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            </Box>
           }
         />
-      </div>
+      </Box>
     );
   },
 };
@@ -254,7 +255,7 @@ export const CommonUseCases: Story = {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-      <div className="flex flex-col gap-4 w-80">
+      <Box className="flex w-80 flex-col gap-4">
         <Input
           type="email"
           placeholder="Email address"
@@ -265,14 +266,14 @@ export const CommonUseCases: Story = {
           placeholder="Password"
           leftIcon={<Lock size={20} />}
           rightIcon={
-            <button
+            <Box as="button"
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="cursor-pointer"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            </Box>
           }
         />
         <Input placeholder="Search" leftIcon={<Search size={20} />} />
@@ -281,7 +282,8 @@ export const CommonUseCases: Story = {
           placeholder="Phone number"
           leftIcon={<Phone size={20} />}
         />
-      </div>
+      </Box>
     );
   },
 };
+
