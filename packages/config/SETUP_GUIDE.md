@@ -9,7 +9,7 @@ This guide shows you how to use the `@repo/config` Tailwind configuration in you
 ```json
 {
   "dependencies": {
-    "@repo/config": "*"
+    "@repo/config": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^4.0.0"

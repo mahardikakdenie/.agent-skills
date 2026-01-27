@@ -2,8 +2,9 @@
 
 # Dependencies
 node_modules
-.pnp
-.pnp.js
+
+# Yarn Plug'n'Play artifacts
+.pnp*
 
 # Local env files
 .env
@@ -39,3 +40,4 @@ yarn-error.log*
 
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
