@@ -3,6 +3,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
+import { Box } from "../Box";
 
 const inputVariants = cva(
   // Base styles
@@ -40,19 +41,16 @@ export interface InputProps
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, variant, size = "md", leftIcon, rightIcon, ...props }, ref) => {
-    const hasLeftIcon = !!leftIcon;
-    const hasRightIcon = !!rightIcon;
+    const hasLeftIcon = Boolean(leftIcon);
+    const hasRightIcon = Boolean(rightIcon);
 
-    // Determine padding based on icon presence
     const paddingClass = clsx({
-      // Left padding
       "pl-10": hasLeftIcon && size === "sm",
       "pl-11": hasLeftIcon && size === "md",
       "pl-12": hasLeftIcon && size === "lg",
       "pl-3": !hasLeftIcon && size === "sm",
       "pl-4": !hasLeftIcon && size === "md",
       "pl-5": !hasLeftIcon && size === "lg",
-      // Right padding
       "pr-10": hasRightIcon && size === "sm",
       "pr-11": hasRightIcon && size === "md",
       "pr-12": hasRightIcon && size === "lg",
@@ -61,17 +59,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       "pr-5": !hasRightIcon && size === "lg",
     });
 
-    // Icon wrapper size based on input size
-    const iconWrapperSize = clsx("flex items-center justify-center shrink-0", {
+    const iconWrapperSize = clsx("flex shrink-0 items-center justify-center", {
       "icon-sm": size === "sm",
       "icon-md": size === "md",
       "icon-lg": size === "lg",
     });
 
     return (
-      <div className="relative w-full">
+      <Box className="relative w-full">
         {leftIcon && (
-          <div
+          <Box
             className={clsx(
               "absolute left-3 top-0 flex h-full items-center text-gray-400",
               {
@@ -80,20 +77,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               },
             )}
           >
-            <div className={iconWrapperSize}>{leftIcon}</div>
-          </div>
+            <Box className={iconWrapperSize}>{leftIcon}</Box>
+          </Box>
         )}
-        <input
+        <Box
+          as="input"
           ref={ref}
-          className={clsx(
-            inputVariants({ variant, size }),
-            paddingClass,
-            className,
-          )}
+          className={clsx(inputVariants({ variant, size }), paddingClass, className)}
           {...props}
         />
         {rightIcon && (
-          <div
+          <Box
             className={clsx(
               "absolute right-3 top-0 flex h-full items-center text-gray-400",
               {
@@ -102,10 +96,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               },
             )}
           >
-            <div className={iconWrapperSize}>{rightIcon}</div>
-          </div>
+            <Box className={iconWrapperSize}>{rightIcon}</Box>
+          </Box>
         )}
-      </div>
+      </Box>
     );
   },
 );

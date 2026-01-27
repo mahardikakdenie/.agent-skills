@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./Button";
+import { Box } from "../Box";
 
 const meta = {
   title: "Components/Button",
@@ -161,15 +162,15 @@ export const Playground: Story = {
 // All variants showcase
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-3">
+    <Box className="flex flex-col gap-4">
+      <Box className="flex gap-3">
         <Button variant="primary">Primary</Button>
         <Button variant="secondary">Secondary</Button>
         <Button variant="danger">Danger</Button>
         <Button variant="outline">Outline</Button>
         <Button variant="ghost">Ghost</Button>
-      </div>
-      <div className="flex gap-3">
+      </Box>
+      <Box className="flex gap-3">
         <Button variant="primary" loading>
           Loading
         </Button>
@@ -179,8 +180,8 @@ export const AllVariants: Story = {
         <Button variant="danger" loading>
           Loading
         </Button>
-      </div>
-      <div className="flex gap-3">
+      </Box>
+      <Box className="flex gap-3">
         <Button variant="primary" disabled>
           Disabled
         </Button>
@@ -190,18 +191,18 @@ export const AllVariants: Story = {
         <Button variant="danger" disabled>
           Disabled
         </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   ),
 };
 
 // All sizes showcase
 export const AllSizes: Story = {
   render: () => (
-    <div className="flex items-center gap-3">
+    <Box className="flex items-center gap-3">
       <Button size="sm">Small</Button>
       <Button size="md">Medium</Button>
       <Button size="lg">Large</Button>
-    </div>
+    </Box>
   ),
 };
