@@ -1,0 +1,26 @@
+{
+    "plugins": [
+        "@trivago/prettier-plugin-sort-imports"
+    ],
+    "singleQuote": true,
+    "semi": true,
+    "endOfLine": "lf",
+    "printWidth": 100,
+    "trailingComma": "all",
+    "importOrder": [
+        "^(?!@/)(@?\\w)",
+        "^@repo/",
+        "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "overrides": [
+        {
+            "files": [
+                "**/*.json"
+            ],
+            "options": {
+                "trailingComma": "none"
+            }
+        }
+    ]
+}
