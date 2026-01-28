@@ -52,9 +52,6 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const [detailsPage, setDetailsPage] = useState(1);
   const [detailsRowsPerPage, setDetailsRowsPerPage] = useState(50);
-  const [formattedCategories, setFormattedCategories] = useState<SubmenuItem[]>(
-    []
-  );
 
   const canRead = permissionList.includes("Product Category.Read");
   const canEdit = permissionList.includes("Product Category.Update");
@@ -148,7 +145,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryFn: async () => {
       if (!planId) return null;
       const response: any = await productService.get(
-        ApiURL.v1PlanDetails(planId)
+        ApiURL.v1PlanDetails(planId),
       );
       return response?.data?.data[0] || null;
     },
@@ -159,7 +156,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   const flattenTree = (
     node: any,
     parent_id: string | null = null,
-    level: number = 0
+    level: number = 0,
   ) => {
     let flatArray: any[] = [];
     const { children, ...rest } = node;
@@ -191,10 +188,10 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryFn: async () => {
       if (!planId) return [];
       const response: any = await productService.get(
-        ApiURL.v1PlanDetailsBenefits(planId)
+        ApiURL.v1PlanDetailsBenefits(planId),
       );
       const reformatTreeToFlatArray = response?.data?.data?.flatMap(
-        (item: any) => flattenTree(item)
+        (item: any) => flattenTree(item),
       );
       return reformatTreeToFlatArray || [];
     },
@@ -211,7 +208,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryFn: async () => {
       if (!planId || !detailType) return [];
       const response: any = await productService.get(
-        ApiURL.v1PlanDetailsDetailsType(planId, detailType)
+        ApiURL.v1PlanDetailsDetailsType(planId, detailType),
       );
       return response?.data.data || [];
     },
@@ -239,7 +236,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryFn: async () => {
       if (!planId) return [];
       const response: any = await productService.get(
-        ApiURL.v1PlanDetailsChannels(planId)
+        ApiURL.v1PlanDetailsChannels(planId),
       );
       return response?.data.data || [];
     },
@@ -272,7 +269,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       const response = await productCatalogService.getPackagesByPlanId(
         planId,
         packagesPage,
-        packagesRowsPerPage
+        packagesRowsPerPage,
       );
       return response;
     },
@@ -285,7 +282,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryFn: async () => {
       if (!packageId) return null;
       const response: any = await productService.get(
-        ApiURL.v1PackagesDetails(packageId)
+        ApiURL.v1PackagesDetails(packageId),
       );
       return response?.data || null;
     },
@@ -299,7 +296,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       queryFn: async () => {
         if (!category) return null;
         const response: any = await productService.get(
-          ApiURL.productConfigType(category)
+          ApiURL.productConfigType(category),
         );
         return response?.data.data || null;
       },
@@ -326,12 +323,13 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
         slug: item.name,
       }));
 
-      setFormattedCategories(formatted);
       return formatted;
     },
     staleTime: 10 * 60 * 1000,
     refetchOnMount: "always",
   });
+
+  const formattedCategories = categoriesData || [];
 
   const savePlanMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -352,7 +350,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     mutationFn: async ({ data, id }: { data: any; id: string }) => {
       const response: any = await productService.put(
         ApiURL.v1PlanDetails(id),
-        data
+        data,
       );
       return response?.data;
     },
@@ -394,7 +392,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     }) => {
       const response: any = await productService.post(
         ApiURL.packagesCategoryBulkCreateDetail(category, id),
-        data
+        data,
       );
       return response?.data;
     },
@@ -414,7 +412,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       const response: any = await productService.post(
         ApiURL.v1PlanBenefitBulkCreateDetails(id),
-        data
+        data,
       );
       return response?.data;
     },
@@ -427,7 +425,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     onError: (error: any) => {
       toastNotification(
         error?.message || "Failed to upload plan benefits",
-        "error"
+        "error",
       );
     },
   });
@@ -444,7 +442,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     }) => {
       const response: any = await productService.post(
         ApiURL.v1PlanBulkCreateDetailsType(id, type),
-        data
+        data,
       );
       return response?.data;
     },
@@ -457,7 +455,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     onError: (error: any) => {
       toastNotification(
         error?.message || "Failed to upload plan details",
-        "error"
+        "error",
       );
     },
   });
@@ -477,7 +475,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
           channel: extractChannel[0],
           plans: [planId],
           channelName: extractChannel[1],
-        }
+        },
       );
       return response?.data;
     },
@@ -490,7 +488,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     onError: (error: any) => {
       toastNotification(
         error?.message || "Failed to assign plan to channel",
-        "error"
+        "error",
       );
     },
   });
@@ -505,7 +503,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     }) => {
       const response: any = await productService.post(
         ApiURL.v1ChannelPackagesUnassignPlans,
-        { channel: channelId, plans: [planId] }
+        { channel: channelId, plans: [planId] },
       );
       return response?.data;
     },
@@ -518,7 +516,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     onError: (error: any) => {
       toastNotification(
         error?.message || "Failed to unassign plan from channel",
-        "error"
+        "error",
       );
     },
   });
@@ -553,7 +551,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       const response: any = await productService.put(
         ApiURL.v1PackagesDetails(id),
-        data
+        data,
       );
       return response?.data;
     },
@@ -580,7 +578,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   const deletePackageMutation = useMutation({
     mutationFn: async (id: string) => {
       const response: any = await productService.delete(
-        ApiURL.v1PackagesDetails(id)
+        ApiURL.v1PackagesDetails(id),
       );
       return response?.data;
     },
@@ -603,7 +601,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     mutationFn: async (data: any) => {
       const response: any = await productService.post(
         ApiURL.v1PlanBenefitCreate,
-        data
+        data,
       );
       return response?.data;
     },
@@ -621,7 +619,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   const deleteBenefitMutation = useMutation({
     mutationFn: async (id: string) => {
       const response: any = await productService.delete(
-        ApiURL.v1PlanBenefitDetails(id)
+        ApiURL.v1PlanBenefitDetails(id),
       );
       return response?.data;
     },
@@ -641,7 +639,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       if (!category) return;
       router.push(AppURL.productCatalogDetail(category, id));
     },
-    [router, category]
+    [router, category],
   );
 
   const handleSearchInsurerOnChange = useCallback((v: string) => {
@@ -653,7 +651,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    []
+    [],
   );
 
   const handleDeletePlan = useCallback(
@@ -662,7 +660,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
         await deletePlanMutation.mutateAsync(id);
       }
     },
-    [deletePlanMutation]
+    [deletePlanMutation],
   );
 
   const handlePackagesPageChange = useCallback((newPage: number) => {
@@ -674,7 +672,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       setPackagesRowsPerPage(Number(e.target.value));
       setPackagesPage(1);
     },
-    []
+    [],
   );
 
   const handlePackagesPrevPage = useCallback(() => {
@@ -689,7 +687,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     async (params: any = {}) => {
       return insurancesData || [];
     },
-    [insurancesData]
+    [insurancesData],
   );
 
   const fetchProducts = useCallback(
@@ -699,7 +697,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       }
       return productsData || [];
     },
-    [productsData]
+    [productsData],
   );
 
   const fetchPlans = useCallback(
@@ -709,7 +707,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       }
       return allPlansData || [];
     },
-    [allPlansData]
+    [allPlansData],
   );
 
   const getPlanDetails = useCallback(
@@ -718,7 +716,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       await new Promise((resolve) => setTimeout(resolve, 0));
       return await refetchPlanDetails();
     },
-    [refetchPlanDetails]
+    [refetchPlanDetails],
   );
 
   const getProductCategoryId = useCallback((): string | null => {

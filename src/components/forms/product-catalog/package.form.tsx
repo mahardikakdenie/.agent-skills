@@ -9,6 +9,15 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
@@ -38,6 +47,8 @@ function generateZodSchema(obj: Record<string, any>): ZodSchema<any> {
         return validator.isNumeric(numeric);
       }),
     currency: z.string().min(1),
+    active_period: z.string().optional(),
+    active_period_unit: z.string().optional(),
   };
 
   for (const key in obj) {
@@ -111,6 +122,8 @@ function generateDefaultValues(obj: Record<string, any>): Record<string, any> {
   const defaultValues: Record<string, any> = {
     premium: "0",
     currency: "",
+    active_period: "",
+    active_period_unit: "",
   };
 
   for (const key in obj) {
@@ -210,7 +223,7 @@ const ProductCategoryPackageForm = ({
       const newSchema = generateZodSchema(productConfig.search_configs);
       const newFormFields = generateFormFields(productConfig.search_configs);
       const newDefaultValues = generateDefaultValues(
-        productConfig.search_configs
+        productConfig.search_configs,
       );
 
       setSchema(newSchema);
@@ -239,7 +252,7 @@ const ProductCategoryPackageForm = ({
       setValue("currency", packageData.currency || "");
       setValue(
         "premium",
-        formatCurrency(packageData.premium?.toString() || "0")
+        formatCurrency(packageData.premium?.toString() || "0"),
       );
 
       for (const key in packageData.search_params) {
@@ -250,13 +263,13 @@ const ProductCategoryPackageForm = ({
           if (key.includes("_from")) {
             setValue(
               `${baseKey}.from`,
-              packageData.search_params[key]?.toString() || ""
+              packageData.search_params[key]?.toString() || "",
             );
           }
           if (key.includes("_to")) {
             setValue(
               `${baseKey}.to`,
-              packageData.search_params[key]?.toString() || ""
+              packageData.search_params[key]?.toString() || "",
             );
           }
         } else {
@@ -338,7 +351,7 @@ const ProductCategoryPackageForm = ({
                         .split("-")
                         .map(
                           (item) =>
-                            item.charAt(0).toUpperCase() + item.slice(1) + " "
+                            item.charAt(0).toUpperCase() + item.slice(1) + " ",
                         )}
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -553,6 +566,71 @@ const ProductCategoryPackageForm = ({
                   );
                 }
               })}
+              <div>
+                <label
+                  htmlFor="active_period"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Active Period
+                </label>
+                <Controller
+                  name="active_period"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Input
+                      type="number"
+                      id="active_period"
+                      placeholder="Active Period"
+                      {...field}
+                      className={`mt-1 block w-full h-12 ${
+                        errors.active_period
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } rounded-md shadow-sm`}
+                    />
+                  )}
+                />
+                {errors.active_period && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.active_period.message as string}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="active_period_unit"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Active Period Unit
+                </label>
+                <Controller
+                  name="active_period_unit"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select {...field} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-12 w-full">
+                        <SelectValue placeholder="Select Unit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Units</SelectLabel>
+                          <SelectItem value="day">Days</SelectItem>
+                          <SelectItem value="week">Weeks</SelectItem>
+                          <SelectItem value="month">Months</SelectItem>
+                          <SelectItem value="year">Years</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.active_period_unit && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.active_period_unit.message as string}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </form>

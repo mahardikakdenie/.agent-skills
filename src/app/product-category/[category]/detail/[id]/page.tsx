@@ -151,7 +151,7 @@ export default function DetaildPage({
                       .split("-")
                       .map(
                         (item) =>
-                          item.charAt(0).toUpperCase() + item.slice(1) + " "
+                          item.charAt(0).toUpperCase() + item.slice(1) + " ",
                       )}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
