@@ -4,7 +4,7 @@ import { Box } from '../Box';
 import { Skeleton } from './Skeleton';
 
 const meta = {
-  title: 'Components/Skeleton',
+  title: 'Components/Feedback/Skeleton',
   component: Skeleton,
   parameters: {
     layout: 'centered',

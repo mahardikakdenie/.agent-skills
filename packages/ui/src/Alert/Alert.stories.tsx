@@ -16,7 +16,7 @@ const variantIcons: Record<AlertVariant, ComponentType<{ className?: string }>> 
 };
 
 const meta = {
-  title: 'Components/Alert',
+  title: 'Components/Feedback/Alert',
   component: Alert,
   parameters: {
     layout: 'centered',

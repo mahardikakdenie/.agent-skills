@@ -12,7 +12,7 @@ import {
 } from './Card';
 
 const meta = {
-  title: 'Components/Card',
+  title: 'Components/Layout/Card',
   component: Card,
   parameters: {
     layout: 'centered',

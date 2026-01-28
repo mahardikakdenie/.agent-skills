@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './Avatar';
 const avatarPlaceholder = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><rect width='80' height='80' fill='%23E2E8F0'/><text x='40' y='50' font-size='28' text-anchor='middle' fill='%230F172A' font-family='Arial' dominant-baseline='middle'>FS</text></svg>`;
 
 const meta = {
-  title: 'Components/Avatar',
+  title: 'Components/Data Display/Avatar',
   component: Avatar,
   parameters: {
     layout: 'centered',

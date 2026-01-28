@@ -17,7 +17,7 @@ const variantIcons: Record<BadgeVariant, ComponentType<{ className?: string }>> 
 };
 
 const meta = {
-  title: 'Components/Badge',
+  title: 'Components/Data Display/Badge',
   component: Badge,
   parameters: {
     layout: 'centered',

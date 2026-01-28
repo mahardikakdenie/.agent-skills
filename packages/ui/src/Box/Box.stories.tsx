@@ -6,7 +6,7 @@ const baseCardClassName =
   'w-[340px] rounded-lg border border-gray-200 bg-white p-4 text-gray-900 shadow-sm';
 
 const meta = {
-  title: 'Components/Box',
+  title: 'Components/Layout/Box',
   component: Box,
   parameters: {
     layout: 'centered',

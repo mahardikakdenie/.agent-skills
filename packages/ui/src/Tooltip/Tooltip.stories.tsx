@@ -18,7 +18,7 @@ type RenderOptions = {
 };
 
 const meta = {
-  title: 'Components/Tooltip',
+  title: 'Components/Overlays/Tooltip',
   component: Tooltip,
   parameters: {
     layout: 'centered',

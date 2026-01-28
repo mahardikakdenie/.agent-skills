@@ -28,7 +28,7 @@ type RenderOptions = {
 };
 
 const meta = {
-  title: 'Components/Dialog',
+  title: 'Components/Overlays/Dialog',
   component: Dialog,
   parameters: {
     layout: 'fullscreen',

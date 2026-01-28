@@ -6,7 +6,7 @@ import { Box } from '../Box';
 import { Input } from './Input';
 
 const meta = {
-  title: 'Components/Input',
+  title: 'Components/Forms/Input',
   component: Input,
   parameters: {
     layout: 'centered',

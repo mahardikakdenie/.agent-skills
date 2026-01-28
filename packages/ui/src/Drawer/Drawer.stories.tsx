@@ -25,7 +25,7 @@ type Direction = NonNullable<DrawerRootProps['direction']>;
 const directions: Direction[] = ['left', 'right', 'top', 'bottom'];
 
 const meta = {
-  title: 'Components/Drawer',
+  title: 'Components/Overlays/Drawer',
   component: Drawer,
   parameters: {
     layout: 'fullscreen',

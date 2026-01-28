@@ -10,7 +10,7 @@ type PopoverRootProps = ComponentPropsWithoutRef<typeof Popover>;
 type PopoverContentProps = ComponentPropsWithoutRef<typeof PopoverContent>;
 
 const meta = {
-  title: 'Components/Popover',
+  title: 'Components/Overlays/Popover',
   component: Popover,
   parameters: {
     layout: 'centered',

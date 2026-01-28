@@ -4,7 +4,7 @@ import { Box } from '../Box';
 import { Button } from './Button';
 
 const meta = {
-  title: 'Components/Button',
+  title: 'Components/Actions/Button',
   component: Button,
   parameters: {
     layout: 'centered',

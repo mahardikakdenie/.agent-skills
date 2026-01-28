@@ -19,7 +19,7 @@ import {
 } from './Form';
 
 const meta = {
-  title: 'Components/Form',
+  title: 'Components/Forms/Form',
   component: Form,
   parameters: {
     layout: 'centered',
