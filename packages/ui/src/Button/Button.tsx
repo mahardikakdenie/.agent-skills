@@ -6,7 +6,7 @@ import { forwardRef, type ButtonHTMLAttributes } from 'react';
 
 import { Box } from '../Box';
 
-const buttonVariants = cva(
+export const buttonVariants = cva(
   // Base styles
   'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
@@ -26,6 +26,7 @@ const buttonVariants = cva(
         sm: 'h-9 px-3 text-sm',
         md: 'h-11 px-5 text-base',
         lg: 'h-13 px-7 text-lg',
+        icon: 'h-9 w-9 p-0 text-sm',
       },
     },
     defaultVariants: {
