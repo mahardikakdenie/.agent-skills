@@ -2,14 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from './Card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './Card';
 
 const meta = {
   title: 'Components/Layout/Card',
