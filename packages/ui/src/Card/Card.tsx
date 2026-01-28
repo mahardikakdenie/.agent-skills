@@ -42,12 +42,7 @@ export const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.ComponentPropsWithoutRef<'p'>
 >(({ className, ...props }, ref) => (
-  <Box
-    as="p"
-    ref={ref}
-    className={clsx('text-muted-foreground text-sm', className)}
-    {...props}
-  />
+  <Box as="p" ref={ref} className={clsx('text-muted-foreground text-sm', className)} {...props} />
 ));
 CardDescription.displayName = 'CardDescription';
 
