@@ -20,7 +20,7 @@ type RenderOptions = {
 };
 
 const meta = {
-  title: 'Components/Tabs',
+  title: 'Components/Navigation/Tabs',
   component: Tabs,
   parameters: {
     layout: 'centered',

@@ -80,7 +80,7 @@ const cancellationOptions: Option[] = [
 ];
 
 const meta = {
-  title: 'Components/RadioGroup',
+  title: 'Components/Forms/RadioGroup',
   component: RadioGroup,
   parameters: {
     layout: 'centered',

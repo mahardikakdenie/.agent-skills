@@ -41,7 +41,7 @@ const notificationOptions: NotificationOption[] = [
 ];
 
 const meta = {
-  title: 'Components/Checkbox',
+  title: 'Components/Forms/Checkbox',
   component: Checkbox,
   parameters: {
     layout: 'centered',

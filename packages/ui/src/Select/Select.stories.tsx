@@ -66,7 +66,7 @@ const locationOptions = [
 ];
 
 const meta = {
-  title: 'Components/Select',
+  title: 'Components/Forms/Select',
   component: Select,
   parameters: {
     layout: 'centered',

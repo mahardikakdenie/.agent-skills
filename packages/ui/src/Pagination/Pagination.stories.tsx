@@ -12,7 +12,7 @@ import {
 } from './Pagination';
 
 const meta = {
-  title: 'Components/Pagination',
+  title: 'Components/Navigation/Pagination',
   component: Pagination,
   parameters: {
     layout: 'centered',

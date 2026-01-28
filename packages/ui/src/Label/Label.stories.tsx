@@ -9,7 +9,7 @@ import { Switch } from '../Switch';
 import { Label } from './Label';
 
 const meta = {
-  title: 'Components/Label',
+  title: 'Components/Forms/Label',
   component: Label,
   parameters: {
     layout: 'centered',

@@ -6,7 +6,7 @@ import { Label } from '../Label';
 import { Textarea } from './Textarea';
 
 const meta = {
-  title: 'Components/Textarea',
+  title: 'Components/Forms/Textarea',
   component: Textarea,
   parameters: {
     layout: 'centered',

@@ -40,7 +40,7 @@ const preferenceOptions: PreferenceOption[] = [
 ];
 
 const meta = {
-  title: 'Components/Switch',
+  title: 'Components/Forms/Switch',
   component: Switch,
   parameters: {
     layout: 'centered',
