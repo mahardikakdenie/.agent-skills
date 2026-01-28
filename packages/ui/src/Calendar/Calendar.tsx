@@ -126,7 +126,7 @@ export function Calendar({
           isDropdownLayout && 'sr-only',
         ),
         caption_dropdowns:
-          'col-start-2 row-start-1 flex flex-nowrap items-center justify-center gap-2',
+          'col-start-2 row-start-1 -ml-2 flex flex-nowrap items-center justify-center gap-2',
         dropdown: 'sr-only',
         dropdown_month: 'flex items-center',
         dropdown_year: 'flex items-center',
