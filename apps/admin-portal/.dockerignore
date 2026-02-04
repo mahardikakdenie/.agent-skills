@@ -1,0 +1,41 @@
+# Ignore node_modules and other dependencies
+node_modules
+*.log
+
+# Ignore build output
+out
+.next
+!.next/static
+!.next/standalone
+
+# Ignore test and development files
+coverage
+*.test.js
+*.spec.js
+*.test.ts
+*.spec.ts
+*.test.tsx
+*.spec.tsx
+
+# Ignore local environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore editor directories and files
+.vscode
+.idea
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+
+# Ignore Docker files
+Dockerfile
+.dockerignore
+
+# Ignore miscellaneous files
+.DS_Store
+Thumbs.db

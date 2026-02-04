@@ -1,0 +1,488 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 200, 100%, 33%;
+    --primary-foreground: 199, 46%, 86%;
+    --primary-light-foreground: 199, 100%, 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --warning: 40, 90%, 61%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  .scrollable::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background: transparent;
+  }
+
+  .scrollable::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollable::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 10px;
+  }
+
+  .scrollable:hover::-webkit-scrollbar-thumb {
+    background: #bbb;
+  }
+
+  .hide-scrollbar::-webkit-inner-spin-button,
+  .hide-scrollbar::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .hide-scrollbar {
+    overflow: hidden;
+  }
+
+  .truncate-1-line {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .truncate-2-lines {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
+
+  .clickable:hover {
+    opacity: 0.7;
+  }
+} 
+.table-transaction table td:nth-child(2),
+.table-transaction table td:nth-child(4),
+.table-transaction table td:last-child,
+.table-claim table td:nth-child(2),
+.table-claim table td:nth-child(3),
+.table-policy table td:nth-child(2),
+.table-policy table td:nth-child(4),
+.table-policy table td:last-child,
+.table-policy table th:last-child {
+  white-space: nowrap;
+}
+button[disabled] {
+  background: #eee;
+  box-shadow: none !important;
+}
+.table-transaction .max-h-\[451px\] {
+  max-height: 351px;
+}
+.table-transaction table td:last-child,
+.table-transaction table th:last-child,
+.table-transaction table td:nth-child(4),
+.table-transaction table th:nth-child(4) {
+  text-align: right;
+}
+
+.alert {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background-color: #4caf50;
+  color: white;
+  padding: 16px;
+  border-radius: 4px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.alert.error {
+  background-color: #f44336;
+}
+
+main {
+  min-height: calc(100vh - 64px);
+}
+
+.sidebar {
+  transition: ease all 0.3s;
+}
+
+.sidebar ::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar ::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 4px;
+}
+
+.sidebar ::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.card-body {
+  min-height: calc(100vh - 240px);
+  box-shadow: none;
+}
+
+.logo-asurance span {
+  background: white;
+  font-size: 12px;
+  line-height: normal;
+}
+
+.logo-asurance img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.text-success.text-default-400 {
+  color: #18c964;
+}
+
+.modal-right {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  margin: 0 !important;
+  min-height: 100vh;
+  border-radius: 0;
+  overflow: auto !important;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* Custom scrollbar styles */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.frame-body {
+  height: calc(100vh - 85px);
+  overflow: auto;
+  max-width: calc(100vw - 18rem);
+
+  -ms-word-break: break-all;
+  white-space: pre-wrap;
+}
+.td-search-params {
+  word-break: break-all;
+}
+button:disabled {
+  opacity: 0.4;
+}
+[vaul-drawer][vaul-drawer-visible="true"][vaul-drawer-direction="right"] {
+  max-width: 100%;
+  width: 620px;
+  margin-top: 0;
+  height: 100vh;
+  border-radius: 0;
+  left: auto;
+}
+[vaul-drawer][vaul-drawer-direction="right"]::after {
+  display: none;
+}
+.table-product-catalog tr td:first-child {
+  max-width: 115px;
+}
+.table-product-catalog tr td:last-child {
+  max-width: 133px;
+}
+.table-transactions tr td:last-child {
+  max-width: 100px;
+}
+.frame-body button[role="combobox"],
+.frame-body input {
+  height: 42px !important;
+}
+.table-search-params tr td:last-child {
+  max-width: 100px !important;
+}
+table tr td button {
+  white-space: nowrap;
+}
+nav[aria-label="breadcrumb"] nav span,
+nav[aria-label="breadcrumb"] nav a,
+nav[aria-label="breadcrumb"] li span,
+nav[aria-label="breadcrumb"] li a {
+  color: #03a89e !important;
+}
+.table-flip tr:nth-child(even),
+.table-search-params tr:nth-child(even) {
+  background-color: #f8f8fa;
+}
+.table-flip tr:hover,
+.table-search-params tr:hover {
+  background-color: #e3e3e3;
+}
+.table-search-params th {
+  background-color: #006ea7;
+  color: white;
+  font-weight: 500;
+}
+tfoot tr:hover {
+  background-color: white !important;
+}
+th {
+  font-weight: 600 !important;
+}
+.select-status option {
+  color: rgb(71, 71, 71);
+  padding: 15px;
+}
+.frame-body input.h-10,
+.frame-body button[role="combobox"].h-10 {
+  height: 2.5rem !important;
+}
+.rdp-month_grid {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.rdp-weekdays {
+  display: flex;
+}
+.rdp-weekday {
+  color: hsl(var(--muted-foreground));
+  font-weight: 400;
+  font-size: 0.8rem;
+  border-radius: calc(var(--radius) - 2px);
+  width: 2rem;
+}
+.rdp-range_start,
+.rdp-range_start:hover,
+.rdp-range_end,
+.rdp-range_end:hover {
+  background: #18181b !important;
+  color: white !important;
+}
+.rdp-range_middle {
+  background-color: #f4f4f5;
+  border-radius: 0;
+}
+.table-claims.not-hover tr.hover\:bg-muted\/50:hover {
+  background-color: auto;
+}
+.rdw-editor-wrapper {
+  border: 1px solid #eae9e9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.public-DraftEditor-content {
+  min-height: 350px;
+  padding: 10px;
+}
+.dialog-email-template {
+  width: 800px;
+  max-width: 96%;
+  padding-top: 70px;
+  color: black;
+}
+.dialog-email-template .editor-preview {
+  color: black;
+  max-height: 70vh;
+  overflow: auto;
+}
+.dialog-email-template .editor-preview p {
+  margin-bottom: 1rem;
+}
+.public-DraftEditor-content {
+  max-height: 400px;
+  overflow: auto;
+  font-size: 14px;
+}
+.editor-preview ul {
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+.editor-preview ol {
+  display: block;
+  list-style-type: decimal;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+.field-combobox button[role="combobox"] {
+  text-align: left;
+}
+.field-combobox button[role="combobox"] span {
+  padding-right: 20px;
+}
+.field-combobox button[role="combobox"] svg {
+  min-width: 1rem;
+}
+
+
+.table-transaction table td:nth-child(2),
+.table-transaction table td:nth-child(4),
+.table-transaction table td:last-child,
+.table-claim table td:nth-child(2),
+.table-claim table td:nth-child(3),
+.table-policy table td:nth-child(2),
+.table-policy table td:nth-child(4),
+.table-policy table td:last-child,
+.table-policy table th:last-child {
+  white-space: nowrap;
+}
+.table-transaction .max-h-\[451px\] {
+  max-height: 351px;
+}
+.table-transaction table td:last-child,
+.table-transaction table th:last-child,
+.table-transaction table td:nth-child(4),
+.table-transaction table th:nth-child(4) {
+  text-align: right;
+}
+.table-sticky div.overflow-auto {
+  overflow: visible;
+}
+
+/* responsive */
+@media screen and (max-width: 1199px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+  }
+  .sidebar button,
+  .sidebar div {
+    z-index: 2;
+  }
+  .sidebar.w-64 .overlay {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    content: "";
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+  }
+  .sidebar button.ms-1 {
+    margin-left: 0;
+  }
+}
+
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  .bg-white {
+    background: white !important;
+    box-shadow: none !important;
+  }
+}
