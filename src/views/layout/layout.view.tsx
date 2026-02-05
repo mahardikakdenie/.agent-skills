@@ -25,7 +25,7 @@ import ApiURL from "@/constants/api-url.const";
 import { toastNotification } from "@/helpers/app.helper";
 import ChecklistIcon from "@/images/checklist.icon";
 import XIcon from "@/images/x.icon";
-import { MicrosoftLoginButton } from "@/components/MicrosoftLoginButton";
+import { MicrosoftLoginButton } from "@/components/microsoft-login-button";
 
 export const LayoutView = ({
   children,
@@ -344,6 +344,9 @@ export const LayoutView = ({
             </p>
           </div>
         ) : isAuthenticated && user ? (
+          children
+        ) : path.startsWith("/oauth/") ? (
+          // Allow OAuth callback pages to render without authentication
           children
         ) : null}
       </main>

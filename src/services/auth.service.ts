@@ -33,9 +33,14 @@ export class AuthService {
     }
   }
 
-  async loginEntra(code: string): Promise<LoginResponse> {
+  async loginEntra(code: string, codeVerifier: string): Promise<LoginResponse> {
     try {
-      return await this.httpClient.post<LoginResponse>('/login/entra', { code });
+      const redirectUri = process.env.NEXT_PUBLIC_AZURE_AD_REDIRECT_URI || "https://localhost:3000/oauth/msal";
+      return await this.httpClient.post<LoginResponse>('/login/entra', { 
+        code,
+        redirectUri,
+        codeVerifier
+      });
     } catch (error) {
       console.error('Entra Login failed:', error);
       throw error;
