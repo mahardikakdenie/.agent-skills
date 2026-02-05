@@ -1,0 +1,15 @@
+export const PROMOTION_ENDPOINTS = {
+  campaigns: "/v1/campaign",
+  campaignDetail: (id: string) => `/v1/campaign/${id}`,
+  campaignSearch: "/v1/campaign/search/query",
+  campaignReport: "/v1/campaign/report",
+  campaignReportInsurance: "/v1/campaign/report/insurance",
+  campaignReportExport: "/v1/campaign/report/export",
+  campaignReportExportInsurance: "/v1/campaign/report/export/insurance",
+  campaignHistory: (id: string) => `/v1/campaign/embedded/history/${id}`,
+  campaignDelete: (id: string) => `/v1/campaign/delete/${id}`,
+  campaignUpdate: (id: string) => `/v1/campaign/update/${id}`,
+  voucherDetail: (id: string) => `/v1/voucher/${id}`,
+  voucherByCode: (code: string) => `/v1/voucher/code/${code}`,
+  voucherPlan: "/v1/plans/",
+} as const;

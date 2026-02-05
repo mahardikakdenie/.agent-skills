@@ -1,0 +1,45 @@
+export const PRODUCT_ENDPOINTS = {
+  products: "/v1/products",
+  productDetail: (id: string) => `/v1/products/${id}`,
+  categories: "/v1/categories",
+  categoryDetail: (id: string) => `/v1/categories/${id}`,
+  categoriesByChannel: (channelId: string) =>
+    `/v1/categories/channel/${channelId}`,
+  insurances: "/v1/insurances",
+  insuranceDetail: (id: string) => `/v1/insurances/${id}`,
+  insurancesLegacy: "/insurances",
+  insuranceLegacyDetail: (id: string) => `/insurances/${id}`,
+  insuranceCurrencies: (insuranceId: string) =>
+    `/v1/insurances/${insuranceId}/currencies`,
+  insuranceCurrencyDetail: (insuranceId: string, currencyId: string) =>
+    `/v1/insurances/${insuranceId}/currencies/${currencyId}`,
+  plans: "/v1/plans",
+  planDetail: (id: string) => `/v1/plans/${id}`,
+  planLegacyDetail: (id: string) => `/plan/${id}`,
+  planBenefits: (id: string) => `/v1/plans/${id}/benefits`,
+  planDetails: (id: string, type: string) => `/v1/plans/${id}/details/${type}`,
+  planBulkCreate: (id: string, type: string) =>
+    `/v1/plans/bulk-create/${id}/${type}`,
+  planSyncEmbeddedDiscounts: "/v1/plans/sync/embedded-discounts",
+  planBenefitCreate: "/v1/plan-benefit/create",
+  planBenefitBulkCreate: (id: string) => `/v1/plan-benefit/bulk-create/${id}`,
+  planBenefitDetail: (id: string) => `/v1/plan-benefit/${id}`,
+  packages: "/v1/packages",
+  packageDetail: (id: string) => `/v1/packages/${id}`,
+  packagesBulkCreateByCategory: (category: string, id: string) =>
+    `/packages/${category}/bulk-create/${id}`,
+  channelPackagesAssignPlans: "/v1/channel-packages/assign-plans",
+  channelPackagesUnassignPlans: "/v1/channel-packages/unassign-plans",
+  channelPackagesPlans: "/v1/channel-packages/plans/",
+  planChannels: (planId: string) => `/v1/plans/${planId}/channels`,
+  referencesCurrencies: "/v1/references/type/currencies",
+  referencesEmailJourney: "/v1/references/type/email-journey",
+  referencesHospital: "/v1/references/type/grab-provider-hospital",
+  referencesHospitalUpload: "/v1/references/upload/grab-provider-hospital",
+  emailTags: "/v1/email-tags",
+  emailTagDetail: (id: string) => `/v1/email-tags/${id}`,
+  emailTemplatesJourney: "/v1/email-templates/journey",
+  emailTemplateJourneyDetail: (id: string) =>
+    `/v1/email-templates/journey/${id}`,
+  productConfig: (type: string) => `/product-config/${type}`,
+} as const;
