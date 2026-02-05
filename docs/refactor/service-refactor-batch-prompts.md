@@ -38,7 +38,26 @@ Follow the structure/template in <SPEC_PATH>.
 Do not modify any other files.
 ```
 
-## Batch 3 - Implement API Layer Only (Phase 4A)
+## Batch 3 - Foundation (Phase 3)
+
+Prompt:
+```
+Use <SPEC_PATH> Phase 3 (Foundation). Implement the shared API client + React Query setup for <APP_NAME> in <APP_PATH>.
+Create/Update:
+- <APP_PATH>/src/lib/api-client/client.ts
+- <APP_PATH>/src/lib/api-client/config.ts
+- <APP_PATH>/src/lib/api-client/interceptors/auth.interceptor.ts
+- <APP_PATH>/src/lib/api-client/interceptors/error.interceptor.ts
+- <APP_PATH>/src/lib/api-client/interceptors/logger.interceptor.ts (optional)
+- <APP_PATH>/src/lib/react-query/query-client.ts
+- <APP_PATH>/src/lib/react-query/query-provider.tsx
+- <APP_PATH>/src/lib/react-query/devtools.tsx (optional)
+Rules: Do not modify old services or components. Keep existing behavior intact. If an existing client exists (e.g., interceptor.ts), keep it compatible or re-export from the new API client setup.
+After completing Phase 3, run the full Verification Gate for <APP_NAME> and report results.
+If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
+```
+
+## Batch 4 - Implement API Layer Only (Phase 4A)
 
 Prompt:
 ```
@@ -49,7 +68,7 @@ After completing Phase 4A for all services, run the full Verification Gate for <
 If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
 
-## Batch 4 - Query Keys + Hooks (Phase 4B)
+## Batch 5 - Query Keys + Hooks (Phase 4B)
 
 Prompt:
 ```
@@ -60,7 +79,7 @@ After completing Phase 4B for all services, run the full Verification Gate for <
 If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
 
-## Batch 5 - Component Migration (Phase 5)
+## Batch 6 - Component Migration (Phase 5)
 
 Prompt:
 ```
@@ -68,7 +87,7 @@ Use <SPEC_PATH> Phase 5. Migrate components to the new service hooks incremental
 Rules: Migrate one feature/component at a time. Keep old services intact until the end. Update imports to new hooks. Update form submissions to use mutations where applicable. If `$vercel-react-best-practices` is available, apply it to React/Next.js refactors. After all component migrations are complete, run the full Verification Gate for <APP_NAME> and report results. If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
 
-## Batch 6 - Cleanup + Docs (Phase 6)
+## Batch 7 - Cleanup + Docs (Phase 6)
 
 Prompt:
 ```
@@ -78,4 +97,4 @@ Rules: Remove obsolete service files. Remove unused API URLs/constants only if n
 
 ## Multi-App Usage
 
-Repeat Batch 0 to Batch 6 for each app. Each app must have its own verification gate file.
+Repeat Batch 0 to Batch 7 for each app. Each app must have its own verification gate file.
