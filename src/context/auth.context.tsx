@@ -28,6 +28,7 @@ interface AuthContextType {
   isForbidden: boolean;
   isNetworkActive: boolean;
   login: (data: any) => void;
+  loginEntra: (code: string) => Promise<void>;
   logout: () => void;
   handleChangeNetwork: (value: boolean) => void;
   handleResponseError: (error: any) => void;
@@ -129,6 +130,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           "error"
         );
         isOnce = false;
+      }
+    }
+  };
+
+  const loginEntra = async (code: string) => {
+    if (!isOnce) {
+      isOnce = true;
+      try {
+        const response: AxiosResponse<LoginResponse> = await authService.post('/login/entra', { code });
+        if (response?.data?.access_token) {
+          const token = response.data.access_token;
+          await setCookie(AUTH_TOKEN, token);
+          authToken.token = token;
+          setGlobalToken(token);
+          if (token) await getUserInformation(token, true);
+        }
+      } catch (error: any) {
+        console.error("Entra login error:", error);
+        toastNotification(
+          error?.response?.data?.message || "Failed to login with Microsoft.",
+          "error"
+        );
+        isOnce = false;
+        throw error;
       }
     }
   };
@@ -295,6 +320,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isForbidden,
         isNetworkActive,
         login,
+        loginEntra,
         logout,
         handleChangeNetwork,
         handleResponseError,

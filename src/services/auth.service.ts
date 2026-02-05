@@ -32,4 +32,13 @@ export class AuthService {
       throw error;
     }
   }
+
+  async loginEntra(code: string): Promise<LoginResponse> {
+    try {
+      return await this.httpClient.post<LoginResponse>('/login/entra', { code });
+    } catch (error) {
+      console.error('Entra Login failed:', error);
+      throw error;
+    }
+  }
 }

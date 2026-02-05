@@ -25,6 +25,7 @@ import ApiURL from "@/constants/api-url.const";
 import { toastNotification } from "@/helpers/app.helper";
 import ChecklistIcon from "@/images/checklist.icon";
 import XIcon from "@/images/x.icon";
+import { MicrosoftLoginButton } from "@/components/MicrosoftLoginButton";
 
 export const LayoutView = ({
   children,
@@ -245,6 +246,10 @@ export const LayoutView = ({
             <Button additionalClassName="my-5" onClick={doLogin}>
               Login
             </Button>
+            <div className="w-full flex justify-center mt-2">
+               <div className="text-xs text-gray-500">OR</div>
+            </div>
+            <MicrosoftLoginButton />
           </div>
         </Modal>
       )}
