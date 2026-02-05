@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { CLAIM_ENDPOINTS } from "./claims.endpoints";
@@ -79,3 +79,4 @@ export const claimsService = {
   getClaimChannelForms: (id: string) =>
     get(CLAIM_ENDPOINTS.channelForms(id)),
 };
+

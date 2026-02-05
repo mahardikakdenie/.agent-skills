@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 
 import { PDF_ENDPOINTS } from "./pdf.endpoints";
 import type { PdfGenerateRequest } from "./pdf.types";
@@ -12,3 +12,4 @@ export const pdfService = {
   generatePdf: (payload: PdfGenerateRequest) =>
     post(PDF_ENDPOINTS.generate, payload),
 };
+

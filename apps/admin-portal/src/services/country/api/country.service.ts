@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 
 import { COUNTRY_ENDPOINTS } from "./country.endpoints";
 
@@ -9,3 +9,4 @@ const get = async <T>(url: string) => (await countryApi.get<T>(url)).data;
 export const countryService = {
   getCountries: () => get(COUNTRY_ENDPOINTS.countries),
 };
+

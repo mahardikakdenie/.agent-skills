@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { TRANSACTION_ENDPOINTS } from "./transaction.endpoints";
@@ -44,3 +44,4 @@ export const transactionService = {
   updateCampaignReport: (id: string, payload: unknown) =>
     put(TRANSACTION_ENDPOINTS.campaignReport(id), payload),
 };
+

@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { POLICY_ENDPOINTS } from "./policy.endpoints";
@@ -62,3 +62,4 @@ export const policyService = {
   uploadInsuredPartiesFirstTimeWithoutTransaction: (payload: unknown) =>
     post(POLICY_ENDPOINTS.insuredPartyUploadFirstTimeWithoutTransaction, payload),
 };
+

@@ -1,6 +1,6 @@
 import { AxiosHttpClient } from "@/lib/axios-http-client";
 import { IHttpClient } from "@/lib/http-client-interface";
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 
 interface PromotionResponse {
   data: any;
@@ -41,3 +41,4 @@ export class ChannelService {
     return this.httpClientChannels.get("/channels/" + id);
   }
 }
+

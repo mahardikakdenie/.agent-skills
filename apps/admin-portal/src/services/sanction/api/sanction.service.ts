@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { SANCTION_ENDPOINTS } from "./sanction.endpoints";
@@ -34,3 +34,4 @@ export const sanctionService = {
     put(SANCTION_ENDPOINTS.blacklistUpdate(id), payload),
   deleteBlacklist: (id: string) => del(SANCTION_ENDPOINTS.blacklistDelete(id)),
 };
+

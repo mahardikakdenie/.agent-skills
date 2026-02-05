@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { AUTH_ENDPOINTS } from "./auth.endpoints";
@@ -111,3 +111,4 @@ export const authService = {
   deleteRolePermission: (id: string) =>
     del(AUTH_ENDPOINTS.rolePermissionDetail(id)),
 };
+

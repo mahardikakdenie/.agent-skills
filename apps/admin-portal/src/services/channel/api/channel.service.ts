@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { CHANNEL_ENDPOINTS } from "./channel.endpoints";
@@ -30,3 +30,4 @@ export const channelService = {
     put(CHANNEL_ENDPOINTS.channelDetailV1(id), payload),
   deleteChannel: (id: string) => del(CHANNEL_ENDPOINTS.channelDetailV1(id)),
 };
+

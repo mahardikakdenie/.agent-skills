@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import type { AxiosRequestConfig } from "axios";
 import qs from "qs";
 
@@ -159,3 +159,4 @@ export const productService = {
   getProductConfigByType: (type: string) =>
     get(PRODUCT_ENDPOINTS.productConfig(type)),
 };
+
