@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { HELPER_ENDPOINTS } from "./helper.endpoints";
@@ -31,3 +31,4 @@ export const helperService = {
     put(HELPER_ENDPOINTS.calendarDetail(id), payload),
   deleteCalendar: (id: string) => del(HELPER_ENDPOINTS.calendarDetail(id)),
 };
+

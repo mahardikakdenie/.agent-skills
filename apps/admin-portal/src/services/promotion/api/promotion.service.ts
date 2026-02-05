@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { PROMOTION_ENDPOINTS } from "./promotion.endpoints";
@@ -43,3 +43,4 @@ export const promotionService = {
   getVoucherByCode: (code: string) => get(PROMOTION_ENDPOINTS.voucherByCode(code)),
   createVoucherPlan: (payload: unknown) => post(PROMOTION_ENDPOINTS.voucherPlan, payload),
 };
+

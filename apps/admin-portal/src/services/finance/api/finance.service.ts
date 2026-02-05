@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/interceptor";
+import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { FINANCE_ENDPOINTS } from "./finance.endpoints";
@@ -64,3 +64,4 @@ export const financeService = {
   createVoucherPlan: (payload: unknown) =>
     post(FINANCE_ENDPOINTS.voucherPlan, payload),
 };
+
