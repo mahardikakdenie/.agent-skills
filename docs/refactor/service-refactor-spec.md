@@ -471,15 +471,22 @@ export const claimKeys = {
 **Example `useClaims.ts`:**
 
 ```typescript
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
 import { claimsService } from '../../api/claims.service';
 import { claimKeys } from '../../query-keys';
 
-export function useClaims(filters: ClaimFilters) {
+type ClaimsResponse = Awaited<ReturnType<typeof claimsService.getClaims>>;
+type ClaimsFilters = Parameters<typeof claimsService.getClaims>[0];
+
+export function useClaims(
+  filters: ClaimsFilters,
+  options?: Omit<UseQueryOptions<ClaimsResponse, Error>, 'queryKey' | 'queryFn'>
+) {
   return useQuery({
     queryKey: claimKeys.list(filters),
     queryFn: () => claimsService.getClaims(filters),
+    ...options,
   });
 }
 ```
@@ -487,18 +494,25 @@ export function useClaims(filters: ClaimFilters) {
 **Example `useCreateClaim.ts`:**
 
 ```typescript
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
 
 import { claimsService } from '../../api/claims.service';
 import { claimKeys } from '../../query-keys';
 
-export function useCreateClaim() {
+type CreateClaimResponse = Awaited<ReturnType<typeof claimsService.createClaim>>;
+type CreateClaimVariables = Parameters<typeof claimsService.createClaim>[0];
+
+export function useCreateClaim(
+  options?: UseMutationOptions<CreateClaimResponse, Error, CreateClaimVariables>
+) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: claimsService.createClaim,
-    onSuccess: () => {
+    ...options,
+    onSuccess: (data, variables, context, mutation) => {
       queryClient.invalidateQueries({ queryKey: claimKeys.lists() });
+      options?.onSuccess?.(data, variables, context, mutation);
     },
   });
 }
@@ -506,6 +520,9 @@ export function useCreateClaim() {
 
 Rules:
 
+- Hooks must accept an optional `options` param so consumers can inject React Query options.
+- Queries: use `options?: Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>` and spread `...options` in `useQuery`.
+- Mutations: use `options?: UseMutationOptions<...>` and spread `...options`. If you add `onSuccess` for invalidation, call `options?.onSuccess` inside it.
 - Implement hooks for **all services** before moving to Phase 5.
 - Do not modify old services or components.
 - Run the verification gate after Phase 4B completes.
@@ -664,3 +681,4 @@ Use the structure and patterns described in this spec file.
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 
 ---
+

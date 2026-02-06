@@ -15,6 +15,9 @@
 - `NEXT_PUBLIC_PDF_SERVICE_URL` -> PDF Service
 - `window.location.origin` (relative `/api`) -> Admin-Portal Internal API
 
+## Refactor Notes
+- All query and mutation hooks in `src/services` must accept an optional `options` param (queries: `Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>`, mutations: `UseMutationOptions<...>`), and mutations should compose `options?.onSuccess` when adding invalidation logic.
+
 ## Auth Service (`NEXT_PUBLIC_AUTH_SERVICE_URL`)
 **Base URL/Client Usage**
 - `AxiosHttpClient` with static `Authorization: Bearer ${NEXT_PUBLIC_AUTH_TOKEN}` in `src/services/auth.service.ts`
@@ -528,3 +531,4 @@
 
 **Migration Complexity**
 - `Low`.
+

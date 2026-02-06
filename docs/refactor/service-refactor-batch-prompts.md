@@ -74,7 +74,7 @@ Prompt:
 ```
 Use <SPEC_PATH> Phase 4B. Implement query keys + hooks for ALL services listed in <APP_PATH>/docs/refactor/service-audit.md.
 Create query-keys.ts, hooks/queries/*, and hooks/mutations/* in each service.
-Rules: Do not modify old services or components. Use proper query keys. Implement useQuery for GET endpoints and useMutation for POST/PUT/DELETE. Add invalidation logic for affected queries.
+Rules: Do not modify old services or components. Use proper query keys. Implement useQuery for GET endpoints and useMutation for POST/PUT/DELETE. Add invalidation logic for affected queries. Hook signatures must include an optional `options` param (queries: `options?: Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>`; mutations: `options?: UseMutationOptions<...>`). When adding `onSuccess` for invalidation, call `options?.onSuccess`.
 After completing Phase 4B for all services, run the full Verification Gate for <APP_NAME> and report results.
 If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
@@ -98,3 +98,4 @@ Rules: Remove obsolete service files. Remove unused API URLs/constants only if n
 ## Multi-App Usage
 
 Repeat Batch 0 to Batch 7 for each app. Each app must have its own verification gate file.
+

@@ -47,6 +47,7 @@ src/
 - Phase 4A: API layer. Implement endpoints, types, and service files for all services.
 - Phase 4A: Verification gate. Run and fix before continuing.
 - Phase 4B: Query keys and hooks. Add query keys, query hooks, mutation hooks for all services.
+- Phase 4B: Hook options. Every query and mutation hook accepts an optional `options` param and composes `options?.onSuccess` when adding invalidations.
 - Phase 4B: Verification gate. Run and fix before continuing.
 - Phase 5: Component migration. Move one feature at a time to new hooks.
 - Phase 5: Verification gate. Run after all migrations.
@@ -611,20 +612,47 @@ export const claimKeys = {
 ```
 Example query hook:
 ```ts
-export function useClaims(filters: ClaimFilters) {
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
+
+import { claimsService } from '../../api/claims.service';
+import { claimKeys } from '../../query-keys';
+
+type ClaimsResponse = Awaited<ReturnType<typeof claimsService.getClaims>>;
+type ClaimFilters = Parameters<typeof claimsService.getClaims>[0];
+
+export function useClaims(
+  filters: ClaimFilters,
+  options?: Omit<UseQueryOptions<ClaimsResponse, Error>, 'queryKey' | 'queryFn'>
+) {
   return useQuery({
     queryKey: claimKeys.list(filters),
     queryFn: () => claimsService.getClaims(filters),
+    ...options,
   });
 }
 ```
 Example mutation hook:
 ```ts
-export function useUpdateClaim() {
+import { useMutation, useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
+
+import { claimsService } from '../../api/claims.service';
+import { claimKeys } from '../../query-keys';
+
+type UpdateClaimResponse = Awaited<ReturnType<typeof claimsService.updateClaim>>;
+type UpdateClaimVariables = Parameters<typeof claimsService.updateClaim>[0];
+
+export function useUpdateClaim(
+  options?: UseMutationOptions<UpdateClaimResponse, Error, UpdateClaimVariables>
+) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: claimsService.updateClaim,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: claimKeys.lists() }),
+    ...options,
+    onSuccess: (data, variables, context, mutation) => {
+      queryClient.invalidateQueries({ queryKey: claimKeys.lists() });
+      options?.onSuccess?.(data, variables, context, mutation);
+    },
   });
 }
 ```
+
