@@ -10,6 +10,7 @@ class AppURL {
   // Policy
   static policy = "/policy";
   static policyList = `${AppURL.policy}/list`;
+  static policyPendingRenewals = `${AppURL.policy}/pending-renewals`;
   static policyDetail = `${AppURL.policyList}/detail`;
   static endorsement = `${AppURL.policy}/endorsement`;
   static endorsementList = `${AppURL.endorsement}/list`;
@@ -51,7 +52,7 @@ class AppURL {
   static masterdataProductDetail = `${AppURL.masterdataProduct}/detail`;
   static masterdataProductDetailWithParams(
     categoryId: string,
-    insuranceId: string
+    insuranceId: string,
   ) {
     const categoryParam = encodeURIComponent(categoryId);
     const insuranceParam = encodeURIComponent(insuranceId);
@@ -185,11 +186,11 @@ class AppURL {
   static productCatalogEditPackage(
     category: string,
     productId: string,
-    packageId: string
+    packageId: string,
   ) {
     return `${AppURL.productCatalogDetail(
       category,
-      productId
+      productId,
     )}/edit-package/${packageId}`;
   }
   static productCatalogAddBenefit(category: string, productId: string) {

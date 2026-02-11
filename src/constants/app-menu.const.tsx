@@ -126,6 +126,17 @@ class AppMenu {
           ],
         },
         {
+          name: "Pending Renewals",
+          url: AppURL.policyPendingRenewals,
+          icon: renderImageIcon(iconClaim, "Pending Renewals"),
+          additionalPages: [
+            {
+              name: "Detail Policy",
+              url: AppURL.policyDetail,
+            },
+          ],
+        },
+        {
           name: "Endorsement List",
           url: AppURL.endorsementList,
           icon: renderImageIcon(iconClaim, "Endorsement List"),
@@ -566,7 +577,7 @@ class AppMenu {
 
   private static renderProductCategoryIcon(
     icon: string | undefined,
-    alt: string
+    alt: string,
   ): ReactNode {
     if (!icon) {
       return renderImageIcon(iconClaim, alt);
