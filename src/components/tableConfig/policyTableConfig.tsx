@@ -166,11 +166,9 @@ export const createPendingRenewalsTableColumns = ({
       return (
         <div className="font-semibold whitespace-nowrap">
           <span
-            className={getStatusColor(
-              policy?.notification_log?.table_status || "",
-            )}
+            className={getStatusColor(policy?.notification_log?.status || "")}
           >
-            {policy?.notification_log?.table_status || "-"}
+            {policy?.notification_log?.status || "-"}
           </span>
         </div>
       );
