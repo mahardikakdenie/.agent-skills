@@ -463,7 +463,7 @@ const DetailClaim = () => {
                         <div className="ml-5 flex flex-col gap-2">
                           <p className="text-sm font-semibold">
                             <span className={getStatusColor(h?.status)}>
-                              {h?.status}
+                              {h?.status || h?.name}
                             </span>
                           </p>
                           <p className="text-xs">
