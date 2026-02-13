@@ -4,6 +4,16 @@
 
 ---
 
+## Related Documents
+
+- `apps/<app-name>/docs/migration/service/refactor-spec.md`
+- `apps/<app-name>/docs/migration/service/refactor-lifecycle.md`
+- `apps/<app-name>/docs/migration/service/audit.md`
+- `apps/<app-name>/docs/migration/service/plan.md`
+- `apps/<app-name>/docs/verification-gate.md`
+
+---
+
 ## Overview
 
 ### Context
@@ -27,11 +37,11 @@ During monorepo migration, each app in `apps/` maintains two branch types:
 **Legacy update routines are independent of refactor phases** and can be applied at ANY time during migration:
 
 - ✅ **Before Phase 0** (before starting refactor) - Safe to integrate
-- ✅ **During Phase 0-5** (before component migration) - Lower risk, old and new services coexist
-- ✅ **During Phase 6** (component migration) - Higher risk, test migrated components carefully
-- ✅ **After Phase 7** (cleanup complete) - Must immediately refactor into new architecture
+- ✅ **During Phase 0-4B** (before component migration) - Lower risk, old and new services coexist
+- ✅ **During Phase 5** (component migration) - Higher risk, test migrated components carefully
+- ✅ **After Phase 6** (cleanup complete) - Must immediately refactor into new architecture
 
-**Key principle:** The routines adapt based on which phase the app is currently in. See "Integration with Main Refactor Batches" section for phase-specific guidance.
+**Key principle:** The routines adapt based on which phase the app is currently in. See "Integration with Main Refactor Lifecycle" section for phase-specific guidance.
 
 ---
 
@@ -97,7 +107,7 @@ git push origin integrate/<app-name>
 
 ---
 
-## Routine 2: Merge integrate/_ to migrate/_ (Sync Refactored Branch)
+## Routine 2: Merge integrate/* to migrate/* (Sync Refactored Branch)
 
 ### Objective
 
@@ -116,7 +126,7 @@ Synchronize the refactored `migrate/*` branch with the updated baseline.
 git checkout migrate/<app-name>
 ```
 
-#### 2.2 Merge integrate/_ into migrate/_
+#### 2.2 Merge integrate/* into migrate/*
 
 ```bash
 git merge integrate/<app-name>
@@ -423,7 +433,7 @@ This typically includes:
 
 #### 6.4 Document results
 
-Create `apps/<app-name>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
+Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
 
 ```markdown
 # Legacy Update - <app-name> - YYYY-MM-DD HH:MM:SS
@@ -482,15 +492,15 @@ Create `apps/<app-name>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md`
 
 ### Scenario D: Update with Breaking Changes
 
-**Flow: Routine 1 → Routine 2 → Routine 3 → Routine 4 (extensive) → Routine 6  
-**Time:\*\* 3-6 hours
+**Flow:** Routine 1 → Routine 2 → Routine 3 → Routine 4 (extensive) → Routine 6  
+**Time:** 3-6 hours
 
 ---
 
 ## Best Practices
 
 1. **integrate/\* is sacred** - Never modify it directly
-2. **Document everything** - Use `legacy-update-log.md`
+2. **Document everything** - Create/update `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`
 3. **Run verification** after every integration
 4. **Incremental only** - Don't rush component migration
 5. **Communicate** - Notify team of breaking changes
@@ -511,25 +521,25 @@ Create `apps/<app-name>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md`
 
 ---
 
-## Integration with Main Refactor Batches
+## Integration with Main Refactor Lifecycle
 
 ### Before Batch 0
 
 - Ensure `integrate/*` is up to date
 - Run routines 1-6 if needed
 
-### During Batch 0-5 (Before Component Migration)
+### During Batch 0-5 (Before Component Migration; covers Phases 0-4B)
 
 1. Pause current batch
 2. Run routines 1-6
 3. Resume batch
 
-### During Batch 6 (Component Migration)
+### During Batch 6 (Component Migration; Phase 5)
 
 1. **Higher risk** - test migrated components carefully
 2. May need to re-migrate affected components
 
-### After Batch 7 (Cleanup)
+### After Batch 7 (Cleanup; Phase 6)
 
 1. No old services to fall back on
 2. Must immediately refactor into new architecture
@@ -568,7 +578,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md`
   - [ ] Sanity: ✅/❌
 
 - [ ] Documentation
-  - [ ] Created legacy-update-YYYYMMDD-HHMMSS.md
+  - [ ] Created legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md
   - [ ] Updated audit.md (if needed)
   - [ ] Updated plan.md (if needed)
 ```

@@ -4,6 +4,17 @@
 
 ---
 
+## Related Documents
+
+- `<APP_PATH>/docs/migration/service/legacy-update-routines.md`
+- `<APP_PATH>/docs/migration/service/refactor-spec.md`
+- `<APP_PATH>/docs/migration/service/refactor-lifecycle.md`
+- `<APP_PATH>/docs/migration/service/audit.md`
+- `<APP_PATH>/docs/migration/service/plan.md`
+- `<APP_PATH>/docs/verification-gate.md`
+
+---
+
 ## Key Principle
 
 **`integrate/*` is 1:1 with legacy repo** (read-only, never modified). Subtree pull to `integrate/*` will NEVER have conflicts. Conflicts only occur when merging `integrate/*` to `migrate/*`.
@@ -121,7 +132,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 4:
    - Impact assessment (low/medium/high)
    - Recommended action (Batch 4, 5, or 6)
 
-4. Create <APP_PATH>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md (use actual datetime) with:
+4. Create <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md (use actual datetime) with:
    - Update timestamp
    - Legacy commit SHA
    - List of changes
@@ -262,7 +273,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
    - Fix issues
    - Re-run verification
 
-5. Complete <APP_PATH>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md:
+5. Complete <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md:
    - Final verification results
    - Notes on issues
    - Actions taken
@@ -320,9 +331,9 @@ Batch 1 → Batch 2 → Batch 3 → Batch 5 → Batch 6
 
 ---
 
-## Integration with Main Refactor Batches
+## Integration with Main Refactor Lifecycle
 
-### During Main Batches 0-5 (Before Component Migration)
+### During Main Batches 0-5 (Before Component Migration; covers Phases 0-4B)
 
 If legacy update occurs:
 
@@ -331,7 +342,7 @@ If legacy update occurs:
 3. Resume main batch where you left off
 4. Do NOT restart main batches unless breaking changes require it
 
-### During Main Batch 6 (Component Migration)
+### During Main Batch 6 (Component Migration; Phase 5)
 
 If legacy update occurs:
 
@@ -340,7 +351,7 @@ If legacy update occurs:
 3. Extensively test migrated components in Batch 6
 4. May need to re-migrate affected components
 
-### After Main Batch 7 (Cleanup Complete)
+### After Main Batch 7 (Cleanup Complete; Phase 6)
 
 If legacy update occurs:
 
@@ -363,9 +374,9 @@ If legacy update occurs:
 
 ## Template: legacy-update-YYYYMMDD-HHMMSS.md
 
-Create separate file for each update at `apps/<app-name>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md`:
+Create separate file for each update at `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`:
 
-**Example:** `apps/ticket-portal/docs/migration/service/legacy-update-20260212-150320.md`
+**Example:** `apps/ticket-portal/docs/migration/service/legacy-updates/legacy-update-20260212-150320.md`
 
 ```markdown
 # Legacy Update - <APP_NAME> - YYYY-MM-DD HH:MM:SS
