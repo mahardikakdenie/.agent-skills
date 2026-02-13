@@ -1,0 +1,166 @@
+{
+    "repos": [
+        {
+            "app": "admin-portal",
+            "remote": "admin-portal",
+            "branch": "stage",
+            "prefix": "apps/admin-portal"
+        },
+        {
+            "app": "admin-portal-boost",
+            "remote": "admin-portal-boost",
+            "branch": "stage",
+            "prefix": "apps/admin-portal-boost"
+        },
+        {
+            "app": "affiliate-admin",
+            "remote": "affiliate-admin",
+            "branch": "stage",
+            "prefix": "apps/affiliate-admin"
+        },
+        {
+            "app": "affiliate-portal",
+            "remote": "affiliate-portal",
+            "branch": "stage",
+            "prefix": "apps/affiliate-portal"
+        },
+        {
+            "app": "agent-admin",
+            "remote": "agent-admin",
+            "branch": "stage",
+            "prefix": "apps/agent-admin"
+        },
+        {
+            "app": "agent-microsite",
+            "remote": "agent-microsite",
+            "branch": "stage",
+            "prefix": "apps/agent-microsite"
+        },
+        {
+            "app": "agent-portal",
+            "remote": "agent-portal",
+            "branch": "stage",
+            "prefix": "apps/agent-portal"
+        },
+        {
+            "app": "agent-web-portal",
+            "remote": "agent-web-portal",
+            "branch": "stage",
+            "prefix": "apps/agent-web-portal"
+        },
+        {
+            "app": "boost-product-fe",
+            "remote": "boost-product-fe",
+            "branch": "development",
+            "prefix": "apps/boost-product-fe"
+        },
+        {
+            "app": "claim-portal",
+            "remote": "claim-portal",
+            "branch": "stage",
+            "prefix": "apps/claim-portal"
+        },
+        {
+            "app": "customer-portal",
+            "remote": "customer-portal",
+            "branch": "stage",
+            "prefix": "apps/customer-portal"
+        },
+        {
+            "app": "ecommerce-gelm",
+            "remote": "ecommerce-gelm",
+            "branch": "stage",
+            "prefix": "apps/ecommerce-gelm"
+        },
+        {
+            "app": "ecommerce-teman",
+            "remote": "ecommerce-teman",
+            "branch": "stage",
+            "prefix": "apps/ecommerce-teman"
+        },
+        {
+            "app": "gegm-friendcover",
+            "remote": "gegm-friendcover",
+            "branch": "stage",
+            "prefix": "apps/gegm-friendcover"
+        },
+        {
+            "app": "gegm-friendcover-admin",
+            "remote": "gegm-friendcover-admin",
+            "branch": "stage",
+            "prefix": "apps/gegm-friendcover-admin"
+        },
+        {
+            "app": "gelm-xproject-microsite",
+            "remote": "gelm-xproject-microsite",
+            "branch": "stage",
+            "prefix": "apps/gelm-xproject-microsite"
+        },
+        {
+            "app": "gen-ai-portal",
+            "remote": "gen-ai-portal",
+            "branch": "stage",
+            "prefix": "apps/gen-ai-portal"
+        },
+        {
+            "app": "getrev-da-microsite",
+            "remote": "getrev-da-microsite",
+            "branch": "stage",
+            "prefix": "apps/getrev-da-microsite"
+        },
+        {
+            "app": "grab-landing-page",
+            "remote": "grab-landing-page",
+            "branch": "stage",
+            "prefix": "apps/grab-landing-page"
+        },
+        {
+            "app": "haruuz-microsite",
+            "remote": "haruuz-microsite",
+            "branch": "stage",
+            "prefix": "apps/haruuz-microsite"
+        },
+        {
+            "app": "mykawan-website",
+            "remote": "mykawan-website",
+            "branch": "stage",
+            "prefix": "apps/mykawan-website"
+        },
+        {
+            "app": "partner-portal",
+            "remote": "partner-portal",
+            "branch": "stage",
+            "prefix": "apps/partner-portal"
+        },
+        {
+            "app": "sso-portal",
+            "remote": "sso-portal",
+            "branch": "stage",
+            "prefix": "apps/sso-portal"
+        },
+        {
+            "app": "teman-affiliate-admin",
+            "remote": "teman-affiliate-admin",
+            "branch": "stage",
+            "prefix": "apps/teman-affiliate-admin"
+        },
+        {
+            "app": "teman-affiliate-microsite",
+            "remote": "teman-affiliate-microsite",
+            "branch": "stage",
+            "prefix": "apps/teman-affiliate-microsite"
+        },
+        {
+            "app": "teman-affiliate-portal",
+            "remote": "teman-affiliate-portal",
+            "branch": "stage",
+            "prefix": "apps/teman-affiliate-portal"
+        },
+        {
+            "app": "ticket-portal",
+            "remote": "ticket-portal",
+            "branch": "stage",
+            "prefix": "apps/ticket-portal"
+        }
+    ]
+}
