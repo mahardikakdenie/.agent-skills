@@ -107,7 +107,7 @@ git push origin integrate/<app-name>
 
 ---
 
-## Routine 2: Merge integrate/* to migrate/* (Sync Refactored Branch)
+## Routine 2: Merge integrate/_ to migrate/_ (Sync Refactored Branch)
 
 ### Objective
 
@@ -126,7 +126,7 @@ Synchronize the refactored `migrate/*` branch with the updated baseline.
 git checkout migrate/<app-name>
 ```
 
-#### 2.2 Merge integrate/* into migrate/*
+#### 2.2 Merge integrate/_ into migrate/_
 
 ```bash
 git merge integrate/<app-name>
@@ -186,6 +186,19 @@ Analyze conflicted files based on **conceptual categories**, not specific paths 
    - Still uses old services? → Non-Migrated Component
 4. Check if file is **infrastructure** (libs, shared code) → Shared Infrastructure
 5. Otherwise, likely **configuration** → Configuration
+
+**Determining Migration Status Mid-Refactor:**
+
+If you're unsure which category a file belongs to (especially during Phase 5 component migration):
+
+1. **Check current refactor phase** in `<APP_PATH>/docs/migration/service/plan.md` or task.md
+2. **Identify migrated components:**
+   - Check recent task.md checklist for migrated component list
+   - Check recent commit messages for "migrate component: ..."
+   - View component imports: new hooks = migrated, old services = not migrated
+3. **For service files:**
+   - Check if service exists in `src/services/<service-name>/` → New/Refactored
+   - Otherwise, check if in old location (e.g., `src/services/*.service.ts`) → Old/Legacy
 
 #### 3.2 Resolve conflicts by category
 
@@ -431,7 +444,27 @@ This typically includes:
 - User interactions work
 - No regressions
 
-#### 6.4 Document results
+#### 6.4 If verification fails catastrophically
+
+If verification fails and cannot be fixed safely:
+
+```bash
+# Rollback migrate/* branch
+git reset --hard <commit-before-legacy-update-merge>
+git push -f origin migrate/<app-name>
+```
+
+Document rollback in `legacy-update-YYYYMMDD-HHMMSS.md` and notify team.
+
+#### 6.5 Update task.md
+
+If main task.md exists at `apps/<app-name>/docs/migration/service/task.md`:
+
+- Mark legacy update as integrated
+- Update current phase/batch status
+- Note services affected and new services added
+
+#### 6.6 Document results
 
 Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
 
@@ -504,6 +537,8 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 3. **Run verification** after every integration
 4. **Incremental only** - Don't rush component migration
 5. **Communicate** - Notify team of breaking changes
+6. **Document pause/resume** - Update task.md when pausing/resuming main refactor
+7. **Verify verification-gate.md exists** - Before Batch 6, ensure verification commands are defined
 
 ### Conflict Resolution Priority
 
@@ -543,6 +578,58 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 
 1. No old services to fall back on
 2. Must immediately refactor into new architecture
+
+---
+
+## Pause/Resume Workflow
+
+### Before Running Legacy Update
+
+**If currently in active refactor batch:**
+
+1. **Complete current step** in main batch (don't stop mid-step)
+2. **Document pause point** in task.md (if task.md exists):
+
+   ```markdown
+   ## Current Status
+
+   - Phase: <e.g., Phase 4B>
+   - Batch: <e.g., Batch 5>
+   - Status: ⏸️ Paused at step <e.g., "Creating hooks for claims service">
+   - Reason: Legacy update incoming
+   - Timestamp: <YYYY-MM-DD HH:MM>
+   ```
+
+3. **Commit and push** current work:
+   ```bash
+   git add .
+   git commit -m "chore: pause main refactor for legacy update"
+   git push origin migrate/<app-name>
+   ```
+4. **Proceed** with legacy update Routine 1
+
+### After Legacy Update Verification
+
+**Once Routine 6 verification passes:**
+
+1. **Update task.md** (if exists):
+
+   ```markdown
+   ## Current Status
+
+   - Phase: <e.g., Phase 4B>
+   - Batch: <e.g., Batch 5>
+   - Status: ▶️ Resumed after legacy update
+   - Legacy update: <timestamp> integrated successfully
+   - Services affected: <list>
+   - New services added: <list or "none">
+   ```
+
+2. **Review changes** that might affect current work:
+   - Check if services you're currently refactoring were modified
+   - Check if new endpoints were added to services you've already implemented
+   - Check if dependencies changed
+3. **Resume main batch** from documented step
 
 ---
 

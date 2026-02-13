@@ -130,14 +130,34 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 4:
 3. For each category, provide:
    - Detailed list
    - Impact assessment (low/medium/high)
-   - Recommended action (Batch 4, 5, or 6)
+   - Recommended action with decision logic:
+     * Batch 4 if: updating existing services OR adding endpoints to existing services (base URL exists in audit.md)
+     * Batch 5 if: new base URL detected OR new service domain added (base URL NOT in audit.md)
+     * Batch 6 if: component-only OR config changes (no service changes needed)
 
-4. Create <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md (use actual datetime) with:
+   **Decision Matrix:**
+   | Scenario | Indicators | Batch |
+   |----------|------------|-------|
+   | New endpoints in existing service | Base URL in audit.md, new paths | 4 |
+   | New service (new base URL) | Base URL NOT in audit.md | 5 |
+   | Modified endpoint types | Endpoint in plan.md, types changed | 4 |
+   | Breaking API changes | Endpoint signature changed | 4 (+ careful testing) |
+   | Component changes only | No service files changed | 4 (minimal) or 6 |
+   | Config/dependency changes | package.json, .env, build config | 4 (minimal) |
+
+4. Before creating the update document:
+   - Create directory if needed: mkdir -p <APP_PATH>/docs/migration/service/legacy-updates
+   - Use current local timestamp in format YYYYMMDD-HHMMSS (no separators)
+   - Example filename: legacy-update-20260213-113000.md
+   - Cross-check base URLs with <APP_PATH>/docs/migration/service/audit.md
+   - Cross-check existing services with <APP_PATH>/docs/migration/service/plan.md
+
+5. Create <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md with:
    - Update timestamp
    - Legacy commit SHA
    - List of changes
-   - Current refactor phase (Batch X)
-   - Recommended next batch
+   - Current refactor phase (Phase X / Batch Y)
+   - Recommended next batch with justification
 
 Report findings and wait for confirmation.
 ```
@@ -167,6 +187,10 @@ For each affected service:
    - Update [service].service.ts
    - Update query-keys.ts
    - Create new hooks in hooks/queries/ or hooks/mutations/
+   - **Hook requirements (see refactor-spec.md lines 523-525):**
+     * Queries: accept optional `options?: Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>`
+     * Mutations: accept optional `options?: UseMutationOptions<...>`
+     * Mutations with onSuccess: call `options?.onSuccess?.(...)`
 
 2. If existing endpoints modified:
    - Update types in [service].types.ts
@@ -227,8 +251,11 @@ Steps:
    - Create query-keys.ts
    - Create hooks/queries/* for GET
    - Create hooks/mutations/* for POST/PUT/DELETE
-   - Include optional options parameter
-   - Add cache invalidation
+   - **Hook signature requirements (see refactor-spec.md lines 523-525):**
+     * Queries: accept optional `options?: Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>`
+     * Mutations: accept optional `options?: UseMutationOptions<...>`
+     * Spread `...options` in useQuery/useMutation calls
+     * Mutations with onSuccess: compose with `options?.onSuccess?.(...)` for cache invalidation
 
 5. Run verification gate after Phase 4B
 
@@ -253,8 +280,19 @@ Verify legacy update integration for <APP_NAME> and complete documentation.
 
 Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
 
-1. Run full verification gate as defined in <APP_PATH>/docs/verification-gate.md
-   (This typically includes: typecheck, build, lint, tests, sanity checks)
+0. **Read verification gate definition:**
+   - View file: <APP_PATH>/docs/verification-gate.md
+   - Extract commands: typecheck, build, lint, test, sanity
+   - If file doesn't exist: create it first using refactor-spec.md App-Specific Inputs section
+   - Note which commands are available vs N/A
+
+1. Run full verification gate commands from verification-gate.md:
+   - Run typecheck command (or closest equivalent)
+   - Run build command
+   - Run lint command (if available)
+   - Run test command (if available)
+   - Run sanity check (if defined)
+   - Document results for each
 
 2. Verify refactored services:
    - Test hooks return expected data
@@ -270,20 +308,33 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
 
 4. If verification fails:
    - Use $systematic-debugging (if available)
-   - Fix issues
-   - Re-run verification
+   - Fix issues in most localized way
+   - Re-run verification gate
+   - If fix is safe and passes: continue to step 5
+   - **If catastrophic failure (cannot fix safely):**
+     * Rollback migrate/* branch:
+       git reset --hard <commit-before-legacy-update-merge>
+       git push -f origin migrate/<app-name>
+     * Document rollback in legacy-update-YYYYMMDD-HHMMSS.md
+     * Notify team and plan alternative approach
+     * STOP - do not proceed
 
 5. Complete <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md:
-   - Final verification results
-   - Notes on issues
-   - Actions taken
-   - Current refactor batch status (e.g., "Completed Batch 5")
+   - Final verification results (with command outputs)
+   - Notes on issues encountered
+   - Actions taken to resolve
+   - Current refactor phase status (e.g., "Phase 4B complete, ready for Phase 5")
 
-6. Report summary:
+6. Update main task.md (if exists at <APP_PATH>/docs/migration/service/task.md):
+   - Mark legacy update as integrated
+   - Update current phase/batch status
+   - Note services affected and new services added (if any)
+
+7. Report summary:
    - Changes integrated
    - Services affected
    - New services added (if any)
-   - Verification status
+   - Verification status (all checks passed)
    - Recommended next steps
 ```
 
