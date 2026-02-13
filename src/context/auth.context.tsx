@@ -12,7 +12,7 @@ import { AUTH_TOKEN } from "@/constants/app-common.const";
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { authService } from "@/services/api.service";
-import { AuthService } from "@/services/auth.service";
+import { AuthService, LoginProvidersResponse } from "@/services/auth.service";
 import ApiURL from "@/constants/api-url.const";
 import { LoginResponse } from "@/types/common";
 import { AxiosResponse } from "axios";
@@ -25,11 +25,13 @@ interface AuthContextType {
   menuList: any[];
   submenuList: any[];
   permissionList: any[];
+  loginProviders: LoginProvidersResponse[];
   isAuthenticated: boolean;
   isForbidden: boolean;
   isNetworkActive: boolean;
   login: (data: any) => void;
   loginEntra: (code: string, codeVerifier: string) => Promise<void>;
+  getLoginProviders: (originUrl: string) => Promise<void>;
   logout: () => void;
   handleChangeNetwork: (value: boolean) => void;
   handleResponseError: (error: any) => void;
@@ -69,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [menuList, setMenuList] = useState<any[]>([]);
   const [submenuList, setSubmenuList] = useState<any[]>([]);
   const [permissionList, setPermissionList] = useState<any[]>([]);
+  const [loginProviders, setLoginProviders] = useState<LoginProvidersResponse[]>([]);
   const path = usePathname();
   const router = useRouter();
   
@@ -306,6 +309,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [getUserInformation]);
 
+  const getLoginProviders = React.useCallback(async (originUrl: any) => {
+    if (!isProcessing.current) {
+      isProcessing.current = true;
+      try {
+        const response = await authServiceEntra.getProviders({ originUrl });
+
+        if(response && response?.data?.length > 0){
+          setLoginProviders(response.data);
+        }
+      } catch (error: any) {
+        console.error("Get login providers error:", error);
+        toastNotification(
+          error?.response?.data?.message || "Failed to get login providers.",
+          "error"
+        );
+      } finally {
+        isProcessing.current = false;
+      }
+    }
+  }, []);
+
   const logout = React.useCallback(async () => {
     await removeCookie(AUTH_TOKEN);
     removeAllLocalStorage();
@@ -336,11 +360,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         menuList,
         submenuList,
         permissionList,
+        loginProviders,
         isAuthenticated,
         isForbidden,
         isNetworkActive,
         login,
         loginEntra,
+        getLoginProviders,
         logout,
         handleChangeNetwork,
         handleResponseError,
