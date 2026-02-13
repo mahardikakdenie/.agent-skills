@@ -14,6 +14,23 @@ Lifecycle diagram: `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` (Me
 
 This spec is designed to be reused across **multiple apps** in a monorepo. Every step, audit, plan, and verification must be executed **per app**.
 
+### Related Documents
+
+**Main Refactor Lifecycle:**
+
+- `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` - Visual lifecycle diagram
+- `<APP_PATH>/docs/migration/service/refactor-batch-prompts.md` - Main refactor batch prompts (Batch 0-7)
+- `<APP_PATH>/docs/verification-gate.md` - Per-app verification commands
+
+**Legacy Repository Updates:**
+
+- `<APP_PATH>/docs/migration/service/legacy-update-integration-guide.md` - Quick reference for integrating legacy updates
+- `<APP_PATH>/docs/migration/service/legacy-update-routines.md` - Detailed update routines
+- `<APP_PATH>/docs/migration/service/legacy-update-batch-prompts.md` - Copy-paste update prompts
+
+> [!NOTE]
+> Legacy updates are **independent of refactor phases** and can occur at any time. See `legacy-update-integration-guide.md` for pause/resume workflow and decision logic.
+
 ### App-Specific Inputs (Fill Per App)
 
 For each app, define these inputs before implementation:
@@ -481,7 +498,7 @@ type ClaimsFilters = Parameters<typeof claimsService.getClaims>[0];
 
 export function useClaims(
   filters: ClaimsFilters,
-  options?: Omit<UseQueryOptions<ClaimsResponse, Error>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<ClaimsResponse, Error>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: claimKeys.list(filters),
@@ -503,7 +520,7 @@ type CreateClaimResponse = Awaited<ReturnType<typeof claimsService.createClaim>>
 type CreateClaimVariables = Parameters<typeof claimsService.createClaim>[0];
 
 export function useCreateClaim(
-  options?: UseMutationOptions<CreateClaimResponse, Error, CreateClaimVariables>
+  options?: UseMutationOptions<CreateClaimResponse, Error, CreateClaimVariables>,
 ) {
   const queryClient = useQueryClient();
 
@@ -681,4 +698,3 @@ Use the structure and patterns described in this spec file.
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 
 ---
-
