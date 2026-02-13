@@ -29,7 +29,7 @@ Use when you expect a clean merge.
 ```
 Update <APP_NAME> in <APP_PATH> with changes from legacy repository.
 
-Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routines 1-2:
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routines 1-2:
 
 1. Routine 1: Subtree pull to integrate/<APP_NAME>
    - Switch to integrate/<APP_NAME>
@@ -57,7 +57,7 @@ Use when conflicts occurred in Batch 1.
 ```
 Resolve conflicts on migrate/<APP_NAME> from merging integrate/<APP_NAME>.
 
-Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routine 3:
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 3:
 
 1. Identify conflict categories:
    - Old/Legacy Services → accept theirs
@@ -99,7 +99,7 @@ Use after migrate/\* is successfully merged (with or without conflicts).
 ```
 Analyze changes from legacy update for <APP_NAME>.
 
-Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routine 4:
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 4:
 
 1. Identify what changed:
    - Compare recent commits: git log integrate/<APP_NAME>~5..integrate/<APP_NAME>
@@ -121,7 +121,7 @@ Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routine 4:
    - Impact assessment (low/medium/high)
    - Recommended action (Batch 4, 5, or 6)
 
-4. Create <APP_PATH>/docs/refactor/service/legacy-update-YYYYMMDD-HHMMSS.md (use actual datetime) with:
+4. Create <APP_PATH>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md (use actual datetime) with:
    - Update timestamp
    - Legacy commit SHA
    - List of changes
@@ -142,7 +142,7 @@ Use when changes don't require new services.
 ```
 Apply adjustments to refactored architecture for <APP_NAME> (no new services).
 
-Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routine 4.3:
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 4.3:
 
 Context from Batch 3:
 - Changes: <list-from-batch-3>
@@ -187,7 +187,7 @@ Use when a new service must be created.
 ```
 Create NEW service for <APP_NAME> from legacy update.
 
-Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routine 5:
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 5:
 
 Context:
 - New service name: <service-name>
@@ -196,12 +196,12 @@ Context:
 
 Steps:
 
-1. Update <APP_PATH>/docs/refactor/service/service-audit.md:
+1. Update <APP_PATH>/docs/migration/service/audit.md:
    - Add new service section
    - List base URL, endpoints, types
    - Mark as NEW with date
 
-2. Update <APP_PATH>/docs/refactor/service/service-refactoring-plan.md:
+2. Update <APP_PATH>/docs/migration/service/plan.md:
    - Add service plan
    - List endpoints, types, query keys, hooks
 
@@ -240,9 +240,9 @@ Final step after all adjustments.
 ```
 Verify legacy update integration for <APP_NAME> and complete documentation.
 
-Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routine 6:
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
 
-1. Run full verification gate as defined in <APP_PATH>/docs/refactor/service/verification-gate.md
+1. Run full verification gate as defined in <APP_PATH>/docs/verification-gate.md
    (This typically includes: typecheck, build, lint, tests, sanity checks)
 
 2. Verify refactored services:
@@ -262,7 +262,7 @@ Follow <APP_PATH>/docs/refactor/service/legacy-update-routines.md Routine 6:
    - Fix issues
    - Re-run verification
 
-5. Complete <APP_PATH>/docs/refactor/service/legacy-update-YYYYMMDD-HHMMSS.md:
+5. Complete <APP_PATH>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md:
    - Final verification results
    - Notes on issues
    - Actions taken
@@ -363,9 +363,9 @@ If legacy update occurs:
 
 ## Template: legacy-update-YYYYMMDD-HHMMSS.md
 
-Create separate file for each update at `apps/<app-name>/docs/refactor/service/legacy-update-YYYYMMDD-HHMMSS.md`:
+Create separate file for each update at `apps/<app-name>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md`:
 
-**Example:** `apps/ticket-portal/docs/refactor/service/legacy-update-20260212-150320.md`
+**Example:** `apps/ticket-portal/docs/migration/service/legacy-update-20260212-150320.md`
 
 ```markdown
 # Legacy Update - <APP_NAME> - YYYY-MM-DD HH:MM:SS

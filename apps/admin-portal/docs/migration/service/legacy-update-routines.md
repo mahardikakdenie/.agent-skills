@@ -329,7 +329,7 @@ Refactor new services added from legacy into the new architecture.
 #### 5.1 Update audit document
 
 ```markdown
-# In apps/<app-name>/docs/refactor/service/service-audit.md
+# In apps/<app-name>/docs/migration/service/audit.md
 
 ## Service: <new-service-name>
 
@@ -354,7 +354,7 @@ Refactor new services added from legacy into the new architecture.
 #### 5.2 Update refactoring plan
 
 ```markdown
-# In apps/<app-name>/docs/refactor/service/service-refactoring-plan.md
+# In apps/<app-name>/docs/migration/service/plan.md
 
 ## Service: <new-service-name>
 
@@ -397,7 +397,7 @@ Ensure legacy updates didn't break refactored functionality.
 
 #### 6.1 Run verification gate
 
-Run the verification gate as defined in `apps/<app-name>/docs/refactor/service/verification-gate.md`.
+Run the verification gate as defined in `apps/<app-name>/docs/verification-gate.md`.
 
 This typically includes:
 
@@ -423,7 +423,7 @@ This typically includes:
 
 #### 6.4 Document results
 
-Create `apps/<app-name>/docs/refactor/service/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
+Create `apps/<app-name>/docs/migration/service/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
 
 ```markdown
 # Legacy Update - <app-name> - YYYY-MM-DD HH:MM:SS
