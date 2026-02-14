@@ -1,8 +1,8 @@
 # Verification Gate - admin-portal
 
-- Typecheck: `pnpm -C apps/admin-portal tsc --noEmit`
-- Build: `pnpm -C apps/admin-portal build`
-- Lint: `pnpm -C apps/admin-portal lint`
+- Typecheck: `pnpm --filter admin-portal exec tsc --noEmit`
+- Build: `pnpm --filter admin-portal run build`
+- Lint: `pnpm --filter admin-portal run lint`
 - Tests: `N/A`
 - Sanity check: `N/A`
 - Sanity coverage: None documented yet

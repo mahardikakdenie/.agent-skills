@@ -1,4 +1,4 @@
-import type { AxiosInstance } from "axios";
+import { AxiosHeaders, type AxiosInstance } from "axios";
 
 import { getGlobalToken } from "@/lib/token-storage";
 
@@ -12,8 +12,9 @@ export const applyAuthInterceptor = (instance: AxiosInstance) => {
     (config) => {
       const token = getAuthorizationToken();
       if (token) {
-        config.headers = config.headers ?? {};
-        config.headers.Authorization = token;
+        const headers = AxiosHeaders.from(config.headers);
+        headers.set("Authorization", token);
+        config.headers = headers;
       }
       return config;
     },

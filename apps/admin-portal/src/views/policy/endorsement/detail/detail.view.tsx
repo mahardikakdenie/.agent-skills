@@ -115,7 +115,7 @@ export const EndorsementDetailView = () => {
       setTableData(data.endorsements_detail);
 
       const profile = data.endorsements_detail?.[0]?.data.profile || {};
-      const policyHolder = data.policies.policy_holders || {};
+      const policyHolder: any = data.policies.policy_holders || {};
       const planData = data.policies.policy_products?.[0]?.plan_data || {};
       const insuranceName = data.insurance?.name;
 

@@ -11,7 +11,9 @@ export function useClaims(
   options?: Omit<UseQueryOptions<ClaimsResponse, Error>, "queryKey" | "queryFn">
 ) {
   return useQuery({
-    queryKey: claimKeys.list(params as Record<string, unknown> | undefined),
+    queryKey: claimKeys.list(
+      params as unknown as Record<string, unknown> | undefined
+    ),
     queryFn: () => claimsService.getClaims(params),
     ...options,
   });

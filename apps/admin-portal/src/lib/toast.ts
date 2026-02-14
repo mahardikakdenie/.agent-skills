@@ -1,5 +1,5 @@
 import { primary, primaryRed } from "@/constants/app-common.const";
-import toast from "react-hot-toast";
+import toast, { type Renderable } from "react-hot-toast";
 
 export const toastNotification = (
   text: string,
@@ -26,8 +26,8 @@ export const toastPromise = <T>(
   promise: Promise<T>,
   messages: {
     loading: string;
-    success?: string | JSX.Element;
-    error?: string | JSX.Element;
+    success?: Renderable;
+    error?: Renderable;
   }
 ) => {
   return toast.promise(promise, {

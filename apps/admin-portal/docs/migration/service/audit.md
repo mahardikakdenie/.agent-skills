@@ -13,6 +13,7 @@
 - `NEXT_PUBLIC_SANCTION_SERVICE_URL` -> Sanction Service
 - `NEXT_PUBLIC_COUNTRY_SERVICE_URL` -> Country Service
 - `NEXT_PUBLIC_PDF_SERVICE_URL` -> PDF Service
+- `NEXT_PUBLIC_REPORT_SERVICE_URL` -> Report Service
 - `window.location.origin` (relative `/api`) -> Admin-Portal Internal API
 
 ## Refactor Notes
@@ -503,6 +504,31 @@
 
 **Migration Complexity**
 - `Low`.
+
+## Report Service (`NEXT_PUBLIC_REPORT_SERVICE_URL`)
+**Base URL/Client Usage**
+- `AxiosHttpClient` in `src/services/report.service.ts` with static `Authorization: Bearer ${NEXT_PUBLIC_REPORT_SERVICE_TOKEN}`
+
+**Legacy Files**
+- `src/services/report.service.ts`
+- `src/hooks/useNotificationLogs.hooks.tsx`
+
+**Endpoints**
+- `/v1/notification-logs`
+- `/v1/notification-logs/:id`
+
+**Types/Interfaces**
+- `NotificationLog`, `NotificationLogsResponse`, `GetNotificationLogsParams` in `src/services/report.service.ts`
+
+**Hardcoded/Direct API Calls**
+- None found outside the service layer for this base URL.
+
+**Pain Points / Tech Debt**
+- Uses static service token (`NEXT_PUBLIC_REPORT_SERVICE_TOKEN`) instead of user auth token flow.
+- New service is not yet included in existing refactor docs/plans before this update.
+
+**Migration Complexity**
+- `Low-Medium`.
 
 ## Admin-Portal Internal API (Same-Origin `/api`)
 **Base URL/Client Usage**

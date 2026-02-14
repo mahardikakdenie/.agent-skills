@@ -441,6 +441,12 @@ export function useUserForm(
     }
   }, []);
 
+  const normalizedChannels = Array.isArray((channels as any)?.data)
+    ? (channels as any).data
+    : Array.isArray(channels)
+      ? channels
+      : [];
+
   return {
     handleSubmit,
     control,
@@ -452,7 +458,7 @@ export function useUserForm(
     userId,
     accountId,
 
-    channels: channels?.data || [],
+    channels: normalizedChannels,
     roleOptions: primaryRoles,
 
     userGroups,

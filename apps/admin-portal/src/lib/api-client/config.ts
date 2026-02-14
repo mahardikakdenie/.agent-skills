@@ -11,6 +11,7 @@ export const API_BASE_URLS = {
   sanction: process.env.NEXT_PUBLIC_SANCTION_SERVICE_URL,
   country: process.env.NEXT_PUBLIC_COUNTRY_SERVICE_URL,
   pdf: process.env.NEXT_PUBLIC_PDF_SERVICE_URL,
+  report: process.env.NEXT_PUBLIC_REPORT_SERVICE_URL,
 } as const;
 
 export const API_TIMEOUT_MS = 30000;

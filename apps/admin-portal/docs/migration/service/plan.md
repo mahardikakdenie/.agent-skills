@@ -40,6 +40,7 @@ src/
 - `NEXT_PUBLIC_SANCTION_SERVICE_URL` -> Sanction Service
 - `NEXT_PUBLIC_COUNTRY_SERVICE_URL` -> Country Service
 - `NEXT_PUBLIC_PDF_SERVICE_URL` -> PDF Service
+- `NEXT_PUBLIC_REPORT_SERVICE_URL` -> Report Service
 - `window.location.origin` with `/api` -> Admin-Portal Internal API
 
 **Implementation Checklist**
@@ -566,6 +567,25 @@ Query Hooks:
 - None expected.
 Mutation Hooks:
 - `useGeneratePdf`
+
+**Report Service**
+Base URL: `NEXT_PUBLIC_REPORT_SERVICE_URL`
+Endpoints:
+- `/v1/notification-logs`
+- `/v1/notification-logs/:id`
+Types:
+- `NotificationLog`
+- `NotificationLogsResponse`
+- `GetNotificationLogsParams`
+Query Keys Outline:
+- `reportKeys.notificationLogs`
+- `reportKeys.notificationLogsList`
+- `reportKeys.notificationLogDetail`
+Query Hooks:
+- `useNotificationLogs`
+- `useNotificationLogDetail`
+Mutation Hooks:
+- None expected.
 
 **Admin-Portal Internal API**
 Base URL: `window.location.origin` with `/api`

@@ -7,6 +7,10 @@
       }
     ],
     "baseUrl": ".",
+    "strict": false,
+    "noUncheckedIndexedAccess": false,
+    "declaration": false,
+    "declarationMap": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve",

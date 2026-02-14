@@ -1,5 +1,6 @@
 /** @type {import("next").NextConfig} */
 import JavaScriptObfuscator from "webpack-obfuscator";
+const enableObfuscator = process.env.NEXT_ENABLE_OBFUSCATOR === "true";
 const nextConfig = {
     images: {
         remotePatterns: [
@@ -16,13 +17,13 @@ const nextConfig = {
         removeConsole: process.env.NODE_ENV !== 'development'
     },
     webpack: (config, { isServer, dev }) => {
-        if (!isServer && !dev) {
+        if (!isServer && !dev && enableObfuscator) {
             config.plugins.push(
                 new JavaScriptObfuscator(
                     {
                         rotateStringArray: true,
                         disableConsoleOutput: true,
-                        selfDefending: true
+                        selfDefending: false
                     },
                     []
                 )
