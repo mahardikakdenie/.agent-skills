@@ -231,7 +231,7 @@ function main() {
   }
 
   // Generate report
-  const reportDir = path.join(adminPortalRoot, 'docs', 'refactor', 'service');
+  const reportDir = path.join(adminPortalRoot, 'docs', 'migration');
   const reportPath = path.join(reportDir, 'unsynced-updates-report.md');
 
   if (!fs.existsSync(reportDir)) {
@@ -404,7 +404,7 @@ Once you've synced integrate/* branches, use the legacy update routines:
 # Check which integrate/* branches need merging to migrate/*
 node scripts/migration/check-unsynced-updates.js
 
-# Then follow apps/admin-portal/docs/refactor/service/legacy-update-batch-prompts.md
+# Then follow apps/admin-portal/docs/migration/service/legacy-update-batch-prompts.md
 \`\`\`
 `;
   } else {
