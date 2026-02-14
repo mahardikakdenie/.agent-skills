@@ -339,7 +339,12 @@ Steps:
 4. After ALL affected components migrated:
    - Run full verification gate from verification-gate.md
    - If verification fails: fix and re-run
-   - Document which components were migrated
+   - Document incremental migration in <APP_PATH>/docs/migration/service/component-migration.md:
+     * Add new "Incremental Updates" section with timestamp
+     * List service name and context (what was added from legacy)
+     * List components migrated for this new service
+     * Include verification results
+     * Cross-reference to legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md
 
 Rules:
 - **ONLY** migrate components using the new service, NOT all components

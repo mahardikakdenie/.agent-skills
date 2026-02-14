@@ -555,7 +555,7 @@ Run full verification gate as defined in `apps/<app-name>/docs/verification-gate
 
 #### 5A.5 Document results
 
-In `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`, add:
+**In `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`**, add:
 
 ```markdown
 ## Component Migration (Routine 5A)
@@ -575,6 +575,31 @@ In `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`, add:
 
 - All migrated components tested: ✅
 - No regressions detected: ✅
+```
+
+**Also update `component-migration.md`** for centralized tracking:
+
+In `apps/<app-name>/docs/migration/service/component-migration.md`, add new section under "Incremental Updates":
+
+```markdown
+### Update: YYYY-MM-DD HH:MM ([Service Name] - Batch 5A)
+
+**Context:** [Brief description of what was added from legacy repo]
+
+**Legacy Update Reference:** [`legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`](./legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md)
+
+**New Service Created:** `[service-name]`
+
+**Components Migrated:**
+
+- [x] `src/path/to/component.tsx` - [Description]
+  - **Before:** [Old pattern]
+  - **After:** [New hook from new service]
+  - **Verified:** ✅
+
+**Verification:** ✅ All passed (Typecheck, Build, Tests, Sanity)
+
+**Issues:** None / [Describe if any]
 ```
 
 ---
