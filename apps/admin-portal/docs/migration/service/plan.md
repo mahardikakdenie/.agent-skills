@@ -1,12 +1,23 @@
 # Enterprise Service Layer Refactoring - admin-portal
 
+## Related Documents
+
+- `apps/admin-portal/docs/migration/service/refactor-spec.md` - Master specification (see Phase 2)
+- `apps/admin-portal/docs/migration/service/audit.md` - Service audit (source for this plan)
+- `apps/admin-portal/docs/migration/service/refactor-batch-prompts.md` - Batch 2-5 prompts
+- `apps/admin-portal/docs/migration/service/component-migration.md` - Component migration tracking
+
+---
+
 **Why Colocation**
+
 - Reduce cross-folder jumps and make service ownership obvious.
 - Keep API endpoints, types, and hooks together per domain.
 - Enable incremental migration without breaking existing flows.
 - Make new services easy to add and old ones easy to remove.
 
 **Directory Structure**
+
 ```text
 src/
 |-- lib/
@@ -28,6 +39,7 @@ src/
 ```
 
 **Base URL Mapping**
+
 - `NEXT_PUBLIC_AUTH_SERVICE_URL` -> Auth Service
 - `NEXT_PUBLIC_API_CLAIM_BASE_URL` -> Claim Service
 - `NEXT_PUBLIC_API_POLICY_BASE_URL` -> Policy Service
@@ -40,9 +52,11 @@ src/
 - `NEXT_PUBLIC_SANCTION_SERVICE_URL` -> Sanction Service
 - `NEXT_PUBLIC_COUNTRY_SERVICE_URL` -> Country Service
 - `NEXT_PUBLIC_PDF_SERVICE_URL` -> PDF Service
+- `NEXT_PUBLIC_REPORT_SERVICE_URL` -> Report Service
 - `window.location.origin` with `/api` -> Admin-Portal Internal API
 
 **Implementation Checklist**
+
 - Phase 3: Foundation. Create shared API client and React Query setup.
 - Phase 4A: API layer. Implement endpoints, types, and service files for all services.
 - Phase 4A: Verification gate. Run and fix before continuing.
@@ -59,6 +73,7 @@ src/
 **Auth Service**
 Base URL: `NEXT_PUBLIC_AUTH_SERVICE_URL`
 Endpoints:
+
 - `/login`
 - `/account`
 - `/account/:id`
@@ -81,13 +96,13 @@ Endpoints:
 - `/v1/permission/page/:pageId`
 - `/v1/role-permission`
 - `/v1/role-permission/:id`
-Types:
+  Types:
 - `LoginCredentials`, `LoginResponse`
 - `User`, `Channel`, `Role`
 - `RoleResponse`, `PermissionResponse`
 - `PagesResponse`
 - `GroupResponse`, `UserResponse`, `AccountGroup`
-Query Keys Outline:
+  Query Keys Outline:
 - `authKeys.accounts`, `authKeys.accountDetail`, `authKeys.accountAllData`, `authKeys.accountPartners`
 - `authKeys.accountChannels`, `authKeys.accountInsurers`
 - `authKeys.groups`, `authKeys.groupDetail`, `authKeys.groupRoles`
@@ -95,7 +110,7 @@ Query Keys Outline:
 - `authKeys.pages`, `authKeys.pageDetail`
 - `authKeys.permissions`, `authKeys.permissionDetail`, `authKeys.permissionByPage`
 - `authKeys.rolePermissions`
-Query Hooks:
+  Query Hooks:
 - `useAccounts`
 - `useAccountDetail`
 - `useAccountAllData`
@@ -112,7 +127,7 @@ Query Hooks:
 - `usePermissions`
 - `usePermissionDetail`
 - `usePermissionByPage`
-Mutation Hooks:
+  Mutation Hooks:
 - `useLogin`
 - `useCreateAccount`
 - `useUpdateAccount`
@@ -146,6 +161,7 @@ Mutation Hooks:
 **Claim Service**
 Base URL: `NEXT_PUBLIC_API_CLAIM_BASE_URL`
 Endpoints:
+
 - `/v1/claims`
 - `/v1/claims/:id`
 - `/v1/claims/submit/:id`
@@ -159,16 +175,16 @@ Endpoints:
 - `/v1/claim-histories`
 - `/v1/claim-category-forms/all/:id`
 - `/v1/claim-channel-forms/all/:id`
-Types:
+  Types:
 - `Claim`, `Participant`, `ClaimHistory`
 - `ListClaimResponse`, `ListClaimHistoryResponse`
 - `ClaimFormsRequest`, `UpdateClaimGrabRequest`
-Query Keys Outline:
+  Query Keys Outline:
 - `claimKeys.lists`, `claimKeys.list`, `claimKeys.detail`
 - `claimKeys.configurations`, `claimKeys.statistics`, `claimKeys.listLimit`
 - `claimKeys.histories`
 - `claimKeys.categoryForms`, `claimKeys.channelForms`
-Query Hooks:
+  Query Hooks:
 - `useClaims`
 - `useClaimDetail`
 - `useClaimConfigurations`
@@ -177,7 +193,7 @@ Query Hooks:
 - `useClaimHistories`
 - `useClaimCategoryForms`
 - `useClaimChannelForms`
-Mutation Hooks:
+  Mutation Hooks:
 - `useUpdateClaim`
 - `useSubmitClaim`
 - `useUpdateClaimStatus`
@@ -187,6 +203,7 @@ Mutation Hooks:
 **Policy Service**
 Base URL: `NEXT_PUBLIC_API_POLICY_BASE_URL`
 Endpoints:
+
 - `/v1/policies`
 - `/v1/policies/:id`
 - `/v1/policies/statistic-data`
@@ -204,16 +221,16 @@ Endpoints:
 - `/v1/insured-parties/channel/:channelId`
 - `/v1/insured-parties/upload-first-time`
 - `/v1/insured-parties/upload-first-time-without-transaction`
-Types:
+  Types:
 - `PolicyData`, `Participant`, `PolicyProductResponse`
 - `MembershipData`, `MembershipProductResponse`
 - `EndorsementResponse`
-Query Keys Outline:
+  Query Keys Outline:
 - `policyKeys.policies`, `policyKeys.policyDetail`, `policyKeys.policyStats`
 - `policyKeys.masterPolicies`
 - `policyKeys.endorsements`, `policyKeys.endorsementDetail`
 - `policyKeys.insuredParties`, `policyKeys.insuredPartyDetail`, `policyKeys.insuredPartyStats`
-Query Hooks:
+  Query Hooks:
 - `usePolicies`
 - `usePolicyDetail`
 - `usePolicyStatistics`
@@ -223,7 +240,7 @@ Query Hooks:
 - `useInsuredParties`
 - `useInsuredPartyDetail`
 - `useInsuredPartyStatistics`
-Mutation Hooks:
+  Mutation Hooks:
 - `useUpdatePolicy`
 - `useRenewPolicy`
 - `useUploadPolicies`
@@ -237,6 +254,7 @@ Mutation Hooks:
 **Transaction Service**
 Base URL: `NEXT_PUBLIC_TRANSACTION_SERVICE_URL`
 Endpoints:
+
 - `/v1/transactions`
 - `/v1/transactions/:id`
 - `/v1/transactions/payment/:id`
@@ -247,13 +265,13 @@ Endpoints:
 - `/v1/customers`
 - `/v1/customers/campaign`
 - `/v1/campaigns/report/:id`
-Types:
+  Types:
 - `Transaction`, `Customer`, `Insurance`, `TransactionFee`, `Participant`
-Query Keys Outline:
+  Query Keys Outline:
 - `transactionKeys.transactions`, `transactionKeys.transactionDetail`, `transactionKeys.transactionStats`
 - `transactionKeys.customers`, `transactionKeys.customerCampaigns`
 - `transactionKeys.campaignReports`
-Query Hooks:
+  Query Hooks:
 - `useTransactions`
 - `useTransactionDetail`
 - `useTransactionStatistics`
@@ -261,7 +279,7 @@ Query Hooks:
 - `useCustomers`
 - `useCustomerCampaigns`
 - `useCampaignReport`
-Mutation Hooks:
+  Mutation Hooks:
 - `useUpdateTransactionStatus`
 - `useCreateTransactionPayment`
 - `useBulkCreateTransactions`
@@ -270,20 +288,21 @@ Mutation Hooks:
 **Channel Service**
 Base URL: `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 Endpoints:
+
 - `/channels`
 - `/channels/:id`
 - `/v1/channels`
 - `/v1/channels/:id`
-Types:
+  Types:
 - `PromotionResponse`
 - `ChannelsResponse`
 - `Channel`
-Query Keys Outline:
+  Query Keys Outline:
 - `channelKeys.channels`, `channelKeys.channelDetail`
-Query Hooks:
+  Query Hooks:
 - `useChannels`
 - `useChannelDetail`
-Mutation Hooks:
+  Mutation Hooks:
 - `useCreateChannel`
 - `useUpdateChannel`
 - `useDeleteChannel`
@@ -291,6 +310,7 @@ Mutation Hooks:
 **Finance Service**
 Base URL: `NEXT_PUBLIC_FINANCE_SERVICE_URL`
 Endpoints:
+
 - `/v1/billings`
 - `/v1/billings/:id`
 - `/v1/billings/:id/confirm-reconcilliation`
@@ -305,14 +325,14 @@ Endpoints:
 - `/v1/fees/channel/:id`
 - `/api/voucher/code/:code`
 - `/v1/plans/`
-Types:
+  Types:
 - None defined in legacy services. Add as discovered during implementation.
-Query Keys Outline:
+  Query Keys Outline:
 - `financeKeys.billings`, `financeKeys.billingDetail`
 - `financeKeys.feesBroker`, `financeKeys.feesBrokerDetail`
 - `financeKeys.feesChannel`, `financeKeys.feesChannelDetail`
 - `financeKeys.voucherByCode`
-Query Hooks:
+  Query Hooks:
 - `useBillings`
 - `useBillingDetail`
 - `useBrokerFees`
@@ -320,7 +340,7 @@ Query Hooks:
 - `useChannelFees`
 - `useChannelFeeDetail`
 - `useVoucherByCode`
-Mutation Hooks:
+  Mutation Hooks:
 - `useCreateBilling`
 - `useUpdateBilling`
 - `useConfirmBillingReconciliation`
@@ -331,18 +351,19 @@ Mutation Hooks:
 **Helper Service**
 Base URL: `NEXT_PUBLIC_HELPER_SERVICE_URL`
 Endpoints:
+
 - `/v1/html2pdf`
 - `/v1/html2pdf/generate-pdf-service`
 - `/v1/calendar`
 - `/v1/calendar/:id`
-Types:
+  Types:
 - None defined in legacy services. Add as discovered during implementation.
-Query Keys Outline:
+  Query Keys Outline:
 - `helperKeys.calendar`, `helperKeys.calendarDetail`
-Query Hooks:
+  Query Hooks:
 - `useCalendar`
 - `useCalendarDetail`
-Mutation Hooks:
+  Mutation Hooks:
 - `useHtmlToPdf`
 - `useGeneratePdfService`
 - `useCreateCalendar`
@@ -352,6 +373,7 @@ Mutation Hooks:
 **Product Service**
 Base URL: `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
 Endpoints:
+
 - `/v1/products`
 - `/v1/products/:id`
 - `/v1/categories`
@@ -393,7 +415,7 @@ Endpoints:
 - `/v1/email-templates/journey`
 - `/v1/email-templates/journey/:id`
 - `/product-config/:type`
-Types:
+  Types:
 - `ProductCatalogDto`, `PackageDto`, `ProductList`, `ProductDto`, `InsuranceDto`
 - `ProductConfig`, `ProductConfigResponse`
 - `ProductResponse`, `CategoriesResponse`, `InsurancesResponse`
@@ -401,7 +423,7 @@ Types:
 - `Insurance`
 - `CurrencyResponse`, `TypeCurreciesResponse`
 - `EmailTagResponse`, `MailTemplateResponse`
-Query Keys Outline:
+  Query Keys Outline:
 - `productKeys.products`, `productKeys.productDetail`
 - `productKeys.categories`, `productKeys.categoryDetail`, `productKeys.categoriesByChannel`
 - `productKeys.insurances`, `productKeys.insuranceDetail`, `productKeys.insuranceCurrencies`
@@ -409,7 +431,7 @@ Query Keys Outline:
 - `productKeys.packages`, `productKeys.channelPackages`, `productKeys.planChannels`
 - `productKeys.references`, `productKeys.emailTags`, `productKeys.emailTemplates`
 - `productKeys.productConfig`
-Query Hooks:
+  Query Hooks:
 - `useProducts`
 - `useProductDetail`
 - `useCategories`
@@ -431,7 +453,7 @@ Query Hooks:
 - `useEmailTemplatesJourney`
 - `useEmailTemplateJourneyDetail`
 - `useProductConfig`
-Mutation Hooks:
+  Mutation Hooks:
 - `useCreateProduct`
 - `useUpdateProduct`
 - `useDeleteProduct`
@@ -472,6 +494,7 @@ Mutation Hooks:
 **Promotion Service**
 Base URL: `NEXT_PUBLIC_PROMOTION_SERVICE_URL`
 Endpoints:
+
 - `/v1/campaign`
 - `/v1/campaign/:id`
 - `/v1/campaign/search/query`
@@ -485,15 +508,15 @@ Endpoints:
 - `/v1/voucher/:id`
 - `/v1/voucher/code/:code`
 - `/v1/plans/`
-Types:
+  Types:
 - `PromotionResponse`
-Query Keys Outline:
+  Query Keys Outline:
 - `promotionKeys.campaigns`, `promotionKeys.campaignDetail`
 - `promotionKeys.campaignSearch`
 - `promotionKeys.campaignReport`, `promotionKeys.campaignReportInsurance`
 - `promotionKeys.campaignHistory`
 - `promotionKeys.voucherDetail`, `promotionKeys.voucherByCode`
-Query Hooks:
+  Query Hooks:
 - `useCampaigns`
 - `useCampaignDetail`
 - `useCampaignSearch`
@@ -502,7 +525,7 @@ Query Hooks:
 - `useCampaignHistory`
 - `useVoucherDetail`
 - `useVoucherByCode`
-Mutation Hooks:
+  Mutation Hooks:
 - `useCreateCampaign`
 - `useUpdateCampaign`
 - `useDeleteCampaign`
@@ -513,6 +536,7 @@ Mutation Hooks:
 **Sanction Service**
 Base URL: `NEXT_PUBLIC_SANCTION_SERVICE_URL`
 Endpoints:
+
 - `/v1/sources`
 - `/v1/sources/:id`
 - `/v1/sources/paging`
@@ -522,18 +546,18 @@ Endpoints:
 - `/v1/blacklist/:id`
 - `/v1/blacklist/delete/:id`
 - `/v1/blacklist/update/:id`
-Types:
+  Types:
 - `Response`, `Insurer`
-Query Keys Outline:
+  Query Keys Outline:
 - `sanctionKeys.sources`, `sanctionKeys.sourceDetail`, `sanctionKeys.sourcePaging`
 - `sanctionKeys.blacklist`, `sanctionKeys.blacklistDetail`
-Query Hooks:
+  Query Hooks:
 - `useSources`
 - `useSourceDetail`
 - `useSourcesPaging`
 - `useBlacklist`
 - `useBlacklistDetail`
-Mutation Hooks:
+  Mutation Hooks:
 - `useCreateSource`
 - `useUpdateSource`
 - `useDeleteSource`
@@ -544,42 +568,65 @@ Mutation Hooks:
 **Country Service**
 Base URL: `NEXT_PUBLIC_COUNTRY_SERVICE_URL`
 Endpoints:
+
 - `/countries`
-Types:
+  Types:
 - `Response`
-Query Keys Outline:
+  Query Keys Outline:
 - `countryKeys.countries`
-Query Hooks:
+  Query Hooks:
 - `useCountries`
-Mutation Hooks:
+  Mutation Hooks:
 - None expected.
 
 **PDF Service**
 Base URL: `NEXT_PUBLIC_PDF_SERVICE_URL`
 Endpoints:
+
 - `/pdf-generate`
-Types:
+  Types:
 - None defined in legacy services. Add as discovered during implementation.
-Query Keys Outline:
+  Query Keys Outline:
 - None expected.
-Query Hooks:
+  Query Hooks:
 - None expected.
-Mutation Hooks:
+  Mutation Hooks:
 - `useGeneratePdf`
+
+**Report Service**
+Base URL: `NEXT_PUBLIC_REPORT_SERVICE_URL`
+Endpoints:
+
+- `/v1/notification-logs`
+- `/v1/notification-logs/:id`
+  Types:
+- `NotificationLog`
+- `NotificationLogsResponse`
+- `GetNotificationLogsParams`
+  Query Keys Outline:
+- `reportKeys.notificationLogs`
+- `reportKeys.notificationLogsList`
+- `reportKeys.notificationLogDetail`
+  Query Hooks:
+- `useNotificationLogs`
+- `useNotificationLogDetail`
+  Mutation Hooks:
+- None expected.
 
 **Admin-Portal Internal API**
 Base URL: `window.location.origin` with `/api`
 Endpoints:
+
 - `/api/cookie`
 - `/api/cookie/:key`
-Types:
+  Types:
 - None defined in legacy services. Add as discovered during implementation.
-Query Keys Outline:
+  Query Keys Outline:
 - `internalKeys.cookie`, `internalKeys.cookieByKey`
-Query Hooks:
+  Query Hooks:
 - `useCookie`
 - `useCookieByKey`
-Mutation Hooks:
+  Mutation Hooks:
 - `useSetCookie`
 - `useDeleteCookie`
 
@@ -587,6 +634,7 @@ Mutation Hooks:
 Service: `claims`
 Base URL: `NEXT_PUBLIC_API_CLAIM_BASE_URL`
 Example structure:
+
 ```text
 src/services/claims/
 |-- api/
@@ -601,7 +649,9 @@ src/services/claims/
 |       |-- useUpdateClaim.ts
 |-- query-keys.ts
 ```
+
 Example query keys:
+
 ```ts
 export const claimKeys = {
   all: ['claims'] as const,
@@ -610,7 +660,9 @@ export const claimKeys = {
   detail: (id: string) => [...claimKeys.all, 'detail', id] as const,
 };
 ```
+
 Example query hook:
+
 ```ts
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
@@ -622,7 +674,7 @@ type ClaimFilters = Parameters<typeof claimsService.getClaims>[0];
 
 export function useClaims(
   filters: ClaimFilters,
-  options?: Omit<UseQueryOptions<ClaimsResponse, Error>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<ClaimsResponse, Error>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: claimKeys.list(filters),
@@ -631,7 +683,9 @@ export function useClaims(
   });
 }
 ```
+
 Example mutation hook:
+
 ```ts
 import { useMutation, useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
 
@@ -642,7 +696,7 @@ type UpdateClaimResponse = Awaited<ReturnType<typeof claimsService.updateClaim>>
 type UpdateClaimVariables = Parameters<typeof claimsService.updateClaim>[0];
 
 export function useUpdateClaim(
-  options?: UseMutationOptions<UpdateClaimResponse, Error, UpdateClaimVariables>
+  options?: UseMutationOptions<UpdateClaimResponse, Error, UpdateClaimVariables>,
 ) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -655,4 +709,3 @@ export function useUpdateClaim(
   });
 }
 ```
-

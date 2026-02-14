@@ -8,6 +8,9 @@
 
 - `apps/<app-name>/docs/migration/service/refactor-spec.md`
 - `apps/<app-name>/docs/migration/service/refactor-lifecycle.md`
+- `apps/<app-name>/docs/migration/service/refactor-batch-prompts.md`
+- `apps/<app-name>/docs/migration/service/legacy-update-batch-prompts.md`
+- `apps/<app-name>/docs/migration/service/component-migration.md`
 - `apps/<app-name>/docs/migration/service/audit.md`
 - `apps/<app-name>/docs/migration/service/plan.md`
 - `apps/<app-name>/docs/verification-gate.md`
@@ -24,6 +27,9 @@ During monorepo migration, each app in `apps/` maintains two branch types:
 - **`migrate/*`** = Work/refactor branch created from `integrate/*`
 
 **Key principle:** The `integrate/*` branch is 1:1 with the legacy repo and never has local modifications. Therefore, subtree pull to `integrate/*` will NEVER have conflicts. Conflicts only occur when merging `integrate/*` to `migrate/*`.
+
+> [!IMPORTANT]
+> **All legacy update documentation and refactoring work** happens on the `migrate/*` branch, NOT on `integrate/*`. The `integrate/*` branch remains untouched except for git subtree pull operations.
 
 ### Goals
 
@@ -761,6 +767,9 @@ If main task.md exists at `apps/<app-name>/docs/migration/service/task.md`:
 - Mark legacy update as integrated
 - Update current phase/batch status
 - Note services affected and new services added
+
+> [!NOTE]
+> All documentation is created on the `migrate/<app-name>` branch, NOT on `integrate/*`.
 
 #### 6.6 Document results
 

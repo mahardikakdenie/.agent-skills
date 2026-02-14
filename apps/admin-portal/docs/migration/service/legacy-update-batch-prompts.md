@@ -9,6 +9,7 @@
 - `<APP_PATH>/docs/migration/service/legacy-update-routines.md`
 - `<APP_PATH>/docs/migration/service/refactor-spec.md`
 - `<APP_PATH>/docs/migration/service/refactor-lifecycle.md`
+- `<APP_PATH>/docs/migration/service/component-migration.md`
 - `<APP_PATH>/docs/migration/service/audit.md`
 - `<APP_PATH>/docs/migration/service/plan.md`
 - `<APP_PATH>/docs/verification-gate.md`
@@ -152,7 +153,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 4:
    - Cross-check base URLs with <APP_PATH>/docs/migration/service/audit.md
    - Cross-check existing services with <APP_PATH>/docs/migration/service/plan.md
 
-5. Create <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md with:
+5. Create <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md (on migrate/<APP_NAME> branch) with:
    - Update timestamp
    - Legacy commit SHA
    - List of changes

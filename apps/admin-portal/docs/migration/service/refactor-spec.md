@@ -20,6 +20,7 @@ This spec is designed to be reused across **multiple apps** in a monorepo. Every
 
 - `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` - Visual lifecycle diagram
 - `<APP_PATH>/docs/migration/service/refactor-batch-prompts.md` - Main refactor batch prompts (Batch 0-7)
+- `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking (Batch 6 + 5A)
 - `<APP_PATH>/docs/verification-gate.md` - Per-app verification commands
 
 **Legacy Repository Updates:**
