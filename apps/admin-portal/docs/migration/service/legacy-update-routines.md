@@ -28,6 +28,9 @@ During monorepo migration, each app in `apps/` maintains two branch types:
 
 **Key principle:** The `integrate/*` branch is 1:1 with the legacy repo and never has local modifications. Therefore, subtree pull to `integrate/*` will NEVER have conflicts. Conflicts only occur when merging `integrate/*` to `migrate/*`.
 
+> [!IMPORTANT]
+> **All legacy update documentation and refactoring work** happens on the `migrate/*` branch, NOT on `integrate/*`. The `integrate/*` branch remains untouched except for git subtree pull operations.
+
 ### Goals
 
 1. **Synchronization** - Keep monorepo apps updated with legacy repo changes
@@ -764,6 +767,9 @@ If main task.md exists at `apps/<app-name>/docs/migration/service/task.md`:
 - Mark legacy update as integrated
 - Update current phase/batch status
 - Note services affected and new services added
+
+> [!NOTE]
+> All documentation is created on the `migrate/<app-name>` branch, NOT on `integrate/*`.
 
 #### 6.6 Document results
 
