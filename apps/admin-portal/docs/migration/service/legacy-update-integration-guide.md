@@ -10,6 +10,7 @@
 - `refactor-batch-prompts.md` - Main refactor batch prompts
 - `legacy-update-routines.md` - Detailed update routines
 - `legacy-update-batch-prompts.md` - Copy-paste update prompts
+- `component-migration.md` - Component migration tracking
 - `refactor-lifecycle.md` - Visual lifecycle diagram
 - `verification-gate.md` - Per-app verification commands
 
@@ -24,7 +25,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
 | **Before Batch 0** (Not started)           | ✅ Low      | Direct integration                 | Safe to integrate before starting refactor |
 | **Batch 0-5** (Phases 0-4B)                | ⚠️ Medium   | Pause → Update → Resume            | Old and new services coexist               |
 | **Batch 6** (Phase 5, Component Migration) | 🔴 High     | Pause → Update → Extensive Testing | Some components already migrated           |
-| **Batch 7+** (Phase 6, After Cleanup)      | 🔴 Critical | Immediate refactor required        | Old services deleted, must use Batch 5     |
+| **Batch 7+** (Phase 6, After Cleanup)      | 🔴 Critical | Incremental refactor required      | Old services deleted, use Batch 5A + 5B    |
 
 ---
 
@@ -36,6 +37,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
 
 1. **Complete current step** in main batch (don't stop mid-step)
 2. **Document pause point** in task.md:
+
    ```markdown
    ## Current Status
 
@@ -45,6 +47,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
    - Reason: Legacy update incoming
    - Timestamp: <YYYY-MM-DD HH:MM>
    ```
+
 3. **Commit and push** current work:
    ```bash
    git add .
@@ -58,6 +61,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
 **Once Batch 6 verification passes:**
 
 1. **Update task.md**:
+
    ```markdown
    ## Current Status
 
@@ -68,6 +72,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
    - Services affected: <list>
    - New services added: <list or "none">
    ```
+
 2. **Review changes** that might affect current work:
    - Check if services you're currently refactoring were modified
    - Check if new endpoints were added to services you've already implemented
@@ -203,7 +208,7 @@ Batch 6: Extensive verification
 
 ### Scenario E: Update After Cleanup (Phase 6 Complete)
 
-**Batch Sequence:** 1 → 3 → 5 (mandatory) → 6  
+**Batch Sequence:** 1 → 3 → 5A → 5B → 6  
 **Time:** 2-4 hours  
 **Risk:** 🔴 Critical - no old services to fall back on  
 **Use When:** Legacy update occurs after old services are deleted
@@ -212,14 +217,48 @@ Batch 6: Extensive verification
 Batch 1: Subtree pull and merge
          ↓
 Batch 3: Analyze changes
-         ↓ (Batch 5 is MANDATORY)
-Batch 5: Immediately refactor all new changes
-         - All changes must go through new architecture
-         - No legacy service fallback available
-         - Must implement API layer + hooks for everything
+         ↓ (Incremental refactor MANDATORY)
+Batch 5A: Component Migration (Incremental)
+         - Migrate ONLY affected components to new service
+         - Use component-migration.md to track
+         - No legacy fallback available
+         ↓
+Batch 5B: Cleanup (Incremental)
+         - Remove ONLY related old service files
+         - Update imports in affected components
          ↓
 Batch 6: Verify + document
 ```
+
+**Key Difference from Scenario C:**
+
+- Scenario C (pre-cleanup): Full Batch 5 (new service from scratch)
+- Scenario E (post-cleanup): Batch 5A + 5B (incremental migration only)
+
+---
+
+### Post-Cleanup Decision Tree (After Batch 7 Complete)
+
+**When Batch 7 is complete and new legacy update arrives:**
+
+```mermaid
+flowchart TD
+    A[Batch 3: Analyze Changes] --> B{New Service?}
+    B -->|Yes| C[Batch 5: Full new service\nPhase 4A + 4B]
+    B -->|No| D{Changes in\nRefactored Service?}
+    D -->|Yes| E[Batch 5A: Component Migration\nIncremental - affected only]
+    E --> F[Batch 5B: Cleanup\nIncremental - related files]
+    D -->|No| G[Batch 4: Legacy-only update\nno refactor needed]
+    C --> H[Batch 6: Verify]
+    F --> H
+    G --> H
+```
+
+**Decision Rules:**
+
+1. **New base URL** → Full Batch 5 (same as Scenario C)
+2. **Existing refactored service** → Batch 5A (component migration) + 5B (cleanup)
+3. **Legacy-only changes** → Batch 4 minimal
 
 ---
 
@@ -285,14 +324,21 @@ Use this checklist before running Batch 1:
 
 ## Quick Reference: Which Prompt to Use
 
-| Situation                  | Use This Prompt |
-| -------------------------- | --------------- |
-| Starting legacy update     | Batch 1         |
-| Conflicts after merge      | Batch 2         |
-| Analyzing what changed     | Batch 3         |
-| Updating existing services | Batch 4         |
-| Creating new service       | Batch 5         |
-| Final verification         | Batch 6         |
+| Situation                         | Use This Prompt | When                            |
+| --------------------------------- | --------------- | ------------------------------- |
+| Starting legacy update            | Batch 1         | Always                          |
+| Conflicts after merge             | Batch 2         | If conflicts detected           |
+| Analyzing what changed            | Batch 3         | Always                          |
+| Updating existing services        | Batch 4         | Existing endpoints/types        |
+| Creating new service (full)       | Batch 5         | New base URL                    |
+| Component migration (incremental) | Batch 5A        | After Batch 7, existing service |
+| Cleanup (incremental)             | Batch 5B        | After Batch 5A                  |
+| Final verification                | Batch 6         | Always                          |
+
+**Post-Cleanup Flow:**
+
+- New service → Batch 1 → 3 → **5** → 6
+- Existing service → Batch 1 → 3 → **5A** → **5B** → 6
 
 ---
 

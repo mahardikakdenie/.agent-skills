@@ -162,3 +162,19 @@ _(Template for future incremental updates - copy and fill in)_
 - Each migration must pass verification gate before marking complete
 - See [`refactor-batch-prompts.md`](./refactor-batch-prompts.md) for main refactor guidance
 - See [`legacy-update-batch-prompts.md`](./legacy-update-batch-prompts.md) for incremental update guidance
+
+---
+
+## Related Documents
+
+**Main Refactor:**
+
+- [`refactor-spec.md`](./refactor-spec.md) - Master specification (Phase 5-6)
+- [`refactor-batch-prompts.md`](./refactor-batch-prompts.md) - Batch 6-7 prompts
+- [`plan.md`](./plan.md) - Services planned for migration
+
+**Incremental Updates:**
+
+- [`legacy-update-batch-prompts.md`](./legacy-update-batch-prompts.md) - Batch 5A prompt
+- [`legacy-update-routines.md`](./legacy-update-routines.md) - Routine 5A details
+- [`legacy-updates/`](./legacy-updates/) - Legacy update logs

@@ -9,6 +9,7 @@
 - `<APP_PATH>/docs/migration/service/legacy-update-routines.md`
 - `<APP_PATH>/docs/migration/service/refactor-spec.md`
 - `<APP_PATH>/docs/migration/service/refactor-lifecycle.md`
+- `<APP_PATH>/docs/migration/service/component-migration.md`
 - `<APP_PATH>/docs/migration/service/audit.md`
 - `<APP_PATH>/docs/migration/service/plan.md`
 - `<APP_PATH>/docs/verification-gate.md`

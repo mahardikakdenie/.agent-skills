@@ -8,6 +8,17 @@ Placeholders
 - `<APP_PATH>`: apps/admin-portal
 - `<SPEC_PATH>`: spec file (default: `<APP_PATH>/docs/migration/service/refactor-spec.md`)
 
+## Related Documents
+
+- `<APP_PATH>/docs/migration/service/refactor-spec.md` - Master specification
+- `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` - Visual lifecycle
+- `<APP_PATH>/docs/migration/service/audit.md` - Service audit (Phase 1)
+- `<APP_PATH>/docs/migration/service/plan.md` - Migration plan (Phase 2)
+- `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking
+- `<APP_PATH>/docs/verification-gate.md` - Verification commands
+
+---
+
 ## Batch 0 - Verification Gate Setup (No Smoke Required)
 
 Prompt:

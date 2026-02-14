@@ -8,6 +8,9 @@
 
 - `apps/<app-name>/docs/migration/service/refactor-spec.md`
 - `apps/<app-name>/docs/migration/service/refactor-lifecycle.md`
+- `apps/<app-name>/docs/migration/service/refactor-batch-prompts.md`
+- `apps/<app-name>/docs/migration/service/legacy-update-batch-prompts.md`
+- `apps/<app-name>/docs/migration/service/component-migration.md`
 - `apps/<app-name>/docs/migration/service/audit.md`
 - `apps/<app-name>/docs/migration/service/plan.md`
 - `apps/<app-name>/docs/verification-gate.md`
