@@ -410,6 +410,279 @@ After both Phase 4A and 4B.
 
 ---
 
+## Routine 5A: Component Migration for New Service (Incremental)
+
+### Objective
+
+Migrate ONLY components that need the newly created service (typically after main Batch 6-7 complete).
+
+### When to Apply
+
+- ✅ After Routine 5 completes (new service API + hooks created)
+- ✅ After main refactor Batch 6 or 7 (component migration started/completed)
+- ✅ When components exist that should use the new service
+- ❌ Skip if before main Batch 6 (components still use old services)
+
+### When to Skip
+
+- Before main component migration phase (Batch 6)
+- No components need the new service yet
+- Service is for future use only
+
+### Steps
+
+#### 5A.1 Identify affected components
+
+Search codebase for components that:
+
+- Currently use old service patterns related to new service domain
+- Make API calls related to new service endpoints
+- Would benefit from the new service
+
+**Methods:**
+
+```bash
+# Search for old API calls
+grep -r "<endpoint-pattern>" apps/<app>/src/
+
+# Search for old service imports
+grep -r "import.*<old-service-name>" apps/<app>/src/
+
+# Check component directories
+find apps/<app>/src/components -name "*.tsx" -o -name "*.ts"
+find apps/<app>/src/pages -name "*.tsx" -o -name "*.ts"
+```
+
+Create list of affected components (pages, forms, dashboards, etc.)
+
+#### 5A.2 Migrate components incrementally
+
+**For EACH component** (one at a time):
+
+1. **Backup approach**: Commit current state before migrating
+2. **Update imports**:
+
+   ```typescript
+   // ❌ Remove old patterns
+   import { useUpdateNew } from '@/services/new-service/hooks/mutations/useUpdateNew';
+   // ✅ Add new hooks
+   import { useNewData } from '@/services/new-service/hooks/queries/useNewData';
+   import { oldService } from '@/services/old.service';
+   ```
+
+3. **Replace data fetching**:
+
+   ```typescript
+   // ❌ Old pattern
+   const [data, setData] = useState([]);
+   const [loading, setLoading] = useState(false);
+
+   useEffect(() => {
+     const fetchData = async () => {
+       setLoading(true);
+       const result = await oldService.getData();
+       setData(result);
+       setLoading(false);
+     };
+     fetchData();
+   }, []);
+
+   // ✅ New pattern
+   const { data, isLoading } = useNewData({ filters });
+   ```
+
+4. **Replace mutations**:
+
+   ```typescript
+   // ❌ Old pattern
+   const handleSubmit = async (values) => {
+     setLoading(true);
+     await oldService.update(values);
+     setLoading(false);
+     refetch(); // manual refetch
+   };
+
+   // ✅ New pattern
+   const { mutate, isPending } = useUpdateNew();
+
+   const handleSubmit = (values) => {
+     mutate(values, {
+       onSuccess: () => {
+         // automatic cache invalidation
+       }
+     });
+   };
+   ```
+
+5. **Update loading/error states**:
+
+   ```typescript
+   // ✅ Use hook states
+   if (isLoading) return <Spinner />;
+   if (error) return <ErrorMessage error={error} />;
+   ```
+
+6. **Test component thoroughly**:
+   - Page loads without errors
+   - Data fetching works correctly
+   - User interactions work
+   - No console/network errors
+   - No regressions
+
+7. **Commit after each component** if successful
+
+#### 5A.3 Verify each migration
+
+After each component migration:
+
+```bash
+# Typecheck
+pnpm typecheck
+
+# Build (if fast enough)
+pnpm build
+
+# Manual test
+# - Open page in browser
+# - Test all interactions
+# - Check network tab
+# - Check console
+```
+
+#### 5A.4 After all components migrated
+
+Run full verification gate as defined in `apps/<app-name>/docs/verification-gate.md`.
+
+#### 5A.5 Document results
+
+In `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`, add:
+
+```markdown
+## Component Migration (Routine 5A)
+
+### Components Migrated
+
+- `<component-1>` - Description
+- `<component-2>` - Description
+
+### Patterns Applied
+
+- Replaced useState + useEffect with useQuery
+- Replaced manual mutations with useMutation hooks
+- Automatic cache invalidation
+
+### Verification
+
+- All migrated components tested: ✅
+- No regressions detected: ✅
+```
+
+---
+
+## Routine 5B: Incremental Cleanup for New Service
+
+### Objective
+
+Remove ONLY old service files related to newly created service (if any exist).
+
+### When to Apply
+
+- ✅ After Routine 5A completes (components migrated to new service)
+- ✅ When old service files exist for the same domain
+- ❌ Skip if no old service exists for this domain
+- ❌ Skip if before main Batch 6 (old services still needed by other components)
+
+### When to Skip
+
+- No old service exists for this domain (e.g., brand new service from legacy)
+- Before main cleanup phase (Batch 7)
+- Old services still used by other components
+
+### Steps
+
+#### 5B.1 Identify old service files
+
+Search for old service files related to new service domain:
+
+```bash
+# Search for old service files
+find apps/<app>/src/services -name "*<service-name>*.ts"
+
+# Check for old API clients
+grep -r "<old-service-name>" apps/<app>/src/services/
+
+# List potential files to delete
+ls -la apps/<app>/src/services/*<service-name>*
+```
+
+Common patterns:
+
+- `src/services/<old-service-name>.service.ts`
+- `src/services/<old-service-name>.ts`
+- `src/api/<old-service-name>.ts`
+- `src/utils/<old-service-name>-client.ts`
+
+#### 5B.2 Delete old service files (if exist)
+
+**If old service files found:**
+
+```bash
+# Delete ONLY files related to new service
+rm apps/<app>/src/services/<old-service-name>.service.ts
+
+# Update any remaining imports (should be none if 5A was complete)
+# Check for broken imports:
+pnpm typecheck
+```
+
+**Rules:**
+
+- **ONLY** delete files related to new service domain
+- **DO NOT** delete other old services (may be used elsewhere)
+- **DO NOT** delete shared utilities unless verified unused
+
+**If no old service files found:**
+
+Document: "No cleanup needed, old service doesn't exist (brand new service)"
+
+#### 5B.3 Verify cleanup
+
+```bash
+# Typecheck
+pnpm typecheck
+
+# Build
+pnpm build
+
+# Verify no broken imports
+# Verify app still runs
+```
+
+#### 5B.4 Run verification gate
+
+Run full verification gate from `verification-gate.md`.
+
+#### 5B.5 Document cleanup
+
+In `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`, add:
+
+```markdown
+## Cleanup (Routine 5B)
+
+### Files Deleted
+
+- `src/services/<old-service-name>.service.ts`
+- (or "None - old service didn't exist")
+
+### Verification
+
+- Typecheck: ✅
+- Build: ✅
+- No broken imports: ✅
+```
+
+---
+
 ## Routine 6: Verify No Breaking Changes
 
 ### Objective
@@ -530,6 +803,28 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 
 ---
 
+### Scenario E: New Service After Full Cleanup
+
+**Flow:** Routine 1 → Routine 2 → Routine 3 (if conflicts) → Routine 4 → Routine 5 → Routine 5A → Routine 5B → Routine 6  
+**Time:** 3-5 hours
+
+**Context:** Main refactor complete (Batch 0-7 done), old services deleted, now legacy update adds new service.
+
+**Key Difference:** After cleanup, MUST immediately migrate components (Routine 5A) - cannot leave components using non-existent old services.
+
+**Steps:**
+
+1. Routine 1-3: Subtree pull, merge, resolve conflicts (if any)
+2. Routine 4: Identify new service needed
+3. Routine 5: Create new service (API + Hooks - Phase 4A + 4B)
+4. **Routine 5A**: Migrate ONLY components that need the new service (incremental Phase 5)
+5. **Routine 5B**: Cleanup old service files (if legacy added old-style service) (incremental Phase 6)
+6. Routine 6: Full verification
+
+**DO NOT** re-run main Batch 6-7 from scratch - use incremental Routines 5A/5B instead.
+
+---
+
 ## Best Practices
 
 1. **integrate/\* is sacred** - Never modify it directly
@@ -577,7 +872,15 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 ### After Batch 7 (Cleanup; Phase 6)
 
 1. No old services to fall back on
-2. Must immediately refactor into new architecture
+2. **Must use incremental routines** for new service:
+   - Run Routines 1-4 (subtree, merge, analyze, adjust)
+   - Run **Routine 5** (create new service - API + Hooks)
+   - Run **Routine 5A** (migrate affected components incrementally)
+   - Run **Routine 5B** (cleanup if old service was added from legacy)
+   - Run Routine 6 (verification)
+3. **DO NOT** re-run main Batch 6-7 (would migrate all components from scratch)
+4. **DO** use Routine 5A to migrate ONLY affected components
+5. Full verification is mandatory (Routine 6)
 
 ---
 
