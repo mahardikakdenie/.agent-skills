@@ -217,6 +217,23 @@ Proceed to Batch 6 (verification) after completing adjustments.
 
 Use when a new service must be created.
 
+### When to Use This Batch
+
+This batch creates the API layer and hooks (Phase 4A + 4B) for the new service.
+
+**After this batch, determine next steps based on current refactor phase:**
+
+| Current Main Refactor Phase                                      | Next Steps After Batch 5                                                                                                                    |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Before Batch 6-7** (old services still exist)                  | → Skip to **Batch 6** (verification only)<br/>Components still use old services, no migration needed yet                                    |
+| **After Batch 6** (component migration done, but before cleanup) | → **Batch 5A** (migrate affected components)<br/>→ **Batch 5B** (cleanup old service if exists)<br/>→ **Batch 6** (verification)            |
+| **After Batch 7** (cleanup complete, no old services)            | → **Batch 5A** (migrate affected components)<br/>→ **Batch 5B** (cleanup if old service added from legacy)<br/>→ **Batch 6** (verification) |
+
+**Decision Logic:**
+
+- Use **Batch 5 only** if components don't need the new service yet (before component migration phase)
+- Use **Batch 5 → 5A → 5B** if components need to use the new service immediately (after/during component migration)
+
 ### Prompt
 
 ```
@@ -264,7 +281,134 @@ Rules:
 - Do NOT modify old services
 - Follow Phase 4A/4B patterns from main refactor spec
 
-Proceed to Batch 6 (verification) after completing.
+Proceed to Batch 5A if components need to use the new service, otherwise proceed to Batch 6 (verification).
+```
+
+---
+
+## Update Batch 5A: Component Migration (Incremental - New Service Only)
+
+Use when components need to use the newly created service (typically after main Batch 6-7).
+
+### When to Use This Batch
+
+- ✅ After Batch 5 completes (new service API + hooks created)
+- ✅ After main refactor Batch 6 or 7 (component migration started/completed)
+- ✅ When components exist that should use the new service
+- ❌ Skip if before main Batch 6 (components still use old services)
+
+### Prompt
+
+```
+Migrate components to use the NEW service created in Batch 5 for <APP_NAME>.
+
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 5A:
+
+Context:
+- New service name: <service-name>
+- Service already implemented: Phase 4A (API) + Phase 4B (Hooks) complete
+
+Steps:
+
+1. Identify affected components:
+   - Search codebase for components that:
+     * Currently use old service patterns related to <service-name> domain
+     * Make API calls related to <service-name> endpoints
+     * Would benefit from the new service
+   - List all affected components (pages, forms, dashboards, etc.)
+
+2. Migrate components incrementally (ONE at a time):
+   - Use patterns from <SPEC_PATH> Phase 5
+   - Replace old patterns:
+     * Remove useState + useEffect for data fetching
+     * Remove old service imports
+     * Import new hooks from @/services/<service-name>/hooks/
+   - Update to new patterns:
+     * Use useQuery hooks for GET operations
+     * Use useMutation hooks for POST/PUT/DELETE
+     * Use proper loading/error states from hooks
+   - Test EACH component thoroughly after migration
+
+3. Verification per component:
+   - Page still loads without errors
+   - Data fetching works correctly
+   - User interactions still work
+   - No console/network errors
+   - No regressions
+
+4. After ALL affected components migrated:
+   - Run full verification gate from verification-gate.md
+   - If verification fails: fix and re-run
+   - Document which components were migrated
+
+Rules:
+- **ONLY** migrate components using the new service, NOT all components
+- **DO NOT** touch unrelated components
+- Migrate ONE component at a time
+- Test after each component migration
+- Maintain 100% backward compatibility
+- If $vercel-react-best-practices available, apply it
+
+Proceed to Batch 5B after all affected components are migrated and verified.
+```
+
+---
+
+## Update Batch 5B: Cleanup (Incremental - New Service Only)
+
+Use when old service files exist for the newly created service domain (typically after Batch 5A).
+
+### When to Use This Batch
+
+- ✅ After Batch 5A completes (components migrated to new service)
+- ✅ When old service files exist for the same domain
+- ❌ Skip if no old service exists for this domain
+- ❌ Skip if before main Batch 6 (old services still needed by other components)
+
+### Prompt
+
+```
+Cleanup old service files for <service-name> after component migration for <APP_NAME>.
+
+Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 5B:
+
+Context:
+- New service name: <service-name>
+- Components already migrated: Batch 5A complete
+
+Steps:
+
+1. Identify old service files related to <service-name>:
+   - Search for old service files (e.g., src/services/*.service.ts)
+   - Check if old service exists for <service-name> domain
+   - List files to be deleted
+
+2. If old service files exist:
+   - Delete ONLY files related to <service-name>
+   - DO NOT delete other old services (they may be used elsewhere)
+   - Update any remaining imports (should be none if Batch 5A was complete)
+
+3. If NO old service files exist:
+   - Note: "No cleanup needed, old service doesn't exist"
+   - This is expected if service is brand new from legacy
+
+4. Verify cleanup:
+   - Run typecheck
+   - Run build
+   - No broken imports
+   - App still runs correctly
+
+5. Run full verification gate from verification-gate.md:
+   - Document cleanup results
+   - Note which files were deleted (if any)
+
+Rules:
+- **ONLY** delete old service files for <service-name>
+- **DO NOT** delete other old services
+- Verify no broken imports after deletion
+- If verification fails: fix and re-run
+
+Proceed to Batch 6 (verification and documentation) after cleanup.
 ```
 
 ---
@@ -382,6 +526,28 @@ Batch 1 → Batch 2 → Batch 3 → Batch 5 → Batch 6
 
 ---
 
+### Scenario E: New Service After Full Cleanup (After Main Batch 7)
+
+```
+Batch 1 → Batch 3 → Batch 5 → Batch 5A → Batch 5B → Batch 6
+```
+
+**Time:** 3-5 hours
+
+**Context:** Main refactor complete (Batch 0-7 done), old services deleted, now legacy update adds new service.
+
+**Flow:**
+
+1. **Batch 1-3**: Subtree pull, merge, analyze (as usual)
+2. **Batch 5**: Create new service (API + Hooks only)
+3. **Batch 5A**: Migrate ONLY components that need the new service
+4. **Batch 5B**: Cleanup old service (if legacy added old-style service, otherwise skip)
+5. **Batch 6**: Full verification
+
+**Key Difference:** After cleanup, MUST immediately migrate components (Batch 5A) - cannot leave components using non-existent old services.
+
+---
+
 ## Integration with Main Refactor Lifecycle
 
 ### During Main Batches 0-5 (Before Component Migration; covers Phases 0-4B)
@@ -407,8 +573,15 @@ If legacy update occurs:
 If legacy update occurs:
 
 1. Old services are gone
-2. **Immediately refactor** via Batch 5 pattern
-3. Run full verification
+2. **Must use incremental batches** for new service:
+   - Run Batch 1-3 (subtree, merge, analyze)
+   - Run **Batch 5** (create new service - API + Hooks)
+   - Run **Batch 5A** (migrate affected components incrementally)
+   - Run **Batch 5B** (cleanup if old service was added from legacy)
+   - Run Batch 6 (verification)
+3. **DO NOT** re-run main Batch 6-7 (would migrate all components from scratch)
+4. **DO** use Batch 5A to migrate ONLY affected components
+5. Full verification is mandatory
 
 ---
 
