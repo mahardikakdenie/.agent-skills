@@ -282,6 +282,18 @@ export default function useExportClaim(): UseExportClaimProps {
       );
     };
 
+    const excludedTypes = ["multiple file", "file"];
+    let claimConfigLabels: string[] = [];
+
+    if (isGrabExpress && data.length > 0) {
+      const firstItemConfig = data[0]?.claim_config;
+      if (Array.isArray(firstItemConfig)) {
+        claimConfigLabels = firstItemConfig
+          .filter((c: any) => !excludedTypes.includes(c.type))
+          .map((c: any) => c.label);
+      }
+    }
+
     const sheetData = data.map((item, index) => {
       const baseData: any = {
         No: index + 1,
@@ -295,12 +307,12 @@ export default function useExportClaim(): UseExportClaimProps {
         Status: item.status || "-",
       };
 
-      if (isGrabExpress) {
-        baseData["Booking ID"] = getClaimConfigValue(item, "order_id");
-        baseData["Tanggal Claim"] = getClaimConfigValue(
-          item,
-          "datetime_loss_damage",
-        );
+      if (isGrabExpress && Array.isArray(item?.claim_config)) {
+        item.claim_config
+          .filter((c: any) => !excludedTypes.includes(c.type))
+          .forEach((c: any) => {
+            baseData[c.label] = c.value || "-";
+          });
       }
 
       return baseData;
@@ -320,12 +332,12 @@ export default function useExportClaim(): UseExportClaimProps {
     columnWidths["Status"] = 100;
 
     if (isGrabExpress) {
-      columnWidths["Booking ID"] = 150;
-      columnWidths["Tanggal Claim"] = 150;
+      claimConfigLabels.forEach((label) => {
+        columnWidths[label] = 200;
+      });
     }
-    // Set the width for each column
     worksheet["!cols"] = Object.keys(columnWidths).map((key) => ({
-      wpx: columnWidths[key], //adjust multiplier for better fit
+      wpx: columnWidths[key],
     }));
 
     const workbook = XLSX.utils.book_new();

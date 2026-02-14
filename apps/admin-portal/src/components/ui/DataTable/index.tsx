@@ -112,7 +112,7 @@ export function DataTable<T extends Record<string, any>>({
           ) : data.length > 0 ? (
             data.map((item, index) => (
               <TableRow
-                key={item.id || index}
+                key={index}
                 className={getRowClassName ? getRowClassName(item, index) : ""}
               >
                 {columns.map((column) => (
