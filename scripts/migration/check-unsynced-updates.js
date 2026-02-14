@@ -20,7 +20,6 @@ const { execSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const adminPortalRoot = path.resolve(__dirname, '..', '..');
-const workspaceRoot = path.resolve(adminPortalRoot, '..', '..');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -60,7 +59,7 @@ function execGit(command, options = {}) {
  * Load subtree configuration
  */
 function loadSubtreeConfig() {
-  const configPath = path.join(workspaceRoot, 'subtree-config.json');
+  const configPath = path.join(adminPortalRoot, 'subtree-config.json');
 
   if (!fs.existsSync(configPath)) {
     console.error('❌ Error: subtree-config.json not found!');
