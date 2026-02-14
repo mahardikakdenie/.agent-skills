@@ -50,14 +50,16 @@ interface UsePoliciesProps {
   handleClear: () => void;
 }
 
-export default function usePolicies(): UsePoliciesProps {
+export default function usePolicies(
+  isPendingRenewal?: boolean,
+): UsePoliciesProps {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [tab, setTab] = useState("All");
   const [searchData, setSearchData] = useState("");
   const [searchChannel, setSearchChannel] = useState(
-    "40eee5bf-2b92-4d23-be55-f9caa9d3ea88"
+    "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
   );
   const [searchCategory, setSearchCategory] = useState("All");
   const [date, setDate] = useState<DateRange | undefined>(undefined);
@@ -76,6 +78,7 @@ export default function usePolicies(): UsePoliciesProps {
     searchCategory,
     date?.from?.toISOString(),
     date?.to?.toISOString(),
+    isPendingRenewal,
   ];
 
   const channelQueryKey = ["channels"];
@@ -100,6 +103,7 @@ export default function usePolicies(): UsePoliciesProps {
         category: searchCategory !== "All" ? searchCategory : undefined,
         created_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
         created_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+        ...(isPendingRenewal && { is_need_renewal: true }),
       };
 
       const response = await policyService.get(ApiURL.v1Policies, { params });
@@ -127,7 +131,7 @@ export default function usePolicies(): UsePoliciesProps {
     queryFn: async () => {
       if (!searchChannel) return { data: [] };
       const response = await productService.get(
-        ApiURL.v1CategoriesChannelDetails(searchChannel)
+        ApiURL.v1CategoriesChannelDetails(searchChannel),
       );
       return response.data;
     },
@@ -164,7 +168,7 @@ export default function usePolicies(): UsePoliciesProps {
         setSearchData(keyword);
         setPage(1);
       }, 300),
-    []
+    [],
   );
 
   const handleRowsPerPageChange = useCallback(
@@ -172,7 +176,7 @@ export default function usePolicies(): UsePoliciesProps {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    []
+    [],
   );
 
   const selectTab = useCallback((tabName: string) => {

@@ -105,7 +105,7 @@ const ClaimsPage = () => {
   const [dataDocument, setDataDocument] = useState<any[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [finalSelectedDocuments, setFinalSelectedDocuments] = useState<any[]>(
-    []
+    [],
   );
   const [selectedClaim, setSelectedClaim] = useState<any>(null);
 
@@ -125,7 +125,7 @@ const ClaimsPage = () => {
       const deleteBtn = permissionList.includes("Claim.Delete");
       const createBtn = permissionList.includes("Claim.Create");
       const openAllStatus = permissionList.includes(
-        "Claim.AllowChangeAllStatus"
+        "Claim.AllowChangeAllStatus",
       );
 
       setCanEdit(editBtn);
@@ -162,7 +162,7 @@ const ClaimsPage = () => {
         .filter(
           (doc: any) =>
             doc.type.toLowerCase() === "file" ||
-            doc.type.toLowerCase() === "file multiple"
+            doc.type.toLowerCase() === "file multiple",
         )
         .map((document: any) => ({
           ...document,
@@ -179,14 +179,14 @@ const ClaimsPage = () => {
         response?.data
           ?.filter(
             (doc: any) =>
-              doc?.type?.toLowerCase() === "fields" && doc?.fields?.length > 0
+              doc?.type?.toLowerCase() === "fields" && doc?.fields?.length > 0,
           )
           .map((a: any) =>
             a?.fields?.filter(
               (doc: any) =>
                 doc?.type?.toLowerCase() === "file" ||
-                doc?.type?.toLowerCase() === "file multiple"
-            )
+                doc?.type?.toLowerCase() === "file multiple",
+            ),
           )
           ?.flat() || [];
 
@@ -245,7 +245,7 @@ const ClaimsPage = () => {
     const reqAmount = filteredClaims
       .map((item) => {
         const matchingClaim = item.claim.find(
-          (d: any) => d.type === "Number" && d.name === "claim"
+          (d: any) => d.type === "Number" && d.name === "claim",
         );
         return item.id === claimId
           ? matchingClaim
@@ -298,7 +298,7 @@ const ClaimsPage = () => {
     newStatus: string,
     amount_approved?: number,
     note?: string,
-    lack_of_documents?: string[]
+    lack_of_documents?: string[],
   ) => {
     claimService
       .put(ApiURL.v1ClaimUpdateStatus(claimId), {
@@ -321,7 +321,7 @@ const ClaimsPage = () => {
     if (selectedClaim.amount && selectedClaim.amount > 0) {
       if (amountApproved > reqAmountApproved) {
         setAmApprovedMsg(
-          "Your approval amount limit cannot exceed the requested amount"
+          "Your approval amount limit cannot exceed the requested amount",
         );
         return;
       }
@@ -360,8 +360,8 @@ const ClaimsPage = () => {
         amountApproved,
         notes,
         finalSelectedDocuments.map((item) =>
-          !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name
-        )
+          !!item.nameForUpdateStatus ? item.nameForUpdateStatus : item.name,
+        ),
       );
       setIsModalOpen(false);
       setFinalSelectedDocuments([]);
@@ -385,27 +385,27 @@ const ClaimsPage = () => {
     setSelectedDocuments((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((docId) => docId !== id)
-        : [...prevSelected, id]
+        : [...prevSelected, id],
     );
   };
 
   const handleAddSelectedDocuments = () => {
     const selected = dataDocument.filter((doc) =>
-      selectedDocuments.includes(doc.name)
+      selectedDocuments.includes(doc.name),
     );
     const docListFields =
       dataDocument.length > 0
         ? dataDocument
             .filter(
               (doc: any) =>
-                doc.type.toLowerCase() === "fields" && doc.fields.length > 0
+                doc.type.toLowerCase() === "fields" && doc.fields.length > 0,
             )
             .map((a: any) =>
               a.fields.filter(
                 (doc: any) =>
                   doc.type.toLowerCase() === "file" ||
-                  doc.type.toLowerCase() === "file multiple"
-              )
+                  doc.type.toLowerCase() === "file multiple",
+              ),
             )
             .flat()
             .map((d: any) => ({
@@ -414,7 +414,7 @@ const ClaimsPage = () => {
             }))
         : [];
     const selectedFields = docListFields.filter((doc) =>
-      selectedDocuments.includes(doc.name)
+      selectedDocuments.includes(doc.name),
     );
     setFinalSelectedDocuments([...selected, ...selectedFields]);
   };
@@ -434,7 +434,7 @@ const ClaimsPage = () => {
     const fetchClaimsStatus = async () => {
       try {
         const { data = [] } = await claimService.get(
-          ApiURL.v1ClaimConfigurations
+          ApiURL.v1ClaimConfigurations,
         );
         const filteredStatus = data.filter((cs: any) => cs.status !== "Draft");
         setClaimStatusOptions(filteredStatus);
@@ -486,8 +486,8 @@ const ClaimsPage = () => {
     return claim.sla_status === "Due Date"
       ? "bg-[#FFFEE2]"
       : claim.sla_status === "Overdue"
-      ? "bg-[#fadede]"
-      : "";
+        ? "bg-[#fadede]"
+        : "";
   };
 
   return (
@@ -505,7 +505,7 @@ const ClaimsPage = () => {
                 variant={"outline"}
                 className={cn(
                   "sm:w-[280px] w-full justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
+                  !date && "text-muted-foreground",
                 )}
               >
                 <CalendarIcon className="w-4 h-4 mr-2" />
@@ -538,7 +538,7 @@ const ClaimsPage = () => {
             disabled={!date}
             className={cn(
               "font-semibold bg-transparent hover:bg-transparent p-0 text-red-700 text-sm cursor-pointer absolute right-2",
-              !date && "text-gray-500 cursor-not-allowed"
+              !date && "text-gray-500 cursor-not-allowed",
             )}
             title="Clear"
           >
@@ -802,7 +802,7 @@ const ClaimsPage = () => {
                                 document.type.toLowerCase() === "file" ||
                                 document.type.toLowerCase() ===
                                   "file multiple" ||
-                                document.type.toLowerCase() === "fields"
+                                document.type.toLowerCase() === "fields",
                             )}
                             columns={documentTableColumns}
                             noDataImage={noData}
@@ -893,8 +893,8 @@ const ClaimsPage = () => {
                   status.count > 9
                     ? "px-1.5"
                     : status.count > 99
-                    ? "px-0.5"
-                    : "px-2"
+                      ? "px-0.5"
+                      : "px-2"
                 } ${tab !== status.status && "hidden"}`}
               >
                 {totalData}

@@ -69,7 +69,7 @@ interface UseEmailTemplateFormProps {
 }
 
 export function useEmailTemplateForm(
-  mode: "create" | "edit" = "create"
+  mode: "create" | "edit" = "create",
 ): UseEmailTemplateFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -111,9 +111,8 @@ export function useEmailTemplateForm(
     queryKey: ["email-template-detail", templateId],
     queryFn: async () => {
       if (!templateId) return null;
-      const response = await mailTemplateService.getMailTemplateById(
-        templateId
-      );
+      const response =
+        await mailTemplateService.getMailTemplateById(templateId);
       return response.data[0];
     },
     enabled: !!templateId && isEdit,
@@ -201,15 +200,15 @@ export function useEmailTemplateForm(
         type: selectedTemplateType,
       };
 
+      const cleanedData = Object.fromEntries(
+        Object.entries(requestData)
+          .map(([key, value]) => [key, value === "" ? null : value])
+          .filter(([_, value]) => value !== undefined),
+      );
       if (isEdit && templateId) {
-        const cleanedData = Object.fromEntries(
-          Object.entries(requestData)
-            .map(([key, value]) => [key, value === "" ? null : value])
-            .filter(([_, value]) => value !== undefined)
-        );
         return await mailTemplateService.updateJourney(cleanedData, templateId);
       } else {
-        return await mailTemplateService.saveJourney(requestData);
+        return await mailTemplateService.saveJourney(cleanedData);
       }
     },
     onSuccess: (response) => {
@@ -219,7 +218,7 @@ export function useEmailTemplateForm(
       toast.success(
         isEdit
           ? "Email Template Updated Successfully!"
-          : "Email Template Created Successfully!"
+          : "Email Template Created Successfully!",
       );
 
       router.push(AppURL.masterdataEmailTemplate);
@@ -228,7 +227,7 @@ export function useEmailTemplateForm(
       console.error("Save failed:", error);
       toast.error(
         error?.response?.data?.message ||
-          "Failed to save email template. Please try again."
+          "Failed to save email template. Please try again.",
       );
     },
   });
@@ -271,7 +270,7 @@ export function useEmailTemplateForm(
             const blocksFromHTML = convertFromHTML(templateDetail.content);
             const contentState = ContentState.createFromBlockArray(
               blocksFromHTML.contentBlocks,
-              blocksFromHTML.entityMap
+              blocksFromHTML.entityMap,
             );
             setEditorState(EditorState.createWithContent(contentState));
           } catch (error) {
@@ -334,7 +333,7 @@ export function useEmailTemplateForm(
     if (templateDetail && isEdit && insurancesData) {
       if (insurancesData.length > 0 && templateDetail.insurance) {
         const insuranceExists = insurancesData.some(
-          (ins: any) => ins.id === templateDetail.insurance
+          (ins: any) => ins.id === templateDetail.insurance,
         );
         if (insuranceExists) {
           setValue("insurance", templateDetail.insurance, {
@@ -350,7 +349,7 @@ export function useEmailTemplateForm(
     if (templateDetail && isEdit && productsData) {
       if (productsData.length > 0 && templateDetail.product) {
         const productExists = productsData.some(
-          (prod: any) => prod.id === templateDetail.product
+          (prod: any) => prod.id === templateDetail.product,
         );
         if (productExists) {
           setValue("product", templateDetail.product, {
@@ -366,7 +365,7 @@ export function useEmailTemplateForm(
     if (templateDetail && isEdit && plansData) {
       if (plansData.length > 0 && templateDetail.plan) {
         const planExists = plansData.some(
-          (plan: any) => plan.id === templateDetail.plan
+          (plan: any) => plan.id === templateDetail.plan,
         );
         if (planExists) {
           setValue("plan", templateDetail.plan, {
@@ -392,7 +391,7 @@ export function useEmailTemplateForm(
 
       await saveMutation.mutateAsync(formData);
     },
-    [saveMutation, content]
+    [saveMutation, content],
   );
 
   const loadTemplateDetail = useCallback((id: string) => {
@@ -419,18 +418,18 @@ export function useEmailTemplateForm(
       const newContentState = Modifier.replaceText(
         contentState,
         selectionState,
-        text
+        text,
       );
 
       const newEditorState = EditorState.push(
         editorState,
         newContentState,
-        "insert-characters"
+        "insert-characters",
       );
 
       setEditorState(newEditorState);
     },
-    [editorState]
+    [editorState],
   );
 
   const handleSelectTemplateType = useCallback((type: string) => {
