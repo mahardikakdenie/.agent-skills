@@ -83,6 +83,7 @@ Components:
 #### Service: Policy + Transaction + Claim (Dashboard/Home Aggregation)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_API_POLICY_BASE_URL`
 - `NEXT_PUBLIC_TRANSACTION_SERVICE_URL`
 - `NEXT_PUBLIC_API_CLAIM_BASE_URL`
@@ -98,6 +99,7 @@ Components:
 #### Service: Policy + Channel Service (Membership and Endorsement flows)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_API_POLICY_BASE_URL`
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 
@@ -172,6 +174,7 @@ Components:
 #### Service: Finance + Helper Service
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_FINANCE_SERVICE_URL`
 - `NEXT_PUBLIC_HELPER_SERVICE_URL`
 
@@ -204,6 +207,7 @@ Components:
 #### Service: Product + Channel Service (Product Catalog flows)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 
@@ -230,6 +234,7 @@ Components:
 #### Service: Promotion + Product + Channel Service
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_PROMOTION_SERVICE_URL`
 - `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
@@ -257,6 +262,7 @@ Components:
 #### Service: Masterdata (Channel/Currency/Product Hook Layer)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 - `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
 
@@ -343,6 +349,7 @@ Components:
 #### Service: Product + Channel Service (Partner Management Assign Plan)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 
@@ -357,6 +364,7 @@ Components:
 #### Service: Auth + Channel + Product + Helper + Finance + Sanction + Country (Legacy `src/hooks` layer)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_AUTH_SERVICE_URL`
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 - `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
@@ -664,6 +672,7 @@ Components:
 #### Service: Transaction + Policy + Claim + Product (Legacy `src/views` layer)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_TRANSACTION_SERVICE_URL`
 - `NEXT_PUBLIC_API_POLICY_BASE_URL`
 - `NEXT_PUBLIC_API_CLAIM_BASE_URL`
@@ -728,6 +737,7 @@ Components:
 #### Service: Channel + Policy + Claims + Product + Transaction + Finance (Legacy `src/views` final pass)
 
 Service Base URLs:
+
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 - `NEXT_PUBLIC_API_POLICY_BASE_URL`
 - `NEXT_PUBLIC_API_CLAIM_BASE_URL`
@@ -878,6 +888,7 @@ Components:
 #### Service: Auth + Shared Non-View Modules (Final Pass)
 
 Service Base URL:
+
 - `NEXT_PUBLIC_AUTH_SERVICE_URL`
 
 Components:
@@ -1028,9 +1039,9 @@ Components:
   - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/package-list.tsx`
   - `apps/admin-portal/src/components/tableConfig/packageTableConfig.tsx`
 - Added permanent docs:
-  - `apps/admin-portal/docs/ARCHITECTURE.md`
-  - `apps/admin-portal/docs/ADDING_SERVICES.md`
-  - `apps/admin-portal/docs/QUERY_PATTERNS.md`
+  - `apps/admin-portal/docs/SERVICE_ARCHITECTURE.md`
+  - `apps/admin-portal/docs/SERVICE_IMPLEMENTATION_GUIDE.md`
+  - `apps/admin-portal/docs/SERVICE_REACTQUERY_PATTERNS.md`
 
 ### Batch 7 Verification Gate Results
 
@@ -1051,8 +1062,8 @@ Components:
 
 ## Migration History Summary
 
-| Date       | Type         | Service       | Components   | Status      | Reference  |
-| ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner + dashboard/transactions + policy/membership + campaign/report/export/notification hooks + full `src/views` migration final pass + non-view auth/menu cleanup) | 126 components | Completed | this doc   |
-| 2026-02-15 | Incremental  | Legacy `src/hooks` full React Query wrapper cleanup | 60 hooks | Completed | this doc |
-| 2026-02-16 | Batch 7      | Cleanup + docs (legacy flat services removed, colocated types finalized, permanent docs added) | N/A | Completed | this doc |
+| Date       | Type         | Service                                                                                                                                                                                                                                                                                                                     | Components     | Status    | Reference |
+| ---------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | --------- | --------- |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner + dashboard/transactions + policy/membership + campaign/report/export/notification hooks + full `src/views` migration final pass + non-view auth/menu cleanup) | 126 components | Completed | this doc  |
+| 2026-02-15 | Incremental  | Legacy `src/hooks` full React Query wrapper cleanup                                                                                                                                                                                                                                                                         | 60 hooks       | Completed | this doc  |
+| 2026-02-16 | Batch 7      | Cleanup + docs (legacy flat services removed, colocated types finalized, permanent docs added)                                                                                                                                                                                                                              | N/A            | Completed | this doc  |

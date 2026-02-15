@@ -52,15 +52,69 @@ Refactor-specific docs are temporary and must be grouped separately to avoid mix
 
 Use this structure per app:
 
+# Service Refactor Specification
+
+> **Purpose:** This document is the specification for refactoring the service layer to an enterprise-level, colocated architecture with TanStack Query integration. It is the single source of truth for scope, requirements, and process.
+
+---
+
+## Specification Overview
+
+This specification defines how to refactor the service layer in this project to implement an **enterprise-level, colocated architecture** with the following goals:
+
+Lifecycle diagram: `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` (Mermaid).
+
+### Multi-App Applicability
+
+This spec is designed to be reused across **multiple apps** in a monorepo. Every step, audit, plan, and verification must be executed **per app**.
+
+### Related Documents
+
+**Main Refactor Lifecycle:**
+
+- `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` - Visual lifecycle diagram
+- `<APP_PATH>/docs/migration/service/refactor-batch-prompts.md` - Main refactor batch prompts (Batch 0-7)
+- `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking (Batch 6 + 5A)
+- `<APP_PATH>/docs/verification-gate.md` - Per-app verification commands
+
+**Legacy Repository Updates:**
+
+- `<APP_PATH>/docs/migration/service/legacy-update-integration-guide.md` - Quick reference for integrating legacy updates
+- `<APP_PATH>/docs/migration/service/legacy-update-routines.md` - Detailed update routines
+- `<APP_PATH>/docs/migration/service/legacy-update-batch-prompts.md` - Copy-paste update prompts
+
+> [!NOTE]
+> Legacy updates are **independent of refactor phases** and can occur at any time. See `legacy-update-integration-guide.md` for pause/resume workflow and decision logic.
+
+### App-Specific Inputs (Fill Per App)
+
+For each app, define these inputs before implementation:
+
+- App name and root path
+- Dev command
+- Typecheck command
+- Build command
+- Lint command
+- Test command (or `N/A`)
+- Optional sanity checks (manual or automated) and covered routes/flows
+- **Service boundary mapping (required):** list each **base URL** (env var or absolute URL) and the **service name** you will use for it.  
+  **Rule:** One service per base URL. If multiple domains/features share a base URL, they are **one service** with subdomains, not separate services.
+
+### Documentation Grouping (Best Practice)
+
+Refactor-specific docs are temporary and must be grouped separately to avoid mixing with permanent project docs.
+
+Use this structure per app:
+
 - `<APP_PATH>/docs/migration/service/audit.md` (temporary)
 - `<APP_PATH>/docs/migration/service/plan.md` (temporary)
 - `<APP_PATH>/docs/verification-gate.md` (temporary)
 
 Permanent docs remain in `docs/`:
 
-- `docs/ARCHITECTURE.md`
-- `docs/ADDING_SERVICES.md`
-- `docs/QUERY_PATTERNS.md`
+- `docs/SERVICE_ARCHITECTURE.md`
+- `docs/SERVICE_IMPLEMENTATION_GUIDE.md`
+- `docs/SERVICE_REACTQUERY_PATTERNS.md`
 
 ### Primary Goals
 
@@ -599,27 +653,6 @@ Rules:
 7. After all component migrations, run the full verification gate before continuing
 
 Rule: If equivalent service hooks do not exist yet, temporary manual `useQuery`/`useMutation` is allowed only with a documented reason in `component-migration.md`.
-
----
-
-### Phase 6: Cleanup & Documentation
-
-**Task:** Remove old code and document patterns
-
-**Instructions:**
-
-1. Delete old service files
-2. Remove old HTTP client wrappers
-3. Update imports across codebase
-4. Create documentation:
-   - `docs/ARCHITECTURE.md` - Explain new structure
-   - `docs/ADDING_SERVICES.md` - How to add new services
-   - `docs/QUERY_PATTERNS.md` - TanStack Query best practices
-5. Run the full verification gate after cleanup
-
----
-
-## ✅ Success Criteria
 
 ### Architecture Success
 
