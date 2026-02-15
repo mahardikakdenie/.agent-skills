@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Download, Upload } from "react-feather";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { capitalizeStringWithChar } from "@/lib/formatter";
 import { toastPromise, toastNotification } from "@/lib/toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip";
@@ -16,8 +16,10 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogD
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import {channelService, claimService, productService} from "@/services/api.service";
+import { useCategories } from "@/services/product/hooks/queries";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import { useClaimImportDataGuide } from "@/services/claims/hooks/queries";
+import { useImportClaimsAsJson } from "@/services/claims/hooks/mutations";
 
 
 export default function ImportWithPreviewPage() {
@@ -54,52 +56,94 @@ export default function ImportWithPreviewPage() {
   const [newLabelHeader, setNewLabelHeader] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const hasFetchedChannel = useRef(false);
-  const hasFetchedCategory = useRef(false);
-  useEffect(() => {
-    // Generic function to fetch and set options
-    const fetchOptions = async (fetchFunction: () => Promise<any>, setOptions: (options: any) => void) => {
-      try {
-        const result = await fetchFunction();
-        if (result && result.length > 0) {
-          setOptions(
-            result.map((item: any) => ({
-              label: capitalizeStringWithChar(item.name),
-              value: item.id,
-            }))
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    if (!hasFetchedCategory.current || !hasFetchedChannel.current) {
-      setLoading(true);
-
-      const fetchData = async () => {
-        if (!hasFetchedCategory.current) {
-          hasFetchedCategory.current = true;
-          await fetchOptions(
-            () => productService.get(ApiURL.v1Categories, { params: { page: 1, limit: 100 } }).then((res: any) => res.data?.data),
-            setCategoryOptions
-          );
-        }
-
-        if (!hasFetchedChannel.current) {
-          hasFetchedChannel.current = true;
-          await fetchOptions(
-            () => channelService.get(ApiURL.v1Channels, { params: { page: 1, limit: 100 } }).then((res: any) => res.data?.data),
-            setChannelOptions
-          );
-        }
-
-        setLoading(false);
-      };
-
-      fetchData();
+  const { data: categoriesResponse, isFetching: isCategoriesFetching } =
+    useCategories({ page: 1, limit: 100 });
+  const { data: channelsResponse, isFetching: isChannelsFetching } =
+    useChannelsV1({ page: 1, limit: 100 });
+  const shouldFetchImportGuide = Boolean(selectedChannel && selectedCategory);
+  const {
+    data: importDataGuideResponse,
+    isFetching: isImportGuideFetching,
+    error: importDataGuideError,
+  } = useClaimImportDataGuide(
+    shouldFetchImportGuide
+      ? ({ channel: selectedChannel, category: selectedCategory } as any)
+      : undefined,
+    {
+      enabled: shouldFetchImportGuide,
+      retry: false,
     }
-  });
+  );
+  const { mutateAsync: importClaimsAsJson } = useImportClaimsAsJson();
+
+  useEffect(() => {
+    setLoading(
+      isCategoriesFetching || isChannelsFetching || isImportGuideFetching
+    );
+  }, [isCategoriesFetching, isChannelsFetching, isImportGuideFetching, setLoading]);
+
+  useEffect(() => {
+    const categories = (categoriesResponse as any)?.data;
+    if (Array.isArray(categories)) {
+      setCategoryOptions(
+        categories.map((item: any) => ({
+          label: capitalizeStringWithChar(item.name),
+          value: item.id,
+        }))
+      );
+    }
+  }, [categoriesResponse]);
+
+  useEffect(() => {
+    const channels = (channelsResponse as any)?.data;
+    if (Array.isArray(channels)) {
+      setChannelOptions(
+        channels.map((item: any) => ({
+          label: capitalizeStringWithChar(item.name),
+          value: item.id,
+        }))
+      );
+    }
+  }, [channelsResponse]);
+
+  useEffect(() => {
+    if (!shouldFetchImportGuide) {
+      setHeaderGuide([]);
+      setHeaderOptions([]);
+      return;
+    }
+
+    const guideResponse =
+      Array.isArray(importDataGuideResponse) && importDataGuideResponse.length > 0
+        ? importDataGuideResponse[0]?.data
+        : null;
+
+    if (guideResponse) {
+      setHeaderGuide(guideResponse);
+      setHeaderOptions(
+        guideResponse.map((guide: any) => ({
+          label: `${guide?.field} ${guide?.required ? "(Required)" : ""}`,
+          value: guide?.field,
+        }))
+      );
+    } else if (!isImportGuideFetching) {
+      setHeaderGuide([]);
+      setHeaderOptions([]);
+      toastNotification(
+        "Header Guide not found. Please select another category.",
+        "error"
+      );
+    }
+  }, [importDataGuideResponse, isImportGuideFetching, shouldFetchImportGuide]);
+
+  useEffect(() => {
+    if (importDataGuideError) {
+      toastNotification(
+        "Header Guide not found. Please select another category.",
+        "error"
+      );
+    }
+  }, [importDataGuideError]);
 
   const handleDownloadTemplate = () => {
     try {
@@ -259,60 +303,6 @@ export default function ImportWithPreviewPage() {
     setSelectedCategory(value);
   };
 
-  const lastSelectedChannel = useRef<string | null>(null);
-  const lastSelectedCategory = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (
-      selectedChannel && selectedCategory && (selectedChannel !== lastSelectedChannel.current || selectedCategory !== lastSelectedCategory.current)
-    ) {
-      fetchImportDataGuide(selectedChannel, selectedCategory);
-
-      lastSelectedChannel.current = selectedChannel;
-      lastSelectedCategory.current = selectedCategory;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedChannel, selectedCategory]);
-
-  const fetchImportDataGuide = async (channelId: string, categoryId: string) => {
-    setHeaderGuide([]);
-
-    setLoading(true);
-    try {
-      const response: any = await claimService.get(ApiURL.v1ClaimImport, { params: { channel: channelId, category: categoryId } });
-
-      const guideResponse =
-        Array.isArray(response.data) && response.data?.length > 0
-          ? response.data?.[0]?.data
-          : null;
-
-      if (guideResponse) {
-        setHeaderGuide(guideResponse);
-        setHeaderOptions(
-          guideResponse.map((guide: any) => {
-            return {
-              label: `${guide?.field} ${guide?.required ? "(Required)" : ""}`,
-              value: guide?.field,
-            };
-          })
-        );
-      } else {
-        toastNotification(
-          "Header Guide not found. Please select another category.",
-          "error"
-        );
-      }
-    } catch (error) {
-      toastNotification(
-        "Header Guide not found. Please select another category.",
-        "error"
-      );
-      console.error("Error fetching guide", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleUpload = async () => {
     if (!selectedFile || tableHeader.length <= 0 || tableData.length <= 0)
       return;
@@ -323,7 +313,7 @@ export default function ImportWithPreviewPage() {
       // Transform tableData so that the first row is used as keys for the subsequent rows
       const importData = transformJsonWithHeaders(tableHeader, tableData);
 
-      const uploadPromise: any = claimService.post(ApiURL.v1ClaimImportSubmit, {
+      const uploadPromise = importClaimsAsJson({
         data: importData,
         input: "Data",
         channel: selectedChannel,

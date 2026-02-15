@@ -1,14 +1,11 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { ChannelService } from "@/services/channel.services";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { useAuth } from "@/context/auth.context";
 import _ from "lodash";
-import qs from "qs";
-import ApiURL from "@/constants/api-url.const";
-import { claimService } from "@/services/api.service";
+import { useClaims as useClaimsQuery } from "@/services/claims/hooks/queries";
+import { useChannels } from "@/services/channel/hooks/queries";
 
 interface UseClaimsProps {
   claims: any[];
@@ -55,8 +52,6 @@ export default function useClaims(): UseClaimsProps {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const channelService = useMemo(() => new ChannelService(), []);
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -199,18 +194,60 @@ export default function useClaims(): UseClaimsProps {
     claimsToken?.account_channels?.[0]?.channel ||
     defaultChannel;
 
-  const queryKey = [
-    "claims",
-    page,
-    rowsPerPage,
-    tab,
-    searchData,
-    searchSlaStatus,
-    date?.from?.toISOString(),
-    date?.to?.toISOString(),
-    channelId,
-    searchChannel,
-  ];
+  const claimParams = useMemo(() => {
+    const params: Record<string, any> = {
+      page,
+      limit: rowsPerPage,
+      channel: channelId,
+    };
+
+    if (searchData) {
+      params.keyword = searchData;
+    }
+
+    const normalizedSlaStatus = searchSlaStatus?.trim().toLowerCase();
+    const shouldApplySlaFilter =
+      !!searchSlaStatus &&
+      normalizedSlaStatus !== "all" &&
+      normalizedSlaStatus !== "all priority";
+
+    if (shouldApplySlaFilter) {
+      params.sla_status = searchSlaStatus;
+    }
+
+    const status = tab === "All" ? "" : tab;
+    if (status) {
+      if (status !== "Draft") {
+        params.status = [status];
+      }
+    } else {
+      params.status = [
+        "Submitted",
+        "Acknowledged",
+        "Document Review Operator",
+        "Reupload Document Review Operator",
+        "Lack of Documents Operator",
+        "Document Review Insurance",
+        "Reupload Document Review Insurance",
+        "Lack of Documents Insurance",
+        "Claim Assessment",
+        "Approved",
+        "Rejected",
+        "Paid",
+        "Closed",
+      ];
+    }
+
+    if (date?.from) {
+      params.date_from = format(date.from, "yyyy-MM-dd");
+    }
+
+    if (date?.to) {
+      params.date_to = format(date.to, "yyyy-MM-dd");
+    }
+
+    return params;
+  }, [channelId, date?.from, date?.to, page, rowsPerPage, searchData, searchSlaStatus, tab]);
 
   const {
     data: resClaims,
@@ -219,78 +256,17 @@ export default function useClaims(): UseClaimsProps {
     error,
     refetch,
     isFetching,
-  } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        limit: rowsPerPage,
-        channel: channelId,
-      };
-
-      if (searchData) {
-        params.keyword = searchData;
-      }
-
-      const normalizedSlaStatus = searchSlaStatus?.trim().toLowerCase();
-      const shouldApplySlaFilter =
-        !!searchSlaStatus &&
-        normalizedSlaStatus !== "all" &&
-        normalizedSlaStatus !== "all priority";
-
-      if (shouldApplySlaFilter) {
-        params.sla_status = searchSlaStatus;
-      }
-
-      const status = tab === "All" ? "" : tab;
-      if (status) {
-        if (status !== "Draft") {
-          params.status = [status];
-        }
-      } else {
-        params.status = [
-          "Submitted",
-          "Acknowledged",
-          "Document Review Operator",
-          "Reupload Document Review Operator",
-          "Lack of Documents Operator",
-          "Document Review Insurance",
-          "Reupload Document Review Insurance",
-          "Lack of Documents Insurance",
-          "Claim Assessment",
-          "Approved",
-          "Rejected",
-          "Paid",
-          "Closed",
-        ];
-      }
-
-      if (date?.from) {
-        params.date_from = format(date.from, "yyyy-MM-dd");
-      }
-
-      if (date?.to) {
-        params.date_to = format(date.to, "yyyy-MM-dd");
-      }
-
-      const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-      const response = await claimService.get(
-        `${ApiURL.v1Claims}?${queryString}`
-      );
-
-      return response.data;
-    },
+  } = useClaimsQuery(claimParams as any, {
     enabled: !!channelId,
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
 
-  const { data: channelsData, isFetching: isLoadingChannels } = useQuery({
-    queryKey: ["channels"],
-    queryFn: () => channelService.getChannels(undefined, 100),
-    staleTime: 30000,
-  });
+  const { data: channelsData, isFetching: isLoadingChannels } = useChannels(
+    { page: 1, limit: 100 },
+    { staleTime: 30000 }
+  );
 
   const tokenChannel = useMemo(() => {
     if (!claimsToken) return defaultChannel;
@@ -303,8 +279,9 @@ export default function useClaims(): UseClaimsProps {
   }, [claimsToken]);
 
   useEffect(() => {
-    if (channelsData?.data) {
-      setChannels(channelsData?.data);
+    const channelsResult = (channelsData as any)?.data;
+    if (channelsResult) {
+      setChannels(channelsResult as any[]);
     }
   }, [channelsData]);
 
@@ -373,11 +350,19 @@ export default function useClaims(): UseClaimsProps {
     };
   }, [handleSearch]);
 
+  const handleRefetch = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  const claimsData = (resClaims as any)?.data || [];
+  const claimsTotalPages = (resClaims as any)?.pageTotal || 1;
+  const claimsTotal = (resClaims as any)?.total || 0;
+
   return {
-    claims: resClaims?.data || [],
-    filteredClaims: resClaims?.data || [],
-    totalPages: resClaims?.pageTotal || 1,
-    totalData: resClaims?.total || 0,
+    claims: claimsData,
+    filteredClaims: claimsData,
+    totalPages: claimsTotalPages,
+    totalData: claimsTotal,
     channels,
 
     page,
@@ -403,7 +388,7 @@ export default function useClaims(): UseClaimsProps {
     isFetching,
     isLoadingChannels,
 
-    refetch,
+    refetch: handleRefetch,
     handleSearch,
     handleRowsPerPageChange,
     selectTab,

@@ -3,16 +3,10 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-import {
-  getDetailClaims,
-  getFormClaims,
-  putSubmitClaimsById,
-  putUpdateClaimsGrab,
-} from "@/services/claim.service";
+import { claimsService } from "@/services/claims/api/claims.service";
 import {
   ClaimForm,
   ClaimFormsRequest,
-  CreateClaimResponse,
   UpdateClaimGrabRequest,
 } from "@/interface";
 import { useAuth } from "@/context/auth.context";
@@ -21,7 +15,6 @@ import {
   filterSchemaByNames,
   flattenClaimFormFields,
 } from "@/lib/utils";
-import { AxiosResponse } from "axios";
 
 type useDetailClaimProps = {
   isLoading: boolean;
@@ -58,10 +51,10 @@ export function useDetailClaim(): useDetailClaimProps {
   const [formValue, setFormValue] = useState<any>({});
 
   const { mutate: mutateDetailClaim, isPending: isLoading } = useMutation({
-    mutationFn: (id: string) => getDetailClaims(id),
+    mutationFn: (id: string) => claimsService.getClaimById(id),
     onSuccess: (res) => {
-      if (res.status === 200 && res.data) {
-        setDetailClaim(res.data);
+      if (res) {
+        setDetailClaim(res);
       }
     },
     onError: (error) => {
@@ -77,10 +70,10 @@ export function useDetailClaim(): useDetailClaimProps {
       }: {
         categoryId: string;
         params?: ClaimFormsRequest;
-      }) => getFormClaims(categoryId, params),
+      }) => claimsService.getClaimCategoryForms(categoryId, params),
       onSuccess: (res) => {
-        const response = res?.data?.data;
-        if (res.status === 200 && response) {
+        const response = (res as any)?.data;
+        if (response) {
           const claimForms: any = [
             ...response.filter((item: any) => item.name != "chronology"),
             ...detailClaim!.claim_config.map((item: any) => ({
@@ -143,7 +136,7 @@ export function useDetailClaim(): useDetailClaimProps {
     }: {
       id: string;
       params: UpdateClaimGrabRequest;
-    }) => putUpdateClaimsGrab(id, params),
+    }) => claimsService.updateClaim(id, params),
     onError: (error) => {
       toast.error("Failed to update claims");
       console.error("Failed to update claims grab:", error);
@@ -154,8 +147,8 @@ export function useDetailClaim(): useDetailClaimProps {
     mutate: mutateSubmitClaimsById,
     isPending: isLoadingSubmitClaimsById,
   } = useMutation({
-    mutationFn: ({ id }: { id: string }) => putSubmitClaimsById(id),
-    onSuccess: (res) => {
+    mutationFn: ({ id }: { id: string }) => claimsService.submitClaim(id),
+    onSuccess: () => {
       toast.success("Uploaded Successfull!");
       if (detailClaim?.id) {
         mutateDetailClaim(detailClaim.id);
@@ -232,13 +225,12 @@ export function useDetailClaim(): useDetailClaimProps {
         const params: UpdateClaimGrabRequest = {
           form: patched,
         };
-        const response: AxiosResponse<CreateClaimResponse> =
-          await muateAsyncUpdateClaimsGrab({
-            id: detailClaim.id,
-            params,
-          });
+        const response = await muateAsyncUpdateClaimsGrab({
+          id: detailClaim.id,
+          params,
+        });
         if (response) {
-          await mutateSubmitClaimsById({
+          mutateSubmitClaimsById({
             id: detailClaim.id,
           });
         }

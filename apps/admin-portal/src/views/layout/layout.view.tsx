@@ -20,8 +20,7 @@ import {
   primaryRed,
 } from "@/constants/app-common.const";
 import Input from "@/components/input";
-import { authService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { useChangeAccountPassword } from "@/services/auth/hooks/mutations";
 import { toastNotification } from "@/helpers/app.helper";
 import ChecklistIcon from "@/images/checklist.icon";
 import XIcon from "@/images/x.icon";
@@ -60,6 +59,7 @@ export const LayoutView = ({
     login,
     logout,
   } = useAuth();
+  const { mutateAsync: changeAccountPassword } = useChangeAccountPassword();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -109,9 +109,12 @@ export const LayoutView = ({
 
   const changePassword = async () => {
     try {
-      await authService.put(ApiURL.v1ChangePassword(user.sub), {
-        newPassword,
-        oldPassword,
+      await changeAccountPassword({
+        id: user.sub,
+        payload: {
+          newPassword,
+          oldPassword,
+        },
       });
       setIsModalChangePassword(false);
       logout();

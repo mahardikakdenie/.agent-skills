@@ -11,8 +11,12 @@ import { useEffect, useState } from "react";
 import { formatMoneyClaim } from "@/lib/formatter";
 import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/context/auth.context";
-import { claimService } from "@/services/api.service";
 import { usePathname, useRouter } from "next/navigation";
+import { claimsService } from "@/services/claims/api/claims.service";
+import {
+  useClaimConfigurations,
+} from "@/services/claims/hooks/queries";
+import { useUpdateClaimStatus } from "@/services/claims/hooks/mutations";
 import {
   Popover,
   PopoverContent,
@@ -53,7 +57,6 @@ import {
 } from "@/components/tableConfig/claimTableConfig";
 import useClaims from "@/hooks/useClaims.hooks";
 import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
 
 const ClaimsPage = () => {
   const path = usePathname();
@@ -87,6 +90,8 @@ const ClaimsPage = () => {
     handleSearchSlaStatusChange,
     handleChannelChange,
   } = useClaims();
+  const { data: claimConfigurations } = useClaimConfigurations();
+  const { mutateAsync: updateClaimStatusMutation } = useUpdateClaimStatus();
   const router = useRouter();
 
   // Modal state
@@ -147,16 +152,15 @@ const ClaimsPage = () => {
   };
 
   const selectChannel = (id: string) => {
-    claimService.get(ApiURL.v1ClaimChannelFormsAll(id)).then((res) => {
-      setDataDocument(res?.data?.data);
+    claimsService.getClaimChannelForms(id).then((res: any) => {
+      setDataDocument(res?.data || []);
     });
   };
 
   const selectCategory = (id: string, dataId: string) => {
-    claimService.get(ApiURL.v1ClaimCategoryFormsAll(id)).then((res) => {
+    claimsService.getClaimCategoryForms(id).then((response: any) => {
       const label = filteredClaims?.filter((f: any) => f?.id === dataId)?.[0]
         ?.claim_config;
-      const response = res?.data;
 
       const updatedDataDocument = response?.data
         .filter(
@@ -300,13 +304,15 @@ const ClaimsPage = () => {
     note?: string,
     lack_of_documents?: string[],
   ) => {
-    claimService
-      .put(ApiURL.v1ClaimUpdateStatus(claimId), {
+    updateClaimStatusMutation({
+      id: claimId,
+      payload: {
         status: newStatus,
         note,
         amount_approved,
         lack_of_documents,
-      })
+      },
+    })
       .then(() => {
         alert("Update status successfully.");
         refetch();
@@ -431,23 +437,13 @@ const ClaimsPage = () => {
   };
 
   useEffect(() => {
-    const fetchClaimsStatus = async () => {
-      try {
-        const { data = [] } = await claimService.get(
-          ApiURL.v1ClaimConfigurations,
-        );
-        const filteredStatus = data.filter((cs: any) => cs.status !== "Draft");
-        setClaimStatusOptions(filteredStatus);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-
-    fetchClaimsStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (Array.isArray(claimConfigurations)) {
+      const filteredStatus = claimConfigurations.filter(
+        (cs: any) => cs.status !== "Draft",
+      );
+      setClaimStatusOptions(filteredStatus);
+    }
+  }, [claimConfigurations]);
 
   const handleExport = () => {
     const exportData = {

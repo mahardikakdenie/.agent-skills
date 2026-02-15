@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {PolicyStatisticYearly} from "@/types/policy";
 import {defaultChart, homeCard, primary} from "@/constants/app-common.const";
-import {AxiosResponse} from "axios";
-import ApiURL from "@/constants/api-url.const";
 import {ClaimMonthData, ClaimStatisticYearly} from "@/types/claim";
-import {claimService, policyService, transactionService} from "@/services/api.service";
+import { claimsService } from "@/services/claims/api/claims.service";
+import { policyService } from "@/services/policy/api/policy.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
 import {useScreen} from "@/context/screen.context";
 import Chart from "@/components/chart";
 import {capitalizeString, getColorForBarChart, getHeaderPage, moneyFormatter, numberSimpleFormatter} from "@/helpers/app.helper";
@@ -119,9 +119,12 @@ export const HomeView = () => {
         const fetchDataHome = async () => {
             try {
                 setLoading(true);
-                const responseTransactionsStatisticYearly: AxiosResponse<TransactionStatisticYearly> = await transactionService.get(ApiURL.transactionsStatisticYearly, { params: { year: currentYear } });
+                const responseTransactionsStatisticYearly =
+                  (await transactionService.getTransactionStatistics({
+                    year: currentYear,
+                  })) as TransactionStatisticYearly;
                 if (responseTransactionsStatisticYearly) {
-                    const months = responseTransactionsStatisticYearly.data.months;
+                    const months = responseTransactionsStatisticYearly.months;
                     const revenueMap: CountryData = {};
 
                     Object.values(months).forEach(month => {
@@ -147,16 +150,22 @@ export const HomeView = () => {
                     setRevenueCurrentYear(Object.values(months).map((month: any) => month?.revenue));
                 }
 
-                const responsePoliciesStatisticYearly: AxiosResponse<PolicyStatisticYearly> = await policyService.get(ApiURL.policiesStatisticYearly, { params: { year: currentYear } });
+                const responsePoliciesStatisticYearly =
+                  (await policyService.getPolicyStatistics({
+                    year: currentYear,
+                  })) as PolicyStatisticYearly;
                 if (responsePoliciesStatisticYearly) {
-                    const months = responsePoliciesStatisticYearly.data.months;
+                    const months = responsePoliciesStatisticYearly.months;
                     setTotalPoliciesHome(Object.values(months).reduce((accumulator, month) => accumulator + month.total, 0));
                     setPoliciesCurrentYear(Object.values(months).map(month => month.total));
                 }
 
-                const responseClaimsStatisticYearly: AxiosResponse<ClaimStatisticYearly> = await claimService.get(ApiURL.claimsStatisticYearly, { params: { year: currentYear } });
+                const responseClaimsStatisticYearly =
+                  (await claimsService.getClaimStatistics({
+                    year: currentYear,
+                  })) as ClaimStatisticYearly;
                 if (responseClaimsStatisticYearly) {
-                    const months = responseClaimsStatisticYearly.data.months;
+                    const months = responseClaimsStatisticYearly.months;
                     setTotalClaims(Object.values(months).reduce((total, month) => total + month.total, 0));
                     setTotalClaimValue(Object.values(months).reduce((total, month) => total + month.amount_approved, 0));
                     setClaimsCurrentYear(Object.values(months).map(claim => ({

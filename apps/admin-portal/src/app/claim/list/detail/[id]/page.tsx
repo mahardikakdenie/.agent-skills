@@ -23,8 +23,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { claimHasValue } from "@/lib/utils";
 import { useDetailClaim } from "@/hooks/useDetailClaim.hooks";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
-import { claimService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { useClaimHistories } from "@/services/claims/hooks/queries";
 import AppURL from "@/constants/app-url.const";
 
 interface FieldType {
@@ -49,21 +48,26 @@ interface FieldType {
 const DetailClaim = () => {
   const router = useRouter();
   const params = useParams();
+  const claimId = Array.isArray(params.id) ? params.id[0] : (params.id as string | undefined);
   const { permissionList } = useAuth();
 
   const { detailClaim, getDetailClaim, getMissingDocuments, isLoading } =
     useDetailClaim();
+  const { data: claimHistoriesResponse } = useClaimHistories(
+    claimId ? { claim: claimId } : undefined,
+    { enabled: !!claimId }
+  );
+  const histories = (claimHistoriesResponse as any)?.data || [];
 
   useEffect(() => {
-    if (params.id) {
-      getDetailClaim(params.id as string);
+    if (claimId) {
+      getDetailClaim(claimId);
     }
-  }, [params.id, getDetailClaim]);
+  }, [claimId, getDetailClaim]);
 
   const [tab, setTab] = useState("Summary");
   const [claim, setClaim] = useState<any>(null);
   const [docToOpen, setDocToOpen] = useState<any>(null);
-  const [histories, setHistories] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [isViewDocument, setIsViewDocument] = useState(false);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -202,25 +206,6 @@ const DetailClaim = () => {
 
     checkAccess();
   }, [router]);
-
-  useEffect(() => {
-    const fetchClaimData = async (id: string) => {
-      try {
-        const { data: claimHistoriesResponse } = await claimService.get(
-          `${ApiURL.v1ClaimHistories}?claim=${id}`,
-        );
-        if (claimHistoriesResponse && claimHistoriesResponse.data) {
-          setHistories(claimHistoriesResponse.data);
-        }
-      } catch (error) {
-        console.error("Error fetching claim data:", error);
-      }
-    };
-
-    if (params.id) {
-      fetchClaimData(params.id as string);
-    }
-  }, [params.id]);
 
   useEffect(() => {
     if (detailClaim) {

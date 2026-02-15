@@ -15,8 +15,7 @@ import { ChevronLeft, Upload } from "react-feather";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
-import {claimService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { useImportClaims } from "@/services/claims/hooks/mutations";
 
 export default function ImportPage() {
   const router = useRouter();
@@ -25,6 +24,7 @@ export default function ImportPage() {
   const [uploadStatus, setUploadStatus] = useState< "idle" | "uploading" | "success" | "error" >("idle");
   const [base64String, setBase64String] = useState<string>("");
   const { setLoading } = useScreen();
+  const { mutateAsync: importClaims } = useImportClaims();
 
   // Helper function to convert file to base64
   const convertToBase64 = (file: File): Promise<string> => {
@@ -90,7 +90,7 @@ export default function ImportPage() {
     setUploadStatus("uploading");
     setLoading(true);
 
-    const uploadPromise: any = claimService.post(ApiURL.v1ClaimImportSubmit, {
+    const uploadPromise = importClaims({
       data: base64String,
       input: "File",
       channel: "d1181179-a65f-4c9a-9085-6c7ce90f5845",
