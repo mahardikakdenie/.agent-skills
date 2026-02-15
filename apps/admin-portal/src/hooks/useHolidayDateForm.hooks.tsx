@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { HelperService } from "@/services/helper.service";
+import { helperService } from "@/services/helper/api/helper.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -39,7 +39,6 @@ export function useHolidayDateForm(
 ): UseHolidayDateFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const helperService = new HelperService();
   const { permissionList } = useAuth();
 
   const [holidayId, setHolidayId] = useState<string>();
@@ -90,7 +89,7 @@ export function useHolidayDateForm(
     queryKey: ["holiday-detail", holidayId],
     queryFn: async () => {
       if (!holidayId) return null;
-      const response = await helperService.getCalendar({ id: holidayId });
+      const response: any = await helperService.getCalendar({ id: holidayId });
       return response.data[0];
     },
     enabled: !!holidayId && isEdit,
@@ -228,3 +227,4 @@ export function useHolidayDateForm(
     goBack,
   };
 }
+

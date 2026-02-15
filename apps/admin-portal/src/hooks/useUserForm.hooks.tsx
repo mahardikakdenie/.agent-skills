@@ -3,9 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { UserService } from "@/services/masterdata/user.service";
-import { GroupService } from "@/services/masterdata/group.service";
-import ApiURL from "@/constants/api-url.const";
+import { authService } from "@/services/auth/api/auth.service";
+import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
 import { primaryRoles, countries } from "@/app/masterdata/user/user.const";
 import toast from "react-hot-toast";
@@ -82,8 +81,6 @@ export function useUserForm(
   const router = useRouter();
   const { permissionList } = useAuth();
   const queryClient = useQueryClient();
-  const userService = new UserService();
-  const groupService = new GroupService();
   const isEdit = mode === "edit";
 
   const {
@@ -139,7 +136,7 @@ export function useUserForm(
   const { data: channels, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["user-channels"],
     queryFn: async () => {
-      const response = await userService.getChannel({});
+      const response: any = await channelService.getChannelsV1({ limit: 1000 });
       return response || [];
     },
     staleTime: 300000,
@@ -150,7 +147,7 @@ export function useUserForm(
     queryKey: ["user-detail", userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await userService.getUserById(userId);
+      const response: any = await authService.getAccountById(userId);
       return response;
     },
     enabled: isEdit && !!userId,
@@ -162,7 +159,7 @@ export function useUserForm(
   const { data: groupsData, isLoading: isLoadingGroups } = useQuery({
     queryKey: ["available-groups"],
     queryFn: async () => {
-      const response = await groupService.getGroup(1, 100);
+      const response: any = await authService.getGroups({ page: 1, pageSize: 100 });
       return response;
     },
     enabled: isEdit && !!accountId,
@@ -172,7 +169,7 @@ export function useUserForm(
   const { data: rolesData, isLoading: isLoadingRoles } = useQuery({
     queryKey: ["available-roles"],
     queryFn: async () => {
-      const response = await groupService.getRoles(1, 100);
+      const response: any = await authService.getRoles({ page: 1, pageSize: 100 });
       return response;
     },
     enabled: isEdit && !!accountId,
@@ -216,14 +213,14 @@ export function useUserForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: UserFormData & { phone_number: string }) => {
       if (isEdit) {
-        await userService.updateUser(payload, userId);
+        await authService.updateAccount(userId, payload);
         return { id: userId };
       } else {
-        const response = await userService.saveUser(payload);
+        const response: any = await authService.createAccount(payload);
         return response;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast.success(
         isEdit ? "User Updated Successfully!" : "User Created Successfully!"
       );
@@ -250,7 +247,7 @@ export function useUserForm(
     mutationFn: async (groupIds: string[]) => {
       const results = [];
       for (const groupId of groupIds) {
-        const response = await userService.addAccountGroups({
+        const response: any = await authService.addAccountGroup({
           account: accountId,
           group: groupId,
         });
@@ -270,7 +267,7 @@ export function useUserForm(
 
   const deleteGroupMutation = useMutation({
     mutationFn: async (groupId: string) => {
-      await userService.removeAccountGroups(groupId);
+      await authService.removeAccountGroup(groupId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-detail", userId] });
@@ -286,7 +283,7 @@ export function useUserForm(
     mutationFn: async (roleIds: string[]) => {
       const results = [];
       for (const roleId of roleIds) {
-        const response = await userService.addAccountRoles({
+        const response: any = await authService.addAccountRole({
           account: accountId,
           role: roleId,
         });
@@ -306,7 +303,7 @@ export function useUserForm(
 
   const deleteRoleMutation = useMutation({
     mutationFn: async (roleId: string) => {
-      await userService.removeAccountRoles(roleId);
+      await authService.removeAccountRole(roleId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-detail", userId] });
@@ -506,3 +503,4 @@ export function useUserForm(
     getStatusColor,
   };
 }
+

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { ProductCategoriesService } from "@/services/masterdata/product-category.service";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface ProductCategoryFormData {
@@ -39,7 +39,6 @@ export function useProductCategoryForm(
   const router = useRouter();
   const { permissionList } = useAuth();
   const queryClient = useQueryClient();
-  const productCategoryService = new ProductCategoriesService();
   const isEdit = mode === "edit";
 
   const {
@@ -83,10 +82,8 @@ export function useProductCategoryForm(
     queryFn: async () => {
       if (!categoryId) return null;
 
-      const response = await productCategoryService.getCategoriesById(
-        categoryId
-      );
-      return response;
+      const response: any = await productService.getCategoryById(categoryId);
+      return response?.data ?? response;
     },
     enabled: isEdit && !!categoryId,
     staleTime: 0,
@@ -117,13 +114,10 @@ export function useProductCategoryForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: any) => {
       if (isEdit && categoryId) {
-        const response = await productCategoryService.updateCategories(
-          payload,
-          categoryId
-        );
+        const response: any = await productService.updateCategory(categoryId, payload);
         return response;
       } else {
-        const response = await productCategoryService.saveCategories(payload);
+        const response: any = await productService.createCategory(payload);
         return response;
       }
     },
@@ -213,3 +207,4 @@ export function useProductCategoryForm(
     loadCategoryDetail,
   };
 }
+

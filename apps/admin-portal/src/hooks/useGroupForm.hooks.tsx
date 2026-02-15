@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { GroupService } from "@/services/masterdata/group.service";
+import { authService } from "@/services/auth/api/auth.service";
 import AppURL from "@/constants/app-url.const";
 
 interface GroupFormData {
@@ -43,7 +43,6 @@ export function useGroupForm(
 ): useGroupFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const groupService = new GroupService();
 
   const [groupId, setGroupId] = useState<string>();
   const [groupRoles, setGroupRoles] = useState<any[]>([]);
@@ -72,8 +71,8 @@ export function useGroupForm(
     queryKey: ["group-detail", groupId],
     queryFn: async () => {
       if (!groupId) return null;
-      const response = await groupService.getGroupById(groupId);
-      return response.data;
+      const response: any = await authService.getGroupById(groupId);
+      return response?.data ?? response;
     },
     enabled: !!groupId && isEdit,
     staleTime: 300000,
@@ -82,8 +81,8 @@ export function useGroupForm(
   const { data: rolesData, isLoading: isLoadingRoles } = useQuery({
     queryKey: ["roles-list"],
     queryFn: async () => {
-      const response = await groupService.getRoles(1, 1000);
-      return response.data;
+      const response: any = await authService.getRoles({ page: 1, pageSize: 1000 });
+      return response?.data ?? response;
     },
     staleTime: 300000,
   });
@@ -91,8 +90,11 @@ export function useGroupForm(
   const { data: usersData, isLoading: isLoadingUsers } = useQuery({
     queryKey: ["users-list"],
     queryFn: async () => {
-      const response = await groupService.getUser(1, 1000);
-      return response.data;
+      const response: any = await authService.getAccounts({
+        page: 1,
+        pageSize: 1000,
+      });
+      return response?.data ?? response;
     },
     staleTime: 300000,
   });
@@ -100,12 +102,12 @@ export function useGroupForm(
   const saveMutation = useMutation({
     mutationFn: async (data: GroupFormData) => {
       if (isEdit && groupId) {
-        return await groupService.updateGroup(data, groupId);
+        return await authService.updateGroup(groupId, data);
       } else {
-        return await groupService.addGroup(data);
+        return await authService.createGroup(data);
       }
     },
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["groups"] });
       queryClient.invalidateQueries({ queryKey: ["group-detail"] });
 
@@ -126,7 +128,7 @@ export function useGroupForm(
       if (!groupId) throw new Error("Group ID is required");
 
       const promises = roleIds.map((roleId) =>
-        groupService.addGroupRole({
+        authService.addGroupRole({
           group: groupId,
           role: roleId,
         })
@@ -145,7 +147,7 @@ export function useGroupForm(
 
   const deleteRoleMutation = useMutation({
     mutationFn: async (groupRoleId: string) => {
-      return await groupService.removeGroupRole(groupRoleId);
+      return await authService.removeGroupRole(groupRoleId);
     },
     onSuccess: () => {
       refetchGroupDetail();
@@ -161,7 +163,7 @@ export function useGroupForm(
       if (!groupId) throw new Error("Group ID is required");
 
       const promises = userIds.map((userId) =>
-        groupService.addGroupAccount({
+        authService.addAccountGroup({
           account: userId,
           group: groupId,
         })
@@ -180,7 +182,7 @@ export function useGroupForm(
 
   const deleteUserMutation = useMutation({
     mutationFn: async (groupUserId: string) => {
-      return await groupService.removeGroupAccount(groupUserId);
+      return await authService.removeAccountGroup(groupUserId);
     },
     onSuccess: () => {
       refetchGroupDetail();
@@ -289,3 +291,4 @@ export function useGroupForm(
     goBack,
   };
 }
+

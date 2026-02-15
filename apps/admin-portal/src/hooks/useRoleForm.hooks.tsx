@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { RoleService } from "@/services/masterdata/roles.service";
+import { authService } from "@/services/auth/api/auth.service";
 import AppURL from "@/constants/app-url.const";
 
 interface RoleFormData {
@@ -57,7 +57,6 @@ export function useRoleForm(
 ): UseRoleFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const roleService = new RoleService();
 
   const [roleId, setRoleId] = useState<string>();
   const [permissionFields, setPermissionFields] = useState<
@@ -89,8 +88,8 @@ export function useRoleForm(
     queryKey: ["role-detail", roleId],
     queryFn: async () => {
       if (!roleId) return null;
-      const response = await roleService.getRoleById(roleId);
-      return response.data;
+      const response: any = await authService.getRoleById(roleId);
+      return response?.data ?? response;
     },
     enabled: !!roleId && isEdit,
     staleTime: 300000,
@@ -99,8 +98,8 @@ export function useRoleForm(
   const { data: menusData, isLoading: isLoadingMenus } = useQuery({
     queryKey: ["menus-list"],
     queryFn: async () => {
-      const response = await roleService.getMenu(1, 100);
-      return response.data;
+      const response: any = await authService.getPages({ page: 1, pageSize: 100 });
+      return response?.data ?? response;
     },
     staleTime: 300000,
   });
@@ -108,12 +107,12 @@ export function useRoleForm(
   const saveMutation = useMutation({
     mutationFn: async (data: RoleFormData) => {
       if (isEdit && roleId) {
-        return await roleService.updateRole(data, roleId);
+        return await authService.updateRole(roleId, data);
       } else {
-        return await roleService.addRole(data);
+        return await authService.createRole(data);
       }
     },
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       queryClient.invalidateQueries({ queryKey: ["role-detail"] });
 
@@ -131,13 +130,13 @@ export function useRoleForm(
 
   const addPermissionMutation = useMutation({
     mutationFn: async (data: { role: string; permission: string }) => {
-      return await roleService.createPermissionRole(data);
+      return await authService.createRolePermission(data);
     },
   });
 
   const deletePermissionMutation = useMutation({
     mutationFn: async (permissionId: string) => {
-      return await roleService.deletePermissionRole(permissionId);
+      return await authService.deleteRolePermission(permissionId);
     },
   });
 
@@ -243,9 +242,13 @@ export function useRoleForm(
       field.onChange(value);
 
       try {
-        const result = await roleService.getPermission(1, 100, value);
+        const result: any = await authService.getPermissionsByPage(value, {
+          page: 1,
+          pageSize: 100,
+        });
         const updatedPermissionOpt: any = { ...permissionOptions };
-        const permissionOption = result.data.map((item: any) => ({
+        const permissionData = result?.data ?? result ?? [];
+        const permissionOption = permissionData.map((item: any) => ({
           id: "",
           permissions: {
             id: item.id,
@@ -258,7 +261,7 @@ export function useRoleForm(
         console.error("Error fetching permissions:", error);
       }
     },
-    [permissionFields, menusData, permissionOptions, roleService]
+    [permissionFields, menusData, permissionOptions]
   );
 
   const handleTickPermission = useCallback(
@@ -275,7 +278,7 @@ export function useRoleForm(
         currentPermission.push(permissionId);
 
         try {
-          const response = await addPermissionMutation.mutateAsync({
+          const response: any = await addPermissionMutation.mutateAsync({
             role: roleId,
             permission: permissionId,
           });
@@ -353,14 +356,14 @@ export function useRoleForm(
   const handleBulkEditPermission = useCallback(
     async (index: number) => {
       try {
-        const result = await roleService.getPermission(
-          1,
-          100,
-          permissionFields[index].menuId
+        const result: any = await authService.getPermissionsByPage(
+          permissionFields[index].menuId,
+          { page: 1, pageSize: 100 }
         );
 
         const menuId = permissionFields[index].menuId;
-        const menuPermissionOpt = result.data.map((item: any) => {
+        const permissionData = result?.data ?? result ?? [];
+        const menuPermissionOpt = permissionData.map((item: any) => {
           const authPermission = permissionOptions[menuId]?.find(
             (currentPermission: any) =>
               currentPermission.permissions.id === item.id
@@ -386,7 +389,7 @@ export function useRoleForm(
         console.error("Failed to edit permission:", error);
       }
     },
-    [permissionFields, permissionOptions, roleService]
+    [permissionFields, permissionOptions]
   );
 
   const handleBulkDeleteRolePermission = useCallback(
@@ -448,3 +451,4 @@ export function useRoleForm(
     goBack,
   };
 }
+

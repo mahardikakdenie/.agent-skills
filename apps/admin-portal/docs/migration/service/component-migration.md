@@ -7,9 +7,9 @@
 ## Status Overview
 
 - Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 43
+- Total Components Migrated (Main): 63
 - Incremental Updates: 0
-- Last Updated: 2026-02-15 18:42
+- Last Updated: 2026-02-15 19:06
 
 ---
 
@@ -20,7 +20,7 @@
 - Started: 2026-02-15 17:10
 - Completed: In Progress
 - Total Services: 10 (Claim, Auth, Policy, Transaction, Channel, Finance, Helper, Product, Promotion, Masterdata + dashboard aggregation)
-- Total Components: 43
+- Total Components: 63
 - Status: In Progress
 
 ### Components Migrated by Service
@@ -353,6 +353,136 @@ Components:
   - Verified: PASS
   - Issues: None
 
+#### Service: Auth + Channel + Product + Helper (Legacy `src/hooks` masterdata layer)
+
+Service Base URLs:
+- `NEXT_PUBLIC_AUTH_SERVICE_URL`
+- `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
+- `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
+- `NEXT_PUBLIC_HELPER_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/hooks/useUsers.hooks.tsx` - Legacy user list hook
+  - Before: `new UserService()` class usage
+  - After: New auth API service methods (`getAccounts`, `getRoles`, `deleteAccount`, `updateAccount`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useUserForm.hooks.tsx` - Legacy user form hook
+  - Before: `new UserService()` + `new GroupService()` class usage
+  - After: New auth/channel API service methods for account detail, groups, roles, account-group/account-role operations
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useRole.hooks.tsx` - Legacy role list hook
+  - Before: `new RoleService()` class usage
+  - After: New auth API service role methods (`getRoles`, `deleteRole`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useRoleForm.hooks.tsx` - Legacy role form hook
+  - Before: `new RoleService()` class usage
+  - After: New auth API service methods for role/page/permission and role-permission relation flows
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useGroupList.hooks.tsx` - Legacy group list hook
+  - Before: `new GroupService()` class usage
+  - After: New auth API service group methods (`getGroups`, `deleteGroup`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useGroupForm.hooks.tsx` - Legacy group form hook
+  - Before: `new GroupService()` class usage
+  - After: New auth API service methods for group CRUD, group-role relation, and account-group relation
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/usePageManagement.hooks.tsx` - Legacy page management list hook
+  - Before: `new PagesService()` class usage
+  - After: New auth API service page methods (`getPages`, `deletePage`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/usePageManagementForm.hooks.tsx` - Legacy page management form hook
+  - Before: `new PagesService()` + `new PermissionService()` class usage
+  - After: New auth API service page + permission methods
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useProduct.hooks.tsx` - Legacy product list hook
+  - Before: `new MdProductService()` + `new InsuranceService()` class usage
+  - After: New product API service methods (`getCategories`, `getInsurances`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useProductForm.hooks.tsx` - Legacy product form hook
+  - Before: `new MdProductService()` + legacy API client direct call
+  - After: New product API service methods for category/insurance/product lookup and create/update/delete product
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useProductCategory.hooks.tsx` - Legacy product category list hook
+  - Before: `new ProductCategoriesService()` class usage
+  - After: New product API service category methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useProductCategoryForm.hooks.tsx` - Legacy product category form hook
+  - Before: `new ProductCategoriesService()` class usage
+  - After: New product API service category detail/create/update methods
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useIsurance.hooks.tsx` - Legacy insurance list hook
+  - Before: `new InsuranceService()` class usage
+  - After: New product API service insurance list/delete methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useInsuranceForm.hooks.tsx` - Legacy insurance form hook
+  - Before: `new InsuranceService()` class usage
+  - After: New product API service insurance detail/create/update methods
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useHolidayDate.hooks.tsx` - Legacy holiday list hook
+  - Before: `new HelperService()` class usage
+  - After: New helper API service calendar list/delete methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useHolidayDateForm.hooks.tsx` - Legacy holiday form hook
+  - Before: `new HelperService()` class usage
+  - After: New helper API service calendar detail/create/update methods
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useEmailTag.hooks.tsx` - Legacy email-tag list hook
+  - Before: `new EmailTagService()` class usage
+  - After: New product API service email-tag list/delete methods
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useEmailTagForm.hooks.tsx` - Legacy email-tag form hook
+  - Before: `new EmailTagService()` + `new MailTemplateService()` class usage
+  - After: New product API service email-tag and journey-reference methods
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useEmailTemplate.hooks.tsx` - Legacy email-template list hook
+  - Before: `new MailTemplateService()` class usage
+  - After: New product API service template/category methods (`getEmailTemplatesJourney`, `getCategories`, `deleteEmailTemplateJourney`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useEmailTemplateForm.hooks.tsx` - Legacy email-template form hook
+  - Before: `new MailTemplateService()` class usage
+  - After: New product API service methods for template/category/insurance/product/plan/journey/tag operations
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
@@ -364,13 +494,14 @@ Components:
 ### Components NOT Migrated
 
 - Active migration scope (`src/app`, `src/views/home`, `src/views/layout`) has no remaining `@/services/api.service` imports or `new *Service()` class instantiation patterns.
+- Extended `src/hooks` scope now has 39 remaining files with legacy patterns (migration in progress).
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 43
-- Components with issues: 4 (all fixed)
+- Total components migrated: 63
+- Components with issues: 5 (all fixed)
 - Components rolled back: 0
 
 #### Full Verification Gate
@@ -412,10 +543,17 @@ Components:
 - Fix: Added localized narrowing (`as any`) for `catalogPlansData` and `packagesData` at return mapping
 - Status: PASS (resolved)
 
+#### Issue 5: Legacy `src/hooks` migration introduced `unknown` inference in mutation/query payload access
+
+- Component: `apps/admin-portal/src/hooks/useUsers.hooks.tsx`, `apps/admin-portal/src/hooks/useUserForm.hooks.tsx`, `apps/admin-portal/src/hooks/useRoleForm.hooks.tsx`, `apps/admin-portal/src/hooks/useGroupForm.hooks.tsx`, `apps/admin-portal/src/hooks/usePageManagementForm.hooks.tsx`, `apps/admin-portal/src/hooks/useProductForm.hooks.tsx`, `apps/admin-portal/src/hooks/useInsuranceForm.hooks.tsx`, `apps/admin-portal/src/hooks/useEmailTag.hooks.tsx`, `apps/admin-portal/src/hooks/useEmailTemplate.hooks.tsx`
+- Cause: New API service methods are currently generic and default to `unknown` without explicit type parameters
+- Fix: Added localized response narrowing (`: any` / fallback casts) in migrated hooks to keep runtime behavior stable
+- Status: PASS (resolved)
+
 ### Next Steps
 
-- [ ] Decide whether to extend Batch 6 migration to additional non-active-scope legacy hooks in `src/hooks`
-- [ ] Re-run full verification gate after next migration slice (if scope is extended)
+- [ ] Continue migrating remaining legacy files in `src/hooks` (39 files)
+- [ ] Migrate legacy `src/views/*` files still importing `@/services/api.service`
 - [ ] Mark Batch 6 complete only after all component migrations are finished
 
 ---
@@ -424,4 +562,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata slice | 43 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slice | 63 components | In Progress | this doc   |

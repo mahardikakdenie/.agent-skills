@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { EmailTagService } from "@/services/masterdata/email-tag.service";
+import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 export function useEmailTag() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const emailTagService = new EmailTagService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -42,7 +41,7 @@ export function useEmailTag() {
   const { data: tagsResponse, isLoading: isLoadingTags } = useQuery({
     queryKey: ["email-tags", page, rowsPerPage],
     queryFn: async () => {
-      const response = await emailTagService.getEmailTag({
+      const response: any = await productService.getEmailTags({
         page,
         pageSize: rowsPerPage,
       });
@@ -55,7 +54,7 @@ export function useEmailTag() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await emailTagService.deleteEmailTag(id);
+      return await productService.deleteEmailTag(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["email-tags"] });
@@ -116,3 +115,4 @@ export function useEmailTag() {
     addNewTag,
   };
 }
+

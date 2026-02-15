@@ -4,8 +4,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import {
   Insurance,
-  InsuranceService,
 } from "@/services/masterdata/insurance.service";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface UseInsuranceProps {
@@ -41,7 +41,6 @@ export function useInsurance(): UseInsuranceProps {
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
   const queryClient = useQueryClient();
-  const insuranceService = new InsuranceService();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -124,7 +123,10 @@ export function useInsurance(): UseInsuranceProps {
   } = useQuery({
     queryKey: ["insurances", page, rowsPerPage],
     queryFn: async () => {
-      const response = await insuranceService.getInsurance(page, rowsPerPage);
+      const response: any = await productService.getInsurances({
+        page,
+        pageSize: rowsPerPage,
+      });
       return response;
     },
     staleTime: 30000,
@@ -135,7 +137,7 @@ export function useInsurance(): UseInsuranceProps {
   
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await insuranceService.deleteInsurance(id);
+      await productService.deleteInsurance(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["insurances"] });
@@ -193,3 +195,4 @@ export function useInsurance(): UseInsuranceProps {
     addNewInsurance,
   };
 }
+

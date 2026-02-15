@@ -1,9 +1,8 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import { UserService } from "@/services/masterdata/user.service";
-import ApiURL from "@/constants/api-url.const";
+import { authService } from "@/services/auth/api/auth.service";
 import AppURL from "@/constants/app-url.const";
 import { primaryRoles } from "@/app/masterdata/user/user.const";
 import _ from "lodash";
@@ -64,7 +63,6 @@ export function useUsers(): UseUserProps {
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
   const queryClient = useQueryClient();
-  const userService = useMemo(() => new UserService(), []);
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -179,12 +177,12 @@ export function useUsers(): UseUserProps {
   } = useQuery({
     queryKey: ["users", page, rowsPerPage, roleFilter, searchQuery],
     queryFn: async () => {
-      const result = await userService.getUser(
-        roleFilter,
+      const result: any = await authService.getAccounts({
+        role: roleFilter,
         page,
-        rowsPerPage,
-        searchQuery
-      );
+        pageSize: rowsPerPage,
+        search: searchQuery,
+      });
       return result;
     },
     enabled: !!hasAccess,
@@ -196,7 +194,7 @@ export function useUsers(): UseUserProps {
   const { data: roleOptionsData } = useQuery({
     queryKey: ["user-roles"],
     queryFn: async () => {
-      const allRoles = await userService.getRole({ page: 1, pageSize: 1000 });
+      const allRoles: any = await authService.getRoles({ page: 1, pageSize: 1000 });
       const seen = new Set(primaryRoles.map((item) => item.name));
       const options = [...primaryRoles];
 
@@ -214,7 +212,7 @@ export function useUsers(): UseUserProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await userService.deleteUser(id);
+      await authService.deleteAccount(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -232,7 +230,7 @@ export function useUsers(): UseUserProps {
         ...otherData,
         status: user.status === "Active" ? "Inactive" : "Active",
       };
-      await userService.updateUser(data, id);
+      await authService.updateAccount(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -314,3 +312,4 @@ export function useUsers(): UseUserProps {
     addNewUser,
   };
 }
+

@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import {
   ProductCategories,
-  ProductCategoriesService,
 } from "@/services/masterdata/product-category.service";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface UseProductCategoryProps {
@@ -31,7 +31,6 @@ export function useProductCategory(): UseProductCategoryProps {
   const router = useRouter();
   const { permissionList } = useAuth();
   const queryClient = useQueryClient();
-  const productCategoryService = new ProductCategoriesService();
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -67,8 +66,8 @@ export function useProductCategory(): UseProductCategoryProps {
   } = useQuery({
     queryKey: ["product-categories-masterdata"],
     queryFn: async () => {
-      const result = await productCategoryService.getCategories();
-      return result;
+      const result: any = await productService.getCategories();
+      return result?.data ?? result;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -77,7 +76,7 @@ export function useProductCategory(): UseProductCategoryProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await productCategoryService.deleteCategories(id);
+      await productService.deleteCategory(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -129,3 +128,4 @@ export function useProductCategory(): UseProductCategoryProps {
     addNewCategory,
   };
 }
+

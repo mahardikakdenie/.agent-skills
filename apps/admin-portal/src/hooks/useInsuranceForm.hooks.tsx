@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { InsuranceService } from "@/services/masterdata/insurance.service";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface InsuranceFormData {
@@ -42,7 +42,6 @@ export function useInsuranceForm(
   const router = useRouter();
   const { permissionList } = useAuth();
   const queryClient = useQueryClient();
-  const insuranceService = new InsuranceService();
   const isEdit = mode === "edit";
 
   const {
@@ -89,8 +88,8 @@ export function useInsuranceForm(
     queryFn: async () => {
       if (!insuranceId) return null;
 
-      const response = await insuranceService.getInsuranceById(insuranceId);
-      return response.data;
+      const response: any = await productService.getInsuranceById(insuranceId);
+      return response?.data ?? response;
     },
     enabled: isEdit && !!insuranceId,
     staleTime: 0,
@@ -125,14 +124,14 @@ export function useInsuranceForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: InsuranceFormData) => {
       if (isEdit && insuranceId) {
-        const response = await insuranceService.updateInsurance(
-          payload,
-          insuranceId
+        const response: any = await productService.updateInsurance(
+          insuranceId,
+          payload
         );
-        return response.data;
+        return response?.data ?? response;
       } else {
-        const response = await insuranceService.saveInsurance(payload);
-        return response.data;
+        const response: any = await productService.createInsurance(payload);
+        return response?.data ?? response;
       }
     },
     onSuccess: (data) => {
@@ -211,3 +210,4 @@ export function useInsuranceForm(
     loadInsuranceDetail,
   };
 }
+

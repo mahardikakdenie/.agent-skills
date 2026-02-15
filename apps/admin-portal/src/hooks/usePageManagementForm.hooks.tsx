@@ -2,8 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { PagesService } from "@/services/masterdata/page.service";
-import { PermissionService } from "@/services/masterdata/permission.service";
+import { authService } from "@/services/auth/api/auth.service";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 
@@ -43,8 +42,6 @@ export function usePageManagementForm(
 ): UsePageManagementFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const pagesService = new PagesService();
-  const permissionService = new PermissionService();
 
   const [pageId, setPageId] = useState<string>();
   const [permissionFields, setPermissionFields] = useState<PermissionField[]>([
@@ -70,8 +67,8 @@ export function usePageManagementForm(
     queryKey: ["page-detail", pageId],
     queryFn: async () => {
       if (!pageId) return null;
-      const response = await pagesService.getPagesById(pageId);
-      return response.data;
+      const response: any = await authService.getPageById(pageId);
+      return response?.data ?? response;
     },
     enabled: !!pageId && isEdit,
     staleTime: 0,
@@ -83,8 +80,11 @@ export function usePageManagementForm(
     queryKey: ["page-permissions", pageId],
     queryFn: async () => {
       if (!pageId) return [];
-      const response = await permissionService.getPermission(1, 100, pageId);
-      return response.data;
+      const response: any = await authService.getPermissionsByPage(pageId, {
+        page: 1,
+        pageSize: 100,
+      });
+      return response?.data ?? response;
     },
     enabled: !!pageId && isEdit,
     staleTime: 30000,
@@ -93,12 +93,12 @@ export function usePageManagementForm(
   const saveMutation = useMutation({
     mutationFn: async (data: PageFormData) => {
       if (isEdit && pageId) {
-        return await pagesService.updatePages(data, pageId);
+        return await authService.updatePage(pageId, data);
       } else {
-        return await pagesService.savePages(data);
+        return await authService.createPage(data);
       }
     },
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["pages"] });
       queryClient.invalidateQueries({ queryKey: ["page-detail"] });
 
@@ -125,7 +125,7 @@ export function usePageManagementForm(
 
   const addPermissionMutation = useMutation({
     mutationFn: async (data: { page: string; name: string }) => {
-      return await permissionService.savePermission(data);
+      return await authService.createPermission(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["page-permissions", pageId] });
@@ -135,7 +135,7 @@ export function usePageManagementForm(
 
   const deletePermissionMutation = useMutation({
     mutationFn: async (permissionId: string) => {
-      return await permissionService.deletePermission(permissionId);
+      return await authService.deletePermission(permissionId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["page-permissions", pageId] });
@@ -171,7 +171,7 @@ export function usePageManagementForm(
       }
 
       try {
-        const response = await saveMutation.mutateAsync(formData);
+        const response: any = await saveMutation.mutateAsync(formData);
 
         if (isEdit && pageId) {
           const existingPermissions =
@@ -260,3 +260,4 @@ export function usePageManagementForm(
     goBack,
   };
 }
+

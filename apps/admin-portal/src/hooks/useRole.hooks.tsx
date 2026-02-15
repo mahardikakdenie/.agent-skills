@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { RoleService } from "@/services/masterdata/roles.service";
+import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 
 export function useRole() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const roleService = new RoleService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -46,7 +45,7 @@ export function useRole() {
   } = useQuery({
     queryKey: ["roles", page, rowsPerPage],
     queryFn: async () => {
-      const response = await roleService.getRole(page, rowsPerPage);
+      const response: any = await authService.getRoles({ page, pageSize: rowsPerPage });
       return response;
     },
     enabled: hasAccess === true,
@@ -56,7 +55,7 @@ export function useRole() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await roleService.deleteRole(id);
+      return await authService.deleteRole(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
@@ -107,3 +106,4 @@ export function useRole() {
     isDeleting: deleteMutation.isPending,
   };
 }
+

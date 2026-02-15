@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { MailTemplateService } from "@/services/masterdata/mail-template.service";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 import { EditorState, ContentState, convertFromHTML, Modifier } from "draft-js";
@@ -73,7 +73,6 @@ export function useEmailTemplateForm(
 ): UseEmailTemplateFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const mailTemplateService = new MailTemplateService();
 
   const [templateId, setTemplateId] = useState<string>();
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -111,9 +110,11 @@ export function useEmailTemplateForm(
     queryKey: ["email-template-detail", templateId],
     queryFn: async () => {
       if (!templateId) return null;
-      const response =
-        await mailTemplateService.getMailTemplateById(templateId);
-      return response.data[0];
+      const response: any = await productService.getEmailTemplateJourneyById(
+        templateId
+      );
+      const data = response?.data ?? response;
+      return Array.isArray(data) ? data[0] : data;
     },
     enabled: !!templateId && isEdit,
     staleTime: 0,
@@ -124,8 +125,8 @@ export function useEmailTemplateForm(
   const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["email-template-categories"],
     queryFn: async () => {
-      const response = await mailTemplateService.getCategory({});
-      return response.data;
+      const response: any = await productService.getCategories({});
+      return response?.data ?? response;
     },
     staleTime: 300000,
   });
@@ -133,11 +134,11 @@ export function useEmailTemplateForm(
   const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
     queryKey: ["email-template-insurances", selectedCategoryId],
     queryFn: async () => {
-      const response = await mailTemplateService.getInsurance({
+      const response: any = await productService.getInsurances({
         page: 1,
         categoryId: selectedCategoryId,
       });
-      return response.data;
+      return response?.data ?? response;
     },
     enabled: !!selectedCategoryId,
     staleTime: 300000,
@@ -146,11 +147,11 @@ export function useEmailTemplateForm(
   const { data: productsData, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["email-template-products", selectedInsuranceId],
     queryFn: async () => {
-      const response = await mailTemplateService.getProductSelect({
+      const response: any = await productService.getProducts({
         page: 1,
         insuranceId: selectedInsuranceId,
       });
-      return response.data;
+      return response?.data ?? response;
     },
     enabled: !!selectedInsuranceId,
     staleTime: 300000,
@@ -159,11 +160,11 @@ export function useEmailTemplateForm(
   const { data: plansData, isLoading: isLoadingPlans } = useQuery({
     queryKey: ["email-template-plans", selectedProductId],
     queryFn: async () => {
-      const response = await mailTemplateService.getPlans({
+      const response: any = await productService.getPlans({
         page: 1,
         productId: selectedProductId,
       });
-      return response.data;
+      return response?.data ?? response;
     },
     enabled: !!selectedProductId,
     staleTime: 300000,
@@ -172,8 +173,8 @@ export function useEmailTemplateForm(
   const { data: journeysData, isLoading: isLoadingJourneys } = useQuery({
     queryKey: ["email-template-journeys"],
     queryFn: async () => {
-      const response = await mailTemplateService.getJourney();
-      return response.data;
+      const response: any = await productService.getReferenceEmailJourney();
+      return response?.data ?? response;
     },
     staleTime: 300000,
   });
@@ -181,12 +182,12 @@ export function useEmailTemplateForm(
   const { data: emailTagsData, isLoading: isLoadingEmailTags } = useQuery({
     queryKey: ["email-template-tags", selectedJourneyId],
     queryFn: async () => {
-      const response = await mailTemplateService.getEmailTag({
+      const response: any = await productService.getEmailTags({
         page: 1,
         pageSize: 100,
         journey: selectedJourneyId,
       });
-      return response.data;
+      return response?.data ?? response;
     },
     enabled: !!selectedJourneyId,
     staleTime: 300000,
@@ -206,9 +207,12 @@ export function useEmailTemplateForm(
           .filter(([_, value]) => value !== undefined),
       );
       if (isEdit && templateId) {
-        return await mailTemplateService.updateJourney(cleanedData, templateId);
+        return await productService.updateEmailTemplateJourney(
+          templateId,
+          cleanedData
+        );
       } else {
-        return await mailTemplateService.saveJourney(cleanedData);
+        return await productService.createEmailTemplateJourney(cleanedData);
       }
     },
     onSuccess: (response) => {
@@ -486,3 +490,4 @@ export function useEmailTemplateForm(
     goBack,
   };
 }
+

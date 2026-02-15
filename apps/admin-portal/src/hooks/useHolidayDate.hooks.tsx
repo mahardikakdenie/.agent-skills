@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { HelperService } from "@/services/helper.service";
+import { helperService } from "@/services/helper/api/helper.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 export function useHolidayDate() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const helperService = new HelperService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -66,11 +65,11 @@ export function useHolidayDate() {
         where.type = searchType;
       }
 
-      const response = await helperService.getCalendar(
-        where,
+      const response: any = await helperService.getCalendar({
         page,
-        rowsPerPage
-      );
+        pageSize: rowsPerPage,
+        ...where,
+      });
       return response;
     },
     enabled: hasAccess === true && !!searchYear,
@@ -185,3 +184,4 @@ export function useHolidayDate() {
     addNewHoliday,
   };
 }
+

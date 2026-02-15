@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { PagesService } from "@/services/masterdata/page.service";
+import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 export function usePageManagement() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const pagesService = new PagesService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -47,7 +46,7 @@ export function usePageManagement() {
   } = useQuery({
     queryKey: ["pages", page, rowsPerPage],
     queryFn: async () => {
-      const response = await pagesService.getPages(page, rowsPerPage);
+      const response: any = await authService.getPages({ page, pageSize: rowsPerPage });
       return response;
     },
     enabled: hasAccess === true,
@@ -57,7 +56,7 @@ export function usePageManagement() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await pagesService.deletePages(id);
+      return await authService.deletePage(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pages"] });
@@ -109,3 +108,4 @@ export function usePageManagement() {
     isDeleting: deleteMutation.isPending,
   };
 }
+

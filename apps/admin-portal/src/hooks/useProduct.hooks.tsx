@@ -1,12 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import {
-  InsuranceService,
-  Insurance,
-} from "@/services/masterdata/insurance.service";
-import { MdProductService } from "@/services/masterdata/product.service";
+import { Insurance } from "@/services/masterdata/insurance.service";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface UseProductProps {
@@ -43,9 +40,6 @@ export function useProduct(): UseProductProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
-  const insuranceService = new InsuranceService();
-  const productService = new MdProductService();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -131,8 +125,8 @@ export function useProduct(): UseProductProps {
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
     queryKey: ["product-categories"],
     queryFn: async () => {
-      const result = await productService.getCategories();
-      return result;
+      const result: any = await productService.getCategories();
+      return result?.data ?? result;
     },
     staleTime: 300000,
     refetchOnWindowFocus: false,
@@ -156,11 +150,11 @@ export function useProduct(): UseProductProps {
     queryKey: ["products", page, rowsPerPage, selectedTab],
     queryFn: async () => {
       const categoryFilter = selectedTab === "Travel" ? "" : selectedTab;
-      const result = await insuranceService.getInsurance(
+      const result: any = await productService.getInsurances({
         page,
-        rowsPerPage,
-        categoryFilter
-      );
+        pageSize: rowsPerPage,
+        categoryId: categoryFilter,
+      });
       return result;
     },
     enabled: !!selectedTab,
@@ -211,3 +205,4 @@ export function useProduct(): UseProductProps {
     addNewProduct,
   };
 }
+

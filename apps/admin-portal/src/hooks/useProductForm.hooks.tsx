@@ -3,9 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { MdProductService } from "@/services/masterdata/product.service";
-import { productService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface ProductField {
@@ -59,7 +57,6 @@ export function useProductForm(
   const router = useRouter();
   const { permissionList } = useAuth();
   const queryClient = useQueryClient();
-  const mdProductService = new MdProductService();
   const isEdit = mode === "edit";
 
   const {
@@ -112,8 +109,8 @@ export function useProductForm(
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
     queryKey: ["product-categories"],
     queryFn: async () => {
-      const result = await mdProductService.getCategories();
-      return result;
+      const result: any = await productService.getCategories();
+      return result?.data ?? result;
     },
     staleTime: 300000,
     refetchOnWindowFocus: false,
@@ -124,10 +121,11 @@ export function useProductForm(
     queryFn: async () => {
       if (!selectedCategoryId) return [];
 
-      const response: any = await productService.get(ApiURL.v1Insurances, {
-        params: { page: 1, categoryId: selectedCategoryId },
+      const response: any = await productService.getInsurances({
+        page: 1,
+        categoryId: selectedCategoryId,
       });
-      return response?.data?.data || [];
+      return response?.data ?? [];
     },
     enabled: !!selectedCategoryId,
     staleTime: 300000,
@@ -139,14 +137,13 @@ export function useProductForm(
     queryFn: async () => {
       if (!selectedCategoryId || !selectedInsuranceId) return [];
 
-      const { data } = await mdProductService.getProduct(
-        1,
-        100,
-        "",
-        selectedCategoryId,
-        selectedInsuranceId
-      );
-      return data;
+      const response: any = await productService.getProducts({
+        page: 1,
+        pageSize: 100,
+        categoryId: selectedCategoryId,
+        insuranceId: selectedInsuranceId,
+      });
+      return response?.data ?? [];
     },
     enabled: isEdit && !!selectedCategoryId && !!selectedInsuranceId,
     staleTime: 0,
@@ -224,22 +221,19 @@ export function useProductForm(
 
       for (const product of payload.products) {
         if (product.id === "") {
-          const { data } = await mdProductService.saveProduct({
+          const response: any = await productService.createProduct({
             category: payload.category,
             insurance: payload.insurance,
             name: product.name,
           });
-          results.push(data);
+          results.push(response?.data ?? response);
         } else {
-          const { data } = await mdProductService.updateProduct(
-            {
+          const response: any = await productService.updateProduct(product.id, {
               category: payload.category,
               insurance: payload.insurance,
               name: product.name,
-            },
-            product.id
-          );
-          results.push(data);
+            });
+          results.push(response?.data ?? response);
         }
       }
 
@@ -271,7 +265,7 @@ export function useProductForm(
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await mdProductService.deleteProduct(id);
+      await productService.deleteProduct(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -412,3 +406,4 @@ export function useProductForm(
     loadProductDetail,
   };
 }
+

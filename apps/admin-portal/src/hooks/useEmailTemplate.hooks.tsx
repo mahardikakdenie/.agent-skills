@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { MailTemplateService } from "@/services/masterdata/mail-template.service";
+import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 export function useEmailTemplate() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const mailTemplateService = new MailTemplateService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -43,8 +42,8 @@ export function useEmailTemplate() {
   const { data: categoriesData } = useQuery({
     queryKey: ["email-template-categories"],
     queryFn: async () => {
-      const response = await mailTemplateService.getCategories();
-      return response;
+      const response: any = await productService.getCategories();
+      return response?.data ?? response;
     },
     enabled: hasAccess === true,
     staleTime: 300000,
@@ -64,11 +63,11 @@ export function useEmailTemplate() {
   } = useQuery({
     queryKey: ["email-templates", page, rowsPerPage, selectedTab],
     queryFn: async () => {
-      const response = await mailTemplateService.getMailTemplate(
+      const response: any = await productService.getEmailTemplatesJourney({
         page,
-        rowsPerPage,
-        selectedTab === "Travel" ? "" : selectedTab
-      );
+        pageSize: rowsPerPage,
+        category: selectedTab === "Travel" ? "" : selectedTab,
+      });
       return response;
     },
     enabled: hasAccess === true && !!selectedTab,
@@ -78,7 +77,7 @@ export function useEmailTemplate() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await mailTemplateService.deleteMailTemplate(id);
+      return await productService.deleteEmailTemplateJourney(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["email-templates"] });
@@ -151,3 +150,4 @@ export function useEmailTemplate() {
     isDeleting: deleteMutation.isPending,
   };
 }
+

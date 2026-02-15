@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { GroupService } from "@/services/masterdata/group.service";
+import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 
 export function useGroupList() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const groupService = new GroupService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -46,7 +45,7 @@ export function useGroupList() {
   } = useQuery({
     queryKey: ["groups", page, rowsPerPage],
     queryFn: async () => {
-      const response = await groupService.getGroup(page, rowsPerPage);
+      const response: any = await authService.getGroups({ page, pageSize: rowsPerPage });
       return response;
     },
     enabled: hasAccess === true,
@@ -56,7 +55,7 @@ export function useGroupList() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await groupService.deleteGroup(id);
+      return await authService.deleteGroup(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["groups"] });
@@ -102,3 +101,4 @@ export function useGroupList() {
     isDeleting: deleteMutation.isPending,
   };
 }
+

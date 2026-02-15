@@ -2,8 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { EmailTagService } from "@/services/masterdata/email-tag.service";
-import { MailTemplateService } from "@/services/masterdata/mail-template.service";
+import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -35,8 +34,6 @@ export function useEmailTagForm(
 ): UseEmailTagFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const emailTagService = new EmailTagService();
-  const mailTemplateService = new MailTemplateService();
   const { permissionList } = useAuth();
 
   const [tagId, setTagId] = useState<string>();
@@ -77,8 +74,8 @@ export function useEmailTagForm(
     queryKey: ["email-tag-detail", tagId],
     queryFn: async () => {
       if (!tagId) return null;
-      const response = await emailTagService.getEmailTagById(tagId);
-      return response.data;
+      const response: any = await productService.getEmailTagById(tagId);
+      return response?.data ?? response;
     },
     enabled: !!tagId && isEdit,
     staleTime: 0,
@@ -89,8 +86,8 @@ export function useEmailTagForm(
   const { data: journeysData, isLoading: isLoadingJourneys } = useQuery({
     queryKey: ["email-tag-journeys"],
     queryFn: async () => {
-      const response = await mailTemplateService.getJourney();
-      return response.data;
+      const response: any = await productService.getReferenceEmailJourney();
+      return response?.data ?? response;
     },
     staleTime: 300000,
   });
@@ -130,9 +127,9 @@ export function useEmailTagForm(
   const saveMutation = useMutation({
     mutationFn: async (data: EmailTagFormData) => {
       if (isEdit && tagId) {
-        return await emailTagService.updateEmailTag(data, tagId);
+        return await productService.updateEmailTag(tagId, data);
       } else {
-        return await emailTagService.saveEmailTag(data);
+        return await productService.createEmailTag(data);
       }
     },
     onSuccess: () => {
@@ -194,3 +191,4 @@ export function useEmailTagForm(
     goBack,
   };
 }
+
