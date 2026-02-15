@@ -1,6 +1,5 @@
 import { useState } from "react";
-import ApiURL from "@/constants/api-url.const";
-import {financeService} from "@/services/api.service";
+import { financeService } from "@/services/finance/api/finance.service";
 
 const useBrokerFee = () => {
   const [brokerFees, setBrokerFees] = useState<any>();
@@ -12,8 +11,13 @@ const useBrokerFee = () => {
     pageSize?: number,
     searchData?: string
   ) => {
-    const fee: any = await financeService.get(ApiURL.v1FeesBroker, { params: { ...where, page, pageSize, keyword: searchData } });
-    setBrokerFees(fee?.data);
+    const fee: any = await financeService.getBrokerFees({
+      ...where,
+      page,
+      pageSize,
+      keyword: searchData,
+    });
+    setBrokerFees(fee);
   };
 
   const getChannelFees = async (
@@ -22,31 +26,36 @@ const useBrokerFee = () => {
     pageSize?: number,
     searchData?: string
   ) => {
-    const fee: any = await financeService.get(ApiURL.v1FeesChannel, { params: { ...where, page, pageSize, keyword: searchData } });
-    setChannelFees(fee?.data);
+    const fee: any = await financeService.getChannelFees({
+      ...where,
+      page,
+      pageSize,
+      keyword: searchData,
+    });
+    setChannelFees(fee);
   };
 
 
   const createBrokerFee = async (data: any) => {
-    await financeService.post(ApiURL.v1FeesBroker, data);
+    await financeService.createBrokerFee(data);
   };
 
   const updateBrokerFee = async (id: string, data: any) => {
-    await financeService.put(ApiURL.v1FeesBrokerDetail(id), data);
+    await financeService.updateBrokerFee(id, data);
   };
 
   const deleteBrokerFee = async (id: string) => {
-    await financeService.delete(ApiURL.v1FeesBrokerDetail(id));
+    await financeService.deleteBrokerFee(id);
   };
 
   const createChannelFee = async (channelId: string, data: any) => {
-    await financeService.post(ApiURL.v1FeesChannelDetail(channelId), data);
+    await financeService.createChannelFee(channelId, data);
   };
   const updateChannelFee = async (id: string, data: any) => {
-    await financeService.put(ApiURL.v1FeesChannelDetail(id), data);
+    await financeService.updateChannelFee(id, data);
   };
   const deleteChannelFee = async (id: string) => {
-    await financeService.delete(ApiURL.v1FeesChannelDetail(id));
+    await financeService.deleteChannelFee(id);
   };
   return {
     deleteBrokerFee,

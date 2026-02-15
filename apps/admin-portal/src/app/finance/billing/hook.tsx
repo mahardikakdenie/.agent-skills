@@ -2,14 +2,10 @@ import { useState, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format } from "date-fns";
-import {
-  channelService,
-  financeService,
-  financeServiceFormData,
-  productService,
-  transactionService,
-} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { channelService } from "@/services/channel/api/channel.service";
+import { financeService } from "@/services/finance/api/finance.service";
+import { productService } from "@/services/product/api/product.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
 import { toastNotification } from "@/lib/toast";
 
 interface UseBillingProps {
@@ -234,10 +230,11 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["channels"],
     queryFn: async () => {
-      const response = await channelService.get(ApiURL.v1Channels, {
-        params: { page: 1, limit: 100 },
+      const response = await channelService.getChannelsV1({
+        page: 1,
+        limit: 100,
       });
-      return response?.data?.data || [];
+      return (response as any)?.data || [];
     },
     staleTime: 10 * 60 * 1000,
   });
@@ -245,10 +242,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
     queryKey: ["insurances"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances, {
-        params: {},
-      });
-      return response?.data?.data || [];
+      const response = await productService.getInsurances({});
+      return (response as any)?.data || [];
     },
     staleTime: 10 * 60 * 1000,
   });
@@ -256,8 +251,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Categories);
-      return response?.data?.data || [];
+      const response = await productService.getCategories();
+      return (response as any)?.data || [];
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -307,11 +302,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
         query.category = searchCategory;
       }
 
-      const response = await financeService.get(ApiURL.v1Billings, {
-        params: query,
-      });
-
-      return response?.data;
+      const response = await financeService.getBillings(query);
+      return response;
     },
     enabled: !!searchType && !!searchChannel,
     staleTime: 30000,
@@ -336,11 +328,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
         params.groupBy = billingDetailsParams.groupBy;
       }
 
-      const response = await financeService.get(
-        ApiURL.v1BillingDetails(billingId),
-        { params }
-      );
-      return response?.data;
+      const response = await financeService.getBillingById(billingId, params);
+      return response;
     },
     enabled: !!billingId,
     staleTime: 5 * 60 * 1000,
@@ -353,11 +342,11 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   } = useQuery({
     queryKey: ["unmatched-reconcill-billings", page, rowsPerPage],
     queryFn: async () => {
-      const response = await financeService.get(
-        ApiURL.v1BillingsNotMatchReconciliation,
-        { params: { page, pageSize: rowsPerPage } }
-      );
-      return response?.data;
+      const response = await financeService.getNotMatchReconciliation({
+        page,
+        pageSize: rowsPerPage,
+      });
+      return response;
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -392,11 +381,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
         search.category = category;
       }
 
-      const response = await transactionService.get(ApiURL.v1Transactions, {
-        params: search,
-      });
-
-      return response?.data || { data: [], meta: {} };
+      const response = await transactionService.getTransactions(search);
+      return response || { data: [], meta: {} };
     },
     enabled: !!transactionParams,
     staleTime: 30000,
@@ -405,7 +391,7 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
 
   const createBillingMutation = useMutation({
     mutationFn: async (data: any) => {
-      await financeService.post(ApiURL.v1Billings, data);
+      await financeService.createBilling(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["billings"] });
@@ -418,7 +404,7 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
 
   const updateBillingMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      await financeService.put(ApiURL.v1BillingDetails(id), data);
+      await financeService.updateBilling(id, data);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["billings"] });
@@ -432,10 +418,7 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
 
   const importBillingTransactionsMutation = useMutation({
     mutationFn: async (data: any) => {
-      await financeServiceFormData.post(
-        ApiURL.v1BillingsImportTransaction,
-        data
-      );
+      await financeService.importTransactions(data as FormData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["billings"] });
@@ -454,9 +437,7 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
 
   const confirmReconciliationMutation = useMutation({
     mutationFn: async (id: string) => {
-      await financeService.post(
-        ApiURL.v1BillingDetailsConfirmReconciliation(id)
-      );
+      await financeService.confirmBillingReconciliation(id);
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["billings"] });
@@ -481,11 +462,11 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
       queryFn: async () => {
         if (!insuranceId) return null;
 
-        const response: any = await financeService.get(
-          ApiURL.v1FeesBrokerFilter,
-          { params: { insuranceId, productId, planId } }
-        );
-        const feesResponse: any = response?.data;
+        const feesResponse: any = await financeService.getBrokerFeesFilter({
+          insuranceId,
+          productId,
+          planId,
+        });
 
         if (feesResponse && feesResponse.data.length > 0) {
           return {
@@ -519,11 +500,10 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
       queryFn: async () => {
         if (!channelId || !insuranceId) return null;
 
-        const response: any = await financeService.get(
-          ApiURL.v1FeesChannelFilter,
-          { params: { channelId, insuranceId } }
-        );
-        const feesResponse: any = response?.data;
+        const feesResponse: any = await financeService.getChannelFeesFilter({
+          channelId,
+          insuranceId,
+        });
 
         if (feesResponse && feesResponse.data.length > 0) {
           return {
@@ -550,16 +530,14 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
 
   const checkDuplicateBilling = useCallback(
     async (type: string, company: string, period: string) => {
-      const result = await financeService.get(ApiURL.v1Billings, {
-        params: {
-          page: 1,
-          pageSize: 10,
-          type,
-          company,
-          transaction_period: period,
-        },
+      const result = await financeService.getBillings({
+        page: 1,
+        pageSize: 10,
+        type,
+        company,
+        transaction_period: period,
       });
-      return result?.data;
+      return result;
     },
     []
   );
@@ -649,19 +627,23 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     [refetchBilling]
   );
 
+  const billingsResult = billingsData as any;
+  const unmatchedReconcillBillingsResult = unmatchedReconcillBillingsData as any;
+  const transactionsResult = transactionsData as any;
+
   return {
-    billings: billingsData?.data || [],
+    billings: billingsResult?.data || [],
     billing: billingData,
-    unmatchedReconcillBillings: unmatchedReconcillBillingsData?.data || [],
-    unmatchedReconcillBillingsMeta: unmatchedReconcillBillingsData?.meta || {},
+    unmatchedReconcillBillings: unmatchedReconcillBillingsResult?.data || [],
+    unmatchedReconcillBillingsMeta: unmatchedReconcillBillingsResult?.meta || {},
     categories: categoriesData || [],
     channels: channelsData || [],
     insurances: insurancesData || [],
-    totalPages: billingsData?.meta
-      ? Math.ceil(billingsData.meta.total / rowsPerPage)
+    totalPages: billingsResult?.meta
+      ? Math.ceil(billingsResult.meta.total / rowsPerPage)
       : 1,
-    totalItems: billingsData?.meta?.total || 0,
-    totalAmount: billingsData?.totalAmount || 0,
+    totalItems: billingsResult?.meta?.total || 0,
+    totalAmount: billingsResult?.totalAmount || 0,
 
     page,
     rowsPerPage,
@@ -705,8 +687,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     refetchBillings,
     refetchBilling,
 
-    transactions: transactionsData?.data || [],
-    transactionsMeta: transactionsData?.meta || {},
+    transactions: transactionsResult?.data || [],
+    transactionsMeta: transactionsResult?.meta || {},
     fetchTransactions,
     fetchBillingDetails,
   };

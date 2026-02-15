@@ -44,8 +44,10 @@ import {
 } from "@/components/ui/table";
 import { toastNotification } from "@/lib/toast";
 import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import {channelService, productService, transactionService} from "@/services/api.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { productService } from "@/services/product/api/product.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
+import { useCreateTransactionsConventional } from "@/services/transaction/hooks/mutations";
 
 type RenewalForm = {
     channel_id: string;
@@ -155,6 +157,8 @@ export default function AddTransaction() {
     });
 
     const router = useRouter();
+    const { mutateAsync: createTransactionsConventional } =
+        useCreateTransactionsConventional();
 
     const onSubmit = async (data: RenewalForm) => {
         const request = {
@@ -187,7 +191,7 @@ export default function AddTransaction() {
         };
 
         try {
-            await transactionService.post(ApiURL.v1TransactionsConventional, request);
+            await createTransactionsConventional(request);
             toastNotification("Transaction created successfully!");
             router.push(AppURL.transactionList);
         } catch (error) {
@@ -266,8 +270,11 @@ export default function AddTransaction() {
 
     const fetchChannels = async () => {
         try {
-            const res: any = await channelService.get(ApiURL.v1Channels, { params: { page: 1, limit: 100 } });
-            setChannels(res.data.data);
+            const res: any = await channelService.getChannelsV1({
+                page: 1,
+                limit: 100,
+            });
+            setChannels(res?.data || []);
         } catch (error) {
             console.error(error);
         }
@@ -281,8 +288,8 @@ export default function AddTransaction() {
                 type: selectedType ? selectedType : undefined,
                 name: searchCustomer ? searchCustomer : undefined
             };
-            const res: any = await transactionService.get(ApiURL.v1Customers, { params });
-            setCustomers(res.data.data);
+            const res: any = await transactionService.getCustomers(params);
+            setCustomers(res?.data || []);
         } catch (error) {
             console.error(error);
         }
@@ -290,10 +297,13 @@ export default function AddTransaction() {
 
     const fetchInsurances = async () => {
         try {
-            const response: any = await productService.get(ApiURL.v1Insurances);
-            const res = response?.data;
-            console.log(res)
-            setInsurances(res.data.map((item: any) => ({ id: item.id, name: item.name })));
+            const res: any = await productService.getInsurances();
+            setInsurances(
+                ((res?.data || []) as any[]).map((item: any) => ({
+                    id: item.id,
+                    name: item.name,
+                }))
+            );
         } catch (error) {
             console.error(error);
         }
@@ -301,10 +311,12 @@ export default function AddTransaction() {
 
     const fetchProductCategories = async () => {
         try {
-            const response: any = await productService.get(ApiURL.v1Categories);
-            const res = response?.data;
+            const res: any = await productService.getCategories();
             setCategories(
-                res.data.map((item: any) => ({ id: item.name, name: item.name }))
+                ((res?.data || []) as any[]).map((item: any) => ({
+                    id: item.name,
+                    name: item.name,
+                }))
             );
         } catch (error) {
             console.log(error);
@@ -313,10 +325,12 @@ export default function AddTransaction() {
 
     const fetchCurrencies = async () => {
         try {
-            const response: any = await productService.get(ApiURL.v1ReferencesTypeCurrencies);
-            const res = response.data;
+            const res: any = await productService.getReferenceCurrencies();
             setCurrencies(
-                res.data.map((item: any) => ({ id: item.name, name: item.name }))
+                ((res?.data || []) as any[]).map((item: any) => ({
+                    id: item.name,
+                    name: item.name,
+                }))
             );
         } catch (error) {
             console.log(error);
@@ -325,9 +339,11 @@ export default function AddTransaction() {
 
     const fetchPlans = async (insuranceId: string, category: string) => {
         try {
-            const response: any = await productService.get(ApiURL.v1Plans, { params: { insuranceId, category } });
-            const res = response?.data;
-            setPlans(res.data);
+            const res: any = await productService.getPlans({
+                insuranceId,
+                category,
+            });
+            setPlans(res?.data || []);
         } catch (error) {
             console.log(error);
         }

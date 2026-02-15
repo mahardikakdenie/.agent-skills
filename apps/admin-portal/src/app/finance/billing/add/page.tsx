@@ -24,8 +24,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import AppURL from "@/constants/app-url.const";
 import { DataTable } from "@/components/ui/DataTable";
 import { createBillingTransactionTableColumns } from "@/components/tableConfig/billingTransactionTableConfig";
-import { financeService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { financeService } from "@/services/finance/api/finance.service";
 import { generateYears, generateMonths } from "@/lib/utils";
 
 const CreateBillingPage = () => {
@@ -127,16 +126,12 @@ const CreateBillingPage = () => {
         const feePromises = feeRequests.map(async (req) => {
           try {
             if (type === "partner") {
-              const response: any = await financeService.get(
-                ApiURL.v1FeesChannelFilter,
+              const feesResponse: any = await financeService.getChannelFeesFilter(
                 {
-                  params: {
-                    channelId: company,
-                    insuranceId: req.insuranceId,
-                  },
+                  channelId: company,
+                  insuranceId: req.insuranceId,
                 }
               );
-              const feesResponse: any = response?.data;
 
               if (feesResponse && feesResponse.data.length > 0) {
                 return {
@@ -150,17 +145,13 @@ const CreateBillingPage = () => {
                 };
               }
             } else if (type === "insurer") {
-              const response: any = await financeService.get(
-                ApiURL.v1FeesBrokerFilter,
+              const feesResponse: any = await financeService.getBrokerFeesFilter(
                 {
-                  params: {
-                    insuranceId: req.insuranceId,
-                    productId: req.productId,
-                    planId: req.planId,
-                  },
+                  insuranceId: req.insuranceId,
+                  productId: req.productId,
+                  planId: req.planId,
                 }
               );
-              const feesResponse: any = response?.data;
 
               if (feesResponse && feesResponse.data.length > 0) {
                 return {

@@ -7,9 +7,9 @@
 ## Status Overview
 
 - Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 17
+- Total Components Migrated (Main): 22
 - Incremental Updates: 0
-- Last Updated: 2026-02-15 18:03
+- Last Updated: 2026-02-15 18:14
 
 ---
 
@@ -19,8 +19,8 @@
 
 - Started: 2026-02-15 17:10
 - Completed: In Progress
-- Total Services: 6 (Claim, Auth, Policy, Transaction, Channel + dashboard aggregation)
-- Total Components: 17
+- Total Services: 7 (Claim, Auth, Policy, Transaction, Channel, Finance, Helper + dashboard aggregation)
+- Total Components: 22
 - Status: In Progress
 
 ### Components Migrated by Service
@@ -162,6 +162,44 @@ Components:
   - Verified: PASS
   - Issues: None
 
+- [x] `apps/admin-portal/src/app/transaction/list/add/page.tsx` - Transaction create flow
+  - Before: Direct `channelService`/`productService`/`transactionService` calls from legacy api service
+  - After: New domain API services for lookups + `useCreateTransactionsConventional` mutation for submit
+  - Verified: PASS
+  - Issues: None
+
+#### Service: Finance + Helper Service
+
+Service Base URLs:
+- `NEXT_PUBLIC_FINANCE_SERVICE_URL`
+- `NEXT_PUBLIC_HELPER_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/app/finance/broker-fee/hook.tsx` - Broker/channel fee operations hook
+  - Before: Direct `financeService` calls from legacy api service
+  - After: New finance API service methods (`getBrokerFees`, `getChannelFees`, create/update/delete fee methods)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/finance/billing/hook.tsx` - Billing domain orchestration hook
+  - Before: Direct `channelService`/`productService`/`financeService`/`transactionService` legacy calls
+  - After: New domain API services (`channel`, `product`, `finance`, `transaction`) with equivalent query/mutation flows
+  - Verified: PASS
+  - Issues: Local narrowing added for `unknown` query payloads
+
+- [x] `apps/admin-portal/src/app/finance/billing/add/page.tsx` - Create billing fee prefetch logic
+  - Before: Direct `financeService.get(...)` filter calls via legacy api service
+  - After: New finance API filter methods (`getChannelFeesFilter`, `getBrokerFeesFilter`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx` - Invoice PDF generation
+  - Before: Direct `helperService.post(...)` legacy call
+  - After: `useGeneratePdfService` mutation hook
+  - Verified: PASS
+  - Issues: None
+
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
@@ -172,14 +210,14 @@ Components:
 
 ### Components NOT Migrated
 
-- Remaining components/hooks still using legacy service imports are pending in Batch 6 continuation (currently 25 files in active scope across transaction add, finance, product-category, promotion, and masterdata-related hooks/components).
+- Remaining components/hooks still using legacy service imports are pending in Batch 6 continuation (currently 20 files in active scope across product-category, promotion, and masterdata-related hooks/components).
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 17
-- Components with issues: 2 (all fixed)
+- Total components migrated: 22
+- Components with issues: 3 (all fixed)
 - Components rolled back: 0
 
 #### Full Verification Gate
@@ -207,6 +245,13 @@ Components:
 - Fix: Local cast in hook call for compatibility; behavior validated via verification gate
 - Status: ✅ Resolved
 
+#### Issue 3: Finance billing hook data inference became `unknown` after legacy service replacement
+
+- Component: `apps/admin-portal/src/app/finance/billing/hook.tsx`
+- Cause: New API service methods return generic payloads and `useQuery` inferred `unknown` in aggregate return mapping
+- Fix: Added localized narrowing (`as any`) for aggregate query payloads at return assembly to preserve existing behavior safely in this phase
+- Status: PASS (resolved)
+
 ### Next Steps
 
 - [ ] Continue Batch 6 component migration for remaining services/features
@@ -219,4 +264,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction | 17 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper | 22 components | In Progress | this doc   |

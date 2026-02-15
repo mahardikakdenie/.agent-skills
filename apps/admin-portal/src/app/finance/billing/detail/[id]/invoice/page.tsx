@@ -6,8 +6,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useScreen } from "@/context/screen.context";
-import ApiURL from "@/constants/api-url.const";
-import { helperService } from "@/services/api.service";
+import { useGeneratePdfService } from "@/services/helper/hooks/mutations";
 
 export default function InvoicePage() {
   const { id } = useParams();
@@ -15,6 +14,7 @@ export default function InvoicePage() {
   const searchParams = useSearchParams();
   const invoiceRef = useRef<HTMLDivElement>(null);
   const { setLoading } = useScreen();
+  const { mutateAsync: generatePdfService } = useGeneratePdfService();
 
   const type = searchParams.get("type") || "insurer";
 
@@ -404,14 +404,16 @@ export default function InvoicePage() {
     setLoading(true);
 
     try {
-      const response: any = await helperService.post(
-        ApiURL.v1Html2pdfGeneratePdfService,
-        {
-          content: htmlContent,
-          filename: `policies/${billingNo}`,
-        }
-      );
-      window.open(response.data.file.url, "_blank");
+      const response: any = await generatePdfService({
+        content: htmlContent,
+        filename: `policies/${billingNo}`,
+      });
+      const pdfUrl = response?.file?.url || response?.data?.file?.url;
+      if (pdfUrl) {
+        window.open(pdfUrl, "_blank");
+      } else {
+        alert("Failed to generate PDF");
+      }
     } catch (error) {
       console.error("Failed to download PDF:", error);
       alert("Failed to download PDF");
