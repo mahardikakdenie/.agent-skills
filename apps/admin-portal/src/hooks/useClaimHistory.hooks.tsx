@@ -1,11 +1,10 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useScreen } from "@/context/screen.context";
 import _ from "lodash";
 import AppURL from "@/constants/app-url.const";
-import { claimsService } from "@/services/claims/api/claims.service";
+import { useClaimListLimit } from "@/services/claims/hooks/queries/useClaimListLimit";
 import { capitalizeString, getHeaderPage } from "@/helpers/app.helper";
 
 interface ClaimHistoryDetail {
@@ -78,6 +77,10 @@ export function useClaimHistory(): UseClaimHistoryProps {
   const [allAvailablePolicies, setAllAvailablePolicies] = useState<
     { policyId: string; policyNo: string }[]
   >([]);
+  const [allOptionsData, setAllOptionsData] =
+    useState<ClaimHistorySummary | null>(null);
+  const [filteredClaimHistoryData, setFilteredClaimHistoryData] =
+    useState<ClaimHistorySummary | null>(null);
 
   const updateURL = useCallback(
     (params: Record<string, string | undefined>) => {
@@ -199,67 +202,71 @@ export function useClaimHistory(): UseClaimHistoryProps {
     [allAvailablePlans, allAvailablePolicies]
   );
 
-  const { data: allOptionsData, isLoading: isLoadingAllOptions } = useQuery({
-    queryKey: ["claim-history-all-options", searchData],
-    queryFn: async () => {
-      if (!searchData) return null;
-
-      const params = {
+  const allOptionsParams = searchData
+    ? {
         search: searchData,
-      };
+      }
+    : undefined;
 
-      const response: any = await claimsService.getClaimListLimit(params);
-      const payload = response?.data ?? response;
+  const { data: allOptionsResponse, isLoading: isLoadingAllOptions } =
+    useClaimListLimit(allOptionsParams, {
+      enabled:
+        !!searchData &&
+        allAvailablePlans.length === 0 &&
+        allAvailablePolicies.length === 0,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    });
 
-      return mapResponse(payload, true);
-    },
-    enabled:
-      !!searchData &&
-      allAvailablePlans.length === 0 &&
-      allAvailablePolicies.length === 0,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+  const filteredParams = {
+    plan_id: selectedPlanId || undefined,
+    policy_id: selectedPolicyId || undefined,
+    search: searchData || undefined,
+  };
 
   const {
-    data: filteredClaimHistoryData,
+    data: filteredClaimHistoryResponse,
     isLoading: isLoadingFilteredData,
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: [
-      "claim-history-filtered",
-      searchData,
-      selectedPlanId,
-      selectedPolicyId,
-    ],
-    queryFn: async () => {
-      const params = {
-        plan_id: selectedPlanId || undefined,
-        policy_id: selectedPolicyId || undefined,
-        search: searchData || undefined,
-      };
-
-      const response: any = await claimsService.getClaimListLimit(params);
-      const payload = response?.data ?? response;
-
-      const mappedResponse = mapResponse(payload, false);
-
-      if (mappedResponse.data.length > 0) {
-        setIsSearchParamValid(true);
-        return mappedResponse;
-      } else {
-        setIsSearchParamValid(false);
-        return null;
-      }
-    },
+  } = useClaimListLimit(filteredParams, {
     enabled: !!(searchData || selectedPlanId || selectedPolicyId),
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
+
+  useEffect(() => {
+    if (!allOptionsResponse) {
+      setAllOptionsData(null);
+      return;
+    }
+
+    const payload = (allOptionsResponse as any)?.data ?? allOptionsResponse;
+    setAllOptionsData(mapResponse(payload, true));
+  }, [allOptionsResponse, mapResponse]);
+
+  useEffect(() => {
+    if (!filteredClaimHistoryResponse) {
+      setFilteredClaimHistoryData(null);
+      return;
+    }
+
+    const payload =
+      (filteredClaimHistoryResponse as any)?.data ?? filteredClaimHistoryResponse;
+    const mappedResponse = mapResponse(payload, false);
+
+    if (mappedResponse.data.length > 0) {
+      setIsSearchParamValid(true);
+      setFilteredClaimHistoryData(mappedResponse);
+      return;
+    }
+
+    setIsSearchParamValid(false);
+    setFilteredClaimHistoryData(null);
+  }, [filteredClaimHistoryResponse, mapResponse]);
 
   const isLoading = isLoadingAllOptions || isLoadingFilteredData;
 

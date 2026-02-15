@@ -1,10 +1,18 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import {
+  useInsuranceCurrencies,
+  useInsurances,
+  useReferenceCurrencies,
+} from "@/services/product/hooks/queries";
+import {
+  useCreateInsuranceCurrency,
+  useDeleteInsuranceCurrency,
+} from "@/services/product/hooks/mutations";
 
 interface CurrencyField {
   id: string;
@@ -111,45 +119,35 @@ export function useCurrencyForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: insurances = [], isLoading: isLoadingInsurances } = useQuery({
-    queryKey: ["currency-insurances"],
-    queryFn: async () => {
-      const data: any = await productService.getInsurances({ page: 1 });
-      return data?.data || [];
-    },
+  const { data: insurancesResponse, isLoading: isLoadingInsurances } = useInsurances(
+    { page: 1 },
+    {
     staleTime: 300000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: typeCurrencies = [], isLoading: isLoadingTypeCurrencies } =
-    useQuery({
-      queryKey: ["type-currencies"],
-      queryFn: async () => {
-        const data: any = await productService.getReferenceCurrencies({});
-        return data?.data || [];
-      },
+  const { data: typeCurrenciesResponse, isLoading: isLoadingTypeCurrencies } =
+    useReferenceCurrencies(
+      {},
+      {
       staleTime: 300000,
       refetchOnWindowFocus: false,
     });
 
-  const { data: existingCurrencies, isLoading: isLoadingCurrencies } = useQuery(
-    {
-      queryKey: ["currencies-detail", selectedInsuranceId],
-      queryFn: async () => {
-        if (!selectedInsuranceId) return null;
-
-        const data: any = await productService.getInsuranceCurrencies(
-          selectedInsuranceId,
-          { page: 1, pageSize: 100 }
-        );
-        return data?.data || [];
-      },
+  const { data: existingCurrenciesResponse, isLoading: isLoadingCurrencies } =
+    useInsuranceCurrencies(selectedInsuranceId || "", { page: 1, pageSize: 100 }, {
       enabled: isEdit && !!selectedInsuranceId,
       staleTime: 0,
       gcTime: 0,
       refetchOnMount: "always",
-    }
-  );
+    });
+
+  const insurancesData: any = insurancesResponse;
+  const insurances = insurancesData?.data ?? insurancesData ?? [];
+  const typeCurrenciesData: any = typeCurrenciesResponse;
+  const typeCurrencies = typeCurrenciesData?.data ?? typeCurrenciesData ?? [];
+  const existingCurrenciesData: any = existingCurrenciesResponse;
+  const existingCurrencies = existingCurrenciesData?.data ?? existingCurrenciesData ?? [];
 
   useEffect(() => {
     if (existingCurrencies && isEdit) {
@@ -203,66 +201,9 @@ export function useCurrencyForm(
     }
   }, [existingCurrencies, reset, isEdit, selectedInsuranceId]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: {
-      currencies: CurrencyField[];
-      insuranceId: string;
-    }) => {
-      const results = [];
+  const createInsuranceCurrencyMutation = useCreateInsuranceCurrency();
 
-      for (const currency of payload.currencies) {
-        if (currency.isEdited || currency.id === "") {
-          await productService.createInsuranceCurrency(payload.insuranceId, {
-            insurance: "",
-            value: currency.rate,
-            currency_from: currency.currency_from,
-            currency_to: currency.currency_to,
-            start_from: new Date(),
-            active: true,
-          });
-          results.push(currency);
-        }
-      }
-
-      return results;
-    },
-    onSuccess: () => {
-      setAlertType("success");
-      setAlertMessage(
-        isEdit
-          ? "Currencies Updated Successfully!"
-          : "Currencies Created Successfully!"
-      );
-      setShowAlert(true);
-
-      setTimeout(() => {
-        setShowAlert(false);
-        queryClient.invalidateQueries({ queryKey: ["currencies"] });
-        queryClient.removeQueries({ queryKey: ["currencies-detail"] });
-        router.back();
-      }, 2000);
-    },
-    onError: (error) => {
-      console.error("Failed to save currencies:", error);
-      setAlertType("error");
-      setAlertMessage("Failed to save currencies. Please try again.");
-      setShowAlert(true);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async ({
-      insuranceId,
-      currencyId,
-    }: {
-      insuranceId: string;
-      currencyId: string;
-    }) => {
-      await productService.deleteInsuranceCurrency(
-        insuranceId,
-        currencyId
-      );
-    },
+  const deleteMutation = useDeleteInsuranceCurrency({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currencies"] });
     },
@@ -298,12 +239,45 @@ export function useCurrencyForm(
         return;
       }
 
-      saveMutation.mutate({
-        currencies: currencyFields,
-        insuranceId: formData.insurance,
-      });
+      try {
+        for (const currency of currencyFields) {
+          if (currency.isEdited || currency.id === "") {
+            await createInsuranceCurrencyMutation.mutateAsync({
+              insuranceId: formData.insurance,
+              payload: {
+                insurance: "",
+                value: currency.rate,
+                currency_from: currency.currency_from,
+                currency_to: currency.currency_to,
+                start_from: new Date(),
+                active: true,
+              },
+            });
+          }
+        }
+
+        setAlertType("success");
+        setAlertMessage(
+          isEdit
+            ? "Currencies Updated Successfully!"
+            : "Currencies Created Successfully!"
+        );
+        setShowAlert(true);
+
+        setTimeout(() => {
+          setShowAlert(false);
+          queryClient.invalidateQueries({ queryKey: ["currencies"] });
+          queryClient.removeQueries({ queryKey: ["currencies-detail"] });
+          router.back();
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to save currencies:", error);
+        setAlertType("error");
+        setAlertMessage("Failed to save currencies. Please try again.");
+        setShowAlert(true);
+      }
     },
-    [saveMutation, currencyFields]
+    [createInsuranceCurrencyMutation, currencyFields, isEdit, queryClient, router]
   );
 
   const handleAddCurrency = useCallback(() => {
@@ -407,7 +381,7 @@ export function useCurrencyForm(
     isLoadingInsurances,
     isLoadingTypeCurrencies,
     isLoadingCurrencies,
-    isSaving: saveMutation.isPending,
+    isSaving: createInsuranceCurrencyMutation.isPending,
 
     handleSave,
     handleAddCurrency,

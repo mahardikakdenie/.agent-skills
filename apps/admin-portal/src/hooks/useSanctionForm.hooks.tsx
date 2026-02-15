@@ -1,12 +1,18 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import { isValid, parseISO } from "date-fns";
-import { countryService } from "@/services/country/api/country.service";
-import { sanctionService } from "@/services/sanction/api/sanction.service";
 import AppURL from "@/constants/app-url.const";
+import { useCountries } from "@/services/country/hooks/queries";
+import {
+  useBlacklistDetail,
+  useSources,
+} from "@/services/sanction/hooks/queries";
+import {
+  useCreateBlacklist,
+  useUpdateBlacklist,
+} from "@/services/sanction/hooks/mutations";
 
 interface Source {
   id: string;
@@ -64,7 +70,6 @@ export function useSanctionForm(
 ): UseSanctionFormProps {
   const router = useRouter();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
   const isEdit = mode === "edit";
 
   const {
@@ -107,41 +112,81 @@ export function useSanctionForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: sourcesData, isLoading: isLoadingSources } = useQuery({
-    queryKey: ["sanction-sources"],
-    queryFn: async () => {
-      const response: any = await sanctionService.getSources({
-        page: 1,
-        limit: 1000,
-      });
-      return response?.data || [];
+  const { data: sourcesResponse, isLoading: isLoadingSources } = useSources(
+    {
+      page: 1,
+      limit: 1000,
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const { data: countriesResponse, isLoading: isLoadingCountries } =
+    useCountries({
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    });
+
+  const { data: sanctionDetailResponse, isLoading: isLoadingDetail } =
+    useBlacklistDetail(sanctionId, {
+      enabled: isEdit && !!sanctionId,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    });
+
+  const sourcesData = (sourcesResponse as any)?.data || [];
+  const countriesData = (countriesResponse as any)?.data || [];
+  const sanctionDetail = (sanctionDetailResponse as any)?.data?.[0] ?? null;
+
+  const handleSaveSuccess = useCallback(
+    (data: unknown) => {
+      if (data != null) {
+        setErrorMessage(
+          isEdit
+            ? "Sanction Updated Successfully!"
+            : "Sanction Created Successfully!"
+        );
+      } else {
+        setErrorMessage(
+          isEdit
+            ? "Failed to update sanction. Please try again."
+            : "Failed to create sanction. Please try again."
+        );
+      }
+
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        router.push(AppURL.sanctionList);
+      }, 2000);
+    },
+    [isEdit, router]
+  );
+
+  const handleSaveError = useCallback(
+    (error: unknown) => {
+      console.error("Failed to save sanction:", error);
+      setErrorMessage(
+        isEdit
+          ? "Failed to update sanction. Please try again."
+          : "Failed to create sanction. Please try again."
+      );
+      setShowAlert(true);
+    },
+    [isEdit]
+  );
+
+  const createBlacklistMutation = useCreateBlacklist({
+    onSuccess: handleSaveSuccess,
+    onError: handleSaveError,
   });
 
-  const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
-    queryKey: ["countries"],
-    queryFn: async () => {
-      const response: any = await countryService.getCountries();
-      return response?.data || [];
-    },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: sanctionDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["sanction-detail", sanctionId],
-    queryFn: async () => {
-      if (!sanctionId) return null;
-
-      const response: any = await sanctionService.getBlacklistById(sanctionId);
-      return response?.data?.[0] ?? null;
-    },
-    enabled: isEdit && !!sanctionId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
+  const updateBlacklistMutation = useUpdateBlacklist({
+    onSuccess: handleSaveSuccess,
+    onError: handleSaveError,
   });
 
   useEffect(() => {
@@ -160,48 +205,6 @@ export function useSanctionForm(
       });
     }
   }, [sanctionDetail, reset, isEdit]);
-
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      if (isEdit && sanctionId) {
-        return sanctionService.updateBlacklist(sanctionId, payload);
-      } else {
-        return sanctionService.createBlacklist(payload);
-      }
-    },
-    onSuccess: (data) => {
-      if (data != null) {
-        setErrorMessage(
-          isEdit
-            ? "Sanction Updated Successfully!"
-            : "Sanction Created Successfully!"
-        );
-      } else {
-        setErrorMessage(
-          isEdit
-            ? "Failed to update sanction. Please try again."
-            : "Failed to create sanction. Please try again."
-        );
-      }
-
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-
-        queryClient.invalidateQueries({ queryKey: ["sanctions"] });
-        router.push(AppURL.sanctionList);
-      }, 2000);
-    },
-    onError: (error) => {
-      console.error("Failed to save sanction:", error);
-      setErrorMessage(
-        isEdit
-          ? "Failed to update sanction. Please try again."
-          : "Failed to create sanction. Please try again."
-      );
-      setShowAlert(true);
-    },
-  });
 
   const handleSave = useCallback(
     async (formData: SanctionFormData) => {
@@ -273,9 +276,14 @@ export function useSanctionForm(
         date_blacklisted: formData.date_blacklisted,
       };
 
-      saveMutation.mutate(isEdit ? [payload] : payload);
+      if (isEdit && sanctionId) {
+        updateBlacklistMutation.mutate({ id: sanctionId, payload: [payload] });
+        return;
+      }
+
+      createBlacklistMutation.mutate(payload);
     },
-    [saveMutation, isEdit]
+    [isEdit, sanctionId, createBlacklistMutation, updateBlacklistMutation]
   );
 
   const goBack = useCallback(() => {
@@ -303,7 +311,8 @@ export function useSanctionForm(
     isLoadingSources,
     isLoadingCountries,
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving:
+      createBlacklistMutation.isPending || updateBlacklistMutation.isPending,
 
     handleSave,
     setShowAlert,

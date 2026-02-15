@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import _ from "lodash";
 
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
-import { financeService } from "@/services/finance/api/finance.service";
+import { useBrokerFees } from "@/services/finance/hooks/queries";
+import { useDeleteBrokerFee } from "@/services/finance/hooks/mutations";
 
 interface BrokerFeeItem {
   id: string;
@@ -59,7 +59,6 @@ export function useBrokerFee(): UseBrokerFeeProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -128,33 +127,20 @@ export function useBrokerFee(): UseBrokerFeeProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["broker-fees", page, rowsPerPage, searchTerm],
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        pageSize: rowsPerPage,
-      };
-
-      if (searchTerm) {
-        params.keyword = searchTerm;
-      }
-
-      const response = await financeService.getBrokerFees(params);
-      return response;
+  } = useBrokerFees(
+    {
+      page,
+      pageSize: rowsPerPage,
+      ...(searchTerm ? { keyword: searchTerm } : {}),
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await financeService.deleteBrokerFee(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["broker-fees"] });
-    },
+  const deleteMutation = useDeleteBrokerFee({
     onError: (error) => {
       console.error("Failed to delete broker fee:", error);
       alert("Failed to delete broker fee");

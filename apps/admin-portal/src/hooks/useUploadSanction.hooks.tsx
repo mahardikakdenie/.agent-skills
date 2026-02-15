@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import Papa from "papaparse";
-import { countryService } from "@/services/country/api/country.service";
-import { productService } from "@/services/product/api/product.service";
-import { sanctionService } from "@/services/sanction/api/sanction.service";
 import AppURL from "@/constants/app-url.const";
+import { useCountries } from "@/services/country/hooks/queries";
+import { useInsurances } from "@/services/product/hooks/queries";
+import { useCreateBlacklist } from "@/services/sanction/hooks/mutations";
+import { useSources } from "@/services/sanction/hooks/queries";
 
 interface CountryAPI {
   id: string;
@@ -74,7 +74,6 @@ interface UseUploadSanctionProps {
 export function useUploadSanction(): UseUploadSanctionProps {
   const router = useRouter();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -82,6 +81,7 @@ export function useUploadSanction(): UseUploadSanctionProps {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [csvData, setCsvData] = useState<ParsedRowData[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -98,85 +98,38 @@ export function useUploadSanction(): UseUploadSanctionProps {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: sourcesData, isLoading: isLoadingSources } = useQuery({
-    queryKey: ["sanction-sources"],
-    queryFn: async () => {
-      const response: any = await sanctionService.getSources({
-        page: 1,
-        limit: 1000,
-      });
-      return response?.data || [];
+  const { data: sourcesResponse, isLoading: isLoadingSources } = useSources(
+    {
+      page: 1,
+      limit: 1000,
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const sourcesData = (sourcesResponse as any)?.data || [];
 
-  const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
-    queryKey: ["insurances"],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances();
-      return response?.data || [];
-    },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: insurancesResponse, isLoading: isLoadingInsurances } =
+    useInsurances(undefined, {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    });
+  const insurancesData = (insurancesResponse as any)?.data || [];
 
-  const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
-    queryKey: ["countries"],
-    queryFn: async () => {
-      const response: any = await countryService.getCountries();
-      return response?.data || [];
-    },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: countriesResponse, isLoading: isLoadingCountries } =
+    useCountries({
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    });
+  const countriesData = (countriesResponse as any)?.data || [];
 
-  const uploadMutation = useMutation({
-    mutationFn: async (data: ParsedRowData[]) => {
-      const sources = sourcesData || [];
-
-      await Promise.all(
-        data.map(async (row) => {
-          const sanctionData = {
-            id_number: row.id_number.toString(),
-            first_name: row.first_name,
-            middle_name: row.middle_name || null,
-            last_name: row.last_name || null,
-            phone_number: row.phone_number.toString(),
-            email: row.email,
-            blacklist_reason: row.blacklist_reason,
-            source_id: row.source_name
-              ? sources.find(
-                  (s: Source) =>
-                    s.source_name.toLowerCase() ===
-                    row.source_name.toLowerCase()
-                )?.id
-              : null,
-            country: "IDN",
-            id_type: "KTP",
-            created_at: new Date().toISOString(),
-            date_blacklisted: row.blacklist_date,
-          };
-
-          await sanctionService.createBlacklist(sanctionData);
-        })
-      );
-    },
-    onSuccess: () => {
-      setErrorMessage("Sanction Uploaded!");
-      setShowAlert(true);
-
-      setTimeout(() => {
-        setShowAlert(false);
-
-        queryClient.invalidateQueries({ queryKey: ["sanctions"] });
-        router.push(AppURL.sanctionList);
-      }, 2000);
-    },
+  const createBlacklistMutation = useCreateBlacklist({
     onError: (error) => {
       console.error("Failed to upload sanctions:", error);
       setErrorMessage("Failed to create sanction. Please try again.");
       setShowAlert(true);
+      setIsUploading(false);
     },
   });
 
@@ -350,9 +303,51 @@ export function useUploadSanction(): UseUploadSanctionProps {
         return;
       }
 
-      uploadMutation.mutate(csvData);
+      try {
+        setIsUploading(true);
+        const sources = sourcesData || [];
+
+        await Promise.all(
+          csvData.map(async (row) => {
+            const sanctionData = {
+              id_number: row.id_number.toString(),
+              first_name: row.first_name,
+              middle_name: row.middle_name || null,
+              last_name: row.last_name || null,
+              phone_number: row.phone_number.toString(),
+              email: row.email,
+              blacklist_reason: row.blacklist_reason,
+              source_id: row.source_name
+                ? sources.find(
+                    (s: Source) =>
+                      s.source_name.toLowerCase() ===
+                      row.source_name.toLowerCase()
+                  )?.id
+                : null,
+              country: "IDN",
+              id_type: "KTP",
+              created_at: new Date().toISOString(),
+              date_blacklisted: row.blacklist_date,
+            };
+
+            await createBlacklistMutation.mutateAsync(sanctionData as any);
+          })
+        );
+
+        setErrorMessage("Sanction Uploaded!");
+        setShowAlert(true);
+
+        setTimeout(() => {
+          setShowAlert(false);
+          router.push(AppURL.sanctionList);
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to upload sanctions:", error);
+      } finally {
+        setIsUploading(false);
+      }
     },
-    [csvData, sourcesData, uploadMutation]
+    [csvData, sourcesData, createBlacklistMutation, router]
   );
 
   const goBack = useCallback(() => {
@@ -374,7 +369,7 @@ export function useUploadSanction(): UseUploadSanctionProps {
     isLoadingSources,
     isLoadingInsurances,
     isLoadingCountries,
-    isUploading: uploadMutation.isPending,
+    isUploading: isUploading || createBlacklistMutation.isPending,
 
     fileInputRef,
 

@@ -1,10 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { Insurance } from "@/services/masterdata/insurance.service";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import { useCategories, useInsurances } from "@/services/product/hooks/queries";
 
 interface UseProductProps {
   insurances: Insurance[];
@@ -122,15 +121,15 @@ export function useProduct(): UseProductProps {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
-    queryKey: ["product-categories"],
-    queryFn: async () => {
-      const result: any = await productService.getCategories();
-      return result?.data ?? result;
-    },
+  const { data: categoriesResponse, isLoading: isLoadingCategories } = useCategories(
+    undefined,
+    {
     staleTime: 300000,
     refetchOnWindowFocus: false,
   });
+
+  const categoriesData: any = categoriesResponse;
+  const categories = categoriesData?.data ?? categoriesData ?? [];
 
   useEffect(() => {
     if (categories.length > 0 && !selectedTab) {
@@ -146,22 +145,21 @@ export function useProduct(): UseProductProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["products", page, rowsPerPage, selectedTab],
-    queryFn: async () => {
-      const categoryFilter = selectedTab === "Travel" ? "" : selectedTab;
-      const result: any = await productService.getInsurances({
-        page,
-        pageSize: rowsPerPage,
-        categoryId: categoryFilter,
-      });
-      return result;
+  } = useInsurances(
+    {
+      page,
+      pageSize: rowsPerPage,
+      categoryId: selectedTab === "Travel" ? "" : selectedTab,
     },
-    enabled: !!selectedTab,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      enabled: !!selectedTab,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
+
+  const insuranceData: any = insuranceResponse;
 
   const handleEdit = useCallback(
     (insuranceId: string) => {
@@ -177,10 +175,10 @@ export function useProduct(): UseProductProps {
   }, [router]);
 
   return {
-    insurances: insuranceResponse?.data || [],
+    insurances: insuranceData?.data || [],
     categories,
-    totalPages: insuranceResponse?.meta?.pageTotal || 1,
-    totalItems: insuranceResponse?.meta?.total || 0,
+    totalPages: insuranceData?.meta?.pageTotal || 1,
+    totalItems: insuranceData?.meta?.total || 0,
 
     page,
     rowsPerPage,

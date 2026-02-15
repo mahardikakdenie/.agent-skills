@@ -1,13 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
+import { useRoles } from "@/services/auth/hooks/queries";
+import { useDeleteRole } from "@/services/auth/hooks/mutations";
 
 export function useRole() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -42,24 +41,16 @@ export function useRole() {
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ["roles", page, rowsPerPage],
-    queryFn: async () => {
-      const response: any = await authService.getRoles({ page, pageSize: rowsPerPage });
-      return response;
-    },
+  } = useRoles(
+    { page, pageSize: rowsPerPage },
+    {
     enabled: hasAccess === true,
     staleTime: 300000,
     refetchOnWindowFocus: false,
-  });
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await authService.deleteRole(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] });
-    },
+  const deleteMutation = useDeleteRole({
     onError: (error) => {
       console.error("Delete failed:", error);
       alert("Failed to delete role");
@@ -86,9 +77,9 @@ export function useRole() {
   }, []);
 
   return {
-    roles: rolesResponse?.data || [],
-    totalPages: rolesResponse?.meta?.pageTotal || 1,
-    totalItems: rolesResponse?.meta?.total || 0,
+    roles: (rolesResponse as any)?.data || [],
+    totalPages: (rolesResponse as any)?.meta?.pageTotal || 1,
+    totalItems: (rolesResponse as any)?.meta?.total || 0,
     page,
     rowsPerPage,
     hasAccess,

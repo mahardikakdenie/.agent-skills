@@ -1,3 +1,4 @@
+export * from './useAllClaims';
 export * from './useClaimCategoryForms';
 export * from './useClaimChannelForms';
 export * from './useClaimConfigurations';

@@ -1,10 +1,11 @@
 import { useState, useCallback, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { productService } from "@/services/product/api/product.service";
-import { policyService } from "@/services/policy/api/policy.service";
+import { usePolicyStatistics } from "@/services/policy/hooks/queries/usePolicyStatistics";
+import { useInsurances } from "@/services/product/hooks/queries/useInsurances";
+import { usePlans } from "@/services/product/hooks/queries/usePlans";
+import { useProducts } from "@/services/product/hooks/queries/useProducts";
 import { formatDateTimeWithTZ } from "@/lib/formatter";
 
 interface UsePolicyDashboardProps {
@@ -148,15 +149,12 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
     [updateURL]
   );
 
-  const { data: insurancesData, isFetching: isLoadingInsurances } = useQuery({
-    queryKey: ["insurances"],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances();
-      return response?.data || [];
-    },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: insurancesResponse, isFetching: isLoadingInsurances } =
+    useInsurances(undefined, {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    });
+  const insurancesData = (insurancesResponse as any)?.data || [];
 
   const insuranceOptions = useMemo(() => {
     if (!insurancesData) return [{ label: "INSURANCE NAME", value: "All" }];
@@ -168,23 +166,22 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
     return [{ label: "INSURANCE NAME", value: "All" }, ...list];
   }, [insurancesData]);
 
-  const { data: productsData, isFetching: isLoadingProducts } = useQuery({
-    queryKey: ["products", selectedInsuranceId],
-    queryFn: async () => {
-      const response: any = await productService.getProducts({
-        insuranceIds:
-          selectedInsuranceId !== "All" && selectedInsuranceId
-            ? [selectedInsuranceId]
-            : [],
-        page: 1,
-        pageSize: 100,
-      });
-      return response?.data || [];
+  const { data: productsResponse, isFetching: isLoadingProducts } = useProducts(
+    {
+      insuranceIds:
+        selectedInsuranceId !== "All" && selectedInsuranceId
+          ? [selectedInsuranceId]
+          : [],
+      page: 1,
+      pageSize: 100,
     },
-    enabled: !!selectedInsuranceId,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: !!selectedInsuranceId,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const productsData = (productsResponse as any)?.data || [];
 
   const productOptions = useMemo(() => {
     if (!productsData) return [{ label: "INSURANCE PRODUCT", value: "All" }];
@@ -196,23 +193,20 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
     return [{ label: "INSURANCE PRODUCT", value: "All" }, ...list];
   }, [productsData]);
 
-  const { data: plansData, isFetching: isLoadingPlans } = useQuery({
-    queryKey: ["plans", selectedProduct],
-    queryFn: async () => {
-      const response: any = await productService.getPlans({
-        productIds:
-          selectedProduct !== "All" && selectedProduct
-            ? [selectedProduct]
-            : [],
-        page: 1,
-        pageSize: 100,
-      });
-      return response?.data || [];
+  const { data: plansResponse, isFetching: isLoadingPlans } = usePlans(
+    {
+      productIds:
+        selectedProduct !== "All" && selectedProduct ? [selectedProduct] : [],
+      page: 1,
+      pageSize: 100,
     },
-    enabled: !!selectedProduct && selectedProduct !== "All",
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: !!selectedProduct && selectedProduct !== "All",
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const plansData = (plansResponse as any)?.data || [];
 
   const planOptions = useMemo(() => {
     if (!plansData) return [{ label: "PLAN NAME", value: "All" }];
@@ -224,53 +218,40 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
     return [{ label: "PLAN NAME", value: "All" }, ...list];
   }, [plansData]);
 
+  const policyStatisticsParams = {
+    sort: "desc",
+    insurance:
+      selectedInsuranceId && selectedInsuranceId !== "All"
+        ? selectedInsuranceId
+        : undefined,
+    product:
+      selectedProduct && selectedProduct !== "All" ? selectedProduct : undefined,
+    plan: selectedPlan && selectedPlan !== "All" ? selectedPlan : undefined,
+    from: dateRange?.from
+      ? format(dateRange.from, "yyyy-MM-dd")
+      : format(today, "yyyy-MM-dd"),
+    to: dateRange?.to
+      ? format(dateRange.to, "yyyy-MM-dd")
+      : format(today, "yyyy-MM-dd"),
+  };
+
   const {
-    data: statisticsData,
+    data: statisticsResponse,
     isLoading: isLoadingStatistics,
     isError,
     error,
     refetch: refetchStatistics,
-  } = useQuery({
-    queryKey: [
-      "policyStatistics",
-      selectedInsuranceId,
-      selectedProduct,
-      selectedPlan,
-      dateRange?.from?.toISOString(),
-      dateRange?.to?.toISOString(),
-    ],
-    queryFn: async () => {
-      const params = {
-        sort: "desc",
-        insurance:
-          selectedInsuranceId && selectedInsuranceId !== "All"
-            ? selectedInsuranceId
-            : undefined,
-        product:
-          selectedProduct && selectedProduct !== "All"
-            ? selectedProduct
-            : undefined,
-        plan: selectedPlan && selectedPlan !== "All" ? selectedPlan : undefined,
-        from: dateRange?.from
-          ? format(dateRange.from, "yyyy-MM-dd")
-          : format(today, "yyyy-MM-dd"),
-        to: dateRange?.to
-          ? format(dateRange.to, "yyyy-MM-dd")
-          : format(today, "yyyy-MM-dd"),
-      };
-
-      const response: any = await policyService.getPolicyStatistics(params);
-
-      return {
-        data: response?.data || [],
-        total: response?.total || 0,
-        totalPremium: response?.total_premium || 0,
-      };
-    },
+  } = usePolicyStatistics(policyStatisticsParams, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
+
+  const statisticsData = {
+    data: (statisticsResponse as any)?.data || [],
+    total: (statisticsResponse as any)?.total || 0,
+    totalPremium: (statisticsResponse as any)?.total_premium || 0,
+  };
 
   const pieChartData = useMemo(() => {
     if (!Array.isArray(statisticsData?.data)) return [];

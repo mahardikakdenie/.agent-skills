@@ -1,11 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
-import { channelService } from "@/services/channel/api/channel.service";
-import { claimsService } from "@/services/claims/api/claims.service";
+import { useChannelConfigurations } from "@/services/channel/hooks/queries";
+import { useAllClaims } from "@/services/claims/hooks/queries";
 import { formatMoneyClaim } from "@/lib/formatter";
 
 interface UseExportClaimProps {
@@ -41,17 +40,17 @@ export default function useExportClaim(): UseExportClaimProps {
     };
   }, []);
 
-  const channel = getFilters()?.channel;
+  const filters = getFilters();
+  const channel = filters?.channel;
 
-  const { data: channelConfigurations } = useQuery({
-    queryKey: ["channelConfigurations", channel],
-    queryFn: async () => {
-      return channelService.getChannelConfigurations({
-        ...(channel && { channel }),
-      });
+  const { data: channelConfigurations } = useChannelConfigurations(
+    {
+      ...(channel && { channel }),
     },
-    enabled: !!channel,
-  });
+    {
+      enabled: !!channel,
+    }
+  );
 
   const channelConfigurationsData: any = channelConfigurations;
   const isGrabExpress =
@@ -59,58 +58,34 @@ export default function useExportClaim(): UseExportClaimProps {
     channelConfigurationsData?.data?.[0]?.other?.show_channel_info
       ?.GRAB_EXPRESS;
 
-  const { isLoading } = useQuery({
-    queryKey: ["export-claims", getFilters()],
-    queryFn: async () => {
-      const filters = getFilters();
-      if (!filters) return [];
-
-      const rowsPerPage = 100;
-      let allData: any[] = [];
-      let currentPage = 1;
-      let totalRecords = 0;
-
-      do {
-        try {
-          const params = {
-            page: currentPage,
-            limit: rowsPerPage,
-            ...(filters.search && { keyword: filters.search }),
-            ...(filters.status &&
-              filters.status !== "All" && { status: filters.status }),
-            ...(filters.sla_status &&
-              filters.sla_status !== "All" && {
-                sla_status: filters.sla_status,
-              }),
-            ...(filters.date_from && { date_from: filters.date_from }),
-            ...(filters.date_to && { date_to: filters.date_to }),
-            ...(filters.channel && { channel: filters.channel }),
-          };
-
-          const res: any = await claimsService.getClaims(params as any);
-
-          if (res?.data) {
-            const filteredData = res.data.filter(
-              (item: any) => item.status !== "Draft",
-            );
-            allData = [...allData, ...filteredData];
-            totalRecords = res.total || 0;
-          }
-        } catch (pageError) {
-          console.error(`Error fetching page ${currentPage}:`, pageError);
-        }
-
-        currentPage++;
-      } while (allData.length < totalRecords && totalRecords > 0);
-
-      setData(allData);
-      return allData;
-    },
-    enabled: !!getFilters(), // Only fetch if filters are available
+  const { data: claimsData, isLoading } = useAllClaims(
+    {
+      ...(filters?.search && { keyword: filters.search }),
+      ...(filters?.status &&
+        filters.status !== "All" && { status: filters.status }),
+      ...(filters?.sla_status &&
+        filters.sla_status !== "All" && {
+          sla_status: filters.sla_status,
+        }),
+      ...(filters?.date_from && { date_from: filters.date_from }),
+      ...(filters?.date_to && { date_to: filters.date_to }),
+      ...(filters?.channel && { channel: filters.channel }),
+    } as any,
+    {
+      enabled: !!filters, // Only fetch if filters are available
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
-  });
+    }
+  );
+
+  useEffect(() => {
+    const claimsResult = (claimsData as any) || [];
+    const filteredData = claimsResult.filter(
+      (item: any) => item.status !== "Draft"
+    );
+    setData(filteredData);
+  }, [claimsData]);
 
   const getClaimConfigValue = useCallback((item: any, name: string) => {
     const config = item?.claim_config?.find((c: any) => c.name === name);

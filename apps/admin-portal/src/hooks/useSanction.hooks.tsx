@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import { sanctionService } from "@/services/sanction/api/sanction.service";
+import { useBlacklist } from "@/services/sanction/hooks/queries";
+import { useDeleteBlacklist } from "@/services/sanction/hooks/mutations";
 
 interface SanctionItem {
   id: string;
@@ -60,7 +61,6 @@ export function useSanction(): UseSanctionProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -128,34 +128,20 @@ export function useSanction(): UseSanctionProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["sanctions", page, rowsPerPage, searchTerm],
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        limit: rowsPerPage,
-      };
-
-      if (searchTerm) {
-        params.keyword = searchTerm;
-      }
-
-      const response = await sanctionService.getBlacklist(params);
-      return response;
+  } = useBlacklist(
+    {
+      page,
+      limit: rowsPerPage,
+      ...(searchTerm ? { keyword: searchTerm } : {}),
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await sanctionService.deleteBlacklist(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sanctions"] });
-      queryClient.invalidateQueries({ queryKey: ["sanction-detail"] });
-    },
+  const deleteMutation = useDeleteBlacklist({
     onError: (error) => {
       console.error("Failed to delete sanction:", error);
     },

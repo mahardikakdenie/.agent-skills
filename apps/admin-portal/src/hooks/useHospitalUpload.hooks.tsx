@@ -1,10 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import { useUploadReferenceHospital } from "@/services/product/hooks/mutations";
 
 interface UseHospitalUploadProps {
   selectedFile: File | null;
@@ -44,12 +44,7 @@ export function useHospitalUpload(): UseHospitalUploadProps {
     checkAccess();
   }, [router, permissionList]);
 
-  const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      return await productService.uploadReferenceHospital(formData);
-    },
+  const uploadHospitalMutation = useUploadReferenceHospital({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hospitals"] });
       toast.success("File uploaded successfully!");
@@ -67,6 +62,12 @@ export function useHospitalUpload(): UseHospitalUploadProps {
       setUploadStatus("error");
     },
   });
+
+  const handleUploadMutation = useCallback(async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    await uploadHospitalMutation.mutateAsync(formData);
+  }, [uploadHospitalMutation]);
 
   const handleFileSelection = useCallback((file: File) => {
     if (
@@ -117,8 +118,8 @@ export function useHospitalUpload(): UseHospitalUploadProps {
     if (!selectedFile || uploadStatus === "uploading") return;
 
     setUploadStatus("uploading");
-    await uploadMutation.mutateAsync(selectedFile);
-  }, [selectedFile, uploadStatus, uploadMutation]);
+    await handleUploadMutation(selectedFile);
+  }, [handleUploadMutation, selectedFile, uploadStatus]);
 
   const goBack = useCallback(() => {
     router.push(AppURL.masterdataHospital);

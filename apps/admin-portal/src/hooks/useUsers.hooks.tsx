@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import { authService } from "@/services/auth/api/auth.service";
 import AppURL from "@/constants/app-url.const";
 import { primaryRoles } from "@/app/masterdata/user/user.const";
 import _ from "lodash";
+import { useAccounts, useRoles } from "@/services/auth/hooks/queries";
+import { useDeleteAccount, useUpdateAccount } from "@/services/auth/hooks/mutations";
 
 interface User {
   id: string;
@@ -62,7 +62,6 @@ export function useUsers(): UseUserProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -174,66 +173,51 @@ export function useUsers(): UseUserProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["users", page, rowsPerPage, roleFilter, searchQuery],
-    queryFn: async () => {
-      const result: any = await authService.getAccounts({
-        role: roleFilter,
-        page,
-        pageSize: rowsPerPage,
-        search: searchQuery,
-      });
-      return result;
+  } = useAccounts(
+    {
+      role: roleFilter,
+      page,
+      pageSize: rowsPerPage,
+      search: searchQuery,
     },
+    {
     enabled: !!hasAccess,
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
-  });
+    },
+  );
 
-  const { data: roleOptionsData } = useQuery({
-    queryKey: ["user-roles"],
-    queryFn: async () => {
-      const allRoles: any = await authService.getRoles({ page: 1, pageSize: 1000 });
-      const seen = new Set(primaryRoles.map((item) => item.name));
-      const options = [...primaryRoles];
+  const { data: roleOptionsData } = useRoles(
+    { page: 1, pageSize: 1000 },
+    {
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+      select: (allRoles: any) => {
+        const seen = new Set(primaryRoles.map((item) => item.name));
+        const options = [...primaryRoles];
 
-      for (const item of allRoles.data) {
-        if (!seen.has(item.name)) {
-          seen.add(item.name);
-          options.push(item);
+        for (const item of allRoles?.data || []) {
+          if (!seen.has(item.name)) {
+            seen.add(item.name);
+            options.push(item);
+          }
         }
-      }
-      return options;
-    },
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await authService.deleteAccount(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-    },
+        return options;
+      },
+    }
+  );
+
+  const deleteMutation = useDeleteAccount({
     onError: (error: any) => {
       console.error("Failed to delete user:", error);
       alert(error?.response?.data?.message || "Failed to delete user");
     },
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: async (user: User) => {
-      const { id, ...otherData } = user;
-      const data = {
-        ...otherData,
-        status: user.status === "Active" ? "Inactive" : "Active",
-      };
-      await authService.updateAccount(id, data);
-    },
+  const updateStatusMutation = useUpdateAccount({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
       setIsModalChangeStatusOpen(false);
     },
     onError: (error: any) => {
@@ -265,7 +249,12 @@ export function useUsers(): UseUserProps {
 
   const handleUpdateStatus = useCallback(async () => {
     if (selectedUserStatus) {
-      updateStatusMutation.mutate(selectedUserStatus);
+      const { id, ...otherData } = selectedUserStatus;
+      const payload = {
+        ...otherData,
+        status: selectedUserStatus.status === "Active" ? "Inactive" : "Active",
+      };
+      updateStatusMutation.mutate({ id, payload });
     }
   }, [selectedUserStatus, updateStatusMutation]);
 
@@ -274,16 +263,16 @@ export function useUsers(): UseUserProps {
   }, [router]);
 
   return {
-    users: userResponse?.data || [],
-    totalPages: userResponse?.meta?.pageTotal || 1,
-    totalItems: userResponse?.meta?.total || 0,
+    users: (userResponse as any)?.data || [],
+    totalPages: (userResponse as any)?.meta?.pageTotal || 1,
+    totalItems: (userResponse as any)?.meta?.total || 0,
 
     page,
     rowsPerPage,
     roleFilter,
     searchQuery,
 
-    roleOptions: roleOptionsData || [],
+    roleOptions: (roleOptionsData as any) || [],
     selectedUserStatus,
     isModalChangeStatusOpen,
 

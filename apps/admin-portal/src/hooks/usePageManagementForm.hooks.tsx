@@ -1,10 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { authService } from "@/services/auth/api/auth.service";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import { usePageDetail, usePermissionByPage } from "@/services/auth/hooks/queries";
+import {
+  useCreatePage,
+  useCreatePermission,
+  useDeletePermission,
+  useUpdatePage,
+} from "@/services/auth/hooks/mutations";
 
 interface PageFormData {
   name: string;
@@ -41,7 +46,6 @@ export function usePageManagementForm(
   mode: "create" | "edit" = "create"
 ): UsePageManagementFormProps {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const [pageId, setPageId] = useState<string>();
   const [permissionFields, setPermissionFields] = useState<PermissionField[]>([
@@ -63,56 +67,42 @@ export function usePageManagementForm(
     },
   });
 
-  const { data: pageDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["page-detail", pageId],
-    queryFn: async () => {
-      if (!pageId) return null;
-      const response: any = await authService.getPageById(pageId);
-      return response?.data ?? response;
-    },
+  const { data: pageDetail, isLoading: isLoadingDetail } = usePageDetail(
+    pageId || "",
+    {
     enabled: !!pageId && isEdit,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: "always",
-  });
-
-  const { data: permissionsData } = useQuery({
-    queryKey: ["page-permissions", pageId],
-    queryFn: async () => {
-      if (!pageId) return [];
-      const response: any = await authService.getPermissionsByPage(pageId, {
-        page: 1,
-        pageSize: 100,
-      });
-      return response?.data ?? response;
     },
-    enabled: !!pageId && isEdit,
-    staleTime: 30000,
-  });
+  );
 
-  const saveMutation = useMutation({
-    mutationFn: async (data: PageFormData) => {
-      if (isEdit && pageId) {
-        return await authService.updatePage(pageId, data);
-      } else {
-        return await authService.createPage(data);
-      }
+  const {
+    data: permissionsData,
+    refetch: refetchPermissionsData,
+  } = usePermissionByPage(
+    pageId || "",
+    {
+      page: 1,
+      pageSize: 100,
     },
+    {
+      enabled: !!pageId && isEdit,
+      staleTime: 30000,
+    }
+  );
+
+  const createPageMutation = useCreatePage({
     onSuccess: (response: any) => {
-      queryClient.invalidateQueries({ queryKey: ["pages"] });
-      queryClient.invalidateQueries({ queryKey: ["page-detail"] });
+      toast.success("Page Created Successfully!");
 
-      toast.success(
-        isEdit ? "Page Updated Successfully!" : "Page Created Successfully!"
-      );
-
-      if (!isEdit && response.data?.id) {
-        router.push(
-          `${AppURL.masterdataPageManagementDetail}/${response.data.id}`
-        );
-      } else {
-        router.push(AppURL.masterdataPageManagement);
+      const createdId = response?.data?.id || response?.id;
+      if (createdId) {
+        router.push(`${AppURL.masterdataPageManagementDetail}/${createdId}`);
+        return;
       }
+
+      router.push(AppURL.masterdataPageManagement);
     },
     onError: (error: any) => {
       console.error("Save failed:", error);
@@ -123,37 +113,49 @@ export function usePageManagementForm(
     },
   });
 
-  const addPermissionMutation = useMutation({
-    mutationFn: async (data: { page: string; name: string }) => {
-      return await authService.createPermission(data);
-    },
+  const updatePageMutation = useUpdatePage({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["page-permissions", pageId] });
+      toast.success("Page Updated Successfully!");
+      router.push(AppURL.masterdataPageManagement);
+    },
+    onError: (error: any) => {
+      console.error("Save failed:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to save page. Please try again."
+      );
+    },
+  });
+
+  const addPermissionMutation = useCreatePermission({
+    onSuccess: () => {
+      refetchPermissionsData();
       toast.success("Permission added successfully");
     },
   });
 
-  const deletePermissionMutation = useMutation({
-    mutationFn: async (permissionId: string) => {
-      return await authService.deletePermission(permissionId);
-    },
+  const deletePermissionMutation = useDeletePermission({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["page-permissions", pageId] });
+      refetchPermissionsData();
       toast.success("Permission deleted successfully");
     },
   });
 
-  useEffect(() => {
-    if (pageDetail && isEdit) {
-      reset({
-        name: pageDetail.name || "",
-      });
-    }
-  }, [pageDetail, reset, isEdit]);
+  const normalizedPageDetail = (pageDetail as any)?.data ?? pageDetail;
+  const normalizedPermissionsData =
+    (permissionsData as any)?.data ?? permissionsData ?? [];
 
   useEffect(() => {
-    if (permissionsData && permissionsData.length > 0) {
-      const updateFormValue = permissionsData.map((item: any) => ({
+    if (normalizedPageDetail && isEdit) {
+      reset({
+        name: (normalizedPageDetail as any).name || "",
+      });
+    }
+  }, [normalizedPageDetail, reset, isEdit]);
+
+  useEffect(() => {
+    if (normalizedPermissionsData && normalizedPermissionsData.length > 0) {
+      const updateFormValue = normalizedPermissionsData.map((item: any) => ({
         id: item.id,
         name: item.name,
       }));
@@ -161,7 +163,7 @@ export function usePageManagementForm(
     } else if (isEdit) {
       setPermissionFields([{ id: "", name: "" }]);
     }
-  }, [permissionsData, isEdit]);
+  }, [normalizedPermissionsData, isEdit]);
 
   const handleSave = useCallback(
     async (formData: PageFormData) => {
@@ -171,11 +173,11 @@ export function usePageManagementForm(
       }
 
       try {
-        const response: any = await saveMutation.mutateAsync(formData);
-
         if (isEdit && pageId) {
+          await updatePageMutation.mutateAsync({ id: pageId, payload: formData });
+
           const existingPermissions =
-            permissionsData?.map((perm: any) => perm.name) || [];
+            normalizedPermissionsData?.map((perm: any) => perm.name) || [];
 
           for (const permission of permissionFields) {
             if (
@@ -188,18 +190,22 @@ export function usePageManagementForm(
               });
             }
           }
+          return;
         }
+
+        await createPageMutation.mutateAsync(formData);
       } catch (error) {
         console.error("Failed to save:", error);
       }
     },
     [
-      saveMutation,
+      addPermissionMutation,
+      createPageMutation,
       isEdit,
+      normalizedPermissionsData,
       pageId,
       permissionFields,
-      permissionsData,
-      addPermissionMutation,
+      updatePageMutation,
     ]
   );
 
@@ -251,7 +257,7 @@ export function usePageManagementForm(
     pageName: watch("name"),
     permissionFields,
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving: createPageMutation.isPending || updatePageMutation.isPending,
     handleSave,
     loadPageDetail,
     handleAddPermission,

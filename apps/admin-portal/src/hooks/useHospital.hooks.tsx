@@ -1,10 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import _ from "lodash";
+import { useReferenceHospitals } from "@/services/product/hooks/queries";
 
 export function useHospital() {
   const router = useRouter();
@@ -32,20 +31,19 @@ export function useHospital() {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: hospitalsResponse, isLoading: isLoadingHospitals } = useQuery({
-    queryKey: ["hospitals", page, rowsPerPage, searchData],
-    queryFn: async () => {
-      const response = await productService.getReferenceHospitalList({
+  const { data: hospitalsResponse, isLoading: isLoadingHospitals } =
+    useReferenceHospitals(
+      {
         name: searchData,
         page,
         pageSize: rowsPerPage,
-      });
-      return response;
-    },
-    enabled: hasAccess === true,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+      },
+      {
+        enabled: hasAccess === true,
+        staleTime: 300000,
+        refetchOnWindowFocus: false,
+      }
+    );
 
   const handleSearch = useCallback(
     _.debounce((keyword: string) => {

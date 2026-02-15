@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { policyService } from "@/services/policy/api/policy.service";
+import { useUpdateEndorsementStatus } from "@/services/policy/hooks/mutations/useUpdateEndorsementStatus";
+import { useUpdateEndorsementStatusBulking } from "@/services/policy/hooks/mutations/useUpdateEndorsementStatusBulking";
+import { useEndorsementDetail as useEndorsementDetailQuery } from "@/services/policy/hooks/queries/useEndorsementDetail";
 
 interface UseEndorsementDetailProps {
   endorsement: any;
@@ -30,8 +31,6 @@ interface UseEndorsementDetailProps {
 }
 
 export function useEndorsementDetail(): UseEndorsementDetailProps {
-  const queryClient = useQueryClient();
-
   const [endorsementId, setEndorsementId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notes, setNotes] = useState("");
@@ -42,12 +41,7 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["endorsement-detail", endorsementId],
-    queryFn: async () => {
-      if (!endorsementId) return null;
-      return policyService.getEndorsementById(endorsementId);
-    },
+  } = useEndorsementDetailQuery(endorsementId || "", {
     enabled: !!endorsementId,
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -59,42 +53,31 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
   const imageUrl =
     endorsementData?.participants?.nric_front || "/images/no-image.png";
 
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({
-      id,
-      status,
-      note,
-      isEDSB,
-    }: {
-      id: string;
-      status: string;
-      note: string;
-      isEDSB: boolean;
-    }) => {
-      const payload = {
-        status,
-        note,
-      };
+  const onUpdateStatusSuccess = useCallback(() => {
+    toast.success("Endorsement status updated successfully!");
+  }, []);
 
-      return isEDSB
-        ? policyService.updateEndorsementStatusBulking(id, payload)
-        : policyService.updateEndorsementStatus(id, payload);
-    },
-    onSuccess: () => {
-      toast.success("Endorsement status updated successfully!");
+  const onUpdateStatusError = useCallback((error: any) => {
+    console.error("Failed to update endorsement status:", error);
+    const errorMessage = error?.response?.data?.message || "Update failed.";
+    toast.error(errorMessage);
+  }, []);
 
-      queryClient.invalidateQueries({ queryKey: ["endorsements"] });
-      queryClient.invalidateQueries({ queryKey: ["endorsement-detail"] });
-    },
-    onError: (error: any) => {
-      console.error("Failed to update endorsement status:", error);
-      const errorMessage = error?.response?.data?.message || "Update failed.";
-      toast.error(errorMessage);
-    },
-    onSettled: () => {
-      setIsModalOpen(false);
-      setNotes("");
-    },
+  const onUpdateStatusSettled = useCallback(() => {
+    setIsModalOpen(false);
+    setNotes("");
+  }, []);
+
+  const updateStatusMutation = useUpdateEndorsementStatus({
+    onSuccess: onUpdateStatusSuccess,
+    onError: onUpdateStatusError,
+    onSettled: onUpdateStatusSettled,
+  });
+
+  const updateStatusBulkingMutation = useUpdateEndorsementStatusBulking({
+    onSuccess: onUpdateStatusSuccess,
+    onError: onUpdateStatusError,
+    onSettled: onUpdateStatusSettled,
   });
 
   const getEndorsementDetail = useCallback((id: string) => {
@@ -105,31 +88,57 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
     if (!endorsementData?.id) return;
 
     try {
-      await updateStatusMutation.mutateAsync({
-        id: endorsementData.id,
+      const payload = {
         status: "Approved",
         note: "",
-        isEDSB,
-      });
+      };
+
+      if (isEDSB) {
+        await updateStatusBulkingMutation.mutateAsync({
+          id: endorsementData.id,
+          payload,
+        });
+      } else {
+        await updateStatusMutation.mutateAsync({
+          id: endorsementData.id,
+          payload,
+        });
+      }
     } catch (error) {
       throw error;
     }
-  }, [endorsementData?.id, isEDSB, updateStatusMutation]);
+  }, [endorsementData?.id, isEDSB, updateStatusBulkingMutation, updateStatusMutation]);
 
   const handleReject = useCallback(async () => {
     if (!endorsementData?.id) return;
 
     try {
-      await updateStatusMutation.mutateAsync({
-        id: endorsementData.id,
+      const payload = {
         status: "Rejected",
         note: notes,
-        isEDSB,
-      });
+      };
+
+      if (isEDSB) {
+        await updateStatusBulkingMutation.mutateAsync({
+          id: endorsementData.id,
+          payload,
+        });
+      } else {
+        await updateStatusMutation.mutateAsync({
+          id: endorsementData.id,
+          payload,
+        });
+      }
     } catch (error) {
       throw error;
     }
-  }, [endorsementData?.id, notes, isEDSB, updateStatusMutation]);
+  }, [
+    endorsementData?.id,
+    isEDSB,
+    notes,
+    updateStatusBulkingMutation,
+    updateStatusMutation,
+  ]);
 
   const handleDownload = useCallback(() => {
     if (
@@ -211,7 +220,8 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
     imageUrl,
 
     isLoading,
-    isUpdating: updateStatusMutation.isPending,
+    isUpdating:
+      updateStatusMutation.isPending || updateStatusBulkingMutation.isPending,
     isError,
     error,
 

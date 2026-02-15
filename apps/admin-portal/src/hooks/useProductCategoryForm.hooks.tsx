@@ -1,10 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import { useCategoryDetail } from "@/services/product/hooks/queries";
+import {
+  useCreateCategory,
+  useUpdateCategory,
+} from "@/services/product/hooks/mutations";
 
 interface ProductCategoryFormData {
   name: string;
@@ -77,19 +81,16 @@ export function useProductCategoryForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: categoryDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["product-category-detail", categoryId],
-    queryFn: async () => {
-      if (!categoryId) return null;
-
-      const response: any = await productService.getCategoryById(categoryId);
-      return response?.data ?? response;
-    },
+  const { data: categoryDetailResponse, isLoading: isLoadingDetail } =
+    useCategoryDetail(categoryId || "", {
     enabled: isEdit && !!categoryId,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: "always",
   });
+
+  const categoryDetailData: any = categoryDetailResponse;
+  const categoryDetail = categoryDetailData?.data ?? categoryDetailData;
 
   useEffect(() => {
     if (categoryDetail && isEdit) {
@@ -111,49 +112,8 @@ export function useProductCategoryForm(
     }
   }, [categoryId, reset, queryClient]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      if (isEdit && categoryId) {
-        const response: any = await productService.updateCategory(categoryId, payload);
-        return response;
-      } else {
-        const response: any = await productService.createCategory(payload);
-        return response;
-      }
-    },
-    onSuccess: (data) => {
-      if (data != null) {
-        setErrorMessage(
-          isEdit
-            ? "Product Category Updated Successfully!"
-            : "Product Category Created Successfully!"
-        );
-      } else {
-        setErrorMessage(
-          isEdit
-            ? "Failed to update product category. Please try again."
-            : "Failed to create product category. Please try again."
-        );
-      }
-
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        queryClient.invalidateQueries({ queryKey: ["product-categories"] });
-        queryClient.removeQueries({ queryKey: ["product-category-detail"] });
-        router.push(AppURL.masterdataProductCategory);
-      }, 2000);
-    },
-    onError: (error) => {
-      console.error("Failed to save product category:", error);
-      setErrorMessage(
-        isEdit
-          ? "Failed to update product category. Please try again."
-          : "Failed to create product category. Please try again."
-      );
-      setShowAlert(true);
-    },
-  });
+  const createCategoryMutation = useCreateCategory();
+  const updateCategoryMutation = useUpdateCategory();
 
   const handleSave = useCallback(
     async (formData: ProductCategoryFormData) => {
@@ -172,9 +132,54 @@ export function useProductCategoryForm(
         return;
       }
 
-      saveMutation.mutate(formData);
+      try {
+        const data =
+          isEdit && categoryId
+            ? await updateCategoryMutation.mutateAsync({
+                id: categoryId,
+                payload: formData,
+              })
+            : await createCategoryMutation.mutateAsync(formData);
+
+        if (data != null) {
+          setErrorMessage(
+            isEdit
+              ? "Product Category Updated Successfully!"
+              : "Product Category Created Successfully!"
+          );
+        } else {
+          setErrorMessage(
+            isEdit
+              ? "Failed to update product category. Please try again."
+              : "Failed to create product category. Please try again."
+          );
+        }
+
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          queryClient.invalidateQueries({ queryKey: ["product-categories"] });
+          queryClient.removeQueries({ queryKey: ["product-category-detail"] });
+          router.push(AppURL.masterdataProductCategory);
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to save product category:", error);
+        setErrorMessage(
+          isEdit
+            ? "Failed to update product category. Please try again."
+            : "Failed to create product category. Please try again."
+        );
+        setShowAlert(true);
+      }
     },
-    [saveMutation]
+    [
+      categoryId,
+      createCategoryMutation,
+      isEdit,
+      queryClient,
+      router,
+      updateCategoryMutation,
+    ]
   );
 
   const goBack = useCallback(() => {
@@ -199,7 +204,7 @@ export function useProductCategoryForm(
     isEdit,
 
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving: createCategoryMutation.isPending || updateCategoryMutation.isPending,
 
     handleSave,
     setShowAlert,

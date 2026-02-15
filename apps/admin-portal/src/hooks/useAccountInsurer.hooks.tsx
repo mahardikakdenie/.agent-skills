@@ -1,7 +1,10 @@
 import { useState, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { authService } from "@/services/auth/api/auth.service";
 import toast from "react-hot-toast";
+import { useAccountInsurersByAccount } from "@/services/auth/hooks/queries";
+import {
+  useAddAccountInsurer,
+  useRemoveAccountInsurer,
+} from "@/services/auth/hooks/mutations";
 
 interface UseAccountInsurerProps {
   accountInsurers: any[];
@@ -13,37 +16,18 @@ interface UseAccountInsurerProps {
 }
 
 export function useAccountInsurer(): UseAccountInsurerProps {
-  const queryClient = useQueryClient();
   const [accountId, setAccountId] = useState<string>("");
 
-  const { data: accountInsurers = [], isLoading } = useQuery({
-    queryKey: ["account-insurers", accountId],
-    queryFn: async () => {
-      if (!accountId) return [];
-      const response: any = await authService.getAccountInsurersByAccount(
-        accountId
-      );
-      return response?.data || [];
-    },
-    enabled: !!accountId,
-    staleTime: 30000,
-  });
+  const { data: accountInsurers = [], isLoading, refetch } =
+    useAccountInsurersByAccount(accountId, {
+      enabled: !!accountId,
+      staleTime: 30000,
+      select: (response: any) => response?.data || [],
+    });
 
-  const addInsurerMutation = useMutation({
-    mutationFn: async ({
-      accountId,
-      insurerId,
-    }: {
-      accountId: string;
-      insurerId: string;
-    }) => {
-      await authService.addAccountInsurer({
-        account: accountId,
-        insurance: insurerId,
-      });
-    },
+  const addInsurerMutation = useAddAccountInsurer({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["account-insurers"] });
+      refetch();
       toast.success("Insurer added successfully");
     },
     onError: (error) => {
@@ -52,12 +36,9 @@ export function useAccountInsurer(): UseAccountInsurerProps {
     },
   });
 
-  const deleteInsurerMutation = useMutation({
-    mutationFn: async (insurerId: string) => {
-      await authService.removeAccountInsurer(insurerId);
-    },
+  const deleteInsurerMutation = useRemoveAccountInsurer({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["account-insurers"] });
+      refetch();
       toast.success("Insurer removed successfully");
     },
     onError: (error) => {
@@ -68,7 +49,10 @@ export function useAccountInsurer(): UseAccountInsurerProps {
 
   const handleAddInsurer = useCallback(
     async (accountId: string, insurerId: string) => {
-      await addInsurerMutation.mutateAsync({ accountId, insurerId });
+      await addInsurerMutation.mutateAsync({
+        account: accountId,
+        insurance: insurerId,
+      });
     },
     [addInsurerMutation]
   );
@@ -84,8 +68,12 @@ export function useAccountInsurer(): UseAccountInsurerProps {
     setAccountId(id);
   }, []);
 
+  const normalizedAccountInsurers = Array.isArray(accountInsurers)
+    ? accountInsurers
+    : [];
+
   return {
-    accountInsurers,
+    accountInsurers: normalizedAccountInsurers,
     isLoading,
     handleAddInsurer,
     handleDeleteInsurer,

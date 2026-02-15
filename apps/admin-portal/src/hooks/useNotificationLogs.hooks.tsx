@@ -1,7 +1,6 @@
-import { useState, useCallback, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import _ from "lodash";
-import { reportService } from "@/services/report/api/report.service";
+import { useNotificationLogs as useNotificationLogsQuery } from "@/services/report/hooks/queries";
 
 interface UseNotificationLogsProps {
   notificationLogs: any[];
@@ -35,23 +34,21 @@ export default function useNotificationLogs(): UseNotificationLogsProps {
     error,
     refetch,
     isFetching,
-  } = useQuery({
-    queryKey: ["notification-logs", page, rowsPerPage, searchData],
-    queryFn: async () => {
-      const response = await reportService.getNotificationLogs({
-        page,
-        limit: rowsPerPage,
-        // Add any additional filters as needed
-        // type: "Email",
-        // stage: "submission",
-        // status: "sent",
-      });
-      return response;
+  } = useNotificationLogsQuery(
+    {
+      page,
+      limit: rowsPerPage,
+      // Add any additional filters as needed
+      // type: "Email",
+      // stage: "submission",
+      // status: "sent",
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
 
   const handleSearch = useMemo(
     () =>
@@ -69,6 +66,10 @@ export default function useNotificationLogs(): UseNotificationLogsProps {
     },
     [],
   );
+
+  useEffect(() => {
+    refetch();
+  }, [searchData, refetch]);
 
   return {
     notificationLogs: resNotificationLogs?.data || [],

@@ -1,10 +1,9 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import _ from "lodash";
 import AppURL from "@/constants/app-url.const";
-import { policyService } from "@/services/policy/api/policy.service";
-import { channelService } from "@/services/channel/api/channel.service";
+import { useChannelsV1 } from "@/services/channel/hooks/queries/useChannelsV1";
+import { useInsuredParties } from "@/services/policy/hooks/queries/useInsuredParties";
 
 interface UseMembershipProps {
   membership: any[];
@@ -136,36 +135,30 @@ export function useMembership(): UseMembershipProps {
     error,
     refetch,
     isFetching,
-  } = useQuery({
-    queryKey: ["membership", page, rowsPerPage, searchData, tab, channel],
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        limit: rowsPerPage,
-        keyword: searchData || undefined,
-        status: tab !== "All" ? tab : undefined,
-        channel: channel || undefined,
-      };
-
-      const response = await policyService.getInsuredParties(params);
-      return response;
+  } = useInsuredParties(
+    {
+      page,
+      limit: rowsPerPage,
+      keyword: searchData || undefined,
+      status: tab !== "All" ? tab : undefined,
+      channel: channel || undefined,
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
 
-  const { data: channelsData, isFetching: isLoadingChannels } = useQuery({
-    queryKey: ["membership-channels"],
-    queryFn: async () => {
-      const response = await channelService.getChannelsV1({
-        page: 1,
-        limit: 100,
-      });
-      return response;
+  const { data: channelsData, isFetching: isLoadingChannels } = useChannelsV1(
+    {
+      page: 1,
+      limit: 100,
     },
-    staleTime: 30000,
-  });
+    {
+      staleTime: 30000,
+    }
+  );
 
   useEffect(() => {
     const channelsResponse: any = channelsData;

@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
-import { channelService } from "@/services/channel/api/channel.service";
 import { claimsService } from "@/services/claims/api/claims.service";
+import { useChannels } from "@/services/channel/hooks/queries/useChannels";
+import { useExportClaims } from "@/services/claims/hooks/queries/useExportClaims";
 import AppURL from "@/constants/app-url.const";
 import { formatDate } from "@/lib/formatter";
 import { DateRange } from "react-day-picker";
@@ -37,54 +37,50 @@ export function useClaimReport() {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["channels-list"],
-    queryFn: async () => {
-      const response: any = await channelService.getChannels({ limit: 100 });
-      return response?.data || [];
+  const { data: channelsResponse, isLoading: isLoadingChannels } = useChannels(
+    {
+      limit: 100,
     },
-    enabled: hasAccess === true,
-    staleTime: 300000,
-  });
+    {
+      enabled: hasAccess === true,
+      staleTime: 300000,
+    }
+  );
+  const channelsData = (channelsResponse as any)?.data || [];
+
+  const dateFrom = date?.from
+    ? formatDate(date.from.toString(), "YYYY-MM-DD")
+    : undefined;
+  const dateTo = date?.to ? formatDate(date.to.toString(), "YYYY-MM-DD") : undefined;
 
   const {
-    data: claimReportData,
+    data: claimReportResponse,
     isLoading: isLoadingClaims,
     refetch: refetchClaims,
-  } = useQuery({
-    queryKey: ["claim-reports", page, rowsPerPage, selectedChannel?.id, date],
-    queryFn: async () => {
-      if (!date?.from || !date?.to) {
-        return { data: [], headers: [], total: 0, pageTotal: 1 };
-      }
-
-      const dateFrom = formatDate(date.from.toString(), "YYYY-MM-DD");
-      const dateTo = formatDate(date.to.toString(), "YYYY-MM-DD");
-
-      const params = {
-        page,
-        limit: rowsPerPage,
-        channel_id: selectedChannel?.id,
-        output: "Data",
-        date_from: dateFrom,
-        date_to: dateTo,
-      };
-
-      const response: any = await claimsService.exportClaims(params);
-
-      const data = response?.data || [];
-      const headers = data.length > 0 ? Object.keys(data[0]) : [];
-
-      return {
-        data,
-        headers,
-        total: response?.total || 0,
-        pageTotal: response?.pageTotal || 1,
-      };
+  } = useExportClaims(
+    {
+      page,
+      limit: rowsPerPage,
+      channel_id: selectedChannel?.id,
+      output: "Data",
+      date_from: dateFrom,
+      date_to: dateTo,
     },
-    enabled: hasAccess === true && !!date?.from && !!date?.to,
-    staleTime: 0,
-  });
+    {
+      enabled: hasAccess === true && !!date?.from && !!date?.to,
+      staleTime: 0,
+    }
+  );
+
+  const claimReportData = {
+    data: (claimReportResponse as any)?.data || [],
+    headers:
+      ((claimReportResponse as any)?.data || []).length > 0
+        ? Object.keys((claimReportResponse as any)?.data[0])
+        : [],
+    total: (claimReportResponse as any)?.total || 0,
+    pageTotal: (claimReportResponse as any)?.pageTotal || 1,
+  };
 
   const handleChannelChange = useCallback(
     (channelId: string) => {

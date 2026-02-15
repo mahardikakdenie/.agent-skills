@@ -1,10 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import { useEmailTags } from "@/services/product/hooks/queries";
+import { useDeleteEmailTag } from "@/services/product/hooks/mutations";
 
 export function useEmailTag() {
   const router = useRouter();
@@ -38,24 +39,21 @@ export function useEmailTag() {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: tagsResponse, isLoading: isLoadingTags } = useQuery({
-    queryKey: ["email-tags", page, rowsPerPage],
-    queryFn: async () => {
-      const response: any = await productService.getEmailTags({
+  const { data: tagsResponse, isLoading: isLoadingTags } = useEmailTags(
+    {
         page,
         pageSize: rowsPerPage,
-      });
-      return response;
     },
-    enabled: hasAccess === true,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: hasAccess === true,
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await productService.deleteEmailTag(id);
-    },
+  const tagsData: any = tagsResponse;
+
+  const deleteMutation = useDeleteEmailTag({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["email-tags"] });
       queryClient.invalidateQueries({ queryKey: ["email-template-tags"] });
@@ -98,9 +96,9 @@ export function useEmailTag() {
   );
 
   return {
-    tags: tagsResponse?.data || [],
-    totalPages: tagsResponse?.meta?.pageTotal || 1,
-    totalItems: tagsResponse?.meta?.total || 0,
+    tags: tagsData?.data || [],
+    totalPages: tagsData?.meta?.pageTotal || 1,
+    totalItems: tagsData?.meta?.total || 0,
     page,
     rowsPerPage,
     hasAccess,

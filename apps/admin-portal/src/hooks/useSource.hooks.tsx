@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import _ from "lodash";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import { sanctionService } from "@/services/sanction/api/sanction.service";
+import { useSources } from "@/services/sanction/hooks/queries";
+import { useDeleteSource } from "@/services/sanction/hooks/mutations";
 
 interface SourceItem {
   id: string;
@@ -57,7 +58,6 @@ export function useSource(): UseSourceProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -123,34 +123,20 @@ export function useSource(): UseSourceProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["sources", page, rowsPerPage, searchTerm],
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        limit: rowsPerPage,
-      };
-
-      if (searchTerm) {
-        params.keyword = searchTerm;
-      }
-
-      const response = await sanctionService.getSources(params);
-      return response;
+  } = useSources(
+    {
+      page,
+      limit: rowsPerPage,
+      ...(searchTerm ? { keyword: searchTerm } : {}),
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await sanctionService.deleteSource(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sources"] });
-      queryClient.invalidateQueries({ queryKey: ["source-detail"] });
-    },
+  const deleteMutation = useDeleteSource({
     onError: (error) => {
       console.error("Failed to delete source:", error);
     },

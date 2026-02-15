@@ -1,12 +1,19 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import { isValid, parseISO, format } from "date-fns";
-import { channelService } from "@/services/channel/api/channel.service";
 import { productService } from "@/services/product/api/product.service";
 import { promotionService } from "@/services/promotion/api/promotion.service";
+import { useChannelsV1 } from "@/services/channel/hooks/queries/useChannelsV1";
+import { useCreateCampaign } from "@/services/promotion/hooks/mutations/useCreateCampaign";
+import { useUpdateCampaign } from "@/services/promotion/hooks/mutations/useUpdateCampaign";
+import { useCampaignDetail } from "@/services/promotion/hooks/queries/useCampaignDetail";
+import { useInsurances } from "@/services/product/hooks/queries/useInsurances";
+import { usePlans } from "@/services/product/hooks/queries/usePlans";
+import { useProducts } from "@/services/product/hooks/queries/useProducts";
+import { useReferenceCurrencies } from "@/services/product/hooks/queries/useReferenceCurrencies";
 import AppURL from "@/constants/app-url.const";
 import { PromotionDetails } from "@/app/promotion/dto/promotion.details.dto";
 
@@ -262,109 +269,93 @@ export function useCampaignForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: currency = [], isLoading: isLoadingCurrency } = useQuery({
-    queryKey: ["currency"],
-    queryFn: async () => {
-      const response: any = await productService.getReferenceCurrencies();
-      return response?.data || [];
-    },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: currencyResponse, isLoading: isLoadingCurrency } =
+    useReferenceCurrencies(undefined, {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    });
+  const currency = (currencyResponse as any)?.data || [];
 
-  const { data: channels } = useQuery({
-    queryKey: ["channels", currentPageChannels, showChannelsPerPage],
-    queryFn: async () => {
-      const response = await channelService.getChannelsV1({
-        page: currentPageChannels,
-        limit: showChannelsPerPage,
-      });
-      return response;
+  const { data: channels } = useChannelsV1(
+    {
+      page: currentPageChannels,
+      limit: showChannelsPerPage,
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const { data: insurances } = useQuery({
-    queryKey: ["insurances", currentPageIns, showInsPerPage],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances({
-        page: currentPageIns,
-        limit: showInsPerPage,
-      });
-      setTotalInsuranceItems(response?.meta?.total || 0);
-      return response;
+  const { data: insurances } = useInsurances(
+    {
+      page: currentPageIns,
+      limit: showInsPerPage,
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const { data: products } = useQuery({
-    queryKey: [
-      "products",
-      Array.from(globalSelectedInsuranceIds),
-      currentPageProd,
-      showProdPerPage,
-    ],
-    queryFn: async () => {
-      if (globalSelectedInsuranceIds.size === 0) return undefined;
+  useEffect(() => {
+    setTotalInsuranceItems((insurances as any)?.meta?.total || 0);
+  }, [insurances]);
 
-      const response: any = await productService.getProducts({
-        insuranceIds: Array.from(globalSelectedInsuranceIds),
-        page: currentPageProd,
-        pageSize: showProdPerPage,
-      });
-      setTotalProductItems(response?.meta?.total || 0);
-      return response;
-    },
+  const productParams =
+    globalSelectedInsuranceIds.size > 0
+      ? {
+          insuranceIds: Array.from(globalSelectedInsuranceIds),
+          page: currentPageProd,
+          pageSize: showProdPerPage,
+        }
+      : undefined;
+
+  const { data: products } = useProducts(productParams, {
     enabled: globalSelectedInsuranceIds.size > 0,
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: plans } = useQuery({
-    queryKey: [
-      "plans",
-      Array.from(globalSelectedProdIds),
-      currentPagePlan,
-      showPlansPerPage,
-      searchQuery,
-    ],
-    queryFn: async () => {
-      if (globalSelectedProdIds.size === 0) return undefined;
+  useEffect(() => {
+    setTotalProductItems((products as any)?.meta?.total || 0);
+  }, [products]);
 
-      const params: any = {
-        productIds: Array.from(globalSelectedProdIds),
-        page: currentPagePlan,
-        pageSize: showPlansPerPage,
-      };
+  const planParams =
+    globalSelectedProdIds.size > 0
+      ? {
+          productIds: Array.from(globalSelectedProdIds),
+          page: currentPagePlan,
+          pageSize: showPlansPerPage,
+          ...(searchQuery ? { planName: searchQuery } : {}),
+        }
+      : undefined;
 
-      if (searchQuery) {
-        params.planName = searchQuery;
-      }
-
-      const response: any = await productService.getPlans(params);
-      setTotalPlanItems(response?.meta?.total || 0);
-      return response;
-    },
+  const { data: plans } = usePlans(planParams, {
     enabled: globalSelectedProdIds.size > 0,
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: campaignDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["campaign-detail", campaignId],
-    queryFn: async () => {
-      if (!campaignId) return null;
+  useEffect(() => {
+    setTotalPlanItems((plans as any)?.meta?.total || 0);
+  }, [plans]);
 
-      const response: any = await promotionService.getCampaignById(campaignId);
-      return response?.data?.[0] ?? response?.data?.data?.[0] ?? null;
-    },
-    enabled: isEdit && !!campaignId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+  const { data: campaignDetailResponse, isLoading: isLoadingDetail } =
+    useCampaignDetail(campaignId || "", {
+      enabled: isEdit && !!campaignId,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    });
+
+  const campaignDetail = useMemo(() => {
+    return (
+      (campaignDetailResponse as any)?.data?.[0] ??
+      (campaignDetailResponse as any)?.data?.data?.[0] ??
+      null
+    );
+  }, [campaignDetailResponse]);
 
   useEffect(() => {
     if (campaignDetail && isEdit) {
@@ -472,15 +463,8 @@ export function useCampaignForm(
     }
   }, [campaignDetail, isEdit, reset, watch, setValue]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      if (isEdit && campaignId) {
-        return promotionService.updateCampaign(campaignId, payload);
-      } else {
-        return promotionService.createCampaign(payload);
-      }
-    },
-    onSuccess: async (data: any) => {
+  const handleSaveSuccess = useCallback(
+    async (data: any) => {
       if (promotion.type === "embedded") {
         if (data?.data?.error?.code === 409) {
           setErrorMessage(
@@ -490,9 +474,9 @@ export function useCampaignForm(
           );
           setShowAlert(true);
           return;
-        } else {
-          await productService.syncEmbeddedDiscounts();
         }
+
+        await productService.syncEmbeddedDiscounts();
       }
 
       setErrorMessage(
@@ -507,7 +491,11 @@ export function useCampaignForm(
         router.push(AppURL.promotionCampaign);
       }, 2000);
     },
-    onError: (error) => {
+    [isEdit, promotion.type, queryClient, router]
+  );
+
+  const handleSaveError = useCallback(
+    (error: unknown) => {
       console.error("Failed to save campaign:", error);
       setErrorMessage(
         isEdit
@@ -516,6 +504,17 @@ export function useCampaignForm(
       );
       setShowAlert(true);
     },
+    [isEdit]
+  );
+
+  const createCampaignMutation = useCreateCampaign({
+    onSuccess: handleSaveSuccess,
+    onError: handleSaveError,
+  });
+
+  const updateCampaignMutation = useUpdateCampaign({
+    onSuccess: handleSaveSuccess,
+    onError: handleSaveError,
   });
 
   const handleSave = useCallback(
@@ -626,9 +625,20 @@ export function useCampaignForm(
         })),
       };
 
-      saveMutation.mutate(payload);
+      if (isEdit && campaignId) {
+        updateCampaignMutation.mutate({ id: campaignId, payload });
+      } else {
+        createCampaignMutation.mutate(payload);
+      }
     },
-    [saveMutation, promotion, vouchers, isEdit]
+    [
+      campaignId,
+      createCampaignMutation,
+      isEdit,
+      promotion,
+      updateCampaignMutation,
+      vouchers,
+    ]
   );
 
   const handleChangeType = useCallback((value: string) => {
@@ -1265,6 +1275,6 @@ export function useCampaignForm(
 
     isLoadingCurrency,
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving: createCampaignMutation.isPending || updateCampaignMutation.isPending,
   };
 }

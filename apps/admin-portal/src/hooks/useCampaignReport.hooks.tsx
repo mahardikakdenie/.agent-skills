@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
-import { productService } from "@/services/product/api/product.service";
 import { promotionService } from "@/services/promotion/api/promotion.service";
+import { useCampaignReport as useCampaignReportQuery } from "@/services/promotion/hooks/queries/useCampaignReport";
+import { useCampaignReportInsurance } from "@/services/promotion/hooks/queries/useCampaignReportInsurance";
+import { useInsurances } from "@/services/product/hooks/queries/useInsurances";
 import AppURL from "@/constants/app-url.const";
 import { DateRange } from "react-day-picker";
 import { startOfMonth, endOfMonth } from "date-fns";
@@ -51,63 +52,58 @@ export function useCampaignReport() {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: insuranceOptions = [] } = useQuery<InsuranceOption[]>({
-    queryKey: ["insurance-options"],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances();
-      return (response?.data || []).map(
-        (insurance: { id: string; name: string }) => ({
-          id: insurance.id,
-          name: insurance.name,
-        })
-      );
-    },
+  const { data: insuranceResponse } = useInsurances(undefined, {
     enabled: hasAccess === true && filterBy === "insurance",
     staleTime: 300000,
   });
+  const insuranceOptions: InsuranceOption[] = (
+    (insuranceResponse as any)?.data || []
+  ).map((insurance: { id: string; name: string }) => ({
+    id: insurance.id,
+    name: insurance.name,
+  }));
 
-  const { data: campaignReportData, isLoading: isLoadingReports } = useQuery({
-    queryKey: [
-      "campaign-reports",
-      page,
-      rowsPerPage,
-      sortBy,
-      filterBy,
-      selectedInsurance,
-      date,
-    ],
-    queryFn: async () => {
-      const params: any = {
-        page,
-        limit: rowsPerPage,
-        sort: sortBy,
-        dateFrom: date?.from,
-        dateTo: date?.to,
-      };
+  const reportBaseParams = {
+    page,
+    limit: rowsPerPage,
+    sort: sortBy,
+    dateFrom: date?.from,
+    dateTo: date?.to,
+  };
 
-      if (filterBy === "insurance" && selectedInsurance) {
-        params.insurance = selectedInsurance;
-        const response: any =
-          await promotionService.getCampaignReportInsurance(params);
-        return {
-          data: response?.data || [],
-          total: response?.total || 0,
-          pageTotal: response?.pageTotal || 1,
-        };
-      } else {
-        params.filter = filterBy;
-        const response: any = await promotionService.getCampaignReport(params);
-        return {
-          data: response?.data || [],
-          total: response?.total || 0,
-          pageTotal: response?.pageTotal || 1,
-        };
+  const { data: campaignReportDataAll, isLoading: isLoadingAllReports } =
+    useCampaignReportQuery(
+      {
+        ...reportBaseParams,
+        filter: filterBy,
+      },
+      {
+        enabled: hasAccess === true && filterBy !== "insurance",
+        staleTime: 0,
       }
+    );
+
+  const {
+    data: campaignReportDataInsurance,
+    isLoading: isLoadingInsuranceReports,
+  } = useCampaignReportInsurance(
+    {
+      ...reportBaseParams,
+      insurance: selectedInsurance,
     },
-    enabled:
-      hasAccess === true && (filterBy !== "insurance" || !!selectedInsurance),
-    staleTime: 0,
-  });
+    {
+      enabled: hasAccess === true && filterBy === "insurance" && !!selectedInsurance,
+      staleTime: 0,
+    }
+  );
+
+  const campaignReportData =
+    filterBy === "insurance"
+      ? campaignReportDataInsurance
+      : campaignReportDataAll;
+  const normalizedCampaignReportData = (campaignReportData as any) || {};
+  const isLoadingReports =
+    filterBy === "insurance" ? isLoadingInsuranceReports : isLoadingAllReports;
 
   const handleSortChange = useCallback((value: string) => {
     setSortBy(value);
@@ -205,10 +201,10 @@ export function useCampaignReport() {
   }, [filterBy, selectedInsurance, sortBy, date]);
 
   return {
-    promotions: campaignReportData?.data || [],
+    promotions: normalizedCampaignReportData?.data || [],
     insuranceOptions,
-    totalItems: campaignReportData?.total || 0,
-    totalPages: campaignReportData?.pageTotal || 1,
+    totalItems: normalizedCampaignReportData?.total || 0,
+    totalPages: normalizedCampaignReportData?.pageTotal || 1,
 
     page,
     rowsPerPage,

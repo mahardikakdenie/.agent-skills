@@ -1,9 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { authService } from "@/services/auth/api/auth.service";
 import AppURL from "@/constants/app-url.const";
+import { usePages, useRoleDetail } from "@/services/auth/hooks/queries";
+import {
+  useCreateRole,
+  useCreateRolePermission,
+  useDeleteRolePermission,
+  useUpdateRole,
+} from "@/services/auth/hooks/mutations";
 
 interface RoleFormData {
   name: string;
@@ -56,7 +62,6 @@ export function useRoleForm(
   mode: "create" | "edit" = "create"
 ): UseRoleFormProps {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const [roleId, setRoleId] = useState<string>();
   const [permissionFields, setPermissionFields] = useState<
@@ -83,44 +88,25 @@ export function useRoleForm(
   const {
     data: roleDetail,
     isLoading: isLoadingDetail,
-    refetch: refetchRoleDetail,
-  } = useQuery({
-    queryKey: ["role-detail", roleId],
-    queryFn: async () => {
-      if (!roleId) return null;
-      const response: any = await authService.getRoleById(roleId);
-      return response?.data ?? response;
-    },
+  } = useRoleDetail(roleId || "", {
     enabled: !!roleId && isEdit,
     staleTime: 300000,
   });
 
-  const { data: menusData, isLoading: isLoadingMenus } = useQuery({
-    queryKey: ["menus-list"],
-    queryFn: async () => {
-      const response: any = await authService.getPages({ page: 1, pageSize: 100 });
-      return response?.data ?? response;
-    },
-    staleTime: 300000,
-  });
+  const { data: menusData, isLoading: isLoadingMenus } = usePages(
+    { page: 1, pageSize: 100 },
+    { staleTime: 300000 }
+  );
 
-  const saveMutation = useMutation({
-    mutationFn: async (data: RoleFormData) => {
-      if (isEdit && roleId) {
-        return await authService.updateRole(roleId, data);
-      } else {
-        return await authService.createRole(data);
-      }
-    },
+  const createRoleMutation = useCreateRole({
     onSuccess: (response: any) => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] });
-      queryClient.invalidateQueries({ queryKey: ["role-detail"] });
-
-      if (!isEdit && response.data?.id) {
-        router.push(`${AppURL.masterdataRoleDetail}/${response.data.id}`);
-      } else {
-        router.push(AppURL.masterdataRole);
+      const createdId = response?.data?.id || response?.id;
+      if (createdId) {
+        router.push(`${AppURL.masterdataRoleDetail}/${createdId}`);
+        return;
       }
+
+      router.push(AppURL.masterdataRole);
     },
     onError: (error) => {
       console.error("Save failed:", error);
@@ -128,26 +114,31 @@ export function useRoleForm(
     },
   });
 
-  const addPermissionMutation = useMutation({
-    mutationFn: async (data: { role: string; permission: string }) => {
-      return await authService.createRolePermission(data);
+  const updateRoleMutation = useUpdateRole({
+    onSuccess: () => {
+      router.push(AppURL.masterdataRole);
+    },
+    onError: (error) => {
+      console.error("Save failed:", error);
+      alert("Failed to save role");
     },
   });
 
-  const deletePermissionMutation = useMutation({
-    mutationFn: async (permissionId: string) => {
-      return await authService.deleteRolePermission(permissionId);
-    },
-  });
+  const addPermissionMutation = useCreateRolePermission();
+
+  const deletePermissionMutation = useDeleteRolePermission();
+
+  const normalizedRoleDetail = (roleDetail as any)?.data ?? roleDetail;
+  const menus = (menusData as any)?.data ?? menusData ?? [];
 
   useEffect(() => {
-    if (roleDetail && isEdit) {
+    if (normalizedRoleDetail && isEdit) {
       reset({
-        name: roleDetail.name || "",
-        description: roleDetail.description || "",
+        name: (normalizedRoleDetail as any).name || "",
+        description: (normalizedRoleDetail as any).description || "",
       });
 
-      const groupedPermissions = roleDetail.role_permissions?.reduce(
+      const groupedPermissions = (normalizedRoleDetail as any).role_permissions?.reduce(
         (acc: any, role: any) => {
           const menuName = role?.permissions?.pages?.name || "-";
           if (!acc[menuName]) {
@@ -194,7 +185,7 @@ export function useRoleForm(
       setPermissionOptions(updatedPermissionOpt);
       setPermissionFields(updatedPermissionFields);
     }
-  }, [roleDetail, reset, isEdit]);
+  }, [normalizedRoleDetail, reset, isEdit]);
 
   const handleSave = useCallback(
     async (formData: RoleFormData) => {
@@ -203,9 +194,14 @@ export function useRoleForm(
         return;
       }
 
-      await saveMutation.mutateAsync(formData);
+      if (isEdit && roleId) {
+        await updateRoleMutation.mutateAsync({ id: roleId, payload: formData });
+        return;
+      }
+
+      await createRoleMutation.mutateAsync(formData);
     },
-    [saveMutation]
+    [createRoleMutation, isEdit, roleId, updateRoleMutation]
   );
 
   const loadRoleDetail = useCallback((id: string) => {
@@ -235,7 +231,7 @@ export function useRoleForm(
   const selectMenu = useCallback(
     async (value: string, field: any, index: number) => {
       const updateFormValue = [...permissionFields];
-      const selectedMenu = menusData?.find((item: any) => item.id === value);
+      const selectedMenu = menus?.find((item: any) => item.id === value);
       updateFormValue[index].menu = selectedMenu?.name || "";
       updateFormValue[index].menuId = value;
       setPermissionFields(updateFormValue);
@@ -261,7 +257,7 @@ export function useRoleForm(
         console.error("Error fetching permissions:", error);
       }
     },
-    [permissionFields, menusData, permissionOptions]
+    [permissionFields, menus, permissionOptions]
   );
 
   const handleTickPermission = useCallback(
@@ -434,10 +430,10 @@ export function useRoleForm(
     roleDescription: watch("description"),
     permissionFields,
     permissionOptions,
-    menus: menusData || [],
+    menus: menus || [],
     isLoadingDetail,
     isLoadingMenus,
-    isSaving: saveMutation.isPending,
+    isSaving: createRoleMutation.isPending || updateRoleMutation.isPending,
     handleSave,
     loadRoleDetail,
     handleAddPermission,

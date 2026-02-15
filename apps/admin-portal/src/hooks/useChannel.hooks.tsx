@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import { useDeleteChannel } from "@/services/channel/hooks/mutations";
 
 interface Channel {
   id: string;
@@ -44,7 +44,6 @@ export function useChannel(): UseChannelProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -122,28 +121,20 @@ export function useChannel(): UseChannelProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["channels", page, rowsPerPage],
-    queryFn: async () => {
-      const res: any = await channelService.getChannelsV1({
-        page,
-        limit: rowsPerPage,
-      });
-      return res;
+  } = useChannelsV1(
+    {
+      page,
+      limit: rowsPerPage,
     },
-    enabled: !!hasAccess,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      enabled: !!hasAccess,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await channelService.deleteChannel(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["channels"] });
-    },
+  const deleteMutation = useDeleteChannel({
     onError: (error) => {
       console.error("Failed to delete channel:", error);
       alert("Failed to delete channel");
@@ -170,10 +161,12 @@ export function useChannel(): UseChannelProps {
     router.push(AppURL.masterdataChannelAdd);
   }, [router]);
 
+  const channelData: any = channelResponse;
+
   return {
-    channels: channelResponse?.data || [],
-    totalPages: channelResponse?.pageTotal || 1,
-    totalItems: channelResponse?.total || 0,
+    channels: channelData?.data || [],
+    totalPages: channelData?.pageTotal || 1,
+    totalItems: channelData?.total || 0,
 
     page,
     rowsPerPage,

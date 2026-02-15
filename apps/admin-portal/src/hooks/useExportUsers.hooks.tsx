@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { channelService } from "@/services/channel/api/channel.service";
-import { productService } from "@/services/product/api/product.service";
 import { transactionService } from "@/services/transaction/api/transaction.service";
+import { useAllChannels } from "@/services/channel/hooks/queries";
+import { useAllProducts, usePlans } from "@/services/product/hooks/queries";
+import { useCustomerCampaigns } from "@/services/transaction/hooks/queries/useCustomerCampaigns";
 
 interface FilterItem {
   key_id: string;
@@ -112,59 +112,23 @@ export function useExportUsers(): UseExportUsersProps {
     []
   );
 
-  const { data: channelData, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["export-channels"],
-    queryFn: async () => {
-      const allChannels: any[] = [];
-      let currentPage = 1;
-      let hasMore = true;
+  const { data: channelData, isLoading: isLoadingChannels } = useAllChannels(
+    undefined,
+    {
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const channelListData = (channelData as any[]) || [];
 
-      while (hasMore) {
-        const response: any = await channelService.getChannels({
-          page: currentPage,
-          limit: 100,
-        });
-        if (response?.data) {
-          allChannels.push(...response.data);
-          hasMore = currentPage < (response?.pageTotal || 1);
-          currentPage++;
-        } else {
-          hasMore = false;
-        }
-      }
-
-      return allChannels;
-    },
+  const { data: productData, isLoading: isLoadingProducts } = useAllProducts(
+    undefined,
+    {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-  });
-
-  const { data: productData, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["export-products"],
-    queryFn: async () => {
-      const allProducts: any[] = [];
-      let currentPage = 1;
-      let hasMore = true;
-
-      while (hasMore) {
-        const response: any = await productService.getProducts({
-          page: currentPage,
-          pageSize: 100,
-        });
-        if (response?.data) {
-          allProducts.push(...response.data);
-          hasMore = currentPage < (response?.meta?.pageTotal || 1);
-          currentPage++;
-        } else {
-          hasMore = false;
-        }
-      }
-
-      return allProducts;
-    },
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
+    }
+  );
+  const productListData = (productData as any[]) || [];
 
   const [planSearchQuery, setPlanSearchQuery] = useState("");
   const [debouncedPlanSearch, setDebouncedPlanSearch] = useState("");
@@ -177,19 +141,18 @@ export function useExportUsers(): UseExportUsersProps {
     return () => clearTimeout(timer);
   }, [planSearchQuery]);
 
-  const { data: planData, isLoading: isLoadingPlans } = useQuery({
-    queryKey: ["export-plans", debouncedPlanSearch],
-    queryFn: async () => {
-      const response: any = await productService.getPlans({
-        page: 1,
-        pageSize: 100,
-        ...(debouncedPlanSearch && { planName: debouncedPlanSearch }),
-      });
-      return response?.data || [];
+  const { data: planResponse, isLoading: isLoadingPlans } = usePlans(
+    {
+      page: 1,
+      pageSize: 100,
+      ...(debouncedPlanSearch && { planName: debouncedPlanSearch }),
     },
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const planData = (planResponse as any)?.data || [];
 
   const handlePlanSearch = useCallback((query: string) => {
     setPlanSearchQuery(query);
@@ -222,39 +185,39 @@ export function useExportUsers(): UseExportUsersProps {
   }, [filteredUsers]);
 
   const {
-    data: customersData,
+    selectedChannel,
+    selectedProduct,
+    selectedPlan,
+    selectedFrequentBuyers,
+    selectedBirthdayMonth,
+  } = processingFilteredUser();
+
+  const {
+    data: customersResponse,
     isLoading: isLoadingCustomers,
     refetch: refetchCustomers,
-  } = useQuery({
-    queryKey: ["export-customers", page, limit, JSON.stringify(filteredUsers)],
-    queryFn: async () => {
-      const {
-        selectedChannel,
-        selectedProduct,
-        selectedPlan,
-        selectedFrequentBuyers,
-        selectedBirthdayMonth,
-      } = processingFilteredUser();
-
-      const response: any = await transactionService.getCustomerCampaigns({
-        page,
-        limit,
-        channel: selectedChannel,
-        product: selectedProduct,
-        plan: selectedPlan,
-        frequent_buyers: selectedFrequentBuyers,
-        birthday_month: selectedBirthdayMonth,
-      });
-
-      setTotalPages(response?.pageTotal || 1);
-      setTotalItems(response?.total || 0);
-
-      return response?.data || [];
+  } = useCustomerCampaigns(
+    {
+      page,
+      limit,
+      channel: selectedChannel,
+      product: selectedProduct,
+      plan: selectedPlan,
+      frequent_buyers: selectedFrequentBuyers,
+      birthday_month: selectedBirthdayMonth,
     },
-    enabled: isFiltered && filteredUsers.length > 0,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: isFiltered && filteredUsers.length > 0,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const customersData = (customersResponse as any)?.data || [];
+
+  useEffect(() => {
+    setTotalPages((customersResponse as any)?.pageTotal || 1);
+    setTotalItems((customersResponse as any)?.total || 0);
+  }, [customersResponse]);
 
   const fetchAllDataToDownload = useCallback(async () => {
     const {
@@ -294,20 +257,20 @@ export function useExportUsers(): UseExportUsersProps {
 
   const handleChannelChange = useCallback(
     (value: string) => {
-      const selectedChannel = channelData?.find((c: any) => c.id === value);
+      const selectedChannel = channelListData.find((c: any) => c.id === value);
       setChannel(value);
       setChannelName(selectedChannel?.name || "");
     },
-    [channelData]
+    [channelListData]
   );
 
   const handleProductChange = useCallback(
     (value: string) => {
-      const selectedProduct = productData?.find((p: any) => p.id === value);
+      const selectedProduct = productListData.find((p: any) => p.id === value);
       setProduct(value);
       setProductName(selectedProduct?.name || "");
     },
-    [productData]
+    [productListData]
   );
 
   const handlePlanChange = useCallback(
@@ -492,8 +455,8 @@ export function useExportUsers(): UseExportUsersProps {
     totalItems,
     dataToDownload,
 
-    channelList: channelData || [],
-    productList: productData || [],
+    channelList: channelListData,
+    productList: productListData,
     planList: planData || [],
     monthList,
     filterOptions,

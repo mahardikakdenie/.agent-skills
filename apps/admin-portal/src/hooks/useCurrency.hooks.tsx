@@ -1,9 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import { useInsurances } from "@/services/product/hooks/queries";
 
 interface Insurance {
   id: string;
@@ -41,7 +40,6 @@ export function useCurrency(): UseCurrencyProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -119,20 +117,20 @@ export function useCurrency(): UseCurrencyProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["currencies", page, rowsPerPage],
-    queryFn: async () => {
-      const res: any = await productService.getInsurances({
+  } = useInsurances(
+    {
         page,
         pageSize: rowsPerPage,
-      });
-      return res;
     },
-    enabled: !!hasAccess,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      enabled: !!hasAccess,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
+
+  const insuranceData: any = insuranceResponse;
 
   const handleEdit = useCallback(
     (id: string) => {
@@ -146,9 +144,9 @@ export function useCurrency(): UseCurrencyProps {
   }, [router]);
 
   return {
-    insurances: insuranceResponse?.data || [],
-    totalPages: insuranceResponse?.meta?.pageTotal || 1,
-    totalItems: insuranceResponse?.meta?.total || 0,
+    insurances: insuranceData?.data || [],
+    totalPages: insuranceData?.meta?.pageTotal || 1,
+    totalItems: insuranceData?.meta?.total || 0,
 
     page,
     rowsPerPage,

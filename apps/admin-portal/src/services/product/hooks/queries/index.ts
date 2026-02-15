@@ -1,3 +1,4 @@
+export * from './useAllProducts';
 export * from './useCategories';
 export * from './useCategoriesByChannel';
 export * from './useCategoryDetail';

@@ -3,6 +3,8 @@ export const productKeys = {
   products: () => [...productKeys.all, "products"] as const,
   productList: (params?: Record<string, unknown>) =>
     [...productKeys.products(), "list", params] as const,
+  productAll: (params?: Record<string, unknown>) =>
+    [...productKeys.products(), "all", params] as const,
   productDetail: (id: string) =>
     [...productKeys.products(), "detail", id] as const,
 

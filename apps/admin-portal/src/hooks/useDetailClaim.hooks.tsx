@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-import { claimsService } from "@/services/claims/api/claims.service";
+import { useSubmitClaim } from "@/services/claims/hooks/mutations/useSubmitClaim";
+import { useUpdateClaim } from "@/services/claims/hooks/mutations/useUpdateClaim";
+import { useClaimCategoryForms } from "@/services/claims/hooks/queries/useClaimCategoryForms";
+import { useClaimDetail } from "@/services/claims/hooks/queries/useClaimDetail";
 import {
   ClaimForm,
   ClaimFormsRequest,
@@ -49,94 +51,37 @@ export function useDetailClaim(): useDetailClaimProps {
   const [flatClaimForm, setFlatClaimForm] = useState<any[]>([]);
 
   const [formValue, setFormValue] = useState<any>({});
-
-  const { mutate: mutateDetailClaim, isPending: isLoading } = useMutation({
-    mutationFn: (id: string) => claimsService.getClaimById(id),
-    onSuccess: (res) => {
-      if (res) {
-        setDetailClaim(res);
-      }
-    },
-    onError: (error) => {
-      console.error("Failed to fetch claim details:", error);
-    },
-  });
-
-  const { mutate: mutateFormClaims, isPending: isLoadingFormClaims } =
-    useMutation({
-      mutationFn: ({
-        categoryId,
-        params,
-      }: {
-        categoryId: string;
-        params?: ClaimFormsRequest;
-      }) => claimsService.getClaimCategoryForms(categoryId, params),
-      onSuccess: (res) => {
-        const response = (res as any)?.data;
-        if (response) {
-          const claimForms: any = [
-            ...response.filter((item: any) => item.name != "chronology"),
-            ...detailClaim!.claim_config.map((item: any) => ({
-              ...item,
-              form: "claim_config",
-            })),
-          ];
-
-          setFlatClaimForm(claimForms);
-          const flattenClaimForms = flattenClaimFormFields(claimForms);
-          const missingDocs = Object.keys(flattenClaimForms)
-            .filter(
-              (fieldName) =>
-                detailClaim?.lack_of_documents?.indexOf(fieldName) > -1
-            )
-            .map((fieldName) => flattenClaimForms[fieldName]);
-
-          setClaimForms(missingDocs);
-
-          const updatedFormValue = { ...formValue };
-
-          missingDocs.forEach((item: any) => {
-            let initialValue =
-              item.type.toLowerCase() == "file"
-                ? {
-                    ext: "",
-                    fileName: "",
-                    data: "",
-                  }
-                : item.type.toLowerCase() == "file multiple"
-                ? [
-                    {
-                      ext: "",
-                      fileName: "",
-                      data: "",
-                    },
-                  ]
-                : "";
-            updatedFormValue[item.name] = initialValue;
-          });
-
-          setFormValue(updatedFormValue);
-
-          const parentForms = filterSchemaByNames(claimForms, missingDocs);
-          setAllClaimForms(parentForms);
-        }
-      },
-      onError: (error) => {
-        console.error("Failed to fetch form claims:", error);
-      },
-    });
+  const [claimId, setClaimId] = useState("");
+  const [claimFormRequest, setClaimFormRequest] = useState<{
+    categoryId: string;
+    params?: ClaimFormsRequest;
+  } | null>(null);
 
   const {
-    mutateAsync: muateAsyncUpdateClaimsGrab,
+    data: detailClaimResponse,
+    isLoading: isLoading,
+    refetch: refetchDetailClaim,
+  } = useClaimDetail(claimId, {
+    enabled: !!claimId,
+    retry: 0,
+  });
+
+  const {
+    data: formClaimsResponse,
+    isLoading: isLoadingFormClaims,
+  } = useClaimCategoryForms(
+    claimFormRequest?.categoryId || "",
+    claimFormRequest?.params,
+    {
+      enabled: !!claimFormRequest?.categoryId,
+      retry: 0,
+    }
+  );
+
+  const {
+    mutateAsync: mutateAsyncUpdateClaimsGrab,
     isPending: isUpdatingClaimsGrab,
-  } = useMutation({
-    mutationFn: ({
-      id,
-      params,
-    }: {
-      id: string;
-      params: UpdateClaimGrabRequest;
-    }) => claimsService.updateClaim(id, params),
+  } = useUpdateClaim({
     onError: (error) => {
       toast.error("Failed to update claims");
       console.error("Failed to update claims grab:", error);
@@ -146,12 +91,11 @@ export function useDetailClaim(): useDetailClaimProps {
   const {
     mutate: mutateSubmitClaimsById,
     isPending: isLoadingSubmitClaimsById,
-  } = useMutation({
-    mutationFn: ({ id }: { id: string }) => claimsService.submitClaim(id),
+  } = useSubmitClaim({
     onSuccess: () => {
       toast.success("Uploaded Successfull!");
       if (detailClaim?.id) {
-        mutateDetailClaim(detailClaim.id);
+        void refetchDetailClaim();
         router.back();
       }
     },
@@ -162,6 +106,62 @@ export function useDetailClaim(): useDetailClaimProps {
   });
 
   useEffect(() => {
+    if (detailClaimResponse) {
+      setDetailClaim(detailClaimResponse);
+    }
+  }, [detailClaimResponse]);
+
+  useEffect(() => {
+    const response = (formClaimsResponse as any)?.data;
+    if (!response || !detailClaim) return;
+
+    const claimForms: any = [
+      ...response.filter((item: any) => item.name != "chronology"),
+      ...detailClaim.claim_config.map((item: any) => ({
+        ...item,
+        form: "claim_config",
+      })),
+    ];
+
+    setFlatClaimForm(claimForms);
+    const flattenClaimForms = flattenClaimFormFields(claimForms);
+    const missingDocs = Object.keys(flattenClaimForms)
+      .filter((fieldName) => detailClaim?.lack_of_documents?.indexOf(fieldName) > -1)
+      .map((fieldName) => flattenClaimForms[fieldName]);
+
+    setClaimForms(missingDocs);
+
+    setFormValue((prev: any) => {
+      const updatedFormValue = { ...prev };
+
+      missingDocs.forEach((item: any) => {
+        const initialValue =
+          item.type.toLowerCase() == "file"
+            ? {
+                ext: "",
+                fileName: "",
+                data: "",
+              }
+            : item.type.toLowerCase() == "file multiple"
+            ? [
+                {
+                  ext: "",
+                  fileName: "",
+                  data: "",
+                },
+              ]
+            : "";
+        updatedFormValue[item.name] = initialValue;
+      });
+
+      return updatedFormValue;
+    });
+
+    const parentForms = filterSchemaByNames(claimForms, missingDocs);
+    setAllClaimForms(parentForms);
+  }, [detailClaim, formClaimsResponse]);
+
+  useEffect(() => {
     if (detailClaim && claims) {
       const channelId = claims.channel || claims.account_channels?.[0]?.channel;
       getFormClaim(detailClaim.category, { channel: channelId });
@@ -170,8 +170,12 @@ export function useDetailClaim(): useDetailClaimProps {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detailClaim, claims]);
 
+  const getDetailClaim = (id: string) => {
+    setClaimId(id);
+  };
+
   const getFormClaim = (categoryId: string, params?: ClaimFormsRequest) => {
-    mutateFormClaims({ categoryId, params });
+    setClaimFormRequest({ categoryId, params });
   };
 
   const handleChangeFileClaim = (
@@ -225,14 +229,12 @@ export function useDetailClaim(): useDetailClaimProps {
         const params: UpdateClaimGrabRequest = {
           form: patched,
         };
-        const response = await muateAsyncUpdateClaimsGrab({
+        const response = await mutateAsyncUpdateClaimsGrab({
           id: detailClaim.id,
-          params,
+          payload: params,
         });
         if (response) {
-          mutateSubmitClaimsById({
-            id: detailClaim.id,
-          });
+          mutateSubmitClaimsById(detailClaim.id);
         }
       }
     } catch (err) {
@@ -260,7 +262,7 @@ export function useDetailClaim(): useDetailClaimProps {
     formValue,
     getMissingDocuments,
     handleSubmitMissingDocument,
-    getDetailClaim: mutateDetailClaim,
+    getDetailClaim,
     getFormClaim,
     handleChangeFileClaim,
     handleChangeMultipleFileClaim,

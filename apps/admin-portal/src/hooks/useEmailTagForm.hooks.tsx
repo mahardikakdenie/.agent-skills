@@ -1,11 +1,18 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import {
+  useEmailTagDetail,
+  useReferenceEmailJourney,
+} from "@/services/product/hooks/queries";
+import {
+  useCreateEmailTag,
+  useUpdateEmailTag,
+} from "@/services/product/hooks/mutations";
 
 interface EmailTagFormData {
   journey: string;
@@ -70,27 +77,24 @@ export function useEmailTagForm(
     },
   });
 
-  const { data: tagDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["email-tag-detail", tagId],
-    queryFn: async () => {
-      if (!tagId) return null;
-      const response: any = await productService.getEmailTagById(tagId);
-      return response?.data ?? response;
-    },
+  const { data: tagDetailResponse, isLoading: isLoadingDetail } =
+    useEmailTagDetail(tagId || "", {
     enabled: !!tagId && isEdit,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: "always",
   });
 
-  const { data: journeysData, isLoading: isLoadingJourneys } = useQuery({
-    queryKey: ["email-tag-journeys"],
-    queryFn: async () => {
-      const response: any = await productService.getReferenceEmailJourney();
-      return response?.data ?? response;
-    },
+  const { data: journeysResponse, isLoading: isLoadingJourneys } =
+    useReferenceEmailJourney(undefined, {
     staleTime: 300000,
   });
+
+  const tagDetailData: any = tagDetailResponse;
+  const tagDetail = tagDetailData?.data ?? tagDetailData;
+
+  const journeysData: any = journeysResponse;
+  const journeys = journeysData?.data ?? journeysData ?? [];
 
   useEffect(() => {
     if (tagDetail && isEdit) {
@@ -124,34 +128,38 @@ export function useEmailTagForm(
     }
   }, [tagDetail, isEdit, reset, setValue, watch]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (data: EmailTagFormData) => {
-      if (isEdit && tagId) {
-        return await productService.updateEmailTag(tagId, data);
-      } else {
-        return await productService.createEmailTag(data);
-      }
-    },
+  const handleSaveError = useCallback((error: any) => {
+    console.error("Save failed:", error);
+    toast.error(
+      error?.response?.data?.message ||
+        "Failed to save email tag. Please try again."
+    );
+  }, []);
+
+  const createEmailTagMutation = useCreateEmailTag({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["email-tags"] });
       queryClient.invalidateQueries({ queryKey: ["email-tag-detail"] });
       queryClient.invalidateQueries({ queryKey: ["email-template-tags"] });
 
-      toast.success(
-        isEdit
-          ? "Email Tag Updated Successfully!"
-          : "Email Tag Created Successfully!"
-      );
+      toast.success("Email Tag Created Successfully!");
 
       router.push(AppURL.masterdataEmailTag);
     },
-    onError: (error: any) => {
-      console.error("Save failed:", error);
-      toast.error(
-        error?.response?.data?.message ||
-          "Failed to save email tag. Please try again."
-      );
+    onError: handleSaveError,
+  });
+
+  const updateEmailTagMutation = useUpdateEmailTag({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["email-tags"] });
+      queryClient.invalidateQueries({ queryKey: ["email-tag-detail"] });
+      queryClient.invalidateQueries({ queryKey: ["email-template-tags"] });
+
+      toast.success("Email Tag Updated Successfully!");
+
+      router.push(AppURL.masterdataEmailTag);
     },
+    onError: handleSaveError,
   });
 
   const handleSave = useCallback(
@@ -161,9 +169,17 @@ export function useEmailTagForm(
         return;
       }
 
-      await saveMutation.mutateAsync(formData);
+      if (isEdit && tagId) {
+        await updateEmailTagMutation.mutateAsync({
+          id: tagId,
+          payload: formData,
+        });
+        return;
+      }
+
+      await createEmailTagMutation.mutateAsync(formData);
     },
-    [saveMutation]
+    [createEmailTagMutation, isEdit, tagId, updateEmailTagMutation]
   );
 
   const loadTagDetail = useCallback((id: string) => {
@@ -182,10 +198,10 @@ export function useEmailTagForm(
     watch,
     reset,
     tagId,
-    journeys: journeysData || [],
+    journeys,
     isLoadingDetail,
     isLoadingJourneys,
-    isSaving: saveMutation.isPending,
+    isSaving: createEmailTagMutation.isPending || updateEmailTagMutation.isPending,
     handleSave,
     loadTagDetail,
     goBack,

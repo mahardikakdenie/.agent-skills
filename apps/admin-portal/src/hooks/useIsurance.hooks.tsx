@@ -1,12 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import {
   Insurance,
 } from "@/services/masterdata/insurance.service";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import { useInsurances } from "@/services/product/hooks/queries";
+import { useDeleteInsurance } from "@/services/product/hooks/mutations";
 
 interface UseInsuranceProps {
   insurances: Insurance[];
@@ -120,25 +121,22 @@ export function useInsurance(): UseInsuranceProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["insurances", page, rowsPerPage],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances({
+  } = useInsurances(
+    {
         page,
         pageSize: rowsPerPage,
-      });
-      return response;
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
+
+  const insuranceData: any = insuranceResponse;
 
   
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await productService.deleteInsurance(id);
-    },
+  const deleteMutation = useDeleteInsurance({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["insurances"] });
     },
@@ -169,9 +167,9 @@ export function useInsurance(): UseInsuranceProps {
   }, [router]);
 
   return {
-    insurances: insuranceResponse?.data || [],
-    totalPages: insuranceResponse?.meta?.pageTotal || 1,
-    totalItems: insuranceResponse?.meta?.total || 0,
+    insurances: insuranceData?.data || [],
+    totalPages: insuranceData?.meta?.pageTotal || 1,
+    totalItems: insuranceData?.meta?.total || 0,
 
     page,
     rowsPerPage,

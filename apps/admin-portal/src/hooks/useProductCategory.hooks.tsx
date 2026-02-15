@@ -1,12 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import {
   ProductCategories,
 } from "@/services/masterdata/product-category.service";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import { useCategories } from "@/services/product/hooks/queries";
+import { useDeleteCategory } from "@/services/product/hooks/mutations";
 
 interface UseProductCategoryProps {
   categories: ProductCategories[];
@@ -58,26 +59,21 @@ export function useProductCategory(): UseProductCategoryProps {
   }, [router, permissionList]);
 
   const {
-    data: categories = [],
+    data: categoriesResponse,
     isLoading,
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["product-categories-masterdata"],
-    queryFn: async () => {
-      const result: any = await productService.getCategories();
-      return result?.data ?? result;
-    },
+  } = useCategories(undefined, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await productService.deleteCategory(id);
-    },
+  const categoriesData: any = categoriesResponse;
+  const categories = categoriesData?.data ?? categoriesData ?? [];
+
+  const deleteMutation = useDeleteCategory({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["product-categories-masterdata"],

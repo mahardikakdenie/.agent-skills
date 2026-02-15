@@ -8,8 +8,8 @@
 
 - Main Refactor (Batch 6): Completed
 - Total Components Migrated (Main): 126
-- Incremental Updates: 9
-- Last Updated: 2026-02-15 22:29
+- Incremental Updates: 10
+- Last Updated: 2026-02-15 23:17
 
 ---
 
@@ -898,6 +898,7 @@ Components:
 - [x] Replaced legacy service imports in migrated components
 - [x] Replaced manual `useQuery`/`useMutation` in migrated scope with custom hooks from `services/*/hooks` when available
 - [x] Replaced direct query/mutation calls with new service query/mutation hooks and retained contracts in component hooks
+- [x] Eliminated manual React Query usage from legacy `src/hooks/*`; remaining `useQuery`/`useMutation` usage is contained in `src/services/*/hooks/*`
 - [x] Preserved existing UI behavior and local component contracts
 - [x] Kept old services intact for non-migrated areas
 
@@ -1004,6 +1005,13 @@ Components:
 - Fix: Updated migrated view call sites to new service method contracts, added localized `any` narrowing where needed, and added `transactionService.completeTransaction` + `transactionComplete` endpoint constant to preserve behavior
 - Status: PASS (resolved)
 
+#### Issue 12: Remaining legacy `src/hooks` still used manual `useQuery`/`useMutation` wrappers after Batch 6
+
+- Component: `apps/admin-portal/src/hooks/*` (export hooks + campaign/policy/claim/transaction/auth/product/helper/finance/sanction slices)
+- Cause: Earlier migration pass switched legacy API clients to new API services but retained local manual React Query wrappers in many legacy hooks
+- Fix: Re-refactored all remaining legacy hooks to consume custom hooks from `services/*/hooks/{queries,mutations}`; added export-oriented service hooks (`useAllChannels`, `useAllProducts`, `useAllClaims`, `useAllPolicies`, `useChannelConfigurations`) to preserve all-pages export behavior without breaking contracts
+- Status: PASS (resolved)
+
 ### Next Steps
 
 - [x] Migrate legacy `src/views/*` files still importing `@/services/api.service`
@@ -1018,3 +1026,4 @@ Components:
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
 | 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner + dashboard/transactions + policy/membership + campaign/report/export/notification hooks + full `src/views` migration final pass + non-view auth/menu cleanup) | 126 components | Completed | this doc   |
+| 2026-02-15 | Incremental  | Legacy `src/hooks` full React Query wrapper cleanup | 60 hooks | Completed | this doc |

@@ -1,15 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 import _ from "lodash";
+import { useAccountPartners } from "@/services/auth/hooks/queries";
+import { useDeleteAccount } from "@/services/auth/hooks/mutations";
 
 export function usePartnerManagement() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -46,27 +45,21 @@ export function usePartnerManagement() {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["partners", page, rowsPerPage, searchData],
-    queryFn: async () => {
-      const response: any = await authService.getAccountPartners({
-        page,
-        pageSize: rowsPerPage,
-        search: searchData,
-      });
-      return response;
+  } = useAccountPartners(
+    {
+      page,
+      pageSize: rowsPerPage,
+      search: searchData,
     },
-    enabled: hasAccess === true,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: hasAccess === true,
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await authService.deleteAccount(id);
-    },
+  const deleteMutation = useDeleteAccount({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["partners"] });
       toast.success("Partner deleted successfully");
     },
     onError: (error: any) => {
@@ -123,10 +116,12 @@ export function usePartnerManagement() {
     };
   }, [handleSearch]);
 
+  const partnersData: any = partnersResponse;
+
   return {
-    partners: partnersResponse?.data || [],
-    totalPages: partnersResponse?.meta?.pageTotal || 1,
-    totalItems: partnersResponse?.meta?.total || 0,
+    partners: partnersData?.data || [],
+    totalPages: partnersData?.meta?.pageTotal || 1,
+    totalItems: partnersData?.meta?.total || 0,
     page,
     rowsPerPage,
     searchData,

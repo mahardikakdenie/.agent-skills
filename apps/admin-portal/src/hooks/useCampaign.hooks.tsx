@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import { channelService } from "@/services/channel/api/channel.service";
 import { productService } from "@/services/product/api/product.service";
 import { promotionService } from "@/services/promotion/api/promotion.service";
+import { useDeleteCampaign } from "@/services/promotion/hooks/mutations/useDeleteCampaign";
+import { useCampaignSearch } from "@/services/promotion/hooks/queries/useCampaignSearch";
 import _ from "lodash";
 
 interface PromotionItem {
@@ -180,40 +182,34 @@ export function useCampaign(): UseCampaignProps {
     checkAccess();
   }, [router, permissionList]);
 
+  const campaignParams = {
+    page: page,
+    limit: rowsPerPage,
+    query: searchData ? searchData : "",
+  };
+
   const {
-    data: promotions = [] as any,
+    data: promotionsResponse,
     isLoading,
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["campaigns", page, rowsPerPage, searchData],
-    queryFn: async () => {
-      const params = {
-        page: page,
-        limit: rowsPerPage,
-        query: searchData ? searchData : "",
-      };
-
-      const res: any = await promotionService.searchCampaigns(params);
-      return {
-        data: res?.data || [],
-        total: res?.total || 0,
-        pageTotal: res?.pageTotal || 1,
-      };
-    },
+  } = useCampaignSearch(campaignParams, {
     enabled: hasAccess === true,
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await promotionService.deleteCampaign(id);
+  const promotions = {
+    data: (promotionsResponse as any)?.data || [],
+    total: (promotionsResponse as any)?.total || 0,
+    pageTotal: (promotionsResponse as any)?.pageTotal || 1,
+  };
+
+  const deleteMutation = useDeleteCampaign({
+    onSuccess: async () => {
       await productService.syncEmbeddedDiscounts();
-    },
-    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
     },
     onError: (error) => {

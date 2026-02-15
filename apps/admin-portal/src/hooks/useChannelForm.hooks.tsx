@@ -1,10 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
+import { useChannelDetailV1 } from "@/services/channel/hooks/queries";
+import {
+  useCreateChannel,
+  useUpdateChannel,
+} from "@/services/channel/hooks/mutations";
 
 interface ChannelFormData {
   name: string;
@@ -41,7 +44,6 @@ export function useChannelForm(
 ): UseChannelFormProps {
   const router = useRouter();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
   const isEdit = mode === "edit";
 
   const {
@@ -81,19 +83,17 @@ export function useChannelForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: channelDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["channel-detail", channelId],
-    queryFn: async () => {
-      if (!channelId) return null;
+  const { data: channelDetailResponse, isLoading: isLoadingDetail } =
+    useChannelDetailV1(channelId, {
+      enabled: isEdit && !!channelId,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    });
 
-      const response: any = await channelService.getChannelByIdV1(channelId);
-      return response?.data ?? response;
-    },
-    enabled: isEdit && !!channelId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+  const channelDetail: any = channelDetailResponse
+    ? (channelDetailResponse as any)?.data ?? channelDetailResponse
+    : null;
 
   useEffect(() => {
     if (channelDetail && isEdit) {
@@ -104,38 +104,40 @@ export function useChannelForm(
     }
   }, [channelDetail, reset, isEdit]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: ChannelFormData) => {
-      if (isEdit) {
-        const data: any = await channelService.updateChannel(channelId, payload);
-        return data?.data ?? data;
-      } else {
-        const data: any = await channelService.createChannel(payload);
-        return data?.data ?? data;
-      }
-    },
-    onSuccess: () => {
-      setAlertType("success");
-      setAlertMessage(
-        isEdit
-          ? "Channel Updated Successfully!"
-          : "Channel Created Successfully!"
-      );
-      setShowAlert(true);
+  const handleSaveSuccess = useCallback(() => {
+    setAlertType("success");
+    setAlertMessage(
+      isEdit
+        ? "Channel Updated Successfully!"
+        : "Channel Created Successfully!"
+    );
+    setShowAlert(true);
 
-      setTimeout(() => {
-        setShowAlert(false);
-        queryClient.invalidateQueries({ queryKey: ["channels"] });
-        queryClient.removeQueries({ queryKey: ["channel-detail"] });
-        router.back();
-      }, 2000);
+    setTimeout(() => {
+      setShowAlert(false);
+      router.back();
+    }, 2000);
+  }, [isEdit, router]);
+
+  const handleSaveError = useCallback((error: unknown) => {
+    console.error("Failed to save channel:", error);
+    setAlertType("error");
+    setAlertMessage("Failed to save channel. Please try again.");
+    setShowAlert(true);
+  }, []);
+
+  const createChannelMutation = useCreateChannel({
+    onSuccess: () => {
+      handleSaveSuccess();
     },
-    onError: (error) => {
-      console.error("Failed to save channel:", error);
-      setAlertType("error");
-      setAlertMessage("Failed to save channel. Please try again.");
-      setShowAlert(true);
+    onError: handleSaveError,
+  });
+
+  const updateChannelMutation = useUpdateChannel({
+    onSuccess: () => {
+      handleSaveSuccess();
     },
+    onError: handleSaveError,
   });
 
   const handleSave = useCallback(
@@ -150,9 +152,22 @@ export function useChannelForm(
         return;
       }
 
-      saveMutation.mutate(formData);
+      if (isEdit) {
+        updateChannelMutation.mutate({ id: channelId, payload: formData });
+        return;
+      }
+
+      createChannelMutation.mutate(formData);
     },
-    [saveMutation]
+    [
+      isEdit,
+      channelId,
+      createChannelMutation,
+      updateChannelMutation,
+      setAlertMessage,
+      setShowAlert,
+      setAlertType,
+    ]
   );
 
   const goBack = useCallback(() => {
@@ -180,7 +195,7 @@ export function useChannelForm(
     isEdit,
 
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving: createChannelMutation.isPending || updateChannelMutation.isPending,
 
     handleSave,
     setShowAlert,

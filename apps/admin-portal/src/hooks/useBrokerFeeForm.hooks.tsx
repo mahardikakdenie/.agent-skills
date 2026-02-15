@@ -1,11 +1,14 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { financeService } from "@/services/finance/api/finance.service";
 import { useProducts } from "@/app/product-category/hooks";
 import AppURL from "@/constants/app-url.const";
+import { useBrokerFeeDetail } from "@/services/finance/hooks/queries";
+import {
+  useCreateBrokerFee,
+  useUpdateBrokerFee,
+} from "@/services/finance/hooks/mutations";
 
 interface BrokerFeeFormData {
   insurance: string;
@@ -48,7 +51,6 @@ export function useBrokerFeeForm(
 ): UseBrokerFeeFormProps {
   const router = useRouter();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
   const isEdit = mode === "edit";
 
   const {
@@ -124,23 +126,24 @@ export function useBrokerFeeForm(
     }
   }, [watchProduct, fetchPlans]);
 
-  const { data: brokerFeeDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["broker-fee-detail", brokerFeeId],
-    queryFn: async () => {
-      if (!brokerFeeId) return null;
+  const { data: brokerFeeDetailResponse, isLoading: isLoadingDetail } =
+    useBrokerFeeDetail(brokerFeeId, {
+      enabled: isEdit && !!brokerFeeId,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    });
 
-      const response: any = await financeService.getBrokerFeeById(brokerFeeId);
-      const detail = response?.data;
-      if (Array.isArray(detail)) {
-        return detail[0] ?? null;
-      }
-      return detail ?? response ?? null;
-    },
-    enabled: isEdit && !!brokerFeeId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+  const brokerFeeDetail = useMemo(() => {
+    if (!brokerFeeDetailResponse) return null;
+
+    const detail = (brokerFeeDetailResponse as any)?.data;
+    if (Array.isArray(detail)) {
+      return detail[0] ?? null;
+    }
+
+    return detail ?? brokerFeeDetailResponse ?? null;
+  }, [brokerFeeDetailResponse]);
 
   useEffect(() => {
     if (!brokerFeeDetail || !isEdit) {
@@ -192,15 +195,8 @@ export function useBrokerFeeForm(
     initializationStep.current = "idle";
   }, [brokerFeeId]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      if (isEdit && brokerFeeId) {
-        return financeService.updateBrokerFee(brokerFeeId, payload);
-      } else {
-        return financeService.createBrokerFee(payload);
-      }
-    },
-    onSuccess: (data) => {
+  const handleSaveSuccess = useCallback(
+    (data: any) => {
       if (data != null) {
         setErrorMessage(
           isEdit
@@ -218,11 +214,14 @@ export function useBrokerFeeForm(
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
-        queryClient.invalidateQueries({ queryKey: ["broker-fees"] });
         router.push(AppURL.financeBrokerFee);
       }, 2000);
     },
-    onError: (error) => {
+    [isEdit, router]
+  );
+
+  const handleSaveError = useCallback(
+    (error: unknown) => {
       console.error("Failed to save broker fee:", error);
       setErrorMessage(
         isEdit
@@ -230,6 +229,19 @@ export function useBrokerFeeForm(
           : "Failed to create broker fee. Please try again."
       );
       setShowAlert(true);
+    },
+    [isEdit]
+  );
+
+  const createBrokerFeeMutation = useCreateBrokerFee({
+    onSuccess: handleSaveSuccess,
+    onError: handleSaveError,
+  });
+
+  const updateBrokerFeeMutation = useUpdateBrokerFee({
+    onSuccess: handleSaveSuccess,
+    onError: (error) => {
+      handleSaveError(error);
     },
   });
 
@@ -264,9 +276,22 @@ export function useBrokerFeeForm(
         currency: "IDR",
       };
 
-      saveMutation.mutate(payload);
+      if (isEdit && brokerFeeId) {
+        updateBrokerFeeMutation.mutate({ id: brokerFeeId, payload });
+        return;
+      }
+
+      createBrokerFeeMutation.mutate(payload);
     },
-    [saveMutation, insurances, products, plans]
+    [
+      isEdit,
+      brokerFeeId,
+      createBrokerFeeMutation,
+      updateBrokerFeeMutation,
+      insurances,
+      products,
+      plans,
+    ]
   );
 
   const goBack = useCallback(() => {
@@ -298,7 +323,8 @@ export function useBrokerFeeForm(
     isLoadingProducts,
     isLoadingPlans: isLoadingAllPlans,
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving:
+      createBrokerFeeMutation.isPending || updateBrokerFeeMutation.isPending,
 
     handleSave,
     setShowAlert,

@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { promotionService } from "@/services/promotion/api/promotion.service";
-import { transactionService } from "@/services/transaction/api/transaction.service";
+import { useUpdateCampaignReport } from "@/services/transaction/hooks/mutations/useUpdateCampaignReport";
+import { useCampaignSearch } from "@/services/promotion/hooks/queries/useCampaignSearch";
+import { useCampaignReport as useCampaignReportQuery } from "@/services/transaction/hooks/queries/useCampaignReport";
 import { toastNotification } from "@/lib/toast";
 import * as XLSX from "xlsx";
 
@@ -18,84 +18,79 @@ export function useCampaignAnalytics() {
   const [timeData, setTimeData] = useState<any[]>([]);
   const [openClickTrend, setOpenClickTrend] = useState<any[]>([]);
 
-  const { data: campaignList = [], isLoading: isLoadingCampaigns } = useQuery({
-    queryKey: ["campaign-list"],
-    queryFn: async () => {
-      const res: any = await promotionService.searchCampaigns({
-        page: 1,
-        limit: 1000,
-        query: "",
-      });
-      return (res?.data || []).map((c: any) => ({
-        id: c.campaign_id,
-        name: c.name,
-      }));
-    },
-    staleTime: 300000,
-  });
+  const campaignParams = {
+    page: 1,
+    limit: 1000,
+    query: "",
+  };
 
-  const { mutate: fetchAnalytics, isPending: isLoadingAnalytics } = useMutation(
-    {
-      mutationFn: async (campaignId: string) => {
-        const res: any = await transactionService.getCampaignReport(
-          campaignId
-        );
-        return res;
-      },
-      onSuccess: (res) => {
-        if (res?.report?.data) {
-          setTotalTransaction(res.transaction_total);
-          setTotalLeads(
-            Number(res.report.data.campaignSummary.delivered) +
-              Number(res.report.data.campaignSummary.hard_bounces) +
-              Number(res.report.data.campaignSummary.soft_bounces)
-          );
-          setTotalPurchased(res.purchased);
-          setCampaignSummary(res.report.data.campaignSummary);
-          setCampaignData(res.report.data.campaignData);
-          setClickLinks(res.report.data.clickLinks);
-          setTimeData(res.report.data.timeData);
-          setOpenClickTrend(res.report.data.openClickTrend);
-          toastNotification("Analytics loaded successfully!", "success");
-        }
-      },
-      onError: (error) => {
-        console.error("Error fetching analytics:", error);
-        toastNotification("Failed to load analytics", "error");
-      },
-    }
+  const { data: campaignListResponse, isLoading: isLoadingCampaigns } =
+    useCampaignSearch(campaignParams, {
+      staleTime: 300000,
+    });
+
+  const campaignList = ((campaignListResponse as any)?.data || []).map(
+    (c: any) => ({
+      id: c.campaign_id,
+      name: c.name,
+    })
   );
 
-  const { mutate: updateCampaign, isPending: isUpdatingCampaign } = useMutation(
-    {
-      mutationFn: async ({
-        campaignId,
-        data,
-      }: {
-        campaignId: string;
-        data: any;
-      }) => {
-        await transactionService.updateCampaignReport(campaignId, { data });
-      },
+  const { refetch: refetchCampaignAnalytics, isFetching: isLoadingAnalytics } =
+    useCampaignReportQuery(selectedCampaign, {
+      enabled: false,
+      retry: 0,
+    });
+
+  const applyAnalyticsResponse = useCallback((res: any) => {
+    if (res?.report?.data) {
+      setTotalTransaction(res.transaction_total);
+      setTotalLeads(
+        Number(res.report.data.campaignSummary.delivered) +
+          Number(res.report.data.campaignSummary.hard_bounces) +
+          Number(res.report.data.campaignSummary.soft_bounces)
+      );
+      setTotalPurchased(res.purchased);
+      setCampaignSummary(res.report.data.campaignSummary);
+      setCampaignData(res.report.data.campaignData);
+      setClickLinks(res.report.data.clickLinks);
+      setTimeData(res.report.data.timeData);
+      setOpenClickTrend(res.report.data.openClickTrend);
+      toastNotification("Analytics loaded successfully!", "success");
+    }
+  }, []);
+
+  const loadAnalytics = useCallback(async () => {
+    if (!selectedCampaign) return;
+    try {
+      const res = await refetchCampaignAnalytics();
+      applyAnalyticsResponse(res.data);
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      toastNotification("Failed to load analytics", "error");
+    }
+  }, [applyAnalyticsResponse, refetchCampaignAnalytics, selectedCampaign]);
+
+  const { mutate: updateCampaign, isPending: isUpdatingCampaign } =
+    useUpdateCampaignReport({
       onSuccess: () => {
         toastNotification("Update campaign report successfully!", "success");
 
         if (selectedCampaign) {
-          fetchAnalytics(selectedCampaign);
+          void loadAnalytics();
         }
       },
       onError: (error) => {
         console.error("Error updating campaign:", error);
         toastNotification("Update campaign report failed!", "error");
       },
-    }
-  );
+    });
 
   const handleViewAnalytics = useCallback(() => {
     if (selectedCampaign) {
-      fetchAnalytics(selectedCampaign);
+      void loadAnalytics();
     }
-  }, [selectedCampaign, fetchAnalytics]);
+  }, [selectedCampaign, loadAnalytics]);
 
   const handleExcelUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -309,8 +304,8 @@ export function useCampaignAnalytics() {
       };
 
       updateCampaign({
-        campaignId: selectedCampaign,
-        data: processedData,
+        id: selectedCampaign,
+        payload: { data: processedData },
       });
     },
     [selectedCampaign, updateCampaign]

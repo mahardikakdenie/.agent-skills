@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import _ from "lodash";
 
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
-import { channelService } from "@/services/channel/api/channel.service";
-import { financeService } from "@/services/finance/api/finance.service";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import { useChannelFees } from "@/services/finance/hooks/queries";
+import { useDeleteChannelFee } from "@/services/finance/hooks/mutations";
 
 interface PartnerCommItem {
   id: string;
@@ -68,7 +68,6 @@ export function usePartnerComm(): UsePartnerCommProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -132,18 +131,17 @@ export function usePartnerComm(): UsePartnerCommProps {
     setPageState(1);
   }, []);
 
-  const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["channels"],
-    queryFn: async () => {
-      const response: any = await channelService.getChannelsV1({
-        page: 1,
-        limit: 100,
-      });
-      return response?.data || [];
+  const { data: channelsResponse, isLoading: isLoadingChannels } = useChannelsV1(
+    {
+      page: 1,
+      limit: 100,
     },
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const channelsData = (channelsResponse as any)?.data || [];
 
   const {
     data: partnerCommResponse,
@@ -151,37 +149,21 @@ export function usePartnerComm(): UsePartnerCommProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["partner-comms", page, rowsPerPage, searchTerm, selectedChannel],
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        pageSize: rowsPerPage,
-      };
-
-      if (selectedChannel !== "All") {
-        params.channelId = selectedChannel;
-      }
-
-      if (searchTerm) {
-        params.keyword = searchTerm;
-      }
-
-      const response = await financeService.getChannelFees(params);
-      return response;
+  } = useChannelFees(
+    {
+      page,
+      pageSize: rowsPerPage,
+      ...(selectedChannel !== "All" ? { channelId: selectedChannel } : {}),
+      ...(searchTerm ? { keyword: searchTerm } : {}),
     },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+    {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await financeService.deleteChannelFee(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["partner-comms"] });
-    },
+  const deleteMutation = useDeleteChannelFee({
     onError: (error) => {
       console.error("Failed to delete partner comm:", error);
       alert("Failed to delete partner comm");

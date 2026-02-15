@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import _ from "lodash";
-import { policyService } from "@/services/policy/api/policy.service";
+import { useEndorsements as useEndorsementsQuery } from "@/services/policy/hooks/queries/useEndorsements";
 
 interface UseEndorsementsProps {
   endorsements: any[];
@@ -39,7 +38,12 @@ export default function useEndorsements(): UseEndorsementsProps {
 
   const [endorsements, setEndorsements] = useState<any[]>([]);
 
-  const queryKey = ["endorsements", page, rowsPerPage, tab, searchData];
+  const endorsementsParams: Record<string, any> = {
+    page,
+    limit: rowsPerPage,
+    keyword: searchData || undefined,
+    status: tab && tab !== "All" ? tab : undefined,
+  };
 
   const {
     data: resEndorsements,
@@ -48,19 +52,7 @@ export default function useEndorsements(): UseEndorsementsProps {
     error,
     refetch,
     isFetching,
-  } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        limit: rowsPerPage,
-        keyword: searchData || undefined,
-        status: tab && tab !== "All" ? tab : undefined,
-      };
-
-      const response = await policyService.getEndorsements(params);
-      return response;
-    },
+  } = useEndorsementsQuery(endorsementsParams, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,

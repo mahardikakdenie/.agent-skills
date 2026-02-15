@@ -1,11 +1,14 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/product/api/product.service";
-import { sanctionService } from "@/services/sanction/api/sanction.service";
 import AppURL from "@/constants/app-url.const";
+import { useInsurances } from "@/services/product/hooks/queries";
+import { useSourceDetail } from "@/services/sanction/hooks/queries";
+import {
+  useCreateSource,
+  useUpdateSource,
+} from "@/services/sanction/hooks/mutations";
 
 interface Insurance {
   id: string;
@@ -50,7 +53,6 @@ export function useSourceForm(
 ): UseSourceFormProps {
   const router = useRouter();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
   const isEdit = mode === "edit";
 
   const {
@@ -93,30 +95,24 @@ export function useSourceForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
-    queryKey: ["insurances"],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances();
-      return response?.data || [];
-    },
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: insurancesResponse, isLoading: isLoadingInsurances } =
+    useInsurances(undefined, {
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    });
 
-  const { data: sourceDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["source-detail", sourceId],
-    queryFn: async () => {
-      if (!sourceId) return null;
+  const insurancesData = (insurancesResponse as any)?.data || [];
 
-      const response: any = await sanctionService.getSourceById(sourceId);
-      return response?.data?.[0] ?? null;
-    },
-    enabled: isEdit && !!sourceId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: false,
-  });
+  const { data: sourceDetailResponse, isLoading: isLoadingDetail } =
+    useSourceDetail(sourceId, {
+      enabled: isEdit && !!sourceId,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: false,
+    });
+
+  const sourceDetail = (sourceDetailResponse as any)?.data?.[0] ?? null;
 
   useEffect(() => {
     if (sourceDetail && isEdit) {
@@ -161,15 +157,8 @@ export function useSourceForm(
     [setValue]
   );
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      if (isEdit && sourceId) {
-        return sanctionService.updateSource(sourceId, payload);
-      } else {
-        return sanctionService.createSource(payload);
-      }
-    },
-    onSuccess: (data) => {
+  const handleSaveSuccess = useCallback(
+    (data: unknown) => {
       if (data != null) {
         setErrorMessage(
           isEdit
@@ -187,12 +176,14 @@ export function useSourceForm(
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
-
-        queryClient.invalidateQueries({ queryKey: ["sources"] });
         router.push(AppURL.sourceList);
       }, 2000);
     },
-    onError: (error) => {
+    [isEdit, router]
+  );
+
+  const handleSaveError = useCallback(
+    (error: unknown) => {
       console.error("Failed to save source:", error);
       setErrorMessage(
         isEdit
@@ -200,6 +191,19 @@ export function useSourceForm(
           : "Failed to create source. Please try again."
       );
       setShowAlert(true);
+    },
+    [isEdit]
+  );
+
+  const createSourceMutation = useCreateSource({
+    onSuccess: handleSaveSuccess,
+    onError: handleSaveError,
+  });
+
+  const updateSourceMutation = useUpdateSource({
+    onSuccess: handleSaveSuccess,
+    onError: (error) => {
+      handleSaveError(error);
     },
   });
 
@@ -254,9 +258,14 @@ export function useSourceForm(
         country: "IDN",
       };
 
-      saveMutation.mutate(payload);
+      if (isEdit && sourceId) {
+        updateSourceMutation.mutate({ id: sourceId, payload });
+        return;
+      }
+
+      createSourceMutation.mutate(payload);
     },
-    [saveMutation]
+    [isEdit, sourceId, createSourceMutation, updateSourceMutation, insurancesData]
   );
 
   const goBack = useCallback(() => {
@@ -284,7 +293,7 @@ export function useSourceForm(
 
     isLoadingInsurances,
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving: createSourceMutation.isPending || updateSourceMutation.isPending,
 
     handleSave,
     setShowAlert,

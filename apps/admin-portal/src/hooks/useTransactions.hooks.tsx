@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/context/auth.context";
 import _ from "lodash";
-import { transactionService } from "@/services/transaction/api/transaction.service";
+import { useUpdateTransactionStatus } from "@/services/transaction/hooks/mutations/useUpdateTransactionStatus";
+import { useTransactions as useTransactionsQuery } from "@/services/transaction/hooks/queries/useTransactions";
 import toast from "react-hot-toast";
 
 interface UseTransactionsProps {
@@ -38,8 +37,6 @@ interface UseTransactionsProps {
 }
 
 export default function useTransactions(): UseTransactionsProps {
-  const { permissionList } = useAuth();
-
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -49,7 +46,13 @@ export default function useTransactions(): UseTransactionsProps {
 
   const [transactions, setTransactions] = useState<any[]>([]);
 
-  const queryKey = ["transactions", page, rowsPerPage, tab, searchData, type];
+  const transactionParams: Record<string, any> = {
+    page,
+    limit: rowsPerPage,
+    type: type || undefined,
+    keyword: searchData || undefined,
+    status: tab === "All" ? undefined : tab,
+  };
 
   const {
     data: resTransactions,
@@ -58,32 +61,14 @@ export default function useTransactions(): UseTransactionsProps {
     error,
     refetch,
     isFetching,
-  } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        limit: rowsPerPage,
-        type: type || undefined,
-        keyword: searchData || undefined,
-        status: tab === "All" ? undefined : tab,
-      };
-
-      const response = await transactionService.getTransactions(params);
-      return response;
-    },
+  } = useTransactionsQuery(transactionParams, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
 
   const { mutate: mutateUpdateStatus, isPending: isLoadingUpdateStatus } =
-    useMutation({
-      mutationFn: async (id: string) => {
-        return transactionService.updateTransactionStatus(id, {
-          payment_info: "Paid",
-        });
-      },
+    useUpdateTransactionStatus({
       onSuccess: () => {
         refetch();
       },
@@ -134,7 +119,12 @@ export default function useTransactions(): UseTransactionsProps {
   const handleUpdateToPaid = useCallback(
     async (id: string) => {
       try {
-        mutateUpdateStatus(id);
+        mutateUpdateStatus({
+          id,
+          payload: {
+            payment_info: "Paid",
+          },
+        });
       } catch (error) {
         throw error;
       }

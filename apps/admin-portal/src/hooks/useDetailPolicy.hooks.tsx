@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
-import { policyService } from "@/services/policy/api/policy.service";
+import { useRenewPolicy } from "@/services/policy/hooks/mutations/useRenewPolicy";
+import { usePolicyDetail as usePolicyDetailQuery } from "@/services/policy/hooks/queries/usePolicyDetail";
 
 interface PolicyVisibility {
   name: boolean;
@@ -52,12 +53,7 @@ export function usePolicyDetail(): UsePolicyDetailProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["policy-detail", policyId],
-    queryFn: async () => {
-      if (!policyId) return null;
-      return policyService.getPolicyById(policyId);
-    },
+  } = usePolicyDetailQuery(policyId || "", {
     enabled: !!policyId,
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -65,10 +61,7 @@ export function usePolicyDetail(): UsePolicyDetailProps {
   });
   const policyData: any = policy;
 
-  const renewPolicyMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return policyService.renewPolicy(id);
-    },
+  const renewPolicyMutation = useRenewPolicy({
     onSuccess: () => {
       toast.success("Policy renewed successfully!");
 

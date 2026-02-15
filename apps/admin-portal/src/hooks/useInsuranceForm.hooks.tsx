@@ -1,10 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import { useInsuranceDetail } from "@/services/product/hooks/queries";
+import {
+  useCreateInsurance,
+  useUpdateInsurance,
+} from "@/services/product/hooks/mutations";
 
 interface InsuranceFormData {
   name: string;
@@ -83,19 +87,16 @@ export function useInsuranceForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: insuranceDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["insurance-detail", insuranceId],
-    queryFn: async () => {
-      if (!insuranceId) return null;
-
-      const response: any = await productService.getInsuranceById(insuranceId);
-      return response?.data ?? response;
-    },
+  const { data: insuranceDetailResponse, isLoading: isLoadingDetail } =
+    useInsuranceDetail(insuranceId || "", {
     enabled: isEdit && !!insuranceId,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: "always",
   });
+
+  const insuranceDetailData: any = insuranceDetailResponse;
+  const insuranceDetail = insuranceDetailData?.data ?? insuranceDetailData;
 
   useEffect(() => {
     if (insuranceDetail && isEdit) {
@@ -121,46 +122,8 @@ export function useInsuranceForm(
     }
   }, [insuranceId, reset, queryClient]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: InsuranceFormData) => {
-      if (isEdit && insuranceId) {
-        const response: any = await productService.updateInsurance(
-          insuranceId,
-          payload
-        );
-        return response?.data ?? response;
-      } else {
-        const response: any = await productService.createInsurance(payload);
-        return response?.data ?? response;
-      }
-    },
-    onSuccess: (data) => {
-      setAlertType("success");
-      setAlertMessage(
-        isEdit
-          ? "Insurance Updated Successfully!"
-          : "Insurance Created Successfully!"
-      );
-      setShowAlert(true);
-
-      setTimeout(() => {
-        setShowAlert(false);
-        queryClient.invalidateQueries({ queryKey: ["insurances"] });
-        queryClient.removeQueries({ queryKey: ["insurance-detail"] });
-        router.push(AppURL.masterdataInsurance);
-      }, 2000);
-    },
-    onError: (error) => {
-      console.error("Failed to save insurance:", error);
-      setAlertType("error");
-      setAlertMessage(
-        isEdit
-          ? "Failed to update insurance. Please try again."
-          : "Failed to create insurance. Please try again."
-      );
-      setShowAlert(true);
-    },
-  });
+  const createInsuranceMutation = useCreateInsurance();
+  const updateInsuranceMutation = useUpdateInsurance();
 
   const handleSave = useCallback(
     async (formData: InsuranceFormData) => {
@@ -174,9 +137,49 @@ export function useInsuranceForm(
         return;
       }
 
-      saveMutation.mutate(formData);
+      try {
+        if (isEdit && insuranceId) {
+          await updateInsuranceMutation.mutateAsync({
+            id: insuranceId,
+            payload: formData,
+          });
+        } else {
+          await createInsuranceMutation.mutateAsync(formData);
+        }
+
+        setAlertType("success");
+        setAlertMessage(
+          isEdit
+            ? "Insurance Updated Successfully!"
+            : "Insurance Created Successfully!"
+        );
+        setShowAlert(true);
+
+        setTimeout(() => {
+          setShowAlert(false);
+          queryClient.invalidateQueries({ queryKey: ["insurances"] });
+          queryClient.removeQueries({ queryKey: ["insurance-detail"] });
+          router.push(AppURL.masterdataInsurance);
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to save insurance:", error);
+        setAlertType("error");
+        setAlertMessage(
+          isEdit
+            ? "Failed to update insurance. Please try again."
+            : "Failed to create insurance. Please try again."
+        );
+        setShowAlert(true);
+      }
     },
-    [saveMutation]
+    [
+      createInsuranceMutation,
+      insuranceId,
+      isEdit,
+      queryClient,
+      router,
+      updateInsuranceMutation,
+    ]
   );
 
   const goBack = useCallback(() => {
@@ -202,7 +205,7 @@ export function useInsuranceForm(
     isEdit,
 
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving: createInsuranceMutation.isPending || updateInsuranceMutation.isPending,
 
     handleSave,
     setShowAlert,

@@ -1,10 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import {
+  useCategories,
+  useEmailTemplatesJourney,
+} from "@/services/product/hooks/queries";
+import { useDeleteEmailTemplateJourney } from "@/services/product/hooks/mutations";
 
 export function useEmailTemplate() {
   const router = useRouter();
@@ -39,46 +43,41 @@ export function useEmailTemplate() {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: categoriesData } = useQuery({
-    queryKey: ["email-template-categories"],
-    queryFn: async () => {
-      const response: any = await productService.getCategories();
-      return response?.data ?? response;
-    },
+  const { data: categoriesResponse } = useCategories(undefined, {
     enabled: hasAccess === true,
     staleTime: 300000,
   });
 
+  const categoriesData: any = categoriesResponse;
+  const categories = categoriesData?.data ?? categoriesData ?? [];
+
   useEffect(() => {
-    if (categoriesData && categoriesData.length > 0 && !selectedTab) {
-      setSelectedTab(categoriesData[0].id);
+    if (categories.length > 0 && !selectedTab) {
+      setSelectedTab(categories[0].id);
     }
-  }, [categoriesData, selectedTab]);
+  }, [categories, selectedTab]);
 
   const {
     data: templatesResponse,
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ["email-templates", page, rowsPerPage, selectedTab],
-    queryFn: async () => {
-      const response: any = await productService.getEmailTemplatesJourney({
+  } = useEmailTemplatesJourney(
+    {
         page,
         pageSize: rowsPerPage,
         category: selectedTab === "Travel" ? "" : selectedTab,
-      });
-      return response;
     },
-    enabled: hasAccess === true && !!selectedTab,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: hasAccess === true && !!selectedTab,
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    },
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await productService.deleteEmailTemplateJourney(id);
-    },
+  const templatesData: any = templatesResponse;
+
+  const deleteMutation = useDeleteEmailTemplateJourney({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["email-templates"] });
       toast.success("Email template deleted successfully");
@@ -127,10 +126,10 @@ export function useEmailTemplate() {
   }, []);
 
   return {
-    templates: templatesResponse?.data || [],
-    totalPages: templatesResponse?.meta?.pageTotal || 1,
-    totalItems: templatesResponse?.meta?.total || 0,
-    categories: categoriesData || [],
+    templates: templatesData?.data || [],
+    totalPages: templatesData?.meta?.pageTotal || 1,
+    totalItems: templatesData?.meta?.total || 0,
+    categories,
     page,
     rowsPerPage,
     selectedTab,

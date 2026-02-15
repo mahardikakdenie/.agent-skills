@@ -3,6 +3,8 @@ export const claimKeys = {
   lists: () => [...claimKeys.all, "list"] as const,
   list: (params?: Record<string, unknown>) =>
     [...claimKeys.lists(), params] as const,
+  allList: (params?: Record<string, unknown>) =>
+    [...claimKeys.lists(), "all", params] as const,
   detail: (id: string) => [...claimKeys.all, "detail", id] as const,
   configurations: () => [...claimKeys.all, "configurations"] as const,
   export: (params?: Record<string, unknown>) =>

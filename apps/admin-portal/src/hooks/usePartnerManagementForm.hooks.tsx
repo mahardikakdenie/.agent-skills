@@ -1,11 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { authService } from "@/services/auth/api/auth.service";
-import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import { useAccountDetail } from "@/services/auth/hooks/queries";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import {
+  useCreateAccount,
+  useUpdateAccount,
+} from "@/services/auth/hooks/mutations";
 
 interface PartnerFormData {
   name: string;
@@ -42,7 +45,6 @@ export function usePartnerManagementForm(
   mode: "create" | "edit" = "create",
 ): UsePartnerManagementFormProps {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const [partnerId, setPartnerId] = useState<string>();
   const isEdit = mode === "edit";
@@ -65,52 +67,54 @@ export function usePartnerManagementForm(
     },
   });
 
-  const { data: partnerDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["partner-detail", partnerId],
-    queryFn: async () => {
-      if (!partnerId) return null;
-      const response: any = await authService.getAccountById(partnerId);
-      return response;
+  const { data: partnerDetail, isLoading: isLoadingDetail } = useAccountDetail(
+    partnerId ?? "",
+    {
+      enabled: !!partnerId && isEdit,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    }
+  );
+
+  const { data: channelsResponse, isLoading: isLoadingChannels } = useChannelsV1(
+    {
+      page: 1,
+      limit: 9999,
     },
-    enabled: !!partnerId && isEdit,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+    {
+      staleTime: 300000,
+    }
+  );
 
-  const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["channels-list"],
-    queryFn: async () => {
-      const response: any = await channelService.getChannelsV1({
-        page: 1,
-        limit: 9999,
-      });
-      return response?.data || [];
-    },
-    staleTime: 300000,
-  });
+  const channelsData = (channelsResponse as any)?.data || [];
 
-  const saveMutation = useMutation({
-    mutationFn: async (data: PartnerFormData) => {
-      const payload = {
-        name: data.name,
-        email: data.email,
-        phone_number: data.phone_code + data.phone_number,
-        api_key: data.api_key,
-        channel: data.channel,
-        role: "Partner",
-      };
+  const createAccountMutation = useCreateAccount({
+    onSuccess: (response: any) => {
+      toast.success(
+        isEdit
+          ? "Partner Updated Successfully!"
+          : "Partner Created Successfully!",
+      );
 
-      if (isEdit && partnerId) {
-        return await authService.updateAccount(partnerId, payload);
-      } else {
-        return await authService.createAccount(payload);
+      const createdId = response?.id || response?.data?.id;
+      if (!isEdit && createdId) {
+        router.push(
+          `${AppURL.masterdataPartnerManagementDetail}/${createdId}`,
+        );
       }
     },
-    onSuccess: (response: any) => {
-      queryClient.invalidateQueries({ queryKey: ["partners"] });
-      queryClient.invalidateQueries({ queryKey: ["partner-detail"] });
+    onError: (error: any) => {
+      console.error("Save failed:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to save partner. Please try again.",
+      );
+    },
+  });
 
+  const updateAccountMutation = useUpdateAccount({
+    onSuccess: (response: any) => {
       toast.success(
         isEdit
           ? "Partner Updated Successfully!"
@@ -135,15 +139,16 @@ export function usePartnerManagementForm(
 
   useEffect(() => {
     if (partnerDetail && isEdit) {
-      const phoneMatch = partnerDetail.phone_number?.match(/^(\+\d{2})(.*)$/);
+      const partnerData: any = partnerDetail;
+      const phoneMatch = partnerData.phone_number?.match(/^(\+\d{2})(.*)$/);
 
       reset({
-        name: partnerDetail.name || "",
-        email: partnerDetail.email || "",
+        name: partnerData.name || "",
+        email: partnerData.email || "",
         phone_code: phoneMatch?.[1] || "+62",
-        phone_number: phoneMatch?.[2] || partnerDetail.phone_number || "",
-        api_key: partnerDetail.api_key || "",
-        channel: partnerDetail.channel?.toString() || "",
+        phone_number: phoneMatch?.[2] || partnerData.phone_number || "",
+        api_key: partnerData.api_key || "",
+        channel: partnerData.channel?.toString() || "",
       });
     }
   }, [partnerDetail, reset, isEdit]);
@@ -155,9 +160,23 @@ export function usePartnerManagementForm(
         return;
       }
 
-      await saveMutation.mutateAsync(formData);
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        phone_number: formData.phone_code + formData.phone_number,
+        api_key: formData.api_key,
+        channel: formData.channel,
+        role: "Partner",
+      };
+
+      if (isEdit && partnerId) {
+        await updateAccountMutation.mutateAsync({ id: partnerId, payload });
+        return;
+      }
+
+      await createAccountMutation.mutateAsync(payload);
     },
-    [saveMutation],
+    [isEdit, partnerId, createAccountMutation, updateAccountMutation],
   );
 
   const loadPartnerDetail = useCallback((id: string) => {
@@ -188,7 +207,7 @@ export function usePartnerManagementForm(
     channels: channelsData || [],
     isLoadingDetail,
     isLoadingChannels,
-    isSaving: saveMutation.isPending,
+    isSaving: createAccountMutation.isPending || updateAccountMutation.isPending,
     handleSave,
     loadPartnerDetail,
     generateApiKey,

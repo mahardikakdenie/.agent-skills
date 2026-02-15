@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { policyService } from "@/services/policy/api/policy.service";
+import { useInsuredPartyDetail } from "@/services/policy/hooks/queries/useInsuredPartyDetail";
 
 interface MembershipDetail {
   id: string;
@@ -63,13 +62,7 @@ export function useMembershipDetail(): UseMembershipDetailProps {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["membership-detail", membershipId],
-    queryFn: async () => {
-      if (!membershipId) return null;
-
-      return policyService.getInsuredPartyById(membershipId);
-    },
+  } = useInsuredPartyDetail(membershipId, {
     enabled: !!membershipId,
     staleTime: 30000,
     refetchOnWindowFocus: false,

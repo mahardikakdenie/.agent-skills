@@ -1,12 +1,15 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { channelService } from "@/services/channel/api/channel.service";
-import { financeService } from "@/services/finance/api/finance.service";
 import { useProducts } from "@/app/product-category/hooks";
 import AppURL from "@/constants/app-url.const";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import { useChannelFeeDetail } from "@/services/finance/hooks/queries";
+import {
+  useCreateChannelFee,
+  useUpdateChannelFee,
+} from "@/services/finance/hooks/mutations";
 
 interface PartnerCommFormData {
   channel: string;
@@ -52,7 +55,6 @@ export function usePartnerCommForm(
 ): UsePartnerCommFormProps {
   const router = useRouter();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
   const isEdit = mode === "edit";
 
   const {
@@ -113,18 +115,17 @@ export function usePartnerCommForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["channels"],
-    queryFn: async () => {
-      const response: any = await channelService.getChannelsV1({
-        page: 1,
-        limit: 100,
-      });
-      return response?.data || [];
+  const { data: channelsResponse, isLoading: isLoadingChannels } = useChannelsV1(
+    {
+      page: 1,
+      limit: 100,
     },
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const channelsData = (channelsResponse as any)?.data || [];
 
   useEffect(() => {
     if (watchChannel && initializationStep.current === "complete") {
@@ -133,26 +134,27 @@ export function usePartnerCommForm(
     }
   }, [watchChannel, fetchInsurances, setValue]);
 
-  const { data: partnerCommDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["partner-comm-detail", partnerCommId],
-    queryFn: async () => {
-      if (!partnerCommId) return null;
+  const { data: partnerCommDetailResponse, isLoading: isLoadingDetail } =
+    useChannelFeeDetail(partnerCommId, {
+      enabled: isEdit && !!partnerCommId,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    });
 
-      const response: any = await financeService.getChannelFeeById(partnerCommId);
-      const detail = response?.data;
-      if (Array.isArray(detail)) {
-        return detail[0] ?? null;
-      }
-      return detail ?? response ?? null;
-    },
-    enabled: isEdit && !!partnerCommId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+  const partnerCommDetail = (() => {
+    const detail = (partnerCommDetailResponse as any)?.data;
+    if (Array.isArray(detail)) {
+      return detail[0] ?? null;
+    }
+
+    return detail ?? partnerCommDetailResponse ?? null;
+  })();
 
   useEffect(() => {
-    if (!partnerCommDetail || !isEdit) {
+    const detail = partnerCommDetail;
+
+    if (!detail || !isEdit) {
       return;
     }
 
@@ -161,10 +163,10 @@ export function usePartnerCommForm(
       channelsData &&
       channelsData.length > 0
     ) {
-      setValue("channel", partnerCommDetail.channel);
-      setValue("fee", Number(partnerCommDetail.fee) || 0);
+      setValue("channel", detail.channel);
+      setValue("fee", Number(detail.fee) || 0);
 
-      fetchInsurances({ channelId: partnerCommDetail.channel });
+      fetchInsurances({ channelId: detail.channel });
       initializationStep.current = "channels";
       return;
     }
@@ -172,7 +174,7 @@ export function usePartnerCommForm(
     if (initializationStep.current === "channels" && insurances.length > 0) {
       setValue(
         "insurance",
-        partnerCommDetail.insurance ? partnerCommDetail.insurance : "All"
+        detail.insurance ? detail.insurance : "All"
       );
       initializationStep.current = "complete";
       return;
@@ -195,23 +197,10 @@ export function usePartnerCommForm(
       plan: "",
       fee: 0,
     });
+  }, [partnerCommId, reset]);
 
-    if (partnerCommId) {
-      queryClient.removeQueries({
-        queryKey: ["partner-comm-detail", partnerCommId],
-      });
-    }
-  }, [partnerCommId, reset, queryClient]);
-
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      if (isEdit && partnerCommId) {
-        return financeService.updateChannelFee(partnerCommId, payload);
-      } else {
-        return financeService.createChannelFee(payload.channel, payload);
-      }
-    },
-    onSuccess: (data) => {
+  const handleSaveSuccess = useCallback(
+    (data: unknown) => {
       if (data != null) {
         setErrorMessage(
           isEdit
@@ -229,18 +218,33 @@ export function usePartnerCommForm(
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
-        queryClient.invalidateQueries({ queryKey: ["partner-comms"] });
-        queryClient.removeQueries({ queryKey: ["partner-comm-detail"] });
         router.push(AppURL.financePartnerComm);
       }, 2000);
     },
-    onError: (error: any) => {
+    [isEdit, router]
+  );
+
+  const handleSaveError = useCallback(
+    (error: any) => {
       const defaultMessage = isEdit
         ? "Failed to update partner comm. Please try again."
         : "Failed to create partner comm. Please try again.";
       const errorMessage = error?.response?.data?.message || defaultMessage;
       setErrorMessage(errorMessage);
       setShowAlert(true);
+    },
+    [isEdit]
+  );
+
+  const createChannelFeeMutation = useCreateChannelFee({
+    onSuccess: handleSaveSuccess,
+    onError: handleSaveError,
+  });
+
+  const updateChannelFeeMutation = useUpdateChannelFee({
+    onSuccess: handleSaveSuccess,
+    onError: (error: any) => {
+      handleSaveError(error);
     },
   });
 
@@ -275,9 +279,24 @@ export function usePartnerCommForm(
         currency: "IDR",
       };
 
-      saveMutation.mutate(payload);
+      if (isEdit && partnerCommId) {
+        updateChannelFeeMutation.mutate({ channelId: partnerCommId, payload });
+        return;
+      }
+
+      createChannelFeeMutation.mutate({
+        channelId: payload.channel,
+        payload,
+      });
     },
-    [saveMutation, channelsData, insurances]
+    [
+      isEdit,
+      partnerCommId,
+      createChannelFeeMutation,
+      updateChannelFeeMutation,
+      channelsData,
+      insurances,
+    ]
   );
 
   const goBack = useCallback(() => {
@@ -311,7 +330,8 @@ export function usePartnerCommForm(
     isLoadingProducts,
     isLoadingPlans: isLoadingAllPlans,
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving:
+      createChannelFeeMutation.isPending || updateChannelFeeMutation.isPending,
 
     handleSave,
     setShowAlert,

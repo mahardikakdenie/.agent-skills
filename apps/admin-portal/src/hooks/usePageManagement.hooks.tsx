@@ -1,14 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import { usePages } from "@/services/auth/hooks/queries";
+import { useDeletePage } from "@/services/auth/hooks/mutations";
 
 export function usePageManagement() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -43,23 +42,17 @@ export function usePageManagement() {
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ["pages", page, rowsPerPage],
-    queryFn: async () => {
-      const response: any = await authService.getPages({ page, pageSize: rowsPerPage });
-      return response;
-    },
+  } = usePages(
+    { page, pageSize: rowsPerPage },
+    {
     enabled: hasAccess === true,
     staleTime: 300000,
     refetchOnWindowFocus: false,
-  });
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await authService.deletePage(id);
-    },
+  const deleteMutation = useDeletePage({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pages"] });
       toast.success("Page deleted successfully");
     },
     onError: (error: any) => {
@@ -88,9 +81,9 @@ export function usePageManagement() {
   }, []);
 
   return {
-    pages: pagesResponse?.data || [],
-    totalPages: pagesResponse?.meta?.pageTotal || 1,
-    totalItems: pagesResponse?.meta?.total || 0,
+    pages: (pagesResponse as any)?.data || [],
+    totalPages: (pagesResponse as any)?.meta?.pageTotal || 1,
+    totalItems: (pagesResponse as any)?.meta?.total || 0,
     page,
     rowsPerPage,
     hasAccess,

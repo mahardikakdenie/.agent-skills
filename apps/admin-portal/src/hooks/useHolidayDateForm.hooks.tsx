@@ -1,12 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { helperService } from "@/services/helper/api/helper.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 import { formatDate } from "@/lib/formatter";
+import { useCalendarDetail } from "@/services/helper/hooks/queries";
+import {
+  useCreateCalendar,
+  useUpdateCalendar,
+} from "@/services/helper/hooks/mutations";
 
 interface HolidayFormData {
   name: string;
@@ -85,18 +89,17 @@ export function useHolidayDateForm(
         },
   });
 
-  const { data: holidayDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["holiday-detail", holidayId],
-    queryFn: async () => {
-      if (!holidayId) return null;
-      const response: any = await helperService.getCalendar({ id: holidayId });
-      return response.data[0];
-    },
+  const { data: holidayDetailResponse, isLoading: isLoadingDetail } =
+    useCalendarDetail(holidayId || "", {
     enabled: !!holidayId && isEdit,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: "always",
   });
+
+  const holidayDetailData: any = holidayDetailResponse;
+  const holidayDetail =
+    holidayDetailData?.data?.[0] ?? holidayDetailData?.data ?? holidayDetailData;
 
   useEffect(() => {
     if (holidayDetail && isEdit) {
@@ -134,40 +137,32 @@ export function useHolidayDateForm(
     }
   }, [holidayDetail, isEdit, reset, setValue, watch]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (data: HolidayFormData) => {
-      if (isEdit && holidayId) {
-        return await helperService.updateCalendar(holidayId, data);
-      } else {
-        const createData = {
-          ...data,
-          date: data.startdate,
-          year: data.startdate
-            ? new Date(data.startdate).getFullYear().toString()
-            : "",
-        };
-        return await helperService.createCalendar(createData);
-      }
-    },
+  const handleSaveError = useCallback((error: any) => {
+    console.error("Save failed:", error);
+    toast.error(
+      error?.response?.data?.message ||
+        "Failed to save holiday. Please try again."
+    );
+  }, []);
+
+  const createHolidayMutation = useCreateCalendar({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["holidays"] });
       queryClient.invalidateQueries({ queryKey: ["holiday-detail"] });
-
-      toast.success(
-        isEdit
-          ? "Holiday Updated Successfully!"
-          : "Holiday Created Successfully!"
-      );
-
+      toast.success("Holiday Created Successfully!");
       router.push(AppURL.masterdataHolidayDate);
     },
-    onError: (error: any) => {
-      console.error("Save failed:", error);
-      toast.error(
-        error?.response?.data?.message ||
-          "Failed to save holiday. Please try again."
-      );
+    onError: handleSaveError,
+  });
+
+  const updateHolidayMutation = useUpdateCalendar({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["holidays"] });
+      queryClient.invalidateQueries({ queryKey: ["holiday-detail"] });
+      toast.success("Holiday Updated Successfully!");
+      router.push(AppURL.masterdataHolidayDate);
     },
+    onError: handleSaveError,
   });
 
   const handleSave = useCallback(
@@ -187,9 +182,24 @@ export function useHolidayDateForm(
         return;
       }
 
-      await saveMutation.mutateAsync(formData);
+      if (isEdit && holidayId) {
+        await updateHolidayMutation.mutateAsync({
+          id: holidayId,
+          payload: formData,
+        });
+        return;
+      }
+
+      const createData = {
+        ...formData,
+        date: formData.startdate,
+        year: formData.startdate
+          ? new Date(formData.startdate).getFullYear().toString()
+          : "",
+      };
+      await createHolidayMutation.mutateAsync(createData);
     },
-    [saveMutation, isEdit]
+    [createHolidayMutation, holidayId, isEdit, updateHolidayMutation]
   );
 
   const loadHolidayDetail = useCallback((id: string) => {
@@ -219,7 +229,7 @@ export function useHolidayDateForm(
     reset,
     holidayId,
     isLoadingDetail,
-    isSaving: saveMutation.isPending,
+    isSaving: createHolidayMutation.isPending || updateHolidayMutation.isPending,
     types,
     countries,
     handleSave,

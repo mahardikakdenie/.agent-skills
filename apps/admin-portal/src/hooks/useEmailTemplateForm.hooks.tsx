@@ -1,12 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 import { EditorState, ContentState, convertFromHTML, Modifier } from "draft-js";
 import { stateToHTML } from "draft-js-export-html";
+import {
+  useCategories,
+  useEmailTags,
+  useEmailTemplateJourneyDetail,
+  useInsurances,
+  usePlans,
+  useProducts,
+  useReferenceEmailJourney,
+} from "@/services/product/hooks/queries";
+import {
+  useCreateEmailTemplateJourney,
+  useUpdateEmailTemplateJourney,
+} from "@/services/product/hooks/mutations";
 
 interface EmailTemplateFormData {
   category: string;
@@ -106,135 +118,125 @@ export function useEmailTemplateForm(
     },
   });
 
-  const { data: templateDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["email-template-detail", templateId],
-    queryFn: async () => {
-      if (!templateId) return null;
-      const response: any = await productService.getEmailTemplateJourneyById(
-        templateId
-      );
-      const data = response?.data ?? response;
-      return Array.isArray(data) ? data[0] : data;
-    },
+  const { data: templateDetailResponse, isLoading: isLoadingDetail } =
+    useEmailTemplateJourneyDetail(templateId || "", {
     enabled: !!templateId && isEdit,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: "always",
   });
 
-  const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
-    queryKey: ["email-template-categories"],
-    queryFn: async () => {
-      const response: any = await productService.getCategories({});
-      return response?.data ?? response;
-    },
-    staleTime: 300000,
-  });
+  const templateDetailData: any = templateDetailResponse;
+  const templateDetail = (() => {
+    const detail = templateDetailData?.data ?? templateDetailData;
+    return Array.isArray(detail) ? detail[0] : detail;
+  })();
 
-  const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
-    queryKey: ["email-template-insurances", selectedCategoryId],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances({
+  const { data: categoriesResponse, isLoading: isLoadingCategories } =
+    useCategories(
+      {},
+      {
+        staleTime: 300000,
+      },
+    );
+
+  const { data: insurancesResponse, isLoading: isLoadingInsurances } =
+    useInsurances(
+      {
         page: 1,
         categoryId: selectedCategoryId,
-      });
-      return response?.data ?? response;
-    },
-    enabled: !!selectedCategoryId,
-    staleTime: 300000,
-  });
+      },
+      {
+        enabled: !!selectedCategoryId,
+        staleTime: 300000,
+      },
+    );
 
-  const { data: productsData, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["email-template-products", selectedInsuranceId],
-    queryFn: async () => {
-      const response: any = await productService.getProducts({
-        page: 1,
-        insuranceId: selectedInsuranceId,
-      });
-      return response?.data ?? response;
+  const { data: productsResponse, isLoading: isLoadingProducts } = useProducts(
+    {
+      page: 1,
+      insuranceId: selectedInsuranceId,
     },
-    enabled: !!selectedInsuranceId,
-    staleTime: 300000,
-  });
-
-  const { data: plansData, isLoading: isLoadingPlans } = useQuery({
-    queryKey: ["email-template-plans", selectedProductId],
-    queryFn: async () => {
-      const response: any = await productService.getPlans({
-        page: 1,
-        productId: selectedProductId,
-      });
-      return response?.data ?? response;
+    {
+      enabled: !!selectedInsuranceId,
+      staleTime: 300000,
     },
-    enabled: !!selectedProductId,
-    staleTime: 300000,
-  });
+  );
 
-  const { data: journeysData, isLoading: isLoadingJourneys } = useQuery({
-    queryKey: ["email-template-journeys"],
-    queryFn: async () => {
-      const response: any = await productService.getReferenceEmailJourney();
-      return response?.data ?? response;
+  const { data: plansResponse, isLoading: isLoadingPlans } = usePlans(
+    {
+      page: 1,
+      productId: selectedProductId,
     },
-    staleTime: 300000,
-  });
+    {
+      enabled: !!selectedProductId,
+      staleTime: 300000,
+    },
+  );
 
-  const { data: emailTagsData, isLoading: isLoadingEmailTags } = useQuery({
-    queryKey: ["email-template-tags", selectedJourneyId],
-    queryFn: async () => {
-      const response: any = await productService.getEmailTags({
+  const { data: journeysResponse, isLoading: isLoadingJourneys } =
+    useReferenceEmailJourney(undefined, {
+      staleTime: 300000,
+    });
+
+  const { data: emailTagsResponse, isLoading: isLoadingEmailTags } =
+    useEmailTags(
+      {
         page: 1,
         pageSize: 100,
         journey: selectedJourneyId,
-      });
-      return response?.data ?? response;
-    },
-    enabled: !!selectedJourneyId,
-    staleTime: 300000,
+      },
+      {
+        enabled: !!selectedJourneyId,
+        staleTime: 300000,
+      },
+    );
+
+  const handleSaveError = useCallback((error: any) => {
+    console.error("Save failed:", error);
+    toast.error(
+      error?.response?.data?.message ||
+        "Failed to save email template. Please try again.",
+    );
+  }, []);
+
+  const handleCreateSuccess = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["email-templates"] });
+    queryClient.invalidateQueries({ queryKey: ["email-template-detail"] });
+    toast.success("Email Template Created Successfully!");
+    router.push(AppURL.masterdataEmailTemplate);
+  }, [queryClient, router]);
+
+  const handleUpdateSuccess = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["email-templates"] });
+    queryClient.invalidateQueries({ queryKey: ["email-template-detail"] });
+    toast.success("Email Template Updated Successfully!");
+    router.push(AppURL.masterdataEmailTemplate);
+  }, [queryClient, router]);
+
+  const createEmailTemplateMutation = useCreateEmailTemplateJourney({
+    onSuccess: handleCreateSuccess,
+    onError: handleSaveError,
   });
 
-  const saveMutation = useMutation({
-    mutationFn: async (data: EmailTemplateFormData) => {
-      const requestData = {
-        ...data,
-        content,
-        type: selectedTemplateType,
-      };
-
-      const cleanedData = Object.fromEntries(
-        Object.entries(requestData)
-          .map(([key, value]) => [key, value === "" ? null : value])
-          .filter(([_, value]) => value !== undefined),
-      );
-      if (isEdit && templateId) {
-        return await productService.updateEmailTemplateJourney(
-          templateId,
-          cleanedData
-        );
-      } else {
-        return await productService.createEmailTemplateJourney(cleanedData);
-      }
-    },
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: ["email-templates"] });
-      queryClient.invalidateQueries({ queryKey: ["email-template-detail"] });
-
-      toast.success(
-        isEdit
-          ? "Email Template Updated Successfully!"
-          : "Email Template Created Successfully!",
-      );
-
-      router.push(AppURL.masterdataEmailTemplate);
-    },
-    onError: (error: any) => {
-      console.error("Save failed:", error);
-      toast.error(
-        error?.response?.data?.message ||
-          "Failed to save email template. Please try again.",
-      );
-    },
+  const updateEmailTemplateMutation = useUpdateEmailTemplateJourney({
+    onSuccess: handleUpdateSuccess,
+    onError: handleSaveError,
   });
+
+  const categoriesData: any = categoriesResponse;
+  const insurancesData: any = insurancesResponse;
+  const productsData: any = productsResponse;
+  const plansData: any = plansResponse;
+  const journeysData: any = journeysResponse;
+  const emailTagsData: any = emailTagsResponse;
+
+  const categories = categoriesData?.data ?? categoriesData ?? [];
+  const insurances = insurancesData?.data ?? insurancesData ?? [];
+  const products = productsData?.data ?? productsData ?? [];
+  const plans = plansData?.data ?? plansData ?? [];
+  const journeys = journeysData?.data ?? journeysData ?? [];
+  const emailTags = emailTagsData?.data ?? emailTagsData ?? [];
 
   useEffect(() => {
     if (templateDetail && isEdit) {
@@ -334,52 +336,46 @@ export function useEmailTemplateForm(
   }, [templateDetail, isEdit, reset, setValue, watch]);
 
   useEffect(() => {
-    if (templateDetail && isEdit && insurancesData) {
-      if (insurancesData.length > 0 && templateDetail.insurance) {
-        const insuranceExists = insurancesData.some(
-          (ins: any) => ins.id === templateDetail.insurance,
-        );
-        if (insuranceExists) {
-          setValue("insurance", templateDetail.insurance, {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
-        }
+    if (templateDetail && isEdit && insurances.length > 0 && templateDetail.insurance) {
+      const insuranceExists = insurances.some(
+        (ins: any) => ins.id === templateDetail.insurance,
+      );
+      if (insuranceExists) {
+        setValue("insurance", templateDetail.insurance, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       }
     }
-  }, [insurancesData, templateDetail, isEdit, setValue]);
+  }, [insurances, templateDetail, isEdit, setValue]);
 
   useEffect(() => {
-    if (templateDetail && isEdit && productsData) {
-      if (productsData.length > 0 && templateDetail.product) {
-        const productExists = productsData.some(
-          (prod: any) => prod.id === templateDetail.product,
-        );
-        if (productExists) {
-          setValue("product", templateDetail.product, {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
-        }
+    if (templateDetail && isEdit && products.length > 0 && templateDetail.product) {
+      const productExists = products.some(
+        (prod: any) => prod.id === templateDetail.product,
+      );
+      if (productExists) {
+        setValue("product", templateDetail.product, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       }
     }
-  }, [productsData, templateDetail, isEdit, setValue]);
+  }, [products, templateDetail, isEdit, setValue]);
 
   useEffect(() => {
-    if (templateDetail && isEdit && plansData) {
-      if (plansData.length > 0 && templateDetail.plan) {
-        const planExists = plansData.some(
-          (plan: any) => plan.id === templateDetail.plan,
-        );
-        if (planExists) {
-          setValue("plan", templateDetail.plan, {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
-        }
+    if (templateDetail && isEdit && plans.length > 0 && templateDetail.plan) {
+      const planExists = plans.some(
+        (planItem: any) => planItem.id === templateDetail.plan,
+      );
+      if (planExists) {
+        setValue("plan", templateDetail.plan, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       }
     }
-  }, [plansData, templateDetail, isEdit, setValue]);
+  }, [plans, templateDetail, isEdit, setValue]);
 
   const handleSave = useCallback(
     async (formData: EmailTemplateFormData) => {
@@ -393,9 +389,36 @@ export function useEmailTemplateForm(
         return;
       }
 
-      await saveMutation.mutateAsync(formData);
+      const requestData = {
+        ...formData,
+        content,
+        type: selectedTemplateType,
+      };
+
+      const cleanedData = Object.fromEntries(
+        Object.entries(requestData)
+          .map(([key, value]) => [key, value === "" ? null : value])
+          .filter(([_, value]) => value !== undefined),
+      );
+
+      if (isEdit && templateId) {
+        await updateEmailTemplateMutation.mutateAsync({
+          id: templateId,
+          payload: cleanedData,
+        });
+        return;
+      }
+
+      await createEmailTemplateMutation.mutateAsync(cleanedData);
     },
-    [saveMutation, content],
+    [
+      content,
+      createEmailTemplateMutation,
+      isEdit,
+      selectedTemplateType,
+      templateId,
+      updateEmailTemplateMutation,
+    ],
   );
 
   const loadTemplateDetail = useCallback((id: string) => {
@@ -454,12 +477,12 @@ export function useEmailTemplateForm(
     watch,
     reset,
     templateId,
-    categories: categoriesData || [],
-    insurances: insurancesData || [],
-    products: productsData || [],
-    plans: plansData || [],
-    journeys: journeysData || [],
-    emailTags: emailTagsData || [],
+    categories,
+    insurances,
+    products,
+    plans,
+    journeys,
+    emailTags,
     editorState,
     setEditorState,
     content,
@@ -481,7 +504,8 @@ export function useEmailTemplateForm(
     isLoadingPlans,
     isLoadingJourneys,
     isLoadingEmailTags,
-    isSaving: saveMutation.isPending,
+    isSaving:
+      createEmailTemplateMutation.isPending || updateEmailTemplateMutation.isPending,
     handleSave,
     loadTemplateDetail,
     handleEditorChange,

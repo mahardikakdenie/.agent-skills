@@ -1,3 +1,4 @@
+export * from './useAllPolicies';
 export * from './useEndorsementDetail';
 export * from './useEndorsements';
 export * from './useInsuredParties';

@@ -1,10 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { helperService } from "@/services/helper/api/helper.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
+import { useCalendar } from "@/services/helper/hooks/queries";
+import { useDeleteCalendar } from "@/services/helper/hooks/mutations";
 
 export function useHolidayDate() {
   const router = useRouter();
@@ -47,40 +48,24 @@ export function useHolidayDate() {
     setSearchYear(currYear.toString());
   }, []);
 
-  const { data: holidaysResponse, isLoading: isLoadingHolidays } = useQuery({
-    queryKey: [
-      "holidays",
-      page,
-      rowsPerPage,
-      searchYear,
-      searchCountry,
-      searchType,
-    ],
-    queryFn: async () => {
-      const where: any = {
-        year: searchYear,
-        country: searchCountry,
-      };
-      if (searchType) {
-        where.type = searchType;
-      }
-
-      const response: any = await helperService.getCalendar({
+  const { data: holidaysResponse, isLoading: isLoadingHolidays } = useCalendar(
+    {
         page,
         pageSize: rowsPerPage,
-        ...where,
-      });
-      return response;
+        year: searchYear,
+        country: searchCountry,
+        ...(searchType ? { type: searchType } : {}),
     },
-    enabled: hasAccess === true && !!searchYear,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: hasAccess === true && !!searchYear,
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await helperService.deleteCalendar(id);
-    },
+  const holidaysData: any = holidaysResponse;
+
+  const deleteMutation = useDeleteCalendar({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["holidays"] });
       toast.success("Holiday deleted successfully");
@@ -158,9 +143,9 @@ export function useHolidayDate() {
   })();
 
   return {
-    holidays: holidaysResponse?.data || [],
-    totalPages: holidaysResponse?.meta?.pageTotal || 1,
-    totalItems: holidaysResponse?.meta?.total || 0,
+    holidays: holidaysData?.data || [],
+    totalPages: holidaysData?.meta?.pageTotal || 1,
+    totalItems: holidaysData?.meta?.total || 0,
     page,
     rowsPerPage,
     searchCountry,

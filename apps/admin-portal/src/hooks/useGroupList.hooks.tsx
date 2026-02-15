@@ -1,13 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
+import { useGroups } from "@/services/auth/hooks/queries";
+import { useDeleteGroup } from "@/services/auth/hooks/mutations";
 
 export function useGroupList() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -42,24 +41,16 @@ export function useGroupList() {
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ["groups", page, rowsPerPage],
-    queryFn: async () => {
-      const response: any = await authService.getGroups({ page, pageSize: rowsPerPage });
-      return response;
-    },
+  } = useGroups(
+    { page, pageSize: rowsPerPage },
+    {
     enabled: hasAccess === true,
     staleTime: 300000,
     refetchOnWindowFocus: false,
-  });
+    }
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await authService.deleteGroup(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["groups"] });
-    },
+  const deleteMutation = useDeleteGroup({
     onError: (error) => {
       console.error("Delete failed:", error);
       alert("Failed to delete group");
@@ -81,9 +72,9 @@ export function useGroupList() {
   };
 
   return {
-    groups: groupsResponse?.data || [],
-    totalPages: groupsResponse?.meta?.pageTotal || 1,
-    totalItems: groupsResponse?.meta?.total || 0,
+    groups: (groupsResponse as any)?.data || [],
+    totalPages: (groupsResponse as any)?.meta?.pageTotal || 1,
+    totalItems: (groupsResponse as any)?.meta?.total || 0,
     page,
     rowsPerPage,
     hasAccess,

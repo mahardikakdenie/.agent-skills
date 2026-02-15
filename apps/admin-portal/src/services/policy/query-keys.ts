@@ -3,6 +3,8 @@ export const policyKeys = {
   policies: () => [...policyKeys.all, "policies"] as const,
   policyList: (params?: Record<string, unknown>) =>
     [...policyKeys.policies(), "list", params] as const,
+  policyAllList: (params?: Record<string, unknown>) =>
+    [...policyKeys.policies(), "all", params] as const,
   policyDetail: (id: string) =>
     [...policyKeys.policies(), "detail", id] as const,
   policyStatistics: (params?: Record<string, unknown>) =>

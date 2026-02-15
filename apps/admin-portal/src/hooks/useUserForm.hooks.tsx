@@ -1,13 +1,24 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { authService } from "@/services/auth/api/auth.service";
-import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
 import { primaryRoles, countries } from "@/app/masterdata/user/user.const";
 import toast from "react-hot-toast";
+import {
+  useAccountDetail,
+  useGroups,
+  useRoles,
+} from "@/services/auth/hooks/queries";
+import {
+  useAddAccountGroup,
+  useAddAccountRole,
+  useCreateAccount,
+  useRemoveAccountGroup,
+  useRemoveAccountRole,
+  useUpdateAccount,
+} from "@/services/auth/hooks/mutations";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
 
 interface UserFormData {
   id?: string;
@@ -80,7 +91,6 @@ export function useUserForm(
 ): UseUserFormProps {
   const router = useRouter();
   const { permissionList } = useAuth();
-  const queryClient = useQueryClient();
   const isEdit = mode === "edit";
 
   const {
@@ -133,59 +143,53 @@ export function useUserForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: channels, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["user-channels"],
-    queryFn: async () => {
-      const response: any = await channelService.getChannelsV1({ limit: 1000 });
-      return response || [];
-    },
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: channels, isLoading: isLoadingChannels } = useChannelsV1(
+    { limit: 1000 },
+    {
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const { data: userDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ["user-detail", userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      const response: any = await authService.getAccountById(userId);
-      return response;
-    },
+  const {
+    data: userDetail,
+    isLoading: isLoadingDetail,
+    refetch: refetchUserDetail,
+  } = useAccountDetail(userId, {
     enabled: isEdit && !!userId,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: "always",
   });
 
-  const { data: groupsData, isLoading: isLoadingGroups } = useQuery({
-    queryKey: ["available-groups"],
-    queryFn: async () => {
-      const response: any = await authService.getGroups({ page: 1, pageSize: 100 });
-      return response;
-    },
-    enabled: isEdit && !!accountId,
-    staleTime: 300000,
-  });
+  const { data: groupsData, isLoading: isLoadingGroups } = useGroups(
+    { page: 1, pageSize: 100 },
+    {
+      enabled: isEdit && !!accountId,
+      staleTime: 300000,
+    }
+  );
 
-  const { data: rolesData, isLoading: isLoadingRoles } = useQuery({
-    queryKey: ["available-roles"],
-    queryFn: async () => {
-      const response: any = await authService.getRoles({ page: 1, pageSize: 100 });
-      return response;
-    },
-    enabled: isEdit && !!accountId,
-    staleTime: 300000,
-  });
+  const { data: rolesData, isLoading: isLoadingRoles } = useRoles(
+    { page: 1, pageSize: 100 },
+    {
+      enabled: isEdit && !!accountId,
+      staleTime: 300000,
+    }
+  );
+
+  const normalizedUserDetail = (userDetail as any)?.data || userDetail;
 
   useEffect(() => {
-    if (userDetail && isEdit) {
+    if (normalizedUserDetail && isEdit) {
       const formData = {
-        name: userDetail.name || "",
-        email: userDetail.email || "",
-        phone_number: userDetail.phone_number?.slice(3) || "",
-        password: userDetail.password || "",
-        status: userDetail.status || "",
-        role: userDetail.role || "",
-        channel: userDetail.channel || "",
+        name: (normalizedUserDetail as any).name || "",
+        email: (normalizedUserDetail as any).email || "",
+        phone_number: (normalizedUserDetail as any).phone_number?.slice(3) || "",
+        password: (normalizedUserDetail as any).password || "",
+        status: (normalizedUserDetail as any).status || "",
+        role: (normalizedUserDetail as any).role || "",
+        channel: (normalizedUserDetail as any).channel || "",
       };
 
       reset(formData);
@@ -193,8 +197,8 @@ export function useUserForm(
       setTimeout(() => {
         const currentChannel = watch("channel");
 
-        if (currentChannel !== userDetail.channel) {
-          setValue("channel", userDetail.channel, {
+        if (currentChannel !== (normalizedUserDetail as any).channel) {
+          setValue("channel", (normalizedUserDetail as any).channel, {
             shouldValidate: true,
             shouldDirty: true,
             shouldTouch: true,
@@ -202,36 +206,24 @@ export function useUserForm(
         }
       }, 200);
 
-      setPhoneCode(userDetail.phone_number?.slice(0, 3) || countries[0].code);
-      setStatus(userDetail.status || "");
-      setAccountId(userDetail.id);
-      setUserGroups(userDetail.account_groups || []);
-      setGroupRoles(userDetail.account_roles || []);
-    }
-  }, [userDetail, reset, isEdit, setValue, watch]);
-
-  const saveMutation = useMutation({
-    mutationFn: async (payload: UserFormData & { phone_number: string }) => {
-      if (isEdit) {
-        await authService.updateAccount(userId, payload);
-        return { id: userId };
-      } else {
-        const response: any = await authService.createAccount(payload);
-        return response;
-      }
-    },
-    onSuccess: (data: any) => {
-      toast.success(
-        isEdit ? "User Updated Successfully!" : "User Created Successfully!"
+      setPhoneCode(
+        (normalizedUserDetail as any).phone_number?.slice(0, 3) ||
+          countries[0].code
       );
+      setStatus((normalizedUserDetail as any).status || "");
+      setAccountId((normalizedUserDetail as any).id);
+      setUserGroups((normalizedUserDetail as any).account_groups || []);
+      setGroupRoles((normalizedUserDetail as any).account_roles || []);
+    }
+  }, [normalizedUserDetail, reset, isEdit, setValue, watch]);
 
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.removeQueries({ queryKey: ["user-detail"] });
+  const createUserMutation = useCreateAccount({
+    onSuccess: (data: any) => {
+      toast.success("User Created Successfully!");
 
-      if (isEdit) {
-        router.push(AppURL.masterdataUser);
-      } else if (data?.id) {
-        router.push(`${AppURL.masterdataUserDetail}/${data.id}`);
+      const createdId = data?.id || data?.data?.id;
+      if (createdId) {
+        router.push(`${AppURL.masterdataUserDetail}/${createdId}`);
       }
     },
     onError: (error: any) => {
@@ -243,34 +235,30 @@ export function useUserForm(
     },
   });
 
-  const addGroupMutation = useMutation({
-    mutationFn: async (groupIds: string[]) => {
-      const results = [];
-      for (const groupId of groupIds) {
-        const response: any = await authService.addAccountGroup({
-          account: accountId,
-          group: groupId,
-        });
-        results.push(response);
-      }
-      return results;
-    },
+  const updateUserMutation = useUpdateAccount({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-detail", userId] });
-      toast.success("Groups added successfully");
+      toast.success("User Updated Successfully!");
+      router.push(AppURL.masterdataUser);
     },
+    onError: (error: any) => {
+      console.error("Failed to save user:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to save user. Please try again."
+      );
+    },
+  });
+
+  const addGroupMutation = useAddAccountGroup({
     onError: (error) => {
       console.error("Failed to add groups:", error);
       toast.error("Failed to add groups");
     },
   });
 
-  const deleteGroupMutation = useMutation({
-    mutationFn: async (groupId: string) => {
-      await authService.removeAccountGroup(groupId);
-    },
+  const deleteGroupMutation = useRemoveAccountGroup({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-detail", userId] });
+      refetchUserDetail();
       toast.success("Group removed successfully");
     },
     onError: (error) => {
@@ -279,34 +267,16 @@ export function useUserForm(
     },
   });
 
-  const addRoleMutation = useMutation({
-    mutationFn: async (roleIds: string[]) => {
-      const results = [];
-      for (const roleId of roleIds) {
-        const response: any = await authService.addAccountRole({
-          account: accountId,
-          role: roleId,
-        });
-        results.push(response);
-      }
-      return results;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-detail", userId] });
-      toast.success("Roles added successfully");
-    },
+  const addRoleMutation = useAddAccountRole({
     onError: (error) => {
       console.error("Failed to add roles:", error);
       toast.error("Failed to add roles");
     },
   });
 
-  const deleteRoleMutation = useMutation({
-    mutationFn: async (roleId: string) => {
-      await authService.removeAccountRole(roleId);
-    },
+  const deleteRoleMutation = useRemoveAccountRole({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-detail", userId] });
+      refetchUserDetail();
       toast.success("Role removed successfully");
     },
     onError: (error) => {
@@ -340,9 +310,14 @@ export function useUserForm(
         delete payload.password;
       }
 
-      saveMutation.mutate(payload);
+      if (isEdit) {
+        updateUserMutation.mutate({ id: userId, payload });
+        return;
+      }
+
+      createUserMutation.mutate(payload);
     },
-    [saveMutation, phoneCode]
+    [createUserMutation, isEdit, phoneCode, updateUserMutation, userId]
   );
 
   const handleGeneratePassword = useCallback(() => {
@@ -397,9 +372,16 @@ export function useUserForm(
 
   const handleAddGroup = useCallback(
     async (groupIds: string[]) => {
-      await addGroupMutation.mutateAsync(groupIds);
+      for (const groupId of groupIds) {
+        await addGroupMutation.mutateAsync({
+          account: accountId,
+          group: groupId,
+        });
+      }
+      refetchUserDetail();
+      toast.success("Groups added successfully");
     },
-    [addGroupMutation]
+    [accountId, addGroupMutation, refetchUserDetail]
   );
 
   const handleDeleteGroup = useCallback(
@@ -413,9 +395,16 @@ export function useUserForm(
 
   const handleAddRole = useCallback(
     async (roleIds: string[]) => {
-      await addRoleMutation.mutateAsync(roleIds);
+      for (const roleId of roleIds) {
+        await addRoleMutation.mutateAsync({
+          account: accountId,
+          role: roleId,
+        });
+      }
+      refetchUserDetail();
+      toast.success("Roles added successfully");
     },
-    [addRoleMutation]
+    [accountId, addRoleMutation, refetchUserDetail]
   );
 
   const handleDeleteRole = useCallback(
@@ -460,8 +449,8 @@ export function useUserForm(
 
     userGroups,
     groupRoles,
-    availableGroups: groupsData?.data || [],
-    availableRoles: rolesData?.data || [],
+    availableGroups: (groupsData as any)?.data || [],
+    availableRoles: (rolesData as any)?.data || [],
 
     phoneCode,
     status,
@@ -478,7 +467,8 @@ export function useUserForm(
     isLoadingGroups,
     isLoadingRoles,
     isSaving:
-      saveMutation.isPending ||
+      createUserMutation.isPending ||
+      updateUserMutation.isPending ||
       addGroupMutation.isPending ||
       deleteGroupMutation.isPending ||
       addRoleMutation.isPending ||

@@ -1,10 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
-import { policyService } from "@/services/policy/api/policy.service";
+import { useAllPolicies } from "@/services/policy/hooks/queries";
 import { useAuth } from "@/context/auth.context";
 
 interface ExportPolicyFilters {
@@ -57,57 +56,33 @@ export default function useExportPolicy(): UseExportPolicyProps {
     };
   }, []);
 
-  const { isLoading } = useQuery({
-    queryKey: ["export-policies", getFilters()],
-    queryFn: async () => {
-      const filters = getFilters();
-      if (!filters) return [];
-
-      const rowsPerPage = 100;
-      let allData: any[] = [];
-      let currentPage = 1;
-      let totalRecords = 0;
-
-      do {
-        try {
-          const params = {
-            page: currentPage,
-            limit: rowsPerPage,
-            keyword: filters.search ? filters.search : undefined,
-            status:
-              filters.status && filters.status !== "All"
-                ? filters.status
-                : undefined,
-            channel: filters.channel ? filters.channel : undefined,
-            category:
-              filters.category && filters.category !== "All"
-                ? filters.category
-                : undefined,
-            created_from: filters.date_from ? filters.date_from : undefined,
-            created_to: filters.date_to ? filters.date_to : undefined,
-          };
-
-          const res: any = await policyService.getPolicies(params);
-
-          if (res?.data) {
-            allData = [...allData, ...res.data];
-            totalRecords = res.total || 0;
-          }
-        } catch (pageError) {
-          console.error(`Error fetching page ${currentPage}:`, pageError);
-        }
-
-        currentPage++;
-      } while (allData.length < totalRecords && totalRecords > 0);
-
-      setData(allData);
-      return allData;
+  const filters = getFilters();
+  const { data: policiesData, isLoading } = useAllPolicies(
+    {
+      keyword: filters?.search ? filters.search : undefined,
+      status:
+        filters?.status && filters.status !== "All"
+          ? filters.status
+          : undefined,
+      channel: filters?.channel ? filters.channel : undefined,
+      category:
+        filters?.category && filters.category !== "All"
+          ? filters.category
+          : undefined,
+      created_from: filters?.date_from ? filters.date_from : undefined,
+      created_to: filters?.date_to ? filters.date_to : undefined,
     },
-    enabled: !!getFilters(),
+    {
+      enabled: !!filters,
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
-  });
+    }
+  );
+
+  useEffect(() => {
+    setData((policiesData as any) || []);
+  }, [policiesData]);
 
   const handleGeneratePdf = useCallback(() => {
     if (!reportTemplateRef.current) {

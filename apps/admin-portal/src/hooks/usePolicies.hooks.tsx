@@ -1,11 +1,10 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import _ from "lodash";
-import { policyService } from "@/services/policy/api/policy.service";
-import { channelService } from "@/services/channel/api/channel.service";
-import { productService } from "@/services/product/api/product.service";
+import { useChannelsV1 } from "@/services/channel/hooks/queries/useChannelsV1";
+import { usePolicies as usePoliciesQuery } from "@/services/policy/hooks/queries/usePolicies";
+import { useCategoriesByChannel } from "@/services/product/hooks/queries/useCategoriesByChannel";
 
 interface UsePoliciesProps {
   policies: any[];
@@ -65,21 +64,17 @@ export default function usePolicies(
   const [channels, setChannels] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
 
-  const policyQueryKey = [
-    "policies",
+  const policyParams: Record<string, any> = {
     page,
-    rowsPerPage,
-    tab,
-    searchData,
-    searchChannel,
-    searchCategory,
-    date?.from?.toISOString(),
-    date?.to?.toISOString(),
-    isPendingRenewal,
-  ];
-
-  const channelQueryKey = ["channels"];
-  const categoryQueryKey = ["categories", searchChannel];
+    limit: rowsPerPage,
+    keyword: searchData || undefined,
+    status: tab !== "All" ? tab : undefined,
+    channel: searchChannel || undefined,
+    category: searchCategory !== "All" ? searchCategory : undefined,
+    created_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
+    created_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+    ...(isPendingRenewal && { is_need_renewal: true }),
+  };
 
   const {
     data: resPolicies,
@@ -88,55 +83,29 @@ export default function usePolicies(
     error,
     refetch,
     isFetching,
-  } = useQuery({
-    queryKey: policyQueryKey,
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page,
-        limit: rowsPerPage,
-        keyword: searchData || undefined,
-        status: tab !== "All" ? tab : undefined,
-        channel: searchChannel || undefined,
-        category: searchCategory !== "All" ? searchCategory : undefined,
-        created_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-        created_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
-        ...(isPendingRenewal && { is_need_renewal: true }),
-      };
-
-      const response = await policyService.getPolicies(params);
-      return response;
-    },
+  } = usePoliciesQuery(policyParams, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
 
-  const { data: resChannels, isFetching: isLoadingChannels } = useQuery({
-    queryKey: channelQueryKey,
-    queryFn: async () => {
-      const response = await channelService.getChannelsV1({
-        page: 1,
-        limit: 10000,
-      });
-      return response;
+  const { data: resChannels, isFetching: isLoadingChannels } = useChannelsV1(
+    {
+      page: 1,
+      limit: 10000,
     },
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const { data: resCategories, isFetching: isLoadingCategories } = useQuery({
-    queryKey: categoryQueryKey,
-    queryFn: async () => {
-      if (!searchChannel) return { data: [] } as any;
-      const response: any = await productService.getCategoriesByChannelId(
-        searchChannel
-      );
-      return response;
-    },
-    enabled: !!searchChannel,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: resCategories, isFetching: isLoadingCategories } =
+    useCategoriesByChannel(searchChannel || "", {
+      enabled: !!searchChannel,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    });
 
   useEffect(() => {
     const policiesData: any = resPolicies;

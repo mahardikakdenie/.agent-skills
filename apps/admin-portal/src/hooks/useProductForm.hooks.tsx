@@ -1,10 +1,15 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
+import { useCategories, useInsurances, useProducts } from "@/services/product/hooks/queries";
+import {
+  useCreateProduct,
+  useDeleteProduct,
+  useUpdateProduct,
+} from "@/services/product/hooks/mutations";
 
 interface ProductField {
   id: string;
@@ -106,50 +111,46 @@ export function useProductForm(
     checkAccess();
   }, [router, permissionList, isEdit]);
 
-  const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
-    queryKey: ["product-categories"],
-    queryFn: async () => {
-      const result: any = await productService.getCategories();
-      return result?.data ?? result;
-    },
+  const { data: categoriesResponse, isLoading: isLoadingCategories } = useCategories(
+    undefined,
+    {
     staleTime: 300000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: insurances = [], isLoading: isLoadingInsurances } = useQuery({
-    queryKey: ["product-insurances", selectedCategoryId],
-    queryFn: async () => {
-      if (!selectedCategoryId) return [];
-
-      const response: any = await productService.getInsurances({
+  const { data: insurancesResponse, isLoading: isLoadingInsurances } = useInsurances(
+    {
         page: 1,
         categoryId: selectedCategoryId,
-      });
-      return response?.data ?? [];
     },
-    enabled: !!selectedCategoryId,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      enabled: !!selectedCategoryId,
+      staleTime: 300000,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const { data: existingProducts, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["products-detail", selectedCategoryId, selectedInsuranceId],
-    queryFn: async () => {
-      if (!selectedCategoryId || !selectedInsuranceId) return [];
-
-      const response: any = await productService.getProducts({
+  const { data: existingProductsResponse, isLoading: isLoadingProducts } = useProducts(
+    {
         page: 1,
         pageSize: 100,
         categoryId: selectedCategoryId,
         insuranceId: selectedInsuranceId,
-      });
-      return response?.data ?? [];
     },
-    enabled: isEdit && !!selectedCategoryId && !!selectedInsuranceId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+    {
+      enabled: isEdit && !!selectedCategoryId && !!selectedInsuranceId,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    }
+  );
+
+  const categoriesData: any = categoriesResponse;
+  const categories = categoriesData?.data ?? categoriesData ?? [];
+  const insurancesData: any = insurancesResponse;
+  const insurances = insurancesData?.data ?? insurancesData ?? [];
+  const existingProductsData: any = existingProductsResponse;
+  const existingProducts = existingProductsData?.data ?? existingProductsData ?? [];
 
   useEffect(() => {
     if (!isEdit && watchCategory && watchCategory !== selectedCategoryId) {
@@ -211,62 +212,10 @@ export function useProductForm(
     }
   }, [isEdit, isLoadingProducts, existingProducts]);
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: {
-      products: ProductField[];
-      category: string;
-      insurance: string;
-    }) => {
-      const results = [];
+  const createProductMutation = useCreateProduct();
+  const updateProductMutation = useUpdateProduct();
 
-      for (const product of payload.products) {
-        if (product.id === "") {
-          const response: any = await productService.createProduct({
-            category: payload.category,
-            insurance: payload.insurance,
-            name: product.name,
-          });
-          results.push(response?.data ?? response);
-        } else {
-          const response: any = await productService.updateProduct(product.id, {
-              category: payload.category,
-              insurance: payload.insurance,
-              name: product.name,
-            });
-          results.push(response?.data ?? response);
-        }
-      }
-
-      return results;
-    },
-    onSuccess: () => {
-      setAlertType("success");
-      setAlertMessage(
-        isEdit
-          ? "Products Updated Successfully!"
-          : "Products Created Successfully!"
-      );
-      setShowAlert(true);
-
-      setTimeout(() => {
-        setShowAlert(false);
-        queryClient.invalidateQueries({ queryKey: ["products"] });
-        queryClient.removeQueries({ queryKey: ["products-detail"] });
-        router.back();
-      }, 2000);
-    },
-    onError: (error) => {
-      console.error("Failed to save products:", error);
-      setAlertType("error");
-      setAlertMessage("Failed to save products. Please try again.");
-      setShowAlert(true);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await productService.deleteProduct(id);
-    },
+  const deleteMutation = useDeleteProduct({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
@@ -296,13 +245,53 @@ export function useProductForm(
         return;
       }
 
-      saveMutation.mutate({
-        products: validProducts,
-        category: formData.category,
-        insurance: formData.insurance,
-      });
+      try {
+        for (const product of validProducts) {
+          const payload = {
+            category: formData.category,
+            insurance: formData.insurance,
+            name: product.name,
+          };
+
+          if (product.id === "") {
+            await createProductMutation.mutateAsync(payload);
+          } else {
+            await updateProductMutation.mutateAsync({
+              id: product.id,
+              payload,
+            });
+          }
+        }
+
+        setAlertType("success");
+        setAlertMessage(
+          isEdit
+            ? "Products Updated Successfully!"
+            : "Products Created Successfully!"
+        );
+        setShowAlert(true);
+
+        setTimeout(() => {
+          setShowAlert(false);
+          queryClient.invalidateQueries({ queryKey: ["products"] });
+          queryClient.removeQueries({ queryKey: ["products-detail"] });
+          router.back();
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to save products:", error);
+        setAlertType("error");
+        setAlertMessage("Failed to save products. Please try again.");
+        setShowAlert(true);
+      }
     },
-    [saveMutation, productFields]
+    [
+      createProductMutation,
+      isEdit,
+      productFields,
+      queryClient,
+      router,
+      updateProductMutation,
+    ]
   );
 
   const handleAddProduct = useCallback(() => {
@@ -395,7 +384,7 @@ export function useProductForm(
     isLoadingCategories,
     isLoadingInsurances,
     isLoadingProducts,
-    isSaving: saveMutation.isPending,
+    isSaving: createProductMutation.isPending || updateProductMutation.isPending,
 
     handleSave,
     handleAddProduct,
