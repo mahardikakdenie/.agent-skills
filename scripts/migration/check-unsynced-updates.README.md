@@ -2,7 +2,7 @@
 
 ## check-unsynced-updates.js
 
-This script checks whether legacy remote branches have new commits that have not yet been synced into `origin/integrate/<app>` via `git subtree pull`.
+This script checks whether legacy remote branches have new commits that have not yet been synced into `origin/integrate-app/<app>` via `git subtree pull`.
 
 ### Prerequisites
 
@@ -32,5 +32,5 @@ The report includes:
 
 ### Notes
 
-- The script only analyzes commit gaps between `origin/integrate/<app>` and `<remote>/<branch>`.
+- The script only analyzes commit gaps between `origin/integrate-app/<app>` and `<remote>/<branch>`.
 - The script does not perform merge or subtree pull automatically.

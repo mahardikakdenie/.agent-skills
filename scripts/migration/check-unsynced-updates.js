@@ -4,7 +4,7 @@
  * Unsynced Legacy Updates Checker
  *
  * Checks if legacy repo remotes have new commits that haven't been
- * merged to integrate/* branches via git subtree pull.
+ * merged to integrate-app/* branches via git subtree pull.
  *
  * Requires: subtree-config.json file with remote configurations
  *
@@ -191,14 +191,14 @@ function main() {
       continue;
     }
 
-    // Check if integrate/* branch exists
-    const integrateBranch = `integrate/${repo.app}`;
+    // Check if integrate-app/* branch exists
+    const integrateBranch = `integrate-app/${repo.app}`;
     const integrateBranchExists = execGit(`git rev-parse --verify origin/${integrateBranch}`, {
       allowError: true,
     });
 
     if (!integrateBranchExists) {
-      console.log('⚠️  integrate/* branch not found');
+      console.log('⚠️  integrate-app/* branch not found');
       errors.push({
         app: repo.app,
         error: `Branch origin/${integrateBranch} not found`,
@@ -206,7 +206,7 @@ function main() {
       continue;
     }
 
-    // Get commits that are in remote but not in integrate/*
+    // Get commits that are in remote but not in integrate-app/*
     const unsyncedCommits = getCommitsBetween(`origin/${integrateBranch}`, remoteBranch);
 
     if (unsyncedCommits.length > 0) {
@@ -328,9 +328,9 @@ function generateMarkdownReport(needsUpdate, upToDate, errors) {
 
       md += '\n**Command to sync:**\n\n';
       md += '```bash\n';
-      md += `git checkout integrate/${r.app}\n`;
+      md += `git checkout integrate-app/${r.app}\n`;
       md += `git subtree pull --prefix=${r.prefix} ${r.remote} ${r.branch}\n`;
-      md += `git push origin integrate/${r.app}\n`;
+      md += `git push origin integrate-app/${r.app}\n`;
       md += '```\n\n';
       md += '---\n\n';
     });
@@ -385,9 +385,9 @@ function generateMarkdownReport(needsUpdate, upToDate, errors) {
 
     needsUpdate.forEach((r) => {
       md += `# ${r.app}\n`;
-      md += `git checkout integrate/${r.app}\n`;
+      md += `git checkout integrate-app/${r.app}\n`;
       md += `git subtree pull --prefix=${r.prefix} ${r.remote} ${r.branch}\n`;
-      md += `git push origin integrate/${r.app}\n\n`;
+      md += `git push origin integrate-app/${r.app}\n\n`;
     });
 
     md += `\`\`\`
@@ -398,10 +398,10 @@ See detailed commands in the "Details" section above.
 
 ### Option 3: After Syncing
 
-Once you've synced integrate/* branches, use the legacy update routines:
+Once you've synced integrate-app/* branches, use the legacy update routines:
 
 \`\`\`bash
-# Check which integrate/* branches need merging to migrate/*
+# Check which integrate-app/* branches need merging to migrate-app/*
 node scripts/migration/check-unsynced-updates.js
 
 # Then follow apps/admin-portal/docs/migration/service/legacy-update-batch-prompts.md
@@ -410,7 +410,7 @@ node scripts/migration/check-unsynced-updates.js
   } else {
     md += `All apps are up to date! No subtree pulls needed.
 
-You can still check if any integrate/* branches need merging to migrate/*:
+You can still check if any integrate-app/* branches need merging to migrate-app/*:
 
 \`\`\`bash
 node scripts/migration/check-unsynced-updates.js
