@@ -8,22 +8,25 @@ import { Button } from "@/components/ui/button";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {useScreen} from "@/context/screen.context";
-import ApiURL from "@/constants/api-url.const";
-import {channelService, policyServiceFormData} from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import { useUploadPoliciesDrGadget } from "@/services/policy/hooks/mutations";
 
 export default function ImportPolicyPage() {
   const router = useRouter();
   const { setLoading } = useScreen();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(100);
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [channel, setChannel] = useState("");
-  const [channels, setChannels] = useState<any[]>([]);
   const [xlsxData, setXlsxData] = useState<any[]>([]);
-  const [headers, setHeaders] = useState<string[]>([]);
+  const { data: channelsResponse, isFetching: isChannelsFetching } = useChannelsV1({
+    page: 1,
+    limit: 100,
+  });
+  const channels = ((channelsResponse as any)?.data ?? []) as any[];
+  const { mutateAsync: uploadPoliciesDrGadget, isPending: isUploadPending } =
+    useUploadPoliciesDrGadget();
 
   const handleChooseFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
@@ -32,21 +35,8 @@ export default function ImportPolicyPage() {
   };
 
   useEffect(() => {
-    const fetchChannel = async () => {
-      setLoading(true);
-      try {
-        const result: any = await channelService.get(ApiURL.v1Channels, { params: { page, limit } });
-        setChannels(result?.data?.data);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchChannel();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit]);
+    setLoading(isChannelsFetching || isUploadPending);
+  }, [isChannelsFetching, isUploadPending, setLoading]);
 
 
   const handlePreview = () => {
@@ -58,9 +48,6 @@ export default function ImportPolicyPage() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const parsedData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-        const headerRow = XLSX.utils.sheet_to_json(worksheet, { header: 1, range: 0, blankrows: false, })[0] as string[] || [];
-
-        setHeaders(headerRow);
         setXlsxData(parsedData);
       };
       reader.readAsArrayBuffer(file);
@@ -127,8 +114,6 @@ export default function ImportPolicyPage() {
       return;
     }
     const fileCSV: File | null = await convertCSV(file) as File | null;
-
-    setLoading(true);
     try {
       // const transformedData = xlsxData.map((row) => {
       //   const newRow: Record<string, any> = {};
@@ -165,9 +150,13 @@ export default function ImportPolicyPage() {
 
       try {
         var c = channels.filter((x) => x.id == channel)[0];
+        if (!c) {
+          alert("Selected channel not found.");
+          return;
+        }
         if (c.name == "drgadget") {
-          const response: any = await policyServiceFormData.post(ApiURL.v1PoliciesUploadDrgadget, formData);
-          const successMessage = response?.data?.data?.message || "Data uploaded successfully!";
+          const response: any = await uploadPoliciesDrGadget(formData);
+          const successMessage = response?.data?.message || response?.message || "Data uploaded successfully!";
           alert(successMessage);
           router.push(AppURL.policyList);
         } else {
@@ -180,8 +169,6 @@ export default function ImportPolicyPage() {
       console.error("Upload error:", error);
       const errorMessage = error?.response?.data?.message || "Upload failed.";
       alert(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -9,15 +9,17 @@ import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {useAuth} from "@/context/auth.context";
 import {useScreen} from "@/context/screen.context";
-import ApiURL from "@/constants/api-url.const";
-import {channelService, policyService} from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import {
+  useUpdateInsuredPartyChannel,
+  useUploadInsuredPartiesFirstTime,
+  useUploadInsuredPartiesFirstTimeWithoutTransaction,
+} from "@/services/policy/hooks/mutations";
 
 export default function UploadMembership() {
   const router = useRouter();
   const { setLoading } = useScreen();
-  const [ page, setPage ] = useState(1);
-  const [ limit, setLimit ] = useState(100);
   const [ file, setFile ] = useState<File | null>(null);
   const [ channel, setChannel ] = useState("");
   const [ canUploadFirstTime, setCanUploadFirstTime ] = useState(false);
@@ -28,14 +30,21 @@ export default function UploadMembership() {
   const [ endDate, setEndDate ] = useState("");
   const [ policyTerm, setPolicyTerm ] = useState("");
   const [ insuredType, setInsuredType ] = useState("");
-  const [ channels, setChannels ] = useState<any[]>([]);
   const [ xlsxData, setXlsxData ] = useState<any[]>([]);
-  const [ headers, setHeaders ] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const actionOptions = ["Feedback", "First Time", "First Time - Without Transaction"];
   const insuredTypeOptions = ["Person", "Motorcycle", "Car", "Gadget"];
 
   const { permissionList } = useAuth();
+  const { data: channelsResponse, isFetching: isChannelsFetching } = useChannelsV1({
+    page: 1,
+    limit: 100,
+  });
+  const channels = ((channelsResponse as any)?.data ?? []) as any[];
+  const { mutateAsync: updateInsuredPartyChannel } = useUpdateInsuredPartyChannel();
+  const { mutateAsync: uploadInsuredPartiesFirstTime } = useUploadInsuredPartiesFirstTime();
+  const { mutateAsync: uploadInsuredPartiesFirstTimeWithoutTransaction } =
+    useUploadInsuredPartiesFirstTimeWithoutTransaction();
   
   const handleChooseFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
@@ -44,24 +53,13 @@ export default function UploadMembership() {
   };  
 
   useEffect(() => {
-    const fetchChannel = async () => {
-      setLoading(true);
-      try {
-        const hasPermissionUploadFirstTime = permissionList.includes("Membership.Membership List.Create");
-        setCanUploadFirstTime(hasPermissionUploadFirstTime);
+    setLoading(isChannelsFetching);
+  }, [isChannelsFetching, setLoading]);
 
-        const result: any = await channelService.get(ApiURL.v1Channels, { params: { page, limit } });
-        setChannels(result?.data?.data);
-      } catch (error) {
-        console.error("Error fetching insurance products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchChannel();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit]);
+  useEffect(() => {
+    const hasPermissionUploadFirstTime = permissionList.includes("Membership.Membership List.Create");
+    setCanUploadFirstTime(hasPermissionUploadFirstTime);
+  }, [permissionList]);
 
   const excelDateToISO = (serial: number) => {
     const utcDays = Math.floor(serial - 25569);
@@ -161,9 +159,13 @@ export default function UploadMembership() {
         };
       }
   
-      let response;
+      let response: any;
       if (action === "First Time - Without Transaction") {
         const chunkSize = Number(chunkNumber);
+        if (!chunkSize || chunkSize < 1) {
+          alert("Please input a valid chunk number.");
+          return;
+        }
         const fullData = payload.data;
         const chunks = [];
         for (let i = 0; i < fullData.length; i += chunkSize) {
@@ -172,17 +174,20 @@ export default function UploadMembership() {
 
         for (const chunk of chunks) {
           const chunkedPayload = { ...payload, data: chunk };
-          await policyService.post(ApiURL.v1InsuredPartiesUploadFirstTimeWithoutTransaction, chunkedPayload);
+          await uploadInsuredPartiesFirstTimeWithoutTransaction(chunkedPayload);
         }
 
         response = null;
       } else if (action === "First Time") {
-        response = await policyService.post(ApiURL.v1InsuredPartiesUploadFirstTime, payload);
+        response = await uploadInsuredPartiesFirstTime(payload);
       } else {
-        response = await policyService.put(ApiURL.v1InsuredPartiesChannelDetails(channel), payload);
+        response = await updateInsuredPartyChannel({
+          channelId: channel,
+          payload,
+        });
       }
 
-      const successMessage = response?.data?.data?.message || "Data uploaded successfully!";
+      const successMessage = response?.data?.message || response?.message || "Data uploaded successfully!";
       alert(successMessage);
       router.push(AppURL.membershipList);
     } catch (error: any) {

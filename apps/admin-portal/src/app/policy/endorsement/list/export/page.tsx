@@ -7,40 +7,20 @@ import noData from "/public/images/no-data.webp";
 import Spinner from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { ChevronLeft, Download } from "react-feather";
-import ApiURL from "@/constants/api-url.const";
-import {policyService} from "@/services/api.service";
+import { useEndorsements } from "@/services/policy/hooks/queries";
 
 export default function ExportPage() {
-  const [data, setData] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalData, setTotalData] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(totalData);
-  const [isLoading, setIsLoading] = useState(false);
+  const page = 1;
+  const { data: endorsementsResponse, isFetching: isLoading } = useEndorsements({
+    page,
+    limit: 100,
+  });
+  const data = ((endorsementsResponse as any)?.data ?? []) as any[];
+  const totalData = ((endorsementsResponse as any)?.total ?? 1) as number;
+  const rowsPerPage = totalData || 1;
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const params = {
-          page: page,
-          limit: 100
-        };
-        const res = await policyService.get(ApiURL.v1Endorsement, { params });
-        setData(res.data?.data);
-        setTotalData(res.data?.total);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const reportTemplateRef = useRef(null);
 

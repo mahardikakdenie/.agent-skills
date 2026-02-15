@@ -17,22 +17,33 @@ import { Button } from "@/components/ui/button";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table, } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {useScreen} from "@/context/screen.context";
-import ApiURL from "@/constants/api-url.const";
-import {channelService, policyService} from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import {
+    useBulkCreateEndorsements,
+} from "@/services/policy/hooks/mutations";
+import { useMasterPoliciesByChannel } from "@/services/policy/hooks/queries";
 
 export default function UploadEndorsement() {
     const router = useRouter();
     const { setLoading } = useScreen();
     const [xlsxData, setXlsxData] = useState<any[]>([]);
     const [file, setFile] = useState<File | null>(null);
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(100);
-    const [channels, setChannels] = useState<any[]>([]);
     const [channel, setChannel] = useState("");
     const [type, setType] = useState("");
     const [policiesId, setPoliciesId] = useState<string>("");
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const { data: channelsResponse, isFetching: isChannelsFetching } = useChannelsV1({
+        page: 1,
+        limit: 100,
+    });
+    const channels = ((channelsResponse as any)?.data ?? []) as any[];
+    const {
+        data: masterPolicyResponse,
+        isFetching: isMasterPolicyFetching,
+    } = useMasterPoliciesByChannel(channel, { enabled: !!channel });
+    const { mutateAsync: bulkCreateEndorsements, isPending: isUploadPending } =
+        useBulkCreateEndorsements();
 
 
     const handleChooseFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,41 +54,16 @@ export default function UploadEndorsement() {
 
 
     useEffect(() => {
-        const fetchChannel = async () => {
-            setLoading(true);
-            try {
-                const result: any = await channelService.get(ApiURL.v1Channels, { params: { page, limit } });
-                setChannels(result.data?.data);
-            } catch (error) {
-                console.error("Error fetching insurance products:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchChannel().then();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page, limit]);
+        setLoading(isChannelsFetching || isMasterPolicyFetching || isUploadPending);
+    }, [isChannelsFetching, isMasterPolicyFetching, isUploadPending, setLoading]);
 
     useEffect(() => {
-        const fetchPoliciesMaster = async () => {
-            if (!channel) {
-                return;
-            }
-            setLoading(true);
-            try {
-                const result: any = await policyService.get(ApiURL.v1PoliciesMasterDetail(channel), { params: { is_only_master_policy: true } });
-                setPoliciesId(result?.data?.id);
-            } catch (error) {
-                console.error("Error fetching insurance products:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPoliciesMaster().then();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [channel]);
+        if (!channel) {
+            setPoliciesId("");
+            return;
+        }
+        setPoliciesId((masterPolicyResponse as any)?.id || "");
+    }, [channel, masterPolicyResponse]);
 
     const excelDateToISO = (serial: number) => {
         const utcDays = Math.floor(serial - 25569);
@@ -130,11 +116,14 @@ export default function UploadEndorsement() {
             alert("Please select a channel before uploading.");
             return;
         }
+        if (!policiesId) {
+            alert("Master policy not found for selected channel.");
+            return;
+        }
         if (!type) {
             alert("Please select a type before uploading.");
             return;
         }
-        setLoading(true);
         try {
             const transformedData = xlsxData.map((row) => {
                 const newRow: Record<string, any> = {};
@@ -149,16 +138,14 @@ export default function UploadEndorsement() {
 
             const payload = { policy: policiesId, type: type, data: transformedData, };
 
-            const response = await policyService.post(ApiURL.v1EndorsementUpload, payload);
-            const successMessage = response?.data?.message || "Data uploaded successfully!";
+            const response = await bulkCreateEndorsements(payload);
+            const successMessage = (response as any)?.message || "Data uploaded successfully!";
             alert(successMessage);
             router.push(AppURL.endorsementList);
         } catch (error: any) {
             console.error("Upload error:", error);
             const errorMessage = error?.response?.data?.message || "Upload failed.";
             alert(errorMessage);
-        } finally {
-            setLoading(false);
         }
     };
 

@@ -17,61 +17,53 @@ import { Button } from "@/components/ui/button";
 import { formatMoney, formatDateTimeWithTZ } from "@/lib/formatter";
 import Spinner from "@/components/ui/spinner";
 import {useAuth} from "@/context/auth.context";
-import {transactionService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { useTransactions } from "@/services/transaction/hooks/queries";
 
 export default function ExportPage() {
-    const [data, setData] = useState<any[]>([]);
-    const [page, setPage] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
-    const [rowsPerPage, setRowsPerPage] = useState(100);
+    const page = 1;
+    const [queryParams, setQueryParams] = useState<Record<string, unknown> | undefined>(undefined);
+    const rowsPerPage = 100;
     const [isShowOrderId, setIsShowOrderId] = useState<boolean>(false);
     const [isShowRequestId, setIsShowRequestId] = useState<boolean>(false);
     const [isShowCreatedAt, setIsShowCreatedAt] = useState<boolean>(false);
     const router = useRouter();
     const { permissionList } = useAuth();
+    const { data: transactionsResponse, isFetching: isLoading } = useTransactions(
+      queryParams,
+      { enabled: !!queryParams }
+    );
+    const data = (((transactionsResponse as any)?.data ?? []) as any[]).filter(
+      (item: any) => item.status !== "Draft"
+    );
 
     useEffect(() => {
-        const checkAccess = async () => {
-            const withOrderId = permissionList.includes("Transactions.Export.withOrderId");
-            const withRequestId = permissionList.includes("Transactions.Export.withRequestId");
-            const withCreatedAt = permissionList.includes("Transactions.Export.withCreatedAt");
+        const withOrderId = permissionList.includes("Transactions.Export.withOrderId");
+        const withRequestId = permissionList.includes("Transactions.Export.withRequestId");
+        const withCreatedAt = permissionList.includes("Transactions.Export.withCreatedAt");
 
-            setIsShowOrderId(withOrderId);
-            setIsShowRequestId(withRequestId);
-            setIsShowCreatedAt(withCreatedAt);
+        setIsShowOrderId(withOrderId);
+        setIsShowRequestId(withRequestId);
+        setIsShowCreatedAt(withCreatedAt);
+    }, [permissionList]);
 
-            await fetchData();
-        };
+    useEffect(() => {
+        try {
+            const savedData = localStorage.getItem("exportTransactionData");
+            if (!savedData) return;
 
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                const savedData = localStorage.getItem("exportTransactionData");
-                if (!savedData) return;
+            const parsedData = JSON.parse(savedData);
 
-                const parsedData = JSON.parse(savedData);
-
-                const params = {
-                    page: 1,
-                    limit: 150,
-                    type: parsedData.type,
-                    ...(parsedData.search && { keyword: parsedData.search }),
-                    ...(parsedData.status &&
-                        parsedData.status !== "All" && { status: parsedData.status }),
-                };
-
-                const response: any = await transactionService.get(ApiURL.v1Transactions, { params });
-                const res = response.data;
-                setData(res.data.filter((item: any) => item.status !== "Draft"));
-            } catch (error) {
-                console.error("Error fetching data: ", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        checkAccess();
+            setQueryParams({
+                page: 1,
+                limit: 150,
+                type: parsedData.type,
+                ...(parsedData.search && { keyword: parsedData.search }),
+                ...(parsedData.status &&
+                    parsedData.status !== "All" && { status: parsedData.status }),
+            });
+        } catch (error) {
+            console.error("Error preparing export params: ", error);
+        }
     }, []);
 
     const reportTemplateRef = useRef(null);

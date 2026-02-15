@@ -7,40 +7,35 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Download } from "react-feather";
-import ApiURL from "@/constants/api-url.const";
-import {policyService} from "@/services/api.service";
+import { useInsuredParties } from "@/services/policy/hooks/queries";
 
 export default function ExportPage() {
   const router = useRouter();
   const [ page, setPage ] = useState(1);
-  const [ data, setData ] = useState<any[]>([]);
-  const [ isLoading, setIsLoading ] = useState(false);
-  const [ rowsPerPage, setRowsPerPage ] = useState(100);
+  const [ listParams, setListParams ] = useState<Record<string, unknown> | undefined>(undefined);
+  const rowsPerPage = 100;
+  const { data: insuredPartiesResponse, isFetching: isLoading } = useInsuredParties(
+    listParams,
+    { enabled: !!listParams }
+  );
+  const data = ((insuredPartiesResponse as any)?.data ?? []) as any[];
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const savedData = localStorage.getItem("exportMembershipData");
-        if (!savedData) return;
+    try {
+      const savedData = localStorage.getItem("exportMembershipData");
+      if (!savedData) return;
 
-        const parsedData = JSON.parse(savedData);
-        const params = {
-          page: parsedData.page ?? 1,
-          limit: 100,
-          channel: parsedData.channel || undefined
-        };
-        const res: any = await policyService.get(ApiURL.v1InsuredParties, { params });
-        setData(res?.data?.data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      const parsedData = JSON.parse(savedData);
+      const savedPage = parsedData.page ?? 1;
+      setPage(savedPage);
+      setListParams({
+        page: savedPage,
+        limit: 100,
+        channel: parsedData.channel || undefined,
+      });
+    } catch (error) {
+      console.error("Error preparing export params: ", error);
+    }
   }, []);
 
   const reportTemplateRef = useRef(null);

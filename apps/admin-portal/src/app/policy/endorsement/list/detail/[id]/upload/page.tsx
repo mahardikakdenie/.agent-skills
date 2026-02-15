@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import {policyService} from "@/services/api.service";
 import { useParams } from "next/navigation";
+import { useUpdateEndorsementStatusBulking } from "@/services/policy/hooks/mutations";
 
 export default function UploadEndorsement() {
   const router = useRouter();
@@ -19,6 +18,8 @@ export default function UploadEndorsement() {
   const { setLoading } = useScreen();
   const [ xlsxData, setXlsxData ] = useState<any[]>([]);
   const [ file, setFile ] = useState<File | null>(null);
+  const { mutateAsync: updateEndorsementStatusBulking } =
+    useUpdateEndorsementStatusBulking();
 
   const handleChooseFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
@@ -89,8 +90,8 @@ export default function UploadEndorsement() {
         data: transformedData,
       };
 
-      const response: any = await policyService.put(ApiURL.v1EndorsementUpdtaeStatusBulking(id), payload);
-      const successMessage = response?.data?.message || "Data uploaded successfully!";
+      const response: any = await updateEndorsementStatusBulking({ id, payload });
+      const successMessage = response?.message || "Data uploaded successfully!";
       alert(successMessage);
       router.push(`${AppURL.endorsementDetail}/${id}`);
     } catch (error: any) {

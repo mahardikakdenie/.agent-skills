@@ -7,9 +7,9 @@
 ## Status Overview
 
 - Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 8
+- Total Components Migrated (Main): 17
 - Incremental Updates: 0
-- Last Updated: 2026-02-15 17:45
+- Last Updated: 2026-02-15 18:03
 
 ---
 
@@ -19,8 +19,8 @@
 
 - Started: 2026-02-15 17:10
 - Completed: In Progress
-- Total Services: 4 (Claim + Auth + Policy/Transaction dashboard path in this iteration)
-- Total Components: 8
+- Total Services: 6 (Claim, Auth, Policy, Transaction, Channel + dashboard aggregation)
+- Total Components: 17
 - Status: In Progress
 
 ### Components Migrated by Service
@@ -94,6 +94,74 @@ Components:
   - Verified: ✅
   - Issues: None
 
+#### Service: Policy + Channel Service (Membership and Endorsement flows)
+
+Service Base URLs:
+- `NEXT_PUBLIC_API_POLICY_BASE_URL`
+- `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/app/membership/list/export/page.tsx` - Membership export data fetch
+  - Before: Direct `policyService.get(...)` via legacy api service
+  - After: `useInsuredParties` query hook
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/membership/list/upload/page.tsx` - Membership upload actions (feedback/first-time/first-time-without-transaction)
+  - Before: Direct `channelService` + `policyService` calls
+  - After: `useChannelsV1` + `useUpdateInsuredPartyChannel` + `useUploadInsuredPartiesFirstTime` + `useUploadInsuredPartiesFirstTimeWithoutTransaction`
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx` - Endorsement export data fetch
+  - Before: Direct `policyService.get(...)` via legacy api service
+  - After: `useEndorsements` query hook
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx` - Endorsement upload flow
+  - Before: Direct `channelService` + `policyService` calls
+  - After: `useChannelsV1` + `useMasterPoliciesByChannel` + `useBulkCreateEndorsements`
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` - Endorsement detail upload status bulking
+  - Before: Direct `policyService.put(...)` via legacy api service
+  - After: `useUpdateEndorsementStatusBulking` mutation hook
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/policy/list/import/page.tsx` - Policy import upload
+  - Before: Direct `channelService` + `policyServiceFormData` calls
+  - After: `useChannelsV1` + `useUploadPoliciesDrGadget`
+  - Verified: PASS
+  - Issues: None
+
+#### Service: Transaction Service
+
+Service Base URL: `NEXT_PUBLIC_TRANSACTION_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/app/transaction/list/export/page.tsx` - Transaction export data fetch
+  - Before: Direct `transactionService.get(...)` via legacy api service
+  - After: `useTransactions` query hook
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/transaction/list/import/import/page.tsx` - Transaction CSV bulk upload
+  - Before: Direct `transactionService.post(...)` via legacy api service
+  - After: `useBulkCreateTransactions` mutation hook
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx` - Transaction detail + update-to-paid action
+  - Before: Direct `transactionService.get/put(...)` via legacy api service
+  - After: `useTransactionDetail` + `useUpdateTransactionStatus`
+  - Verified: PASS
+  - Issues: None
+
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
@@ -104,13 +172,13 @@ Components:
 
 ### Components NOT Migrated
 
-- Remaining components/hooks still using legacy service imports are pending in Batch 6 continuation (currently 29 import sites across policy detail/import/export flows, transaction CRUD flows, finance, product, promotion, and related shared hooks/views).
+- Remaining components/hooks still using legacy service imports are pending in Batch 6 continuation (currently 25 files in active scope across transaction add, finance, product-category, promotion, and masterdata-related hooks/components).
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 8
+- Total components migrated: 17
 - Components with issues: 2 (all fixed)
 - Components rolled back: 0
 
@@ -151,4 +219,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home | 8 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction | 17 components | In Progress | this doc   |

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Papa from "papaparse";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,6 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { useRouter } from "next/navigation";
 import { ChevronLeft, Search, Upload, X } from "react-feather";
 import {
   Breadcrumb,
@@ -22,32 +21,25 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { useScreen } from "@/context/screen.context";
-import ApiURL from "@/constants/api-url.const";
-import { transactionService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
 import { useParams } from "next/navigation";
+import { useBulkCreateTransactions } from "@/services/transaction/hooks/mutations";
 
 export default function UploadTransactions() {
   const params = useParams();
   const idParam = params.id;
-  const categoryParam = params.category;
   const id =
     typeof idParam === "string"
       ? idParam
       : Array.isArray(idParam)
       ? idParam[0]
       : "";
-  const category =
-    typeof categoryParam === "string"
-      ? categoryParam
-      : Array.isArray(categoryParam)
-      ? categoryParam[0]
-      : "";
   const [csvData, setCsvData] = useState<any[]>([]);
   const { setLoading } = useScreen();
   const [file, setFile] = useState<any>(null);
   const [fileName, setFileName] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mutateAsync: bulkCreateTransactions } = useBulkCreateTransactions();
 
   const handleChooseFile = (event: any) => {
     const selectedFile = event.target.files[0];
@@ -64,14 +56,6 @@ export default function UploadTransactions() {
     }
   };
 
-  const uploadTransactions = async (transactionId: string, data: any) => {
-    const { data: response } = await transactionService.post(
-      ApiURL.v1TransactionBulkCreateDetails(transactionId),
-      data
-    );
-    return response;
-  };
-
   const handlePreview = () => {
     if (file) {
       Papa.parse(file, {
@@ -86,11 +70,10 @@ export default function UploadTransactions() {
     }
   };
 
-  const router = useRouter();
   const handleUpload = async () => {
     setLoading(true);
     try {
-      await uploadTransactions(id, csvData);
+      await bulkCreateTransactions({ id, payload: csvData });
       alert("Package uploaded successfully");
       // router.push(PRODUCT_CATALOG_DETAIL(params.category, params.id));
     } catch (error) {

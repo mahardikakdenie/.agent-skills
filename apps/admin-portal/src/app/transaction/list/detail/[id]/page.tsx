@@ -10,12 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/formatter";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { ChevronLeft } from "react-feather";
-import ApiURL from "@/constants/api-url.const";
-import { transactionService } from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
 import { useParams } from "next/navigation";
+import { useTransactionDetail } from "@/services/transaction/hooks/queries";
+import { useUpdateTransactionStatus } from "@/services/transaction/hooks/mutations";
 
 export default function DetailTransaction() {
   const params = useParams();
@@ -26,27 +25,22 @@ export default function DetailTransaction() {
       : Array.isArray(idParam)
       ? idParam[0]
       : "";
+  const { data: transactionResponse, isFetching: isTransactionLoading } =
+    useTransactionDetail(id, { enabled: !!id });
+  const { mutateAsync: updateTransactionStatus } =
+    useUpdateTransactionStatus();
+  const transaction = (transactionResponse as any) ?? null;
 
-  const [transaction, setTransaction] = useState<any>(null);
-  useEffect(() => {
-    if (id) {
-      transactionService
-        .get(ApiURL.v1TransactionDetails(id))
-        .then((res: any) => {
-          setTransaction(res);
-        });
-    }
-  }, [id]);
-  if (!transaction) {
+  if (isTransactionLoading || !transaction) {
     return <div>Loading...</div>;
   }
 
   const handleUpdateToPaid = async (id: string) => {
     try {
-      await transactionService.put(ApiURL.v1TransactionUpdateStatus(id), {
-        payment_info: "Paid",
+      await updateTransactionStatus({
+        id,
+        payload: { payment_info: "Paid" },
       });
-      setTransaction((prev: any) => ({ ...prev, status: "Paid" }));
     } catch (error) {
       alert(error);
     }
