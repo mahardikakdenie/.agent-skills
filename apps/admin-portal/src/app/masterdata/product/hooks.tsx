@@ -2,10 +2,9 @@ import {
   MdProductService,
   ProductResponse,
 } from "@/services/masterdata/product.service";
+import { productService } from "@/services/product/api/product.service";
 import { root } from "postcss";
 import { useState } from "react";
-import {productService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
 
 export const useProduct = () => {
   const mdProduct = new MdProductService();
@@ -61,8 +60,8 @@ export const useProduct = () => {
   };
 
   const fetchInsurances = async (search: any) => {
-    const response: any = await productService.get(ApiURL.v1Insurances, { params: { ...search } });
-    setInsurances(response?.data?.data);
+    const response: any = await productService.getInsurances({ ...search });
+    setInsurances(response?.data);
   };
 
   return {

@@ -7,9 +7,9 @@
 ## Status Overview
 
 - Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 22
+- Total Components Migrated (Main): 29
 - Incremental Updates: 0
-- Last Updated: 2026-02-15 18:14
+- Last Updated: 2026-02-15 18:28
 
 ---
 
@@ -19,8 +19,8 @@
 
 - Started: 2026-02-15 17:10
 - Completed: In Progress
-- Total Services: 7 (Claim, Auth, Policy, Transaction, Channel, Finance, Helper + dashboard aggregation)
-- Total Components: 22
+- Total Services: 10 (Claim, Auth, Policy, Transaction, Channel, Finance, Helper, Product, Promotion, Masterdata + dashboard aggregation)
+- Total Components: 29
 - Status: In Progress
 
 ### Components Migrated by Service
@@ -200,6 +200,73 @@ Components:
   - Verified: PASS
   - Issues: None
 
+#### Service: Product + Channel Service (Product Catalog flows)
+
+Service Base URLs:
+- `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
+- `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/app/product-category/page.tsx` - Product category redirect bootstrap
+  - Before: Direct `productService.get(...)` via legacy api service for category bootstrap
+  - After: New product API service (`productService.getCategories`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/product-category/[category]/page.tsx` - Product category listing page
+  - Before: Mixed legacy `productService.get(...)` + `new ProductCatalogService()` usage
+  - After: New product API service methods (`getPlans`, `getCategories`, `deletePlan`) while preserving UI behavior
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/product-category/hooks.tsx` - Product catalog domain hook orchestration
+  - Before: Legacy `channelService`/`productService` API calls + `ProductCatalogService` instantiation
+  - After: New product/channel API service methods for all query/mutation paths
+  - Verified: PASS
+  - Issues: Local narrowing added for inferred `unknown` aggregate query payloads (`catalogPlansData`, `packagesData`)
+
+#### Service: Promotion + Product + Channel Service
+
+Service Base URLs:
+- `NEXT_PUBLIC_PROMOTION_SERVICE_URL`
+- `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
+- `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/app/promotion/campaign/detail/[id]/page.tsx` - Promotion campaign detail page data loading
+  - Before: Direct `promotionService`/`productService`/`channelService` calls via legacy api service
+  - After: New promotion/product/channel API service methods with preserved parallel fetch flow
+  - Verified: PASS
+  - Issues: Normalized response access to handle existing mixed payload shapes safely
+
+#### Service: Masterdata (Channel/Currency/Product Hook Layer)
+
+Service Base URLs:
+- `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
+- `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/app/masterdata/channel/hooks.tsx` - Channel CRUD helper hook
+  - Before: Direct legacy `channelService` API calls
+  - After: New channel API service methods (`getChannelsV1`, `getChannelByIdV1`, create/update/delete channel)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/currency/hooks.tsx` - Currency helper hook
+  - Before: Direct legacy `productService` API calls
+  - After: New product API service methods for insurance currency/category/reference lookups and CRUD paths
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/product/hooks.tsx` - Product helper hook (insurance lookup path)
+  - Before: Mixed `MdProductService` + legacy `productService.get(...)` for insurance fetch
+  - After: Retained `MdProductService` usage and replaced legacy insurance lookup with new product API service
+  - Verified: PASS
+  - Issues: None
+
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
@@ -210,14 +277,14 @@ Components:
 
 ### Components NOT Migrated
 
-- Remaining components/hooks still using legacy service imports are pending in Batch 6 continuation (currently 20 files in active scope across product-category, promotion, and masterdata-related hooks/components).
+- Remaining components/hooks still using legacy class-service instantiation patterns are pending in Batch 6 continuation (currently 14 files in active scope across promotion and masterdata-related hooks/components).
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 22
-- Components with issues: 3 (all fixed)
+- Total components migrated: 29
+- Components with issues: 4 (all fixed)
 - Components rolled back: 0
 
 #### Full Verification Gate
@@ -252,6 +319,13 @@ Components:
 - Fix: Added localized narrowing (`as any`) for aggregate query payloads at return assembly to preserve existing behavior safely in this phase
 - Status: PASS (resolved)
 
+#### Issue 4: Product category hook aggregate query payload inferred as `unknown`
+
+- Component: `apps/admin-portal/src/app/product-category/hooks.tsx`
+- Cause: New product API service methods are generic and `useQuery` inferred aggregate payload as `unknown` at return assembly
+- Fix: Added localized narrowing (`as any`) for `catalogPlansData` and `packagesData` at return mapping
+- Status: PASS (resolved)
+
 ### Next Steps
 
 - [ ] Continue Batch 6 component migration for remaining services/features
@@ -264,4 +338,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper | 22 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata slice | 29 components | In Progress | this doc   |

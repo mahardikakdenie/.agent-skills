@@ -4,8 +4,6 @@ import { useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import { productService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +22,7 @@ import {
   createProductCatalogTableColumns,
   ProductCatalogTableData,
 } from "@/components/tableConfig/productCatalogTableConfig";
+import { productService } from "@/services/product/api/product.service";
 import { useProducts } from "./hooks";
 
 export default function ProductCategoryPage() {
@@ -34,9 +33,7 @@ export default function ProductCategoryPage() {
   const { data: categoriesData } = useQuery({
     queryKey: ["product-categories-redirect"],
     queryFn: async () => {
-      const response: any = await productService.get(ApiURL.v1Categories, {
-        params: { limit: 1000 },
-      });
+      const response: any = await productService.getCategories({ limit: 1000 });
       const rawCategories =
         response?.data?.data ?? response?.data ?? response ?? [];
       return Array.isArray(rawCategories) ? rawCategories : [];

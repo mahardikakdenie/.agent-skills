@@ -6,11 +6,11 @@ import {
   InsuranceResponse,
   PlanResponse,
   ProductResponse,
-  PromotionDetails
 } from "../../../dto/promotion.details.dto";
-import ApiURL from "@/constants/api-url.const";
-import {channelService, productService, promotionService} from "@/services/api.service";
 import AppURL from "@/constants/app-url.const";
+import { channelService } from "@/services/channel/api/channel.service";
+import { productService } from "@/services/product/api/product.service";
+import { promotionService } from "@/services/promotion/api/promotion.service";
 
 export default function ViewPromotionDetails() {
   const [promotion, setPromotion] = useState<any>(null);
@@ -40,34 +40,38 @@ export default function ViewPromotionDetails() {
 
     const fetchPromotionDetails = async () => {
       try {
-        const response: any = await promotionService.get(ApiURL.v1CampaignDetail(id as string), { params: { id } });
-        const promotionData = response?.data?.data?.[0];
+        const response: any = await promotionService.getCampaignById(id as string);
+        const promotionData =
+          response?.data?.[0] ?? response?.data?.data?.[0] ?? null;
         setPromotion(promotionData);
+
+        if (!promotionData) {
+          return;
+        }
 
         const fetchNames = async () => {
           const channelFetches = promotionData.embedded_discount_channels.map(
               async (channel: { channel_id: string }) => {
-                const res: any = await channelService.get(ApiURL.v1ChannelDetails(channel.channel_id));
-                return res?.data;
+                const res: any = await channelService.getChannelByIdV1(channel.channel_id);
+                return res?.data ?? res;
               }
           );
           const insuranceFetches = promotionData.embedded_discount_insurances.map(
               async (insurance: { insurance_id: string }) => {
-                const res: any = await productService.get(ApiURL.v1InsuranceDetails(insurance.insurance_id));
-                return res?.data;
+                const res: any = await productService.getInsuranceById(insurance.insurance_id);
+                return res?.data ?? res;
               }
           );
           const productFetches = promotionData.embedded_discount_products.map(
               async (product: { product_id: string }) => {
-                const res: any = await productService.get(ApiURL.v1ProductDetails(product.product_id));
-                // console.log(res.data.data)
-                return res?.data?.data;
+                const res: any = await productService.getProductById(product.product_id);
+                return res;
               }
           );
           const planFetches = promotionData.embedded_discount_plans.map(
               async (plan: { plan_id: string }) => {
-                const res: any = await productService.get(ApiURL.v1PlanDetails(plan.plan_id));
-                return res?.data;
+                const res: any = await productService.getPlanById(plan.plan_id);
+                return res?.data ?? res;
               }
           );
 
@@ -96,14 +100,18 @@ export default function ViewPromotionDetails() {
               ])
             )
           );
-          // setProductNames(
-          //   new Map(
-          //     productResponses.map((res: ProductResponse) => [
-          //       res.data[0].id,
-          //       res.data[0].name,
-          //     ])
-          //   )
-          // );
+          setProductNames(
+            new Map(
+              productResponses
+                .map((res: ProductResponse | any) => {
+                  const normalized = res?.data?.[0] ?? res?.data ?? res;
+                  return normalized?.id && normalized?.name
+                    ? [normalized.id, normalized.name]
+                    : null;
+                })
+                .filter(Boolean) as [string, string][]
+            )
+          );
           setPlanNames(
             new Map(
               planResponses.map((res: PlanResponse) => [res.id, res.name])
@@ -114,8 +122,10 @@ export default function ViewPromotionDetails() {
         await fetchNames();
 
         if (promotionData.type === "voucher") {
-          const vouchersResponse: any = await promotionService.get(ApiURL.v1VoucherDetails(promotionData.campaign_id));
-          setVouchers(vouchersResponse?.data?.data);
+          const vouchersResponse: any = await promotionService.getVoucherById(
+            promotionData.campaign_id,
+          );
+          setVouchers(vouchersResponse?.data ?? vouchersResponse?.data?.data ?? []);
         }
       } catch (err) {
         setError("Failed to fetch promotion details");

@@ -1,7 +1,6 @@
-import { productService } from "@/services/api.service";
+import { productService } from "@/services/product/api/product.service";
 import { root } from "postcss";
 import { useState } from "react";
-import ApiURL from "@/constants/api-url.const";
 
 export const useCurrency = () => {
   const [currency, setCurrencys] = useState<any[]>([]);
@@ -23,25 +22,19 @@ export const useCurrency = () => {
       category: search ? search : undefined,
     };
 
-    const { data } = await productService.get(
-      ApiURL.v1InsuranceDetailsCurrency(insurance),
-      { params }
-    );
+    const data = await productService.getInsuranceCurrencies(insurance, params);
     console.log(1, data);
-    setCurrencies(data);
+    setCurrencies(data as any);
   };
 
   const fetchCurrencyById = async (id: string) => {
-    const response = await productService.get(ApiURL.v1ProductDetails(id));
-    console.log(2, response.data);
-    return response.data;
+    const response = await productService.getProductById(id);
+    console.log(2, (response as any)?.data ?? response);
+    return (response as any)?.data ?? response;
   };
 
   const saveCurrency = async (data: any, id: string) => {
-    const { data: response } = await productService.post(
-      ApiURL.v1InsuranceDetailsCurrency(id),
-      data
-    );
+    const response = await productService.createInsuranceCurrency(id, data);
     return response;
   };
 
@@ -50,41 +43,36 @@ export const useCurrency = () => {
     idInsurance: string,
     idCurrency: string
   ) => {
-    const { data: response } = await productService.put(
-      ApiURL.v1InsuranceDetailsCurrencyDetails(idInsurance, idCurrency),
+    const response = await productService.updateInsuranceCurrency(
+      idInsurance,
+      idCurrency,
       data
     );
     return response;
   };
 
   const deleteCurrency = async (idInsurance: string, idCurrency: string) => {
-    const { data: response } = await productService.delete(
-      ApiURL.v1InsuranceDetailsCurrencyDetails(idInsurance, idCurrency)
+    const response = await productService.deleteInsuranceCurrency(
+      idInsurance,
+      idCurrency
     );
     return response;
   };
 
   const fetchCategories = async (search: any) => {
-    const { data } = await productService.get(ApiURL.v1Categories, {
-      params: { ...search },
-    });
+    const data = await productService.getCategories({ ...search });
     console.log(3, data);
-    setCategories(data);
+    setCategories(data as any);
   };
 
   const fetchInsurances = async (search: any) => {
-    const { data } = await productService.get(ApiURL.v1Insurances, {
-      params: { ...search },
-    });
+    const data: any = await productService.getInsurances({ ...search });
     console.log(4, data);
     setInsurances(data?.data);
   };
 
   const fetchTypeCurrencies = async (search: any) => {
-    const { data } = await productService.get(
-      ApiURL.v1ReferencesTypeCurrencies,
-      { params: { ...search } }
-    );
+    const data: any = await productService.getReferenceCurrencies({ ...search });
     console.log(5, data);
     setTypeCurrencies(data?.data);
   };

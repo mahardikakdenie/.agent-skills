@@ -59,8 +59,20 @@ export const productService = {
   ) => get(withQuery(PRODUCT_ENDPOINTS.insuranceCurrencies(insuranceId), params)),
   createInsuranceCurrency: (insuranceId: string, payload: unknown) =>
     post(PRODUCT_ENDPOINTS.insuranceCurrencies(insuranceId), payload),
-  updateInsuranceCurrency: (insuranceId: string, payload: unknown) =>
-    post(PRODUCT_ENDPOINTS.insuranceCurrencies(insuranceId), payload),
+  updateInsuranceCurrency: (
+    insuranceId: string,
+    currencyIdOrPayload: string | unknown,
+    payload?: unknown
+  ) =>
+    typeof currencyIdOrPayload === "string"
+      ? put(
+          PRODUCT_ENDPOINTS.insuranceCurrencyDetail(
+            insuranceId,
+            currencyIdOrPayload
+          ),
+          payload
+        )
+      : post(PRODUCT_ENDPOINTS.insuranceCurrencies(insuranceId), currencyIdOrPayload),
   deleteInsuranceCurrency: (insuranceId: string, currencyId: string) =>
     del(PRODUCT_ENDPOINTS.insuranceCurrencyDetail(insuranceId, currencyId)),
 

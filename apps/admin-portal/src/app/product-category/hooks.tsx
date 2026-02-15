@@ -1,10 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { channelService, productService } from "@/services/api.service";
-import { ProductCatalogService } from "@/services/product-catalog.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import { toastNotification } from "@/lib/toast";
 
@@ -84,10 +83,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryKey: ["products", searchInsurer],
     queryFn: async () => {
       const params = searchInsurer ? { insuranceId: searchInsurer } : {};
-      const response: any = await productService.get(ApiURL.v1Products, {
-        params,
-      });
-      return response?.data?.data || [];
+      const response: any = await productService.getProducts(params);
+      return response?.data || [];
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -95,10 +92,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
     queryKey: ["insurances"],
     queryFn: async () => {
-      const response: any = await productService.get(ApiURL.v1Insurances, {
-        params: {},
-      });
-      return response?.data?.data || [];
+      const response: any = await productService.getInsurances({});
+      return response?.data || [];
     },
     staleTime: 10 * 60 * 1000,
   });
@@ -119,7 +114,6 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     ],
     queryFn: async () => {
       if (!category) return null;
-      const productCatalogService = new ProductCatalogService();
       const params = {
         page,
         pageSize: rowsPerPage,
@@ -128,7 +122,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
         ...(searchInsurer && { insuranceId: searchInsurer }),
         ...(searchProduct && { productId: searchProduct }),
       };
-      const response = await productCatalogService.getPlans(params);
+      const response = await productService.getPlans(params);
       return response;
     },
     enabled: !!category,
@@ -144,10 +138,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryKey: ["plan", planId],
     queryFn: async () => {
       if (!planId) return null;
-      const response: any = await productService.get(
-        ApiURL.v1PlanDetails(planId),
-      );
-      return response?.data?.data[0] || null;
+      const response: any = await productService.getPlanById(planId);
+      return response?.data?.[0] || null;
     },
     enabled: !!planId,
     staleTime: 5 * 60 * 1000,
@@ -187,10 +179,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryKey: ["plan-benefits", planId],
     queryFn: async () => {
       if (!planId) return [];
-      const response: any = await productService.get(
-        ApiURL.v1PlanDetailsBenefits(planId),
-      );
-      const reformatTreeToFlatArray = response?.data?.data?.flatMap(
+      const response: any = await productService.getPlanBenefits(planId);
+      const reformatTreeToFlatArray = response?.data?.flatMap(
         (item: any) => flattenTree(item),
       );
       return reformatTreeToFlatArray || [];
@@ -207,10 +197,11 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryKey: ["plan-details", planId, detailType],
     queryFn: async () => {
       if (!planId || !detailType) return [];
-      const response: any = await productService.get(
-        ApiURL.v1PlanDetailsDetailsType(planId, detailType),
+      const response: any = await productService.getPlanDetails(
+        planId,
+        detailType,
       );
-      return response?.data.data || [];
+      return response?.data || [];
     },
     enabled: !!planId && !!detailType,
     staleTime: 5 * 60 * 1000,
@@ -219,10 +210,11 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["channels"],
     queryFn: async () => {
-      const response: any = await channelService.get(ApiURL.v1Channels, {
-        params: { page: 1, limit: 100 },
+      const response: any = await channelService.getChannelsV1({
+        page: 1,
+        limit: 100,
       });
-      return response?.data.data || [];
+      return response?.data || [];
     },
     staleTime: 10 * 60 * 1000,
   });
@@ -235,10 +227,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryKey: ["channel-plans", planId],
     queryFn: async () => {
       if (!planId) return [];
-      const response: any = await productService.get(
-        ApiURL.v1PlanDetailsChannels(planId),
-      );
-      return response?.data.data || [];
+      const response: any = await productService.getPlanChannels(planId);
+      return response?.data || [];
     },
     enabled: !!planId,
     staleTime: 5 * 60 * 1000,
@@ -247,12 +237,10 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   const { data: allPlansData, isFetching: isLoadingAllPlans } = useQuery({
     queryKey: ["all-plans", searchProduct],
     queryFn: async () => {
-      const response: any = await productService.get(ApiURL.v1Plans, {
-        params: {
-          ...(searchProduct && { productId: searchProduct }),
-        },
+      const response: any = await productService.getPlans({
+        ...(searchProduct && { productId: searchProduct }),
       });
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -265,12 +253,10 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryKey: ["packages-by-plan", planId, packagesPage, packagesRowsPerPage],
     queryFn: async () => {
       if (!planId) return { data: [], meta: { page: 1, total: 0 } };
-      const productCatalogService = new ProductCatalogService();
-      const response = await productCatalogService.getPackagesByPlanId(
-        planId,
-        packagesPage,
-        packagesRowsPerPage,
-      );
+      const response = await productService.getPackagesByPlan(planId, {
+        page: packagesPage,
+        pageSize: packagesRowsPerPage,
+      });
       return response;
     },
     enabled: !!planId,
@@ -281,10 +267,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     queryKey: ["package", packageId],
     queryFn: async () => {
       if (!packageId) return null;
-      const response: any = await productService.get(
-        ApiURL.v1PackagesDetails(packageId),
-      );
-      return response?.data || null;
+      const response: any = await productService.getPackageById(packageId);
+      return response || null;
     },
     enabled: !!packageId,
     staleTime: 5 * 60 * 1000,
@@ -295,10 +279,10 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       queryKey: ["product-config", category],
       queryFn: async () => {
         if (!category) return null;
-        const response: any = await productService.get(
-          ApiURL.productConfigType(category),
+        const response: any = await productService.getProductConfigByType(
+          category,
         );
-        return response?.data.data || null;
+        return response?.data || null;
       },
       enabled: !!category,
       staleTime: 10 * 60 * 1000,
@@ -307,9 +291,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
   const { data: categoriesData } = useQuery({
     queryKey: ["product-categories-catalog"],
     queryFn: async () => {
-      const response: any = await productService.get(ApiURL.v1Categories, {
-        params: { limit: 1000 },
-      });
+      const response: any = await productService.getCategories({ limit: 1000 });
       const rawCategories =
         response?.data?.data ?? response?.data ?? response ?? [];
       const normalizedCategories = Array.isArray(rawCategories)
@@ -333,8 +315,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const savePlanMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response: any = await productService.post(ApiURL.v1Plans, data);
-      return response?.data;
+      const response: any = await productService.createPlan(data);
+      return response?.data ?? response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-catalog-plans"] });
@@ -348,11 +330,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const updatePlanMutation = useMutation({
     mutationFn: async ({ data, id }: { data: any; id: string }) => {
-      const response: any = await productService.put(
-        ApiURL.v1PlanDetails(id),
-        data,
-      );
-      return response?.data;
+      const response: any = await productService.updatePlan(id, data);
+      return response?.data ?? response;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["product-catalog-plans"] });
@@ -367,8 +346,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const deletePlanMutation = useMutation({
     mutationFn: async (id: string) => {
-      const productCatalogService = new ProductCatalogService();
-      await productCatalogService.deletePlan(id);
+      await productService.deletePlan(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-catalog-plans"] });
@@ -390,11 +368,12 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       id: string;
       data: any;
     }) => {
-      const response: any = await productService.post(
-        ApiURL.packagesCategoryBulkCreateDetail(category, id),
+      const response: any = await productService.bulkCreatePackagesByCategory(
+        category,
+        id,
         data,
       );
-      return response?.data;
+      return response?.data ?? response;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["package", variables.id] });
@@ -410,11 +389,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const uploadPlanBenefitsMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const response: any = await productService.post(
-        ApiURL.v1PlanBenefitBulkCreateDetails(id),
-        data,
-      );
-      return response?.data;
+      const response: any = await productService.bulkCreatePlanBenefits(id, data);
+      return response?.data ?? response;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -440,11 +416,12 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       type: string;
       data: any;
     }) => {
-      const response: any = await productService.post(
-        ApiURL.v1PlanBulkCreateDetailsType(id, type),
+      const response: any = await productService.bulkCreatePlanDetails(
+        id,
+        type,
         data,
       );
-      return response?.data;
+      return response?.data ?? response;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -469,15 +446,14 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       channel: string;
     }) => {
       const extractChannel = channel.split("|");
-      const response: any = await productService.post(
-        ApiURL.v1ChannelPackagesAssignPlans,
+      const response: any = await productService.assignChannelPlans(
         {
           channel: extractChannel[0],
           plans: [planId],
           channelName: extractChannel[1],
         },
       );
-      return response?.data;
+      return response?.data ?? response;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -501,11 +477,10 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       planId: string;
       channelId: string;
     }) => {
-      const response: any = await productService.post(
-        ApiURL.v1ChannelPackagesUnassignPlans,
+      const response: any = await productService.unassignChannelPlans(
         { channel: channelId, plans: [planId] },
       );
-      return response?.data;
+      return response?.data ?? response;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -523,8 +498,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const savePackageMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response: any = await productService.post(ApiURL.v1Packages, data);
-      return response?.data;
+      const response: any = await productService.createPackage(data);
+      return response?.data ?? response;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["package"] });
@@ -549,11 +524,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const updatePackageMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const response: any = await productService.put(
-        ApiURL.v1PackagesDetails(id),
-        data,
-      );
-      return response?.data;
+      const response: any = await productService.updatePackage(id, data);
+      return response?.data ?? response;
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["package", variables.id] });
@@ -577,10 +549,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const deletePackageMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response: any = await productService.delete(
-        ApiURL.v1PackagesDetails(id),
-      );
-      return response?.data;
+      const response: any = await productService.deletePackage(id);
+      return response?.data ?? response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["package"] });
@@ -599,11 +569,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const saveBenefitMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response: any = await productService.post(
-        ApiURL.v1PlanBenefitCreate,
-        data,
-      );
-      return response?.data;
+      const response: any = await productService.createPlanBenefit(data);
+      return response?.data ?? response;
     },
     onSuccess: () => {
       if (planId) {
@@ -618,10 +585,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const deleteBenefitMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response: any = await productService.delete(
-        ApiURL.v1PlanBenefitDetails(id),
-      );
-      return response?.data;
+      const response: any = await productService.deletePlanBenefit(id);
+      return response?.data ?? response;
     },
     onSuccess: () => {
       if (planId) {
@@ -741,27 +706,29 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
       []
     );
   }, [productsData, getProductCategoryId]);
+  const catalogPlansResult = catalogPlansData as any;
+  const packagesResult = packagesData as any;
 
   return {
     products: productsData || [],
     insurances: insurancesData || [],
-    catalogPlans: catalogPlansData?.data || [],
-    totalPages: catalogPlansData?.meta
-      ? Math.ceil(catalogPlansData.meta.total / rowsPerPage)
+    catalogPlans: catalogPlansResult?.data || [],
+    totalPages: catalogPlansResult?.meta
+      ? Math.ceil(catalogPlansResult.meta.total / rowsPerPage)
       : 1,
-    totalItems: catalogPlansData?.meta?.total || 0,
+    totalItems: catalogPlansResult?.meta?.total || 0,
     plan: planData,
     benefits: benefitsData || [],
     details: planDetailsData || [],
     channels: channelsData || [],
     channelPlans: channelPlansData || [],
     plans: allPlansData || [],
-    packages: packagesData?.data || [],
-    packagesMeta: packagesData?.meta || { page: 1, total: 0 },
-    packagesTotalPages: packagesData?.meta
-      ? Math.ceil(packagesData.meta.total / packagesRowsPerPage)
+    packages: packagesResult?.data || [],
+    packagesMeta: packagesResult?.meta || { page: 1, total: 0 },
+    packagesTotalPages: packagesResult?.meta
+      ? Math.ceil(packagesResult.meta.total / packagesRowsPerPage)
       : 1,
-    packagesTotalItems: packagesData?.meta?.total || 0,
+    packagesTotalItems: packagesResult?.meta?.total || 0,
     packageDetail: packageData,
     productConfig: productConfigData,
     subMenuItems: formattedCategories,

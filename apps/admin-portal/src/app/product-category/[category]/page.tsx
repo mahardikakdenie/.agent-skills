@@ -8,10 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
-import {
-  ProductCatalogDto,
-  ProductCatalogService,
-} from "@/services/product-catalog.service";
+import type { ProductCatalogDto } from "@/services/product-catalog.service";
 import {
   Table,
   TableBody,
@@ -31,9 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import { productService } from "@/services/api.service";
 import ExtendedSidemenu, { SubmenuItem } from "@/components/extended-sidemenu";
+import { productService } from "@/services/product/api/product.service";
 
 const formatCategoryLabel = (value: string | undefined) => {
   if (!value) return "";
@@ -47,7 +43,6 @@ const formatCategoryLabel = (value: string | undefined) => {
 
 export default function ProductCatalogPage() {
   const { category } = useParams<{ category: string }>();
-  const productCatalogService = new ProductCatalogService();
   const [product, setProducts] = useState<ProductCatalogDto[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -105,7 +100,7 @@ export default function ProductCatalogPage() {
           ...(searchProduct && { productId: searchProduct }),
         };
 
-        const response = await productCatalogService.getPlans(params);
+        const response: any = await productService.getPlans(params);
 
         if (response?.data && response?.meta) {
           setProducts(response.data);
@@ -139,9 +134,7 @@ export default function ProductCatalogPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response: any = await productService.get(ApiURL.v1Categories, {
-          params: { limit: 1000 },
-        });
+        const response: any = await productService.getCategories({ limit: 1000 });
         const rawCategories =
           response?.data?.data ?? response?.data ?? response ?? [];
         const normalizedCategories = Array.isArray(rawCategories)
@@ -185,7 +178,7 @@ export default function ProductCatalogPage() {
   const handleDeletePlan = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this campaign?")) {
       try {
-        await productCatalogService.deletePlan(id);
+        await productService.deletePlan(id);
         setProducts((prevProducts) =>
           prevProducts.filter((plan) => plan.id !== id)
         );
