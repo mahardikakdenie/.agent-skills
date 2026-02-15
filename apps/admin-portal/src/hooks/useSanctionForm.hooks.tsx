@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import { isValid, parseISO } from "date-fns";
-import { countryService, sanctionService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { countryService } from "@/services/country/api/country.service";
+import { sanctionService } from "@/services/sanction/api/sanction.service";
 import AppURL from "@/constants/app-url.const";
 
 interface Source {
@@ -110,8 +110,11 @@ export function useSanctionForm(
   const { data: sourcesData, isLoading: isLoadingSources } = useQuery({
     queryKey: ["sanction-sources"],
     queryFn: async () => {
-      const response = await sanctionService.get(ApiURL.v1Sources);
-      return response.data.data;
+      const response: any = await sanctionService.getSources({
+        page: 1,
+        limit: 1000,
+      });
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -120,8 +123,8 @@ export function useSanctionForm(
   const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
     queryKey: ["countries"],
     queryFn: async () => {
-      const response = await countryService.get(ApiURL.countries);
-      return response.data.data;
+      const response: any = await countryService.getCountries();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -132,10 +135,8 @@ export function useSanctionForm(
     queryFn: async () => {
       if (!sanctionId) return null;
 
-      const response = await sanctionService.get(
-        ApiURL.v1BlacklistDetails(sanctionId)
-      );
-      return response.data.data[0];
+      const response: any = await sanctionService.getBlacklistById(sanctionId);
+      return response?.data?.[0] ?? null;
     },
     enabled: isEdit && !!sanctionId,
     staleTime: 0,
@@ -163,17 +164,9 @@ export function useSanctionForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: any) => {
       if (isEdit && sanctionId) {
-        const response = await sanctionService.put(
-          ApiURL.v1BlacklistUpdateDetails(sanctionId),
-          payload
-        );
-        return response.data;
+        return sanctionService.updateBlacklist(sanctionId, payload);
       } else {
-        const response = await sanctionService.post(
-          ApiURL.v1Blacklist,
-          payload
-        );
-        return response.data;
+        return sanctionService.createBlacklist(payload);
       }
     },
     onSuccess: (data) => {

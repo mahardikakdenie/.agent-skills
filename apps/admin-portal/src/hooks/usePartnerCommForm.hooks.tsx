@@ -3,9 +3,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { financeService } from "@/services/api.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { financeService } from "@/services/finance/api/finance.service";
 import { useProducts } from "@/app/product-category/hooks";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
 
 interface PartnerCommFormData {
@@ -116,10 +116,11 @@ export function usePartnerCommForm(
   const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["channels"],
     queryFn: async () => {
-      const response = await financeService.get(ApiURL.v1Channels, {
-        params: { page: 1, limit: 100 },
+      const response: any = await channelService.getChannelsV1({
+        page: 1,
+        limit: 100,
       });
-      return response.data.data || [];
+      return response?.data || [];
     },
     staleTime: 300000,
     refetchOnWindowFocus: false,
@@ -137,10 +138,12 @@ export function usePartnerCommForm(
     queryFn: async () => {
       if (!partnerCommId) return null;
 
-      const response = await financeService.get(ApiURL.v1FeesChannel, {
-        params: { id: partnerCommId },
-      });
-      return response.data.data[0];
+      const response: any = await financeService.getChannelFeeById(partnerCommId);
+      const detail = response?.data;
+      if (Array.isArray(detail)) {
+        return detail[0] ?? null;
+      }
+      return detail ?? response ?? null;
     },
     enabled: isEdit && !!partnerCommId,
     staleTime: 0,
@@ -203,17 +206,9 @@ export function usePartnerCommForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: any) => {
       if (isEdit && partnerCommId) {
-        const response = await financeService.put(
-          ApiURL.v1FeesChannelDetail(partnerCommId),
-          payload
-        );
-        return response.data;
+        return financeService.updateChannelFee(partnerCommId, payload);
       } else {
-        const response = await financeService.post(
-          ApiURL.v1FeesChannelDetail(payload.channel),
-          payload
-        );
-        return response.data;
+        return financeService.createChannelFee(payload.channel, payload);
       }
     },
     onSuccess: (data) => {

@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { productService, sanctionService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { productService } from "@/services/product/api/product.service";
+import { sanctionService } from "@/services/sanction/api/sanction.service";
 import AppURL from "@/constants/app-url.const";
 
 interface Insurance {
@@ -96,8 +96,8 @@ export function useSourceForm(
   const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
     queryKey: ["insurances"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances);
-      return response.data.data;
+      const response: any = await productService.getInsurances();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -108,10 +108,8 @@ export function useSourceForm(
     queryFn: async () => {
       if (!sourceId) return null;
 
-      const response = await sanctionService.get(
-        ApiURL.v1SourcesDetails(sourceId)
-      );
-      return response.data.data[0];
+      const response: any = await sanctionService.getSourceById(sourceId);
+      return response?.data?.[0] ?? null;
     },
     enabled: isEdit && !!sourceId,
     staleTime: 0,
@@ -166,14 +164,9 @@ export function useSourceForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: any) => {
       if (isEdit && sourceId) {
-        const response = await sanctionService.put(
-          ApiURL.v1SourcesUpdateDetails(sourceId),
-          payload
-        );
-        return response.data;
+        return sanctionService.updateSource(sourceId, payload);
       } else {
-        const response = await sanctionService.post(ApiURL.v1Sources, payload);
-        return response.data;
+        return sanctionService.createSource(payload);
       }
     },
     onSuccess: (data) => {

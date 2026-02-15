@@ -3,9 +3,8 @@ import _ from "lodash";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { sanctionService } from "@/services/api.service";
+import { sanctionService } from "@/services/sanction/api/sanction.service";
 
 interface SourceItem {
   id: string;
@@ -136,10 +135,8 @@ export function useSource(): UseSourceProps {
         params.keyword = searchTerm;
       }
 
-      const response = await sanctionService.get(ApiURL.v1SourcesPaging, {
-        params,
-      });
-      return response.data;
+      const response = await sanctionService.getSources(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -148,7 +145,7 @@ export function useSource(): UseSourceProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await sanctionService.delete(ApiURL.v1SourcesDeleteDetails(id));
+      await sanctionService.deleteSource(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sources"] });
@@ -190,9 +187,8 @@ export function useSource(): UseSourceProps {
 
   const handleViewDetail = useCallback(async (id: string) => {
     try {
-      const res = await sanctionService.get(ApiURL.v1SourcesDetails(id));
-      const response = res.data;
-      const sourceData = response.data[0];
+      const response: any = await sanctionService.getSourceById(id);
+      const sourceData = response?.data?.[0];
       setSelectedSource(sourceData);
       setDrawerOpen(true);
     } catch (err) {
@@ -220,11 +216,13 @@ export function useSource(): UseSourceProps {
     router.push(AppURL.sourceAdd);
   }, [router]);
 
+  const sourcesData: any = sourceResponse;
+
   return {
-    sources: sourceResponse?.data || [],
-    filteredSources: sourceResponse?.data || [],
-    totalPages: sourceResponse?.pageTotal || 1,
-    totalItems: sourceResponse?.total || 0,
+    sources: sourcesData?.data || [],
+    filteredSources: sourcesData?.data || [],
+    totalPages: sourcesData?.pageTotal || 1,
+    totalItems: sourcesData?.total || 0,
     selectedSource,
 
     page,

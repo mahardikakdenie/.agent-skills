@@ -2,8 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { UserService } from "@/services/masterdata/user.service";
-import { ChannelService } from "@/services/channel.services";
+import { authService } from "@/services/auth/api/auth.service";
+import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 
@@ -43,8 +43,6 @@ export function usePartnerManagementForm(
 ): UsePartnerManagementFormProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const userService = new UserService();
-  const channelService = new ChannelService();
 
   const [partnerId, setPartnerId] = useState<string>();
   const isEdit = mode === "edit";
@@ -71,7 +69,7 @@ export function usePartnerManagementForm(
     queryKey: ["partner-detail", partnerId],
     queryFn: async () => {
       if (!partnerId) return null;
-      const response = await userService.getUserById(partnerId);
+      const response: any = await authService.getAccountById(partnerId);
       return response;
     },
     enabled: !!partnerId && isEdit,
@@ -83,8 +81,11 @@ export function usePartnerManagementForm(
   const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["channels-list"],
     queryFn: async () => {
-      const response = await channelService.getChannels(1, 9999);
-      return response.data || [];
+      const response: any = await channelService.getChannelsV1({
+        page: 1,
+        limit: 9999,
+      });
+      return response?.data || [];
     },
     staleTime: 300000,
   });
@@ -101,12 +102,12 @@ export function usePartnerManagementForm(
       };
 
       if (isEdit && partnerId) {
-        return await userService.updateUser(payload, partnerId);
+        return await authService.updateAccount(partnerId, payload);
       } else {
-        return await userService.saveUser(payload);
+        return await authService.createAccount(payload);
       }
     },
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["partners"] });
       queryClient.invalidateQueries({ queryKey: ["partner-detail"] });
 
@@ -116,9 +117,10 @@ export function usePartnerManagementForm(
           : "Partner Created Successfully!",
       );
 
-      if (!isEdit && response?.id) {
+      const createdId = response?.id || response?.data?.id;
+      if (!isEdit && createdId) {
         router.push(
-          `${AppURL.masterdataPartnerManagementDetail}/${response.id}`,
+          `${AppURL.masterdataPartnerManagementDetail}/${createdId}`,
         );
       }
     },

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { UserService } from "@/services/masterdata/user.service";
+import { authService } from "@/services/auth/api/auth.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -10,7 +10,6 @@ import _ from "lodash";
 export function usePartnerManagement() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const userService = new UserService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -50,11 +49,11 @@ export function usePartnerManagement() {
   } = useQuery({
     queryKey: ["partners", page, rowsPerPage, searchData],
     queryFn: async () => {
-      const response = await userService.getPartner(
+      const response: any = await authService.getAccountPartners({
         page,
-        rowsPerPage,
-        searchData
-      );
+        pageSize: rowsPerPage,
+        search: searchData,
+      });
       return response;
     },
     enabled: hasAccess === true,
@@ -64,7 +63,7 @@ export function usePartnerManagement() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await userService.deleteUser(id);
+      return await authService.deleteAccount(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["partners"] });

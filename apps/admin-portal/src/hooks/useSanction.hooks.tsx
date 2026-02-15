@@ -1,11 +1,9 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import _ from "lodash";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { sanctionService } from "@/services/api.service";
+import { sanctionService } from "@/services/sanction/api/sanction.service";
 
 interface SanctionItem {
   id: string;
@@ -142,10 +140,8 @@ export function useSanction(): UseSanctionProps {
         params.keyword = searchTerm;
       }
 
-      const response = await sanctionService.get(ApiURL.v1Blacklist, {
-        params,
-      });
-      return response.data;
+      const response = await sanctionService.getBlacklist(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -154,7 +150,7 @@ export function useSanction(): UseSanctionProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await sanctionService.delete(ApiURL.v1BlacklistDeleteDetails(id));
+      await sanctionService.deleteBlacklist(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sanctions"] });
@@ -192,9 +188,8 @@ export function useSanction(): UseSanctionProps {
 
   const handleViewDetail = useCallback(async (id: string) => {
     try {
-      const res = await sanctionService.get(ApiURL.v1BlacklistDetails(id));
-      const response = res.data;
-      const sanctionData = response.data[0];
+      const response: any = await sanctionService.getBlacklistById(id);
+      const sanctionData = response?.data?.[0];
       setSelectedSanction(sanctionData);
       setDrawerOpen(true);
     } catch (err) {
@@ -226,11 +221,13 @@ export function useSanction(): UseSanctionProps {
     router.push(AppURL.sanctionUpload);
   }, [router]);
 
+  const sanctionsData: any = sanctionResponse;
+
   return {
-    sanctions: sanctionResponse?.data || [],
-    filteredSanctions: sanctionResponse?.data || [],
-    totalPages: sanctionResponse?.pageTotal || 1,
-    totalItems: sanctionResponse?.total || 0,
+    sanctions: sanctionsData?.data || [],
+    filteredSanctions: sanctionsData?.data || [],
+    totalPages: sanctionsData?.pageTotal || 1,
+    totalItems: sanctionsData?.total || 0,
     selectedSanction,
 
     page,

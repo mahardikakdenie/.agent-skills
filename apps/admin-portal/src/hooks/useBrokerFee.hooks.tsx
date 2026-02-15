@@ -4,9 +4,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import _ from "lodash";
 
 import { useAuth } from "@/context/auth.context";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { financeService } from "@/services/api.service";
+import { financeService } from "@/services/finance/api/finance.service";
 
 interface BrokerFeeItem {
   id: string;
@@ -141,10 +140,8 @@ export function useBrokerFee(): UseBrokerFeeProps {
         params.keyword = searchTerm;
       }
 
-      const response = await financeService.get(ApiURL.v1FeesBroker, {
-        params,
-      });
-      return response.data;
+      const response = await financeService.getBrokerFees(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -153,7 +150,7 @@ export function useBrokerFee(): UseBrokerFeeProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await financeService.delete(ApiURL.v1FeesBrokerDetail(id));
+      await financeService.deleteBrokerFee(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["broker-fees"] });
@@ -209,11 +206,13 @@ export function useBrokerFee(): UseBrokerFeeProps {
     router.push(AppURL.financeBrokerFeeAdd);
   }, [router]);
 
+  const brokerFeeData: any = brokerFeeResponse;
+
   return {
-    brokerFees: brokerFeeResponse?.data || [],
-    filteredBrokerFees: brokerFeeResponse?.data || [],
-    totalPages: Math.ceil((brokerFeeResponse?.meta?.total || 0) / rowsPerPage),
-    totalItems: brokerFeeResponse?.meta?.total || 0,
+    brokerFees: brokerFeeData?.data || [],
+    filteredBrokerFees: brokerFeeData?.data || [],
+    totalPages: Math.ceil((brokerFeeData?.meta?.total || 0) / rowsPerPage),
+    totalItems: brokerFeeData?.meta?.total || 0,
 
     page,
     rowsPerPage,

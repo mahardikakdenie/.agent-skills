@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { MdProductService } from "@/services/masterdata/product.service";
+import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
@@ -22,7 +22,6 @@ interface UseHospitalUploadProps {
 export function useHospitalUpload(): UseHospitalUploadProps {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const mdProductService = new MdProductService();
   const { permissionList } = useAuth();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -47,7 +46,9 @@ export function useHospitalUpload(): UseHospitalUploadProps {
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      return await mdProductService.uploadHospitalList(file);
+      const formData = new FormData();
+      formData.append("file", file);
+      return await productService.uploadReferenceHospital(formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hospitals"] });

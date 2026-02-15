@@ -3,8 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { productService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface CurrencyField {
@@ -115,9 +114,7 @@ export function useCurrencyForm(
   const { data: insurances = [], isLoading: isLoadingInsurances } = useQuery({
     queryKey: ["currency-insurances"],
     queryFn: async () => {
-      const { data }: any = await productService.get(ApiURL.v1Insurances, {
-        params: { page: 1 },
-      });
+      const data: any = await productService.getInsurances({ page: 1 });
       return data?.data || [];
     },
     staleTime: 300000,
@@ -128,10 +125,7 @@ export function useCurrencyForm(
     useQuery({
       queryKey: ["type-currencies"],
       queryFn: async () => {
-        const { data }: any = await productService.get(
-          ApiURL.v1ReferencesTypeCurrencies,
-          { params: {} }
-        );
+        const data: any = await productService.getReferenceCurrencies({});
         return data?.data || [];
       },
       staleTime: 300000,
@@ -144,11 +138,9 @@ export function useCurrencyForm(
       queryFn: async () => {
         if (!selectedInsuranceId) return null;
 
-        const { data } = await productService.get(
-          ApiURL.v1InsuranceDetailsCurrency(selectedInsuranceId),
-          {
-            params: { page: 1, pageSize: 100 },
-          }
+        const data: any = await productService.getInsuranceCurrencies(
+          selectedInsuranceId,
+          { page: 1, pageSize: 100 }
         );
         return data?.data || [];
       },
@@ -220,17 +212,14 @@ export function useCurrencyForm(
 
       for (const currency of payload.currencies) {
         if (currency.isEdited || currency.id === "") {
-          await productService.post(
-            ApiURL.v1InsuranceDetailsCurrency(payload.insuranceId),
-            {
-              insurance: "",
-              value: currency.rate,
-              currency_from: currency.currency_from,
-              currency_to: currency.currency_to,
-              start_from: new Date(),
-              active: true,
-            }
-          );
+          await productService.createInsuranceCurrency(payload.insuranceId, {
+            insurance: "",
+            value: currency.rate,
+            currency_from: currency.currency_from,
+            currency_to: currency.currency_to,
+            start_from: new Date(),
+            active: true,
+          });
           results.push(currency);
         }
       }
@@ -269,8 +258,9 @@ export function useCurrencyForm(
       insuranceId: string;
       currencyId: string;
     }) => {
-      await productService.delete(
-        ApiURL.v1InsuranceDetailsCurrencyDetails(insuranceId, currencyId)
+      await productService.deleteInsuranceCurrency(
+        insuranceId,
+        currencyId
       );
     },
     onSuccess: () => {

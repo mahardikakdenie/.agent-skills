@@ -2,8 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import { channelService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
 
 interface Channel {
@@ -126,10 +125,11 @@ export function useChannel(): UseChannelProps {
   } = useQuery({
     queryKey: ["channels", page, rowsPerPage],
     queryFn: async () => {
-      const res: any = await channelService.get(ApiURL.v1Channels, {
-        params: { page, limit: rowsPerPage },
+      const res: any = await channelService.getChannelsV1({
+        page,
+        limit: rowsPerPage,
       });
-      return res.data;
+      return res;
     },
     enabled: !!hasAccess,
     staleTime: 30000,
@@ -139,7 +139,7 @@ export function useChannel(): UseChannelProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await channelService.delete(ApiURL.v1ChannelDetails(id));
+      await channelService.deleteChannel(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["channels"] });

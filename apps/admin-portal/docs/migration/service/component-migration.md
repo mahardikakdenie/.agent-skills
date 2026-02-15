@@ -7,9 +7,9 @@
 ## Status Overview
 
 - Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 63
-- Incremental Updates: 0
-- Last Updated: 2026-02-15 19:06
+- Total Components Migrated (Main): 72
+- Incremental Updates: 2
+- Last Updated: 2026-02-15 21:02
 
 ---
 
@@ -19,8 +19,8 @@
 
 - Started: 2026-02-15 17:10
 - Completed: In Progress
-- Total Services: 10 (Claim, Auth, Policy, Transaction, Channel, Finance, Helper, Product, Promotion, Masterdata + dashboard aggregation)
-- Total Components: 63
+- Total Services: 10+ (Claim, Auth, Policy, Transaction, Channel, Finance, Helper, Product, Promotion, Masterdata, Sanction/Country + dashboard aggregation)
+- Total Components: 72
 - Status: In Progress
 
 ### Components Migrated by Service
@@ -353,13 +353,16 @@ Components:
   - Verified: PASS
   - Issues: None
 
-#### Service: Auth + Channel + Product + Helper (Legacy `src/hooks` masterdata layer)
+#### Service: Auth + Channel + Product + Helper + Finance + Sanction + Country (Legacy `src/hooks` layer)
 
 Service Base URLs:
 - `NEXT_PUBLIC_AUTH_SERVICE_URL`
 - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
 - `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
 - `NEXT_PUBLIC_HELPER_SERVICE_URL`
+- `NEXT_PUBLIC_FINANCE_SERVICE_URL`
+- `NEXT_PUBLIC_SANCTION_SERVICE_URL`
+- `NEXT_PUBLIC_COUNTRY_SERVICE_URL`
 
 Components:
 
@@ -483,6 +486,60 @@ Components:
   - Verified: PASS
   - Issues: Local response narrowing applied for generic `unknown` payloads
 
+- [x] `apps/admin-portal/src/hooks/useSanction.hooks.tsx` - Legacy sanction list hook
+  - Before: Legacy `sanctionService` from `@/services/api.service` + `ApiURL` endpoints
+  - After: New sanction API service methods (`getBlacklist`, `getBlacklistById`, `deleteBlacklist`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useSanctionForm.hooks.tsx` - Legacy sanction form hook
+  - Before: Legacy `sanctionService`/`countryService` from `@/services/api.service` + `ApiURL`
+  - After: New sanction/country API service methods (`getSources`, `getBlacklistById`, `createBlacklist`, `updateBlacklist`, `getCountries`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useSource.hooks.tsx` - Legacy source list hook
+  - Before: Legacy `sanctionService` from `@/services/api.service` + `ApiURL`
+  - After: New sanction API service methods (`getSources`, `getSourceById`, `deleteSource`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useSourceForm.hooks.tsx` - Legacy source form hook
+  - Before: Legacy `sanctionService`/`productService` from `@/services/api.service` + `ApiURL`
+  - After: New sanction/product API service methods (`getSourceById`, `createSource`, `updateSource`, `getInsurances`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useUploadSanction.hooks.tsx` - Legacy sanction CSV upload hook
+  - Before: Legacy `sanctionService`/`productService`/`countryService` from `@/services/api.service` + `ApiURL`
+  - After: New sanction/product/country API service methods (`getSources`, `getInsurances`, `getCountries`, `createBlacklist`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useBrokerFee.hooks.tsx` - Legacy broker fee list hook
+  - Before: Legacy `financeService` from `@/services/api.service` + `ApiURL`
+  - After: New finance API service methods (`getBrokerFees`, `deleteBrokerFee`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useBrokerFeeForm.hooks.tsx` - Legacy broker fee form hook
+  - Before: Legacy `financeService` from `@/services/api.service` + `ApiURL`
+  - After: New finance API service methods (`getBrokerFeeById`, `createBrokerFee`, `updateBrokerFee`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/usePartnerComm.hooks.tsx` - Legacy partner comm list hook
+  - Before: Legacy `channelService`/`financeService` from `@/services/api.service` + `ApiURL`
+  - After: New channel/finance API service methods (`getChannelsV1`, `getChannelFees`, `deleteChannelFee`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/usePartnerCommForm.hooks.tsx` - Legacy partner comm form hook
+  - Before: Legacy `financeService` from `@/services/api.service` + `ApiURL`
+  - After: New channel/finance API service methods (`getChannelsV1`, `getChannelFeeById`, `createChannelFee`, `updateChannelFee`)
+  - Verified: PASS
+  - Issues: None
+
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
@@ -494,14 +551,14 @@ Components:
 ### Components NOT Migrated
 
 - Active migration scope (`src/app`, `src/views/home`, `src/views/layout`) has no remaining `@/services/api.service` imports or `new *Service()` class instantiation patterns.
-- Extended `src/hooks` scope now has 39 remaining files with legacy patterns (migration in progress).
+- Extended `src/hooks` scope now has 20 remaining files with legacy patterns (migration in progress).
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 63
-- Components with issues: 5 (all fixed)
+- Total components migrated: 72
+- Components with issues: 7 (all fixed)
 - Components rolled back: 0
 
 #### Full Verification Gate
@@ -550,9 +607,23 @@ Components:
 - Fix: Added localized response narrowing (`: any` / fallback casts) in migrated hooks to keep runtime behavior stable
 - Status: PASS (resolved)
 
+#### Issue 6: Sanction/source list hooks inferred API responses as `unknown` after legacy client removal
+
+- Component: `apps/admin-portal/src/hooks/useSanction.hooks.tsx`, `apps/admin-portal/src/hooks/useSource.hooks.tsx`
+- Cause: New API service methods are generic and `useQuery` inferred response payload as `unknown` at return mapping
+- Fix: Added localized narrowing (`const ...Data: any = ...`) for list payload mapping to keep current UI contract stable
+- Status: PASS (resolved)
+
+#### Issue 7: Finance list hooks inferred API responses as `unknown` after legacy client removal
+
+- Component: `apps/admin-portal/src/hooks/useBrokerFee.hooks.tsx`, `apps/admin-portal/src/hooks/usePartnerComm.hooks.tsx`
+- Cause: New finance API service methods are generic and `useQuery` inferred response payload as `unknown` at return mapping
+- Fix: Added localized narrowing (`const ...Data: any = ...`) for list payload mapping to preserve existing UI contract
+- Status: PASS (resolved)
+
 ### Next Steps
 
-- [ ] Continue migrating remaining legacy files in `src/hooks` (39 files)
+- [ ] Continue migrating remaining legacy files in `src/hooks` (20 files)
 - [ ] Migrate legacy `src/views/*` files still importing `@/services/api.service`
 - [ ] Mark Batch 6 complete only after all component migrations are finished
 
@@ -562,4 +633,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slice | 63 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner hooks) | 72 components | In Progress | this doc   |

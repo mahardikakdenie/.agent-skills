@@ -1,14 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { MdProductService } from "@/services/masterdata/product.service";
+import { productService } from "@/services/product/api/product.service";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import _ from "lodash";
 
 export function useHospital() {
   const router = useRouter();
-  const mdProductService = new MdProductService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -36,7 +35,7 @@ export function useHospital() {
   const { data: hospitalsResponse, isLoading: isLoadingHospitals } = useQuery({
     queryKey: ["hospitals", page, rowsPerPage, searchData],
     queryFn: async () => {
-      const response = await mdProductService.getHospitalList({
+      const response = await productService.getReferenceHospitalList({
         name: searchData,
         page,
         pageSize: rowsPerPage,
@@ -68,10 +67,12 @@ export function useHospital() {
     router.push(AppURL.masterdataHospitalUpload);
   }, [router]);
 
+  const hospitalsData: any = hospitalsResponse;
+
   return {
-    hospitals: hospitalsResponse?.data || [],
-    totalPages: hospitalsResponse?.meta?.pageTotal || 1,
-    totalItems: hospitalsResponse?.meta?.total || 0,
+    hospitals: hospitalsData?.data || [],
+    totalPages: hospitalsData?.meta?.pageTotal || 1,
+    totalItems: hospitalsData?.meta?.total || 0,
     page,
     rowsPerPage,
     searchData,

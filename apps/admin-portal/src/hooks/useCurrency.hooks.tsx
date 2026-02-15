@@ -2,8 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import { productService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { productService } from "@/services/product/api/product.service";
 import AppURL from "@/constants/app-url.const";
 
 interface Insurance {
@@ -123,10 +122,11 @@ export function useCurrency(): UseCurrencyProps {
   } = useQuery({
     queryKey: ["currencies", page, rowsPerPage],
     queryFn: async () => {
-      const res: any = await productService.get(ApiURL.v1Insurances, {
-        params: { page, pageSize: rowsPerPage },
+      const res: any = await productService.getInsurances({
+        page,
+        pageSize: rowsPerPage,
       });
-      return res.data;
+      return res;
     },
     enabled: !!hasAccess,
     staleTime: 30000,

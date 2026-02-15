@@ -3,8 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
-import { channelService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { channelService } from "@/services/channel/api/channel.service";
 import AppURL from "@/constants/app-url.const";
 
 interface ChannelFormData {
@@ -87,10 +86,8 @@ export function useChannelForm(
     queryFn: async () => {
       if (!channelId) return null;
 
-      const response: any = await channelService.get(
-        ApiURL.v1ChannelDetails(channelId)
-      );
-      return response.data;
+      const response: any = await channelService.getChannelByIdV1(channelId);
+      return response?.data ?? response;
     },
     enabled: isEdit && !!channelId,
     staleTime: 0,
@@ -110,14 +107,11 @@ export function useChannelForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: ChannelFormData) => {
       if (isEdit) {
-        const { data } = await channelService.put(
-          ApiURL.v1ChannelDetails(channelId),
-          payload
-        );
-        return data;
+        const data: any = await channelService.updateChannel(channelId, payload);
+        return data?.data ?? data;
       } else {
-        const { data } = await channelService.post(ApiURL.v1Channels, payload);
-        return data;
+        const data: any = await channelService.createChannel(payload);
+        return data?.data ?? data;
       }
     },
     onSuccess: () => {

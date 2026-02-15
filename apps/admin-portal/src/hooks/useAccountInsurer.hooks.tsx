@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { InsurerService } from "@/services/masterdata/insurer.service";
+import { authService } from "@/services/auth/api/auth.service";
 import toast from "react-hot-toast";
 
 interface UseAccountInsurerProps {
@@ -14,17 +14,16 @@ interface UseAccountInsurerProps {
 
 export function useAccountInsurer(): UseAccountInsurerProps {
   const queryClient = useQueryClient();
-  const insurerService = new InsurerService();
   const [accountId, setAccountId] = useState<string>("");
 
   const { data: accountInsurers = [], isLoading } = useQuery({
     queryKey: ["account-insurers", accountId],
     queryFn: async () => {
       if (!accountId) return [];
-      const response = await insurerService.getAccountInsurersByAccountId(
+      const response: any = await authService.getAccountInsurersByAccount(
         accountId
       );
-      return response.data || [];
+      return response?.data || [];
     },
     enabled: !!accountId,
     staleTime: 30000,
@@ -38,7 +37,7 @@ export function useAccountInsurer(): UseAccountInsurerProps {
       accountId: string;
       insurerId: string;
     }) => {
-      await insurerService.addAccountInsurers({
+      await authService.addAccountInsurer({
         account: accountId,
         insurance: insurerId,
       });
@@ -55,7 +54,7 @@ export function useAccountInsurer(): UseAccountInsurerProps {
 
   const deleteInsurerMutation = useMutation({
     mutationFn: async (insurerId: string) => {
-      await insurerService.removeAccountInsurers(insurerId);
+      await authService.removeAccountInsurer(insurerId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["account-insurers"] });

@@ -3,12 +3,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import Papa from "papaparse";
-import {
-  countryService,
-  productService,
-  sanctionService,
-} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { countryService } from "@/services/country/api/country.service";
+import { productService } from "@/services/product/api/product.service";
+import { sanctionService } from "@/services/sanction/api/sanction.service";
 import AppURL from "@/constants/app-url.const";
 
 interface CountryAPI {
@@ -104,8 +101,11 @@ export function useUploadSanction(): UseUploadSanctionProps {
   const { data: sourcesData, isLoading: isLoadingSources } = useQuery({
     queryKey: ["sanction-sources"],
     queryFn: async () => {
-      const response = await sanctionService.get(ApiURL.v1Sources);
-      return response.data.data;
+      const response: any = await sanctionService.getSources({
+        page: 1,
+        limit: 1000,
+      });
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -114,8 +114,8 @@ export function useUploadSanction(): UseUploadSanctionProps {
   const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
     queryKey: ["insurances"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances);
-      return response.data.data;
+      const response: any = await productService.getInsurances();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -124,8 +124,8 @@ export function useUploadSanction(): UseUploadSanctionProps {
   const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
     queryKey: ["countries"],
     queryFn: async () => {
-      const response = await countryService.get(ApiURL.countries);
-      return response.data.data;
+      const response: any = await countryService.getCountries();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -158,7 +158,7 @@ export function useUploadSanction(): UseUploadSanctionProps {
             date_blacklisted: row.blacklist_date,
           };
 
-          await sanctionService.post(ApiURL.v1Blacklist, sanctionData);
+          await sanctionService.createBlacklist(sanctionData);
         })
       );
     },

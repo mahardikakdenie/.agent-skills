@@ -4,9 +4,9 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import _ from "lodash";
 
 import { useAuth } from "@/context/auth.context";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { channelService, financeService } from "@/services/api.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { financeService } from "@/services/finance/api/finance.service";
 
 interface PartnerCommItem {
   id: string;
@@ -135,10 +135,11 @@ export function usePartnerComm(): UsePartnerCommProps {
   const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["channels"],
     queryFn: async () => {
-      const response = await channelService.get(ApiURL.v1Channels, {
-        params: { page: 1, limit: 100 },
+      const response: any = await channelService.getChannelsV1({
+        page: 1,
+        limit: 100,
       });
-      return response.data.data || [];
+      return response?.data || [];
     },
     staleTime: 300000,
     refetchOnWindowFocus: false,
@@ -166,10 +167,8 @@ export function usePartnerComm(): UsePartnerCommProps {
         params.keyword = searchTerm;
       }
 
-      const response = await financeService.get(ApiURL.v1FeesChannel, {
-        params,
-      });
-      return response.data;
+      const response = await financeService.getChannelFees(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -178,7 +177,7 @@ export function usePartnerComm(): UsePartnerCommProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await financeService.delete(ApiURL.v1FeesChannelDetail(id));
+      await financeService.deleteChannelFee(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["partner-comms"] });
@@ -231,13 +230,15 @@ export function usePartnerComm(): UsePartnerCommProps {
     router.push(AppURL.financePartnerCommAdd);
   }, [router]);
 
+  const partnerCommData: any = partnerCommResponse;
+
   return {
-    partnerComms: partnerCommResponse?.data || [],
+    partnerComms: partnerCommData?.data || [],
     channels: channelsData || [],
     totalPages: Math.ceil(
-      (partnerCommResponse?.meta?.total || 0) / rowsPerPage
+      (partnerCommData?.meta?.total || 0) / rowsPerPage
     ),
-    totalItems: partnerCommResponse?.meta?.total || 0,
+    totalItems: partnerCommData?.meta?.total || 0,
 
     page,
     rowsPerPage,

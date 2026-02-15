@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserService } from "@/services/masterdata/user.service";
+import { authService } from "@/services/auth/api/auth.service";
 import toast from "react-hot-toast";
 
 interface UseAccountChannelProps {
@@ -14,7 +14,6 @@ interface UseAccountChannelProps {
 
 export function useAccountChannel(): UseAccountChannelProps {
   const queryClient = useQueryClient();
-  const userService = new UserService();
   const [accountId, setAccountId] = useState<string>("");
 
   // ✅ Fetch account channels
@@ -22,10 +21,10 @@ export function useAccountChannel(): UseAccountChannelProps {
     queryKey: ["account-channels", accountId],
     queryFn: async () => {
       if (!accountId) return [];
-      const response = await userService.getAccountChannelsByAccountId(
+      const response: any = await authService.getAccountChannelsByAccount(
         accountId
       );
-      return response.data || [];
+      return response?.data || [];
     },
     enabled: !!accountId,
     staleTime: 30000,
@@ -40,7 +39,7 @@ export function useAccountChannel(): UseAccountChannelProps {
       accountId: string;
       channelId: string;
     }) => {
-      await userService.addAccountChannels({
+      await authService.addAccountChannel({
         account: accountId,
         channel: channelId,
       });
@@ -58,7 +57,7 @@ export function useAccountChannel(): UseAccountChannelProps {
   // ✅ Delete channel mutation
   const deleteChannelMutation = useMutation({
     mutationFn: async (channelId: string) => {
-      await userService.removeAccountChannels(channelId);
+      await authService.removeAccountChannel(channelId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["account-channels"] });
