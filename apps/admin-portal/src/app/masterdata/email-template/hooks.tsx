@@ -1,12 +1,11 @@
 import {
-  MailTemplateService,
   ProductResponse,
 } from "@/services/masterdata/mail-template.service";
+import { productService } from "@/services/product/api/product.service";
 import { root } from "postcss";
 import { useState } from "react";
 
 export const usePages = () => {
-  const mailTemplateService = new MailTemplateService();
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [product, setProduct] = useState<any[]>([]);
   const [plans, setPlans] = useState<any[]>([]);
@@ -28,72 +27,69 @@ export const usePages = () => {
     const insuranceId = insurance;
     const categoryId = categories;
 
-    const { data } = await mailTemplateService.getProduct(
+    const response: any = await productService.getProducts({
       page,
-      rowsPerPage,
+      pageSize: rowsPerPage,
       category,
       categoryId,
-      insuranceId
-    );
-    setProduct(data);
+      insuranceId,
+    });
+    setProduct(response?.data || []);
   };
 
   const savePages = async (data: any) => {
-    const { data: response } = await mailTemplateService.saveJourney(data);
+    const response = await productService.createEmailTemplateJourney(data);
     return response;
   };
 
   const updatePages = async (data: any, id: string) => {
-    const { data: response } = await mailTemplateService.updateJourney(
-      data,
-      id
-    );
+    const response = await productService.updateEmailTemplateJourney(id, data);
     return response;
   };
 
   const fetchCategories = async (search: any) => {
-    const { data } = await mailTemplateService.getCategory(search);
-    setCategories(data);
+    const response: any = await productService.getCategories(search);
+    setCategories(response?.data || []);
   };
 
   const fetchInsurances = async (search: any) => {
-    const { data } = await mailTemplateService.getInsurance(search);
-    setInsurances(data);
+    const response: any = await productService.getInsurances(search);
+    setInsurances(response?.data || []);
   };
 
   const fetchProductSelect = async (search: any) => {
-    const { data } = await mailTemplateService.getProductSelect(search);
-    setProducts(data);
+    const response: any = await productService.getProducts(search);
+    setProducts(response?.data || []);
   };
 
   const fetchPlans = async (search: any) => {
-    const { data } = await mailTemplateService.getPlans(search);
-    setPlans(data);
+    const response: any = await productService.getPlans(search);
+    setPlans(response?.data || []);
   };
 
   const fetchMailTemplate = async (search: any) => {
-    const { data } = await mailTemplateService.getMailTemplate(search);
-    setMailTemplate(data);
+    const response: any = await productService.getEmailTemplatesJourney(search);
+    setMailTemplate(response?.data || []);
   };
 
   const fetchMailTemplateById = async (id: any) => {
-    const { data } = await mailTemplateService.getMailTemplateById(id);
-    setMailTemplateById(data);
+    const response: any = await productService.getEmailTemplateJourneyById(id);
+    setMailTemplateById(response?.data ?? response ?? []);
   };
 
   const deleteMailTemplate = async (id: string) => {
-    const { data: response } = await mailTemplateService.deleteMailTemplate(id);
+    const response = await productService.deleteEmailTemplateJourney(id);
     return response;
   };
 
   const fetchJourney = async (search: any) => {
-    const { data } = await mailTemplateService.getJourney(search);
-    setJourney(data);
+    const response: any = await productService.getReferenceEmailJourney(search);
+    setJourney(response?.data || []);
   };
 
   const fetchEmailTag = async (search: any) => {
-    const { data } = await mailTemplateService.getEmailTag(search);
-    setEmailTag(data);
+    const response: any = await productService.getEmailTags(search);
+    setEmailTag(response?.data || []);
   };
 
   return {
@@ -103,7 +99,7 @@ export const usePages = () => {
     updatePages,
     deleteMailTemplate,
     fetchProduct,
-    mailTemplateService,
+    mailTemplateService: productService,
     products,
     setProducts,
     mailTemplateById,

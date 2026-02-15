@@ -1,4 +1,3 @@
-import { PlanService } from "@/services/plan.services";
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { FaCheck, FaTimes } from "react-icons/fa";
@@ -78,15 +77,7 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   onRemovePlan,
   onSearch,
 }) => {
-  const planService = new PlanService();
-  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(
-    new Set(preSelectedPlanIds)
-  );
-  const [productNames, setProductNames] = useState<{ [key: string]: string }>(
-    {}
-  );
   const [selectAll, setSelectAll] = useState(false);
-  const [currentPagePlan, setCurrentPagePlan] = useState(pagePlan);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [localSelectedPlanIds, setLocalSelectedPlanIds] = useState<Set<string>>(
     new Set()
@@ -94,16 +85,8 @@ const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const data = plans?.data || [];
-  let totalItems = plans?.meta.total || 0;
-  let totalPages = Math.ceil(totalItems / showPlansPerPage);
-
-  useEffect(() => {
-    const names: { [key: string]: string } = {};
-    products.forEach((product) => {
-      names[product.id] = product.name;
-    });
-    setProductNames(names);
-  }, [products]);
+  const totalItems = plans?.meta.total || 0;
+  const totalPages = Math.ceil(totalItems / showPlansPerPage);
 
   useEffect(() => {
     if (isOpen) {

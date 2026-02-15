@@ -1,57 +1,53 @@
-import { RoleResponse, RoleService } from "@/services/masterdata/roles.service";
+import { authService } from "@/services/auth/api/auth.service";
+import type { RoleResponse } from "@/services/masterdata/roles.service";
 import { useState } from "react";
 
 export const useRole = () => {
-  const roleService = new RoleService();
-
   const [roles, setRoles] = useState<RoleResponse[]>([]);
   const [role, setRole] = useState<any[]>([]);
   const [menu, setMenu] = useState<any[]>([]);
   const [permission, setPermission] = useState<any[]>([]);
 
   const fetchRole = async (search: any) => {
-    const { data } = await roleService.getRole(search);
-    setRoles(data);
+    const response: any = await authService.getRoles(search);
+    setRoles(response?.data || []);
   };
 
   const fetchRoleById = async (id: string) => {
-    const response = await roleService.getRoleById(id);
-    return response;
+    return await authService.getRoleById(id);
   };
 
   const addRole = async (data: any) => {
-    const { data: response } = await roleService.addRole(data);
-    return response;
+    return await authService.createRole(data);
   };
 
   const updateRole = async (data: any, id: string) => {
-    const { data: response } = await roleService.updateRole(data, id);
-    return response;
+    return await authService.updateRole(id, data);
   };
 
   const deleteRole = async (id: string) => {
-    const { data: response } = await roleService.deleteRole(id);
-    return response;
+    return await authService.deleteRole(id);
   };
 
   const fetchMenu = async (search: any) => {
-    const { data } = await roleService.getMenu(search);
-    setMenu(data);
+    const response: any = await authService.getPages(search);
+    setMenu(response?.data || []);
   };
 
   const fetchPermission = async (search: any) => {
-    const { data } = await roleService.getPermission(search);
-    setPermission(data);
+    const response: any = await authService.getPermissionsByPage(
+      search?.pagesId,
+      search,
+    );
+    setPermission(response?.data || []);
   };
 
   const addPermissionRole = async (data: any) => {
-    const { data: response } = await roleService.createPermissionRole(data);
-    return response;
+    return await authService.createRolePermission(data);
   };
 
   const deletePermissionRole = async (id: string) => {
-    const { data: response } = await roleService.deletePermissionRole(id);
-    return response;
+    return await authService.deleteRolePermission(id);
   };
 
   return {

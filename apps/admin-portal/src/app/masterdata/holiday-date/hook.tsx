@@ -1,17 +1,19 @@
-import { FinanceService } from "@/services/finance.services";
-import { HelperService } from "@/services/helper.service";
+import { helperService } from "@/services/helper/api/helper.service";
 import { useState } from "react";
 
 const useCalendar = () => {
   const [dataCalendar, setDataCalendar] = useState<any>();
 
-  const helperService = new HelperService();
   const getCalendarHoliday = async (
     where?: any,
     page?: number,
     pageSize?: number
   ) => {
-    const res = await helperService.getCalendar(where, page, pageSize);
+    const res = await helperService.getCalendar({
+      page,
+      pageSize,
+      ...(where || {}),
+    });
     setDataCalendar(res);
   };
 

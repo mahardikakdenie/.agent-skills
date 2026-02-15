@@ -1,78 +1,77 @@
-import { User, UserService } from "@/services/masterdata/user.service";
+import { authService } from "@/services/auth/api/auth.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import type { User } from "@/services/masterdata/user.service";
 import { channel } from "process";
 import { useState } from "react";
 
 export const useUser = () => {
-  const userService = new UserService();
-
   const [users, setUsers] = useState<User[]>([]);
   const [user, setUser] = useState<any[]>([]);
   const [channels, setChannels] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
 
   const fetchUser = async (search: any) => {
-    const { data } = await userService.getUser(search);
-    setUsers(data);
+    const response: any = await authService.getAccounts(search);
+    setUsers(response?.data || []);
   };
 
   const fetchChannels = async (search: any) => {
-    const { data } = await userService.getChannel(search);
+    const response: any = await channelService.getChannelsV1({
+      ...search,
+      limit: 1000,
+    });
+    const data = response?.data || [];
     setChannels(data);
     return data;
   };
 
   const fetchRole = async (search: any) => {
-    const { data } = await userService.getRole(search);
-    setRoles(data);
+    const response: any = await authService.getRoles(search);
+    setRoles(response?.data || []);
   };
 
   const fetchUserById = async (id: string) => {
-    const response = await userService.getUserById(id);
-    return response;
+    return await authService.getAccountById(id);
   };
 
   const saveUser = async (data: any) => {
-    const response = await userService.saveUser(data);
-    return response;
+    return await authService.createAccount(data);
   };
 
   const getExistingUser = async (data: any) => {
-    return await userService.getExistingUser(data);
+    return await authService.getAccountAllDataPagination({
+      page: 1,
+      pageSize: 1,
+      ...data,
+    });
   };
 
   const updateUser = async (data: any, id: string) => {
-    const { data: response } = await userService.updateUser(data, id);
-    return response;
+    return await authService.updateAccount(id, data);
   };
 
   const updateUserAllData = async (data: any, id: string) => {
-    const { data: response } = await userService.updateUserAllData(data, id);
-    return response;
+    return await authService.updateAccountAllData(id, data);
   };
 
   const deleteUser = async (id: string) => {
-    const { data: response } = await userService.deleteUser(id);
-    return response;
+    return await authService.deleteAccount(id);
   };
 
   const addAccountGroups = async (data: any) => {
-    const { data: response } = await userService.addAccountGroups(data);
-    return response;
+    return await authService.addAccountGroup(data);
   };
 
   const removeAccountGroups = async (id: string) => {
-    const { data: response } = await userService.removeAccountGroups(id);
-    return response;
+    return await authService.removeAccountGroup(id);
   };
 
   const addAccountRoles = async (data: any) => {
-    const { data: response } = await userService.addAccountRoles(data);
-    return response;
+    return await authService.addAccountRole(data);
   };
 
   const removeAccountRoles = async (id: string) => {
-    const { data: response } = await userService.removeAccountRoles(id);
-    return response;
+    return await authService.removeAccountRole(id);
   };
 
   return {

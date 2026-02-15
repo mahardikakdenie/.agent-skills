@@ -1,46 +1,41 @@
 import { GroupResponse } from "@/services/masterdata/group.service";
 import {
   PermissionResponse,
-  PermissionService,
 } from "@/services/masterdata/permission.service";
-import { useMemo, useState } from "react";
+import { authService } from "@/services/auth/api/auth.service";
+import { useState } from "react";
 
 export const usePermission = () => {
-  const permissionService = useMemo(() => new PermissionService(), []);
   const [permission, setPermission] = useState<PermissionResponse[]>([]);
   const [groups, setGroups] = useState<GroupResponse[]>([]);
 
   const fetchPermission = async (search: any) => {
-    const { data } = await permissionService.getPermission(search);
-    setPermission(data);
+    const response: any = await authService.getPermissionsByPage(
+      search?.pagesId,
+      search,
+    );
+    setPermission(response?.data || []);
   };
 
   const savePermission = async (data: any) => {
-    const { data: response } = await permissionService.savePermission(data);
-    return response;
+    return await authService.createPermission(data);
   };
 
   const updatePermission = async (data: any, id: string) => {
-    const { data: response } = await permissionService.updatePermission(
-      data,
-      id
-    );
-    return response;
+    return await authService.updatePermission(id, data);
   };
 
   const fetchPermissionById = async (id: string) => {
-    const response = await permissionService.getPermissionById(id);
-    return response;
+    return await authService.getPermissionById(id);
   };
 
   const deletePermission = async (id: string) => {
-    const { data: response } = await permissionService.deletePermission(id);
-    return response;
+    return await authService.deletePermission(id);
   };
 
   const fetchGroups = async (search: any) => {
-    const { data } = await permissionService.getPages(search);
-    setGroups(data);
+    const response: any = await authService.getPages(search);
+    setGroups(response?.data || []);
   };
 
   return {
@@ -48,7 +43,6 @@ export const usePermission = () => {
     updatePermission,
     deletePermission,
     fetchPermission,
-    permissionService,
     permission,
     groups,
     setPermission,

@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { ProductCatalogService } from "@/services/product-catalog.service";
+import { productService } from "@/services/product/api/product.service";
 import Image from "next/image";
 import noData from "/public/images/no-data.webp";
 import { Eye, ChevronLeft, ChevronRight } from "react-feather";
@@ -41,7 +41,6 @@ const AssignPlan = ({
   const [totalPages, setTotalPages] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  const productCatalogService = new ProductCatalogService();
   const { setLoading } = useScreen();
 
   const [assignedPlans, setAssignedPlans] = useState<any[]>([]);
@@ -82,9 +81,9 @@ const AssignPlan = ({
   useEffect(() => {
     if (!id) return;
     const loadAssignedPlans = async () => {
-      const response = await productCatalogService.getChannelPlansByChannel(id);
+      const response: any = await productService.getChannelPackagesByChannel(id);
       if (response) {
-        setAssignedPlans(response);
+        setAssignedPlans(response?.data || response || []);
       }
     };
     loadAssignedPlans();
@@ -99,7 +98,7 @@ const AssignPlan = ({
         pageSize: rowsPerPage,
         category,
       };
-      const response = await productCatalogService.getPlans(params);
+      const response: any = await productService.getPlans(params);
       if (response?.data && response?.meta) {
         setProducts(response.data);
         setPage(response.meta.page);
@@ -152,19 +151,22 @@ const AssignPlan = ({
 
     try {
       if (selectedAction.type === "assign") {
-        await productCatalogService.assignPlans(
-          selectedAction.planId,
-          id,
-          channelName
-        );
+        await productService.assignChannelPlans({
+          channel: id,
+          plans: [selectedAction.planId],
+          channelName,
+        });
       } else {
-        await productCatalogService.unAssignPlans(selectedAction.planId, id);
+        await productService.unassignChannelPlans({
+          channel: id,
+          plans: [selectedAction.planId],
+        });
       }
 
       // Refresh assigned plans
-      const response = await productCatalogService.getChannelPlansByChannel(id);
+      const response: any = await productService.getChannelPackagesByChannel(id);
       if (response) {
-        setAssignedPlans(response);
+        setAssignedPlans(response?.data || response || []);
       }
 
       // Refresh current tab

@@ -1,5 +1,4 @@
 import {
-  MdProductService,
   ProductResponse,
 } from "@/services/masterdata/product.service";
 import { productService } from "@/services/product/api/product.service";
@@ -7,7 +6,6 @@ import { root } from "postcss";
 import { useState } from "react";
 
 export const useProduct = () => {
-  const mdProduct = new MdProductService();
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [product, setProduct] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -24,39 +22,39 @@ export const useProduct = () => {
     const insuranceId = insurance;
     const categoryId = categories;
 
-    const { data } = await mdProduct.getProduct(
+    const response: any = await productService.getProducts({
       page,
-      rowsPerPage,
+      pageSize: rowsPerPage,
       category,
       categoryId,
-      insuranceId
-    );
-    setProduct(data);
+      insuranceId,
+    });
+    setProduct(response?.data || []);
   };
 
   const fetchProductById = async (id: string) => {
-    const response = await mdProduct.getProductById(id);
-    return response;
+    const response: any = await productService.getProductById(id);
+    return response?.data ?? response;
   };
 
   const saveProduct = async (data: any) => {
-    const { data: response } = await mdProduct.saveProduct(data);
+    const response = await productService.createProduct(data);
     return response;
   };
 
   const updateProduct = async (data: any, id: string) => {
-    const { data: response } = await mdProduct.updateProduct(data, id);
+    const response = await productService.updateProduct(id, data);
     return response;
   };
 
   const deleteProduct = async (id: string) => {
-    const { data: response } = await mdProduct.deleteProduct(id);
+    const response = await productService.deleteProduct(id);
     return response;
   };
 
   const fetchCategories = async (search: any) => {
-    const { data } = await mdProduct.getCategory(search);
-    setCategories(data);
+    const response: any = await productService.getCategories(search);
+    setCategories(response?.data || []);
   };
 
   const fetchInsurances = async (search: any) => {
@@ -71,7 +69,7 @@ export const useProduct = () => {
     updateProduct,
     deleteProduct,
     fetchProduct,
-    mdProduct,
+    mdProduct: productService,
     products,
     setProducts,
     fetchProductById,

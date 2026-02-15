@@ -1,36 +1,35 @@
 import {
   Insurance,
-  InsuranceService,
 } from "@/services/masterdata/insurance.service";
+import { productService } from "@/services/product/api/product.service";
 import { useState } from "react";
 
 export const useInsurance = () => {
-  const insuranceService = new InsuranceService();
   const [productsInsurance, setsInsurance] = useState<Insurance[]>([]);
   const [insurance, setInsurance] = useState<any[]>([]);
 
   const fetchInsurance = async (search: any) => {
-    const { data } = await insuranceService.getInsurance();
-    setInsurance(data);
+    const response: any = await productService.getInsurances(search);
+    setInsurance(response?.data || []);
   };
 
   const fetchInsuranceById = async (id: string) => {
-    const response = await insuranceService.getInsuranceById(id);
-    return response;
+    const response: any = await productService.getInsuranceById(id);
+    return response?.data ?? response;
   };
 
   const saveInsurance = async (data: any) => {
-    const { data: response } = await insuranceService.saveInsurance(data);
+    const response = await productService.createInsurance(data);
     return response;
   };
 
   const updateInsurance = async (data: any, id: string) => {
-    const { data: response } = await insuranceService.updateInsurance(data, id);
+    const response = await productService.updateInsurance(id, data);
     return response;
   };
 
   const deleteInsurance = async (id: string) => {
-    const { data: response } = await insuranceService.deleteInsurance(id);
+    const response = await productService.deleteInsurance(id);
     return response;
   };
 

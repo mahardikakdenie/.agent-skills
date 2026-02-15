@@ -7,9 +7,9 @@
 ## Status Overview
 
 - Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 29
+- Total Components Migrated (Main): 43
 - Incremental Updates: 0
-- Last Updated: 2026-02-15 18:28
+- Last Updated: 2026-02-15 18:42
 
 ---
 
@@ -20,7 +20,7 @@
 - Started: 2026-02-15 17:10
 - Completed: In Progress
 - Total Services: 10 (Claim, Auth, Policy, Transaction, Channel, Finance, Helper, Product, Promotion, Masterdata + dashboard aggregation)
-- Total Components: 29
+- Total Components: 43
 - Status: In Progress
 
 ### Components Migrated by Service
@@ -241,6 +241,18 @@ Components:
   - Verified: PASS
   - Issues: Normalized response access to handle existing mixed payload shapes safely
 
+- [x] `apps/admin-portal/src/app/promotion/components/product-selection-modal.tsx` - Promotion product picker category source
+  - Before: `new ProductService()` legacy class service for category lookup
+  - After: New product API service (`productService.getCategories`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/promotion/components/plan-selection-modal.tsx` - Promotion plan picker modal cleanup
+  - Before: `new PlanService()` legacy class instantiation (unused in component flow)
+  - After: Removed legacy class dependency and kept existing plan selection behavior
+  - Verified: PASS
+  - Issues: None
+
 #### Service: Masterdata (Channel/Currency/Product Hook Layer)
 
 Service Base URLs:
@@ -262,8 +274,82 @@ Components:
   - Issues: None
 
 - [x] `apps/admin-portal/src/app/masterdata/product/hooks.tsx` - Product helper hook (insurance lookup path)
-  - Before: Mixed `MdProductService` + legacy `productService.get(...)` for insurance fetch
-  - After: Retained `MdProductService` usage and replaced legacy insurance lookup with new product API service
+  - Before: `MdProductService` class usage for product CRUD/listing/category operations + legacy insurance lookup path
+  - After: New product API service methods for product CRUD/listing/category/insurance operations
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/user/hooks.tsx` - User helper hook
+  - Before: `new UserService()` class usage for account/group/role/channel operations
+  - After: New auth/channel API service methods (`authService`, `channelService`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/role/hooks.tsx` - Role helper hook
+  - Before: `new RoleService()` class usage for role/menu/permission operations
+  - After: New auth API service methods (`getRoles`, `getPages`, `getPermissionsByPage`, role-permission methods)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/group/hooks.tsx` - Group helper hook
+  - Before: `new GroupService()` class usage for group/member/role relations
+  - After: New auth API service methods for group and relation endpoints
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/page-management/hooks.tsx` - Page management helper hook
+  - Before: `new PagesService()` class usage
+  - After: New auth API service page methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/page-management/permission.hooks.tsx` - Permission helper hook
+  - Before: `new PermissionService()` class usage
+  - After: New auth API service permission methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/product-category/hooks.tsx` - Product category helper hook
+  - Before: `new ProductCategoriesService()` class usage
+  - After: New product API service category methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/insurance/hooks.tsx` - Insurance helper hook
+  - Before: `new InsuranceService()` class usage
+  - After: New product API service insurance methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/email-tag/hooks.tsx` - Email tag helper hook
+  - Before: `new EmailTagService()` class usage
+  - After: New product API service email-tag and journey-reference methods
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/email-template/hooks.tsx` - Email template helper hook
+  - Before: `new MailTemplateService()` class usage
+  - After: New product API service methods for template/product/category/insurance/plan/journey/tag operations
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/app/masterdata/holiday-date/hook.tsx` - Holiday calendar helper hook
+  - Before: `new HelperService()` class usage
+  - After: New helper API service calendar methods
+  - Verified: PASS
+  - Issues: None
+
+#### Service: Product + Channel Service (Partner Management Assign Plan)
+
+Service Base URLs:
+- `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
+- `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/app/masterdata/partner-management/detail/[id]/assign-plan.tsx` - Partner assign/unassign plan modal flow
+  - Before: `new ProductCatalogService()` class usage for plan list/assignment operations
+  - After: New product API service methods (`getPlans`, `getChannelPackagesByChannel`, `assignChannelPlans`, `unassignChannelPlans`)
   - Verified: PASS
   - Issues: None
 
@@ -277,13 +363,13 @@ Components:
 
 ### Components NOT Migrated
 
-- Remaining components/hooks still using legacy class-service instantiation patterns are pending in Batch 6 continuation (currently 14 files in active scope across promotion and masterdata-related hooks/components).
+- Active migration scope (`src/app`, `src/views/home`, `src/views/layout`) has no remaining `@/services/api.service` imports or `new *Service()` class instantiation patterns.
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 29
+- Total components migrated: 43
 - Components with issues: 4 (all fixed)
 - Components rolled back: 0
 
@@ -328,8 +414,8 @@ Components:
 
 ### Next Steps
 
-- [ ] Continue Batch 6 component migration for remaining services/features
-- [ ] Re-run full verification gate after next migration slice
+- [ ] Decide whether to extend Batch 6 migration to additional non-active-scope legacy hooks in `src/hooks`
+- [ ] Re-run full verification gate after next migration slice (if scope is extended)
 - [ ] Mark Batch 6 complete only after all component migrations are finished
 
 ---
@@ -338,4 +424,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata slice | 29 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata slice | 43 components | In Progress | this doc   |

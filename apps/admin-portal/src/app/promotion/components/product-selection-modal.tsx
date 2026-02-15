@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { ProductService } from "@/services/product.services";
+import { productService } from "@/services/product/api/product.service";
 
 interface Product {
   id: string;
@@ -72,8 +72,6 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const totalItems = products?.meta.total || 0;
   const totalPages = Math.ceil(totalItems / showProdPerPage);
 
-  const productService = new ProductService();
-
   const formatCategoryName = (name: string): string => {
     return name
       .replace(/[-_]/g, " ")
@@ -99,8 +97,8 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await productService.getPromotionCategories();
-        if (response.data && Array.isArray(response.data)) {
+        const response: any = await productService.getCategories();
+        if (response?.data && Array.isArray(response.data)) {
           const categoryList = response.data.map(
             (category: { id: string; name: string }) => ({
               id: category.id,
