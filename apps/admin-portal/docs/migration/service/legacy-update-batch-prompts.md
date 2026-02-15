@@ -188,7 +188,7 @@ For each affected service:
    - Update [service].service.ts
    - Update query-keys.ts
    - Create new hooks in hooks/queries/ or hooks/mutations/
-   - Update hook barrel exports in hooks/queries/index.ts, hooks/mutations/index.ts, and hooks/index.ts
+   - Update hook barrel exports in hooks/queries/index.ts and hooks/mutations/index.ts
    - **Hook requirements (see refactor-spec.md lines 523-525):**
      * Queries: accept optional `options?: Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>`
      * Mutations: accept optional `options?: UseMutationOptions<...>`
@@ -271,7 +271,6 @@ Steps:
    - Create hooks/queries/* for GET
    - Create hooks/mutations/* for POST/PUT/DELETE
    - Create hooks/queries/index.ts and hooks/mutations/index.ts
-   - Create hooks/index.ts (service-level hook barrel)
    - **Hook signature requirements (see refactor-spec.md lines 523-525):**
      * Queries: accept optional `options?: Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>`
      * Mutations: accept optional `options?: UseMutationOptions<...>`
@@ -326,7 +325,7 @@ Steps:
    - Replace old patterns:
      * Remove useState + useEffect for data fetching
      * Remove old service imports
-     * Import new hooks from @/services/<service-name>/hooks/
+     * Import query hooks from @/services/<service-name>/hooks/queries and mutation hooks from @/services/<service-name>/hooks/mutations
    - Update to new patterns:
      * Use useQuery hooks for GET operations
      * Use useMutation hooks for POST/PUT/DELETE
