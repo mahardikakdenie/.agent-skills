@@ -8,8 +8,8 @@
 
 - Main Refactor (Batch 6): Completed
 - Total Components Migrated (Main): 126
-- Incremental Updates: 8
-- Last Updated: 2026-02-15 20:52
+- Incremental Updates: 9
+- Last Updated: 2026-02-15 22:29
 
 ---
 
@@ -184,9 +184,9 @@ Components:
 
 - [x] `apps/admin-portal/src/app/finance/billing/hook.tsx` - Billing domain orchestration hook
   - Before: Direct `channelService`/`productService`/`financeService`/`transactionService` legacy calls
-  - After: New domain API services (`channel`, `product`, `finance`, `transaction`) with equivalent query/mutation flows
+  - After: `useChannelsV1`, `useInsurances`, `useCategories`, `useBillings`, `useBillingDetail`, `useNotMatchReconciliation`, `useTransactions`, `useCreateBilling`, `useUpdateBilling`, `useImportTransactions`, `useConfirmBillingReconciliation`, `useBrokerFeesFilter`, `useChannelFeesFilter`
   - Verified: PASS
-  - Issues: Local narrowing added for `unknown` query payloads
+  - Issues: Local narrowing retained for generic payload shape compatibility (`unknown`)
 
 - [x] `apps/admin-portal/src/app/finance/billing/add/page.tsx` - Create billing fee prefetch logic
   - Before: Direct `financeService.get(...)` filter calls via legacy api service
@@ -210,7 +210,7 @@ Components:
 
 - [x] `apps/admin-portal/src/app/product-category/page.tsx` - Product category redirect bootstrap
   - Before: Direct `productService.get(...)` via legacy api service for category bootstrap
-  - After: New product API service (`productService.getCategories`)
+  - After: `useCategories` query hook from product service
   - Verified: PASS
   - Issues: None
 
@@ -222,9 +222,9 @@ Components:
 
 - [x] `apps/admin-portal/src/app/product-category/hooks.tsx` - Product catalog domain hook orchestration
   - Before: Legacy `channelService`/`productService` API calls + `ProductCatalogService` instantiation
-  - After: New product/channel API service methods for all query/mutation paths
+  - After: Product/channel custom hooks from `services/*/hooks/queries` and `services/*/hooks/mutations` (plans, packages, benefits, channels, product config, categories, assign/unassign)
   - Verified: PASS
-  - Issues: Local narrowing added for inferred `unknown` aggregate query payloads (`catalogPlansData`, `packagesData`)
+  - Issues: Local narrowing retained for inferred `unknown` aggregate query payloads (`catalogPlansData`, `packagesData`)
 
 #### Service: Promotion + Product + Channel Service
 
@@ -896,8 +896,8 @@ Components:
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
-- [x] Replaced manual mutation calls with `useMutation` service hooks
-- [x] Replaced direct query calls with new service query hooks where feasible
+- [x] Replaced manual `useQuery`/`useMutation` in migrated scope with custom hooks from `services/*/hooks` when available
+- [x] Replaced direct query/mutation calls with new service query/mutation hooks and retained contracts in component hooks
 - [x] Preserved existing UI behavior and local component contracts
 - [x] Kept old services intact for non-migrated areas
 
@@ -945,14 +945,14 @@ Components:
 
 - Component: `apps/admin-portal/src/app/finance/billing/hook.tsx`
 - Cause: New API service methods return generic payloads and `useQuery` inferred `unknown` in aggregate return mapping
-- Fix: Added localized narrowing (`as any`) for aggregate query payloads at return assembly to preserve existing behavior safely in this phase
+- Fix: Re-refactored manual `useQuery`/`useMutation` calls to finance/product/channel/transaction custom hooks, then kept localized narrowing (`as any`) at aggregate return mapping to preserve current contract
 - Status: PASS (resolved)
 
 #### Issue 4: Product category hook aggregate query payload inferred as `unknown`
 
 - Component: `apps/admin-portal/src/app/product-category/hooks.tsx`
 - Cause: New product API service methods are generic and `useQuery` inferred aggregate payload as `unknown` at return assembly
-- Fix: Added localized narrowing (`as any`) for `catalogPlansData` and `packagesData` at return mapping
+- Fix: Re-refactored manual `useQuery`/`useMutation` calls to product/channel custom hooks and retained localized narrowing (`as any`) for `catalogPlansData` and `packagesData` at return mapping
 - Status: PASS (resolved)
 
 #### Issue 5: Legacy `src/hooks` migration introduced `unknown` inference in mutation/query payload access

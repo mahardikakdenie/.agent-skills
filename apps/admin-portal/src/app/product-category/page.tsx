@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import AppURL from "@/constants/app-url.const";
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,7 @@ import {
   createProductCatalogTableColumns,
   ProductCatalogTableData,
 } from "@/components/tableConfig/productCatalogTableConfig";
-import { productService } from "@/services/product/api/product.service";
+import { useCategories } from "@/services/product/hooks/queries";
 import { useProducts } from "./hooks";
 
 export default function ProductCategoryPage() {
@@ -30,17 +29,20 @@ export default function ProductCategoryPage() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
 
-  const { data: categoriesData } = useQuery({
-    queryKey: ["product-categories-redirect"],
-    queryFn: async () => {
-      const response: any = await productService.getCategories({ limit: 1000 });
-      const rawCategories =
-        response?.data?.data ?? response?.data ?? response ?? [];
-      return Array.isArray(rawCategories) ? rawCategories : [];
-    },
-    enabled: !category,
-    staleTime: 10 * 60 * 1000,
-  });
+  const { data: categoriesResponse } = useCategories(
+    { limit: 1000 },
+    {
+      enabled: !category,
+      staleTime: 10 * 60 * 1000,
+    }
+  );
+
+  const categoriesData = useMemo(() => {
+    const responseData = categoriesResponse as any;
+    const rawCategories =
+      responseData?.data?.data ?? responseData?.data ?? responseData ?? [];
+    return Array.isArray(rawCategories) ? rawCategories : [];
+  }, [categoriesResponse]);
 
   useEffect(() => {
     if (!category && categoriesData && categoriesData.length > 0) {

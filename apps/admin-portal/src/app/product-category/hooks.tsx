@@ -1,9 +1,37 @@
-import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import AppURL from "@/constants/app-url.const";
-import { channelService } from "@/services/channel/api/channel.service";
-import { productService } from "@/services/product/api/product.service";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import {
+  useCategories,
+  useInsurances,
+  usePackageDetail,
+  usePackagesByPlan,
+  usePlanBenefits,
+  usePlanChannels,
+  usePlanDetail,
+  usePlanDetailsByType,
+  usePlans,
+  useProductConfig,
+  useProducts as useProductList,
+} from "@/services/product/hooks/queries";
+import {
+  useAssignChannelPlans,
+  useBulkCreatePackagesByCategory,
+  useBulkCreatePlanBenefits,
+  useBulkCreatePlanDetails,
+  useCreatePackage,
+  useCreatePlan,
+  useCreatePlanBenefit,
+  useDeletePackage,
+  useDeletePlan,
+  useDeletePlanBenefit,
+  useUnassignChannelPlans,
+  useUpdatePackage,
+  useUpdatePlan,
+} from "@/services/product/hooks/mutations";
+import { productKeys } from "@/services/product/query-keys";
 import { useAuth } from "@/context/auth.context";
 import { toastNotification } from "@/lib/toast";
 
@@ -69,258 +97,202 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     }
   }, [searchPlanName, searchInsurer, searchProduct]);
 
-  useEffect(() => {
-    if (searchInsurer) {
-      refetchProducts();
-    }
-  }, [searchInsurer]);
+  const productsParams = useMemo(
+    () => (searchInsurer ? { insuranceId: searchInsurer } : undefined),
+    [searchInsurer],
+  );
 
   const {
-    data: productsData,
+    data: productsResponse,
     isLoading: isLoadingProducts,
     refetch: refetchProducts,
-  } = useQuery({
-    queryKey: ["products", searchInsurer],
-    queryFn: async () => {
-      const params = searchInsurer ? { insuranceId: searchInsurer } : {};
-      const response: any = await productService.getProducts(params);
-      return response?.data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  } = useProductList(productsParams, { staleTime: 5 * 60 * 1000 });
+  const productsData = useMemo(
+    () => (productsResponse as any)?.data || [],
+    [productsResponse],
+  );
 
-  const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
-    queryKey: ["insurances"],
-    queryFn: async () => {
-      const response: any = await productService.getInsurances({});
-      return response?.data || [];
-    },
-    staleTime: 10 * 60 * 1000,
-  });
+  const { data: insurancesResponse, isLoading: isLoadingInsurances } =
+    useInsurances({}, { staleTime: 10 * 60 * 1000 });
+  const insurancesData = useMemo(
+    () => (insurancesResponse as any)?.data || [],
+    [insurancesResponse],
+  );
+
+  const catalogPlansParams = useMemo(() => {
+    if (!category) return undefined;
+    return {
+      page,
+      pageSize: rowsPerPage,
+      category,
+      ...(searchPlanName && { planName: searchPlanName }),
+      ...(searchInsurer && { insuranceId: searchInsurer }),
+      ...(searchProduct && { productId: searchProduct }),
+    };
+  }, [
+    category,
+    page,
+    rowsPerPage,
+    searchInsurer,
+    searchPlanName,
+    searchProduct,
+  ]);
 
   const {
     data: catalogPlansData,
     isLoading: isLoadingCatalogPlans,
     refetch: refetchCatalogPlans,
-  } = useQuery({
-    queryKey: [
-      "product-catalog-plans",
-      category,
-      page,
-      rowsPerPage,
-      searchPlanName,
-      searchInsurer,
-      searchProduct,
-    ],
-    queryFn: async () => {
-      if (!category) return null;
-      const params = {
-        page,
-        pageSize: rowsPerPage,
-        category,
-        ...(searchPlanName && { planName: searchPlanName }),
-        ...(searchInsurer && { insuranceId: searchInsurer }),
-        ...(searchProduct && { productId: searchProduct }),
-      };
-      const response = await productService.getPlans(params);
-      return response;
-    },
+  } = usePlans(catalogPlansParams, {
     enabled: !!category,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
   const {
-    data: planData,
+    data: planResponse,
     isLoading: isLoadingPlan,
     refetch: refetchPlan,
-  } = useQuery({
-    queryKey: ["plan", planId],
-    queryFn: async () => {
-      if (!planId) return null;
-      const response: any = await productService.getPlanById(planId);
-      return response?.data?.[0] || null;
-    },
+  } = usePlanDetail(planId || "", {
     enabled: !!planId,
     staleTime: 5 * 60 * 1000,
   });
+  const planData = (planResponse as any)?.data?.[0] || null;
 
-  const flattenTree = (
-    node: any,
-    parent_id: string | null = null,
-    level: number = 0,
-  ) => {
-    let flatArray: any[] = [];
-    const { children, ...rest } = node;
-    flatArray.push({
-      ...rest,
-      parent_id,
-      name:
-        " - ".repeat(level) + rest.benefits.description_id ||
-        rest.benefits.description_en ||
-        rest.benefits.description_multilanguage,
-      level,
-    });
-
-    if (children && children.length > 0) {
-      children.forEach((child: any) => {
-        flatArray = flatArray.concat(flattenTree(child, node.id, level + 1));
+  const flattenTree = useCallback(
+    (node: any, parent_id: string | null = null, level: number = 0) => {
+      let flatArray: any[] = [];
+      const { children, ...rest } = node;
+      flatArray.push({
+        ...rest,
+        parent_id,
+        name:
+          " - ".repeat(level) + rest.benefits.description_id ||
+          rest.benefits.description_en ||
+          rest.benefits.description_multilanguage,
+        level,
       });
-    }
 
-    return flatArray;
-  };
+      if (children && children.length > 0) {
+        children.forEach((child: any) => {
+          flatArray = flatArray.concat(flattenTree(child, node.id, level + 1));
+        });
+      }
+
+      return flatArray;
+    },
+    [],
+  );
 
   const {
-    data: benefitsData,
+    data: benefitsResponse,
     isLoading: isLoadingBenefits,
     refetch: refetchBenefits,
-  } = useQuery({
-    queryKey: ["plan-benefits", planId],
-    queryFn: async () => {
-      if (!planId) return [];
-      const response: any = await productService.getPlanBenefits(planId);
-      const reformatTreeToFlatArray = response?.data?.flatMap(
-        (item: any) => flattenTree(item),
-      );
-      return reformatTreeToFlatArray || [];
-    },
+  } = usePlanBenefits(planId || "", {
     enabled: !!planId,
     staleTime: 5 * 60 * 1000,
   });
+  const benefitsData = useMemo(() => {
+    const benefitTree = (benefitsResponse as any)?.data;
+    if (!Array.isArray(benefitTree)) return [];
+    return benefitTree.flatMap((item: any) => flattenTree(item));
+  }, [benefitsResponse, flattenTree]);
 
   const {
-    data: planDetailsData,
+    data: planDetailsResponse,
     isLoading: isLoadingPlanDetails,
     refetch: refetchPlanDetails,
-  } = useQuery({
-    queryKey: ["plan-details", planId, detailType],
-    queryFn: async () => {
-      if (!planId || !detailType) return [];
-      const response: any = await productService.getPlanDetails(
-        planId,
-        detailType,
-      );
-      return response?.data || [];
-    },
+  } = usePlanDetailsByType(planId || "", detailType || "", {
     enabled: !!planId && !!detailType,
     staleTime: 5 * 60 * 1000,
   });
+  const planDetailsData = (planDetailsResponse as any)?.data || [];
 
-  const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["channels"],
-    queryFn: async () => {
-      const response: any = await channelService.getChannelsV1({
-        page: 1,
-        limit: 100,
-      });
-      return response?.data || [];
-    },
-    staleTime: 10 * 60 * 1000,
-  });
+  const { data: channelsResponse, isLoading: isLoadingChannels } = useChannelsV1(
+    { page: 1, limit: 100 },
+    { staleTime: 10 * 60 * 1000 },
+  );
+  const channelsData = (channelsResponse as any)?.data || [];
 
   const {
-    data: channelPlansData,
+    data: channelPlansResponse,
     isLoading: isLoadingChannelPlans,
     refetch: refetchChannelPlans,
-  } = useQuery({
-    queryKey: ["channel-plans", planId],
-    queryFn: async () => {
-      if (!planId) return [];
-      const response: any = await productService.getPlanChannels(planId);
-      return response?.data || [];
-    },
+  } = usePlanChannels(planId || "", {
     enabled: !!planId,
     staleTime: 5 * 60 * 1000,
   });
+  const channelPlansData = (channelPlansResponse as any)?.data || [];
 
-  const { data: allPlansData, isFetching: isLoadingAllPlans } = useQuery({
-    queryKey: ["all-plans", searchProduct],
-    queryFn: async () => {
-      const response: any = await productService.getPlans({
-        ...(searchProduct && { productId: searchProduct }),
-      });
-      return response?.data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  const allPlansParams = useMemo(
+    () => (searchProduct ? { productId: searchProduct } : undefined),
+    [searchProduct],
+  );
+  const { data: allPlansResponse, isFetching: isLoadingAllPlans } = usePlans(
+    allPlansParams,
+    { staleTime: 5 * 60 * 1000 },
+  );
+  const allPlansData = useMemo(
+    () => (allPlansResponse as any)?.data || [],
+    [allPlansResponse],
+  );
 
+  const packagesParams = useMemo(
+    () => ({
+      page: packagesPage,
+      pageSize: packagesRowsPerPage,
+    }),
+    [packagesPage, packagesRowsPerPage],
+  );
   const {
     data: packagesData,
     isLoading: isLoadingPackages,
     refetch: refetchPackages,
-  } = useQuery({
-    queryKey: ["packages-by-plan", planId, packagesPage, packagesRowsPerPage],
-    queryFn: async () => {
-      if (!planId) return { data: [], meta: { page: 1, total: 0 } };
-      const response = await productService.getPackagesByPlan(planId, {
-        page: packagesPage,
-        pageSize: packagesRowsPerPage,
-      });
-      return response;
-    },
+  } = usePackagesByPlan(planId || "", packagesParams, {
     enabled: !!planId,
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: packageData, isLoading: isLoadingPackage } = useQuery({
-    queryKey: ["package", packageId],
-    queryFn: async () => {
-      if (!packageId) return null;
-      const response: any = await productService.getPackageById(packageId);
-      return response || null;
+  const { data: packageData, isLoading: isLoadingPackage } = usePackageDetail(
+    packageId || "",
+    {
+      enabled: !!packageId,
+      staleTime: 5 * 60 * 1000,
     },
-    enabled: !!packageId,
-    staleTime: 5 * 60 * 1000,
-  });
+  );
 
-  const { data: productConfigData, isLoading: isLoadingProductConfig } =
-    useQuery({
-      queryKey: ["product-config", category],
-      queryFn: async () => {
-        if (!category) return null;
-        const response: any = await productService.getProductConfigByType(
-          category,
-        );
-        return response?.data || null;
-      },
+  const { data: productConfigResponse, isLoading: isLoadingProductConfig } =
+    useProductConfig(category || "", {
       enabled: !!category,
       staleTime: 10 * 60 * 1000,
     });
+  const productConfigData = (productConfigResponse as any)?.data || null;
 
-  const { data: categoriesData } = useQuery({
-    queryKey: ["product-categories-catalog"],
-    queryFn: async () => {
-      const response: any = await productService.getCategories({ limit: 1000 });
-      const rawCategories =
-        response?.data?.data ?? response?.data ?? response ?? [];
-      const normalizedCategories = Array.isArray(rawCategories)
-        ? rawCategories
-        : [];
-
-      const formatted = normalizedCategories.map((item: any) => ({
-        id: item.id,
-        url: `${AppURL.productCategory}?category=${item.name}`,
-        label: item?.display_name || formatCategoryLabel(item.name),
-        slug: item.name,
-      }));
-
-      return formatted;
+  const { data: categoriesResponse } = useCategories(
+    { limit: 1000 },
+    {
+      staleTime: 10 * 60 * 1000,
+      refetchOnMount: "always",
     },
-    staleTime: 10 * 60 * 1000,
-    refetchOnMount: "always",
-  });
+  );
 
-  const formattedCategories = categoriesData || [];
+  const formattedCategories = useMemo(() => {
+    const responseData = categoriesResponse as any;
+    const rawCategories =
+      responseData?.data?.data ?? responseData?.data ?? responseData ?? [];
+    const normalizedCategories = Array.isArray(rawCategories)
+      ? rawCategories
+      : [];
 
-  const savePlanMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response: any = await productService.createPlan(data);
-      return response?.data ?? response;
-    },
+    return normalizedCategories.map((item: any) => ({
+      id: item.id,
+      url: `${AppURL.productCategory}?category=${item.name}`,
+      label: item?.display_name || formatCategoryLabel(item.name),
+      slug: item.name,
+    }));
+  }, [categoriesResponse]);
+
+  const savePlanMutation = useCreatePlan({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-catalog-plans"] });
-      queryClient.invalidateQueries({ queryKey: ["all-plans"] });
       toastNotification("Plan created successfully", "success");
     },
     onError: (error: any) => {
@@ -328,15 +300,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const updatePlanMutation = useMutation({
-    mutationFn: async ({ data, id }: { data: any; id: string }) => {
-      const response: any = await productService.updatePlan(id, data);
-      return response?.data ?? response;
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["product-catalog-plans"] });
-      queryClient.invalidateQueries({ queryKey: ["plan", variables.id] });
-      queryClient.invalidateQueries({ queryKey: ["all-plans"] });
+  const updatePlanMutation = useUpdatePlan({
+    onSuccess: () => {
       toastNotification("Plan updated successfully", "success");
     },
     onError: (error: any) => {
@@ -344,13 +309,8 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const deletePlanMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await productService.deletePlan(id);
-    },
+  const deletePlanMutation = useDeletePlan({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-catalog-plans"] });
-      queryClient.invalidateQueries({ queryKey: ["all-plans"] });
       toastNotification("Plan deleted successfully", "success");
     },
     onError: (error: any) => {
@@ -358,27 +318,13 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const uploadPackageMutation = useMutation({
-    mutationFn: async ({
-      category,
-      id,
-      data,
-    }: {
-      category: string;
-      id: string;
-      data: any;
-    }) => {
-      const response: any = await productService.bulkCreatePackagesByCategory(
-        category,
-        id,
-        data,
-      );
-      return response?.data ?? response;
-    },
+  const uploadPackageMutation = useBulkCreatePackagesByCategory({
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["package", variables.id] });
       queryClient.invalidateQueries({
-        queryKey: ["packages-by-plan", variables.id],
+        queryKey: productKeys.packageDetail(variables.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: productKeys.packagesByPlan(variables.id),
       });
       toastNotification("Packages uploaded successfully", "success");
     },
@@ -387,15 +333,13 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const uploadPlanBenefitsMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const response: any = await productService.bulkCreatePlanBenefits(id, data);
-      return response?.data ?? response;
-    },
+  const uploadPlanBenefitsMutation = useBulkCreatePlanBenefits({
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["plan-benefits", variables.id],
-      });
+      if (variables?.planId) {
+        queryClient.invalidateQueries({
+          queryKey: productKeys.planBenefits(variables.planId),
+        });
+      }
       toastNotification("Plan benefits uploaded successfully", "success");
     },
     onError: (error: any) => {
@@ -406,27 +350,13 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const uploadPlanDetailsMutation = useMutation({
-    mutationFn: async ({
-      id,
-      type,
-      data,
-    }: {
-      id: string;
-      type: string;
-      data: any;
-    }) => {
-      const response: any = await productService.bulkCreatePlanDetails(
-        id,
-        type,
-        data,
-      );
-      return response?.data ?? response;
-    },
+  const uploadPlanDetailsMutation = useBulkCreatePlanDetails({
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["plan-details", variables.id, variables.type],
-      });
+      if (variables?.planId) {
+        queryClient.invalidateQueries({
+          queryKey: productKeys.planDetails(variables.planId, variables.type),
+        });
+      }
       toastNotification("Plan details uploaded successfully", "success");
     },
     onError: (error: any) => {
@@ -437,28 +367,14 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const assignPlansMutation = useMutation({
-    mutationFn: async ({
-      planId,
-      channel,
-    }: {
-      planId: string;
-      channel: string;
-    }) => {
-      const extractChannel = channel.split("|");
-      const response: any = await productService.assignChannelPlans(
-        {
-          channel: extractChannel[0],
-          plans: [planId],
-          channelName: extractChannel[1],
-        },
-      );
-      return response?.data ?? response;
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["channel-plans", variables.planId],
-      });
+  const assignPlansMutation = useAssignChannelPlans({
+    onSuccess: (_, variables: any) => {
+      const assignedPlanId = variables?.plans?.[0];
+      if (assignedPlanId) {
+        queryClient.invalidateQueries({
+          queryKey: productKeys.planChannels(assignedPlanId),
+        });
+      }
       toastNotification("Plan assigned to channel successfully", "success");
     },
     onError: (error: any) => {
@@ -469,23 +385,14 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const unAssignPlansMutation = useMutation({
-    mutationFn: async ({
-      planId,
-      channelId,
-    }: {
-      planId: string;
-      channelId: string;
-    }) => {
-      const response: any = await productService.unassignChannelPlans(
-        { channel: channelId, plans: [planId] },
-      );
-      return response?.data ?? response;
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["channel-plans", variables.planId],
-      });
+  const unAssignPlansMutation = useUnassignChannelPlans({
+    onSuccess: (_, variables: any) => {
+      const unassignedPlanId = variables?.plans?.[0];
+      if (unassignedPlanId) {
+        queryClient.invalidateQueries({
+          queryKey: productKeys.planChannels(unassignedPlanId),
+        });
+      }
       toastNotification("Plan unassigned from channel successfully", "success");
     },
     onError: (error: any) => {
@@ -496,23 +403,17 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const savePackageMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response: any = await productService.createPackage(data);
-      return response?.data ?? response;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["package"] });
-
+  const savePackageMutation = useCreatePackage({
+    onSuccess: (data: any) => {
       if (data?.plan) {
         queryClient.invalidateQueries({
-          queryKey: ["packages-by-plan", data.plan],
+          queryKey: productKeys.packagesByPlan(data.plan),
         });
       }
 
       if (planId) {
         queryClient.invalidateQueries({
-          queryKey: ["packages-by-plan", planId],
+          queryKey: productKeys.packagesByPlan(planId),
         });
       }
       toastNotification("Package created successfully", "success");
@@ -522,22 +423,22 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const updatePackageMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const response: any = await productService.updatePackage(id, data);
-      return response?.data ?? response;
-    },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["package", variables.id] });
+  const updatePackageMutation = useUpdatePackage({
+    onSuccess: (data: any, variables) => {
+      if (variables?.id) {
+        queryClient.invalidateQueries({
+          queryKey: productKeys.packageDetail(variables.id),
+        });
+      }
 
       if (data?.plan) {
         queryClient.invalidateQueries({
-          queryKey: ["packages-by-plan", data.plan],
+          queryKey: productKeys.packagesByPlan(data.plan),
         });
       }
       if (planId) {
         queryClient.invalidateQueries({
-          queryKey: ["packages-by-plan", planId],
+          queryKey: productKeys.packagesByPlan(planId),
         });
       }
       toastNotification("Package updated successfully", "success");
@@ -547,17 +448,17 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const deletePackageMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response: any = await productService.deletePackage(id);
-      return response?.data ?? response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["package"] });
+  const deletePackageMutation = useDeletePackage({
+    onSuccess: (_, packageDetailId) => {
+      if (packageDetailId) {
+        queryClient.invalidateQueries({
+          queryKey: productKeys.packageDetail(packageDetailId),
+        });
+      }
 
       if (planId) {
         queryClient.invalidateQueries({
-          queryKey: ["packages-by-plan", planId],
+          queryKey: productKeys.packagesByPlan(planId),
         });
       }
       toastNotification("Package deleted successfully", "success");
@@ -567,14 +468,12 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const saveBenefitMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response: any = await productService.createPlanBenefit(data);
-      return response?.data ?? response;
-    },
+  const saveBenefitMutation = useCreatePlanBenefit({
     onSuccess: () => {
       if (planId) {
-        queryClient.invalidateQueries({ queryKey: ["plan-benefits", planId] });
+        queryClient.invalidateQueries({
+          queryKey: productKeys.planBenefits(planId),
+        });
       }
       toastNotification("Benefit created successfully", "success");
     },
@@ -583,14 +482,12 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     },
   });
 
-  const deleteBenefitMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response: any = await productService.deletePlanBenefit(id);
-      return response?.data ?? response;
-    },
+  const deleteBenefitMutation = useDeletePlanBenefit({
     onSuccess: () => {
       if (planId) {
-        queryClient.invalidateQueries({ queryKey: ["plan-benefits", planId] });
+        queryClient.invalidateQueries({
+          queryKey: productKeys.planBenefits(planId),
+        });
       }
       toastNotification("Benefit deleted successfully", "success");
     },
@@ -650,6 +547,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
 
   const fetchInsurances = useCallback(
     async (params: any = {}) => {
+      void params;
       return insurancesData || [];
     },
     [insurancesData],
@@ -791,16 +689,65 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     canCreate,
 
     savePlan: savePlanMutation.mutateAsync,
-    updatePlan: updatePlanMutation.mutateAsync,
+    updatePlan: async ({ id, data }: { id: string; data: any }) =>
+      updatePlanMutation.mutateAsync({ id, payload: data }),
     deletePlan: deletePlanMutation.mutateAsync,
-    uploadPackage: uploadPackageMutation.mutateAsync,
-    uploadPlanBenefits: uploadPlanBenefitsMutation.mutateAsync,
-    uploadPlanDetails: uploadPlanDetailsMutation.mutateAsync,
-    assignPlans: assignPlansMutation.mutateAsync,
-    unAssignPlans: unAssignPlansMutation.mutateAsync,
+    uploadPackage: async ({
+      category,
+      id,
+      data,
+    }: {
+      category: string;
+      id: string;
+      data: any;
+    }) => uploadPackageMutation.mutateAsync({ category, id, payload: data }),
+    uploadPlanBenefits: async ({ id, data }: { id: string; data: any }) =>
+      uploadPlanBenefitsMutation.mutateAsync({ planId: id, payload: data }),
+    uploadPlanDetails: async ({
+      id,
+      type,
+      data,
+    }: {
+      id: string;
+      type: string;
+      data: any;
+    }) =>
+      uploadPlanDetailsMutation.mutateAsync({
+        planId: id,
+        type,
+        payload: data,
+      }),
+    assignPlans: async ({
+      planId,
+      channel,
+    }: {
+      planId: string;
+      channel: string;
+    }) => {
+      const [channelId, channelName] = channel.split("|");
+      return assignPlansMutation.mutateAsync({
+        channel: channelId,
+        plans: [planId],
+        channelName,
+      });
+    },
+    unAssignPlans: async ({
+      planId,
+      channelId,
+    }: {
+      planId: string;
+      channelId: string;
+    }) =>
+      unAssignPlansMutation.mutateAsync({
+        channel: channelId,
+        plans: [planId],
+      }),
     savePackage: savePackageMutation.mutateAsync,
-    updatePackage: updatePackageMutation.mutateAsync,
-    deletePackage: deletePackageMutation.mutateAsync,
+    updatePackage: async ({ id, data }: { id: string; data: any }) =>
+      updatePackageMutation.mutateAsync({ id, payload: data }),
+    deletePackage: async (id: string) => {
+      await deletePackageMutation.mutateAsync(id);
+    },
     saveBenefit: saveBenefitMutation.mutateAsync,
     deleteBenefit: deleteBenefitMutation.mutateAsync,
 

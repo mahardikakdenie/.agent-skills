@@ -1,11 +1,23 @@
 import { useState, useCallback, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format } from "date-fns";
-import { channelService } from "@/services/channel/api/channel.service";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import {
+  useBillings,
+  useBillingDetail,
+  useBrokerFeesFilter,
+  useChannelFeesFilter,
+  useNotMatchReconciliation,
+} from "@/services/finance/hooks/queries";
+import {
+  useConfirmBillingReconciliation,
+  useCreateBilling,
+  useImportTransactions,
+  useUpdateBilling,
+} from "@/services/finance/hooks/mutations";
 import { financeService } from "@/services/finance/api/finance.service";
-import { productService } from "@/services/product/api/product.service";
-import { transactionService } from "@/services/transaction/api/transaction.service";
+import { useCategories, useInsurances } from "@/services/product/hooks/queries";
+import { useTransactions } from "@/services/transaction/hooks/queries";
 import { toastNotification } from "@/lib/toast";
 
 interface UseBillingProps {
@@ -112,7 +124,6 @@ interface UseBillingHookProps {
 
 export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   const { billingId, groupBy } = props || {};
-  const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -227,110 +238,83 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     [updateURL]
   );
 
-  const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
-    queryKey: ["channels"],
-    queryFn: async () => {
-      const response = await channelService.getChannelsV1({
-        page: 1,
-        limit: 100,
-      });
-      return (response as any)?.data || [];
-    },
-    staleTime: 10 * 60 * 1000,
-  });
-
-  const { data: insurancesData, isLoading: isLoadingInsurances } = useQuery({
-    queryKey: ["insurances"],
-    queryFn: async () => {
-      const response = await productService.getInsurances({});
-      return (response as any)?.data || [];
-    },
-    staleTime: 10 * 60 * 1000,
-  });
-
-  const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const response = await productService.getCategories();
-      return (response as any)?.data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const queryKey = useMemo(
-    () => [
-      "billings",
-      page,
-      rowsPerPage,
-      searchType,
-      searchChannel,
-      searchCategory,
-      date?.toISOString(),
-    ],
-    [page, rowsPerPage, searchType, searchChannel, searchCategory, date]
+  const { data: channelsResponse, isLoading: isLoadingChannels } = useChannelsV1(
+    { page: 1, limit: 100 },
+    { staleTime: 10 * 60 * 1000 }
   );
+  const channelsData = useMemo(
+    () => (channelsResponse as any)?.data || [],
+    [channelsResponse]
+  );
+
+  const { data: insurancesResponse, isLoading: isLoadingInsurances } =
+    useInsurances({}, { staleTime: 10 * 60 * 1000 });
+  const insurancesData = useMemo(
+    () => (insurancesResponse as any)?.data || [],
+    [insurancesResponse]
+  );
+
+  const { data: categoriesResponse, isLoading: isLoadingCategories } =
+    useCategories(undefined, { staleTime: 5 * 60 * 1000 });
+  const categoriesData = (categoriesResponse as any)?.data || [];
+
+  const billingsParams = useMemo(() => {
+    const query: { [key: string]: any } = {
+      type: searchType,
+      company: searchChannel,
+      page,
+      pageSize: rowsPerPage,
+    };
+
+    if (date) {
+      const startDate = format(
+        new Date(date.getFullYear(), date.getMonth(), 1),
+        "yyyy-MM-dd"
+      );
+      const endDate = format(
+        new Date(date.getFullYear(), date.getMonth() + 1, 0),
+        "yyyy-MM-dd"
+      );
+      query.startDate = startDate;
+      query.endDate = endDate;
+    }
+
+    if (searchCategory !== "All") {
+      query.category = searchCategory;
+    }
+
+    return query;
+  }, [date, page, rowsPerPage, searchCategory, searchChannel, searchType]);
 
   const {
     data: billingsData,
     isLoading: isLoadingBillings,
     isFetching: isFetchingBillings,
     refetch: refetchBillings,
-  } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const query: { [key: string]: any } = {
-        type: searchType,
-        company: searchChannel,
-        page,
-        pageSize: rowsPerPage,
-      };
-
-      if (date) {
-        const startDate = format(
-          new Date(date.getFullYear(), date.getMonth(), 1),
-          "yyyy-MM-dd"
-        );
-        const endDate = format(
-          new Date(date.getFullYear(), date.getMonth() + 1, 0),
-          "yyyy-MM-dd"
-        );
-        query.startDate = startDate;
-        query.endDate = endDate;
-      }
-
-      if (searchCategory !== "All") {
-        query.category = searchCategory;
-      }
-
-      const response = await financeService.getBillings(query);
-      return response;
-    },
+  } = useBillings(billingsParams, {
     enabled: !!searchType && !!searchChannel,
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
+  const billingDetailParams = useMemo(() => {
+    const params: any = {
+      page: billingDetailsParams?.page || page,
+      pageSize: billingDetailsParams?.limit || rowsPerPage,
+    };
+
+    if (billingDetailsParams?.groupBy || groupBy) {
+      params.groupBy = billingDetailsParams?.groupBy || groupBy;
+    }
+
+    return params;
+  }, [billingDetailsParams, groupBy, page, rowsPerPage]);
+
   const {
     data: billingData,
     isLoading: isLoadingBilling,
     refetch: refetchBilling,
-  } = useQuery({
-    queryKey: ["billing", billingId, billingDetailsParams],
-    queryFn: async () => {
-      if (!billingId) return null;
-
-      const params: any = {
-        page: billingDetailsParams?.page || page,
-        pageSize: billingDetailsParams?.limit || rowsPerPage,
-      };
-
-      if (billingDetailsParams?.groupBy) {
-        params.groupBy = billingDetailsParams.groupBy;
-      }
-
-      const response = await financeService.getBillingById(billingId, params);
-      return response;
-    },
+  } = useBillingDetail(billingId || "", billingDetailParams, {
     enabled: !!billingId,
     staleTime: 5 * 60 * 1000,
   });
@@ -338,63 +322,54 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
   const {
     data: unmatchedReconcillBillingsData,
     isLoading: isLoadingUnmatchedReconcillBillings,
-    refetch: refetchUnmatchedReconcillBillings,
-  } = useQuery({
-    queryKey: ["unmatched-reconcill-billings", page, rowsPerPage],
-    queryFn: async () => {
-      const response = await financeService.getNotMatchReconciliation({
-        page,
-        pageSize: rowsPerPage,
-      });
-      return response;
+  } = useNotMatchReconciliation(
+    {
+      page,
+      pageSize: rowsPerPage,
     },
-    staleTime: 5 * 60 * 1000,
-  });
+    { staleTime: 5 * 60 * 1000 }
+  );
+
+  const transactionQueryParams = useMemo(() => {
+    if (!transactionParams) {
+      return undefined;
+    }
+
+    const { type, company, category, from, to, page, limit } =
+      transactionParams;
+    const search: any = {
+      status: "Declaration",
+      page,
+      limit,
+      from,
+      to,
+    };
+
+    if (type === "insurer") {
+      search.insurance = company;
+    } else if (type === "partner") {
+      search.channel = company;
+    }
+
+    if (category !== "All") {
+      search.category = category;
+    }
+
+    return search;
+  }, [transactionParams]);
 
   const {
     data: transactionsData,
     isLoading: isLoadingTransactions,
     refetch: refetchTransactions,
-  } = useQuery({
-    queryKey: ["billing-transactions", transactionParams],
-    queryFn: async () => {
-      if (!transactionParams) return { data: [], meta: {} };
-
-      const { type, company, category, from, to, page, limit } =
-        transactionParams;
-
-      const search: any = {
-        status: "Declaration",
-        page,
-        limit,
-        from,
-        to,
-      };
-
-      if (type === "insurer") {
-        search.insurance = company;
-      } else if (type === "partner") {
-        search.channel = company;
-      }
-
-      if (category !== "All") {
-        search.category = category;
-      }
-
-      const response = await transactionService.getTransactions(search);
-      return response || { data: [], meta: {} };
-    },
+  } = useTransactions(transactionQueryParams, {
     enabled: !!transactionParams,
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
-  const createBillingMutation = useMutation({
-    mutationFn: async (data: any) => {
-      await financeService.createBilling(data);
-    },
+  const createBillingMutation = useCreateBilling({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["billings"] });
       toastNotification("Billing created successfully", "success");
     },
     onError: (error: any) => {
@@ -402,13 +377,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     },
   });
 
-  const updateBillingMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      await financeService.updateBilling(id, data);
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["billings"] });
-      queryClient.invalidateQueries({ queryKey: ["billing", variables.id] });
+  const updateBillingMutation = useUpdateBilling({
+    onSuccess: () => {
       toastNotification("Billing updated successfully", "success");
     },
     onError: (error: any) => {
@@ -416,12 +386,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     },
   });
 
-  const importBillingTransactionsMutation = useMutation({
-    mutationFn: async (data: any) => {
-      await financeService.importTransactions(data as FormData);
-    },
+  const importBillingTransactionsMutation = useImportTransactions({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["billings"] });
       toastNotification(
         "Billing transactions imported successfully",
         "success"
@@ -435,13 +401,8 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     },
   });
 
-  const confirmReconciliationMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await financeService.confirmBillingReconciliation(id);
-    },
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ["billings"] });
-      queryClient.invalidateQueries({ queryKey: ["billing", id] });
+  const confirmReconciliationMutation = useConfirmBillingReconciliation({
+    onSuccess: () => {
       toastNotification("Reconciliation confirmed successfully", "success");
     },
     onError: (error: any) => {
@@ -457,75 +418,100 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     productId?: string,
     planId?: string
   ) => {
-    const { data, isLoading, refetch } = useQuery({
-      queryKey: ["broker-fees", insuranceId, productId, planId],
-      queryFn: async () => {
-        if (!insuranceId) return null;
+    const { data: feesResponse, isLoading, refetch } = useBrokerFeesFilter(
+      insuranceId
+        ? {
+            insuranceId,
+            productId,
+            planId,
+          }
+        : undefined,
+      {
+        enabled: !!insuranceId,
+        staleTime: 5 * 60 * 1000,
+      }
+    );
 
-        const feesResponse: any = await financeService.getBrokerFeesFilter({
-          insuranceId,
-          productId,
-          planId,
-        });
+    const fees = (feesResponse as any)?.data;
 
-        if (feesResponse && feesResponse.data.length > 0) {
-          return {
-            insurance: feesResponse.data[0].insurance,
-            fee: feesResponse.data[0].fee,
-            fee_type: feesResponse.data[0].fee_type,
-          };
-        }
+    if (!insuranceId) {
+      return { data: null, isLoading, refetch };
+    }
 
-        return {
-          insurance: "",
-          fee: 0,
-          fee_type: "",
-        };
+    if (Array.isArray(fees) && fees.length > 0) {
+      return {
+        data: {
+          insurance: fees[0].insurance,
+          fee: fees[0].fee,
+          fee_type: fees[0].fee_type,
+        },
+        isLoading,
+        refetch,
+      };
+    }
+
+    return {
+      data: {
+        insurance: "",
+        fee: 0,
+        fee_type: "",
       },
-      enabled: !!insuranceId,
-      staleTime: 5 * 60 * 1000,
-    });
-
-    return { data, isLoading, refetch };
+      isLoading,
+      refetch,
+    };
   };
 
   const useChannelFees = (
     channelId: string,
     insuranceId?: string,
-    productId?: string,
-    planId?: string
+    _productId?: string,
+    _planId?: string
   ) => {
-    const { data, isLoading, refetch } = useQuery({
-      queryKey: ["channel-fees", channelId, insuranceId, productId, planId],
-      queryFn: async () => {
-        if (!channelId || !insuranceId) return null;
+    void _productId;
+    void _planId;
 
-        const feesResponse: any = await financeService.getChannelFeesFilter({
-          channelId,
-          insuranceId,
-        });
+    const { data: feesResponse, isLoading, refetch } = useChannelFeesFilter(
+      channelId && insuranceId
+        ? {
+            channelId,
+            insuranceId,
+          }
+        : undefined,
+      {
+        enabled: !!channelId && !!insuranceId,
+        staleTime: 5 * 60 * 1000,
+      }
+    );
 
-        if (feesResponse && feesResponse.data.length > 0) {
-          return {
-            channel: channelId,
-            insurance: feesResponse.data[0].insurance,
-            fee: feesResponse.data[0].fee,
-            fee_type: feesResponse.data[0].fee_type,
-          };
-        }
+    if (!channelId || !insuranceId) {
+      return { data: null, isLoading, refetch };
+    }
 
-        return {
-          channel: "",
-          insurance: "",
-          fee: 0,
-          fee_type: "",
-        };
+    const fees = (feesResponse as any)?.data;
+
+    if (Array.isArray(fees) && fees.length > 0) {
+      return {
+        data: {
+          channel: channelId,
+          insurance: fees[0].insurance,
+          fee: fees[0].fee,
+          fee_type: fees[0].fee_type,
+        },
+        isLoading,
+        refetch,
+      };
+    }
+
+    return {
+      data: {
+        channel: "",
+        insurance: "",
+        fee: 0,
+        fee_type: "",
       },
-      enabled: !!channelId && !!insuranceId,
-      staleTime: 5 * 60 * 1000,
-    });
-
-    return { data, isLoading, refetch };
+      isLoading,
+      refetch,
+    };
   };
 
   const checkDuplicateBilling = useCallback(
@@ -668,11 +654,18 @@ export const useBilling = (props?: UseBillingHookProps): UseBillingProps => {
     isFetchingBillings,
     isLoadingTransactions,
 
-    createBilling: createBillingMutation.mutateAsync,
-    updateBilling: async (id: string, data: any) =>
-      updateBillingMutation.mutateAsync({ id, data }),
-    importBillingTransactions: importBillingTransactionsMutation.mutateAsync,
-    confirmReconciliation: confirmReconciliationMutation.mutateAsync,
+    createBilling: async (data: any) => {
+      await createBillingMutation.mutateAsync(data);
+    },
+    updateBilling: async (id: string, data: any) => {
+      await updateBillingMutation.mutateAsync({ id, payload: data });
+    },
+    importBillingTransactions: async (data: any) => {
+      await importBillingTransactionsMutation.mutateAsync(data as FormData);
+    },
+    confirmReconciliation: async (id: string) => {
+      await confirmReconciliationMutation.mutateAsync(id);
+    },
 
     handleRowsPerPageChange,
     handleTypeChange,

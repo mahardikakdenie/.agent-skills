@@ -108,16 +108,17 @@ Steps:
 1. Migrate components one feature/component at a time
 2. Keep old services intact until the end
 3. Update imports to new hooks
-4. Update form submissions to use mutations where applicable
-5. Document migrations in <APP_PATH>/docs/migration/service/component-migration.md:
+4. Replace manual `useQuery`/`useMutation` with existing custom hooks from `services/*/hooks/{queries,mutations}` when equivalent hooks already exist
+5. Update form submissions to use mutation hooks where applicable
+6. Document migrations in <APP_PATH>/docs/migration/service/component-migration.md:
    - Update "Main Refactor: Batch 6" section
    - List all migrated components by service
    - Mark each component with verification status
    - Include any issues encountered and resolutions
    - Update verification results section
-6. After all component migrations are complete, run the full Verification Gate for <APP_NAME> and report results
+7. After all component migrations are complete, run the full Verification Gate for <APP_NAME> and report results
 
-Rules: If `$vercel-react-best-practices` is available, apply it to React/Next.js refactors. If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
+Rules: Do not keep manual `useQuery`/`useMutation` wrappers in components if equivalent service hooks already exist; if a manual wrapper is still required, document why in `component-migration.md`. If `$vercel-react-best-practices` is available, apply it to React/Next.js refactors. If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
 
 ## Batch 7 - Cleanup + Docs (Phase 6)

@@ -594,8 +594,11 @@ Rules:
 2. Begin only after Phase 4A and Phase 4B are complete for all services
 3. Migrate one feature at a time
 4. Remove old service imports
-5. Update form submissions to use mutations
-6. After all component migrations, run the full verification gate before continuing
+5. Replace manual `useQuery`/`useMutation` calls in components with custom hooks from `services/*/hooks/{queries,mutations}` when equivalent hooks already exist
+6. Update form submissions to use mutation hooks
+7. After all component migrations, run the full verification gate before continuing
+
+Rule: If equivalent service hooks do not exist yet, temporary manual `useQuery`/`useMutation` is allowed only with a documented reason in `component-migration.md`.
 
 ---
 

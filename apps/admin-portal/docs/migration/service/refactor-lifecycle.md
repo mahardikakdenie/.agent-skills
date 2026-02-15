@@ -601,17 +601,21 @@ flowchart TB
    };
    ```
 
-4. **Test each component after migration:**
+4. **Enforce service hook consumption:**
+   - Replace manual `useQuery`/`useMutation` usage in components with custom hooks from `services/*/hooks/{queries,mutations}` when equivalent hooks are available
+   - If a manual wrapper is still required, document the reason in `component-migration.md`
+
+5. **Test each component after migration:**
    - Page loads without errors
    - Data fetching works
    - User interactions work
    - No console/network errors
 
-5. **Track migrations:**
+6. **Track migrations:**
    - Update `component-migration.md` for each component
    - Mark verification status per component
 
-6. **Do NOT:**
+7. **Do NOT:**
    - Delete old services yet (wait for Phase 6)
    - Migrate all at once (incremental only)
 
