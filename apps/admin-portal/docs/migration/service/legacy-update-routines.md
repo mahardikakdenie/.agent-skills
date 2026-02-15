@@ -232,7 +232,7 @@ git add <file>
 
 Check migration status by looking at imports:
 
-- **If migrated** (uses new hooks like `import { useXxx } from '@/services/.../hooks'` or `import { useXxxMutation } from '@/services/.../hooks/mutations'`):
+- **If migrated** (uses new hooks like `import { useXxx } from '@/services/.../hooks/queries'` or `import { useXxxMutation } from '@/services/.../hooks/mutations'`):
 
   ```bash
   git checkout --ours <file>
@@ -313,7 +313,7 @@ git diff <previous-integrate-commit> integrate/<app-name> --name-status
 2. Add types to `[service].types.ts`
 3. Add function to `[service].service.ts`
 4. Update `query-keys.ts`
-5. Create hooks in `hooks/queries/` or `hooks/mutations/` and update corresponding barrel exports (`hooks/queries/index.ts`, `hooks/mutations/index.ts`, `hooks/index.ts`)
+5. Create hooks in `hooks/queries/` or `hooks/mutations/` and update corresponding barrel exports (`hooks/queries/index.ts`, `hooks/mutations/index.ts`)
 
 **B. Create new service** (see Routine 5)
 
@@ -409,7 +409,6 @@ Create:
 - `query-keys.ts`
 - `hooks/queries/*`
 - `hooks/mutations/*`
-- `hooks/index.ts`
 - `hooks/queries/index.ts`
 - `hooks/mutations/index.ts`
 
@@ -475,7 +474,7 @@ Create list of affected components (pages, forms, dashboards, etc.)
    // ❌ Remove old patterns
    import { oldService } from '@/services/old.service';
    // ✅ Add new hooks (from barrel files)
-   import { useNewData } from '@/services/new-service/hooks';
+   import { useNewData } from '@/services/new-service/hooks/queries';
    import { useUpdateNew } from '@/services/new-service/hooks/mutations';
    ```
 

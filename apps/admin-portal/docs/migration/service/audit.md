@@ -28,7 +28,7 @@
 ## Refactor Notes
 
 - All query and mutation hooks in `src/services` must accept an optional `options` param (queries: `Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>`, mutations: `UseMutationOptions<...>`), and mutations should compose `options?.onSuccess` when adding invalidation logic.
-- Every service must include hook barrel files: `hooks/index.ts`, `hooks/queries/index.ts`, and `hooks/mutations/index.ts`.
+- Every service must include hook barrel files: `hooks/queries/index.ts` and `hooks/mutations/index.ts`.
 
 ## Auth Service (`NEXT_PUBLIC_AUTH_SERVICE_URL`)
 

@@ -502,7 +502,6 @@ flowchart TB
    - Accept optional `options` param, compose `onSuccess`
 
 4. **Create hook barrel files:**
-   - `src/services/[service]/hooks/index.ts`
    - `src/services/[service]/hooks/queries/index.ts`
    - `src/services/[service]/hooks/mutations/index.ts`
 
@@ -521,7 +520,7 @@ flowchart TB
 - `query-keys.ts` for all services
 - `hooks/queries/` for all services
 - `hooks/mutations/` for all services
-- `hooks/index.ts`, `hooks/queries/index.ts`, and `hooks/mutations/index.ts` for all services
+- `hooks/queries/index.ts` and `hooks/mutations/index.ts` for all services
 
 **Verification Requirements:**
 
@@ -578,7 +577,7 @@ flowchart TB
    useEffect(() => { /* fetch data */ }, []);
 
    // ✅ New pattern
-   import { useServiceData } from '@/services/service/hooks';
+   import { useServiceData } from '@/services/service/hooks/queries';
    const { data, isLoading } = useServiceData({ filters });
    ```
 
@@ -957,7 +956,7 @@ See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
 | **Phase 4A** | `src/services/*/api/*`         | `<APP_PATH>/src/services/`           | Permanent | Service API layers            |
 | **Phase 4B** | `src/services/*/query-keys.ts` | `<APP_PATH>/src/services/`           | Permanent | Query keys per service        |
 | **Phase 4B** | `src/services/*/hooks/*`       | `<APP_PATH>/src/services/`           | Permanent | Query and mutation hooks      |
-| **Phase 4B** | `src/services/*/hooks/**/index.ts` | `<APP_PATH>/src/services/`       | Permanent | Hook barrel exports           |
+| **Phase 4B** | `src/services/*/hooks/queries/index.ts` and `src/services/*/hooks/mutations/index.ts` | `<APP_PATH>/src/services/` | Permanent | Hook barrel exports |
 | **Phase 5**  | `component-migration.md`       | `<APP_PATH>/docs/migration/service/` | Temporary | Migration tracking            |
 | **Phase 6**  | `ARCHITECTURE.md`              | `<APP_PATH>/docs/`                   | Permanent | Architecture documentation    |
 | **Phase 6**  | `ADDING_SERVICES.md`           | `<APP_PATH>/docs/`                   | Permanent | Service creation guide        |

@@ -144,7 +144,6 @@ src/
 │       │   │   └── index.ts  # Query hook barrel
 │       │   ├── mutations/    # useMutation hooks
 │       │   │   └── index.ts  # Mutation hook barrel
-│       │   └── index.ts      # Service hook barrel
 │       └── query-keys.ts     # TanStack Query keys (service-level)
 ├── types/                 # Shared types
 ├── utils/                 # Shared utilities
@@ -478,7 +477,6 @@ services/claims/hooks/
 │   ├── useCreateClaim.ts
 │   ├── useUpdateStatus.ts
 │   └── index.ts          # Mutation hook barrel
-└── index.ts              # Service hook barrel
 ```
 
 **Example `query-keys.ts`:**
@@ -547,7 +545,7 @@ Rules:
 - Hooks must accept an optional `options` param so consumers can inject React Query options.
 - Queries: use `options?: Omit<UseQueryOptions<...>, 'queryKey' | 'queryFn'>` and spread `...options` in `useQuery`.
 - Mutations: use `options?: UseMutationOptions<...>` and spread `...options`. If you add `onSuccess` for invalidation, call `options?.onSuccess` inside it.
-- Every service must include hook barrel files: `hooks/index.ts`, `hooks/queries/index.ts`, and `hooks/mutations/index.ts`.
+- Every service must include hook barrel files: `hooks/queries/index.ts` and `hooks/mutations/index.ts`.
 - Implement hooks for **all services** before moving to Phase 5.
 - Do not modify old services or components.
 - Run the verification gate after Phase 4B completes.
@@ -588,7 +586,7 @@ Rules:
 
    ```typescript
    // ✅ New way
-   import { useClaims } from '@/services/claims/hooks';
+   import { useClaims } from '@/services/claims/hooks/queries';
 
    const { data, isLoading } = useClaims({ status: 'pending' });
    ```
