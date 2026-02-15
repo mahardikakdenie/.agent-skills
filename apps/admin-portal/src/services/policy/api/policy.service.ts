@@ -25,6 +25,8 @@ export const policyService = {
   getPolicyById: (id: string) => get(POLICY_ENDPOINTS.policyDetail(id)),
   getPolicyStatistics: (params?: Record<string, unknown>) =>
     get(withQuery(POLICY_ENDPOINTS.policyStatistics, params)),
+  getPolicyStatisticsYearly: (params?: Record<string, unknown>) =>
+    get(withQuery(POLICY_ENDPOINTS.policyStatisticsYearly, params)),
   uploadPoliciesDrGadget: (formData: FormData) =>
     post(POLICY_ENDPOINTS.policyUploadDrGadget, formData, {
       headers: { "Content-Type": "multipart/form-data" },

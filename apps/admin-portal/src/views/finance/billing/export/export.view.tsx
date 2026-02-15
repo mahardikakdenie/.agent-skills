@@ -6,8 +6,7 @@ import {useParams, usePathname, useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
 import {useScreen} from "@/context/screen.context";
 import {useAuth} from "@/context/auth.context";
-import {financeService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {financeService} from "@/services/finance/api/finance.service";
 import {capitalizeString, capitalizeStringWithChar, moneyFormatter, toastNotification} from "@/helpers/app.helper";
 import NotFound from "@/components/not-found";
 import DownloadIcon from "@/images/download.icon";
@@ -33,14 +32,14 @@ export const FinanceBillingDetailExportView = () => {
                     page
                 };
                 if (!id) return;
-                const response = await financeService.get(ApiURL.billingDetails(id.toString()), { params });
+                const response: any = await financeService.getBillingById(id.toString(), params);
 
-                if (response && response.data) {
-                    const newData = response.data.data || [];
+                if (response) {
+                    const newData = response.data || [];
                     const updatedData= [...accumulatedData, ...newData];
                     setData(updatedData);
 
-                    if (page < response.data.meta.pageTotal) {
+                    if (page < response?.meta?.pageTotal) {
                         await fetchAllDataBilling(page + 1, updatedData);
                     }
                 }

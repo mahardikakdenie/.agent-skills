@@ -4,7 +4,6 @@ import Modal from '@/components/modal';
 import NotFound from '@/components/not-found';
 import Select from '@/components/select';
 import { Tooltip } from '@/components/tooltip';
-import ApiURL from '@/constants/api-url.const';
 import {
   primary,
   primaryRed,
@@ -19,7 +18,8 @@ import {
 } from '@/helpers/app.helper';
 import AlertCircleIcon from '@/images/alert-circle.icon';
 import EditIcon from '@/images/edit.icon';
-import { claimService, masterdataService } from '@/services/api.service';
+import { claimsService } from '@/services/claims/api/claims.service';
+import { productService } from '@/services/product/api/product.service';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft } from 'react-feather';
@@ -155,9 +155,13 @@ export const ClaimImportView = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response: any = await masterdataService.get(`${ApiURL.categoriesByChannel}/${user.channel}`);
+      const response: any = await productService.getCategoriesByChannelId(user?.channel || '');
       if (response) {
-        const list = response.data.data;
+        const list = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
         setOptionCategoryList(
           list.map((item: any) => ({
             label: capitalizeStringWithChar(item.name),
@@ -178,13 +182,11 @@ export const ClaimImportView = () => {
   const fetchImportGuide = async (categoryId: string) => {
     try {
       setLoading(true);
-      const responseClaim = await claimService.get(ApiURL.claimImport, {
-        params: {
-          channel: user.channel,
-          category: categoryId,
-        },
-      });
-      const responseHeader = responseClaim.data[0]?.data;
+      const responseClaim: any = await claimsService.getImportDataGuide({
+        channel: user.channel,
+        category: categoryId,
+      } as any);
+      const responseHeader = responseClaim?.[0]?.data;
       if (responseHeader) {
         setCheckedHeaderList(responseHeader);
         setOptionHeaderlist(
@@ -228,11 +230,10 @@ export const ClaimImportView = () => {
       const payload = {
         channel: user?.channel || '',
         category: selectedCategory,
-        input: 'Data',
         data: result,
       };
 
-      await claimService.post(ApiURL.claimImportSubmit, payload);
+      await claimsService.importClaimsAsJson(payload);
       toastNotification('Success!!', 'success');
       router.push(AppURL.claimList);
     } catch (error: any) {

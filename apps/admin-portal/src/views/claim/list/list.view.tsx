@@ -5,10 +5,8 @@ import Pagination from "@/components/pagination";
 import DatePicker from "@/components/datepicker";
 import {delimiter, primary, primaryRed, primaryRedLightForeground, primaryYellowLightForeground, slaStatus} from "@/constants/app-common.const";
 import moment from "moment";
-import {AxiosResponse} from "axios";
-import ApiURL from "@/constants/api-url.const";
-import {Claim, ListClaimRequest, ListClaimResponse} from "@/types/claim";
-import {claimService} from "@/services/api.service";
+import {Claim, ListClaimRequest} from "@/types/claim";
+import {claimsService} from "@/services/claims/api/claims.service";
 import DownloadIcon from "@/images/download.icon";
 import {useScreen} from "@/context/screen.context";
 import Button from "@/components/button";
@@ -72,7 +70,7 @@ export const ClaimListView = () => {
     const fetchClaimStatus = async () => {
         try {
             setLoading(true);
-            const responseClaimStatus: any = await claimService.get(ApiURL.claimConfigurations);
+            const responseClaimStatus: any = await claimsService.getConfigurations();
             if (responseClaimStatus) {
                 let statusArr = [{ label: "All Claim", value: "All" }];
                 responseClaimStatus.data.filter((f: any) => f.status !== "Draft").forEach((cs: any) => statusArr.push({ label: cs.status, value: cs.status }));
@@ -107,11 +105,11 @@ export const ClaimListView = () => {
                 page,
                 channel
             };
-            const response: AxiosResponse<ListClaimResponse> = await claimService.get(ApiURL.claims, { params });
+            const response: any = await claimsService.getClaims(params);
             if (response) {
                 setCurrentPage(page);
-                setTotalData(response.data.total);
-                setData(response.data.data);
+                setTotalData(response.total);
+                setData(response.data);
                 setLocalStorage("filterClaimData", filterClaimData);
             }
         } catch (error: any) {
@@ -128,15 +126,15 @@ export const ClaimListView = () => {
             setLoading(true);
             let responseOptionDocuments;
 
-            if (categoryOrChannelId.includes("category")) responseOptionDocuments = await claimService.get(ApiURL.claimCategoryFormsAll(categoryOrChannelId.split("=")[1]));
-            else responseOptionDocuments = await claimService.get(ApiURL.claimChannelFormsAll(categoryOrChannelId.split("=")[1]));
+            if (categoryOrChannelId.includes("category")) responseOptionDocuments = await claimsService.getClaimCategoryForms(categoryOrChannelId.split("=")[1]);
+            else responseOptionDocuments = await claimsService.getClaimChannelForms(categoryOrChannelId.split("=")[1]);
 
             if (responseOptionDocuments) {
                 const dataByClaimId: any = data.length > 0 && !!claimId ? data.find(obj => obj.id === claimId) : {};
                 const docClaimConfig = dataByClaimId.claim_config.length > 0 ? dataByClaimId.claim_config.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple").map((doc: any) => ({ name: forLabelString(doc), value: doc.name || "-", criteria: doc.criteria || "-", definition: doc.definition || "-", message: `icon${delimiter}${doc?.pending_reason_message?.en || "-"}` })) : [];
                 const docClaimConfigFields = dataByClaimId.claim_config.length > 0 ? dataByClaimId.claim_config.filter((doc: any) => doc.type.toLowerCase() === "fields" && doc.fields.length > 0).map((a: any) => a.fields.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple").map((doc: any) => ({ name: forLabelString(doc), value: `${doc?.name}-fields.${doc?.name}` || "-", criteria: doc.criteria || "-", definition: doc.definition || "-", message: `icon${delimiter}${doc?.pending_reason_message?.en || "-"}` }))).flat() : [];
-                const docClaimCategoryForm = responseOptionDocuments.data?.data.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple").map((doc: any) => ({ name: forLabelString(doc), value: doc.name || "-", criteria: doc.criteria || "-", definition: doc.definition || "-", message: `icon${delimiter}${doc?.pending_reason_message?.en || "-"}` })) || [];
-                const docClaimCategoryFormFields = responseOptionDocuments.data?.data.filter((doc: any) => doc.type.toLowerCase() === "fields" && doc.fields.length > 0).map((a: any) => a.fields.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple")).map((doc: any) => ({ name: forLabelString(doc), value: `${doc?.name}-fields.${doc?.name}` || "-", criteria: doc.criteria || "-", definition: doc.definition || "-", message: `icon${delimiter}${doc?.pending_reason_message?.en || "-"}` })).flat() || [];
+                const docClaimCategoryForm = responseOptionDocuments?.data?.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple").map((doc: any) => ({ name: forLabelString(doc), value: doc.name || "-", criteria: doc.criteria || "-", definition: doc.definition || "-", message: `icon${delimiter}${doc?.pending_reason_message?.en || "-"}` })) || [];
+                const docClaimCategoryFormFields = responseOptionDocuments?.data?.filter((doc: any) => doc.type.toLowerCase() === "fields" && doc.fields.length > 0).map((a: any) => a.fields.filter((doc: any) => doc.type.toLowerCase() === "file" || doc.type.toLowerCase() === "file multiple")).map((doc: any) => ({ name: forLabelString(doc), value: `${doc?.name}-fields.${doc?.name}` || "-", criteria: doc.criteria || "-", definition: doc.definition || "-", message: `icon${delimiter}${doc?.pending_reason_message?.en || "-"}` })).flat() || [];
                 setDocumentList([...docClaimCategoryForm, ...docClaimCategoryFormFields, ...docClaimConfig, ...docClaimConfigFields]);
             }
         } catch (error: any) {
@@ -237,7 +235,7 @@ export const ClaimListView = () => {
         }
         try {
             setLoading(true);
-            const responseUpdateStatusClaim = await claimService.put(ApiURL.claimUpdateStatus(getNewDataClaim(0)), {
+            const responseUpdateStatusClaim = await claimsService.updateClaimStatus(getNewDataClaim(0), {
                 status: getNewDataClaim(3),
                 amount_approved: newApprovedAmount,
                 note: noteChangeClaimStatus,
@@ -343,8 +341,8 @@ export const ClaimListView = () => {
                 date_from: selectedStartDate,
                 date_to: selectedEndDate
             };
-            const responseFileClaimReport: any = await claimService.get(ApiURL.claimsExport, { params });
-            if (!!responseFileClaimReport) window.location = responseFileClaimReport.data.file;
+            const responseFileClaimReport: any = await claimsService.exportClaims(params);
+            if (!!responseFileClaimReport) window.location = responseFileClaimReport.file;
         } catch (error: any) {
             toastNotification("Failed to download claim report!", "error");
         } finally {

@@ -3,13 +3,13 @@ import PieChart from "@/components/recharts/piechart";
 import LineChart from "@/components/recharts/linechart";
 import DetailTable from "@/components/recharts/table-policy";
 import BarChartComp from "@/components/recharts/barchart-vertical";
-import ApiURL from "@/constants/api-url.const";
 import Select from "@/components/select";
 import DatePickerDropdown from "@/components/date-range-picker";
 
 import { format } from "date-fns";
 import { Claim, ClaimStatisticDataRequest } from "@/types/claim";
-import { claimService, masterdataService } from "@/services/api.service";
+import { claimsService } from "@/services/claims/api/claims.service";
+import { productService } from "@/services/product/api/product.service";
 import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
 import { formatDateTimeWithTZ, formatMoney, numberSimpleFormatter } from "@/helpers/app.helper";
@@ -60,14 +60,16 @@ export const DashboardClaim = () => {
           ...(to && { to }),
         };
   
-        const response = await claimService.get(ApiURL.claimStatisticData, { params });
+        const response: any = await claimsService.getClaimStatistics(
+          params as any
+        );
   
-        if (response.data) {
-          setClaimStatisticData(response.data.data);
-          setTotalClaimAmount(response.data.total_claim_amount);
-          setTotalClaimAmountApproved(response.data.total_claim_amount_approved)
-          setTotalClaim(response.data.total_claim)
-          setTotalClaimApproved(response.data.total_claim_approved);
+        if (response) {
+          setClaimStatisticData(response?.data || []);
+          setTotalClaimAmount(response?.total_claim_amount || 0);
+          setTotalClaimAmountApproved(response?.total_claim_amount_approved || 0);
+          setTotalClaim(response?.total_claim || 0);
+          setTotalClaimApproved(response?.total_claim_approved || 0);
         }
       } catch (error: any) {
         handleResponseError(error);
@@ -90,8 +92,11 @@ export const DashboardClaim = () => {
         if (user?.all_insurances && user?.all_insurances?.length > 0) {
           for (let i = 0; i < user.all_insurances.length; i++) {
             const insId = user.all_insurances[i];
-            const res = await masterdataService.get(ApiURL.insuranceDetails(insId));
-            if (res?.data?.data) updatedList.push({ label: res?.data?.data?.name, value: res?.data?.data?.id });
+            const res: any = await productService.getInsuranceById(insId);
+            const insurance = res?.data ?? res;
+            if (insurance?.id) {
+              updatedList.push({ label: insurance.name, value: insurance.id });
+            }
           }
         }
 
@@ -113,17 +118,15 @@ export const DashboardClaim = () => {
       try {
         setLoading(true);
         
-        const response: any = await masterdataService.get(ApiURL.products, {
-          params: { 
-            page: 1, 
-            pageSize: 100,
-            channelId: user?.all_channels?.[0] || undefined,
-            ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
-          },
+        const response: any = await productService.getProducts({
+          page: 1,
+          pageSize: 100,
+          channelId: user?.all_channels?.[0] || undefined,
+          ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
         });
   
-        if (response?.data?.data && Array.isArray(response.data.data)) {
-          const list = response.data.data.map((prod: any) => ({
+        if (Array.isArray(response?.data)) {
+          const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));
@@ -150,16 +153,14 @@ export const DashboardClaim = () => {
     const fetchPlanFilter = async () => {
       try {
         setLoading(true);
-        const response: any = await masterdataService.get(ApiURL.plans, {
-          params: { 
-            page: 1, 
-            pageSize: 20,
-            ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
-          },
+        const response: any = await productService.getPlans({
+          page: 1,
+          pageSize: 20,
+          ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
         });
   
-        if (response?.data?.data && Array.isArray(response.data.data)) {
-          const list = response.data.data.map((prod: any) => ({
+        if (Array.isArray(response?.data)) {
+          const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));

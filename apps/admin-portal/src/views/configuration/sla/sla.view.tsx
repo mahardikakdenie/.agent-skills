@@ -3,8 +3,7 @@ import {usePathname} from "next/navigation";
 import {useScreen} from "@/context/screen.context";
 import {getHeaderPage} from "@/helpers/app.helper";
 import NotFound from "@/components/not-found";
-import {channelService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {channelService} from "@/services/channel/api/channel.service";
 import {useAuth} from "@/context/auth.context";
 
 export const ConfigurationSlaView = () => {
@@ -22,9 +21,10 @@ export const ConfigurationSlaView = () => {
     const fetchConfigurationSla = async () => {
         try {
             setLoading(true);
-            const response: any = await channelService.get(ApiURL.channelConfigurations, { params: { channel: channelId } });
+            const response: any = await channelService.getChannelConfigurations({ channel: channelId });
             if (response) {
-                setData(response?.data?.data[0]?.sla || []);
+                const configurations = Array.isArray(response) ? response : response?.data || [];
+                setData(configurations?.[0]?.sla || []);
             }
         } catch (error: any) {
             handleResponseError(error);

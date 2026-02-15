@@ -1,15 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { AxiosResponse } from "axios";
 import moment from "moment";
 
-import ApiURL from "@/constants/api-url.const";
 import { primary, primaryRed } from "@/constants/app-common.const";
 
-import { EndorsementItem, EndorsementResponse } from "@/types/endorsement";
+import { EndorsementItem } from "@/types/endorsement";
 
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 
 import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
@@ -55,9 +53,9 @@ export const EndorsementListView = () => {
   const fetchMasterPolicy = async () => {
     try {
       setLoading(true);
-      const params = { is_only_master_policy: true };
-      const result = await policyService.get(ApiURL.masterPolicy(user?.channel), { params });
-      setMasterPolicyId(result.data.id);
+      if (!user?.channel) return;
+      const result: any = await policyService.getMasterPoliciesByChannel(user.channel);
+      setMasterPolicyId(result?.id || result?.data?.id || null);
     } catch (error) {
       handleResponseError(error);
     } finally {
@@ -77,13 +75,13 @@ export const EndorsementListView = () => {
         status: tab === "All" ? undefined : tab,
         keyword: searchData,
       };
-      const result: AxiosResponse<EndorsementResponse> = await policyService.get(ApiURL.endorsement, { params });
-      const { data, total, page } = result.data;
-      setTableData(data);
-      setTotalData(total);
-      setCurrentPage(page);
+      const result: any = await policyService.getEndorsements(params as any);
+      const { data, total, page } = result || {};
+      setTableData(data || []);
+      setTotalData(total || 0);
+      setCurrentPage(page || currentPage);
 
-      if (data.length > 0) setHasFetchedDataOnce(true);
+      if ((data || []).length > 0) setHasFetchedDataOnce(true);
     } catch (error) {
       handleResponseError(error);
     } finally {

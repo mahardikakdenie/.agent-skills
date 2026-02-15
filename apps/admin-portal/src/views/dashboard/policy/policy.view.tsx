@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { masterdataService, policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
+import { productService } from "@/services/product/api/product.service";
 import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
 import { ListPolicyStatisticDataRequest, PolicyData } from "@/types/policy";
@@ -8,7 +9,6 @@ import { ListPolicyStatisticDataRequest, PolicyData } from "@/types/policy";
 import PieChart from "@/components/recharts/piechart";
 import LineChart from "@/components/recharts/linechart-policy";
 import DetailTable from "@/components/recharts/table-policy";
-import ApiURL from "@/constants/api-url.const";
 import Select from "@/components/select";
 import { primary } from "@/constants/app-common.const";
 import DatePickerDropdown from "@/components/date-range-picker";
@@ -55,12 +55,14 @@ export const DashboardPolicy = () => {
           ...(to && { to }),
         };
   
-        const response = await policyService.get(ApiURL.policiesStatisticData, { params });
+        const response: any = await policyService.getPolicyStatistics(
+          params as any
+        );
   
-        if (response.data) {
-          setPoliciesStatisticData(response.data.data);
-          setTotalPolicies(response.data.total);
-          setTotalPremium(response.data.total_premium);
+        if (response) {
+          setPoliciesStatisticData(response?.data || []);
+          setTotalPolicies(response?.total || 0);
+          setTotalPremium(response?.total_premium || 0);
         }
       } catch (error: any) {
         handleResponseError(error);
@@ -83,8 +85,11 @@ export const DashboardPolicy = () => {
         if (user?.all_insurances && user?.all_insurances?.length > 0) {
           for (let i = 0; i < user.all_insurances.length; i++) {
             const insId = user.all_insurances[i];
-            const res = await masterdataService.get(ApiURL.insuranceDetails(insId));
-            if (res?.data?.data) updatedList.push({ label: res?.data?.data?.name, value: res?.data?.data?.id });
+            const res: any = await productService.getInsuranceById(insId);
+            const insurance = res?.data ?? res;
+            if (insurance?.id) {
+              updatedList.push({ label: insurance.name, value: insurance.id });
+            }
           }
         }
 
@@ -106,17 +111,15 @@ export const DashboardPolicy = () => {
       try {
         setLoading(true);
         
-        const response: any = await masterdataService.get(ApiURL.products, {
-          params: { 
-            page: 1, 
-            pageSize: 100,
-            channelId: user?.all_channels?.[0] || undefined,
-            ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
-          },
+        const response: any = await productService.getProducts({
+          page: 1,
+          pageSize: 100,
+          channelId: user?.all_channels?.[0] || undefined,
+          ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
         });
   
-        if (response?.data?.data && Array.isArray(response.data.data)) {
-          const list = response.data.data.map((prod: any) => ({
+        if (Array.isArray(response?.data)) {
+          const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));
@@ -143,16 +146,14 @@ export const DashboardPolicy = () => {
     const fetchPlanFilter = async () => {
       try {
         setLoading(true);
-        const response: any = await masterdataService.get(ApiURL.plans, {
-          params: { 
-            page: 1, 
-            pageSize: 20,
-            ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
-          },
+        const response: any = await productService.getPlans({
+          page: 1,
+          pageSize: 20,
+          ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
         });
   
-        if (response?.data?.data && Array.isArray(response.data.data)) {
-          const list = response.data.data.map((prod: any) => ({
+        if (Array.isArray(response?.data)) {
+          const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));

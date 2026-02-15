@@ -2,6 +2,7 @@ export const POLICY_ENDPOINTS = {
   policies: "/v1/policies",
   policyDetail: (id: string) => `/v1/policies/${id}`,
   policyStatistics: "/v1/policies/statistic-data",
+  policyStatisticsYearly: "/policies/statistic-yearly",
   policyUploadDrGadget: "/v1/policies/upload/drgadget",
   policyRenew: (id: string) => `/v1/policies/${id}/renew`,
   endorsements: "/v1/endorsements",

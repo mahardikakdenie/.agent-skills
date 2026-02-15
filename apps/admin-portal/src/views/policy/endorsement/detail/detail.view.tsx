@@ -4,10 +4,9 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
 import * as XLSX from "xlsx";
 
-import ApiURL from "@/constants/api-url.const";
 import { primary } from "@/constants/app-common.const";
 
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 
 import { useAuth } from "@/context/auth.context";
 import { useScreen } from "@/context/screen.context";
@@ -20,7 +19,6 @@ import {
 } from "@/helpers/app.helper";
 
 import {
-  EndorsementDetailResponse,
   EndorsementDetailRawMembership,
 } from "@/types/endorsement";
 
@@ -55,17 +53,8 @@ export const EndorsementDetailView = () => {
   const handleDownloadBtn = async () => {
     try {
       setLoading(true);
-  
-      const params = {
-        is_bulking: true,
-        page: 1,
-        limit: 100,
-      };
-  
-      const { data } = await policyService.get<EndorsementDetailResponse>(
-        `${ApiURL.endorsement}/${id}`,
-        { params }
-      );
+
+      const data: any = await policyService.getEndorsementById(id as string);
   
       const exportData = data.endorsements_detail.map((item, index) => ({
         No: index + 1,
@@ -110,7 +99,7 @@ export const EndorsementDetailView = () => {
   const fetchEndorsementDetail = async () => {
     try {
       setLoading(true);
-      const { data } = await policyService.get<EndorsementDetailResponse>(`${ApiURL.endorsement}/${id}`);
+      const data: any = await policyService.getEndorsementById(id as string);
 
       setTableData(data.endorsements_detail);
 
@@ -144,7 +133,7 @@ export const EndorsementDetailView = () => {
   const handleAccept = async () => {
     try {
       setLoading(true);
-      await policyService.put(ApiURL.updateEndorsementStatus(id as string), {
+      await policyService.updateEndorsementStatusBulking(id as string, {
         status: "Approved",
         "is_send_email_to_third_party": true,
       });
@@ -166,7 +155,7 @@ export const EndorsementDetailView = () => {
   const handleReject = async () => {
     try {
       setLoading(true);
-      await policyService.put(ApiURL.updateEndorsementStatus(id as string), {
+      await policyService.updateEndorsementStatusBulking(id as string, {
         status: "Rejected",
         note: rejectReason,
         "is_send_email_to_third_party": false,

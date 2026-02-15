@@ -14,9 +14,8 @@ import Modal from "@/components/modal";
 import { getBreadcrumbs, getHeaderPage, toastNotification } from "@/helpers/app.helper";
 import { useAuth } from "@/context/auth.context";
 import { useScreen } from "@/context/screen.context";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 
 export const EndorsementUploadView = () => {
   const [selectedFileType, setSelectedFileType] = useState("");
@@ -140,20 +139,16 @@ export const EndorsementUploadView = () => {
         return { profile };
       });
 
-      const masterResult = await policyService.get(ApiURL.masterPolicy(user?.channel), {
-        params: { is_only_master_policy: true },
-        headers: { Authorization: `Bearer ${user?.token}` },
-      });
+      const masterResult: any = await policyService.getMasterPoliciesByChannel(user?.channel || "");
+      const policyId = masterResult?.id || masterResult?.data?.id;
 
-      const policyId = masterResult.data?.id;
-
-      const uploadResponse = await policyService.post(ApiURL.endorsementUpload, {
+      const uploadResponse: any = await policyService.bulkCreateEndorsements({
         policy: policyId,
         type: selectedFileType,
         data: mappedData,
       });
 
-      const failedData = uploadResponse.data?.failed_data || [];
+      const failedData = uploadResponse?.failed_data || uploadResponse?.data?.failed_data || [];
       setUploadStats({ success: mappedData.length - failedData.length, failed: failedData.length });
       setShowModal(true);
     } catch (error) {

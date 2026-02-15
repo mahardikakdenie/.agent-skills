@@ -11,10 +11,8 @@ import {
 import { AUTH_TOKEN } from "@/constants/app-common.const";
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { authService } from "@/services/api.service";
+import { authService } from "@/services/auth/api/auth.service";
 import ApiURL from "@/constants/api-url.const";
-import { LoginResponse } from "@/types/common";
-import { AxiosResponse } from "axios";
 import AppMenu from "@/constants/app-menu.const";
 import { authToken } from "@/types/auth-token";
 import { setGlobalToken } from "@/lib/token-storage";
@@ -112,12 +110,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!isOnce) {
       isOnce = true;
       try {
-        const response: AxiosResponse<LoginResponse> = await authService.post(
-          ApiURL.login,
-          { username: data.email, password: data.password }
-        );
-        if (response && response.data && response.data.access_token) {
-          const token = response.data.access_token;
+        const response = await authService.login({
+          username: data.email,
+          password: data.password,
+        });
+        if (response?.access_token) {
+          const token = response.access_token;
           await setCookie(AUTH_TOKEN, token);
           authToken.token = token;
           setGlobalToken(token);

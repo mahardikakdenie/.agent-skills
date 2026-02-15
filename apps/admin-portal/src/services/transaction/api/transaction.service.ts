@@ -31,8 +31,12 @@ export const transactionService = {
     post(TRANSACTION_ENDPOINTS.transactionsBulkCreate(id), payload),
   getTransactionStatistics: (params?: Record<string, unknown>) =>
     get(withQuery(TRANSACTION_ENDPOINTS.transactionStatistics, params)),
+  getTransactionStatisticsYearly: (params?: Record<string, unknown>) =>
+    get(withQuery(TRANSACTION_ENDPOINTS.transactionStatisticsYearly, params)),
   createTransactionsConventional: (payload: unknown) =>
     post(TRANSACTION_ENDPOINTS.transactionsConventional, payload),
+  completeTransaction: (payload: unknown) =>
+    post(TRANSACTION_ENDPOINTS.transactionComplete, payload),
 
   getCustomers: (params?: Record<string, unknown>) =>
     get(withQuery(TRANSACTION_ENDPOINTS.customers, params)),

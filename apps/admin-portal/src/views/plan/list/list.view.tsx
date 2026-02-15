@@ -3,8 +3,7 @@ import {usePathname, useRouter} from "next/navigation";
 import NotFound from "@/components/not-found";
 import Pagination from "@/components/pagination";
 import {primary, primaryRed} from "@/constants/app-common.const";
-import ApiURL from "@/constants/api-url.const";
-import {masterdataService} from "@/services/api.service";
+import {productService} from "@/services/product/api/product.service";
 import {useScreen} from "@/context/screen.context";
 import Button from "@/components/button";
 import Select from "@/components/select";
@@ -43,9 +42,9 @@ export const PlanListView = () => {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const response: any = await masterdataService.get(ApiURL.categories);
+            const response: any = await productService.getCategories();
             if (response) {
-                const list = response.data.data;
+                const list = response?.data || [];
                 setCategoryList(list.map((item: any) => ({
                     ...item,
                     label: capitalizeStringWithChar(item.name),
@@ -75,11 +74,11 @@ export const PlanListView = () => {
                 pageSize: limit,
                 page
             };
-            const response: any = await masterdataService.get(ApiURL.plans, { params });
+            const response: any = await productService.getPlans(params as any);
             if (response) {
                 setCurrentPage(page);
-                setTotalData(response.data.meta.total);
-                setData(response.data.data);
+                setTotalData(response?.meta?.total || response?.total || 0);
+                setData(response?.data || []);
             }
         } catch (error: any) {
             handleResponseError(error);
@@ -91,7 +90,7 @@ export const PlanListView = () => {
     const deletePlan = async () => {
         try {
             setLoading(true);
-            const response: any = await masterdataService.delete(ApiURL.planDetails(selectedPlan.id));
+            const response: any = await productService.deletePlan(selectedPlan.id);
             if (response) {
                 toastNotification("Plan deleted successfully!");
                 toggleModalConfirmation();

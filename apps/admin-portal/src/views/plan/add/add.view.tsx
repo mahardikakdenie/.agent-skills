@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
-import ApiURL from "@/constants/api-url.const";
-import {masterdataService} from "@/services/api.service";
+import {productService} from "@/services/product/api/product.service";
 import {getBreadcrumbs, getHeaderPage, toastNotification} from "@/helpers/app.helper";
 import {useScreen} from "@/context/screen.context";
 import Select from "@/components/select";
@@ -27,9 +26,9 @@ export const AddPlanView = () => {
         const fetchProductsAdd = async () => {
             try {
                 setLoading(true);
-                const responseAdd: any = await masterdataService.get(ApiURL.products, { params: { insuranceId: insurerId } });
+                const responseAdd: any = await productService.getProducts({ insuranceId: insurerId });
                 if (responseAdd) {
-                    const list = responseAdd.data.data;
+                    const list = responseAdd?.data || [];
                     setProductList(list.map((item: any) => ({
                         label: item.name || "-",
                         value: item.id
@@ -55,7 +54,7 @@ export const AddPlanView = () => {
                 name: planName,
                 slug: planSlug
             }
-            const response: any = await masterdataService.post(ApiURL.plans, requestBody);
+            const response: any = await productService.createPlan(requestBody);
             if (response) {
                 toastNotification("Plan created successfully!");
                 goToPlanListPage();

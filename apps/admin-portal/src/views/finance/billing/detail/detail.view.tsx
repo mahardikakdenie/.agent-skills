@@ -2,8 +2,7 @@ import React, {useEffect, useState} from "react";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
 import moment from "moment/moment";
-import {financeService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {financeService} from "@/services/finance/api/finance.service";
 import {useScreen} from "@/context/screen.context";
 import {useAuth} from "@/context/auth.context";
 import {capitalizeString, capitalizeStringWithChar, getBreadcrumbs, getHeaderPage, moneyFormatter} from "@/helpers/app.helper";
@@ -38,11 +37,11 @@ export const FinanceBillingDetailView = () => {
                 pageSize: limit
             };
             if (!id) return;
-            const responseFinanceBillingDetail = await financeService.get(ApiURL.billingDetails(id.toString()), { params });
+            const responseFinanceBillingDetail: any = await financeService.getBillingById(id.toString(), params);
             if (responseFinanceBillingDetail) {
                 setCurrentPage(page);
-                setTotalData(responseFinanceBillingDetail.data.meta.total);
-                setData(responseFinanceBillingDetail?.data?.data || []);
+                setTotalData(responseFinanceBillingDetail?.meta?.total || 0);
+                setData(responseFinanceBillingDetail?.data || []);
             }
         } catch (error: any) {
             handleResponseError(error);

@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import NotFound from "@/components/not-found";
-import ApiURL from "@/constants/api-url.const";
-import {transactionService} from "@/services/api.service";
+import {transactionService} from "@/services/transaction/api/transaction.service";
 import Pagination from "@/components/pagination";
 import {useScreen} from "@/context/screen.context";
 import {primary, transactionStatus, transactionType} from "@/constants/app-common.const";
@@ -75,11 +74,11 @@ export const TransactionAddView = () => {
                 page,
                 channel: user?.role?.toLowerCase() === "admin" ? undefined : channel,
             };
-            const response = await transactionService.get(ApiURL.transactions, {params});
+            const response: any = await transactionService.getTransactions(params);
             if (response) {
                 setCurrentPage(page);
-                setTotalData(response.data.total);
-                setData(response.data.data);
+                setTotalData(response?.total || 0);
+                setData(response?.data || []);
                 setLocalStorage("filterTransactionData", filterTransactionData);
             }
         } catch (error: any) {
@@ -92,7 +91,7 @@ export const TransactionAddView = () => {
     const addTransaction = async () => {
         try {
             setLoading(true);
-            const responseUpdateStatusTransaction = await transactionService.put(ApiURL.transactionUpdateStatus(details.id), { payment_info: "Paid" });
+            const responseUpdateStatusTransaction = await transactionService.updateTransactionStatus(details.id, { payment_info: "Paid" });
             if (responseUpdateStatusTransaction) {
                 setIsModalChangeTransactionStatusOpen(false);
                 setIsModalTransactionDetailsOpen(false);

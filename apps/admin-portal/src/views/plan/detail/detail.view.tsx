@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
-import ApiURL from "@/constants/api-url.const";
-import {channelService, masterdataService} from "@/services/api.service";
+import {channelService} from "@/services/channel/api/channel.service";
+import {productService} from "@/services/product/api/product.service";
 import NotFound from "@/components/not-found";
 import {getBreadcrumbs, getHeaderPage, toastNotification} from "@/helpers/app.helper";
 import {useScreen} from "@/context/screen.context";
@@ -99,14 +99,12 @@ export const PlanDetailView = () => {
         const fetchAssignOptions = async () => {
             try {
                 setLoading(true);
-                const response: any = await channelService.get(ApiURL.channels, {
-                    params: {
-                        page: 1,
-                        limit: 100
-                    }
+                const response: any = await channelService.getChannels({
+                    page: 1,
+                    limit: 100
                 });
                 if (response) {
-                    const list = response.data.data;
+                    const list = response?.data || [];
                     setAssignOptions(list.map((item: any) => ({
                         label: item.name || "-",
                         value: `${item.id}${delimiter}${item.name}`
@@ -130,8 +128,8 @@ export const PlanDetailView = () => {
             try {
                 setLoading(true);
                 if (!id) return;
-                const response: any = await masterdataService.get(`${ApiURL.planDetails(id.toString())}/${tab}/${selectedDetailOption}`);
-                if (response) setDetailsData(response.data.data);
+                const response: any = await productService.getPlanDetails(id.toString(), selectedDetailOption);
+                if (response) setDetailsData(response?.data || []);
             } catch (error: any) {
                 handleResponseError(error);
             } finally {
@@ -147,10 +145,13 @@ export const PlanDetailView = () => {
         try {
             setLoading(true);
             if (!id) return;
-            const response: any = await masterdataService.get(`${ApiURL.planDetails(id.toString())}/${tab}`);
-
-            if (tab === "benefits" && response) setBenefitsData(response.data.data);
-            else if (tab === "channels" && response) setChannelsData(response.data.data);
+            if (tab === "benefits") {
+                const response: any = await productService.getPlanBenefits(id.toString());
+                if (response) setBenefitsData(response?.data || []);
+            } else if (tab === "channels") {
+                const response: any = await productService.getPlanChannels(id.toString());
+                if (response) setChannelsData(response?.data || []);
+            }
         } catch (error: any) {
             handleResponseError(error);
         } finally {
@@ -161,9 +162,9 @@ export const PlanDetailView = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const response: any = await masterdataService.get(ApiURL.products, { params: { insuranceId: insurerId } });
+            const response: any = await productService.getProducts({ insuranceId: insurerId });
             if (response) {
-                const list = response.data.data;
+                const list = response?.data || [];
                 setProductList(list.map((item: any) => ({
                     label: item.name || "-",
                     value: item.id
@@ -180,9 +181,9 @@ export const PlanDetailView = () => {
         try {
             setLoading(true);
             if (!id) return;
-            const responsePlanDetails: any = await masterdataService.get(ApiURL.planDetails(id.toString()));
+            const responsePlanDetails: any = await productService.getPlanById(id.toString());
             if (responsePlanDetails) {
-                const generalData = responsePlanDetails.data.data[0];
+                const generalData = responsePlanDetails?.data?.[0] || responsePlanDetails?.data || responsePlanDetails;
                 setSelectedProduct(generalData.product);
                 setPlanName(generalData.name);
                 setPlanSlug(generalData.slug);
@@ -205,16 +206,17 @@ export const PlanDetailView = () => {
                 pageSize: limit,
                 page
             };
-            const response: any = await masterdataService.get(ApiURL.packages, { params });
+            const response: any = await productService.getPackages(params as any);
             if (response) {
                 setCurrentPage(page);
-                setTotalData(response.data.meta.total);
-                setPackagesData(response.data.data);
-                setAllPackagesData(response.data.data);
+                const packageList = response?.data || [];
+                setTotalData(response?.meta?.total || response?.total || 0);
+                setPackagesData(packageList);
+                setAllPackagesData(packageList);
 
                 const occupations = Array.from(
                     new Set(
-                        response.data.data
+                        packageList
                             .map((pkg: any) => String(pkg.search_params.occupation_class))
                             .filter((occupation_class: any) => occupation_class)
                     )
@@ -227,7 +229,7 @@ export const PlanDetailView = () => {
 
                 const ages = Array.from(
                     new Set(
-                        response.data.data
+                        packageList
                             .map((pkg: any) => String(pkg.search_params.age))
                             .filter((age: any) => age)
                     )
@@ -243,7 +245,7 @@ export const PlanDetailView = () => {
                 setSelectedAgeOption("all");
 
                 const adults = Array.from(
-                    new Set(response.data.data.map((pkg: any) => pkg.search_params.adult).filter(Boolean))
+                    new Set(packageList.map((pkg: any) => pkg.search_params.adult).filter(Boolean))
                 ).map((item: any) => ({ label: `${item}` || "-", value: `${item}` }));
                 setAdultsOptions([
                     { label: "All adults", value: "all" },
@@ -252,7 +254,7 @@ export const PlanDetailView = () => {
                 setSelectedAdultOption("all");
 
                 const children = Array.from(
-                    new Set(response.data.data.map((pkg: any) => pkg.search_params.children).filter(Boolean))
+                    new Set(packageList.map((pkg: any) => pkg.search_params.children).filter(Boolean))
                 ).map((item: any) => ({ label: `${item}` || "-", value: `${item}` }));
                 setChildOptions([
                     { label: "All children", value: "all" },
@@ -277,7 +279,7 @@ export const PlanDetailView = () => {
                 slug: planSlug
             }
             if (!id) return;
-            const response: any = await masterdataService.put(ApiURL.planDetails(id.toString()), requestBody);
+            const response: any = await productService.updatePlan(id.toString(), requestBody);
             if (response) toastNotification("Plan updated successfully!");
         } catch (error: any) {
             toastNotification("Failed to update plan!", "error");
@@ -295,7 +297,7 @@ export const PlanDetailView = () => {
                 channelName: selectedAssignOption.split(delimiter)[1],
                 plans: [id.toString()]
             }
-            const response: any = await masterdataService.post(`${ApiURL.channelPackages}/assign-plans`, requestBody);
+            const response: any = await productService.assignChannelPlans(requestBody);
             if (response) {
                 toggleAssignModal();
                 setSelectedAssignOption("");
@@ -317,7 +319,7 @@ export const PlanDetailView = () => {
                 channel: selectedUnassignChannel.channel,
                 plans: [id.toString()]
             }
-            const response: any = await masterdataService.post(`${ApiURL.channelPackages}/unassign-plans`, requestBody);
+            const response: any = await productService.unassignChannelPlans(requestBody);
             if (response) {
                 toggleAssignModal(false);
                 setSelectedUnassignChannel({});

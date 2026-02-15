@@ -1,10 +1,8 @@
 import React, {useState, useEffect} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import NotFound from "@/components/not-found";
-import {ListPolicyRequest, ListPolicyResponse, Policy} from "@/types/policy";
-import {AxiosResponse} from "axios";
-import ApiURL from "@/constants/api-url.const";
-import {policyService} from "@/services/api.service";
+import {ListPolicyRequest, Policy} from "@/types/policy";
+import {policyService} from "@/services/policy/api/policy.service";
 import moment from "moment";
 import Pagination from "@/components/pagination";
 import {useScreen} from "@/context/screen.context";
@@ -52,11 +50,11 @@ export const PolicyListView = () => {
                 page,
                 channel
             };
-            const response: AxiosResponse<ListPolicyResponse> = await policyService.get(ApiURL.policies, {params});
+            const response: any = await policyService.getPolicies(params as any);
             if (response) {
                 setCurrentPage(page);
-                setTotalData(response.data.total);
-                setData(response.data.data);
+                setTotalData(response.total);
+                setData(response.data);
                 setLocalStorage("filterPolicyData", filterPolicyData);
             }
         } catch (error: any) {

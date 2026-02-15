@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
-import {AxiosResponse} from "axios";
-import {policyService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {policyService} from "@/services/policy/api/policy.service";
 import {Policy} from "@/types/policy";
 import NotFound from "@/components/not-found";
 import {useScreen} from "@/context/screen.context";
@@ -24,8 +22,8 @@ export const PolicyDetailView = () => {
             try {
                 setLoading(true);
                 if (!id) return;
-                const responsePolicyDetail: AxiosResponse<Policy> = await policyService.get(ApiURL.policyDetails(id.toString()));
-                if (responsePolicyDetail) setData(responsePolicyDetail.data);
+                const responsePolicyDetail: any = await policyService.getPolicyById(id.toString());
+                if (responsePolicyDetail) setData(responsePolicyDetail);
             } catch (error: any) {
                 handleResponseError(error);
             } finally {

@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { usePathname, useParams, useRouter } from "next/navigation";
 import { ChevronLeft } from "react-feather";
 import { getBreadcrumbs, getHeaderPage } from "@/helpers/app.helper";
-import { policyService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { policyService } from "@/services/policy/api/policy.service";
 import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
 
@@ -29,8 +28,9 @@ export const MembershipDetailView = () => {
   const fetchMembershipDetail = async () => {
     try {
       setLoading(true);
-      const response = await policyService.get(`${ApiURL.insuredParties}/${memberId}`);
-      const data = response.data;
+      if (!memberId) return;
+      const response: any = await policyService.getInsuredPartyById(memberId.toString());
+      const data = response?.data || response;
 
       setProfile(data.profile || {});
       setOtherInfo(data.other_info || {});

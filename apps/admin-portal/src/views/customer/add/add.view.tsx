@@ -6,8 +6,8 @@ import {ChevronLeft} from "react-feather";
 import Button from "@/components/button";
 import Select from "@/components/select";
 import {Customer, RequestAddCustomer} from "@/types/customer";
-import {productService, transactionService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {productService} from "@/services/product/api/product.service";
+import {transactionService} from "@/services/transaction/api/transaction.service";
 import {useAuth} from "@/context/auth.context";
 import {Option} from "@/types/common";
 import Modal from "@/components/modal";
@@ -72,27 +72,25 @@ export const CustomerAddView = () => {
 
     const findListPlan = async () => {
         try {
-            const response = await productService.get(`${ApiURL.plans}`, {
-                params: {
-                    page: 1,
-                    pageSize: 9999,
-                    category: 'gadget',
-                    channelId: channel
-                }
+            const response: any = await productService.getPlans({
+                page: 1,
+                pageSize: 9999,
+                category: "gadget",
+                channelId: channel
             })
             const tempOptions: Option[] = []
             const tempPayload = []
-            for (let i = 0; i < response.data.data.length; i++) {
-                if (response.data.data[i].packages.length > 0) {
+            for (let i = 0; i < response.data.length; i++) {
+                if (response.data[i].packages.length > 0) {
                     tempOptions.push({
-                        label: response.data.data[i].name,
-                        value: response.data.data[i].name
+                        label: response.data[i].name,
+                        value: response.data[i].name
                     })
                     tempPayload.push({
-                        name: response.data.data[i].name,
-                        package_id: response.data.data[i].packages.length > 0 ? response.data.data[i].packages[0].id : 0,
-                        premium: response.data.data[i].packages.length > 0 ? response.data.data[i].packages[0].premium : 0,
-                        period: response.data.data[i].products.active_period ? response.data.data[i].products.active_period : 0
+                        name: response.data[i].name,
+                        package_id: response.data[i].packages.length > 0 ? response.data[i].packages[0].id : 0,
+                        premium: response.data[i].packages.length > 0 ? response.data[i].packages[0].premium : 0,
+                        period: response.data[i].products.active_period ? response.data[i].products.active_period : 0
                     })
                 }
             }
@@ -117,8 +115,8 @@ export const CustomerAddView = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await transactionService.post(`${ApiURL.transactionComplete}`, payload)
-            if (response.status === 201) {
+            const response = await transactionService.completeTransaction(payload)
+            if (response) {
                 setIsSubmitted(false)
                 setPayload({
                     channel: "",

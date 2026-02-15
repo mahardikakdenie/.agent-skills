@@ -3,8 +3,6 @@ import { ChartPie } from "lucide-react";
 import type { ReactNode } from "react";
 
 import AppURL from "@/constants/app-url.const";
-import ApiURL from "@/constants/api-url.const";
-import { productService } from "@/services/api.service";
 import iconTransaction from "/public/images/icon-transactions.png";
 import iconCampaigns from "/public/images/icon-campaigns.png";
 import iconPolicy from "/public/images/icon-policy.png";

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {usePathname} from "next/navigation";
 import {defaultChart, homeCard} from "@/constants/app-common.const";
-import {AxiosResponse} from "axios";
-import ApiURL from "@/constants/api-url.const";
-import {transactionService} from "@/services/api.service";
+import {transactionService} from "@/services/transaction/api/transaction.service";
 import {useScreen} from "@/context/screen.context";
 import Chart from "@/components/chart";
 import {capitalizeString, getColorForBarChart, getHeaderPage, moneyFormatter} from "@/helpers/app.helper";
@@ -31,9 +29,9 @@ export const RevenueView = () => {
     const fetchDataRevenue = async (country: string) => {
         try {
             setLoading(true);
-            const responseTransactionRevenueStatisticYearly: AxiosResponse<TransactionStatisticYearly> = await transactionService.get(ApiURL.transactionsStatisticYearly, { params: { year: currentYear } });
+            const responseTransactionRevenueStatisticYearly: TransactionStatisticYearly = await transactionService.getTransactionStatisticsYearly({ year: currentYear }) as TransactionStatisticYearly;
             if (responseTransactionRevenueStatisticYearly) {
-                const months = responseTransactionRevenueStatisticYearly.data.months;
+                const months = responseTransactionRevenueStatisticYearly.months;
                 const revenueTransactionMap: CountryData = {};
 
                 Object.values(months).forEach(month => {

@@ -6,8 +6,7 @@ import {useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
 import {useScreen} from "@/context/screen.context";
 import {useAuth} from "@/context/auth.context";
-import {transactionService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {transactionService} from "@/services/transaction/api/transaction.service";
 import {formatDateTimeWithTZ, getLocalStorage, moneyFormatter, toastNotification} from "@/helpers/app.helper";
 import NotFound from "@/components/not-found";
 import DownloadIcon from "@/images/download.icon";
@@ -37,14 +36,14 @@ export const TransactionExportView = () => {
                     page,
                     // channel
                 };
-                const response = await transactionService.get(ApiURL.transactions, { params });
+                const response: any = await transactionService.getTransactions(params);
 
-                if (response && response.data) {
-                    const newData = response.data.data || [];
+                if (response) {
+                    const newData = response?.data || [];
                     const updatedData= [...accumulatedData, ...newData];
                     setData(updatedData);
 
-                    if (page < response.data.pageTotal) {
+                    if (page < (response?.pageTotal || 0)) {
                         await fetchAllDataTransaction(page + 1, updatedData);
                     }
                 }

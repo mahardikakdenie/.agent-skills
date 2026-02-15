@@ -6,10 +6,10 @@
 
 ## Status Overview
 
-- Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 92
-- Incremental Updates: 5
-- Last Updated: 2026-02-15 19:55
+- Main Refactor (Batch 6): Completed
+- Total Components Migrated (Main): 126
+- Incremental Updates: 8
+- Last Updated: 2026-02-15 20:52
 
 ---
 
@@ -18,10 +18,10 @@
 ### Migration Summary
 
 - Started: 2026-02-15 17:10
-- Completed: In Progress
+- Completed: 2026-02-15 20:52
 - Total Services: 10+ (Claim, Auth, Policy, Transaction, Channel, Finance, Helper, Product, Promotion, Masterdata, Sanction/Country + dashboard aggregation)
-- Total Components: 92
-- Status: In Progress
+- Total Components: 126
+- Status: Completed
 
 ### Components Migrated by Service
 
@@ -660,6 +660,239 @@ Components:
   - Verified: PASS
   - Issues: None
 
+#### Service: Transaction + Policy + Claim + Product (Legacy `src/views` layer)
+
+Service Base URLs:
+- `NEXT_PUBLIC_TRANSACTION_SERVICE_URL`
+- `NEXT_PUBLIC_API_POLICY_BASE_URL`
+- `NEXT_PUBLIC_API_CLAIM_BASE_URL`
+- `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/views/transaction/add/add.view.tsx` - Legacy transaction add page
+  - Before: Legacy `transactionService` from `@/services/api.service` + `ApiURL`
+  - After: New transaction API service methods (`getTransactions`, `updateTransactionStatus`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/transaction/list/list-admin.view.tsx` - Legacy transaction admin list page
+  - Before: Legacy `transactionService` from `@/services/api.service` + `ApiURL`
+  - After: New transaction API service methods (`getTransactions`, `updateTransactionStatus`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/transaction/list/list-transaction.view.tsx` - Legacy transaction list page
+  - Before: Legacy `transactionService` from `@/services/api.service` + `ApiURL`
+  - After: New transaction API service method (`getTransactions`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/transaction/export/export.view.tsx` - Legacy transaction export page
+  - Before: Legacy `transactionService` from `@/services/api.service` + `ApiURL`
+  - After: New transaction API service method (`getTransactions`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/transaction/revenue/revenue.view.tsx` - Legacy revenue analytics page
+  - Before: Legacy `transactionService` from `@/services/api.service` + `ApiURL.transactionsStatisticYearly`
+  - After: New transaction API service method (`getTransactionStatisticsYearly`)
+  - Verified: PASS
+  - Issues: Added yearly statistics endpoint/method to new transaction API layer
+
+- [x] `apps/admin-portal/src/views/transaction/countries/countries.view.tsx` - Legacy country analytics page
+  - Before: Legacy `transactionService`/`policyService` from `@/services/api.service` + yearly statistic `ApiURL` endpoints
+  - After: New transaction/policy API service methods (`getTransactionStatisticsYearly`, `getPolicyStatisticsYearly`)
+  - Verified: PASS
+  - Issues: Added yearly statistics endpoint/method to new policy API layer
+
+- [x] `apps/admin-portal/src/views/dashboard/transaction/transaction.view.tsx` - Legacy transaction performance dashboard
+  - Before: Legacy `transactionService` + `masterdataService` from `@/services/api.service` + `ApiURL`
+  - After: New transaction/product API service methods (`getTransactionStatistics`, `getInsuranceById`, `getProducts`, `getPlans`)
+  - Verified: PASS
+  - Issues: Local cast applied for request type compatibility (`Record<string, unknown>`)
+
+- [x] `apps/admin-portal/src/views/dashboard/policy/policy.view.tsx` - Legacy policy performance dashboard
+  - Before: Legacy `policyService` + `masterdataService` from `@/services/api.service` + `ApiURL`
+  - After: New policy/product API service methods (`getPolicyStatistics`, `getInsuranceById`, `getProducts`, `getPlans`)
+  - Verified: PASS
+  - Issues: Local cast applied for request type compatibility (`Record<string, unknown>`)
+
+- [x] `apps/admin-portal/src/views/dashboard/claim/claim.view.tsx` - Legacy claim performance dashboard
+  - Before: Legacy `claimService` + `masterdataService` from `@/services/api.service` + `ApiURL`
+  - After: New claims/product API service methods (`getClaimStatistics`, `getInsuranceById`, `getProducts`, `getPlans`)
+  - Verified: PASS
+  - Issues: Local cast applied for request type compatibility (`Record<string, unknown>`)
+
+#### Service: Channel + Policy + Claims + Product + Transaction + Finance (Legacy `src/views` final pass)
+
+Service Base URLs:
+- `NEXT_PUBLIC_CHANNEL_SERVICE_URL`
+- `NEXT_PUBLIC_API_POLICY_BASE_URL`
+- `NEXT_PUBLIC_API_CLAIM_BASE_URL`
+- `NEXT_PUBLIC_PRODUCT_SERVICE_URL`
+- `NEXT_PUBLIC_TRANSACTION_SERVICE_URL`
+- `NEXT_PUBLIC_FINANCE_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/views/configuration/sla/sla.view.tsx` - SLA configuration list view
+  - Before: Legacy `channelService.get(ApiURL.channelConfigurations)`
+  - After: New channel API service method (`getChannelConfigurations`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/employment-benefit/membership/list/list.view.tsx` - Membership list page
+  - Before: Legacy `policyService.get(ApiURL.masterPolicy/insuredParties)`
+  - After: New policy API service methods (`getMasterPoliciesByChannel`, `getInsuredParties`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/employment-benefit/membership/detail/detail.view.tsx` - Membership detail page
+  - Before: Legacy `policyService.get(${ApiURL.insuredParties}/{id})`
+  - After: New policy API service method (`getInsuredPartyById`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/customer/list/list.view.tsx` - Customer list page
+  - Before: Legacy `policyService.get(ApiURL.policies)`
+  - After: New policy API service method (`getPolicies`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/customer/add/add.view.tsx` - Customer add page
+  - Before: Legacy `productService.get(ApiURL.plans)` + `transactionService.post(ApiURL.transactionComplete)`
+  - After: New product/transaction API service methods (`getPlans`, `completeTransaction`)
+  - Verified: PASS
+  - Issues: Added `transactionService.completeTransaction` endpoint/method for parity
+
+- [x] `apps/admin-portal/src/views/claim/list/list.view.tsx` - Claim list page
+  - Before: Legacy claim endpoints via `ApiURL` (`claims`, `claimConfigurations`, forms, update-status, export)
+  - After: New claims API service methods (`getClaims`, `getConfigurations`, `getClaimCategoryForms`, `getClaimChannelForms`, `updateClaimStatus`, `exportClaims`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/claim/detail/detail.view.tsx` - Claim detail page
+  - Before: Legacy `claimService.get(ApiURL.claimHistories/claimDetails)`
+  - After: New claims API service methods (`getClaimHistories`, `getClaimById`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/claim/export/export.view.tsx` - Claim export page
+  - Before: Legacy `claimService.get(ApiURL.claims)`
+  - After: New claims API service method (`getClaims`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/finance/billing/list/list.view.tsx` - Billing list page
+  - Before: Legacy `financeService.get(ApiURL.billings)`
+  - After: New finance API service method (`getBillings`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/finance/billing/detail/detail.view.tsx` - Billing detail page
+  - Before: Legacy `financeService.get(ApiURL.billingDetails)`
+  - After: New finance API service method (`getBillingById`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/finance/billing/export/export.view.tsx` - Billing export page
+  - Before: Legacy `financeService.get(ApiURL.billingDetails)`
+  - After: New finance API service method (`getBillingById`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/policy/list/list.view.tsx` - Policy list page
+  - Before: Legacy `policyService.get(ApiURL.policies)`
+  - After: New policy API service method (`getPolicies`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/policy/detail/detail.view.tsx` - Policy detail page
+  - Before: Legacy `policyService.get(ApiURL.policyDetails)`
+  - After: New policy API service method (`getPolicyById`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/policy/export/export.view.tsx` - Policy export page
+  - Before: Legacy `policyService.get(ApiURL.policies)`
+  - After: New policy API service method (`getPolicies`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/policy/import/import.view.tsx` - Claim import page under policy flow
+  - Before: Legacy `masterdataService.get(ApiURL.categoriesByChannel)` + `claimService.get/post(ApiURL.claimImport/claimImportSubmit)`
+  - After: New product/claims API service methods (`getCategoriesByChannelId`, `getImportDataGuide`, `importClaimsAsJson`)
+  - Verified: PASS
+  - Issues: Local cast retained for import-guide params compatibility
+
+- [x] `apps/admin-portal/src/views/policy/endorsement/list/list.view.tsx` - Endorsement list page
+  - Before: Legacy `policyService.get(ApiURL.masterPolicy/endorsement)`
+  - After: New policy API service methods (`getMasterPoliciesByChannel`, `getEndorsements`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/policy/endorsement/upload/upload.view.tsx` - Endorsement upload page
+  - Before: Legacy `policyService.get(ApiURL.masterPolicy)` + `policyService.post(ApiURL.endorsementUpload)`
+  - After: New policy API service methods (`getMasterPoliciesByChannel`, `bulkCreateEndorsements`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/policy/endorsement/detail/detail.view.tsx` - Endorsement detail page
+  - Before: Legacy `policyService.get(${ApiURL.endorsement}/{id})` + bulking status update endpoint
+  - After: New policy API service methods (`getEndorsementById`, `updateEndorsementStatusBulking`)
+  - Verified: PASS
+  - Issues: Local response narrowing for generic payload shape
+
+- [x] `apps/admin-portal/src/views/masterdata/product/product.view.tsx` - Masterdata product page
+  - Before: Legacy `masterdataService` product/category CRUD calls
+  - After: New product API service methods (`getCategories`, `getProducts`, `createProduct`, `updateProduct`, `deleteProduct`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/plan/list/list.view.tsx` - Plan list page
+  - Before: Legacy `masterdataService` plan/category calls
+  - After: New product API service methods (`getCategories`, `getPlans`, `deletePlan`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/plan/add/add.view.tsx` - Plan add page
+  - Before: Legacy `masterdataService` product lookup + plan create
+  - After: New product API service methods (`getProducts`, `createPlan`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/plan/detail/detail.view.tsx` - Plan detail page
+  - Before: Legacy `masterdataService`/`channelService` plan tab + assign/unassign operations
+  - After: New product/channel API service methods (`getPlanById`, `getPlanBenefits`, `getPlanDetails`, `getPlanChannels`, `getPackages`, `updatePlan`, `assignChannelPlans`, `unassignChannelPlans`, `getChannels`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/views/plan/upload/upload.view.tsx` - Plan upload page
+  - Before: Legacy `masterdataService`/`masterdataNotV1Service` bulk upload calls
+  - After: New product API service methods (`getPlanById`, `bulkCreatePlanBenefits`, `bulkCreatePackagesByCategory`, `bulkCreatePlanDetails`)
+  - Verified: PASS
+  - Issues: None
+
+#### Service: Auth + Shared Non-View Modules (Final Pass)
+
+Service Base URL:
+- `NEXT_PUBLIC_AUTH_SERVICE_URL`
+
+Components:
+
+- [x] `apps/admin-portal/src/context/auth.context.tsx` - Auth context login flow
+  - Before: Legacy `authService.post(ApiURL.login, ...)` call from `@/services/api.service`
+  - After: New auth API service method (`authService.login`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/constants/app-menu.const.tsx` - Shared menu configuration
+  - Before: Stale legacy imports (`@/services/api.service`, `ApiURL`) remained in module
+  - After: Removed legacy imports; module now references only current dependencies
+  - Verified: PASS
+  - Issues: None
+
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
@@ -670,15 +903,17 @@ Components:
 
 ### Components NOT Migrated
 
-- Active migration scope (`src/app`, `src/views/home`, `src/views/layout`) has no remaining `@/services/api.service` imports or `new *Service()` class instantiation patterns.
-- Extended `src/hooks` scope has no remaining legacy `@/services/api.service` imports or legacy `new *Service()` patterns.
+- `src/hooks` scope has no remaining legacy `@/services/api.service` imports or legacy `new *Service()` patterns.
+- `src/views` scope has no remaining legacy `@/services/api.service` imports or `ApiURL` endpoint usage.
+- `src/context` scope has no remaining legacy `@/services/api.service` imports.
+- `src/constants` scope has no remaining legacy `@/services/api.service` imports.
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 92
-- Components with issues: 9 (all fixed)
+- Total components migrated: 126
+- Components with issues: 11 (all fixed)
 - Components rolled back: 0
 
 #### Full Verification Gate
@@ -755,10 +990,26 @@ Components:
 - Fix: Added localized narrowing at usage points and added `channelService.getChannelConfigurations` (+ endpoint constant) in the new channel API layer
 - Status: PASS (resolved)
 
+#### Issue 10: `src/views` dashboard migration required yearly-stat endpoints and request param compatibility casts
+
+- Component: `apps/admin-portal/src/views/transaction/revenue/revenue.view.tsx`, `apps/admin-portal/src/views/transaction/countries/countries.view.tsx`, `apps/admin-portal/src/views/dashboard/transaction/transaction.view.tsx`, `apps/admin-portal/src/views/dashboard/policy/policy.view.tsx`, `apps/admin-portal/src/views/dashboard/claim/claim.view.tsx`
+- Cause: New API layer did not yet expose yearly-stat endpoints used by legacy views; typed request interfaces were not directly assignable to `Record<string, unknown>` service signatures
+- Fix: Added `getTransactionStatisticsYearly` and `getPolicyStatisticsYearly` to new API services and applied localized `as any` request casts at migrated call sites
+- Status: PASS (resolved)
+
+#### Issue 11: Remaining legacy `src/views` migration required response-shape normalization and one missing transaction API-layer method
+
+- Component: `apps/admin-portal/src/views/configuration/sla/sla.view.tsx`, `apps/admin-portal/src/views/employment-benefit/membership/list/list.view.tsx`, `apps/admin-portal/src/views/customer/add/add.view.tsx`, `apps/admin-portal/src/views/policy/endorsement/detail/detail.view.tsx`, `apps/admin-portal/src/views/plan/*`, `apps/admin-portal/src/views/masterdata/product/product.view.tsx`, and related migrated `src/views` files in this final pass
+- Cause: New API service methods return payload data (not AxiosResponse objects), which required one-level response access updates; legacy customer-add flow also depended on `/transactions/complete` which was not yet exposed in the new transaction API layer
+- Fix: Updated migrated view call sites to new service method contracts, added localized `any` narrowing where needed, and added `transactionService.completeTransaction` + `transactionComplete` endpoint constant to preserve behavior
+- Status: PASS (resolved)
+
 ### Next Steps
 
-- [ ] Migrate legacy `src/views/*` files still importing `@/services/api.service`
-- [ ] Mark Batch 6 complete only after all component migrations are finished
+- [x] Migrate legacy `src/views/*` files still importing `@/services/api.service`
+- [x] Migrate remaining non-view legacy imports (`src/context/auth.context.tsx`, `src/constants/app-menu.const.tsx`)
+- [x] Mark Batch 6 complete after all component migrations are finished
+- [ ] Continue with Batch 7 cleanup (remove obsolete legacy service files only after final usage audit)
 
 ---
 
@@ -766,4 +1017,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner + dashboard/transactions + policy/membership + campaign/report/export/notification hooks) | 92 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner + dashboard/transactions + policy/membership + campaign/report/export/notification hooks + full `src/views` migration final pass + non-view auth/menu cleanup) | 126 components | Completed | this doc   |

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {usePathname} from "next/navigation";
 import {primary, primaryRed} from "@/constants/app-common.const";
-import ApiURL from "@/constants/api-url.const";
-import {masterdataService} from "@/services/api.service";
+import {productService} from "@/services/product/api/product.service";
 import {useScreen} from "@/context/screen.context";
 import Button from "@/components/button";
 import Select from "@/components/select";
@@ -38,9 +37,9 @@ export const MasterdataProductView = () => {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const response: any = await masterdataService.get(ApiURL.categories);
+            const response: any = await productService.getCategories();
             if (response) {
-                const list = response.data.data;
+                const list = response?.data || [];
                 setCategoryList(list.map((item: any) => ({
                     ...item,
                     label: capitalizeStringWithChar(item.name),
@@ -69,13 +68,14 @@ export const MasterdataProductView = () => {
                 pageSize: limit,
                 page
             };
-            const response: any = await masterdataService.get(ApiURL.products, { params });
+            const response: any = await productService.getProducts(params as any);
             if (response) {
                 setCurrentPage(page);
-                setTotalData(response.data.meta.total);
+                setTotalData(response?.meta?.total || response?.total || 0);
 
-                if (response.data.data.length === 0) setProductRows([dummyData]);
-                else setProductRows(response.data.data);
+                const rows = response?.data || [];
+                if (rows.length === 0) setProductRows([dummyData]);
+                else setProductRows(rows);
 
                 plusKey();
             }
@@ -98,10 +98,12 @@ export const MasterdataProductView = () => {
 
             const updatedProductRows = [...productRows];
 
-            const response: any = isCreate ? await masterdataService.post(ApiURL.products, requestBody) : await masterdataService.put(ApiURL.productDetails(id), requestBody);
+            const response: any = isCreate
+                ? await productService.createProduct(requestBody)
+                : await productService.updateProduct(id.toString(), requestBody);
             if (response) {
-                const newProductId = response.data.data.id;
-                const newProductName = response.data.data.name;
+                const newProductId = response?.data?.id || response?.id;
+                const newProductName = response?.data?.name || response?.name;
 
                 if (isCreate) {
                     updatedProductRows[index].id = newProductId;
@@ -131,7 +133,7 @@ export const MasterdataProductView = () => {
                 return;
             }
 
-            const response: any = await masterdataService.delete(ApiURL.productDetails(id));
+            const response: any = await productService.deleteProduct(id);
             if (response) {
                 toastNotification("Product deleted successfully!");
                 const newProductRows = productRows.filter(row => row.id !== id);

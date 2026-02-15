@@ -10,8 +10,7 @@ import {delimiter, primary} from "@/constants/app-common.const";
 import Modal from "@/components/modal";
 import DatePicker from "@/components/datepicker";
 import Button from "@/components/button";
-import {transactionService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {transactionService} from "@/services/transaction/api/transaction.service";
 import {Transaction} from "@/types/transaction";
 import {useAuth} from "@/context/auth.context";
 
@@ -35,21 +34,19 @@ export const ListTransactionView = () => {
     const findListTransaction = async (from?: string | null, to?: string | null, isClearDateFilter: boolean = false) => {
         setLoading(true);
         try {
-            const response = await transactionService.get(ApiURL.transactions, {
-                params: {
-                    channel,
-                    page: inputPage.page,
-                    limit: inputPage.limit,
-                    from,
-                    to
-                }
-            })
-            setListTransaction(response.data.data);
+            const response: any = await transactionService.getTransactions({
+                channel,
+                page: inputPage.page,
+                limit: inputPage.limit,
+                from,
+                to
+            });
+            setListTransaction(response?.data || []);
             setInputPage((prevState) => (
                 {
                     ...prevState,
-                    pageTotal: response.data.pageTotal,
-                    total: response.data.total
+                    pageTotal: response?.pageTotal || 0,
+                    total: response?.total || 0
                 }
             ))
         } catch (e) {

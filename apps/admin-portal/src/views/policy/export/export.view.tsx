@@ -6,8 +6,7 @@ import {useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
 import {useScreen} from "@/context/screen.context";
 import {useAuth} from "@/context/auth.context";
-import {policyService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {policyService} from "@/services/policy/api/policy.service";
 import {getLocalStorage, toastNotification} from "@/helpers/app.helper";
 import NotFound from "@/components/not-found";
 import DownloadIcon from "@/images/download.icon";
@@ -33,14 +32,14 @@ export const PolicyExportView = () => {
                     page,
                     channel
                 };
-                const response = await policyService.get(ApiURL.policies, { params });
+                const response: any = await policyService.getPolicies(params);
 
-                if (response && response.data) {
-                    const newData = response.data.data || [];
+                if (response) {
+                    const newData = response.data || [];
                     const updatedData= [...accumulatedData, ...newData];
                     setData(updatedData);
 
-                    if (page < response.data.pageTotal) {
+                    if (page < response.pageTotal) {
                         await fetchAllDataPolicy(page + 1, updatedData);
                     }
                 }

@@ -11,10 +11,8 @@ import Pagination from "@/components/pagination";
 import DatePicker from "@/components/datepicker";
 import Button from "@/components/button";
 import Modal from "@/components/modal";
-import {ListPolicyRequest, ListPolicyResponse, Policy} from "@/types/policy";
-import {AxiosResponse} from "axios";
-import {policyService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {ListPolicyRequest, Policy} from "@/types/policy";
+import {policyService} from "@/services/policy/api/policy.service";
 import AddIcon from "@/images/add.icon";
 
 
@@ -51,14 +49,14 @@ export const CustomerListView = () => {
                 page,
                 channel
             };
-            const response: AxiosResponse<ListPolicyResponse> = await policyService.get(ApiURL.policies, {params});
+            const response: any = await policyService.getPolicies(params as any);
             if (response) {
                 // setInputPage(response.data.total);
-                setListCustomer(response.data.data);
+                setListCustomer(response.data);
                 setInputPage((prevState: Meta) => (
                     {...prevState,
-                        pageTotal: response.data.pageTotal,
-                        total: response.data.total
+                        pageTotal: response.pageTotal,
+                        total: response.total
                     })
                 )
                 // setLocalStorage("filterPolicyData", filterPolicyData);

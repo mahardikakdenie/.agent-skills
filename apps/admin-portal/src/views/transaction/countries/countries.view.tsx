@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {defaultChart, homeCard, primary} from "@/constants/app-common.const";
-import {AxiosResponse} from "axios";
-import ApiURL from "@/constants/api-url.const";
-import {policyService, transactionService} from "@/services/api.service";
+import {policyService} from "@/services/policy/api/policy.service";
+import {transactionService} from "@/services/transaction/api/transaction.service";
 import {useScreen} from "@/context/screen.context";
 import Chart from "@/components/chart";
 import {capitalizeString, getHeaderPage, moneyFormatter, numberSimpleFormatter} from "@/helpers/app.helper";
@@ -35,9 +34,9 @@ export const CountriesView = () => {
     const fetchDataCountries = async (country: string) => {
         try {
             setLoading(true);
-            const responseTransactionCountriesStatisticYearly: AxiosResponse<TransactionStatisticYearly> = await transactionService.get(ApiURL.transactionsStatisticYearly, { params: { year: currentYear } });
+            const responseTransactionCountriesStatisticYearly: TransactionStatisticYearly = await transactionService.getTransactionStatisticsYearly({ year: currentYear }) as TransactionStatisticYearly;
             if (responseTransactionCountriesStatisticYearly) {
-                const months = responseTransactionCountriesStatisticYearly.data.months;
+                const months = responseTransactionCountriesStatisticYearly.months;
                 const revenueCountriesMap: CountryData = {};
 
                 Object.values(months).forEach(month => {
@@ -75,9 +74,9 @@ export const CountriesView = () => {
                 }
             }
 
-            const responsePoliciesCountriesStatisticYearly: AxiosResponse<PolicyStatisticYearly> = await policyService.get(ApiURL.policiesStatisticYearly, { params: { year: currentYear } });
+            const responsePoliciesCountriesStatisticYearly: PolicyStatisticYearly = await policyService.getPolicyStatisticsYearly({ year: currentYear }) as PolicyStatisticYearly;
             if (responsePoliciesCountriesStatisticYearly) {
-                const months = responsePoliciesCountriesStatisticYearly.data.months;
+                const months = responsePoliciesCountriesStatisticYearly.months;
 
                 if (country !== "All") {
                     const policiesMonthly: number[] = [];

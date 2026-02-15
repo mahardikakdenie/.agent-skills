@@ -2,15 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import * as XLSX from "xlsx";
-import { AxiosResponse } from "axios";
 import { Download } from "react-feather";
 
-import ApiURL from "@/constants/api-url.const";
 import { primary } from "@/constants/app-common.const";
 
-import { MembershipItem, MembershipResponse, mapMembershipResponse } from "@/types/membership";
+import { MembershipItem, mapMembershipResponse } from "@/types/membership";
 
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 
 import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
@@ -51,9 +49,9 @@ export const MembershipListView = () => {
   const fetchMasterPolicy = async () => {
     try {
       setLoading(true);
-      const params = { is_only_master_policy: true };
-      const result = await policyService.get(ApiURL.masterPolicy(user?.channel), { params });
-      const { id } = result.data;
+      if (!user?.channel) return;
+      const result: any = await policyService.getMasterPoliciesByChannel(user.channel);
+      const id = result?.id || result?.data?.id;
       setMasterPolicyId(id);
     } catch (error) {
       handleResponseError(error);
@@ -74,13 +72,12 @@ export const MembershipListView = () => {
         isFromBulking: true,
         status: tab === "All" ? undefined : tab,
       };
-      const result: AxiosResponse<MembershipResponse> = await policyService.get(ApiURL.insuredParties, { params });
+      const result: any = await policyService.getInsuredParties(params as any);
+      const { data, total, page } = result || {};
 
-      const { data, total, page } = result.data;
-
-      setTableData(mapMembershipResponse(data));
-      setTotalData(total);
-      setCurrentPage(page);
+      setTableData(mapMembershipResponse(data || []));
+      setTotalData(total || 0);
+      setCurrentPage(page || currentPage);
 
       if (data.length > 0) setHasFetchedDataOnce(true);
     } catch (error) {
@@ -123,8 +120,8 @@ export const MembershipListView = () => {
         keyword: searchData,
         status: tab === "All" ? undefined : tab,
       };
-      const result: AxiosResponse<MembershipResponse> = await policyService.get(ApiURL.insuredParties, { params });
-      const exportData = mapMembershipResponse(result.data.data).map((item, index) => ({
+      const result: any = await policyService.getInsuredParties(params as any);
+      const exportData = mapMembershipResponse(result?.data || []).map((item, index) => ({
         No: index + 1,
         "Policy Number": item.policyNumber,
         "Subsidiary / Entity": item.subsidiary,

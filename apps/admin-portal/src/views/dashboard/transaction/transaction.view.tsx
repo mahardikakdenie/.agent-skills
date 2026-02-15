@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { masterdataService, transactionService } from "@/services/api.service";
+import { productService } from "@/services/product/api/product.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
 import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
 import { primary } from "@/constants/app-common.const";
@@ -10,7 +11,6 @@ import { formatDateTimeWithTZ, formatMoney } from "@/helpers/app.helper";
 import PieChart from "@/components/recharts/piechart";
 import LineChart from "@/components/recharts/dashedlinechart";
 import DetailTable from "@/components/recharts/table-policy";
-import ApiURL from "@/constants/api-url.const";
 import Select from "@/components/select";
 import DatePickerDropdown from "@/components/date-range-picker";
 import BarChartComp from "@/components/recharts/barchart-horizontal";
@@ -59,10 +59,12 @@ export const DashboardTransaction = () => {
           to: to || today.toISOString().split("T")[0], 
         };
   
-        const response = await transactionService.get(ApiURL.transactionsStatisticData, { params });
+        const response: any = await transactionService.getTransactionStatistics(
+          params as any
+        );
   
-        if (response.data) {
-          setTransactionStatisticData(response.data.data);
+        if (response?.data) {
+          setTransactionStatisticData(response.data);
         }
       } catch (error: any) {
         handleResponseError(error);
@@ -88,8 +90,11 @@ export const DashboardTransaction = () => {
         if (user?.all_insurances && user?.all_insurances?.length > 0) {
           for (let i = 0; i < user.all_insurances.length; i++) {
             const insId = user.all_insurances[i];
-            const res = await masterdataService.get(ApiURL.insuranceDetails(insId));
-            if (res?.data?.data) updatedList.push({ label: res?.data?.data?.name, value: res?.data?.data?.id });
+            const res: any = await productService.getInsuranceById(insId);
+            const insurance = res?.data ?? res;
+            if (insurance?.id) {
+              updatedList.push({ label: insurance.name, value: insurance.id });
+            }
           }
         }
 
@@ -111,17 +116,15 @@ export const DashboardTransaction = () => {
       try {
         setLoading(true);
         
-        const response: any = await masterdataService.get(ApiURL.products, {
-          params: { 
-            page: 1, 
-            pageSize: 100,
-            channelId: user?.all_channels?.[0] || undefined,
-            ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
-          },
+        const response: any = await productService.getProducts({
+          page: 1,
+          pageSize: 100,
+          channelId: user?.all_channels?.[0] || undefined,
+          ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
         });
   
-        if (response?.data?.data && Array.isArray(response.data.data)) {
-          const list = response.data.data.map((prod: any) => ({
+        if (Array.isArray(response?.data)) {
+          const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));
@@ -148,16 +151,14 @@ export const DashboardTransaction = () => {
     const fetchPlanFilter = async () => {
       try {
         setLoading(true);
-        const response: any = await masterdataService.get(ApiURL.plans, {
-          params: { 
-            page: 1, 
-            pageSize: 20,
-            ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
-          },
+        const response: any = await productService.getPlans({
+          page: 1,
+          pageSize: 20,
+          ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
         });
   
-        if (response?.data?.data && Array.isArray(response.data.data)) {
-          const list = response.data.data.map((prod: any) => ({
+        if (Array.isArray(response?.data)) {
+          const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));

@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { ChevronLeft } from "react-feather";
-import ApiURL from "@/constants/api-url.const";
-import {
-  masterdataNotV1Service,
-  masterdataService,
-} from "@/services/api.service";
+import { productService } from "@/services/product/api/product.service";
 import {
   capitalizeString,
   capitalizeStringWithChar,
@@ -57,16 +53,15 @@ export const UploadPlanView = () => {
       try {
         setLoading(true);
         if (!id) return;
-        const responsePlanDetails: any = await masterdataService.get(
-          ApiURL.planDetails(id.toString())
+        const responsePlanDetails: any = await productService.getPlanById(
+          id.toString()
         );
         if (responsePlanDetails) {
+          const planData = responsePlanDetails?.data?.[0] || responsePlanDetails?.data || responsePlanDetails;
           const key = toCamelCase(
-            `${
-              responsePlanDetails.data.data[0]?.products?.categories?.name || ""
-            } ${doc?.toString() || ""}`
+            `${planData?.products?.categories?.name || ""} ${doc?.toString() || ""}`
           );
-          setPlan(responsePlanDetails.data.data[0]);
+          setPlan(planData);
           setTemplateFileUrl(templateFileLink[key]);
         }
       } catch (error: any) {
@@ -87,20 +82,20 @@ export const UploadPlanView = () => {
       let response: any;
       if (!id || !doc) return;
       if (doc.toString() === "benefits")
-        response = await masterdataService.post(
-          `${ApiURL.planBenefit}/bulk-create/${id.toString()}`,
+        response = await productService.bulkCreatePlanBenefits(
+          id.toString(),
           csvData
         );
       else if (doc.toString() === "packages")
-        response = await masterdataNotV1Service.post(
-          `${ApiURL.packages}/${category}/bulk-create/${id.toString()}`,
+        response = await productService.bulkCreatePackagesByCategory(
+          category,
+          id.toString(),
           csvData
         );
       else
-        response = await masterdataService.post(
-          `${
-            ApiURL.plans
-          }/bulk-create/${id.toString()}/${selectedDetailOption}`,
+        response = await productService.bulkCreatePlanDetails(
+          id.toString(),
+          selectedDetailOption,
           csvData
         );
 

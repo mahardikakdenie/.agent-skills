@@ -3,8 +3,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {useScreen} from "@/context/screen.context";
 import {capitalizeString, capitalizeStringWithChar, getHeaderPage, moneyFormatter} from "@/helpers/app.helper";
 import NotFound from "@/components/not-found";
-import {financeService} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import {financeService} from "@/services/finance/api/finance.service";
 import {useAuth} from "@/context/auth.context";
 import moment from "moment/moment";
 import Button from "@/components/button";
@@ -33,11 +32,11 @@ export const FinanceBillingView = () => {
                 page,
                 pageSize: limit
             };
-            const response: any = await financeService.get(ApiURL.billings, { params });
+            const response: any = await financeService.getBillings(params);
             if (response) {
                 setCurrentPage(page);
-                setTotalData(response.data.meta.total);
-                setData(response?.data?.data || []);
+                setTotalData(response?.meta?.total || 0);
+                setData(response?.data || []);
             }
         } catch (error: any) {
             handleResponseError(error);

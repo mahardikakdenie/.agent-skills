@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import {ChevronLeft} from "react-feather";
-import {AxiosResponse} from "axios";
-import ApiURL from "@/constants/api-url.const";
-import {Claim, ClaimHistory, ListClaimHistoryResponse} from "@/types/claim";
-import {claimService} from "@/services/api.service";
+import {Claim, ClaimHistory} from "@/types/claim";
+import {claimsService} from "@/services/claims/api/claims.service";
 import NotFound from "@/components/not-found";
 import {forLabelString, getBreadcrumbs, getHeaderPage, moneyFormatter, toastNotification} from "@/helpers/app.helper";
 import JourneyVerticalImage from "@/images/journey-vertical.image";
@@ -48,14 +46,14 @@ export const ClaimDetailView = () => {
         const fetchClaimDetail = async () => {
             try {
                 setLoading(true);
-                const responseClaimHistories: AxiosResponse<ListClaimHistoryResponse> = await claimService.get(ApiURL.claimHistories, { params: { claim: `${id}`, limit: 100, page: 1 } });
-                if (responseClaimHistories) setHistories(responseClaimHistories.data.data);
+                const responseClaimHistories: any = await claimsService.getClaimHistories({ claim: `${id}`, limit: 100, page: 1 });
+                if (responseClaimHistories) setHistories(responseClaimHistories.data);
                 if (!id) return;
-                const responseClaim: AxiosResponse<Claim> = await claimService.get(ApiURL.claimDetails(id.toString()));
-                const forClaimCurrency: string | undefined = responseClaim.data?.policy_data?.declarations?.transaction_data?.insurance?.currency ? responseClaim.data?.policy_data?.declarations?.transaction_data?.insurance?.currency : undefined;
-                const identityCardParticipant: string = responseClaim?.data?.participant_data?.data?.ktp || responseClaim?.data?.participant_data?.data?.passport || "";
+                const responseClaim: any = await claimsService.getClaimById(id.toString());
+                const forClaimCurrency: string | undefined = responseClaim?.policy_data?.declarations?.transaction_data?.insurance?.currency ? responseClaim?.policy_data?.declarations?.transaction_data?.insurance?.currency : undefined;
+                const identityCardParticipant: string = responseClaim?.participant_data?.data?.ktp || responseClaim?.participant_data?.data?.passport || "";
                 const identityCardParticipantArray = !!identityCardParticipant ? identityCardParticipant?.split(".") : null;
-                const claimAmountParticipant: any = responseClaim.data.claim.find((d: any) => d.type === "Number" && d.name === "claim");
+                const claimAmountParticipant: any = responseClaim.claim.find((d: any) => d.type === "Number" && d.name === "claim");
                 if (identityCardParticipant) setIdentityCardLink(identityCardParticipant);
                 if (!!identityCardParticipantArray && identityCardParticipantArray?.[identityCardParticipantArray.length - 1]?.toLowerCase() === "pdf") {
                     setIsIdentityCardPdf(true);
@@ -63,11 +61,11 @@ export const ClaimDetailView = () => {
                 }
                 if (claimAmountParticipant) setClaimAmount(moneyFormatter(forClaimCurrency).format(claimAmountParticipant.value));
                 if (responseClaim) {
-                    const filteredGeneral = responseClaim?.data?.general?.length ? responseClaim?.data?.general?.filter((item: any) => !!item.value || !!item.fields) : [];
-                    const filteredClaim = responseClaim?.data?.claim?.length ? responseClaim?.data?.claim?.filter((item: any) => !!item.value || !!item.fields) : [];
-                    const filteredClaimConfig = responseClaim?.data?.claim_config?.length ? responseClaim?.data?.claim_config?.filter((item: any) => !!item.value || !!item.fields) : [];
+                    const filteredGeneral = responseClaim?.general?.length ? responseClaim?.general?.filter((item: any) => !!item.value || !!item.fields) : [];
+                    const filteredClaim = responseClaim?.claim?.length ? responseClaim?.claim?.filter((item: any) => !!item.value || !!item.fields) : [];
+                    const filteredClaimConfig = responseClaim?.claim_config?.length ? responseClaim?.claim_config?.filter((item: any) => !!item.value || !!item.fields) : [];
 
-                    setData(responseClaim.data);
+                    setData(responseClaim);
                     setClaimCurrency(forClaimCurrency);
                     setDocuments([...filteredGeneral, ...filteredClaim, ...filteredClaimConfig]);
                 }

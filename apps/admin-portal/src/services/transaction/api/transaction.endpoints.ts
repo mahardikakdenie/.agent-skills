@@ -7,7 +7,9 @@ export const TRANSACTION_ENDPOINTS = {
   transactionsBulkCreate: (id: string) =>
     `/v1/transactions/bulk-create/${id}`,
   transactionStatistics: "/v1/transactions/statistic-data",
+  transactionStatisticsYearly: "/transactions/statistic-yearly",
   transactionsConventional: "/v1/transactions/conventional",
+  transactionComplete: "/transactions/complete",
   customers: "/v1/customers",
   customersCampaign: "/v1/customers/campaign",
   campaignReport: (id: string) => `/v1/campaigns/report/${id}`,
