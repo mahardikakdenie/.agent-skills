@@ -8,7 +8,7 @@ import { Plus, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
-import { PackageDto } from "@/services/product-catalog.service";
+import type { PackageDto } from "@/services/product/api/product.types";
 import { DataTable } from "@/components/ui/DataTable";
 import { createPackageTableColumns } from "@/components/tableConfig/packageTableConfig";
 

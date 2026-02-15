@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Column } from "@/components/ui/DataTable";
-import { PackageDto } from "@/services/product-catalog.service";
+import type { PackageDto } from "@/services/product/api/product.types";
 import {
   Tooltip,
   TooltipContent,

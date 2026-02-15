@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
-import type { ProductCatalogDto } from "@/services/product-catalog.service";
+import type { ProductCatalogDto } from "@/services/product/api/product.types";
 import {
   Table,
   TableBody,
