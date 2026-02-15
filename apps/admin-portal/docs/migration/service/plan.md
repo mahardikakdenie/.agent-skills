@@ -31,7 +31,10 @@ src/
 |   |   |   |-- [service].service.ts
 |   |   |-- hooks/
 |   |   |   |-- queries/
+|   |   |   |   |-- index.ts
 |   |   |   |-- mutations/
+|   |   |   |   |-- index.ts
+|   |   |   |-- index.ts
 |   |   |-- query-keys.ts
 |-- types/
 |-- utils/
@@ -62,6 +65,7 @@ src/
 - Phase 4A: Verification gate. Run and fix before continuing.
 - Phase 4B: Query keys and hooks. Add query keys, query hooks, mutation hooks for all services.
 - Phase 4B: Hook options. Every query and mutation hook accepts an optional `options` param and composes `options?.onSuccess` when adding invalidations.
+- Phase 4B: Hook barrels. Every service must include `hooks/index.ts`, `hooks/queries/index.ts`, and `hooks/mutations/index.ts`.
 - Phase 4B: Verification gate. Run and fix before continuing.
 - Phase 5: Component migration. Move one feature at a time to new hooks.
 - Phase 5: Verification gate. Run after all migrations.
@@ -645,8 +649,11 @@ src/services/claims/
 |   |-- queries/
 |   |   |-- useClaims.ts
 |   |   |-- useClaimDetail.ts
+|   |   |-- index.ts
 |   |-- mutations/
 |       |-- useUpdateClaim.ts
+|       |-- index.ts
+|   |-- index.ts
 |-- query-keys.ts
 ```
 
