@@ -169,7 +169,7 @@ Batch 3: Analyze changes → detect new base URL
 Batch 5: Create new service (Phase 4A + 4B)
          - Update audit.md and plan.md
          - Implement API layer
-         - Implement hooks
+         - Implement hooks + hook barrel files (`hooks/index.ts`, `hooks/queries/index.ts`, `hooks/mutations/index.ts`)
          - Run verification gate
          ↓
 Batch 6: Verify + document
@@ -283,7 +283,7 @@ flowchart TD
 
 **A:** Check component imports:
 
-- **Migrated:** Uses `import { useXxx } from '@/services/.../hooks/...'`
+- **Migrated:** Uses `import { useXxx } from '@/services/.../hooks'` or `import { useXxxMutation } from '@/services/.../hooks/mutations'` (barrel imports)
 - **Non-migrated:** Uses old service imports like `import { claimService } from '@/services/claim.service'`
 
 Also check recent task.md or commit history for component migration checklist.
