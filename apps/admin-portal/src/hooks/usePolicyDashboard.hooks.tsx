@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import ApiURL from "@/constants/api-url.const";
-import { productService, policyService } from "@/services/api.service";
+import { productService } from "@/services/product/api/product.service";
+import { policyService } from "@/services/policy/api/policy.service";
 import { formatDateTimeWithTZ } from "@/lib/formatter";
 
 interface UsePolicyDashboardProps {
@@ -151,8 +151,8 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
   const { data: insurancesData, isFetching: isLoadingInsurances } = useQuery({
     queryKey: ["insurances"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances);
-      return response?.data?.data || [];
+      const response: any = await productService.getInsurances();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -171,17 +171,15 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
   const { data: productsData, isFetching: isLoadingProducts } = useQuery({
     queryKey: ["products", selectedInsuranceId],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Products, {
-        params: {
-          insuranceIds:
-            selectedInsuranceId !== "All" && selectedInsuranceId
-              ? [selectedInsuranceId]
-              : [],
-          page: 1,
-          pageSize: 100,
-        },
+      const response: any = await productService.getProducts({
+        insuranceIds:
+          selectedInsuranceId !== "All" && selectedInsuranceId
+            ? [selectedInsuranceId]
+            : [],
+        page: 1,
+        pageSize: 100,
       });
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     enabled: !!selectedInsuranceId,
     staleTime: 30000,
@@ -201,17 +199,15 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
   const { data: plansData, isFetching: isLoadingPlans } = useQuery({
     queryKey: ["plans", selectedProduct],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Plans, {
-        params: {
-          productIds:
-            selectedProduct !== "All" && selectedProduct
-              ? [selectedProduct]
-              : [],
-          page: 1,
-          pageSize: 100,
-        },
+      const response: any = await productService.getPlans({
+        productIds:
+          selectedProduct !== "All" && selectedProduct
+            ? [selectedProduct]
+            : [],
+        page: 1,
+        pageSize: 100,
       });
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     enabled: !!selectedProduct && selectedProduct !== "All",
     staleTime: 30000,
@@ -263,15 +259,12 @@ export default function usePolicyDashboard(): UsePolicyDashboardProps {
           : format(today, "yyyy-MM-dd"),
       };
 
-      const response: any = await policyService.get(
-        ApiURL.v1PoliciesStatisticData,
-        { params }
-      );
+      const response: any = await policyService.getPolicyStatistics(params);
 
       return {
-        data: response?.data?.data || [],
-        total: response?.data?.total || 0,
-        totalPremium: response?.data?.total_premium || 0,
+        data: response?.data || [],
+        total: response?.total || 0,
+        totalPremium: response?.total_premium || 0,
       };
     },
     staleTime: 30000,

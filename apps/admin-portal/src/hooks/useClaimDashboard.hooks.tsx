@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import ApiURL from "@/constants/api-url.const";
-import { productService, claimService } from "@/services/api.service";
+import { productService } from "@/services/product/api/product.service";
+import { claimsService } from "@/services/claims/api/claims.service";
 import { formatDateTimeWithTZ, formatMoney } from "@/lib/formatter";
 
 interface UseClaimDashboardProps {
@@ -155,8 +155,8 @@ export default function useClaimDashboard(): UseClaimDashboardProps {
   const { data: insurancesData, isFetching: isLoadingInsurances } = useQuery({
     queryKey: ["insurances"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances);
-      return response?.data?.data || [];
+      const response: any = await productService.getInsurances();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -175,17 +175,15 @@ export default function useClaimDashboard(): UseClaimDashboardProps {
   const { data: productsData, isFetching: isLoadingProducts } = useQuery({
     queryKey: ["products", selectedInsuranceId],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Products, {
-        params: {
-          insuranceIds:
-            selectedInsuranceId !== "All" && selectedInsuranceId
-              ? [selectedInsuranceId]
-              : [],
-          page: 1,
-          pageSize: 100,
-        },
+      const response: any = await productService.getProducts({
+        insuranceIds:
+          selectedInsuranceId !== "All" && selectedInsuranceId
+            ? [selectedInsuranceId]
+            : [],
+        page: 1,
+        pageSize: 100,
       });
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     enabled: !!selectedInsuranceId,
     staleTime: 30000,
@@ -205,17 +203,15 @@ export default function useClaimDashboard(): UseClaimDashboardProps {
   const { data: plansData, isFetching: isLoadingPlans } = useQuery({
     queryKey: ["plans", selectedProduct],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Plans, {
-        params: {
-          productIds:
-            selectedProduct !== "All" && selectedProduct
-              ? [selectedProduct]
-              : [],
-          page: 1,
-          pageSize: 100,
-        },
+      const response: any = await productService.getPlans({
+        productIds:
+          selectedProduct !== "All" && selectedProduct
+            ? [selectedProduct]
+            : [],
+        page: 1,
+        pageSize: 100,
       });
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     enabled: !!selectedProduct && selectedProduct !== "All",
     staleTime: 30000,
@@ -267,18 +263,14 @@ export default function useClaimDashboard(): UseClaimDashboardProps {
           : format(today, "yyyy-MM-dd"),
       };
 
-      const response: any = await claimService.get(
-        ApiURL.v1ClaimStatisticData,
-        { params }
-      );
+      const response: any = await claimsService.getClaimStatistics(params);
 
       return {
-        data: response?.data?.data || [],
-        totalClaimAmount: response?.data?.total_claim_amount || 0,
-        totalClaimAmountApproved:
-          response?.data?.total_claim_amount_approved || 0,
-        totalClaim: response?.data?.total_claim || 0,
-        totalClaimApproved: response?.data?.total_claim_approved || 0,
+        data: response?.data || [],
+        totalClaimAmount: response?.total_claim_amount || 0,
+        totalClaimAmountApproved: response?.total_claim_amount_approved || 0,
+        totalClaim: response?.total_claim || 0,
+        totalClaimApproved: response?.total_claim_approved || 0,
       };
     },
     staleTime: 30000,

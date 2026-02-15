@@ -7,9 +7,9 @@
 ## Status Overview
 
 - Main Refactor (Batch 6): In Progress
-- Total Components Migrated (Main): 72
-- Incremental Updates: 2
-- Last Updated: 2026-02-15 21:02
+- Total Components Migrated (Main): 92
+- Incremental Updates: 5
+- Last Updated: 2026-02-15 19:55
 
 ---
 
@@ -20,7 +20,7 @@
 - Started: 2026-02-15 17:10
 - Completed: In Progress
 - Total Services: 10+ (Claim, Auth, Policy, Transaction, Channel, Finance, Helper, Product, Promotion, Masterdata, Sanction/Country + dashboard aggregation)
-- Total Components: 72
+- Total Components: 92
 - Status: In Progress
 
 ### Components Migrated by Service
@@ -540,6 +540,126 @@ Components:
   - Verified: PASS
   - Issues: None
 
+- [x] `apps/admin-portal/src/hooks/useTransactions.hooks.tsx` - Legacy transaction list hook
+  - Before: Legacy `transactionService` from `@/services/api.service` + `ApiURL`
+  - After: New transaction API service methods (`getTransactions`, `updateTransactionStatus`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useTransactionDashboard.hooks.tsx` - Legacy transaction dashboard filter/statistics hook
+  - Before: Legacy `productService`/`transactionService` from `@/services/api.service` + `ApiURL`
+  - After: New product/transaction API service methods (`getInsurances`, `getProducts`, `getPlans`, `getTransactionStatistics`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/usePolicyDashboard.hooks.tsx` - Legacy policy dashboard filter/statistics hook
+  - Before: Legacy `productService`/`policyService` from `@/services/api.service` + `ApiURL`
+  - After: New product/policy API service methods (`getInsurances`, `getProducts`, `getPlans`, `getPolicyStatistics`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useClaimDashboard.hooks.tsx` - Legacy claim dashboard filter/statistics hook
+  - Before: Legacy `productService`/`claimService` from `@/services/api.service` + `ApiURL`
+  - After: New product/claims API service methods (`getInsurances`, `getProducts`, `getPlans`, `getClaimStatistics`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/usePolicies.hooks.tsx` - Legacy policy list hook
+  - Before: Legacy `policyService`/`channelService`/`productService` from `@/services/api.service` + `ApiURL`
+  - After: New policy/channel/product API service methods (`getPolicies`, `getChannelsV1`, `getCategoriesByChannelId`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useDetailPolicy.hooks.tsx` - Legacy policy detail hook
+  - Before: Legacy `policyService` from `@/services/api.service` + `ApiURL`
+  - After: New policy API service methods (`getPolicyById`, `renewPolicy`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useEndorsements.hooks.tsx` - Legacy endorsement list hook
+  - Before: Legacy `policyService` from `@/services/api.service` + `ApiURL`
+  - After: New policy API service method (`getEndorsements`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useDetailEndorsement.hooks.tsx` - Legacy endorsement detail hook
+  - Before: Legacy `policyService` from `@/services/api.service` + `ApiURL`
+  - After: New policy API service methods (`getEndorsementById`, `updateEndorsementStatus`, `updateEndorsementStatusBulking`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useMembership.hooks.tsx` - Legacy membership list hook
+  - Before: Legacy `policyService`/`channelService` from `@/services/api.service` + `ApiURL`
+  - After: New policy/channel API service methods (`getInsuredParties`, `getChannelsV1`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useMembershipDetail.hooks.tsx` - Legacy membership detail hook
+  - Before: Legacy `policyService` from `@/services/api.service` + `ApiURL`
+  - After: New policy API service method (`getInsuredPartyById`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for generic `unknown` payloads
+
+- [x] `apps/admin-portal/src/hooks/useCampaign.hooks.tsx` - Legacy campaign list/detail hook
+  - Before: Legacy `promotionService`/`productService`/`channelService` from `@/services/api.service` + `ApiURL`
+  - After: New promotion/product/channel API service methods (`searchCampaigns`, `getCampaignById`, `deleteCampaign`, `getCampaignHistory`, `getVoucherById`, `getChannelByIdV1`, `getInsuranceById`, `getProductById`, `getPlanById`, `syncEmbeddedDiscounts`)
+  - Verified: PASS
+  - Issues: Local response normalization retained for mixed payload shapes
+
+- [x] `apps/admin-portal/src/hooks/useCampaignForm.hooks.tsx` - Legacy campaign create/edit hook
+  - Before: Legacy `promotionService`/`productService`/`channelService` from `@/services/api.service` + `ApiURL`
+  - After: New promotion/product/channel API service methods (`getCampaignById`, `createCampaign`, `updateCampaign`, `getVoucherByCode`, `getReferenceCurrencies`, `getChannelsV1`, `getInsurances`, `getProducts`, `getPlans`, `syncEmbeddedDiscounts`)
+  - Verified: PASS
+  - Issues: Local response narrowing applied for mutation success payload
+
+- [x] `apps/admin-portal/src/hooks/useCampaignAnalytics.hooks.tsx` - Legacy campaign analytics hook
+  - Before: `new PromotionService()` + `new TransactionService()` class usage
+  - After: New promotion/transaction API service methods (`searchCampaigns`, `getCampaignReport`, `updateCampaignReport`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useCampaignReport.hooks.tsx` - Legacy campaign report hook
+  - Before: Legacy `promotionService`/`productService` from `@/services/api.service` + `ApiURL`
+  - After: New promotion/product API service methods (`getCampaignReport`, `getCampaignReportInsurance`, `exportCampaignReport`, `exportCampaignReportInsurance`, `getInsurances`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useClaimHistory.hooks.tsx` - Legacy claim history filter hook
+  - Before: Legacy `claimService` from `@/services/api.service` + `ApiURL`
+  - After: New claims API service method (`getClaimListLimit`)
+  - Verified: PASS
+  - Issues: Local response normalization retained for nested payload shape
+
+- [x] `apps/admin-portal/src/hooks/useClaimReport.hooks.tsx` - Legacy claim report hook
+  - Before: Legacy `claimService` + `new ChannelService()` + `ApiURL`
+  - After: New claims/channel API service methods (`exportClaims`, `getChannels`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useExportClaim.hooks.tsx` - Legacy claim export PDF/XLSX hook
+  - Before: Legacy `claimService`/`channelService` from `@/services/api.service` + `ApiURL`
+  - After: New claims/channel API service methods (`getClaims`, `getChannelConfigurations`)
+  - Verified: PASS
+  - Issues: Added missing channel API-layer method for `/channel-configurations`; local response narrowing for query payload
+
+- [x] `apps/admin-portal/src/hooks/useExportPolicy.hooks.tsx` - Legacy policy export PDF/XLSX hook
+  - Before: Legacy `policyService` from `@/services/api.service` + `ApiURL`
+  - After: New policy API service method (`getPolicies`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useExportUsers.hooks.tsx` - Legacy filtered customer export hook
+  - Before: `new ChannelService()` + `new ProductService()` + `new TransactionService()` class usage
+  - After: New channel/product/transaction API service methods (`getChannels`, `getProducts`, `getPlans`, `getCustomerCampaigns`)
+  - Verified: PASS
+  - Issues: None
+
+- [x] `apps/admin-portal/src/hooks/useNotificationLogs.hooks.tsx` - Legacy notification logs hook
+  - Before: `new ReportService()` class usage
+  - After: New report API service method (`getNotificationLogs`)
+  - Verified: PASS
+  - Issues: None
+
 ### Migration Patterns Applied
 
 - [x] Replaced legacy service imports in migrated components
@@ -551,14 +671,14 @@ Components:
 ### Components NOT Migrated
 
 - Active migration scope (`src/app`, `src/views/home`, `src/views/layout`) has no remaining `@/services/api.service` imports or `new *Service()` class instantiation patterns.
-- Extended `src/hooks` scope now has 20 remaining files with legacy patterns (migration in progress).
+- Extended `src/hooks` scope has no remaining legacy `@/services/api.service` imports or legacy `new *Service()` patterns.
 
 ### Verification Results
 
 #### Per-Component Verification
 
-- Total components migrated: 72
-- Components with issues: 7 (all fixed)
+- Total components migrated: 92
+- Components with issues: 9 (all fixed)
 - Components rolled back: 0
 
 #### Full Verification Gate
@@ -621,9 +741,22 @@ Components:
 - Fix: Added localized narrowing (`const ...Data: any = ...`) for list payload mapping to preserve existing UI contract
 - Status: PASS (resolved)
 
+#### Issue 8: Policy/membership detail and list hooks inferred API responses as `unknown`
+
+- Component: `apps/admin-portal/src/hooks/usePolicies.hooks.tsx`, `apps/admin-portal/src/hooks/useDetailPolicy.hooks.tsx`, `apps/admin-portal/src/hooks/useEndorsements.hooks.tsx`, `apps/admin-portal/src/hooks/useDetailEndorsement.hooks.tsx`, `apps/admin-portal/src/hooks/useMembership.hooks.tsx`, `apps/admin-portal/src/hooks/useMembershipDetail.hooks.tsx`
+- Cause: New policy/channel/product API service methods are generic and `useQuery` inferred response payload as `unknown` in mapping/state assignments
+- Fix: Added localized narrowing/casts at usage points to preserve existing hook contracts without widening global type surfaces
+- Status: PASS (resolved)
+
+#### Issue 9: Final campaign/export hook pass surfaced strict `unknown` access and missing channel-configurations API method
+
+- Component: `apps/admin-portal/src/hooks/useCampaignForm.hooks.tsx`, `apps/admin-portal/src/hooks/useExportClaim.hooks.tsx`
+- Cause: `useMutation` success payload and `useQuery` payload inferred as `unknown`; channel API-layer did not yet expose `/channel-configurations`
+- Fix: Added localized narrowing at usage points and added `channelService.getChannelConfigurations` (+ endpoint constant) in the new channel API layer
+- Status: PASS (resolved)
+
 ### Next Steps
 
-- [ ] Continue migrating remaining legacy files in `src/hooks` (20 files)
 - [ ] Migrate legacy `src/views/*` files still importing `@/services/api.service`
 - [ ] Mark Batch 6 complete only after all component migrations are finished
 
@@ -633,4 +766,4 @@ Components:
 
 | Date       | Type         | Service       | Components   | Status      | Reference  |
 | ---------- | ------------ | ------------- | ------------ | ----------- | ---------- |
-| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner hooks) | 72 components | In Progress | this doc   |
+| 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner + dashboard/transactions + policy/membership + campaign/report/export/notification hooks) | 92 components | In Progress | this doc   |

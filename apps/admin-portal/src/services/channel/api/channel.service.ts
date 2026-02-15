@@ -21,6 +21,8 @@ export const channelService = {
   getChannels: (params?: Record<string, unknown>) =>
     get(withQuery(CHANNEL_ENDPOINTS.channels, params)),
   getChannelById: (id: string) => get(CHANNEL_ENDPOINTS.channelDetail(id)),
+  getChannelConfigurations: (params?: Record<string, unknown>) =>
+    get(withQuery(CHANNEL_ENDPOINTS.channelConfigurations, params)),
 
   getChannelsV1: (params?: Record<string, unknown>) =>
     get(withQuery(CHANNEL_ENDPOINTS.channelsV1, params)),

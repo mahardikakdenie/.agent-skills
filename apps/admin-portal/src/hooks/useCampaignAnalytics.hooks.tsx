@@ -1,14 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { PromotionService } from "@/services/promotion.service";
-import { TransactionService } from "@/services/transaction.service";
+import { promotionService } from "@/services/promotion/api/promotion.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
 import { toastNotification } from "@/lib/toast";
 import * as XLSX from "xlsx";
 
 export function useCampaignAnalytics() {
-  const promotionService = new PromotionService();
-  const transactionService = new TransactionService();
-
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [totalTransaction, setTotalTransaction] = useState(0);
   const [totalLeads, setTotalLeads] = useState(0);
@@ -24,8 +21,12 @@ export function useCampaignAnalytics() {
   const { data: campaignList = [], isLoading: isLoadingCampaigns } = useQuery({
     queryKey: ["campaign-list"],
     queryFn: async () => {
-      const res: any = await promotionService.getPromotionCampaign(1, 1000, "");
-      return res.data.map((c: any) => ({
+      const res: any = await promotionService.searchCampaigns({
+        page: 1,
+        limit: 1000,
+        query: "",
+      });
+      return (res?.data || []).map((c: any) => ({
         id: c.campaign_id,
         name: c.name,
       }));
@@ -36,7 +37,7 @@ export function useCampaignAnalytics() {
   const { mutate: fetchAnalytics, isPending: isLoadingAnalytics } = useMutation(
     {
       mutationFn: async (campaignId: string) => {
-        const res: any = await transactionService.getCampaignsReport(
+        const res: any = await transactionService.getCampaignReport(
           campaignId
         );
         return res;
@@ -74,7 +75,7 @@ export function useCampaignAnalytics() {
         campaignId: string;
         data: any;
       }) => {
-        await transactionService.putCampaignsReport(campaignId, { data });
+        await transactionService.updateCampaignReport(campaignId, { data });
       },
       onSuccess: () => {
         toastNotification("Update campaign report successfully!", "success");

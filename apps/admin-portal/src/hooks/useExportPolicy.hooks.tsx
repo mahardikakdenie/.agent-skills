@@ -4,8 +4,7 @@ import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
-import ApiURL from "@/constants/api-url.const";
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 import { useAuth } from "@/context/auth.context";
 
 interface ExportPolicyFilters {
@@ -88,11 +87,11 @@ export default function useExportPolicy(): UseExportPolicyProps {
             created_to: filters.date_to ? filters.date_to : undefined,
           };
 
-          const res = await policyService.get(ApiURL.v1Policies, { params });
+          const res: any = await policyService.getPolicies(params);
 
-          if (res?.data?.data) {
-            allData = [...allData, ...res.data.data];
-            totalRecords = res.data.total || 0;
+          if (res?.data) {
+            allData = [...allData, ...res.data];
+            totalRecords = res.total || 0;
           }
         } catch (pageError) {
           console.error(`Error fetching page ${currentPage}:`, pageError);

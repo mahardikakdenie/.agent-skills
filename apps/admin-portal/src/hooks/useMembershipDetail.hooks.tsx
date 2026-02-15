@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { policyService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { policyService } from "@/services/policy/api/policy.service";
 
 interface MembershipDetail {
   id: string;
@@ -69,11 +68,7 @@ export function useMembershipDetail(): UseMembershipDetailProps {
     queryFn: async () => {
       if (!membershipId) return null;
 
-      const response = await policyService.get(
-        ApiURL.v1InsuredPartiesDetails(membershipId)
-      );
-
-      return response.data;
+      return policyService.getInsuredPartyById(membershipId);
     },
     enabled: !!membershipId,
     staleTime: 30000,
@@ -83,7 +78,7 @@ export function useMembershipDetail(): UseMembershipDetailProps {
 
   useEffect(() => {
     if (membershipResponse) {
-      setMembershipDetail(membershipResponse);
+      setMembershipDetail(membershipResponse as MembershipDetail);
     }
   }, [membershipResponse]);
 

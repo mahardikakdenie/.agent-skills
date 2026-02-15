@@ -3,8 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import ApiURL from "@/constants/api-url.const";
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 
 interface UseEndorsementDetailProps {
   endorsement: any;
@@ -47,10 +46,7 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
     queryKey: ["endorsement-detail", endorsementId],
     queryFn: async () => {
       if (!endorsementId) return null;
-      const response = await policyService.get(
-        ApiURL.v1EndorsementDetail(endorsementId)
-      );
-      return response.data;
+      return policyService.getEndorsementById(endorsementId);
     },
     enabled: !!endorsementId,
     staleTime: 30000,
@@ -58,9 +54,10 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
     retry: 2,
   });
 
-  const isEDSB = endorsement?.number?.startsWith("EDSB-") || false;
+  const endorsementData: any = endorsement;
+  const isEDSB = endorsementData?.number?.startsWith("EDSB-") || false;
   const imageUrl =
-    endorsement?.participants?.nric_front || "/images/no-image.png";
+    endorsementData?.participants?.nric_front || "/images/no-image.png";
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({
@@ -74,15 +71,14 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
       note: string;
       isEDSB: boolean;
     }) => {
-      const apiUrl = isEDSB
-        ? ApiURL.v1EndorsementUpdtaeStatusBulking(id)
-        : ApiURL.v1EndorsementUpdateStatus(id);
-
-      const response = await policyService.put(apiUrl, {
+      const payload = {
         status,
         note,
-      });
-      return response.data;
+      };
+
+      return isEDSB
+        ? policyService.updateEndorsementStatusBulking(id, payload)
+        : policyService.updateEndorsementStatus(id, payload);
     },
     onSuccess: () => {
       toast.success("Endorsement status updated successfully!");
@@ -106,11 +102,11 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
   }, []);
 
   const handleApprove = useCallback(async () => {
-    if (!endorsement?.id) return;
+    if (!endorsementData?.id) return;
 
     try {
       await updateStatusMutation.mutateAsync({
-        id: endorsement.id,
+        id: endorsementData.id,
         status: "Approved",
         note: "",
         isEDSB,
@@ -118,14 +114,14 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
     } catch (error) {
       throw error;
     }
-  }, [endorsement?.id, isEDSB, updateStatusMutation]);
+  }, [endorsementData?.id, isEDSB, updateStatusMutation]);
 
   const handleReject = useCallback(async () => {
-    if (!endorsement?.id) return;
+    if (!endorsementData?.id) return;
 
     try {
       await updateStatusMutation.mutateAsync({
-        id: endorsement.id,
+        id: endorsementData.id,
         status: "Rejected",
         note: notes,
         isEDSB,
@@ -133,19 +129,19 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
     } catch (error) {
       throw error;
     }
-  }, [endorsement?.id, notes, isEDSB, updateStatusMutation]);
+  }, [endorsementData?.id, notes, isEDSB, updateStatusMutation]);
 
   const handleDownload = useCallback(() => {
     if (
-      !endorsement?.endorsements_detail ||
-      endorsement.endorsements_detail.length === 0
+      !endorsementData?.endorsements_detail ||
+      endorsementData.endorsements_detail.length === 0
     ) {
       toast.error("No data to download.");
       return;
     }
 
     try {
-      const data = endorsement.endorsements_detail.map(
+      const data = endorsementData.endorsements_detail.map(
         (item: any, index: number) => ({
           "Policy Number": item?.endorsements?.number,
           "Subsidiary / Entity": item?.data?.profile?.subsidiary,
@@ -182,13 +178,13 @@ export function useEndorsementDetail(): UseEndorsementDetailProps {
         type: "application/octet-stream",
       });
 
-      saveAs(blob, `endorsement-${endorsement?.id}.xlsx`);
+      saveAs(blob, `endorsement-${endorsementData?.id}.xlsx`);
       toast.success("Excel file downloaded successfully!");
     } catch (error) {
       console.error("Error generating Excel file:", error);
       toast.error("Failed to generate Excel file.");
     }
-  }, [endorsement]);
+  }, [endorsementData]);
 
   const getStatusColor = useCallback((status: string) => {
     switch (status) {

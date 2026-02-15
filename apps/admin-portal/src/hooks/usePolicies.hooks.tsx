@@ -3,12 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import _ from "lodash";
-import ApiURL from "@/constants/api-url.const";
-import {
-  policyService,
-  channelService,
-  productService,
-} from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { productService } from "@/services/product/api/product.service";
 
 interface UsePoliciesProps {
   policies: any[];
@@ -106,8 +103,8 @@ export default function usePolicies(
         ...(isPendingRenewal && { is_need_renewal: true }),
       };
 
-      const response = await policyService.get(ApiURL.v1Policies, { params });
-      return response.data;
+      const response = await policyService.getPolicies(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -117,10 +114,11 @@ export default function usePolicies(
   const { data: resChannels, isFetching: isLoadingChannels } = useQuery({
     queryKey: channelQueryKey,
     queryFn: async () => {
-      const response = await channelService.get(ApiURL.v1Channels, {
-        params: { page: 1, limit: 10000 },
+      const response = await channelService.getChannelsV1({
+        page: 1,
+        limit: 10000,
       });
-      return response.data;
+      return response;
     },
     staleTime: 300000,
     refetchOnWindowFocus: false,
@@ -129,11 +127,11 @@ export default function usePolicies(
   const { data: resCategories, isFetching: isLoadingCategories } = useQuery({
     queryKey: categoryQueryKey,
     queryFn: async () => {
-      if (!searchChannel) return { data: [] };
-      const response = await productService.get(
-        ApiURL.v1CategoriesChannelDetails(searchChannel),
+      if (!searchChannel) return { data: [] } as any;
+      const response: any = await productService.getCategoriesByChannelId(
+        searchChannel
       );
-      return response.data;
+      return response;
     },
     enabled: !!searchChannel,
     staleTime: 30000,
@@ -141,26 +139,30 @@ export default function usePolicies(
   });
 
   useEffect(() => {
-    if (resPolicies?.data) {
-      setPolicies(resPolicies.data);
+    const policiesData: any = resPolicies;
+    if (policiesData?.data) {
+      setPolicies(policiesData.data);
     } else {
       setPolicies([]);
     }
-  }, [resPolicies?.data]);
+  }, [resPolicies]);
 
   useEffect(() => {
-    if (resChannels?.data) {
-      setChannels(resChannels.data);
+    const channelsData: any = resChannels;
+    if (channelsData?.data) {
+      setChannels(channelsData.data);
     }
-  }, [resChannels?.data]);
+  }, [resChannels]);
 
   useEffect(() => {
-    if (resCategories?.data) {
-      setCategories(resCategories.data);
+    const categoriesData: any = resCategories;
+    const categoryList = categoriesData?.data || categoriesData || [];
+    if (Array.isArray(categoryList)) {
+      setCategories(categoryList);
     } else {
       setCategories([]);
     }
-  }, [resCategories?.data]);
+  }, [resCategories]);
 
   const handleSearch = useMemo(
     () =>
@@ -221,9 +223,9 @@ export default function usePolicies(
     policies,
     channels,
     categories,
-    totalPages: resPolicies?.pageTotal || 1,
-    totalItems: resPolicies?.total || 0,
-    totalData: resPolicies?.total || 0,
+    totalPages: (resPolicies as any)?.pageTotal || 1,
+    totalItems: (resPolicies as any)?.total || 0,
+    totalData: (resPolicies as any)?.total || 0,
 
     page,
     rowsPerPage,

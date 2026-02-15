@@ -2,13 +2,10 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import {
-  channelService,
-  productService,
-  promotionService,
-} from "@/services/api.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { productService } from "@/services/product/api/product.service";
+import { promotionService } from "@/services/promotion/api/promotion.service";
 import _ from "lodash";
 
 interface PromotionItem {
@@ -198,13 +195,11 @@ export function useCampaign(): UseCampaignProps {
         query: searchData ? searchData : "",
       };
 
-      const res = await promotionService.get(ApiURL.v1CampaignSearchQuery, {
-        params,
-      });
+      const res: any = await promotionService.searchCampaigns(params);
       return {
-        data: res.data?.data || [],
-        total: res.data?.total || 0,
-        pageTotal: res.data?.pageTotal || 1,
+        data: res?.data || [],
+        total: res?.total || 0,
+        pageTotal: res?.pageTotal || 1,
       };
     },
     enabled: hasAccess === true,
@@ -215,8 +210,8 @@ export function useCampaign(): UseCampaignProps {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await promotionService.delete(ApiURL.v1CampaignDeleteDetails(id));
-      await productService.post(ApiURL.v1PlanSyncEmbeddedDiscounts, {});
+      await promotionService.deleteCampaign(id);
+      await productService.syncEmbeddedDiscounts();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
@@ -251,45 +246,43 @@ export function useCampaign(): UseCampaignProps {
 
   const handleViewDetail = useCallback(async (id: string) => {
     try {
-      const response: any = await promotionService.get(
-        ApiURL.v1CampaignDetail(id),
-        { params: { id } }
-      );
-      const promotionData = response.data?.data?.[0];
+      const response: any = await promotionService.getCampaignById(id);
+      const promotionData =
+        response?.data?.[0] ?? response?.data?.data?.[0] ?? null;
       setSelectedPromotion(promotionData);
       setDrawerOpen(true);
+      if (!promotionData) {
+        return;
+      }
 
       const fetchNames = async () => {
         const channelFetches = promotionData.embedded_discount_channels.map(
           async (channel: { channel_id: string }) => {
-            const res: any = await channelService.get(
-              ApiURL.v1ChannelDetails(channel.channel_id)
+            const res: any = await channelService.getChannelByIdV1(
+              channel.channel_id
             );
-            return res.data?.data;
+            return res?.data ?? res;
           }
         );
         const insuranceFetches = promotionData.embedded_discount_insurances.map(
           async (insurance: { insurance_id: string }) => {
-            const res: any = await productService.get(
-              ApiURL.v1InsuranceDetails(insurance.insurance_id)
+            const res: any = await productService.getInsuranceById(
+              insurance.insurance_id
             );
-            return res.data?.data;
+            return res?.data ?? res;
           }
         );
         const productFetches = promotionData.embedded_discount_products.map(
           async (product: { product_id: string }) => {
-            const res: any = await productService.get(
-              ApiURL.v1ProductDetails(product.product_id)
-            );
-            return res.data?.data;
+            return productService.getProductById(product.product_id);
           }
         );
         const planFetches = promotionData.embedded_discount_plans.map(
           async (plan: { plan_id: string }) => {
-            const res: any = await productService.get(
-              ApiURL.v1PlanDetails(plan.plan_id)
+            const res: any = await productService.getPlanById(
+              plan.plan_id
             );
-            return res.data?.data;
+            return res?.data ?? res;
           }
         );
 
@@ -306,38 +299,67 @@ export function useCampaign(): UseCampaignProps {
         ]);
 
         setChannelNames(
-          new Map(channelResponses.map((res: any) => [res.id, res.name]))
+          new Map(
+            channelResponses
+              .map((res: any) => {
+                const normalized = res?.data ?? res;
+                return normalized?.id && normalized?.name
+                  ? [normalized.id, normalized.name]
+                  : null;
+              })
+              .filter(Boolean) as [string, string][]
+          )
         );
         setInsuranceNames(
-          new Map(insuranceResponses.map((res: any) => [res.id, res.name]))
+          new Map(
+            insuranceResponses
+              .map((res: any) => {
+                const normalized = res?.data ?? res;
+                return normalized?.id && normalized?.name
+                  ? [normalized.id, normalized.name]
+                  : null;
+              })
+              .filter(Boolean) as [string, string][]
+          )
         );
         setProductNames(
           new Map(
-            productResponses.map((res: any) => [
-              res.data[0].id,
-              res.data[0].name,
-            ])
+            productResponses
+              .map((res: any) => {
+                const normalized = res?.data?.[0] ?? res?.data ?? res;
+                return normalized?.id && normalized?.name
+                  ? [normalized.id, normalized.name]
+                  : null;
+              })
+              .filter(Boolean) as [string, string][]
           )
         );
         setPlanNames(
-          new Map(planResponses.map((res: any) => [res.id, res.name]))
+          new Map(
+            planResponses
+              .map((res: any) => {
+                const normalized = res?.data ?? res;
+                return normalized?.id && normalized?.name
+                  ? [normalized.id, normalized.name]
+                  : null;
+              })
+              .filter(Boolean) as [string, string][]
+          )
         );
       };
 
       if (promotionData.type === "voucher") {
-        const vouchersResponse: any = await promotionService.get(
-          ApiURL.v1VoucherDetails(promotionData.campaign_id)
+        const vouchersResponse: any = await promotionService.getVoucherById(
+          promotionData.campaign_id
         );
-        setVouchers(vouchersResponse.data?.data || []);
+        setVouchers(vouchersResponse?.data ?? vouchersResponse?.data?.data ?? []);
       }
 
       if (promotionData.type === "embedded") {
-        const embeddedHistory: any = await promotionService.get(
-          ApiURL.v1CampaignEmbeddedHistoryDetails(id),
-          { params: { id } }
-        );
-        if (embeddedHistory?.data) {
-          setEmbeddedDiscount([embeddedHistory.data]);
+        const embeddedHistory: any = await promotionService.getCampaignHistory(id);
+        const embeddedData = embeddedHistory?.data ?? embeddedHistory;
+        if (embeddedData) {
+          setEmbeddedDiscount([embeddedData]);
         } else {
           setEmbeddedDiscount([]);
         }

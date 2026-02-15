@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import _ from "lodash";
-import ApiURL from "@/constants/api-url.const";
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 
 interface UseEndorsementsProps {
   endorsements: any[];
@@ -59,10 +58,8 @@ export default function useEndorsements(): UseEndorsementsProps {
         status: tab && tab !== "All" ? tab : undefined,
       };
 
-      const response = await policyService.get(ApiURL.v1Endorsement, {
-        params,
-      });
-      return response.data;
+      const response = await policyService.getEndorsements(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -70,12 +67,13 @@ export default function useEndorsements(): UseEndorsementsProps {
   });
 
   useEffect(() => {
-    if (resEndorsements?.data) {
-      setEndorsements(resEndorsements.data);
+    const endorsementsData: any = resEndorsements;
+    if (endorsementsData?.data) {
+      setEndorsements(endorsementsData.data);
     } else {
       setEndorsements([]);
     }
-  }, [resEndorsements?.data]);
+  }, [resEndorsements]);
 
   const handleSearch = useMemo(
     () =>
@@ -113,9 +111,9 @@ export default function useEndorsements(): UseEndorsementsProps {
 
   return {
     endorsements,
-    totalPages: resEndorsements?.pageTotal || 1,
-    totalItems: resEndorsements?.total || 0,
-    totalData: resEndorsements?.total || 0,
+    totalPages: (resEndorsements as any)?.pageTotal || 1,
+    totalItems: (resEndorsements as any)?.total || 0,
+    totalData: (resEndorsements as any)?.total || 0,
 
     page,
     rowsPerPage,

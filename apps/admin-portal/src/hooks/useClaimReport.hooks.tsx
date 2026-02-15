@@ -1,20 +1,16 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
-import { ChannelService } from "@/services/channel.services";
-import { claimService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { channelService } from "@/services/channel/api/channel.service";
+import { claimsService } from "@/services/claims/api/claims.service";
 import AppURL from "@/constants/app-url.const";
 import { formatDate } from "@/lib/formatter";
 import { DateRange } from "react-day-picker";
-import qs from "qs";
 import toast from "react-hot-toast";
 
 export function useClaimReport() {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const channelService = new ChannelService();
   const { permissionList } = useAuth();
 
   const [page, setPage] = useState(1);
@@ -44,8 +40,8 @@ export function useClaimReport() {
   const { data: channelsData, isLoading: isLoadingChannels } = useQuery({
     queryKey: ["channels-list"],
     queryFn: async () => {
-      const response = await channelService.getChannels(undefined, 100);
-      return response.data || [];
+      const response: any = await channelService.getChannels({ limit: 100 });
+      return response?.data || [];
     },
     enabled: hasAccess === true,
     staleTime: 300000,
@@ -74,19 +70,16 @@ export function useClaimReport() {
         date_to: dateTo,
       };
 
-      const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-      const response = await claimService.get(
-        `${ApiURL.v1ClaimsExport}?${queryString}`
-      );
+      const response: any = await claimsService.exportClaims(params);
 
-      const data = response.data?.data || [];
+      const data = response?.data || [];
       const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
       return {
         data,
         headers,
-        total: response.data?.total || 0,
-        pageTotal: response.data?.pageTotal || 1,
+        total: response?.total || 0,
+        pageTotal: response?.pageTotal || 1,
       };
     },
     enabled: hasAccess === true && !!date?.from && !!date?.to,
@@ -140,13 +133,10 @@ export function useClaimReport() {
         date_to: dateTo,
       };
 
-      const queryString = qs.stringify(params, { arrayFormat: "brackets" });
-      const response = await claimService.get(
-        `${ApiURL.v1ClaimsExport}?${queryString}`
-      );
+      const response: any = await claimsService.exportClaims(params);
 
-      if (response.data?.file) {
-        window.location.href = response.data.file;
+      if (response?.file) {
+        window.location.href = response.file;
         toast.success("Report downloaded successfully!");
       } else {
         toast.error("Failed to download report");

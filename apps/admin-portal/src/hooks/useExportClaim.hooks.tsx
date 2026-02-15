@@ -4,8 +4,8 @@ import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
-import ApiURL from "@/constants/api-url.const";
-import { channelService, claimService } from "@/services/api.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { claimsService } from "@/services/claims/api/claims.service";
 import { formatMoneyClaim } from "@/lib/formatter";
 
 interface UseExportClaimProps {
@@ -46,19 +46,18 @@ export default function useExportClaim(): UseExportClaimProps {
   const { data: channelConfigurations } = useQuery({
     queryKey: ["channelConfigurations", channel],
     queryFn: async () => {
-      const res = await channelService.get(ApiURL.channelConfigurations, {
-        params: {
-          ...(channel && { channel }),
-        },
+      return channelService.getChannelConfigurations({
+        ...(channel && { channel }),
       });
-      return res.data;
     },
     enabled: !!channel,
   });
 
+  const channelConfigurationsData: any = channelConfigurations;
   const isGrabExpress =
-    channelConfigurations &&
-    channelConfigurations?.data[0]?.other?.show_channel_info?.GRAB_EXPRESS;
+    channelConfigurationsData &&
+    channelConfigurationsData?.data?.[0]?.other?.show_channel_info
+      ?.GRAB_EXPRESS;
 
   const { isLoading } = useQuery({
     queryKey: ["export-claims", getFilters()],
@@ -88,14 +87,14 @@ export default function useExportClaim(): UseExportClaimProps {
             ...(filters.channel && { channel: filters.channel }),
           };
 
-          const res = await claimService.get(ApiURL.v1Claims, { params });
+          const res: any = await claimsService.getClaims(params as any);
 
-          if (res?.data?.data) {
-            const filteredData = res.data.data.filter(
+          if (res?.data) {
+            const filteredData = res.data.filter(
               (item: any) => item.status !== "Draft",
             );
             allData = [...allData, ...filteredData];
-            totalRecords = res.data.total || 0;
+            totalRecords = res.total || 0;
           }
         } catch (pageError) {
           console.error(`Error fetching page ${currentPage}:`, pageError);

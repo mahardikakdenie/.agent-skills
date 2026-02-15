@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChannelService } from "@/services/channel.services";
-import { ProductService } from "@/services/product.services";
-import { TransactionService } from "@/services/transaction.service";
+import { channelService } from "@/services/channel/api/channel.service";
+import { productService } from "@/services/product/api/product.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
 
 interface FilterItem {
   key_id: string;
@@ -62,10 +62,6 @@ interface UseExportUsersProps {
 }
 
 export function useExportUsers(): UseExportUsersProps {
-  const channelService = useMemo(() => new ChannelService(), []);
-  const productService = useMemo(() => new ProductService(), []);
-  const transactionService = useMemo(() => new TransactionService(), []);
-
   const [page, setPageState] = useState(1);
   const [limit, setLimitState] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -124,10 +120,13 @@ export function useExportUsers(): UseExportUsersProps {
       let hasMore = true;
 
       while (hasMore) {
-        const response = await channelService.getChannels(currentPage, 100);
+        const response: any = await channelService.getChannels({
+          page: currentPage,
+          limit: 100,
+        });
         if (response?.data) {
           allChannels.push(...response.data);
-          hasMore = currentPage < response.pageTotal;
+          hasMore = currentPage < (response?.pageTotal || 1);
           currentPage++;
         } else {
           hasMore = false;
@@ -148,10 +147,13 @@ export function useExportUsers(): UseExportUsersProps {
       let hasMore = true;
 
       while (hasMore) {
-        const response = await productService.get100Products(currentPage);
+        const response: any = await productService.getProducts({
+          page: currentPage,
+          pageSize: 100,
+        });
         if (response?.data) {
           allProducts.push(...response.data);
-          hasMore = currentPage < response.meta.pageTotal;
+          hasMore = currentPage < (response?.meta?.pageTotal || 1);
           currentPage++;
         } else {
           hasMore = false;
@@ -178,7 +180,11 @@ export function useExportUsers(): UseExportUsersProps {
   const { data: planData, isLoading: isLoadingPlans } = useQuery({
     queryKey: ["export-plans", debouncedPlanSearch],
     queryFn: async () => {
-      const response = await productService.get100Plans(1, debouncedPlanSearch);
+      const response: any = await productService.getPlans({
+        page: 1,
+        pageSize: 100,
+        ...(debouncedPlanSearch && { planName: debouncedPlanSearch }),
+      });
       return response?.data || [];
     },
     staleTime: 5 * 60 * 1000,
@@ -230,20 +236,20 @@ export function useExportUsers(): UseExportUsersProps {
         selectedBirthdayMonth,
       } = processingFilteredUser();
 
-      const response = await transactionService.getCustomersCampaign(
+      const response: any = await transactionService.getCustomerCampaigns({
         page,
         limit,
-        selectedChannel,
-        selectedProduct,
-        selectedPlan,
-        selectedFrequentBuyers,
-        selectedBirthdayMonth
-      );
+        channel: selectedChannel,
+        product: selectedProduct,
+        plan: selectedPlan,
+        frequent_buyers: selectedFrequentBuyers,
+        birthday_month: selectedBirthdayMonth,
+      });
 
-      setTotalPages(response.pageTotal);
-      setTotalItems(response.total);
+      setTotalPages(response?.pageTotal || 1);
+      setTotalItems(response?.total || 0);
 
-      return response.data;
+      return response?.data || [];
     },
     enabled: isFiltered && filteredUsers.length > 0,
     staleTime: 30000,
@@ -264,19 +270,19 @@ export function useExportUsers(): UseExportUsersProps {
     let hasMore = true;
 
     while (hasMore) {
-      const response = await transactionService.getCustomersCampaign(
-        currentPage,
-        1000,
-        selectedChannel,
-        selectedProduct,
-        selectedPlan,
-        selectedFrequentBuyers,
-        selectedBirthdayMonth
-      );
+      const response: any = await transactionService.getCustomerCampaigns({
+        page: currentPage,
+        limit: 1000,
+        channel: selectedChannel,
+        product: selectedProduct,
+        plan: selectedPlan,
+        frequent_buyers: selectedFrequentBuyers,
+        birthday_month: selectedBirthdayMonth,
+      });
 
       if (response?.data) {
         allData.push(...response.data);
-        hasMore = currentPage < response.pageTotal;
+        hasMore = currentPage < (response?.pageTotal || 1);
         currentPage++;
       } else {
         hasMore = false;
@@ -284,7 +290,7 @@ export function useExportUsers(): UseExportUsersProps {
     }
 
     setDataToDownload(allData);
-  }, [processingFilteredUser, transactionService]);
+  }, [processingFilteredUser]);
 
   const handleChannelChange = useCallback(
     (value: string) => {

@@ -2,8 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth.context";
 import _ from "lodash";
-import ApiURL from "@/constants/api-url.const";
-import { transactionService } from "@/services/api.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
 import toast from "react-hot-toast";
 
 interface UseTransactionsProps {
@@ -70,10 +69,8 @@ export default function useTransactions(): UseTransactionsProps {
         status: tab === "All" ? undefined : tab,
       };
 
-      const response = await transactionService.get(ApiURL.v1Transactions, {
-        params,
-      });
-      return response.data;
+      const response = await transactionService.getTransactions(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -83,13 +80,9 @@ export default function useTransactions(): UseTransactionsProps {
   const { mutate: mutateUpdateStatus, isPending: isLoadingUpdateStatus } =
     useMutation({
       mutationFn: async (id: string) => {
-        const response = await transactionService.put(
-          ApiURL.v1TransactionUpdateStatus(id),
-          {
-            payment_info: "Paid",
-          }
-        );
-        return response.data;
+        return transactionService.updateTransactionStatus(id, {
+          payment_info: "Paid",
+        });
       },
       onSuccess: () => {
         refetch();
@@ -101,14 +94,15 @@ export default function useTransactions(): UseTransactionsProps {
     });
 
   useEffect(() => {
-    if (resTransactions?.data) {
-      let filteredData = resTransactions.data;
+    const transactionsData: any = resTransactions;
+    if (transactionsData?.data) {
+      let filteredData = transactionsData.data;
 
       setTransactions(filteredData);
     } else {
       setTransactions([]);
     }
-  }, [resTransactions?.data]);
+  }, [resTransactions]);
 
   const handleSearch = useMemo(
     () =>
@@ -145,7 +139,7 @@ export default function useTransactions(): UseTransactionsProps {
         throw error;
       }
     },
-    [refetch]
+    [mutateUpdateStatus]
   );
 
   useEffect(() => {
@@ -162,9 +156,9 @@ export default function useTransactions(): UseTransactionsProps {
 
   return {
     transactions,
-    totalPages: resTransactions?.pageTotal || 1,
-    totalItems: resTransactions?.total || 0,
-    totalData: resTransactions?.total || 0,
+    totalPages: (resTransactions as any)?.pageTotal || 1,
+    totalItems: (resTransactions as any)?.total || 0,
+    totalData: (resTransactions as any)?.total || 0,
 
     page,
     rowsPerPage,

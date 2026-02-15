@@ -4,12 +4,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import { isValid, parseISO, format } from "date-fns";
-import {
-  channelService,
-  productService,
-  promotionService,
-} from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { channelService } from "@/services/channel/api/channel.service";
+import { productService } from "@/services/product/api/product.service";
+import { promotionService } from "@/services/promotion/api/promotion.service";
 import AppURL from "@/constants/app-url.const";
 import { PromotionDetails } from "@/app/promotion/dto/promotion.details.dto";
 
@@ -268,10 +265,8 @@ export function useCampaignForm(
   const { data: currency = [], isLoading: isLoadingCurrency } = useQuery({
     queryKey: ["currency"],
     queryFn: async () => {
-      const response = await productService.get(
-        ApiURL.v1ReferencesTypeCurrencies
-      );
-      return response.data?.data || [];
+      const response: any = await productService.getReferenceCurrencies();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -280,10 +275,11 @@ export function useCampaignForm(
   const { data: channels } = useQuery({
     queryKey: ["channels", currentPageChannels, showChannelsPerPage],
     queryFn: async () => {
-      const response = await channelService.get(ApiURL.v1Channels, {
-        params: { page: currentPageChannels, limit: showChannelsPerPage },
+      const response = await channelService.getChannelsV1({
+        page: currentPageChannels,
+        limit: showChannelsPerPage,
       });
-      return response?.data;
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -292,11 +288,12 @@ export function useCampaignForm(
   const { data: insurances } = useQuery({
     queryKey: ["insurances", currentPageIns, showInsPerPage],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances, {
-        params: { page: currentPageIns, limit: showInsPerPage },
+      const response: any = await productService.getInsurances({
+        page: currentPageIns,
+        limit: showInsPerPage,
       });
-      setTotalInsuranceItems(response.data?.meta.total);
-      return response.data;
+      setTotalInsuranceItems(response?.meta?.total || 0);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -312,15 +309,13 @@ export function useCampaignForm(
     queryFn: async () => {
       if (globalSelectedInsuranceIds.size === 0) return undefined;
 
-      const response = await productService.get(ApiURL.v1Products, {
-        params: {
-          insuranceIds: Array.from(globalSelectedInsuranceIds),
-          page: currentPageProd,
-          pageSize: showProdPerPage,
-        },
+      const response: any = await productService.getProducts({
+        insuranceIds: Array.from(globalSelectedInsuranceIds),
+        page: currentPageProd,
+        pageSize: showProdPerPage,
       });
-      setTotalProductItems(response.data?.meta.total);
-      return response.data;
+      setTotalProductItems(response?.meta?.total || 0);
+      return response;
     },
     enabled: globalSelectedInsuranceIds.size > 0,
     staleTime: 30000,
@@ -348,9 +343,9 @@ export function useCampaignForm(
         params.planName = searchQuery;
       }
 
-      const response = await productService.get(ApiURL.v1Plans, { params });
-      setTotalPlanItems(response.data?.meta.total);
-      return response.data;
+      const response: any = await productService.getPlans(params);
+      setTotalPlanItems(response?.meta?.total || 0);
+      return response;
     },
     enabled: globalSelectedProdIds.size > 0,
     staleTime: 30000,
@@ -362,11 +357,8 @@ export function useCampaignForm(
     queryFn: async () => {
       if (!campaignId) return null;
 
-      const response = await promotionService.get(
-        ApiURL.v1CampaignDetail(campaignId),
-        { params: { id: campaignId } }
-      );
-      return response.data?.data?.[0];
+      const response: any = await promotionService.getCampaignById(campaignId);
+      return response?.data?.[0] ?? response?.data?.data?.[0] ?? null;
     },
     enabled: isEdit && !!campaignId,
     staleTime: 0,
@@ -483,20 +475,12 @@ export function useCampaignForm(
   const saveMutation = useMutation({
     mutationFn: async (payload: any) => {
       if (isEdit && campaignId) {
-        const response = await promotionService.put(
-          `${ApiURL.v1CampaignUpdateDetails(campaignId)}?id=${campaignId}`,
-          payload
-        );
-        return response.data;
+        return promotionService.updateCampaign(campaignId, payload);
       } else {
-        const response = await promotionService.post(
-          ApiURL.v1Campaign,
-          payload
-        );
-        return response.data;
+        return promotionService.createCampaign(payload);
       }
     },
-    onSuccess: async (data) => {
+    onSuccess: async (data: any) => {
       if (promotion.type === "embedded") {
         if (data?.data?.error?.code === 409) {
           setErrorMessage(
@@ -507,7 +491,7 @@ export function useCampaignForm(
           setShowAlert(true);
           return;
         } else {
-          await productService.post(ApiURL.v1PlanSyncEmbeddedDiscounts, {});
+          await productService.syncEmbeddedDiscounts();
         }
       }
 
@@ -587,10 +571,10 @@ export function useCampaignForm(
 
         for (const voucher of vouchers) {
           try {
-            const voucherVerify = await promotionService.get(
-              ApiURL.v1VoucherCode(voucher.code)
+            const voucherVerify: any = await promotionService.getVoucherByCode(
+              voucher.code
             );
-            const { data } = voucherVerify?.data;
+            const data = voucherVerify?.data ?? voucherVerify?.data?.data ?? [];
 
             if (data.length > 0 && data[0].code != null) {
               voucherExists = true;
@@ -1115,10 +1099,8 @@ export function useCampaignForm(
       if (!code.trim()) return;
 
       try {
-        const voucherVerify = await promotionService.get(
-          ApiURL.v1VoucherCode(code)
-        );
-        const { data } = voucherVerify.data;
+        const voucherVerify: any = await promotionService.getVoucherByCode(code);
+        const data = voucherVerify?.data ?? voucherVerify?.data?.data ?? [];
 
         if (data.length > 0 && data[0].code != null) {
           setErrorMessage(`Voucher Code ${code} already exists.`);

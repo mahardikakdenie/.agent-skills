@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import ApiURL from "@/constants/api-url.const";
-import { productService, transactionService } from "@/services/api.service";
+import { productService } from "@/services/product/api/product.service";
+import { transactionService } from "@/services/transaction/api/transaction.service";
 import { formatDateTimeWithTZ, formatMoney } from "@/lib/formatter";
 
 interface UseTransactionDashboardProps {
@@ -152,8 +152,8 @@ export default function useTransactionDashboard(): UseTransactionDashboardProps 
   const { data: insurancesData, isFetching: isLoadingInsurances } = useQuery({
     queryKey: ["insurances"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances);
-      return response?.data?.data || [];
+      const response: any = await productService.getInsurances();
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -172,17 +172,15 @@ export default function useTransactionDashboard(): UseTransactionDashboardProps 
   const { data: productsData, isFetching: isLoadingProducts } = useQuery({
     queryKey: ["products", selectedInsuranceId],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Products, {
-        params: {
-          insuranceIds:
-            selectedInsuranceId !== "All" && selectedInsuranceId
-              ? [selectedInsuranceId]
-              : [],
-          page: 1,
-          pageSize: 100,
-        },
+      const response: any = await productService.getProducts({
+        insuranceIds:
+          selectedInsuranceId !== "All" && selectedInsuranceId
+            ? [selectedInsuranceId]
+            : [],
+        page: 1,
+        pageSize: 100,
       });
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     enabled: !!selectedInsuranceId,
     staleTime: 30000,
@@ -202,17 +200,15 @@ export default function useTransactionDashboard(): UseTransactionDashboardProps 
   const { data: plansData, isFetching: isLoadingPlans } = useQuery({
     queryKey: ["plans", selectedProduct],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Plans, {
-        params: {
-          productIds:
-            selectedProduct !== "All" && selectedProduct
-              ? [selectedProduct]
-              : [],
-          page: 1,
-          pageSize: 100,
-        },
+      const response: any = await productService.getPlans({
+        productIds:
+          selectedProduct !== "All" && selectedProduct
+            ? [selectedProduct]
+            : [],
+        page: 1,
+        pageSize: 100,
       });
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     enabled: !!selectedProduct && selectedProduct !== "All",
     staleTime: 30000,
@@ -264,12 +260,11 @@ export default function useTransactionDashboard(): UseTransactionDashboardProps 
           : format(today, "yyyy-MM-dd"),
       };
 
-      const response: any = await transactionService.get(
-        ApiURL.v1TransactionsStatisticData,
-        { params }
+      const response: any = await transactionService.getTransactionStatistics(
+        params
       );
 
-      return response?.data?.data || [];
+      return response?.data || [];
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,

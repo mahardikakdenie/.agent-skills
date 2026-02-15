@@ -2,9 +2,9 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import _ from "lodash";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { policyService, channelService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
+import { channelService } from "@/services/channel/api/channel.service";
 
 interface UseMembershipProps {
   membership: any[];
@@ -147,10 +147,8 @@ export function useMembership(): UseMembershipProps {
         channel: channel || undefined,
       };
 
-      const response = await policyService.get(ApiURL.v1InsuredParties, {
-        params,
-      });
-      return response.data;
+      const response = await policyService.getInsuredParties(params);
+      return response;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -160,17 +158,19 @@ export function useMembership(): UseMembershipProps {
   const { data: channelsData, isFetching: isLoadingChannels } = useQuery({
     queryKey: ["membership-channels"],
     queryFn: async () => {
-      const response = await channelService.get(ApiURL.v1Channels, {
-        params: { page: 1, limit: 100 },
+      const response = await channelService.getChannelsV1({
+        page: 1,
+        limit: 100,
       });
-      return response.data;
+      return response;
     },
     staleTime: 30000,
   });
 
   useEffect(() => {
-    if (channelsData?.data) {
-      setChannels(channelsData.data);
+    const channelsResponse: any = channelsData;
+    if (channelsResponse?.data) {
+      setChannels(channelsResponse.data);
     }
   }, [channelsData]);
 
@@ -252,11 +252,11 @@ export function useMembership(): UseMembershipProps {
   }, [handleSearch]);
 
   return {
-    membership: membershipResponse?.data || [],
-    filteredMembership: membershipResponse?.data || [],
-    totalPages: membershipResponse?.pageTotal || 1,
-    totalData: membershipResponse?.total || 0,
-    totalItems: membershipResponse?.total || 0,
+    membership: (membershipResponse as any)?.data || [],
+    filteredMembership: (membershipResponse as any)?.data || [],
+    totalPages: (membershipResponse as any)?.pageTotal || 1,
+    totalData: (membershipResponse as any)?.total || 0,
+    totalItems: (membershipResponse as any)?.total || 0,
     channels,
 
     page,

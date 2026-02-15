@@ -3,9 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/auth.context";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { policyService } from "@/services/api.service";
+import { policyService } from "@/services/policy/api/policy.service";
 
 interface PolicyVisibility {
   name: boolean;
@@ -57,24 +56,18 @@ export function usePolicyDetail(): UsePolicyDetailProps {
     queryKey: ["policy-detail", policyId],
     queryFn: async () => {
       if (!policyId) return null;
-      const response = await policyService.get(
-        ApiURL.v1PolicyDetails(policyId)
-      );
-      return response.data;
+      return policyService.getPolicyById(policyId);
     },
     enabled: !!policyId,
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
+  const policyData: any = policy;
 
   const renewPolicyMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await policyService.put(
-        ApiURL.v1PolicyDetailsRenew(id),
-        {}
-      );
-      return response.data;
+      return policyService.renewPolicy(id);
     },
     onSuccess: () => {
       toast.success("Policy renewed successfully!");
@@ -121,14 +114,14 @@ export function usePolicyDetail(): UsePolicyDetailProps {
   }, []);
 
   const handleRenewPolicy = useCallback(async () => {
-    if (!policy?.id) return;
+    if (!policyData?.id) return;
 
     try {
-      await renewPolicyMutation.mutateAsync(policy.id);
+      await renewPolicyMutation.mutateAsync(policyData.id);
     } catch (error) {
       throw error;
     }
-  }, [policy?.id, renewPolicyMutation]);
+  }, [policyData?.id, renewPolicyMutation]);
 
   const getStatusColor = useCallback((status: string) => {
     switch (status) {
@@ -144,7 +137,7 @@ export function usePolicyDetail(): UsePolicyDetailProps {
   }, []);
 
   return {
-    policy,
+    policy: policyData,
     policyVisibility,
 
     dialogOpen,

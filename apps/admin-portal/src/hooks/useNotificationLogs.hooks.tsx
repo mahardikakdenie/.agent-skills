@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import _ from "lodash";
-import { ReportService } from "@/services/report.service";
+import { reportService } from "@/services/report/api/report.service";
 
 interface UseNotificationLogsProps {
   notificationLogs: any[];
@@ -27,8 +27,6 @@ export default function useNotificationLogs(): UseNotificationLogsProps {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchData, setSearchData] = useState("");
-
-  const reportService = useMemo(() => new ReportService(), []);
 
   const {
     data: resNotificationLogs,

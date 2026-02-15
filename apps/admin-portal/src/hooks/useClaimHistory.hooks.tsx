@@ -4,9 +4,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useScreen } from "@/context/screen.context";
 import _ from "lodash";
-import ApiURL from "@/constants/api-url.const";
 import AppURL from "@/constants/app-url.const";
-import { claimService } from "@/services/api.service";
+import { claimsService } from "@/services/claims/api/claims.service";
 import { capitalizeString, getHeaderPage } from "@/helpers/app.helper";
 
 interface ClaimHistoryDetail {
@@ -209,11 +208,10 @@ export function useClaimHistory(): UseClaimHistoryProps {
         search: searchData,
       };
 
-      const response = await claimService.get(ApiURL.v1ClaimListLimit, {
-        params,
-      });
+      const response: any = await claimsService.getClaimListLimit(params);
+      const payload = response?.data ?? response;
 
-      return mapResponse(response.data.data, true);
+      return mapResponse(payload, true);
     },
     enabled:
       !!searchData &&
@@ -244,11 +242,10 @@ export function useClaimHistory(): UseClaimHistoryProps {
         search: searchData || undefined,
       };
 
-      const response = await claimService.get(ApiURL.v1ClaimListLimit, {
-        params,
-      });
+      const response: any = await claimsService.getClaimListLimit(params);
+      const payload = response?.data ?? response;
 
-      const mappedResponse = mapResponse(response.data.data, false);
+      const mappedResponse = mapResponse(payload, false);
 
       if (mappedResponse.data.length > 0) {
         setIsSearchParamValid(true);

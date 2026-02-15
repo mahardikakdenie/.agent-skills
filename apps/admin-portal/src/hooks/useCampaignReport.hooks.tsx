@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
-import { productService, promotionService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import { productService } from "@/services/product/api/product.service";
+import { promotionService } from "@/services/promotion/api/promotion.service";
 import AppURL from "@/constants/app-url.const";
 import { DateRange } from "react-day-picker";
 import { startOfMonth, endOfMonth } from "date-fns";
@@ -54,8 +54,8 @@ export function useCampaignReport() {
   const { data: insuranceOptions = [] } = useQuery<InsuranceOption[]>({
     queryKey: ["insurance-options"],
     queryFn: async () => {
-      const response = await productService.get(ApiURL.v1Insurances);
-      return response.data.data.map(
+      const response: any = await productService.getInsurances();
+      return (response?.data || []).map(
         (insurance: { id: string; name: string }) => ({
           id: insurance.id,
           name: insurance.name,
@@ -85,22 +85,24 @@ export function useCampaignReport() {
         dateTo: date?.to,
       };
 
-      let endpoint = ApiURL.v1CampaignReport;
-
       if (filterBy === "insurance" && selectedInsurance) {
-        endpoint = ApiURL.v1CampaignReportInsurance;
         params.insurance = selectedInsurance;
+        const response: any =
+          await promotionService.getCampaignReportInsurance(params);
+        return {
+          data: response?.data || [],
+          total: response?.total || 0,
+          pageTotal: response?.pageTotal || 1,
+        };
       } else {
         params.filter = filterBy;
+        const response: any = await promotionService.getCampaignReport(params);
+        return {
+          data: response?.data || [],
+          total: response?.total || 0,
+          pageTotal: response?.pageTotal || 1,
+        };
       }
-
-      const response = await promotionService.get(endpoint, { params });
-
-      return {
-        data: response.data?.data || [],
-        total: response.data?.total || 0,
-        pageTotal: response.data?.pageTotal || 1,
-      };
     },
     enabled:
       hasAccess === true && (filterBy !== "insurance" || !!selectedInsurance),
@@ -151,16 +153,15 @@ export function useCampaignReport() {
         dateTo: date?.to,
       };
 
-      let endpoint = ApiURL.v1CampaignReportExport;
-
+      let response: any;
       if (filterBy === "insurance" && selectedInsurance) {
-        endpoint = ApiURL.v1CampaignReportExportInsurance;
         params.insurance = selectedInsurance;
+        response = await promotionService.exportCampaignReportInsurance(params);
+      } else {
+        response = await promotionService.exportCampaignReport(params);
       }
 
-      const response = await promotionService.get(endpoint, { params });
-
-      const reportData = response.data.data.map((promotion: any) => ({
+      const reportData = (response?.data || []).map((promotion: any) => ({
         "Campaign Name": promotion.campaign_name || "",
         Type: promotion.type || "",
         "Insurance Company Name": promotion.insurance_name || "N/A",
