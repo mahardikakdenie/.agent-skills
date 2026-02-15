@@ -11,14 +11,14 @@ This file contains templates for generating permanent service documentation in B
 ```markdown
 # Service Layer Architecture
 
-> **Purpose:** Documentation of the colocated service layer architecture for \u003cAPP_NAME\u003e. This describes how API integrations are structured, organized, and maintained.
+> **Purpose:** Documentation of the colocated service layer architecture for <APP_NAME>. This describes how API integrations are structured, organized, and maintained.
 
 ---
 
 ## Related Documentation
 
-- [`SERVICE_IMPLEMENTATION_GUIDE.md`](#) - Step-by-step implementation guide
-- [`SERVICE_REACTQUERY_PATTERNS.md`](#) - TanStack Query best practices
+- [`SERVICE_IMPLEMENTATION_GUIDE.md`](./SERVICE_IMPLEMENTATION_GUIDE.md) - Step-by-step implementation guide
+- [`SERVICE_REACTQUERY_PATTERNS.md`](./SERVICE_REACTQUERY_PATTERNS.md) - TanStack Query best practices
 
 ---
 
@@ -148,8 +148,8 @@ A **service** is defined by its **API base URL**, not by feature names or curren
 
 ## Related Documentation
 
-- [`SERVICE_ARCHITECTURE.md`](#) - Service layer architecture overview
-- [`SERVICE_REACTQUERY_PATTERNS.md`](#) - TanStack Query patterns and best practices
+- [`SERVICE_ARCHITECTURE.md`](./SERVICE_ARCHITECTURE.md) - Service layer architecture overview
+- [`SERVICE_REACTQUERY_PATTERNS.md`](./SERVICE_REACTQUERY_PATTERNS.md) - TanStack Query patterns and best practices
 
 ---
 
@@ -228,8 +228,8 @@ A **service** is defined by its **API base URL**, not by feature names or curren
 
 ## Related Documentation
 
-- [`SERVICE_IMPLEMENTATION_GUIDE.md`](#) - Implementation guide for services
-- [`SERVICE_ARCHITECTURE.md`](#) - Service layer architecture
+- [`SERVICE_IMPLEMENTATION_GUIDE.md`](./SERVICE_IMPLEMENTATION_GUIDE.md) - Implementation guide for services
+- [`SERVICE_ARCHITECTURE.md`](./SERVICE_ARCHITECTURE.md) - Service layer architecture
 - [TanStack Query Official Docs](https://tanstack.com/query/latest/docs/react/overview)
 
 ---

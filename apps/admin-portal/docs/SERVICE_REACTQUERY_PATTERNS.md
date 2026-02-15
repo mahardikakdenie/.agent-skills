@@ -6,8 +6,8 @@
 
 ## Related Documentation
 
-- [`SERVICE_IMPLEMENTATION_GUIDE.md`](file:///c:/Users/user/friendsuretech/projects/frontend-workspace/apps/admin-portal/docs/SERVICE_IMPLEMENTATION_GUIDE.md) - Implementation guide for services
-- [`SERVICE_ARCHITECTURE.md`](file:///c:/Users/user/friendsuretech/projects/frontend-workspace/apps/admin-portal/docs/SERVICE_ARCHITECTURE.md) - Service layer architecture
+- [`SERVICE_IMPLEMENTATION_GUIDE.md`](./SERVICE_IMPLEMENTATION_GUIDE.md) - Implementation guide for services
+- [`SERVICE_ARCHITECTURE.md`](./SERVICE_ARCHITECTURE.md) - Service layer architecture
 - [TanStack Query Official Docs](https://tanstack.com/query/latest/docs/react/overview)
 
 ---

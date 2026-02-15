@@ -6,8 +6,8 @@
 
 ## Related Documentation
 
-- [`SERVICE_IMPLEMENTATION_GUIDE.md`](file:///c:/Users/user/friendsuretech/projects/frontend-workspace/apps/admin-portal/docs/SERVICE_IMPLEMENTATION_GUIDE.md) - Step-by-step implementation guide
-- [`SERVICE_REACTQUERY_PATTERNS.md`](file:///c:/Users/user/friendsuretech/projects/frontend-workspace/apps/admin-portal/docs/SERVICE_REACTQUERY_PATTERNS.md) - TanStack Query best practices
+- [`SERVICE_IMPLEMENTATION_GUIDE.md`](./SERVICE_IMPLEMENTATION_GUIDE.md) - Step-by-step implementation guide
+- [`SERVICE_REACTQUERY_PATTERNS.md`](./SERVICE_REACTQUERY_PATTERNS.md) - TanStack Query best practices
 
 ---
 

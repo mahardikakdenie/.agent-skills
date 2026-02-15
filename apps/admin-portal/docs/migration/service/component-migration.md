@@ -1024,33 +1024,6 @@ Components:
 - Fix: Re-refactored all remaining legacy hooks to consume custom hooks from `services/*/hooks/{queries,mutations}`; added export-oriented service hooks (`useAllChannels`, `useAllProducts`, `useAllClaims`, `useAllPolicies`, `useChannelConfigurations`) to preserve all-pages export behavior without breaking contracts
 - Status: PASS (resolved)
 
-## Batch 7 Cleanup and Documentation (Phase 6)
-
-### Cleanup Summary
-
-- Removed obsolete legacy flat service files in `apps/admin-portal/src/services/` (`api.service.ts`, `auth.service.ts`, `channel.services.ts`, `claim.service.ts`, `endorsement.service.ts`, `finance.services.ts`, `helper.service.ts`, `insurance.services.ts`, `membership.service.ts`, `pdf.service.ts`, `plan.services.ts`, `policy.service.ts`, `product-catalog.service.ts`, `product-config.service.ts`, `product.services.ts`, `promotion.service.ts`, `report.service.ts`, `sanction.service.ts`, `transaction.service.ts`, `voucher.services.ts`)
-- Migrated remaining legacy type dependencies into colocated type modules:
-  - `apps/admin-portal/src/services/claims/api/claims.types.ts`
-  - `apps/admin-portal/src/services/policy/api/policy.types.ts`
-  - `apps/admin-portal/src/services/transaction/api/transaction.types.ts`
-  - `apps/admin-portal/src/services/product/api/product.types.ts`
-- Updated product catalog UI type imports to use colocated product types:
-  - `apps/admin-portal/src/app/product-category/[category]/page.tsx`
-  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/package-list.tsx`
-  - `apps/admin-portal/src/components/tableConfig/packageTableConfig.tsx`
-- Added permanent docs:
-  - `apps/admin-portal/docs/SERVICE_ARCHITECTURE.md`
-  - `apps/admin-portal/docs/SERVICE_IMPLEMENTATION_GUIDE.md`
-  - `apps/admin-portal/docs/SERVICE_REACTQUERY_PATTERNS.md`
-
-### Batch 7 Verification Gate Results
-
-- Typecheck: PASS (`pnpm --filter admin-portal exec tsc --noEmit`)
-- Build: PASS (`pnpm --filter admin-portal run build`)
-- Lint: PASS (`pnpm --filter admin-portal run lint`) with existing non-blocking warnings
-- Tests: N/A
-- Sanity Check: N/A
-
 ### Next Steps
 
 - [x] Migrate legacy `src/views/*` files still importing `@/services/api.service`
@@ -1066,4 +1039,3 @@ Components:
 | ---------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | --------- | --------- |
 | 2026-02-15 | Main Batch 6 | Claim/Auth/Home + Policy/Channel + Transaction + Finance/Helper + Product/Promotion/Masterdata + legacy src/hooks slices (+ sanction/source + broker/partner + dashboard/transactions + policy/membership + campaign/report/export/notification hooks + full `src/views` migration final pass + non-view auth/menu cleanup) | 126 components | Completed | this doc  |
 | 2026-02-15 | Incremental  | Legacy `src/hooks` full React Query wrapper cleanup                                                                                                                                                                                                                                                                         | 60 hooks       | Completed | this doc  |
-| 2026-02-16 | Batch 7      | Cleanup + docs (legacy flat services removed, colocated types finalized, permanent docs added)                                                                                                                                                                                                                              | N/A            | Completed | this doc  |

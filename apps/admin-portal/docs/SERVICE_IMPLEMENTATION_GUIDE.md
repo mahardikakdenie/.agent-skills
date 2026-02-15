@@ -6,8 +6,8 @@
 
 ## Related Documentation
 
-- [`SERVICE_ARCHITECTURE.md`](file:///c:/Users/user/friendsuretech/projects/frontend-workspace/apps/admin-portal/docs/SERVICE_ARCHITECTURE.md) - Service layer architecture overview
-- [`SERVICE_REACTQUERY_PATTERNS.md`](file:///c:/Users/user/friendsuretech/projects/frontend-workspace/apps/admin-portal/docs/SERVICE_REACTQUERY_PATTERNS.md) - TanStack Query patterns and best practices
+- [`SERVICE_ARCHITECTURE.md`](./SERVICE_ARCHITECTURE.md) - Service layer architecture overview
+- [`SERVICE_REACTQUERY_PATTERNS.md`](./SERVICE_REACTQUERY_PATTERNS.md) - TanStack Query patterns and best practices
 
 ---
 
