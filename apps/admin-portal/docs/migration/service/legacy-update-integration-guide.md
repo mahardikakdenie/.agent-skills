@@ -124,7 +124,7 @@ flowchart TD
 **Use When:** Simple endpoint additions or minor updates
 
 ```
-Batch 1: Subtree pull to integrate/* and merge to migrate/*
+Batch 1: Subtree pull to integrate-app/* and merge to migrate-app/*
          ↓ (no conflicts)
 Batch 3: Analyze changes → identify new endpoints in existing service
          ↓ (decision: Batch 4)
@@ -142,7 +142,7 @@ Batch 6: Verify + document
 **Use When:** Legacy and refactored code overlap
 
 ```
-Batch 1: Subtree pull to integrate/* and merge to migrate/*
+Batch 1: Subtree pull to integrate-app/* and merge to migrate-app/*
          ↓ (conflicts detected)
 Batch 2: Resolve conflicts using categorization strategy
          ↓
@@ -162,7 +162,7 @@ Batch 6: Verify + document
 **Use When:** New base URL detected
 
 ```
-Batch 1: Subtree pull to integrate/* and merge to migrate/*
+Batch 1: Subtree pull to integrate-app/* and merge to migrate-app/*
          ↓ (clean or after conflict resolution)
 Batch 3: Analyze changes → detect new base URL
          ↓ (decision: Batch 5)
@@ -344,7 +344,7 @@ Use this checklist before running Batch 1:
 
 ## Summary
 
-✅ **Safe Integration** - Conflicts only on `migrate/*`, never on `integrate/*`  
+✅ **Safe Integration** - Conflicts only on `migrate-app/*`, never on `integrate-app/*`  
 ✅ **Phase-Aware** - Different workflows for different refactor phases  
 ✅ **No Breaking Changes** - Verification at every step  
 ✅ **Incremental Growth** - New services refactored incrementally  

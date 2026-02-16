@@ -18,7 +18,7 @@
 
 ## Key Principle
 
-**`integrate/*` is 1:1 with legacy repo** (read-only, never modified). Subtree pull to `integrate/*` will NEVER have conflicts. Conflicts only occur when merging `integrate/*` to `migrate/*`.
+**`integrate-app/*` is 1:1 with legacy repo** (read-only, never modified). Subtree pull to `integrate-app/*` will NEVER have conflicts. Conflicts only occur when merging `integrate-app/*` to `migrate-app/*`.
 
 ---
 
@@ -46,7 +46,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routines 1-2:
 1. Routine 1: Subtree pull to integrate/<APP_NAME>
    - Switch to integrate/<APP_NAME>
    - Run: git subtree pull --prefix=<SUBTREE_PREFIX> <REMOTE_NAME> <REMOTE_BRANCH>
-   - Expected: Clean merge (no conflicts, since integrate/* is 1:1 with legacy)
+   - Expected: Clean merge (no conflicts, since integrate-app/* is 1:1 with legacy)
    - Push integrate/<APP_NAME>
 
 2. Routine 2: Merge to migrate/<APP_NAME>
@@ -464,7 +464,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
    - Re-run verification gate
    - If fix is safe and passes: continue to step 5
    - **If catastrophic failure (cannot fix safely):**
-     * Rollback migrate/* branch:
+     * Rollback migrate-app/* branch:
        git reset --hard <commit-before-legacy-update-merge>
        git push -f origin migrate/<app-name>
      * Document rollback in legacy-update-YYYYMMDD-HHMMSS.md

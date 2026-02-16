@@ -672,6 +672,326 @@ flowchart TB
    - Remove old HTTP client wrappers
    - Keep only new colocated structure
 
+<<<<<<< HEAD
+=======
+2. **Update imports (should be zero):**
+   - Search for any remaining old service imports
+   - Update if found (should not happen if Phase 5 complete)
+
+3. **Create permanent documentation:**
+   - `docs/ARCHITECTURE.md` - Explain new structure
+   - `docs/ADDING_SERVICES.md` - How to add new services
+   - `docs/QUERY_PATTERNS.md` - TanStack Query best practices
+
+4. **Cleanup temporary docs:**
+   - Keep `audit.md` and `plan.md` for reference
+   - Archive or remove if no longer needed
+
+**Outputs & Deliverables:**
+
+- Old services deleted
+- `docs/ARCHITECTURE.md` created
+- `docs/ADDING_SERVICES.md` created
+- `docs/QUERY_PATTERNS.md` created
+
+**Verification Requirements:**
+
+- **Mandatory Gate:** Run full verification gate after Phase 6
+- Typecheck passes
+- Build succeeds
+- All features still work
+- No broken imports
+
+**Common Issues & Solutions:**
+
+- **Issue:** Broken imports after deletion
+  - **Solution:** Component not fully migrated, fix and re-verify
+
+- **Issue:** Build size increased significantly
+  - **Solution:** Review bundle analyzer, optimize imports
+
+**Post-conditions:**
+
+- Refactor 100% complete
+- Documentation up to date
+- Ready for production
+
+---
+
+## Verification Gates
+
+### Gate Trigger Points
+
+Verification gates are **mandatory** at these points:
+
+| After Phase | Gate Scope          | Purpose                                         |
+| ----------- | ------------------- | ----------------------------------------------- |
+| Phase 3     | Foundation          | Verify infrastructure doesn't break app         |
+| Phase 4A    | API Layer           | Verify API layer compiles, no runtime errors    |
+| Phase 4B    | Hooks               | Verify hooks compile, no runtime errors         |
+| Phase 5     | Component Migration | Verify all features still work after migrations |
+| Phase 6     | Cleanup             | Final verification before completion            |
+
+### Standard Verification Checklist
+
+For each gate, run **all** of these checks (per `verification-gate.md`):
+
+1. **Typecheck:** `pnpm typecheck` or equivalent
+2. **Build:** `pnpm build` or equivalent
+3. **Lint:** `pnpm lint` or `N/A`
+4. **Tests:** `pnpm test` or `N/A`
+5. **Sanity Check:** Manual or automated tests of critical flows
+6. **Console Errors:** Check browser console (should be zero on working pages)
+7. **Network Errors:** Check network tab (should match expected behavior)
+
+### Phase-Specific Requirements
+
+**Phase 3 (Foundation):**
+
+- App still runs
+- DevTools accessible
+- No new console errors
+
+**Phase 4A (API Layer):**
+
+- Typecheck passes (new types correct)
+- Build succeeds (no import errors)
+
+**Phase 4B (Hooks):**
+
+- Typecheck passes (hook signatures correct)
+- Build succeeds (no circular dependencies)
+
+**Phase 5 (Component Migration):**
+
+- **Critical:** All user flows tested
+- No regressions on migrated components
+- Data fetching works identically to before
+
+**Phase 6 (Cleanup):**
+
+- **Critical:** No broken imports
+- All features work
+- Build size acceptable
+
+### Failure Handling Workflow (Fix-First Approach)
+
+**When a gate fails:**
+
+```mermaid
+flowchart TD
+  A[Verification Gate Fails] --> B{Catastrophic?}
+  B -->|Yes, cannot fix safely| C[Rollback]
+  B -->|No, can fix| D[Diagnose Issue]
+  D --> E[Apply Fix]
+  E --> F[Re-run Verification Gate]
+  F --> G{Pass?}
+  G -->|Yes| H[Continue to Next Phase]
+  G -->|No| D
+  C --> I[Document Rollback]
+  I --> J[Reassess Approach]
+```
+
+**Step-by-Step:**
+
+1. **Diagnose:**
+   - Identify failing check (typecheck, build, test, sanity)
+   - Use `$systematic-debugging` skill if available
+   - Locate root cause
+
+2. **Fix:**
+   - Apply most localized fix possible
+   - Do NOT expand scope
+   - Keep changes minimal
+
+3. **Re-verify:**
+   - Run same gate again
+   - Verify fix resolved issue
+
+4. **If fix works:**
+   - Commit fix
+   - Continue to next phase
+
+5. **If fix doesn't work or is unsafe:**
+   - Rollback to pre-phase state
+   - Document failure
+   - Reassess approach or consult team
+
+**Rollback Procedure:**
+
+```bash
+# Identify commit before phase started
+git log --oneline
+
+# Rollback to safe state
+git reset --hard <commit-before-phase>
+git push -f origin migrate/<app-name>
+
+# Document in task.md why rollback occurred
+```
+
+---
+
+## Legacy Update Integration
+
+### Overview
+
+**Legacy updates are INDEPENDENT of the main refactor lifecycle** and can occur at ANY time during migration. This section describes how to integrate legacy updates without breaking the refactor.
+
+**Key Principle:** Legacy updates use a separate batch sequence (Batch 1-6) documented in `legacy-update-batch-prompts.md`. This section focuses on WHEN and HOW to integrate them into the main lifecycle.
+
+### Risk Matrix by Phase
+
+| Current Refactor Phase | Risk Level  | Integration Complexity        | Notes                                           |
+| ---------------------- | ----------- | ----------------------------- | ----------------------------------------------- |
+| **Before Phase 0**     | ✅ Low      | Simple merge                  | Safe, no refactor started                       |
+| **Phase 0-2**          | ✅ Low      | Simple merge                  | Documentation only, no conflicts                |
+| **Phase 3**            | ⚠️ Medium   | Merge + adjust foundation     | May need to update API client                   |
+| **Phase 4A**           | ⚠️ Medium   | Merge + extend API layer      | Add new endpoints to services                   |
+| **Phase 4B**           | ⚠️ Medium   | Merge + extend hooks          | Add new hooks for new endpoints                 |
+| **Phase 5**            | 🔴 High     | Merge + careful testing       | Some components migrated, conflicts likely      |
+| **Phase 6+**           | 🔴 Critical | Incremental refactor required | Old services deleted, must refactor immediately |
+
+### Pause/Resume Workflow
+
+**When legacy update arrives during active refactor:**
+
+1. **Complete current step** (don't stop mid-step)
+2. **Document pause point** in task.md
+3. **Commit and push** current work
+4. **Run legacy update batches** (see `legacy-update-batch-prompts.md`)
+5. **Update task.md** with resume status
+6. **Review impact** on current work
+7. **Resume main batch** from documented step
+
+**Example task.md pause entry:**
+
+```markdown
+## Current Status
+
+- Phase: Phase 4B
+- Batch: Batch 5
+- Status: ⏸️ Paused at "Creating hooks for claims service"
+- Reason: Legacy update incoming
+- Timestamp: 2026-02-15 03:00:00
+```
+
+**Example task.md resume entry:**
+
+```markdown
+## Current Status
+
+- Phase: Phase 4B
+- Batch: Batch 5
+- Status: ▶️ Resumed after legacy update
+- Legacy update: 2026-02-15 03:30:00 integrated successfully
+- Services affected: claims, policy
+- New services added: none
+```
+
+### Decision Tree: Batch 4 vs Batch 5
+
+**After analyzing legacy changes (Legacy Update Batch 3), use this decision tree:**
+
+```mermaid
+flowchart TD
+    A[Legacy Batch 3: Changes Identified] --> B{New Base URL?}
+    B -->|Yes| C[Legacy Batch 5: New Service<br/>Full refactor - Phase 4A + 4B]
+    B -->|No| D{New Endpoints in Existing Service?}
+    D -->|Yes| E{Service Already Refactored?}
+    E -->|Yes, in plan.md| F[Legacy Batch 4: Add to Existing Service<br/>Extend API + hooks]
+    E -->|No, not yet refactored| G{Will it be refactored?}
+    G -->|Yes, in audit.md| F
+    G -->|No, legacy only| H[Legacy Batch 4: Update Legacy Service Only<br/>No refactor needed]
+    D -->|No| I{Endpoint Types/Signatures Changed?}
+    I -->|Yes| J[Legacy Batch 4: Update Service + Hooks]
+    I -->|No| K{Component/Config Changes Only?}
+    K -->|Yes| L[Legacy Batch 4 Minimal or Skip to Batch 6]
+    K -->|No| M[Legacy Batch 4: Apply Other Changes]
+```
+
+**Decision Rules:**
+
+- **New base URL** → Legacy Batch 5 (full new service refactor)
+- **New endpoints (existing service)** → Legacy Batch 4 (extend service)
+- **Modified types** → Legacy Batch 4 (update service + hooks)
+- **Component changes only** → Legacy Batch 4 minimal (no service changes)
+
+### Post-Cleanup Integration (After Main Phase 6 Complete)
+
+**When legacy update arrives after old services are deleted:**
+
+```mermaid
+flowchart TD
+    A[Legacy Batch 3: Analyze Changes] --> B{New Service?}
+    B -->|Yes| C[Legacy Batch 5: Full new service<br/>Phase 4A + 4B]
+    B -->|No| D{Changes in<br/>Refactored Service?}
+    D -->|Yes| E[Legacy Batch 5A: Component Migration<br/>Incremental - affected only]
+    E --> F[Legacy Batch 5B: Cleanup<br/>Incremental - related files]
+    D -->|No| G[Legacy Batch 4: Legacy-only update<br/>no refactor needed]
+    C --> H[Legacy Batch 6: Verify]
+    F --> H
+    G --> H
+```
+
+**Key Difference from Pre-Cleanup:**
+
+- **Pre-cleanup:** Old services still exist, can be updated without refactor
+- **Post-cleanup:** Old services deleted, MUST refactor into new architecture immediately
+
+**Incremental Patterns (Routine 5A/5B):**
+
+- **Routine 5A:** Migrate ONLY components affected by new service
+- **Routine 5B:** Delete ONLY old service files related to new service (if any exist)
+
+See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
+
+---
+
+## Artifact Tracking
+
+### Complete Artifact Map
+
+| Phase        | Artifacts Created/Updated                                                             | Location                             | Type      | Purpose                       |
+| ------------ | ------------------------------------------------------------------------------------- | ------------------------------------ | --------- | ----------------------------- |
+| **Phase 0**  | `verification-gate.md`                                                                | `<APP_PATH>/docs/`                   | Temporary | Verification commands per app |
+| **Phase 1**  | `audit.md`                                                                            | `<APP_PATH>/docs/migration/service/` | Temporary | Service inventory             |
+| **Phase 2**  | `plan.md`                                                                             | `<APP_PATH>/docs/migration/service/` | Temporary | Implementation blueprint      |
+| **Phase 3**  | `src/lib/api-client/*`                                                                | `<APP_PATH>/src/lib/`                | Permanent | API client infrastructure     |
+| **Phase 3**  | `src/lib/react-query/*`                                                               | `<APP_PATH>/src/lib/`                | Permanent | React Query setup             |
+| **Phase 4A** | `src/services/*/api/*`                                                                | `<APP_PATH>/src/services/`           | Permanent | Service API layers            |
+| **Phase 4B** | `src/services/*/query-keys.ts`                                                        | `<APP_PATH>/src/services/`           | Permanent | Query keys per service        |
+| **Phase 4B** | `src/services/*/hooks/*`                                                              | `<APP_PATH>/src/services/`           | Permanent | Query and mutation hooks      |
+| **Phase 4B** | `src/services/*/hooks/queries/index.ts` and `src/services/*/hooks/mutations/index.ts` | `<APP_PATH>/src/services/`           | Permanent | Hook barrel exports           |
+| **Phase 5**  | `component-migration.md`                                                              | `<APP_PATH>/docs/migration/service/` | Temporary | Migration tracking            |
+| **Phase 6**  | `ARCHITECTURE.md`                                                                     | `<APP_PATH>/docs/`                   | Permanent | Architecture documentation    |
+| **Phase 6**  | `ADDING_SERVICES.md`                                                                  | `<APP_PATH>/docs/`                   | Permanent | Service creation guide        |
+| **Phase 6**  | `QUERY_PATTERNS.md`                                                                   | `<APP_PATH>/docs/`                   | Permanent | TanStack Query patterns       |
+
+### Artifact Lifecycle
+
+**Temporary Artifacts** (can be archived after refactor):
+
+- `verification-gate.md`
+- `audit.md`
+- `plan.md`
+- `component-migration.md`
+
+**Permanent Artifacts** (keep in codebase):
+
+- `src/lib/` infrastructure
+- `src/services/` implementations
+- `ARCHITECTURE.md`
+- `ADDING_SERVICES.md`
+- `QUERY_PATTERNS.md`
+
+---
+
+## Safety Patterns & Guardrails
+
+### Dual-Mode Operation
+
+>>>>>>> integrate-app/admin-portal
 **Principle:** Old and new services coexist until Phase 6.
 
 **Implementation:**
@@ -708,7 +1028,7 @@ flowchart TB
 # Identify safe commit
 git log --oneline
 
-# Rollback migrate/* branch
+# Rollback migrate-app/* branch
 git reset --hard <commit-before-phase>
 git push -f origin migrate/<app-name>
 ```
