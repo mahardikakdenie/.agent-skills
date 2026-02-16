@@ -23,19 +23,19 @@
 
 During monorepo migration, each app in `apps/` maintains two branch types:
 
-- **`integrate/*`** = Read-only baseline branch (1:1 copy of legacy repo via git subtree)
-- **`migrate/*`** = Work/refactor branch created from `integrate/*`
+- **`integrate-app/*`** = Read-only baseline branch (1:1 copy of legacy repo via git subtree)
+- **`migrate-app/*`** = Work/refactor branch created from `integrate-app/*`
 
-**Key principle:** The `integrate/*` branch is 1:1 with the legacy repo and never has local modifications. Therefore, subtree pull to `integrate/*` will NEVER have conflicts. Conflicts only occur when merging `integrate/*` to `migrate/*`.
+**Key principle:** The `integrate-app/*` branch is 1:1 with the legacy repo and never has local modifications. Therefore, subtree pull to `integrate-app/*` will NEVER have conflicts. Conflicts only occur when merging `integrate-app/*` to `migrate-app/*`.
 
 > [!IMPORTANT]
-> **All legacy update documentation and refactoring work** happens on the `migrate/*` branch, NOT on `integrate/*`. The `integrate/*` branch remains untouched except for git subtree pull operations.
+> **All legacy update documentation and refactoring work** happens on the `migrate-app/*` branch, NOT on `integrate-app/*`. The `integrate-app/*` branch remains untouched except for git subtree pull operations.
 
 ### Goals
 
 1. **Synchronization** - Keep monorepo apps updated with legacy repo changes
 2. **No Breaking Changes** - Maintain refactored functionality during updates
-3. **Conflict Resolution** - Handle merge conflicts on `migrate/*` systematically
+3. **Conflict Resolution** - Handle merge conflicts on `migrate-app/*` systematically
 4. **Adjustment Integration** - Incorporate new services/features into refactored architecture
 
 ### When to Apply These Routines
@@ -55,9 +55,9 @@ During monorepo migration, each app in `apps/` maintains two branch types:
 
 ```mermaid
 flowchart TD
-    A[Legacy Repo Updated] --> B[Subtree Pull to integrate/*]
-    B --> C[Push integrate/*]
-    C --> D[Merge integrate/* to migrate/*]
+    A[Legacy Repo Updated] --> B[Subtree Pull to integrate-app/*]
+    B --> C[Push integrate-app/*]
+    C --> D[Merge integrate-app/* to migrate-app/*]
     D --> E{Conflicts?}
     E -->|No| F[Adjust Refactored Code]
     E -->|Yes| G[Resolve Conflicts]
@@ -78,13 +78,13 @@ flowchart TD
 
 ### Objective
 
-Pull latest changes from legacy repo into the read-only `integrate/*` branch.
+Pull latest changes from legacy repo into the read-only `integrate-app/*` branch.
 
 ### Pre-conditions
 
 - Legacy repo has new commits
 - Clean working tree
-- `integrate/*` is 1:1 with legacy repo (never modified)
+- `integrate-app/*` is 1:1 with legacy repo (never modified)
 
 ### Steps
 
@@ -97,13 +97,13 @@ git checkout integrate/<app-name>
 #### 1.2 Perform subtree pull
 
 ```bash
-# No conflicts expected since integrate/* is 1:1 with legacy
+# No conflicts expected since integrate-app/* is 1:1 with legacy
 git subtree pull --prefix=apps/<app-name> <remote-name> <remote-branch>
 ```
 
 **Expected:** Clean merge (100% of the time)
 
-**If conflicts occur:** `integrate/*` was modified (should NEVER happen). Investigate and fix.
+**If conflicts occur:** `integrate-app/*` was modified (should NEVER happen). Investigate and fix.
 
 #### 1.3 Push integrate/\* branch
 
@@ -117,11 +117,11 @@ git push origin integrate/<app-name>
 
 ### Objective
 
-Synchronize the refactored `migrate/*` branch with the updated baseline.
+Synchronize the refactored `migrate-app/*` branch with the updated baseline.
 
 ### Pre-conditions
 
-- `integrate/*` successfully updated and pushed
+- `integrate-app/*` successfully updated and pushed
 - Clean working tree
 
 ### Steps
@@ -159,7 +159,7 @@ Resolve conflicts between legacy updates and refactored code.
 
 ### Pre-conditions
 
-- Merge from `integrate/*` to `migrate/*` resulted in conflicts
+- Merge from `integrate-app/*` to `migrate-app/*` resulted in conflicts
 
 ### Steps
 
@@ -273,7 +273,7 @@ Integrate new services, features, or breaking changes from legacy repo.
 
 ### Pre-conditions
 
-- `migrate/*` merged successfully
+- `migrate-app/*` merged successfully
 - No unresolved conflicts
 
 ### Steps
@@ -472,10 +472,10 @@ Create list of affected components (pages, forms, dashboards, etc.)
 
    ```typescript
    // ❌ Remove old patterns
-   import { oldService } from '@/services/old.service';
+   import { useUpdateNew } from '@/services/new-service/hooks/mutations';
    // ✅ Add new hooks (from barrel files)
    import { useNewData } from '@/services/new-service/hooks/queries';
-   import { useUpdateNew } from '@/services/new-service/hooks/mutations';
+   import { oldService } from '@/services/old.service';
    ```
 
 3. **Replace data fetching**:
@@ -755,7 +755,7 @@ This typically includes:
 If verification fails and cannot be fixed safely:
 
 ```bash
-# Rollback migrate/* branch
+# Rollback migrate-app/* branch
 git reset --hard <commit-before-legacy-update-merge>
 git push -f origin migrate/<app-name>
 ```
@@ -771,7 +771,7 @@ If main task.md exists at `apps/<app-name>/docs/migration/service/task.md`:
 - Note services affected and new services added
 
 > [!NOTE]
-> All documentation is created on the `migrate/<app-name>` branch, NOT on `integrate/*`.
+> All documentation is created on the `migrate/<app-name>` branch, NOT on `integrate-app/*`.
 
 #### 6.6 Document results
 
@@ -891,7 +891,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 
 ### Before Batch 0
 
-- Ensure `integrate/*` is up to date
+- Ensure `integrate-app/*` is up to date
 - Run routines 1-6 if needed
 
 ### During Batch 0-5 (Before Component Migration; covers Phases 0-4B)
@@ -1013,7 +1013,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 
 ## Summary
 
-✅ **Safe Integration** - Conflicts only on `migrate/*`, never on `integrate/*`  
+✅ **Safe Integration** - Conflicts only on `migrate-app/*`, never on `integrate-app/*`  
 ✅ **No Breaking Changes** - Verification at every step  
 ✅ **Incremental Growth** - New services refactored incrementally  
 ✅ **Full Documentation** - All updates tracked and logged

@@ -946,21 +946,21 @@ See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
 
 ### Complete Artifact Map
 
-| Phase        | Artifacts Created/Updated      | Location                             | Type      | Purpose                       |
-| ------------ | ------------------------------ | ------------------------------------ | --------- | ----------------------------- |
-| **Phase 0**  | `verification-gate.md`         | `<APP_PATH>/docs/`                   | Temporary | Verification commands per app |
-| **Phase 1**  | `audit.md`                     | `<APP_PATH>/docs/migration/service/` | Temporary | Service inventory             |
-| **Phase 2**  | `plan.md`                      | `<APP_PATH>/docs/migration/service/` | Temporary | Implementation blueprint      |
-| **Phase 3**  | `src/lib/api-client/*`         | `<APP_PATH>/src/lib/`                | Permanent | API client infrastructure     |
-| **Phase 3**  | `src/lib/react-query/*`        | `<APP_PATH>/src/lib/`                | Permanent | React Query setup             |
-| **Phase 4A** | `src/services/*/api/*`         | `<APP_PATH>/src/services/`           | Permanent | Service API layers            |
-| **Phase 4B** | `src/services/*/query-keys.ts` | `<APP_PATH>/src/services/`           | Permanent | Query keys per service        |
-| **Phase 4B** | `src/services/*/hooks/*`       | `<APP_PATH>/src/services/`           | Permanent | Query and mutation hooks      |
-| **Phase 4B** | `src/services/*/hooks/queries/index.ts` and `src/services/*/hooks/mutations/index.ts` | `<APP_PATH>/src/services/` | Permanent | Hook barrel exports |
-| **Phase 5**  | `component-migration.md`       | `<APP_PATH>/docs/migration/service/` | Temporary | Migration tracking            |
-| **Phase 6**  | `ARCHITECTURE.md`              | `<APP_PATH>/docs/`                   | Permanent | Architecture documentation    |
-| **Phase 6**  | `ADDING_SERVICES.md`           | `<APP_PATH>/docs/`                   | Permanent | Service creation guide        |
-| **Phase 6**  | `QUERY_PATTERNS.md`            | `<APP_PATH>/docs/`                   | Permanent | TanStack Query patterns       |
+| Phase        | Artifacts Created/Updated                                                             | Location                             | Type      | Purpose                       |
+| ------------ | ------------------------------------------------------------------------------------- | ------------------------------------ | --------- | ----------------------------- |
+| **Phase 0**  | `verification-gate.md`                                                                | `<APP_PATH>/docs/`                   | Temporary | Verification commands per app |
+| **Phase 1**  | `audit.md`                                                                            | `<APP_PATH>/docs/migration/service/` | Temporary | Service inventory             |
+| **Phase 2**  | `plan.md`                                                                             | `<APP_PATH>/docs/migration/service/` | Temporary | Implementation blueprint      |
+| **Phase 3**  | `src/lib/api-client/*`                                                                | `<APP_PATH>/src/lib/`                | Permanent | API client infrastructure     |
+| **Phase 3**  | `src/lib/react-query/*`                                                               | `<APP_PATH>/src/lib/`                | Permanent | React Query setup             |
+| **Phase 4A** | `src/services/*/api/*`                                                                | `<APP_PATH>/src/services/`           | Permanent | Service API layers            |
+| **Phase 4B** | `src/services/*/query-keys.ts`                                                        | `<APP_PATH>/src/services/`           | Permanent | Query keys per service        |
+| **Phase 4B** | `src/services/*/hooks/*`                                                              | `<APP_PATH>/src/services/`           | Permanent | Query and mutation hooks      |
+| **Phase 4B** | `src/services/*/hooks/queries/index.ts` and `src/services/*/hooks/mutations/index.ts` | `<APP_PATH>/src/services/`           | Permanent | Hook barrel exports           |
+| **Phase 5**  | `component-migration.md`                                                              | `<APP_PATH>/docs/migration/service/` | Temporary | Migration tracking            |
+| **Phase 6**  | `ARCHITECTURE.md`                                                                     | `<APP_PATH>/docs/`                   | Permanent | Architecture documentation    |
+| **Phase 6**  | `ADDING_SERVICES.md`                                                                  | `<APP_PATH>/docs/`                   | Permanent | Service creation guide        |
+| **Phase 6**  | `QUERY_PATTERNS.md`                                                                   | `<APP_PATH>/docs/`                   | Permanent | TanStack Query patterns       |
 
 ### Artifact Lifecycle
 
@@ -1021,7 +1021,7 @@ See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
 # Identify safe commit
 git log --oneline
 
-# Rollback migrate/* branch
+# Rollback migrate-app/* branch
 git reset --hard <commit-before-phase>
 git push -f origin migrate/<app-name>
 ```
