@@ -185,7 +185,7 @@ export const LayoutView = ({
   useEffect(() => {
     const hostname = window.location.host;
     getLoginProviders(hostname);
-  }, [])
+  }, [user])
 
   return (
     <div>

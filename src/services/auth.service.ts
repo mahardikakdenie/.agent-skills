@@ -61,7 +61,7 @@ export class AuthService {
 
   async getProviders(payload: LoginProvidersRequest): Promise<{data: LoginProvidersResponse[]}> {
     try {
-      const path = `/login/providers?originUrl=${encodeURIComponent(payload.originUrl)}`;
+      const path = `/v1/providers?originUrl=${encodeURIComponent(payload.originUrl)}`;
       
       return this.httpClient.get<{data: LoginProvidersResponse[]}>(path);
     } catch (error) {
