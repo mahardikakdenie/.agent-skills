@@ -2,6 +2,7 @@
 import JavaScriptObfuscator from "webpack-obfuscator";
 const enableObfuscator = process.env.NEXT_ENABLE_OBFUSCATOR === "true";
 const nextConfig = {
+    output: "standalone",
     images: {
         remotePatterns: [
             {

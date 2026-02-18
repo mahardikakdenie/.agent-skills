@@ -1,0 +1,19 @@
+# Build context is repo root for `docker build -f apps/admin-portal/Dockerfile .`
+**/node_modules
+**/.next
+**/dist
+**/coverage
+.git
+.gitignore
+.vscode
+.idea
+*.log
+.env
+.env.*
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp

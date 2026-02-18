@@ -1,106 +1,47 @@
-FROM node:18-alpine AS base
+# Build from monorepo root:
+# docker build -f apps/admin-portal/Dockerfile -t admin-portal:local .
 
-# Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+ARG NODE_IMAGE=node:20.19.0-alpine@sha256:8bda036ddd59ea51a23bc1a1035d3b5c614e72c01366d989f4120e8adca196d4
+ARG TURBO_VERSION=2.7.6
+
+FROM ${NODE_IMAGE} AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
-
-# Rebuild the source code only when needed
-FROM base AS builder
-ENV NEXT_PRIVATE_STANDALONE true
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Create a pruned workspace for admin-portal using Turborepo's Docker flow.
+FROM base AS pruner
+ARG TURBO_VERSION
+RUN corepack enable && npm install -g turbo@${TURBO_VERSION}
 COPY . .
+RUN turbo prune admin-portal --docker
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
-# ARG NEXT_PUBLIC_API_CLAIM_BASE_URL
-# ENV NEXT_PUBLIC_API_CLAIM_BASE_URL=${NEXT_PUBLIC_API_CLAIM_BASE_URL}
+# Install dependencies from pruned manifests, then build from full pruned sources.
+FROM base AS deps
+RUN corepack enable
+COPY --from=pruner /app/out/json/ .
+RUN pnpm install --frozen-lockfile
+COPY --from=pruner /app/out/full/ .
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN pnpm --filter admin-portal build
 
-# ARG NEXT_PUBLIC_API_POLICY_BASE_URL
-# ENV NEXT_PUBLIC_API_POLICY_BASE_URL=${NEXT_PUBLIC_API_POLICY_BASE_URL}
-
-# ARG NEXT_PUBLIC_AUTH_SERVICE_URL
-# ENV NEXT_PUBLIC_AUTH_SERVICE_URL=${NEXT_PUBLIC_AUTH_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_AUTH_TOKEN
-# ENV NEXT_PUBLIC_AUTH_TOKEN=${NEXT_PUBLIC_AUTH_TOKEN}
-
-# ARG NEXT_PUBLIC_CHANNEL_SERVICE_URL
-# ENV NEXT_PUBLIC_CHANNEL_SERVICE_URL=${NEXT_PUBLIC_CHANNEL_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_COUNTRY_SERVICE_URL
-# ENV NEXT_PUBLIC_COUNTRY_SERVICE_URL=${NEXT_PUBLIC_COUNTRY_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_FINANCE_SERVICE_URL
-# ENV NEXT_PUBLIC_FINANCE_SERVICE_URL=${NEXT_PUBLIC_FINANCE_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_HELPER_SERVICE_URL
-# ENV NEXT_PUBLIC_HELPER_SERVICE_URL=${NEXT_PUBLIC_HELPER_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_PDF_SERVICE_URL
-# ENV NEXT_PUBLIC_PDF_SERVICE_URL=${NEXT_PUBLIC_PDF_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_PRODUCT_SERVICE_URL
-# ENV NEXT_PUBLIC_PRODUCT_SERVICE_URL=${NEXT_PUBLIC_PRODUCT_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_PROMOTION_SERVICE_URL
-# ENV NEXT_PUBLIC_PROMOTION_SERVICE_URL=${NEXT_PUBLIC_PROMOTION_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_SANCTION_SERVICE_URL
-# ENV NEXT_PUBLIC_SANCTION_SERVICE_URL=${NEXT_PUBLIC_SANCTION_SERVICE_URL}
-
-# ARG NEXT_PUBLIC_TRANSACTION_SERVICE_URL
-# ENV NEXT_PUBLIC_TRANSACTION_SERVICE_URL=${NEXT_PUBLIC_TRANSACTION_SERVICE_URL}
-
-
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
-# Production image, copy all the files and run next
-FROM base AS runner
+# Minimal runtime image running as non-root.
+FROM ${NODE_IMAGE} AS runner
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
-ENV NODE_ENV production
-
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
+COPY --from=deps --chown=nextjs:nodejs /app/apps/admin-portal/public ./apps/admin-portal/public
+COPY --from=deps --chown=nextjs:nodejs /app/apps/admin-portal/.next/standalone ./
+COPY --from=deps --chown=nextjs:nodejs /app/apps/admin-portal/.next/static ./apps/admin-portal/.next/static
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
+USER nextjs
 EXPOSE 3000
 
-ENV PORT=3000
-
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD ["node", "apps/admin-portal/server.js"]
