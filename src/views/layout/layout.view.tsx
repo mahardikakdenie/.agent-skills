@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu } from "react-feather";
 // TODO: change for customization in env
-import whitelableLogo from "/public/whitelable-logo.svg";
-import AppMenu from "@/constants/app-menu.const";
-import { useScreen } from "@/context/screen.context";
-import Modal from "@/components/modal";
 import Button from "@/components/button";
 import OptimizeImage from "@/components/image";
-import { useAuth } from "@/context/auth.context";
+import Input from "@/components/input";
+import { MicrosoftLoginButton } from "@/components/microsoft-login-button";
+import Modal from "@/components/modal";
+import ApiURL from "@/constants/api-url.const";
 import {
   backgroundImageApp,
   logo,
@@ -19,13 +18,15 @@ import {
   primary10,
   primaryRed,
 } from "@/constants/app-common.const";
-import Input from "@/components/input";
-import { authService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
+import AppMenu from "@/constants/app-menu.const";
+import { useAuth } from "@/context/auth.context";
+import { useScreen } from "@/context/screen.context";
 import { toastNotification } from "@/helpers/app.helper";
 import ChecklistIcon from "@/images/checklist.icon";
 import XIcon from "@/images/x.icon";
-import { MicrosoftLoginButton } from "@/components/microsoft-login-button";
+import { authService } from "@/services/api.service";
+import { isEmpty } from "lodash";
+import whitelableLogo from "/public/whitelable-logo.svg";
 
 export const LayoutView = ({
   children,
@@ -60,6 +61,8 @@ export const LayoutView = ({
     isForbidden,
     login,
     logout,
+    getLoginProviders,
+    loginProviders
   } = useAuth();
 
   useEffect(() => {
@@ -179,6 +182,11 @@ export const LayoutView = ({
     );
   };
 
+  useEffect(() => {
+    const hostname = window.location.host;
+    getLoginProviders(hostname);
+  }, [user])
+
   return (
     <div>
       {!isAuthenticated && !searchParams.get("session_code") && (
@@ -246,10 +254,22 @@ export const LayoutView = ({
             <Button additionalClassName="my-5" onClick={doLogin}>
               Login
             </Button>
-            <div className="w-full flex justify-center mt-2">
-               <div className="text-xs text-gray-500">OR</div>
-            </div>
-            <MicrosoftLoginButton />
+            {
+              isEmpty(loginProviders) ? null : (
+                loginProviders.map((provider, index) => (
+                  <div key={`provider-${index}`}>
+                    <div className="w-full flex justify-center mt-2">
+                      <div className="text-xs text-gray-500">OR</div>
+                    </div>
+                    <MicrosoftLoginButton
+                      clientId={provider.client_id || ""}
+                      tenantId={provider.tenant_id || ""}
+                      redirectUri={provider.redirect_url || ""}
+                    />
+                  </div>
+                ))
+              )
+            }
           </div>
         </Modal>
       )}

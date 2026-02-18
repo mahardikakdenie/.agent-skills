@@ -41,11 +41,20 @@ const generateCodeChallenge = async (codeVerifier: string): Promise<string> => {
     .replace(/=+$/, "");
 };
 
-export const MicrosoftLoginButton = () => {
+interface MicrosoftLoginButtonProps {
+  clientId: string;
+  tenantId: string;
+  redirectUri: string;
+}
+
+export const MicrosoftLoginButton = ({
+  clientId,
+  tenantId,
+  redirectUri,
+}: MicrosoftLoginButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
   
-  const clientId = msalConfig.auth.clientId;
-  const authority = msalConfig.auth.authority || "";
+  const authority = msalConfig.auth.authority(tenantId) || "";
   // Check if we have valid config. Note: msalConfig.auth.authority might be constructed with "undefined" string if env missing
   const isConfigValid = clientId && authority && !authority.endsWith("undefined");
 
@@ -56,14 +65,6 @@ export const MicrosoftLoginButton = () => {
   const handleLogin = async () => {
     setIsLoading(true);
     try {
-      const clientId = msalConfig.auth.clientId || "";
-      // Extract tenant ID from authority URL if needed, or use the one from config if we had it directly
-      // Based on msal.config.ts: authority: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_AZURE_AD_TENANT_ID}`
-      const authorityUrl = new URL(msalConfig.auth.authority || "https://login.microsoftonline.com/common");
-      const tenantId = authorityUrl.pathname.split('/')[1] || "common"; // Fallback to common if parse fails
-      
-      const redirectUri = msalConfig.auth.redirectUri || "";
-      
       // Generate PKCE values
       const codeVerifier = generateCodeVerifier();
       const codeChallenge = await generateCodeChallenge(codeVerifier);

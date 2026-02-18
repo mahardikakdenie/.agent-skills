@@ -11,6 +11,18 @@ interface LoginResponse {
   access_token: string;
 }
 
+interface LoginProvidersRequest {
+  originUrl: string
+}
+
+export interface LoginProvidersResponse {
+  client_id: string;
+  client_secret: string;
+  tenant_id: string;
+  origin_url: string;
+  redirect_url: string;
+}
+
 export class AuthService {
   private httpClient: IHttpClient;
 
@@ -43,6 +55,17 @@ export class AuthService {
       });
     } catch (error) {
       console.error('Entra Login failed:', error);
+      throw error;
+    }
+  }
+
+  async getProviders(payload: LoginProvidersRequest): Promise<{data: LoginProvidersResponse[]}> {
+    try {
+      const path = `/v1/providers?originUrl=${encodeURIComponent(payload.originUrl)}`;
+      
+      return this.httpClient.get<{data: LoginProvidersResponse[]}>(path);
+    } catch (error) {
+      console.error('Login failed:', error);
       throw error;
     }
   }
