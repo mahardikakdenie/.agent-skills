@@ -59,7 +59,7 @@ Produce a complete, evidence-based component audit for `apps/<APP_NAME>` that:
 
 1. Inventories every UI component in the app
 2. Classifies each component against `@repo/ui` capabilities
-3. Normalizes naming, variants, and props against enterprise standards (see [06-component-standards.md](./06-component-standards.md))
+3. Normalizes naming, variants, and props against shared standards (see [06-component-standards.md](./06-component-standards.md))
 4. Prepares `per-app-baseline-summary.md` for cross-app aggregation on `feat/ui`
 
 ## Required Discovery (full traversal, no shortcuts)

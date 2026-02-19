@@ -111,7 +111,7 @@ When deleting `apps/<APP_NAME>/src/components/ui/<component>.tsx`:
 
 ## Phase 4 — Dependency Audit & Cleanup
 
-> **The enterprise-level principle:**
+> **The dependency hygiene principle:**
 > Every entry in `package.json` must have at least one **direct `import`** in that package's
 > own source code. A dep belongs at the level that **uses it directly** — not at the level that
 > happens to also depend on it. The question is never "does another package also have this?" —

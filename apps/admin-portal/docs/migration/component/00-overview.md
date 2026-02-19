@@ -141,7 +141,7 @@ For detailed routines, conflict resolution strategy, batch sequences, and copy-p
 | `<APP_NAME>`      | `admin-portal`        | App slug (matches `apps/` directory name)   |
 | `<APP_PATH>`      | `apps/admin-portal`   | Monorepo-relative path to the app root      |
 | `<LEGACY_REMOTE>` | `legacy-admin-portal` | Git remote name pointing to the legacy repo |
-| `<LEGACY_BRANCH>` | `main`                | Default branch of the legacy repo           |
+| `<LEGACY_BRANCH>` | `stage`                | Default branch of the legacy repo           |
 
 ---
 

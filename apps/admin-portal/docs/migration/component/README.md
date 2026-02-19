@@ -2,7 +2,7 @@
 
 > **Coverage:** All apps in `apps/`, shared library `packages/ui`, internal support in `packages/*`
 > **Branch model:** `migrate-app/<app>` per app · `feat/ui` for shared library work
-> **Standard:** Enterprise-level spec-driven development (SDD)
+> **Standard:** Spec-driven development (SDD)
 
 ---
 
@@ -92,40 +92,40 @@ After all apps complete migration and Phase 08 runs on `feat/ui`, the following 
 
 ---
 
-## Workspace Apps (from `git worktree list`)
+## Workspace Apps & Migration Branches
 
-| Worktree                                | Branch                                  | Type       |
-| --------------------------------------- | --------------------------------------- | ---------- |
-| `migrate-app_admin-portal`              | `migrate-app/admin-portal`              | Admin      |
-| `migrate-app_admin-portal-boost`        | `migrate-app/admin-portal-boost`        | Admin      |
-| `migrate-app_affiliate-admin`           | `migrate-app/affiliate-admin`           | Affiliate  |
-| `migrate-app_affiliate-portal`          | `migrate-app/affiliate-portal`          | Affiliate  |
-| `migrate-app_agent-admin`               | `migrate-app/agent-admin`               | Agent      |
-| `migrate-app_agent-microsite`           | `migrate-app/agent-microsite`           | Microsite  |
-| `migrate-app_agent-portal`              | `migrate-app/agent-portal`              | Agent      |
-| `migrate-app_agent-web-portal`          | `migrate-app/agent-web-portal`          | Agent      |
-| `migrate-app_boost-product-fe`          | `migrate-app/boost-product-fe`          | Product    |
-| `migrate-app_claim-portal`              | `migrate-app/claim-portal`              | Ops        |
-| `migrate-app_customer-portal`           | `migrate-app/customer-portal`           | Customer   |
-| `migrate-app_ecommerce-gelm`            | `migrate-app/ecommerce-gelm`            | E-commerce |
-| `migrate-app_ecommerce-teman`           | `migrate-app/ecommerce-teman`           | E-commerce |
-| `migrate-app_gegm-friendcover`          | `migrate-app/gegm-friendcover`          | Partner    |
-| `migrate-app_gegm-friendcover-admin`    | `migrate-app/gegm-friendcover-admin`    | Admin      |
-| `migrate-app_gelm-xproject-microsite`   | `migrate-app/gelm-xproject-microsite`   | Microsite  |
-| `migrate-app_gen-ai-portal`             | `migrate-app/gen-ai-portal`             | AI         |
-| `migrate-app_getrev-da-microsite`       | `migrate-app/getrev-da-microsite`       | Microsite  |
-| `migrate-app_grab-landing-page`         | `migrate-app/grab-landing-page`         | Landing    |
-| `migrate-app_haruuz-microsite`          | `migrate-app/haruuz-microsite`          | Microsite  |
-| `migrate-app_mykawan-website`           | `migrate-app/mykawan-website`           | Website    |
-| `migrate-app_partner-portal`            | `migrate-app/partner-portal`            | Partner    |
-| `migrate-app_sso-portal`                | `migrate-app/sso-portal`                | Auth       |
-| `migrate-app_teman-affiliate-admin`     | `migrate-app/teman-affiliate-admin`     | Affiliate  |
-| `migrate-app_teman-affiliate-microsite` | `migrate-app/teman-affiliate-microsite` | Microsite  |
-| `migrate-app_teman-affiliate-portal`    | `migrate-app/teman-affiliate-portal`    | Affiliate  |
-| `migrate-app_ticket-portal`             | `migrate-app/ticket-portal`             | Ops        |
-| `migrate-app_base`                      | `migrate-app/base`                      | Base       |
+| App                      | Branch                                  | Type       |
+| ------------------------ | --------------------------------------- | ---------- |
+| `admin-portal`           | `migrate-app/admin-portal`              | Admin      |
+| `admin-portal-boost`     | `migrate-app/admin-portal-boost`        | Admin      |
+| `affiliate-admin`        | `migrate-app/affiliate-admin`           | Affiliate  |
+| `affiliate-portal`       | `migrate-app/affiliate-portal`          | Affiliate  |
+| `agent-admin`            | `migrate-app/agent-admin`               | Agent      |
+| `agent-microsite`        | `migrate-app/agent-microsite`           | Microsite  |
+| `agent-portal`           | `migrate-app/agent-portal`              | Agent      |
+| `agent-web-portal`       | `migrate-app/agent-web-portal`          | Agent      |
+| `boost-product-fe`       | `migrate-app/boost-product-fe`          | Product    |
+| `claim-portal`           | `migrate-app/claim-portal`              | Ops        |
+| `customer-portal`        | `migrate-app/customer-portal`           | Customer   |
+| `ecommerce-gelm`         | `migrate-app/ecommerce-gelm`            | E-commerce |
+| `ecommerce-teman`        | `migrate-app/ecommerce-teman`           | E-commerce |
+| `gegm-friendcover`       | `migrate-app/gegm-friendcover`          | Partner    |
+| `gegm-friendcover-admin` | `migrate-app/gegm-friendcover-admin`    | Admin      |
+| `gelm-xproject-microsite`| `migrate-app/gelm-xproject-microsite`   | Microsite  |
+| `gen-ai-portal`          | `migrate-app/gen-ai-portal`             | AI         |
+| `getrev-da-microsite`    | `migrate-app/getrev-da-microsite`       | Microsite  |
+| `grab-landing-page`      | `migrate-app/grab-landing-page`         | Landing    |
+| `haruuz-microsite`       | `migrate-app/haruuz-microsite`          | Microsite  |
+| `mykawan-website`        | `migrate-app/mykawan-website`           | Website    |
+| `partner-portal`         | `migrate-app/partner-portal`            | Partner    |
+| `sso-portal`             | `migrate-app/sso-portal`                | Auth       |
+| `teman-affiliate-admin`  | `migrate-app/teman-affiliate-admin`     | Affiliate  |
+| `teman-affiliate-microsite` | `migrate-app/teman-affiliate-microsite` | Microsite  |
+| `teman-affiliate-portal` | `migrate-app/teman-affiliate-portal`    | Affiliate  |
+| `ticket-portal`          | `migrate-app/ticket-portal`             | Ops        |
+| `base`                   | `migrate-app/base`                      | Base       |
 
-> **Note:** `feat/ui` is the dedicated branch for `packages/ui` development. No app migration work happens there.
+> **Note:** `feat/ui` is the dedicated branch for `packages/ui` development. No app migration work happens there. Local workspace folder naming/setup may vary per developer.
 
 ---
 
