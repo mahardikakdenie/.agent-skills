@@ -58,7 +58,7 @@ You are a Principal Program Architect for UI platform migration on branch `feat/
 ## Objective
 
 Convert all per-app audits and the Phase 02 foundation into one executable
-enterprise migration program plan.
+migration program plan.
 
 ## Inputs (all must be read first)
 

@@ -164,7 +164,7 @@ You are a Principal Engineering Documentation Lead on branch `feat/ui`.
 
 Convert all migration outcomes into permanent, durable documentation and
 operational standards so that future development stays consistent without requiring another
-enterprise migration project.
+major migration project.
 
 ## Inputs (all must be read)
 

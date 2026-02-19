@@ -1,4 +1,4 @@
-# Enterprise Service Layer Refactoring - admin-portal
+# Service Layer Refactoring - admin-portal
 
 ## Related Documents
 

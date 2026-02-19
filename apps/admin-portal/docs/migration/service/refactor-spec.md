@@ -1,12 +1,12 @@
 # Service Refactor Specification
 
-> **Purpose:** This document is the specification for refactoring the service layer to an enterprise-level, colocated architecture with TanStack Query integration. It is the single source of truth for scope, requirements, and process.
+> **Purpose:** This document is the specification for refactoring the service layer to a colocated architecture with TanStack Query integration. It is the single source of truth for scope, requirements, and process.
 
 ---
 
 ## Specification Overview
 
-This specification defines how to refactor the service layer in this project to implement an **enterprise-level, colocated architecture** with the following goals:
+This specification defines how to refactor the service layer in this project to implement a **colocated architecture** with the following goals:
 
 Lifecycle diagram: `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` (Mermaid).
 
@@ -340,7 +340,7 @@ import { claimsService } from '@/services/claims/api/claims.service';
 
 ### Phase 2: Create Refactoring Plan (Per Service)
 
-**Task:** Generate the enterprise refactoring blueprint **with per-service separation**.
+**Task:** Generate the refactoring blueprint **with per-service separation**.
 
 **Instructions:**
 
@@ -367,7 +367,7 @@ import { claimsService } from '@/services/claims/api/claims.service';
 **Template Structure:**
 
 ```markdown
-# Enterprise Service Layer Refactoring
+# Service Layer Refactoring
 
 ## Why Colocation?
 
@@ -684,7 +684,7 @@ Rule: If equivalent service hooks do not exist yet, temporary manual `useQuery`/
 **To start refactoring:**
 
 ```
-Please help me refactor the service layer in this project using the enterprise colocated architecture pattern with TanStack Query integration.
+Please help me refactor the service layer in this project using the colocated architecture pattern with TanStack Query integration.
 
 Follow these steps:
 1. First, audit all existing services and create <APP_PATH>/docs/migration/service/audit.md

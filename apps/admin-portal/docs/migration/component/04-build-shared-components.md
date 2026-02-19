@@ -256,7 +256,7 @@ You are a Principal Frontend Engineer on branch `feat/ui`.
 
 ## Objective
 
-Build a new enterprise-grade component `<COMPONENT_NAME>` for packages/ui.
+Build a new shared component `<COMPONENT_NAME>` for packages/ui.
 
 ## Inputs (read first)
 

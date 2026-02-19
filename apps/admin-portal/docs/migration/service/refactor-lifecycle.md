@@ -1,6 +1,6 @@
 # Service Refactor Lifecycle
 
-> **Purpose:** Enterprise-level visual and procedural guide for the complete service layer refactoring lifecycle. This document provides comprehensive phase details, decision trees, verification requirements, and integration workflows for multi-app monorepo migration.
+> **Purpose:** Visual and procedural guide for the complete service layer refactoring lifecycle. This document provides comprehensive phase details, decision trees, verification requirements, and integration workflows for multi-app monorepo migration.
 
 ---
 
@@ -242,7 +242,7 @@ flowchart TB
 
 ### Phase 2: Create Refactoring Plan
 
-**Purpose:** Generate enterprise refactoring blueprint with per-service implementation details.
+**Purpose:** Generate refactoring blueprint with per-service implementation details.
 
 **Scope:** Documentation only, no code changes.
 
