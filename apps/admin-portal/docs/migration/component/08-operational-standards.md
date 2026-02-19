@@ -229,7 +229,7 @@ Formal operational standards:
 
 - How to propose extending an existing component (new variant/prop)
 - Required: spec amendment PR
-- Required: no breaking changes without major version bump in CHANGELOG.md
+- Required: no breaking changes without major version bump in SHARED_UI_CHANGELOG.md
 
 ### Breaking Change Protocol (The "Deprecate-Warn-Remove" Cycle)
 

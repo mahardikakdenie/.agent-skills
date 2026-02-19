@@ -86,7 +86,7 @@ After all apps complete migration and Phase 08 runs on `feat/ui`, the following 
 | `SHARED_UI_CONTRIBUTING.md`          | Intake process, PR checklist, review gates                                    |
 | `SHARED_UI_OPERATIONAL_STANDARDS.md` | Versioning, ownership, deprecation policy, adapter policy                     |
 | `SHARED_UI_MIGRATION_PLAYBOOK.md`    | Step-by-step guide to onboard a new app to `@repo/ui`                         |
-| `CHANGELOG.md`                       | Component addition/change history (seeded from `20-foundation-change-log.md`) |
+| `SHARED_UI_CHANGELOG.md`             | Component addition/change history (seeded from `20-foundation-change-log.md`) |
 
 > These docs live only in `packages/ui/docs/` and are produced **once** by [Phase 08](./08-operational-standards.md). They are not duplicated in app directories.
 
