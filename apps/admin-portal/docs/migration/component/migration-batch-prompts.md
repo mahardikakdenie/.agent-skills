@@ -119,14 +119,21 @@ Audit ALL UI components in `<APP_PATH>/src/` and classify every one.
 
 ## Execution Steps
 
-1. Scan `<APP_PATH>/src/components/` for all component files
-2. For each component:
+1. Scan `<APP_PATH>/src/` for all UI component files (not only `src/components/`).
+2. Include UI component candidates from common app-local locations, including:
+   - `<APP_PATH>/src/components/**`
+   - `<APP_PATH>/src/app/**` (route-level UI components)
+   - `<APP_PATH>/src/views/**`
+   - `<APP_PATH>/src/features/**` (if present)
+   - Any other local `*.tsx`/`*.jsx` files that render reusable UI
+3. Exclude non-component files from the audit set (utilities, services, hooks-only files, constants, tests, types, API/route handlers).
+4. For each component:
    a. Read the component file
    b. Check if it exists in `packages/ui/src/index.ts`
    c. Compare prop API if it exists
    d. Assign one classification using the rules above
    e. Note parity risk (LOW / MEDIUM / HIGH) based on behavioral complexity
-3. Build parity checklist for all shared-candidate components
+5. Build parity checklist for all shared-candidate components
 
 ## Required Outputs (create all 4)
 
