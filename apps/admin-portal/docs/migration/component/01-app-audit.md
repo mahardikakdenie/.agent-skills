@@ -74,6 +74,7 @@ Produce a complete, evidence-based component audit for `apps/<APP_NAME>` that:
 - All import statements across `apps/<APP_NAME>/src/**` referencing local UI
 - `apps/<APP_NAME>/components.json` (if exists — shadcn config)
 - `apps/<APP_NAME>/package.json` — UI dependencies in use
+- **Bare native HTML elements** — scan for JSX files that return bare `div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, `h1`–`h6`, `strong`, `em` without routing them through a `@repo/ui` component. These are candidates for the Box pass (Phase 05).
 
 ## Component Classification Model (assign exactly ONE per component need)
 
@@ -108,6 +109,7 @@ For each component, document:
 - **Used in:** [list of pages/views/hooks that use it]
 - **Normalization delta:** [prop naming issues, variant naming, token gaps]
 - **Behavior parity risks:** [what must not change]
+- **Native element count:** [number of bare div/span/etc directly in this component's JSX — "0" if none]
 - **Migration notes:** [what exactly needs to happen]
 
 ```

@@ -14,7 +14,7 @@ Establish the single source of truth for component naming, prop conventions, var
 ---
 
 > **Section Navigation:**
-> [§1 Taxonomy](#1-component-taxonomy) · [§2 Prop Naming](#2-prop-naming-conventions) · [§3 TypeScript](#3-typescript-conventions) · [§4 Variant System](#4-variant-system-cva) · [§5 Theming & Tokens](#5-theming--token-contract) · [§6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) · [§7 Accessibility](#7-accessibility-baseline) · [§8 Parity Contract](#8-parity-contract--migration-guardrails)
+> [§1 Taxonomy](#1-component-taxonomy) · [§1.4 Box](#14-box--the-native-element-eliminator) · [§2 Prop Naming](#2-prop-naming-conventions) · [§3 TypeScript](#3-typescript-conventions) · [§4 Variant System](#4-variant-system-cva) · [§5 Theming & Tokens](#5-theming--token-contract) · [§6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) · [§7 Accessibility](#7-accessibility-baseline) · [§8 Parity Contract](#8-parity-contract--migration-guardrails)
 >
 > When referencing a section from another doc, use the anchor format: `06-component-standards.md#6-shared-vs-local-boundary-framework`
 
@@ -30,6 +30,7 @@ Atomic, single-element components. Wrap a single Radix UI primitive or HTML elem
 
 | Component    | @repo/ui export | Radix Primitive               |
 | ------------ | --------------- | ----------------------------- |
+| `Box`        | ✅ `Box`        | `@radix-ui/react-slot`        |
 | `Button`     | ✅ `Button`     | `@radix-ui/react-slot`        |
 | `Input`      | ✅ `Input`      | `<input>`                     |
 | `Textarea`   | ✅ `Textarea`   | `<textarea>`                  |
@@ -43,6 +44,8 @@ Atomic, single-element components. Wrap a single Radix UI primitive or HTML elem
 | `Avatar`     | ✅ `Avatar`     | `@radix-ui/react-avatar`      |
 | `Spinner`    | ❌ missing      | —                             |
 | `Table`      | ❌ missing      | —                             |
+
+> **`Box` is the foundational Tier 0 primitive.** All Tier 1 components that wrap a single native HTML element build on `Box` (or use the same forwarding pattern). See [§1.4 Box — The Native Element Eliminator](#14-box--the-native-element-eliminator) for migration guidance.
 
 ### Tier 2 — Composite Components
 
@@ -61,7 +64,6 @@ Combine multiple primitives into a cohesive UI pattern.
 | `Tooltip`               | ✅ `Tooltip`    | `@radix-ui/react-tooltip`             |
 | `Pagination`            | ✅ `Pagination` | Tier 1                                |
 | `Calendar`              | ✅ `Calendar`   | `react-day-picker`                    |
-| `Box`                   | ✅ `Box`        | —                                     |
 | `DataTable`             | ❌ missing      | `Table` + `Pagination`                |
 | `DatePicker`            | ❌ missing      | `Calendar` + `Popover`                |
 | `DateRangePicker`       | ❌ missing      | `Calendar` + `Popover`                |
@@ -84,6 +86,60 @@ Combine multiple primitives into a cohesive UI pattern.
 | Full-page layout (sidebar, top nav)           | App routing            |
 
 ---
+
+<a id="14-box--the-native-element-eliminator"></a>
+
+### 1.4 Box — The Native Element Eliminator
+
+> [!IMPORTANT]
+> One of the explicit goals of this migration is to **eliminate all bare native HTML elements** (`div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, etc.) from app component code. `Box` is the vehicle for this.
+
+`Box` is a **polymorphic, type-safe layout primitive** exported from `@repo/ui`. It renders any HTML element via the `as` prop and forwards all correct HTML attributes and `ref` types to that element.
+
+```tsx
+// Before — bare native elements
+<div className="flex items-center gap-4">
+  <span className="text-sm">Hello</span>
+</div>
+
+// After — all elements flow through the design system
+import { Box } from '@repo/ui';
+
+<Box className="flex items-center gap-4">
+  <Box as="span" className="text-sm">Hello</Box>
+</Box>
+```
+
+#### When to use `Box`
+
+| Scenario                              | Pattern                                                   |
+| ------------------------------------- | --------------------------------------------------------- |
+| Replace a plain `div`                 | `<Box className="...">` (default `as="div"`)              |
+| Replace any semantic element          | `<Box as="section">`, `<Box as="ul">`, `<Box as="p">`     |
+| Replace an inline element             | `<Box as="span">`, `<Box as="strong">`                    |
+| Wrap with no extra DOM node (asChild) | `<Box asChild className="..."><button>...</button></Box>` |
+
+#### Type safety guarantee
+
+`Box` is fully generic — when you set `as="a"`, TypeScript only allows valid `<a>` attributes (`href`, `target`, etc.). Invalid attributes produce compile-time errors:
+
+```tsx
+// ✅ Valid — href is a valid <a> attribute
+<Box as="a" href="/home">Home</Box>
+
+// ❌ TypeScript error — href is not valid on <div>
+<Box href="/home">Home</Box>
+```
+
+#### Migration rule for Phase 05
+
+When executing app migration (Phase 05), **every component returned from audit that contains bare native HTML elements qualifies for a Box pass** as part of its migration batch — no additional batch needed, this is part of the normal import swap. See [05-app-migration.md](./05-app-migration.md) §Native Element Replacement for the exact guardrails.
+
+#### Do NOT use Box for
+
+- Components that already map to a semantic `@repo/ui` primitive (`Button`, `Input`, `Label`, etc.)
+- Interactive elements that need Radix-managed ARIA (use the appropriate Radix-backed component)
+- Wrapping entire page layouts (Box is per-element, not a layout system)
 
 <a id="2-prop-naming-conventions"></a>
 

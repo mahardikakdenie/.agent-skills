@@ -332,6 +332,91 @@ Navigate through every route listed in `verification-gate.md`:
 
 ---
 
+## §Native Element Replacement (Box Pass)
+
+<a id="native-element-replacement"></a>
+
+> [!IMPORTANT]
+> **All bare native HTML elements in migrated component files must be replaced with `Box` from `@repo/ui`.** This is not optional — it is part of the migration's explicit goal to route all layout primitives through the design system.
+
+### What counts as a "bare native element"
+
+Any `div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, `h1`–`h6`, `strong`, `em`, `code`, `pre`, `hr`, `figure`, `figcaption` used **directly** in JSX (not via a `@repo/ui` component) is a bare native element.
+
+Exceptions — do NOT replace with Box:
+
+- `<html>`, `<body>`, `<head>` (layout files)
+- Radix portal targets (internal plumbing)
+- Next.js App Router boundary helpers (`<Suspense>`, `<ErrorBoundary>` wrappers in layout files)
+- Elements inside `packages/ui` components (those are already in the system)
+
+### When to do the Box pass
+
+**Do it inline during the component's normal batch migration** — not as a separate batch. When you update the import and verify the component, also swap any bare native elements to `Box` in the same changeset. This keeps the scope contained and parity verification unified.
+
+### How to do the Box pass
+
+```tsx
+// Before — bare native elements (typical pattern in legacy components)
+import React from 'react';
+
+// After — Box pass complete
+import { Box } from '@repo/ui';
+
+export function PolicyCard({ title, status, children }) {
+  return (
+    <div className="rounded-md border border-border p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{title}</span>
+        <span className="text-xs text-muted-foreground">{status}</span>
+      </div>
+      <div className="mt-2">{children}</div>
+    </div>
+  );
+}
+
+export function PolicyCard({ title, status, children }) {
+  return (
+    <Box className="rounded-md border border-border p-4">
+      <Box className="flex items-center justify-between">
+        <Box as="span" className="text-sm font-medium">
+          {title}
+        </Box>
+        <Box as="span" className="text-xs text-muted-foreground">
+          {status}
+        </Box>
+      </Box>
+      <Box className="mt-2">{children}</Box>
+    </Box>
+  );
+}
+```
+
+### Guardrails for the Box pass
+
+```
+ALLOWED:
+- Replacing bare native elements with <Box as="[same-element]"> or <Box> for divs
+- Adding the @repo/ui Box import
+
+FORBIDDEN — same parity contract as all other migration work:
+- Changing className values
+- Changing the element's semantic role (e.g., div → span)
+- Merging or splitting adjacent elements
+- Changing children order or nesting structure
+- Removing or adding any element not directly being replaced
+```
+
+### Logging the Box pass
+
+In `_migration-log.md`, add a line per component:
+
+```
+- Box pass: replaced N bare native elements in ComponentName.tsx
+```
+
+---
+
 ## Next.js App Router Integration Rules
 
 > [!IMPORTANT]
@@ -401,11 +486,13 @@ import { DataTable } from '@repo/ui';
 // @repo/ui Skeleton as fallback — correct pattern
 export default function DashboardPage() {
   return (
-    <div>
+    <Box>
+      {' '}
+      {/* Box replaces bare <div> */}
       <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
         <PolicyTable /> {/* async server component */}
       </Suspense>
-    </div>
+    </Box>
   );
 }
 ```

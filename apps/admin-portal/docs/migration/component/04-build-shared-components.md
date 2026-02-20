@@ -146,6 +146,47 @@ export type { DataTableProps, DataTableColumnDef } from './DataTable.types';
 
 ---
 
+### Two-Level Export Architecture
+
+Every component participates in a **two-level re-export chain**. Understanding this prevents confusion when both files look like they're exporting the same things.
+
+```
+Consumer:  import { Button, ButtonProps } from '@repo/ui'
+                              ↓
+packages/ui/src/index.ts     ← Level 2: package public API barrel
+  export * from './Button'
+                              ↓
+packages/ui/src/Button/index.ts  ← Level 1: component module entry point
+  export { Button } from './Button'
+  export type { ButtonProps } from './Button.types'
+```
+
+| Level | File                         | Role                                                                   | Pattern                                         |
+| ----- | ---------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------- |
+| **1** | `src/ComponentName/index.ts` | Component module boundary — resolves all internal files into one entry | Named `export { ... }` + `export type { ... }`  |
+| **2** | `src/index.ts`               | Package public API — one file that is the entire `@repo/ui` surface    | `export * from './ComponentName'` per component |
+
+**Why not `export * from './ComponentName'` everywhere?**
+
+Level 1 (`ComponentName/index.ts`) uses **explicit named exports** (not `export *`) to:
+
+- Separate value exports from type exports (required for `isolatedModules: true`)
+- Keep internal implementation files private (e.g., helper utils not in the public API)
+
+Level 2 (`src/index.ts`) uses **`export *`** because Level 1 has already done the filtering — by the time it reaches `src/index.ts`, everything exported from the folder is intentionally public.
+
+**Adding a new component to the barrel (mandatory step per SDD lifecycle):**
+
+```ts
+// packages/ui/src/index.ts — append one line per new component
+export * from './ComponentName'; // ← that's it; Level 1 handles the rest
+```
+
+> [!IMPORTANT]
+> Never manually redeclare the named export list in `src/index.ts`. If you find yourself writing `export { Foo, Bar } from './ComponentName'` in the barrel, that is a sign Level 1's `ComponentName/index.ts` is incomplete — fix it there instead.
+
+---
+
 ## Deliverables per Phase 04 Run
 
 The required files depend on the component tier:
