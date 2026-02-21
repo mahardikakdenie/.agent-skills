@@ -5,7 +5,7 @@
 > **Run count:** Once per app — after Batch 5 stabilization
 > **Prerequisite:** Phase 05 Batch 5 (Stabilization) complete
 > **Prev:** [05-app-migration.md](./05-app-migration.md) · **Next:** [08-operational-standards.md](./08-operational-standards.md)
-> **AI execution:** Use **Batch 10** in [`migration-batch-prompts.md`](./migration-batch-prompts.md) to run this phase with AI assistance
+> **AI execution:** Use **Batch 10** and **Batch 10.5** in [`migration-batch-prompts.md`](./migration-batch-prompts.md) to run this phase with AI assistance
 
 ---
 
@@ -17,7 +17,9 @@ After the app is fully migrated and stabilized (Batch 5), perform final cleanup 
 2. Eliminate dead adapters and stale barrel exports
 3. **Deduplicate `package.json` dependencies** — remove packages from `apps/<APP>` that are now
    fully owned as transitive dependencies through `@repo/ui`, eliminating redundancy and version drift
-4. Verify a clean build before merging to `migrate-app/base`
+4. **Verify dependency version alignment** — confirm React, TypeScript, and `eslint-config-next`
+   are at the correct versions per the upgrade matrix in [09-dependency-upgrades.md](./09-dependency-upgrades.md)
+5. Verify a clean build before merging to `migrate-app/base`
 
 > **Scope:** This phase runs **per app** on `migrate-app/<app>`. Cross-app synthesis outputs
 > (`30-cleanup-report.md`, `31-deprecation-map.md`) are produced only after ALL apps complete Phase 07.
@@ -345,6 +347,17 @@ A `packages/ui` component with zero usages across ALL currently migrated apps is
 - No new console/runtime errors
 - `jq '.dependencies | keys[]' apps/<APP>/package.json` — confirm removed deps are gone
 - `pnpm list --filter=<app-name> <removed-dep-name>` — confirm dep still resolves transitively
+- Dependency version alignment check:
+  ```bash
+  # Confirm React 19 is resolved
+  node -e "console.log(require('./apps/<APP_NAME>/node_modules/react/package.json').version)"
+  # Must output 19.x.x
+
+  # Confirm eslint-config-next matches next major
+  node -e "const p = require('./apps/<APP_NAME>/package.json'); console.log('next:', p.dependencies.next, 'eslint-config-next:', p.devDependencies['eslint-config-next'])"
+  # next major and eslint-config-next major must match
+  ```
+- Post-upgrade checklist in `09-dependency-upgrades.md` fully signed off
 
 ## Acceptance Criteria
 
@@ -365,5 +378,5 @@ A `packages/ui` component with zero usages across ALL currently migrated apps is
 
 ---
 
-_Related: [05-app-migration.md](./05-app-migration.md) · [08-operational-standards.md](./08-operational-standards.md)_
+_Related: [05-app-migration.md](./05-app-migration.md) · [08-operational-standards.md](./08-operational-standards.md) · [09-dependency-upgrades.md](./09-dependency-upgrades.md)_
 ```
