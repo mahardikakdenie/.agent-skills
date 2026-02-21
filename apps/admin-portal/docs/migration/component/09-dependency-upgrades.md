@@ -40,15 +40,12 @@ align to these — they are not optional per-app decisions.
 | `react-dom` | `^19` | must match `react` |
 | `@types/react` | `^19` | must match runtime |
 | `@types/react-dom` | `^19` | must match runtime |
+| `next` | `^16` | Monorepo platform standard — upgrade from 15.x |
 | `tailwindcss` | `^4` | packages/ui uses Tailwind v4 |
 | `@tailwindcss/postcss` | `^4` | PostCSS plugin for Tailwind v4 (add if not present) |
 | `typescript` | `5.9.2` (pin) | Matches root workspace + packages/ui |
-| `eslint-config-next` | Must match installed `next` major | Run `cat package.json \| jq '.devDependencies."eslint-config-next"'` |
+| `eslint-config-next` | `16` (match `next` major) | Must be upgraded alongside `next` |
 | `@types/node` | `^22` (range, unpinned) | Avoid exact version pins |
-
-> [!NOTE]
-> `next` is likely already at the correct version since it ships separately from packages/ui.
-> Confirm with `cat package.json | jq '.dependencies.next'` and leave it unchanged if already current.
 
 ### A2. React 18 → 19 Upgrade
 
@@ -175,6 +172,90 @@ Common visual differences to watch for:
 
 ---
 
+### A5. Next.js 15.x → 16 Upgrade
+
+#### Why this is a Part A standard
+
+Next.js 16 ships React 19 as the default runtime. Running React 19 on Next.js 15.0–15.2
+is technically valid but you lose Server Action improvements, streaming stability, and
+the aligned `use()` hook behavior. The Next.js version is part of the platform baseline.
+
+#### Breaking changes: what must be fixed
+
+| Area | Change | Impact on runtime behavior |
+| ---- | ------ | -------------------------- |
+| `params` / `searchParams` | Now `Promise<...>` in page/layout components | Sync access throws — **must `await`** |
+| `cookies()` / `headers()` | Async in Server Components | Sync access breaks — **must `await`** |
+| Turbopack default | Default compiler in `next dev` | Build-only — zero runtime impact |
+| `fetch` caching | Already changed in Next.js 15 | No new change from 15.4.x → 16 |
+
+> [!IMPORTANT]
+> **The goal is zero runtime behavior change.** All `await` additions are mechanical —
+> they do not change what the code does, only how it accesses the value.
+> The codemod handles the majority automatically.
+
+#### Step 1 — Run the official upgrade codemod
+
+Next.js ships a codemod that mechanically applies the `async params` / `async cookies` fixes:
+
+```bash
+cd apps/<APP_NAME>
+npx @next/codemod@canary upgrade latest
+```
+
+This patches:
+- `page.tsx`, `layout.tsx`, `route.ts` — adds `await` to `params` / `searchParams`
+- Server Components that call `cookies()`, `headers()` — adds `await`
+- `generateMetadata` — adds `await params`
+
+Review the codemod's diff before committing — accept everything it proposes.
+
+#### Step 2 — Upgrade next and eslint-config-next
+
+```bash
+pnpm --filter <APP_PACKAGE> add next@^16
+pnpm --filter <APP_PACKAGE> add -D eslint-config-next@16
+```
+
+#### Step 3 — Verify with next-devtools MCP (if installed)
+
+After the codemod and upgrade, use the next-devtools MCP to confirm:
+
+```
+next-devtools MCP:
+  → inspect component tree on key routes from smoke-routes list
+  → confirm no "params is not a Promise" or "cookies() was called outside" warnings in server logs
+  → verify no "use server" marker appears inside @repo/ui subtree
+  → check Time to First Byte hasn't regressed (PPR-enabled apps)
+  → confirm RSC vs client component tree is intact
+```
+
+#### Step 4 — Check-types after codemod
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types
+```
+
+Common remaining type errors after the codemod:
+
+| Error | Cause | Fix |
+| ----- | ----- | --- |
+| `Type 'Promise<Params>' is not assignable to...` | Codemod missed a usage | Manually add `await` + wrap function in `async` |
+| `Property 'searchParams' does not exist` | Old prop access pattern | Use `const sp = await searchParams` at top of component |
+| `cookies() expects no arguments` | API change | Remove any arguments (use `.get(name)` after `await cookies()`) |
+
+#### Step 5 — Smoke check
+
+```bash
+pnpm --filter <APP_PACKAGE> dev
+```
+
+Navigate the routes in `verification-gate.md` smoke-routes list. Zero behavior changes
+are acceptable. If a route behaves differently, the codemod likely missed an async access —
+check the server logs for `Warning: cookies()` or `params` access errors.
+
+---
+
 ## Part B — App-Specific Cleanup (Per-App Audit)
 
 These steps are **not prescriptive** — every app has different legacy packages.
@@ -195,7 +276,7 @@ For each package, ask:
    → Remove if confirmed unused. If still used, flag as tech debt.
 
 2. **Is it made redundant by a platform upgrade?**
-   → e.g., a utility now built into React 19, Tailwind v4, or Next.js 15 core
+   → e.g., a utility now built into React 19, Tailwind v4, or Next.js 16 core
    → Remove the package and its plugin/import if applicable.
 
 3. **Does it have no maintained upgrade path?** (major dependency on React 16/17-era APIs, no types, etc.)

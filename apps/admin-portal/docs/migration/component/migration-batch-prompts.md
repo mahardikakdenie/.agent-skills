@@ -110,11 +110,12 @@ Read before starting:
 ## Objective
 
 Align `<APP_NAME>`'s dependency versions with the monorepo platform baseline before any component
-migration begins. `packages/ui` targets React 19, Tailwind CSS v4, and TypeScript 5.9.2 — this app
-must be fully aligned, including all config changes, before @repo/ui components are imported.
+migration begins. `packages/ui` targets React 19, Tailwind CSS v4, TypeScript 5.9.2, and
+Next.js 16 — this app must be fully aligned, including all config and async-API changes,
+before @repo/ui components are imported.
 
-If an upgrade requires a config file change, make that config change. A config update is part of
-the upgrade, not a reason to skip it. The goal is working output identical to pre-upgrade.
+If an upgrade requires a config file change or `await` addition, make it. A mechanical update
+is part of the upgrade, not a reason to skip it. The goal is working output identical to pre-upgrade.
 
 ---
 
@@ -203,7 +204,50 @@ If the app uses Tailwind plugins (e.g. `@tailwindcss/forms`, `@tailwindcss/typog
 whether they have a Tailwind v4-compatible release and upgrade accordingly.
 Any plugin whose utility is now built into Tailwind v4 core — remove its `plugins` entry.
 
-### A5. Install and check for peer dep warnings
+### A5. Upgrade Next.js → 16
+
+#### Step A5-1 — Run the official Next.js upgrade codemod
+
+This handles the majority of async API changes (params, searchParams, cookies, headers) automatically:
+
+```bash
+cd <APP_PATH>
+npx @next/codemod@canary upgrade latest
+```
+
+Review the codemod diff carefully — accept all proposed changes. It patches:
+- `page.tsx`, `layout.tsx`, `route.ts` — `await params` / `await searchParams`
+- Server Components calling `cookies()` or `headers()` — adds `await`
+- `generateMetadata` functions — adds `await params`
+
+#### Step A5-2 — Install Next.js 16 + eslint-config-next
+
+```bash
+pnpm --filter <APP_PACKAGE> add next@^16
+pnpm --filter <APP_PACKAGE> add -D eslint-config-next@16
+```
+
+#### Step A5-3 — Verify with next-devtools MCP
+
+Use next-devtools MCP after starting the dev server:
+- Inspect component tree on 3–5 key routes from `verification-gate.md` smoke list
+- Confirm no `"params is not a Promise"` or `"cookies() was called outside"` warnings in server logs
+- Verify no `"use server"` marker appears inside `@repo/ui` component subtree
+- Confirm RSC vs client component boundaries are intact after codemod
+- Check Time to First Byte has not regressed (PPR-enabled apps)
+
+#### Step A5-4 — Run check-types after codemod
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types
+```
+
+Common remaining issues after codemod:
+- `Type 'Promise<Params>' is not assignable` → manually add `await` + mark function `async`
+- `cookies() expects no arguments` → remove call args, use `.get(name)` after `await`
+- `searchParams` property access on plain object → use `const sp = await searchParams` at top
+
+### A6. Install and check for peer dep warnings
 ```bash
 pnpm install
 ```
@@ -224,7 +268,7 @@ cat <APP_PATH>/package.json | jq '{dependencies, devDependencies}'
 
 For each package, determine:
 1. **Is it deprecated?** (npm warns at install, package archived, no releases in 2+ years)
-2. **Is it made redundant by a platform upgrade?** (e.g., a utility now built into React 19, Tailwind v4, or Next.js 15)
+2. **Is it made redundant by a platform upgrade?** (e.g., a utility now built into React 19, Tailwind v4, or Next.js 16)
 3. **Does it have no maintained upgrade path?** (deep dependency on React 16/17-era APIs)
 4. **Is it superseded by something already in the deps?** (old + new version of the same thing)
 
@@ -284,6 +328,12 @@ rg 'from "react-dom/test-utils"' <APP_PATH>/src <APP_PATH>/app
 
 # Confirm Tailwind v3 directives are gone
 rg "@tailwind base\|@tailwind components\|@tailwind utilities" <APP_PATH>
+
+# Next.js 16 — confirm no remaining sync access to async APIs
+# (codemod output should have fixed these — zero hits expected)
+rg "const params = " <APP_PATH>/app --include="*.tsx" --include="*.ts"
+rg "\.cookies\(\)\." <APP_PATH>/app --include="*.tsx" --include="*.ts"
+# If any hits remain, those files still access cookies()/params synchronously — add await
 ```
 
 ## Common Issues and Fixes
@@ -296,14 +346,19 @@ rg "@tailwind base\|@tailwind components\|@tailwind utilities" <APP_PATH>
 | ESLint rule errors after `eslint-config-next` bump | Check `.eslintrc` for renamed rule keys |
 | CSS not loading | `postcss.config.js` still uses old tailwindcss plugin — switch to `@tailwindcss/postcss` |
 | Theme tokens missing | Add `@config "../tailwind.config.ts"` to `globals.css` |
+| `Type 'Promise<Params>' is not assignable to...` | Codemod missed a params access — add `await` manually, mark fn `async` |
+| Route behaves differently after codemod | Check server logs for `cookies()` or `params` sync-access warning — add `await` where flagged |
+| ESLint errors on `next/config` imports | Removed in Next.js 16 — replace with `process.env` or Next.js runtime config |
 
 ## Guardrails
 
 ALLOWED:
-- Upgrading packages per Part A
+- Upgrading packages per Part A (React 19, Next.js 16, Tailwind v4, TypeScript 5.9.2)
+- Running `npx @next/codemod@canary upgrade latest` and accepting all its proposed changes
+- Adding `await` to `params`, `searchParams`, `cookies()`, `headers()` calls (codemod output)
 - Removing confirmed-dead packages found in Part B audit
 - Updating `postcss.config.js`, `globals.css`, `tailwind.config.ts` per Part A steps
-- Fixing type errors introduced directly by React 19 upgrade
+- Fixing type errors introduced directly by React 19 / Next.js 16 upgrade
 
 FORBIDDEN:
 - Refactoring component logic (even if it would look cleaner in React 19)
@@ -323,7 +378,7 @@ Key sections to fill:
 - **App-Specific Deferred Items** — every kept-but-problematic package with reason + plan
 - **Verification Gate** — results of all four commands
 
-> Skills (if installed): `$next-upgrade` (React + Next.js version alignment steps); `$systematic-debugging` (if check-types fails — trace before fixing); `$monorepo-workspace` (confirm --filter selector, script names); `$next-best-practices` (validate RSC/client boundaries after React 19 upgrade)
+> Skills (if installed): `$next-upgrade` (React + Next.js version alignment steps); `$systematic-debugging` (if check-types fails — trace before fixing); `$monorepo-workspace` (confirm --filter selector, script names); `$next-best-practices` (validate RSC/client boundaries after React 19 + Next.js 16 upgrade); `next-devtools MCP` (component tree inspection, server log analysis, RSC boundary verification — use after A5-3 dev server smoke check)
 
 Do NOT start Batch 1 (Component Audit) until this gate passes.
 ````
