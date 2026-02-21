@@ -31,6 +31,7 @@
 | 06  | [Component Standards & Conventions](./06-component-standards.md) | Standard   | All (reference)     | always-on     |
 | 07  | [Cleanup & Deprecation](./07-cleanup.md)                         | Cleanup    | `migrate-app/<app>` | per app       |
 | 08  | [Operational Standards](./08-operational-standards.md)           | Standards  | `feat/ui`           | once          |
+| 09  | [Dependency Version Upgrades](./09-dependency-upgrades.md)       | Upgrade    | `migrate-app/<app>` | per app       |
 
 **Support Documents (always-on, not phase-gated):**
 

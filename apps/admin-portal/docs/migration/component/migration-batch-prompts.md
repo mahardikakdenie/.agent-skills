@@ -92,22 +92,250 @@ Do NOT create any migration output files yet.
 
 ---
 
+## Batch 0.5 — Dependency Version Upgrade (Pre-Migration)
+
+> **Branch:** `migrate-app/<APP_NAME>`
+> **Run:** Once per app — immediately after Batch 0 (Verification Gate Setup)
+> **Blocks:** All subsequent batches — do NOT start Batch 1 until this gate passes
+> **Spec doc:** `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md`
+
+````
+You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
+
+Read before starting:
+- `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md` (full spec — Part A for platform standards, Part B for app-specific audit)
+- `<APP_PATH>/docs/migration/verification-gate.md`
+- `<APP_PATH>/package.json` (current installed versions)
+
+## Objective
+
+Align `<APP_NAME>`'s dependency versions with the monorepo platform baseline before any component
+migration begins. `packages/ui` targets React 19, Tailwind CSS v4, and TypeScript 5.9.2 — this app
+must be fully aligned, including all config changes, before @repo/ui components are imported.
+
+If an upgrade requires a config file change, make that config change. A config update is part of
+the upgrade, not a reason to skip it. The goal is working output identical to pre-upgrade.
+
+---
+
+## PART A — Platform-Wide Upgrades (run for every app)
+
+These are monorepo-wide requirements — not optional per-app decisions.
+
+### A1. Pre-Upgrade Snapshot
+
+Capture current versions before making any changes:
+```bash
+cat <APP_PATH>/package.json | jq '{
+  react: .dependencies.react,
+  "react-dom": .dependencies["react-dom"],
+  "@types/react": .devDependencies["@types/react"],
+  "@types/react-dom": .devDependencies["@types/react-dom"],
+  typescript: .devDependencies.typescript,
+  "tailwindcss": .devDependencies.tailwindcss,
+  "eslint-config-next": .devDependencies["eslint-config-next"],
+  next: .dependencies.next
+}'
+```
+
+### A2. Upgrade React → 19
+```bash
+pnpm --filter <APP_PACKAGE> add react@^19 react-dom@^19
+pnpm --filter <APP_PACKAGE> add -D @types/react@^19 @types/react-dom@^19
+```
+
+### A3. Align TypeScript + ESLint toolchain
+```bash
+# Pin TypeScript to match root workspace and packages/ui
+pnpm --filter <APP_PACKAGE> add -D typescript@5.9.2
+
+# eslint-config-next must match the installed next major version
+# e.g. if next is 15.x → eslint-config-next@15
+pnpm --filter <APP_PACKAGE> add -D eslint-config-next@<NEXT_MAJOR>
+
+# Use range, not pinned version
+pnpm --filter <APP_PACKAGE> add -D @types/node@^22
+```
+
+### A4. Upgrade Tailwind CSS → v4
+
+```bash
+pnpm --filter <APP_PACKAGE> add -D tailwindcss@^4 @tailwindcss/postcss@^4
+```
+
+Apply **mandatory config changes**:
+
+**`postcss.config.js` (or `.cjs`):**
+```diff
+-module.exports = {
+-  plugins: {
+-    tailwindcss: {},
+-    autoprefixer: {},
+-  },
+-};
++module.exports = {
++  plugins: {
++    '@tailwindcss/postcss': {},
++  },
++};
+```
+> autoprefixer is bundled in Tailwind v4 — removing it from postcss is correct.
+
+**`globals.css` (or `app/globals.css`):**
+```diff
+-@tailwind base;
+-@tailwind components;
+-@tailwind utilities;
++@import "tailwindcss";
++@config "../tailwind.config.ts";
+```
+> `@config` preserves all existing `tailwind.config.ts` customizations.
+> Adjust the relative path to match your config file location.
+
+**`tailwind.config.ts` — remove v3-only keys (do not touch theme/content):**
+```diff
+-  mode: 'jit',         // v4 default, ignored
+-  future: {},          // v3-only
+-  experimental: {},    // v3-only
+```
+
+If the app uses Tailwind plugins (e.g. `@tailwindcss/forms`, `@tailwindcss/typography`), check
+whether they have a Tailwind v4-compatible release and upgrade accordingly.
+Any plugin whose utility is now built into Tailwind v4 core — remove its `plugins` entry.
+
+### A5. Install and check for peer dep warnings
+```bash
+pnpm install
+```
+Review output. Document any warnings.
+
+---
+
+## PART B — App-Specific Package Cleanup (audit first, then act)
+
+Every app has different legacy packages. Do NOT assume what needs removing — audit first.
+
+### B1. Audit all direct dependencies for dead/deprecated packages
+
+```bash
+# List all direct deps
+cat <APP_PATH>/package.json | jq '{dependencies, devDependencies}'
+```
+
+For each package, determine:
+1. **Is it deprecated?** (npm warns at install, package archived, no releases in 2+ years)
+2. **Is it made redundant by a platform upgrade?** (e.g., a utility now built into React 19, Tailwind v4, or Next.js 15)
+3. **Does it have no maintained upgrade path?** (deep dependency on React 16/17-era APIs)
+4. **Is it superseded by something already in the deps?** (old + new version of the same thing)
+
+```bash
+# For any candidate package — check if it is actually imported anywhere
+rg "from '<package-name>'" <APP_PATH>/src <APP_PATH>/app --type ts
+# Zero results = no direct source usage → candidate for removal
+# Non-zero = still actively used → keep or defer
+```
+
+Also confirm it is not used in config files (next.config.ts, tailwind.config.ts, postcss.config.js)
+before removing.
+
+### B2. Decide and act
+
+- **Remove** — if deprecated AND zero direct usage AND not needed in configs
+  ```bash
+  pnpm --filter <APP_PACKAGE> remove <package-name>
+  ```
+  Re-run `check-types` immediately after each removal.
+
+- **Keep and defer** — if still used in source but has no clean upgrade path:
+  Record in `_migration-log.md` under "Deferred Items" with:
+  - Current version retained
+  - Why upgrade is deferred (no upgrade path / requires full refactor)
+  - Planned replacement or upgrade approach and target sprint
+
+- **Keep** — if actively used and has a maintained upgrade path that's out of scope for this batch
+
+> Rule: After Batch 0.5, every package in `package.json` must be one of:
+> **upgraded** · **removed** · **deferred with documented reason**. Nothing undocumented.
+
+---
+
+## Verification Gate (ALL must pass before calling Batch 0.5 complete)
+
+```bash
+# TypeScript — zero errors
+pnpm --filter <APP_PACKAGE> check-types
+
+# Lint — zero errors
+pnpm --filter <APP_PACKAGE> lint
+
+# Build — clean
+pnpm --filter <APP_PACKAGE> build
+
+# Dev server — start and smoke check 3–5 key routes
+# Confirm: no CSS regressions, no console errors, layout identical to pre-upgrade
+pnpm --filter <APP_PACKAGE> dev
+```
+
+Targeted scans:
+```bash
+# Confirm React 19 removed import is gone
+rg "from 'react-dom/test-utils'" <APP_PATH>/src <APP_PATH>/app
+rg 'from "react-dom/test-utils"' <APP_PATH>/src <APP_PATH>/app
+
+# Confirm Tailwind v3 directives are gone
+rg "@tailwind base\|@tailwind components\|@tailwind utilities" <APP_PATH>
+```
+
+## Common Issues and Fixes
+
+| Problem | Fix |
+| ------- | --- |
+| `Property 'children' does not exist` on `React.FC` | Add `children?: React.ReactNode` to the Props interface |
+| `Type 'X' is not assignable to 'ReactNode'` | Fix the return type — stricter in React 19 |
+| `Module 'react-dom/test-utils' has no export 'act'` | `import { act } from 'react'` |
+| ESLint rule errors after `eslint-config-next` bump | Check `.eslintrc` for renamed rule keys |
+| CSS not loading | `postcss.config.js` still uses old tailwindcss plugin — switch to `@tailwindcss/postcss` |
+| Theme tokens missing | Add `@config "../tailwind.config.ts"` to `globals.css` |
+
+## Guardrails
+
+ALLOWED:
+- Upgrading packages per Part A
+- Removing confirmed-dead packages found in Part B audit
+- Updating `postcss.config.js`, `globals.css`, `tailwind.config.ts` per Part A steps
+- Fixing type errors introduced directly by React 19 upgrade
+
+FORBIDDEN:
+- Refactoring component logic (even if it would look cleaner in React 19)
+- Removing `forwardRef` wrappers — they still work; record as improvement candidate
+- Removing packages that appear unused without first checking config files and indirect usage
+- Attempting large refactors (e.g. replacing a form library, replacing an editor component) — defer those
+
+## Required Output
+
+Use the template in `09-dependency-upgrades.md` Part D to append to
+`<APP_PATH>/docs/migration/component/_output/_migration-log.md`.
+
+Key sections to fill:
+- **Platform Packages Upgraded** — record all Part A changes with from/to versions
+- **Config Changes** — list every config file changed and what changed
+- **App-Specific Packages Removed** — only packages confirmed-dead from Part B
+- **App-Specific Deferred Items** — every kept-but-problematic package with reason + plan
+- **Verification Gate** — results of all four commands
+
+> Skills (if installed): `$next-upgrade` (React + Next.js version alignment steps); `$systematic-debugging` (if check-types fails — trace before fixing); `$monorepo-workspace` (confirm --filter selector, script names); `$next-best-practices` (validate RSC/client boundaries after React 19 upgrade)
+
+Do NOT start Batch 1 (Component Audit) until this gate passes.
+````
+
+
+---
+
 ## Batch 1 — Per-App Component Audit (Phase 01)
 
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run:** Once per app (run all apps before moving to Batch 2)
 > **Output:** `<APP_PATH>/docs/migration/component/_output/` — creates 4 files
-
-```
-You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
-
-Read ALL of these before starting:
-- `<APP_PATH>/docs/migration/component/01-app-audit.md` (full spec for this phase)
-- `<APP_PATH>/docs/migration/component/06-component-standards.md` (classification rules)
-
-## Objective
-
-Audit ALL UI components in `<APP_PATH>/src/` and classify every one.
 
 ## Classification Rules (from 06-component-standards.md)
 
@@ -901,10 +1129,142 @@ Switch to `feat/ui` → create cross-app `30-cleanup-report.md` and `31-deprecat
 
 ---
 
+## Batch 10.5 — Deferred Dependency Resolution (Post-Cleanup)
+
+> **Branch:** `migrate-app/<APP_NAME>`
+> **Run:** Once per app — immediately after Batch 10 (Cleanup) passes the verification gate
+> **Prerequisite:** Batch 10 `_cleanup-report.md` complete; Batch 0.5 Deferred Items list exists
+> **Spec doc:** `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md` (Part B)
+
+````
+You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
+
+Read before starting:
+- `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md` Part B (app-specific audit pattern)
+- `<APP_PATH>/docs/migration/component/_output/_migration-log.md` — find the "Deferred Items" section
+  written by Batch 0.5. This is your authoritative list for this batch.
+- `<APP_PATH>/docs/migration/component/_output/_cleanup-report.md` (dep audit results from Batch 10)
+- `<APP_PATH>/package.json` (current state after Batch 10)
+
+## Objective
+
+Resolve the dependency items **deliberately deferred during Batch 0.5**. Those items were kept
+because they had no clean upgrade path within the migration window. Now that component migration
+is complete, work through each one using the pattern below.
+
+---
+
+## Step 1 — Read the Deferred Items List
+
+Open `_migration-log.md` and find the "App-Specific Deferred Items" table from Batch 0.5.
+That table lists the exact packages deferred for this app, with their reasons and plans.
+
+Work through each item individually using this decision framework:
+
+### For each deferred package:
+
+**1. Audit actual source usage:**
+```bash
+# Substitute <package-name> with the actual package from the deferred list
+rg "from '<package-name>'" <APP_PATH>/src <APP_PATH>/app --type ts
+rg 'from "<package-name>"' <APP_PATH>/src <APP_PATH>/app --type ts
+rg "require\('<package-name>'\)" <APP_PATH>/src <APP_PATH>/app
+```
+
+**2. Decide based on usage count:**
+
+| Usage count | Decision |
+| ----------- | -------- |
+| 0 usages | Remove — confirmed dead dep |
+| Low (< threshold set in Batch 0.5 plan) | Migrate to replacement and remove |
+| High (≥ threshold) | Keep at current version; document as remaining tech debt with sprint plan |
+| Used only in configs, not source | Keep if still needed in config; remove if config section was also deleted |
+
+**3. Act:**
+
+Remove if dead:
+```bash
+pnpm --filter <APP_PACKAGE> remove <package-name>
+pnpm --filter <APP_PACKAGE> check-types  # must still pass after each removal
+```
+
+Migrate if low-usage: apply the replacement approach documented in Batch 0.5 plan.
+Do not introduce large refactors in this batch — keep replacements narrow and mechanical.
+
+Keep if high-usage: update the migration log with final usage count and revised sprint target.
+
+---
+
+## Step 2 — Verify platform alignment is intact
+
+After all deferred items are resolved, confirm platform versions have not drifted:
+
+```bash
+# Confirm React 19 still resolved
+node -e "console.log('react:', require('./apps/<APP_NAME>/node_modules/react/package.json').version)"
+# Must output: 19.x.x
+
+# Confirm eslint-config-next major matches next
+node -e "
+const p = require('./apps/<APP_NAME>/package.json');
+console.log('next:', p.dependencies.next);
+console.log('eslint-config-next:', p.devDependencies['eslint-config-next']);
+"
+# Major versions must match
+
+# Confirm Tailwind v4
+node -e "console.log('tailwindcss:', require('./apps/<APP_NAME>/node_modules/tailwindcss/package.json').version)"
+# Must output: 4.x.x
+```
+
+---
+
+## Step 3 — Verification Gate
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types  # zero errors
+pnpm --filter <APP_PACKAGE> lint         # zero errors
+pnpm --filter <APP_PACKAGE> build        # clean build
+```
+
+---
+
+## Required Output
+
+Append to `<APP_PATH>/docs/migration/component/_output/_migration-log.md`:
+
+```
+## Deferred Dependency Resolution — <date>
+
+### Items resolved from Batch 0.5 Deferred list:
+
+| Package | Action taken | Files affected | Notes |
+| ------- | ------------ | -------------- | ----- |
+| [package] | REMOVED / MIGRATED / RETAINED | [files or "n/a"] | [reason or new sprint target] |
+
+### Version Alignment Check (post-cleanup)
+- react: [resolved version] ✅
+- tailwindcss: [resolved version] ✅
+- eslint-config-next: [version] matches next [version] ✅
+
+### Remaining tech debt (if any)
+[List any packages that were RETAINED with updated sprint target, or "None"]
+
+### Verification Gate
+check-types: PASS · lint: PASS · build: PASS
+```
+
+> Skills (if installed): `$systematic-debugging` (if removing a package causes type errors — trace before attempting fixes); `$monorepo-workspace` (pnpm remove --filter and dep ownership rules)
+
+Do NOT start Batch 11 until this gate passes.
+````
+
+---
+
 ## Batch 11 — Operational Standards (Phase 08)
 
 > **Branch:** `feat/ui`
-> **Run:** Once — after ALL apps complete Batch 10
+> **Run:** Once — after ALL apps complete Batch 10 and Batch 10.5
 > **This is the final phase of the migration**
 
 ```
@@ -1259,7 +1619,7 @@ Report: verification gate results, components integrity check, next steps.
 
 | Scenario | Run these batches |
 |---|---|
-| Normal migration (no legacy updates) | 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 |
+| Normal migration (no legacy updates) | 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 10.5 → 11 |
 | Legacy update — clean merge, no new components | L1 → L3 → L4 → L6, then resume |
 | Legacy update — conflicts, no new components | L1 → L2 → L3 → L4 → L6, then resume |
 | Legacy update — clean merge, new KEEP_APP_LOCAL | L1 → L3 → L4 → L6, then resume |
@@ -1271,7 +1631,10 @@ Report: verification gate results, components integrity check, next steps.
 
 ## Multi-App Usage
 
-Batches 0, 1, 6, 7, 8, 9, 10 run **per app** on each app's `migrate-app/<app>` branch.
+Batches 0, **0.5**, 1, 6, 7, 8, 9, 10, **10.5** run **per app** on each app's `migrate-app/<app>` branch.
 Batches 2, 3, 4, 5, 11 run **once** on `feat/ui`.
 Legacy Batches L1–L6 run **per app** whenever the legacy repo updates.
+
+> Batch 0.5 = pre-migration dependency upgrade (React 19, Tailwind v4, TypeScript alignment)
+> Batch 10.5 = post-cleanup deferred item resolution (moment, draft-js, react-router-dom)
 ```
