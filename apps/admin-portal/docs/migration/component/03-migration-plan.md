@@ -27,6 +27,12 @@ Convert all per-app audits + the foundation into a single, executable, batch-bas
 
 ## Batch Structure (mandatory)
 
+> [!IMPORTANT]
+> **Batch 0.5 (Dependency Version Upgrade) is a hard prerequisite for all apps before Batch 1 begins.**
+> Each app must pass the Batch 0.5 verification gate (React 19 + Tailwind v4 + TypeScript 5.9.2
+> aligned, no type errors, clean build) before any import-swap migration work starts.
+> See [`09-dependency-upgrades.md`](./09-dependency-upgrades.md) for the full upgrade spec.
+
 | Batch       | Scope                  | packages/ui changes                             | Branch work                                                                          | Can run in parallel?                                                         |
 | ----------- | ---------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
 | **Batch 1** | `ADOPT_NOW`            | None — components exist                         | `migrate-app/<app>` only: swap imports                                               | ✅ All apps run Batch 1 in parallel                                          |
@@ -289,6 +295,7 @@ Per app:
 - [ ] All items in `_parity-checklist.md` are ✅ or have documented exception
 - [ ] No unreviewed adapter wrappers remain
 - [ ] `_migration-log.md` complete (every component has a status entry)
+- [ ] Platform version alignment still correct: React 19.x, Tailwind 4.x, TypeScript 5.9.2 (run `node -e "console.log(require('./apps/<APP_NAME>/node_modules/react/package.json').version)"` to confirm — versions must not have drifted from Batch 0.5 baseline)
 
 ---
 

@@ -199,7 +199,13 @@ flowchart TB
   end
 
   subgraph MIGRATE_BRANCH2["migrate-app/<APP_NAME> — per app, per batch"]
-    P05[Phase 05: Per-App Migration<br/>Batch 1 → 2 → 3 → 4 — consume @repo/ui]:::phase
+    P09[Phase 09: Dependency Upgrades<br/>Batch 0.5 — React 19 · Tailwind v4 · TS 5.9.2<br/>Must pass gate before Batch 1]:::phase
+    G09{Verification Gate<br/>Batch 0.5}:::gate
+    F09[Fix type errors<br/>fix config]:::fix
+    P09 --> G09
+    G09 -- pass --> P05[Phase 05: Per-App Migration<br/>Batch 1 → 2 → 3 → 4 — consume @repo/ui]:::phase
+    G09 -- fail --> F09 --> G09
+
     G05{Verification Gate<br/>per batch}:::gate
     F05[Fix or rollback<br/>re-run gate]:::fix
     A05[migration-plan.md · migration-log.md<br/>parity-checklist.md]:::artifact
@@ -230,6 +236,7 @@ flowchart TB
   A01 -->|"handoff"| P02
   A02 --> P03
   A03 --> P04
+  A01 -->|"handoff"| P09
   A04 -->|"handoff"| P05
   A07 -->|"merge to base"| FINAL
 
@@ -315,8 +322,10 @@ flowchart TD
 | 02 — Foundation            | None (docs only)           | —                                                         |
 | 03 — Migration Plan        | None (docs only)           | —                                                         |
 | 04 — Build UI              | Per batch item: `@repo/ui` | `check-types` · `build` · `storybook:build` · a11y addon  |
+| 09/Batch 0.5 — Dep Upgrade   | Per app                    | `check-types` · `lint` · `build` · version alignment check (React 19.x, Tailwind 4.x, TS 5.9.2) |
 | 05 — Per-App Migration     | Per batch: app             | From `verification-gate.md` + visual/behavior parity      |
 | 07 — Cleanup               | Full monorepo              | All apps `check-types` · `build` + no broken imports scan |
+| 09/Batch 10.5 — Dep Deferred | Per app                  | `check-types` · `lint` · `build` · deferred item table logged |
 | 08 — Operational Standards | Docs review                | —                                                         |
 
 ---
