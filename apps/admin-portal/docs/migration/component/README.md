@@ -19,6 +19,7 @@
 | 06  | [Component Standards & Conventions](./06-component-standards.md) | Standard   | All (reference)     | always-on     |
 | 07  | [Cleanup & Deprecation](./07-cleanup.md)                         | Cleanup    | `migrate-app/<app>` | per app       |
 | 08  | [Operational Standards](./08-operational-standards.md)           | Standards  | `feat/ui`           | once          |
+| 09  | [Dependency Version Upgrades](./09-dependency-upgrades.md)       | Upgrade    | `migrate-app/<app>` | per app       |
 
 ---
 
@@ -39,7 +40,7 @@ These apply at any point during migration — particularly when a legacy update 
 
 ## Execution Flow
 
-> **Where to start:** New to this migration? Read [00-overview.md](./00-overview.md) first (branch model + full lifecycle), then return here and follow the phase table top-to-bottom. Your first action on an app branch is always **Batch 0** in [`migration-batch-prompts.md`](./migration-batch-prompts.md).
+> **Where to start:** New to this migration? Read [00-overview.md](./00-overview.md) first (branch model + full lifecycle), then return here and follow the phase table top-to-bottom. Your first action on an app branch is always **Batch 0** (verification gate setup) then **Batch 0.5** (dependency upgrades) in [`migration-batch-prompts.md`](./migration-batch-prompts.md) — both must pass before Batch 1 begins.
 
 ```
 [Reference]             Phase 06 (Standards) — Governs all phases

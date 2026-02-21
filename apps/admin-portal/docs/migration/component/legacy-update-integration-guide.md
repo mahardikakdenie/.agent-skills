@@ -23,7 +23,8 @@ Legacy updates can arrive at **any batch**. Risk and workflow vary by current po
 
 | Current Batch Position                            | Risk Level  | Workflow                                                       |
 | ------------------------------------------------- | ----------- | -------------------------------------------------------------- |
-| **Before Batch 1** (no migration started)         | ✅ Low      | Direct integration — nothing to protect                        |
+| **Batch 0** done, **Batch 0.5 not yet started**  | ✅ Low      | Direct integration — dep upgrade not yet in progress           |
+| **Batch 0.5** (dep upgrade in progress)           | ⚠️ Medium   | Pause dep upgrade → integrate legacy → re-confirm platform versions still correct, then resume Batch 0.5 from the next step |
 | **Batch 1** (import swaps in progress)            | ⚠️ Medium   | Pause → Update → Re-verify that import swaps still resolve     |
 | **Batch 2** (adapter wrappers in progress)        | ⚠️ Medium   | Pause → Update → Check adapters still bridge correctly         |
 | **Batch 3** (packages/ui extensions in progress)  | ⚠️ Medium   | Pause → Update → Check legacy didn't add overlapping component |
