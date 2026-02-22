@@ -282,6 +282,7 @@ Extend the existing `<COMPONENT_NAME>` in packages/ui to add:
 - [ ] No process.env.NEXT*PUBLIC*\*
 - [ ] TypeScript props exported from index.ts
 - [ ] Storybook covers all new variants/states
+- [ ] Storybook story `title` follows `'<Group>/<ComponentName>'` taxonomy ([§6.4](./06-component-standards.md#64-storybook-category-taxonomy))
 - [ ] Keyboard nav works
 - [ ] ARIA attributes present
 ```
@@ -308,73 +309,326 @@ Build a new shared component `<COMPONENT_NAME>` for packages/ui.
 
 ## Step 1 — Write Spec (`<COMPONENT_NAME>.spec.md`)
 
-Document BEFORE writing any code:
+Document BEFORE writing any code. Every section below is mandatory unless marked _(if applicable)_.
+
 ```
 
 # <ComponentName> Spec
 
+## Metadata
+
+| Field | Value |
+| ----- | ----- |
+| **Storybook Group** | `Buttons` \| `Inputs` \| `Overlays` \| `Feedback` \| `Navigation` \| `Data Display` \| `Layout` \| `Misc` |
+| **Tier** | 1 — Primitive \| 2 — Composite \| 3 — App-local |
+| **Based on** | `@radix-ui/react-<primitive>` \| custom composition \| none |
+| **Status** | Draft \| Spec Review \| Approved |
+
+---
+
 ## Overview
 
-[One paragraph: what it does, what pattern it follows, when to use it]
+[1–2 paragraphs: what this component does, what design pattern it follows (e.g. controlled input, Radix-based overlay, compound table), and where it fits in the system.]
+
+**When to use:**
+- [Bullet: specific scenario 1]
+- [Bullet: specific scenario 2]
+
+**When NOT to use:**
+- [Bullet: use X instead when Y]
+- [Bullet: keep app-local when Z]
+
+---
 
 ## Design Decisions
 
-- Why [Radix primitive / custom / composition strategy]
-- **Data Table Strategy:** MUST use `TanStack Table v8` (headless) if component involves sorting/filtering.
-- **Date Strategy:** MUST use `react-day-picker` + `date-fns` for Calendar/DatePicker.
-- CVA variant strategy
-- [Controlled vs uncontrolled decision]
+| Decision | Choice | Rationale |
+| -------- | ------ | --------- |
+| Primitive | `@radix-ui/react-X` / none | [why] |
+| CVA strategy | flat \| compound \| slot-based | [why] |
+| Controlled vs uncontrolled | both \| controlled-only | [why] |
+| Portal | yes (for overlays) \| no | [why] |
+| Sub-components | yes — see §Compound Sub-components \| no | [why] |
+
+> **DataTable rule:** MUST use `@tanstack/react-table` v8 if component has sorting/filtering.
+> **Date rule:** MUST use `react-day-picker` + `date-fns` for Calendar / DatePicker.
+
+---
 
 ## Props Interface
 
 | Prop | Type | Default | Required | Description |
 | ---- | ---- | ------- | -------- | ----------- |
-| ...  | ...  | ...     | ...      | ...         |
+| `variant` | `'default' \| 'destructive' \| 'outline' \| 'ghost'` | `'default'` | No | Visual style variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | No | Size of the component |
+| `disabled` | `boolean` | `false` | No | Disables interaction; sets `aria-disabled` |
+| `loading` | `boolean` | `false` | No | Shows spinner; blocks interaction |
+| `className` | `string` | `undefined` | No | Merged via `cn()` — applied last |
+| `asChild` | `boolean` | `false` | No | Renders as child element (Radix `Slot`) |
+| *(add all relevant props)* | | | | |
+
+### Complex Prop Shapes _(if applicable)_
+
+\`\`\`ts
+// e.g. for column definitions, menu items, etc.
+interface <ComponentName>Item {
+  id: string;
+  label: string;
+  // ...
+}
+\`\`\`
+
+---
 
 ## Variants
 
-[visual + size variants with descriptions]
+| Variant | Description | When to use |
+| ------- | ----------- | ----------- |
+| `default` | [visual description] | Primary usage |
+| `destructive` | [visual description] | Dangerous or irreversible actions |
+| `outline` | [visual description] | Secondary, de-emphasized |
+| `ghost` | [visual description] | Minimal chrome, icon-centric |
+
+### Size Scale
+
+| Size | Height | Font | Padding | Use case |
+| ---- | ------ | ---- | ------- | -------- |
+| `sm` | 32px | 12px | px-3 | Dense UI, inline actions |
+| `md` | 40px | 14px | px-4 | Default |
+| `lg` | 48px | 16px | px-6 | Hero CTAs, form submits |
+
+---
 
 ## States
 
-- Default | Hover | Focus | Disabled | Loading | Error
+| State | Visual Behavior | Accessibility |
+| ----- | --------------- | ------------- |
+| Default | [describe normal appearance] | `role="..."` |
+| Hover | [describe hover style] | — |
+| Focus | `focus-visible:ring-2 ring-ring ring-offset-2` | Visible focus ring; keyboard navigable |
+| Active / Pressed | [describe active/clicked style] | `aria-pressed` if toggle |
+| Disabled | Muted opacity; cursor `not-allowed` | `aria-disabled="true"`; no pointer events |
+| Loading | Spinner visible; click blocked | `aria-busy="true"`; label still present |
+| Error | Destructive color; icon + message | `aria-invalid="true"`; `aria-errormessage` linked |
+| Empty _(if applicable)_ | Empty state illustration / copy | `aria-label` describing empty state |
+
+---
+
+## Compound Sub-components _(if applicable)_
+
+| Sub-component | Purpose | Key props |
+| ------------- | ------- | --------- |
+| `<ComponentName>.Root` | Wraps and provides context | `open`, `onOpenChange` |
+| `<ComponentName>.Trigger` | Activates the component | inherits HTMLButtonElement |
+| `<ComponentName>.Content` | Main content area | `align`, `side` |
+| *(list all)* | | |
+
+---
 
 ## Accessibility
 
-- Role: [aria role]
-- Keyboard: [key bindings]
-- ARIA: [attributes used]
+### ARIA Roles & Attributes
+
+| Element | Role / Attribute | Value |
+| ------- | ---------------- | ----- |
+| Root | `role` | `"dialog"` / `"listbox"` / _(as appropriate)_ |
+| Label | `aria-label` / `aria-labelledby` | Must be present |
+| Error message | `aria-errormessage` | ID of error element |
+| Busy state | `aria-busy` | `"true"` when loading |
+
+### Keyboard Map
+
+| Key | Behavior |
+| --- | -------- |
+| `Tab` | Move focus to next focusable element |
+| `Shift+Tab` | Move focus to previous |
+| `Enter` / `Space` | Activate / confirm |
+| `Escape` | Close overlay / cancel |
+| `Arrow Up/Down` | Navigate list items (for listbox/menu) |
+| `Home` / `End` | Jump to first / last item |
+
+### Focus Management
+
+- [Describe where focus goes on open, close, after action]
+- [Describe focus trap behavior if any]
+
+### Screen Reader Notes
+
+- [Describe what is announced on state change]
+- [Describe any live region usage]
+
+---
 
 ## Usage Examples
 
+### 1. Basic usage
 \`\`\`tsx
-<ComponentName variant="default" size="md">Content</ComponentName>
+<ComponentName variant="default" size="md">
+  Label
+</ComponentName>
 \`\`\`
+
+### 2. With icon / slot
+\`\`\`tsx
+<ComponentName variant="outline" size="sm" icon={<PlusIcon />}>
+  Add item
+</ComponentName>
+\`\`\`
+
+### 3. Loading state
+\`\`\`tsx
+<ComponentName loading>Saving...</ComponentName>
+\`\`\`
+
+### 4. Composed / real-world usage _(show it inside a realistic parent)_
+\`\`\`tsx
+<form onSubmit={handleSubmit}>
+  <ComponentName type="submit" loading={isPending}>
+    Save changes
+  </ComponentName>
+</form>
+\`\`\`
+
+---
 
 ## Do / Don't
 
 | ✅ Do | ❌ Don't |
 | ----- | -------- |
-| ...   | ...      |
+| Use `variant="destructive"` for delete actions | Use red-colored custom buttons for delete |
+| Use `loading` prop when an action is in-flight | Disable the button and show a separate spinner |
+| Use `asChild` to render as `<a>` for link-buttons | Wrap in `<button>` inside `<a>` |
+| Export prop types from `index.ts` | Keep prop types internal only |
+| Use CSS variable tokens for all colors | Use hardcoded hex or Tailwind color names |
+| *(add 3–5 more rows specific to this component)* | |
+
+---
 
 ## Storybook Stories Required
 
-- [ ] Default
-- [ ] AllVariants
-- [ ] AllSizes
-- [ ] DisabledState
-- [ ] LoadingState (if applicable)
-- [ ] ErrorState (if applicable)
-- [ ] EdgeCase_LongContent
+**Story file title:** `'<Group>/<ComponentName>'` — see [§6.4 taxonomy](./06-component-standards.md#64-storybook-category-taxonomy)
+
+### Mandatory (all components)
+
+- [ ] `Default` — baseline happy path; all props at defaults; controls panel wired
+- [ ] `AllVariants` — all `variant` values rendered side-by-side in one frame
+- [ ] `AllSizes` — all `size` values rendered side-by-side
+- [ ] `Interactive` — `play()` function: focuses component, performs action, asserts output
+- [ ] `DisabledState` — disabled appearance + confirm `aria-disabled` in DOM
+- [ ] `ResponsiveLayout` — rendered at 320 px and 1440 px viewport widths
+
+### Conditional (add when component supports it)
+
+- [ ] `LoadingState` — spinner visible, interaction blocked, `aria-busy` confirmed
+- [ ] `ErrorState` — error styling, error message prop shown, `aria-invalid` confirmed
+- [ ] `EmptyState` — zero-data / no-content variant _(for data display components)_
+- [ ] `WithSlots` — all optional slot props populated (icon, prefix, suffix, footer, header)
+- [ ] `ControlledMode` — controlled `value` + `onChange` demonstrated _(for inputs)_
+- [ ] `LongContentEdgeCase` — text overflow / wrapping edge case
+- [ ] `RTLSupport` — `dir="rtl"` applied _(if directional layout)_
+- [ ] `DarkMode` — rendered inside dark-theme decorator _(if tokens support dark mode)_
+- [ ] `ComposedUsage` — component used inside realistic parent (e.g. Button in a Form; Dialog with a Table inside)
+
+### Advanced (compound / complex components only)
+
+- [ ] `SubcomponentsShowcase` — each named sub-component rendered independently
+- [ ] `KeyboardNavigation` — `play()` drives full keyboard flow (Tab, Arrow keys, Enter, Esc)
+- [ ] `WithRealData` — representative realistic data exported from `.stories.parts.tsx` (no Lorem ipsum)
+
+---
+
+## Open Questions
+
+- [ ] [Question 1 — what needs to be resolved before implementation]
+- [ ] [Question 2]
+
+---
+
+## Changelog
+
+| Date | Author | Change |
+| ---- | ------ | ------ |
+| YYYY-MM-DD | [name] | Initial spec |
 
 ```
 
 ## Step 2 — Write Storybook Stories (`<COMPONENT_NAME>.stories.tsx`)
-Cover every story listed in spec. Storybook will error until Step 3. This is intentional.
+
+Cover every story listed in the spec. Storybook will error until Step 3 — this is intentional (RED state confirms spec is driving implementation).
+
+### Story Quality Rules (mandatory)
+
+**1. Meta object — controls must work**
+Every prop listed in the spec's Props Interface must be wired to `argTypes` so the Storybook controls panel works without `any` types:
+\`\`\`tsx
+const meta: Meta<typeof ComponentName> = {
+  title: '<Group>/ComponentName',      // §6.4 taxonomy
+  component: ComponentName,
+  tags: ['autodocs'],
+  args: {
+    variant: 'default',                // always provide a baseline
+    size: 'md',
+    disabled: false,
+  },
+  argTypes: {
+    variant: { control: 'select', options: ['default', 'destructive', 'outline', 'ghost'] },
+    size:    { control: 'select', options: ['sm', 'md', 'lg'] },
+    disabled: { control: 'boolean' },
+    onClick:  { action: 'clicked' },   // wire event handlers to actions
+  },
+};
+\`\`\`
+
+**2. Each story must have**
+- `name` field — human-readable, Sentence case (e.g. `name: 'All variants'`)
+- `parameters.docs.description.story` — one-line description of what this story demonstrates
+- Own `args` override that are minimal (only what differs from `meta.args`)
+
+**3. `play()` function — required for all interactive stories**
+Use `@storybook/test` (`userEvent`, `expect`, `within`) to automate interactions. Do not describe interactions as comments — execute them:
+\`\`\`tsx
+export const Interactive: Story = {
+  name: 'Interactive',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: /label/i });
+    await userEvent.click(button);
+    await expect(button).toHaveAttribute('aria-pressed', 'true'); // or whatever behavior
+  },
+};
+\`\`\`
+
+**4. Decorators — wrap stories that need context**
+If the component requires a Provider (ToastProvider, ThemeProvider, DialogProvider, etc.), add it as a story-level decorator rather than embedding it in the component:
+\`\`\`tsx
+export const WithToastContext: Story = {
+  decorators: [(Story) => <ToastProvider><Story /></ToastProvider>],
+};
+\`\`\`
+
+**5. Realistic data — export from `.stories.parts.tsx`**
+For complex components (tables, lists, menus), put sample data in a companion file so stories stay readable:
+\`\`\`tsx
+// ComponentName.stories.parts.tsx
+export const SAMPLE_USERS = [
+  { id: '1', name: 'Andi Pratama', role: 'Admin', status: 'Active' },
+  { id: '2', name: 'Budi Santoso', role: 'Viewer', status: 'Inactive' },
+];
+\`\`\`
+
+**6. Viewport stories**
+Use Storybook's `parameters.viewport` for responsive stories:
+\`\`\`tsx
+export const ResponsiveLayout: Story = {
+  parameters: {
+    viewport: { defaultViewport: 'mobile1' },
+  },
+};
+\`\`\`
 
 > **`$design-system` skill tip:** Before writing stories, read `SKILL.md` → `COMPONENTS.md`
-> (Accessibility, JSDoc Standards, and Component Rules sections) to incorporate the
-> accessibility checklist and focus-visible patterns directly into your spec's Accessibility section.
+> (Accessibility, JSDoc Standards, and Component Rules sections) for accessibility checklist
+> and focus-visible patterns to validate against your spec's Accessibility section.
 
 ## Step 3 — Implement (`<COMPONENT_NAME>.tsx`)
 

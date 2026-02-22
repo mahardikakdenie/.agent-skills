@@ -14,7 +14,7 @@ Establish the single source of truth for component naming, prop conventions, var
 ---
 
 > **Section Navigation:**
-> [§1 Taxonomy](#1-component-taxonomy) · [§1.4 Box](#14-box--the-native-element-eliminator) · [§2 Prop Naming](#2-prop-naming-conventions) · [§3 TypeScript](#3-typescript-conventions) · [§4 Variant System](#4-variant-system-cva) · [§5 Theming & Tokens](#5-theming--token-contract) · [§6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) · [§7 Accessibility](#7-accessibility-baseline) · [§8 Parity Contract](#8-parity-contract--migration-guardrails)
+> [§1 Taxonomy](#1-component-taxonomy) · [§1.4 Box](#14-box--the-native-element-eliminator) · [§2 Prop Naming](#2-prop-naming-conventions) · [§3 TypeScript](#3-typescript-conventions) · [§4 Variant System](#4-variant-system-cva) · [§5 Theming & Tokens](#5-theming--token-contract) · [§6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) · [§6.2 Salvage Evaluation](#62-keepapplocal-salvage-evaluation) · [§6.3 API Consolidation](#63-component-api-consolidation-rules) · [§6.4 Storybook Taxonomy](#64-storybook-category-taxonomy) · [§7 Accessibility](#7-accessibility-baseline) · [§8 Parity Contract](#8-parity-contract--migration-guardrails)
 >
 > When referencing a section from another doc, use the anchor format: `06-component-standards.md#6-shared-vs-local-boundary-framework`
 
@@ -390,6 +390,150 @@ Does the component use next/link, next/image, or router?
 - Empty states (with slot for icon + copy)
 - Data tables (generic column system, no hardcoded domain columns)
 - Navigation primitives (no hardcoded routes)
+
+---
+
+<a id="62-keepapplocal-salvage-evaluation"></a>
+
+### 6.2 KEEP_APP_LOCAL Salvage Evaluation
+
+> [!TIP]
+> Before accepting a `KEEP_APP_LOCAL` classification as final, always run this salvage check. Components with a thin app-specific layer over a reusable visual shell are candidates for extraction with one targeted abstraction.
+
+#### When to Attempt Salvage
+
+Attempt salvage if the component has **at most 2 separable app-specific concerns**.
+
+**Do NOT attempt salvage if:**
+
+- Business logic lives **inside** the component JSX (not merely passed in via props)
+- The component has 3+ distinct app-specific concerns
+- The component performs its own API calls or mutations
+- The component is used only by this app and is not likely needed by any other
+
+#### Salvage Potential Levels
+
+| Level | Criteria |
+| ------ | -------- |
+| `HIGH` | 1 app-specific concern; clear abstraction path; result usable by 2+ apps |
+| `MEDIUM` | 2 concerns; abstraction possible but requires design decisions |
+| `LOW` | Marginally salvageable; effort likely outweighs benefit |
+| `NONE` | 3+ concerns, internal API calls, domain-only, or single-app use only |
+
+#### Abstraction Pattern Reference
+
+| App-specific element | Abstraction pattern | Outcome |
+| -------------------- | ------------------- | ------- |
+| Next.js `<Link>` or `<Image>` | `as` prop or `renderLink` render prop | Generic shell; framework injected by consumer |
+| Data-fetch hook inside component | Extract hook → pass data as plain props | Pure display component eligible for `packages/ui` |
+| Domain type in props (`Policy`, `Claim`, etc.) | Replace with generic shape or `<T>` generic | Type-agnostic — consumers provide concrete type |
+| Single hardcoded business string/label | Make it a required `children` or `label` prop | No business logic remains in component |
+| Conditional rendering varying by app | Slot API (`leftSlot`, `rightSlot`) or `renderX` render prop | Consumer controls the variable part |
+| URL construction or routing logic | Accept computed `href` as prop | Component stays framework-agnostic |
+
+#### Effort and Classification Rules
+
+- **HIGH or MEDIUM salvage potential:** Tag the `KEEP_APP_LOCAL` audit entry with `Salvage potential` + `Salvage strategy`. The CSV classification stays `KEEP_APP_LOCAL` — add `salvage_potential` and `salvage_strategy` columns. This flags the component for a future extraction sprint; the actual refactor is **not** done during Batch 1.
+- **LOW or NONE:** Record `Salvage potential: NONE` and proceed. No further action needed at audit time.
+
+> Salvage work is scheduled **after** Batch 1 audit is complete and cross-app demand is confirmed in Phase 02. Never delay the audit to perform salvage work inline.
+
+_Cross-reference: [01-app-audit.md — step 4f](./01-app-audit.md) · [migration-batch-prompts.md — Batch 1 step 4e](./migration-batch-prompts.md)_
+
+---
+
+<a id="63-component-api-consolidation-rules"></a>
+
+### 6.3 Component API Consolidation Rules
+
+> [!IMPORTANT]
+> Every component added to `packages/ui` must earn its place as a **single, prop-configurable unit**. Sibling components that differ only by 1–2 props or slots are a sign of premature extraction — they proliferate the API surface, inflate the Storybook index, and signal that the audit classification was wrong.
+
+#### The Consolidation Test
+
+Before classifying a component as `NEW_SHARED_COMPONENT`, apply this three-question test:
+
+1. **Same root?** — Does a proposed sibling share the same root element or Radix primitive as an existing (or already-planned) `packages/ui` component?
+2. **Small delta?** — Does the sibling differ from that component by ≤ 2 props or optional slots?
+3. **No domain logic?** — Is the difference purely presentational (a loading spinner, a footer slot, an icon position)?
+
+If **all three** answers are YES → do **not** add a second component. Merge the difference into the existing component as a prop or slot.
+
+#### Common Anti-Patterns (and Their Fixes)
+
+| Anti-pattern (wrong) | Correct approach |
+| -------------------- | ---------------- |
+| `Button` + `ButtonWithLoading` as separate components | One `Button` with `loading?: boolean` prop |
+| `Table` + `TableHeader` as separate components | One compound `Table` with `Table.Header` sub-component |
+| `Modal` + `ModalWithFooter` as separate components | One `Dialog` with `footer?: React.ReactNode` slot |
+| `Card` + `CardWithImage` as separate components | One `Card` with `image?: React.ReactNode` slot |
+| `Input` + `InputWithLabel` as separate components | One `Input` with `label?: string` + `description?: string` props |
+| `Avatar` + `AvatarWithBadge` as separate components | One `Avatar` with `badge?: React.ReactNode` slot |
+
+#### When App-Specific Variation Is OK
+
+If a variation is **only needed by one app** and the variation is purely presentational, the correct pattern is **NOT** a new shared component. Instead:
+
+- Wrap the shared component locally with fixed prop values: `const PrimaryButton = (p) => <Button variant="primary" {...p} />`
+- Use `className` for app-level visual overrides (tokens are still used; no hardcoded values)
+- Use `asChild` to merge behavior into app-specific elements
+
+This is the **app-local wrapper pattern** — it keeps `packages/ui` lean while giving apps full flexibility.
+
+#### When to Allow a Distinct Component
+
+A genuinely distinct component is justified only when:
+
+- The **DOM structure or accessibility semantics** are fundamentally different (e.g., a visually icon-only button needs `aria-label` and a square aspect — try `Button` with `iconOnly` prop first, create `IconButton` only if the prop surface becomes unmanageable)
+- The component is **based on a different Radix primitive** (e.g., `Select` vs `Combobox` — same concept, completely different interaction model)
+- The component has **clearly different information architecture** (e.g., `DataTable` with sorting/filtering vs `Table` as a plain HTML table wrapper)
+
+_Cross-reference: [Batch 1 step 4g](./migration-batch-prompts.md) · [04-build-shared-components.md](./04-build-shared-components.md) App-Agnostic Checklist_
+
+---
+
+<a id="64-storybook-category-taxonomy"></a>
+
+### 6.4 Storybook Category Taxonomy
+
+Every component exported from `packages/ui` must be assigned to exactly one Storybook story group. This ensures the Storybook index is always structured, scannable, and trackable across the 28-app migration.
+
+#### Canonical Story Groups
+
+| Story Group | Components |
+| ----------- | ---------- |
+| `Buttons` | `Button`, `IconButton`, `ToggleButton` |
+| `Inputs` | `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup`, `Switch`, `Combobox`, `DatePicker`, `DateRangePicker` |
+| `Overlays` | `Dialog`, `Drawer`, `Popover`, `Tooltip`, `DropdownMenu`, `ContextMenu`, `Sheet` |
+| `Feedback` | `Alert`, `Toast`, `Badge`, `Spinner`, `Skeleton`, `Progress` |
+| `Navigation` | `Breadcrumb`, `Tabs`, `Pagination`, `NavigationMenu`, `Menubar`, `Sidebar` |
+| `Data Display` | `Table`, `DataTable`, `DataList`, `Avatar`, `Calendar` |
+| `Layout` | `Box`, `Card`, `Separator`, `PageHeader`, `ContentLoadingWrapper` |
+| `Misc` | `Command`, `Label`, `Form` (field-level primitives) |
+
+#### Story `title` Convention (mandatory)
+
+```tsx
+// ComponentName.stories.tsx
+const meta: Meta<typeof ComponentName> = {
+  title: 'Buttons/Button',   // '<Group>/<ComponentName>' — always this exact format
+  component: ComponentName,
+  // ...
+};
+```
+
+The `title` field determines which folder the story lands in inside the Storybook sidebar. Using the canonical group names from the table above is **non-negotiable** — ad-hoc group names (`'UI/Button'`, `'Components/Button'`) are rejected at PR review.
+
+#### Classification Tracking
+
+The `story_group` field must be populated in:
+- The component's `ComponentName.spec.md` (under Overview)
+- The `_component-backlog.csv` (as the `story_group` column)
+- The `11-master-component-roadmap.md` entry (under the component's record)
+
+This enables cross-app tracking: how many `Overlays` do we still need to build? Are all `Inputs` covered? The answer is always one query on the backlog CSV.
+
+_Cross-reference: [04-build-shared-components.md §Spec Template](./04-build-shared-components.md) · [Batch 1 audit template](./migration-batch-prompts.md)_
 
 ---
 
