@@ -71,6 +71,44 @@ You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 Read `<APP_PATH>/docs/migration/component/00-overview.md` Branch Model section.
 Read `<APP_PATH>/docs/migration/verification-gate.md` if it already exists.
 
+## Step 0a — Package Manager Normalization (REQUIRED FIRST)
+
+This monorepo uses **pnpm exclusively**. Before doing anything else, enforce this on the app:
+
+```bash
+# Detect any rogue lock files from other package managers
+find . -name "yarn.lock" -not -path "*/node_modules/*"
+find . -name "package-lock.json" -not -path "*/node_modules/*"
+```
+
+If any are found, **delete them immediately**:
+
+```bash
+# Remove other package manager lock files (run from repo root)
+find . -name "yarn.lock" -not -path "*/node_modules/*" -delete
+find . -name "package-lock.json" -not -path "*/node_modules/*" -delete
+```
+
+Then reinstall with pnpm to ensure `pnpm-lock.yaml` is the authoritative lock file:
+
+```bash
+pnpm install
+```
+
+> [!IMPORTANT]
+> If `pnpm-lock.yaml` does not exist at the repo root after `pnpm install`, something is
+> wrong — do not proceed. Confirm the root `package.json` has `"packageManager": "pnpm@..."`.
+
+Commit the cleanup if any lock files were removed:
+```bash
+git add -A
+git commit -m "chore: enforce pnpm — remove yarn.lock / package-lock.json"
+```
+
+---
+
+## Step 0b — Verification Gate Setup
+
 Create or update `<APP_PATH>/docs/migration/verification-gate.md` with the exact
 commands for THIS app:
 
