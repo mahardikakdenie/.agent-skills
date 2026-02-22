@@ -86,6 +86,8 @@ Produce a complete, evidence-based component audit for `apps/<APP_NAME>` that:
 | `NEW_SHARED_COMPONENT` | Not in @repo/ui, used by this app, likely needed by others                 |
 | `KEEP_APP_LOCAL`       | Business-specific — stays in app (forms, table configs, domain components) |
 
+> **After assigning `KEEP_APP_LOCAL`:** Always run Salvage Evaluation ([06-component-standards.md §6.2](./06-component-standards.md#62-keepapplocal-salvage-evaluation)). Rate `Salvage potential` (HIGH / MEDIUM / LOW / NONE) and record `Salvage strategy` in the audit entry. This step is mandatory for every KEEP_APP_LOCAL classification.
+
 ## Normalization Requirements
 
 For each component, evaluate against [06-component-standards.md](./06-component-standards.md):
@@ -111,6 +113,8 @@ For each component, document:
 - **Behavior parity risks:** [what must not change]
 - **Native element count:** [number of bare div/span/etc directly in this component's JSX — "0" if none]
 - **Migration notes:** [what exactly needs to happen]
+- **Salvage potential:** HIGH | MEDIUM | LOW | NONE  ← KEEP_APP_LOCAL only; omit for all other classifications
+- **Salvage strategy:** `<render-prop | slot | DI | as-prop | generic | none>` — [brief rationale]  ← KEEP_APP_LOCAL only
 
 ```
 
@@ -196,6 +200,7 @@ A fully self-contained one-page summary. Must include:
 6. **Normalization deltas** — most critical naming/API inconsistencies found
 7. **High-risk parity items** — the top 5 behaviors that must not regress
 8. **Backlog CSV row count** — for aggregation verification
+9. **KEEP_APP_LOCAL salvage candidates** — total KEEP_APP_LOCAL count; number rated HIGH or MEDIUM salvage potential; top 3 candidates with strategy noted
 
 ## Acceptance Criteria
 - Every component import in `apps/<APP_NAME>/src/**` is accounted for (no unknowns)

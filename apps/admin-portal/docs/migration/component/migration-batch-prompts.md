@@ -497,6 +497,13 @@ Do NOT start Batch 1 (Component Audit) until this gate passes.
    c. Compare prop API if it exists
    d. Assign one classification using the rules above
    e. Note parity risk (LOW / MEDIUM / HIGH) based on behavioral complexity
+   f. **If KEEP_APP_LOCAL:** run Salvage Evaluation ([06-component-standards.md §6.2](./06-component-standards.md#62-keepapplocal-salvage-evaluation))
+      - Rate: HIGH (1 concern, clear abstraction path) | MEDIUM (2 concerns) | LOW (marginal) | NONE (3+ concerns or internal API calls)
+      - If HIGH or MEDIUM: identify the abstraction strategy (as-prop / render-prop / slot / DI / generic)
+      - Record in `Salvage potential` and `Salvage strategy` fields of the audit entry
+   g. **If NEW_SHARED_COMPONENT:** run Consolidation Quality Gate ([06-component-standards.md §6.3](./06-component-standards.md#63-component-api-consolidation-rules))
+      - Same root? Small delta (≤ 2 props/slots)? No domain logic? → If YES to all 3: reclassify as `EXTEND_EXISTING`
+      - Assign `story_group` from §6.4 taxonomy (e.g. `Buttons`, `Overlays`, `Feedback`)
 5. Build parity checklist for all shared-candidate components
 
 ## Required Outputs (create all 4)
@@ -516,12 +523,15 @@ One entry per component:
 - **Parity risk:** LOW | MEDIUM | HIGH
 - **Risk notes:** (what could regress)
 - **Reason kept app-local:** (if KEEP_APP_LOCAL — domain logic / API call / app-specific)
+- **Salvage potential:** HIGH | MEDIUM | LOW | NONE  ← KEEP_APP_LOCAL only; omit for all other classifications
+- **Salvage strategy:** `<render-prop | slot | DI | as-prop | generic | none>` — [brief rationale]  ← KEEP_APP_LOCAL only
+- **Story group:** `Buttons` | `Inputs` | `Overlays` | `Feedback` | `Navigation` | `Data Display` | `Layout` | `Misc`  ← NEW_SHARED_COMPONENT and EXTEND_EXISTING only
 
 ```
 
 ### `<APP_PATH>/docs/migration/component/_output/_component-backlog.csv`
 
-Columns: `component_name,classification,batch,priority,risk_level,source_path,repo_ui_export,effort,parity_risk`
+Columns: `component_name,classification,batch,priority,risk_level,source_path,repo_ui_export,effort,parity_risk,salvage_potential,salvage_strategy,story_group`
 
 ### `<APP_PATH>/docs/migration/component/_output/_parity-checklist.md`
 
@@ -539,6 +549,7 @@ Summary for Phase 02 cross-app reconciliation:
 - Top 5 highest-parity-risk items with notes
 - Components that EXTEND_EXISTING: what variants are missing in @repo/ui
 - Components that are NEW_SHARED_COMPONENT: full visual spec (props, variants, states)
+- KEEP_APP_LOCAL salvage candidates: total KEEP_APP_LOCAL count; count rated HIGH or MEDIUM; top 3 with strategy noted
 
 > Skills (if installed): `$vercel-composition-patterns` (identify components with boolean prop proliferation that need compound patterns); `$next-best-practices` (flag components with invalid RSC usage, async client components)
 
@@ -577,6 +588,10 @@ This is the constitution: once locked, all Phase 03–05 work must conform to it
 3. Identify most common naming/variant inconsistencies for normalization
 4. Identify dependency gaps in packages/ui
 5. Assess whether packages/config / packages/helper / packages/interface can serve the workspace better
+6. **Consolidation pass** ([06-component-standards.md §6.3](./06-component-standards.md#63-component-api-consolidation-rules)) — Before finalizing canonical names, apply the three-question consolidation test to all NEW_SHARED_COMPONENT candidates across apps:
+   - Any two candidates sharing the same Radix primitive that differ by ≤ 2 props/slots MUST be merged into one entry
+   - Document merge decisions (what was collapsed and why) in `10-cross-app-reconciliation.md`
+   - Assign each surviving candidate its `story_group` per §6.4 and record in `05-coverage-baseline.md`
 
 ## Required Outputs (create all 6 in `packages/ui/docs/normalization/_output/`)
 
