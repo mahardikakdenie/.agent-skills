@@ -1,4 +1,4 @@
-﻿## Dependency Upgrade — 2026-02-22
+## Dependency Upgrade - 2026-02-22
 
 ### Platform Packages Upgraded
 | Package | From | To |
@@ -11,7 +11,7 @@
 | eslint-config-next | 14.2.5 | ^16 |
 | @types/node | 22.5.5 | ^22 |
 | tailwindcss | ^3.4.1 | ^4.1.18 |
-| @tailwindcss/postcss | — | ^4.1.18 (added) |
+| @tailwindcss/postcss | - | ^4.1.18 (added) |
 | next | 15.4.8 | ^16 |
 | vaul | ^0.9.1 | ^1.1.2 |
 
@@ -19,8 +19,11 @@
 - `postcss.config.mjs`: switched Tailwind plugin from `tailwindcss` to `@tailwindcss/postcss`.
 - `src/app/globals.css`: replaced v3 directives with `@import "tailwindcss";` and `@config "../../tailwind.config.ts";`.
 - `tailwind.config.ts`: set `darkMode` to `"class"` (v4-compatible typing) and replaced `require("tailwindcss-animate")` with ESM import.
-- `package.json` scripts: `dev` -> `next dev --webpack`, `build` -> `next build --webpack`, `lint` -> `eslint .` (Next.js 16 no longer supports `next lint`).
+- `next.config.mjs`: removed webpack-only obfuscator hook so config stays bundler-agnostic for Turbopack-compatible flow.
+- Source imports: replaced `/public/...` static asset imports with `@public/...` aliases to satisfy Turbopack server-relative import constraints.
+- `package.json` scripts: `dev` -> `next dev` (Turbopack default), `build` -> `next build` (no forced `--webpack` and no custom obfuscation script), `lint` -> `eslint .` (Next.js 16 no longer supports `next lint`).
 - Next codemod output: `src/middleware.ts` migrated to `src/proxy.ts` (`middleware-to-proxy`).
+- Obfuscation strategy: removed legacy/custom obfuscator flow; rely on Next.js production minification defaults.
 
 ### App-Specific Packages Removed
 | Package | Reason |
@@ -41,7 +44,7 @@
 ### Type Errors Fixed
 - Tailwind v4 type mismatch in `tailwind.config.ts` (`darkMode` strategy).
 - Dev runtime failure from CJS `require()` in `tailwind.config.ts` under Next.js 16 ESM loading.
-- Next.js 16 build/runtime mismatch with webpack customization by enforcing webpack mode in scripts.
+- Turbopack compatibility issue resolved by removing webpack-only obfuscator hook from `next.config.mjs` and normalizing `@public/...` imports for route compilation.
 
 ### Peer Dep Warnings
 - `react-draft-wysiwyg@1.15.0` expects React <=18 (deferred; tracked above).

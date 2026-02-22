@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 import _ from "lodash";
 import React from "react";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -216,3 +216,4 @@ export default function TransactionsPage() {
     </div>
   );
 }
+

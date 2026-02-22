@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 import "jspdf-autotable";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import Image from "next/image";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import Spinner from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -168,3 +168,4 @@ export default function ExportPage() {
     </div>
   );
 };
+

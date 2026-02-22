@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { productService } from "@/services/product/api/product.service";
 import Image from "next/image";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { Eye, ChevronLeft, ChevronRight } from "react-feather";
 import { useScreen } from "@/context/screen.context";
 import {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { Plus, Search } from "react-feather";
@@ -22,7 +22,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Controller, useForm } from "react-hook-form";
-import iconWarning from "/public/images/icon-warning.png";
+import iconWarning from "@public/images/icon-warning.png";
 import { useUsers } from "@/hooks/useUsers.hooks";
 import { createUsersTableColumns } from "@/components/tableConfig/usersTableConfig";
 
@@ -194,3 +194,4 @@ export default function Users() {
     </div>
   );
 }
+

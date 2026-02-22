@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   Select,
@@ -19,7 +19,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { usePathname, useRouter } from "next/navigation";
 import { Download, Upload, X } from "react-feather";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { Button } from "@/components/ui/button";
 import usePolicies from "@/hooks/usePolicies.hooks";
 import { DataTable } from "@/components/ui/DataTable";
@@ -352,3 +352,4 @@ export default function PolicyPage() {
     </div>
   );
 }
+

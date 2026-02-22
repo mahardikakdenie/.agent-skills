@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "check-types": "tsc --noEmit"
@@ -102,8 +102,7 @@
     "eslint-config-next": "^16",
     "postcss": "^8",
     "tailwindcss": "^4.1.18",
-    "typescript": "5.9.2",
-    "webpack-obfuscator": "^3.5.1"
+    "typescript": "5.9.2"
   },
   "engines": {
     "node": ">=18.0.0"

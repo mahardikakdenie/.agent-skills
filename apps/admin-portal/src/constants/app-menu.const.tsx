@@ -1,12 +1,12 @@
-import Image, { StaticImageData } from "next/image";
+﻿import Image, { StaticImageData } from "next/image";
 import { ChartPie } from "lucide-react";
 import type { ReactNode } from "react";
 
 import AppURL from "@/constants/app-url.const";
-import iconTransaction from "/public/images/icon-transactions.png";
-import iconCampaigns from "/public/images/icon-campaigns.png";
-import iconPolicy from "/public/images/icon-policy.png";
-import iconClaim from "/public/images/icon-claim.png";
+import iconTransaction from "@public/images/icon-transactions.png";
+import iconCampaigns from "@public/images/icon-campaigns.png";
+import iconPolicy from "@public/images/icon-policy.png";
+import iconClaim from "@public/images/icon-claim.png";
 
 const renderChartIcon = () => (
   <ChartPie className="text-primary h-[17px] w-[17px]" strokeWidth={3} />
@@ -594,3 +594,4 @@ class AppMenu {
 }
 
 export default AppMenu;
+

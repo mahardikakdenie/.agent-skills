@@ -1,5 +1,5 @@
-"use client";
-import noData from "/public/images/no-data.webp";
+﻿"use client";
+import noData from "@public/images/no-data.webp";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
@@ -209,3 +209,4 @@ export default function ExportPage() {
     </div>
   );
 }
+

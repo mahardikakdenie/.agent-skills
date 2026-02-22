@@ -1,10 +1,10 @@
-import AppURL from "@/constants/app-url.const";
+﻿import AppURL from "@/constants/app-url.const";
 import Revenue2Icon from "@/images/revenue-2.icon";
 import GlobeLocation2Icon from "@/images/globe-location-2.icon";
 import HamburgerIcon from "@/images/hamburger.icon";
 import CommissionIcon from "@/images/commission.icon";
 import SecureDoc2Icon from "@/images/secure-doc-2.icon";
-import friendsureLogo from "/public/friendsure-logo.svg";
+import friendsureLogo from "@public/friendsure-logo.svg";
 
 const getSimpleNumber = (val: number) => {
     if (val >= 1_000_000_000) {

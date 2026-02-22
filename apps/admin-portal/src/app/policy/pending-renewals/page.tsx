@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { DataTable } from "@/components/ui/DataTable";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import React from "react";
 import usePolicies from "@/hooks/usePolicies.hooks";
 import { createPendingRenewalsTableColumns } from "@/components/tableConfig/policyTableConfig";
@@ -133,3 +133,4 @@ export default function PendingRenewals() {
     </div>
   );
 }
+

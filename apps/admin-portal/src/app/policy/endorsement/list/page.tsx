@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import _ from "lodash";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Download, Upload } from "react-feather";
@@ -200,3 +200,4 @@ export default function EndorsementPage() {
     </div>
   );
 }
+

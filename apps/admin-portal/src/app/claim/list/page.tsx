@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 import _ from "lodash";
 import React from "react";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -925,3 +925,4 @@ const ClaimsPage = () => {
 };
 
 export default ClaimsPage;
+

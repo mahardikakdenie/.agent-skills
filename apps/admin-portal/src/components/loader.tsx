@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import OptimizeImage from "@/components/image";
 // TODO: change for customization in env
-import whitelableLogo from "/public/whitelable-logo.svg";
+import whitelableLogo from "@public/whitelable-logo.svg";
 import {logo, logoHeight, logoWidth} from "@/constants/app-common.const";
 
 const Loader: React.FC = () => {
@@ -57,3 +57,4 @@ const Loader: React.FC = () => {
 };
 
 export default Loader;
+

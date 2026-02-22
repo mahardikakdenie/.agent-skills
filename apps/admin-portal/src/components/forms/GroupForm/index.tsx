@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect } from "react";
 import {
@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import Image from "next/image";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 
 interface GroupFormProps {
   mode: "create" | "edit";
@@ -807,3 +807,4 @@ export default function GroupForm({
     </ContentLoadingWrapper>
   );
 }
+

@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronDown, Menu } from "react-feather";
 // TODO: change for customization in env
-import whitelableLogo from "/public/whitelable-logo.svg";
+import whitelableLogo from "@public/whitelable-logo.svg";
 import AppMenu from "@/constants/app-menu.const";
 import { useScreen } from "@/context/screen.context";
 import Modal from "@/components/modal";
@@ -556,3 +556,4 @@ export const LayoutView = ({
     </div>
   );
 };
+

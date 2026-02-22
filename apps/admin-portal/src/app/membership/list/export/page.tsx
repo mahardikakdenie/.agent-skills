@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 import * as XLSX from "xlsx";
 import Image from "next/image";
 import Spinner from "@/components/ui/spinner";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
@@ -188,3 +188,4 @@ export default function ExportPage() {
     </div>
   );
 };
+

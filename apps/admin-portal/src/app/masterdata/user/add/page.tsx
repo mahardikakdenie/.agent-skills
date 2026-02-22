@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useUserForm } from "@/hooks/useUserForm.hooks";
 import { UserFormWrapper } from "@/components/forms/UserForm";
-import iconCopy from "/public/images/icon-copy.svg";
+import iconCopy from "@public/images/icon-copy.svg";
 
 export default function AddUser() {
   const {
@@ -54,3 +54,4 @@ export default function AddUser() {
     />
   );
 }
+

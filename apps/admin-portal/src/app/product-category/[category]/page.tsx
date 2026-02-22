@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { useProducts } from "../hooks";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";

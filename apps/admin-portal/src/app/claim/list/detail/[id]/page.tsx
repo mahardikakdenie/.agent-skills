@@ -1,8 +1,8 @@
 "use client";
 import moment from "moment";
 import Image from "next/image";
-import noData from "/public/images/no-data.webp";
-import noImage from "/public/images/no-image.png";
+import noData from "@public/images/no-data.webp";
+import noImage from "@public/images/no-image.png";
 import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
 import { useState, useEffect } from "react";
 import { X } from "react-feather";

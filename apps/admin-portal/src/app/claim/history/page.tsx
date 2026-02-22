@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 import React from "react";
 import Image from "next/image";
 import { formatMoney } from "@/lib/formatter";
 import { Search } from "react-feather";
 import { Input } from "@/components/ui/input";
-import emptyStateSearchPrompt from "/public/images/empty-state-search-prompt.svg";
+import emptyStateSearchPrompt from "@public/images/empty-state-search-prompt.svg";
 import {
   Select,
   SelectContent,
@@ -183,3 +183,4 @@ export default function ClaimHistoryPage() {
     </div>
   );
 }
+

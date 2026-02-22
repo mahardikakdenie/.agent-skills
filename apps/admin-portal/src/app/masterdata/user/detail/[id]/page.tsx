@@ -7,8 +7,8 @@ import { useAccountChannel } from "@/hooks/useAccountChannel.hooks";
 import { useAccountInsurer } from "@/hooks/useAccountInsurer.hooks";
 import { useInsurance } from "@/hooks/useIsurance.hooks"; // ✅ Import useInsurance
 import { UserFormWrapper } from "@/components/forms/UserForm";
-import iconCopy from "/public/images/icon-copy.svg";
-import noData from "/public/images/no-data.webp";
+import iconCopy from "@public/images/icon-copy.svg";
+import noData from "@public/images/no-data.webp";
 
 export default function EditUser() {
   const params = useParams();

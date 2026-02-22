@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { Check, Plus, Trash2, X, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import emptyStateSearchPrompt from "/public/images/empty-state-search-prompt.svg";
+import emptyStateSearchPrompt from "@public/images/empty-state-search-prompt.svg";
 import {
   Select,
   SelectContent,
@@ -393,3 +393,4 @@ const ExportUsersPage = () => {
 
 ExportUsersPage.displayName = "ExportUsersPage";
 export default ExportUsersPage;
+

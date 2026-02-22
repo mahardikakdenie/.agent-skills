@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import noData from "/public/images/no-data.webp";
+import noData from "@public/images/no-data.webp";
 import { Plus, Upload } from "react-feather";
 import { Button } from "@/components/ui/button";
 import AppURL from "@/constants/app-url.const";
