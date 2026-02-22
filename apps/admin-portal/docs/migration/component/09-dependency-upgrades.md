@@ -29,6 +29,36 @@ A config update is part of the upgrade, not a reason to skip it.
 
 ## Part A — Platform-Wide Upgrade Standards
 
+> [!IMPORTANT]
+> **A0 — Package Manager Normalization (run before A1–A7)**
+>
+> This monorepo uses **pnpm exclusively**. Before upgrading any dependency, confirm the
+> workspace is clean of other package manager lock files:
+>
+> ```bash
+> # Detect any rogue lock files
+> find . -name "yarn.lock" -not -path "*/node_modules/*"
+> find . -name "package-lock.json" -not -path "*/node_modules/*"
+> ```
+>
+> If any are found, delete them and reinstall:
+>
+> ```bash
+> find . -name "yarn.lock" -not -path "*/node_modules/*" -delete
+> find . -name "package-lock.json" -not -path "*/node_modules/*" -delete
+> pnpm install
+> ```
+>
+> Commit the cleanup before proceeding:
+> ```bash
+> git add -A
+> git commit -m "chore: enforce pnpm — remove yarn.lock / package-lock.json"
+> ```
+>
+> All install, add, and remove commands in this document use `pnpm`. Never use `npm install`,
+> `yarn add`, or any other package manager command during the migration.
+
+
 These versions are **monorepo-wide requirements** driven by `packages/ui`. Every app must
 align to these — they are not optional per-app decisions.
 
