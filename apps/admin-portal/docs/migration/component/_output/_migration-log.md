@@ -65,3 +65,24 @@
 
 Next-devtools MCP `get_errors` reported: `No errors detected in 1 browser session(s).`
 Known pre-existing runtime behavior observed during smoke: `GET /api/cookie/token 404` (present across routes).
+
+## Component Audit - Batch 1 - 2026-02-22
+
+### Batch 1 Outputs
+- `apps/admin-portal/docs/migration/component/_output/_audit-report.md`
+- `apps/admin-portal/docs/migration/component/_output/_component-backlog.csv`
+- `apps/admin-portal/docs/migration/component/_output/_parity-checklist.md`
+- `apps/admin-portal/docs/migration/component/_output/_per-app-baseline-summary.md`
+- `apps/admin-portal/docs/migration/component/_output/_spec-input.md`
+
+### Classification Summary
+- Total components audited: **269**
+- ADOPT_NOW: **0**
+- ADOPT_WITH_ADAPTER: **0**
+- EXTEND_EXISTING: **0**
+- NEW_SHARED_COMPONENT: **34**
+- KEEP_APP_LOCAL: **235**
+
+### Notes
+- Current `@repo/ui` export surface on this branch is `Box` only (`packages/ui/src/index.ts`), so no direct ADOPT_* candidates were identified in Batch 1.
+- Batch 1 scope was documentation/audit only; no app source code or `packages/ui` source code was modified.
