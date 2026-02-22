@@ -73,20 +73,28 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` if it already exists.
 
 ## Step 0a — Package Manager Normalization (REQUIRED FIRST)
 
-This monorepo uses **pnpm exclusively**. Before doing anything else, enforce this on the app:
+This monorepo uses **pnpm exclusively**. Before doing anything else, enforce this on the app scope first, then workspace root:
 
 ```bash
-# Detect any rogue lock files from other package managers
-find . -name "yarn.lock" -not -path "*/node_modules/*"
-find . -name "package-lock.json" -not -path "*/node_modules/*"
+# Detect lock files inside the current app scope
+find <APP_PATH> -name "yarn.lock" -not -path "*/node_modules/*"
+find <APP_PATH> -name "package-lock.json" -not -path "*/node_modules/*"
+
+# Detect lock files only at workspace root
+find . -maxdepth 1 -name "yarn.lock"
+find . -maxdepth 1 -name "package-lock.json"
 ```
 
 If any are found, **delete them immediately**:
 
 ```bash
-# Remove other package manager lock files (run from repo root)
-find . -name "yarn.lock" -not -path "*/node_modules/*" -delete
-find . -name "package-lock.json" -not -path "*/node_modules/*" -delete
+# Remove lock files in the current app scope
+find <APP_PATH> -name "yarn.lock" -not -path "*/node_modules/*" -delete
+find <APP_PATH> -name "package-lock.json" -not -path "*/node_modules/*" -delete
+
+# Remove lock files only at workspace root
+find . -maxdepth 1 -name "yarn.lock" -delete
+find . -maxdepth 1 -name "package-lock.json" -delete
 ```
 
 Then reinstall with pnpm to ensure `pnpm-lock.yaml` is the authoritative lock file:
@@ -102,8 +110,10 @@ pnpm install
 Commit the cleanup if any lock files were removed:
 ```bash
 git add -A
-git commit -m "chore: enforce pnpm — remove yarn.lock / package-lock.json"
 ```
+Use commit scope by lock-file location:
+- If removed files are only under `apps/<APP_NAME>`: `git commit -m "chore(<APP_NAME>): enforce pnpm - remove yarn.lock / package-lock.json"`
+- If removed files include workspace root (or multiple apps): `git commit -m "chore: enforce pnpm - remove yarn.lock / package-lock.json"`
 
 ---
 

@@ -33,27 +33,39 @@ A config update is part of the upgrade, not a reason to skip it.
 > **A0 — Package Manager Normalization (run before A1–A7)**
 >
 > This monorepo uses **pnpm exclusively**. Before upgrading any dependency, confirm the
-> workspace is clean of other package manager lock files:
+> current migration scope (`<APP_PATH>`) and workspace root are clean of other package
+> manager lock files:
 >
 > ```bash
-> # Detect any rogue lock files
-> find . -name "yarn.lock" -not -path "*/node_modules/*"
-> find . -name "package-lock.json" -not -path "*/node_modules/*"
+> # Detect lock files inside the current app scope
+> find <APP_PATH> -name "yarn.lock" -not -path "*/node_modules/*"
+> find <APP_PATH> -name "package-lock.json" -not -path "*/node_modules/*"
+>
+> # Detect lock files only at workspace root
+> find . -maxdepth 1 -name "yarn.lock"
+> find . -maxdepth 1 -name "package-lock.json"
 > ```
 >
 > If any are found, delete them and reinstall:
 >
 > ```bash
-> find . -name "yarn.lock" -not -path "*/node_modules/*" -delete
-> find . -name "package-lock.json" -not -path "*/node_modules/*" -delete
+> # Remove lock files in the current app scope
+> find <APP_PATH> -name "yarn.lock" -not -path "*/node_modules/*" -delete
+> find <APP_PATH> -name "package-lock.json" -not -path "*/node_modules/*" -delete
+>
+> # Remove lock files only at workspace root
+> find . -maxdepth 1 -name "yarn.lock" -delete
+> find . -maxdepth 1 -name "package-lock.json" -delete
 > pnpm install
 > ```
 >
 > Commit the cleanup before proceeding:
 > ```bash
 > git add -A
-> git commit -m "chore: enforce pnpm — remove yarn.lock / package-lock.json"
 > ```
+> Use commit scope by lock-file location:
+> - If removed files are only under `apps/<APP_NAME>`: `git commit -m "chore(<APP_NAME>): enforce pnpm - remove yarn.lock / package-lock.json"`
+> - If removed files include workspace root (or multiple apps): `git commit -m "chore: enforce pnpm - remove yarn.lock / package-lock.json"`
 >
 > All install, add, and remove commands in this document use `pnpm`. Never use `npm install`,
 > `yarn add`, or any other package manager command during the migration.
