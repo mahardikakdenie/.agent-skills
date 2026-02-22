@@ -15,7 +15,7 @@ Placeholders
 - `<APP_PATH>/docs/migration/service/audit.md` - Service audit (Phase 1)
 - `<APP_PATH>/docs/migration/service/plan.md` - Migration plan (Phase 2)
 - `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking
-- `<APP_PATH>/docs/verification-gate.md` - Verification commands
+- `<APP_PATH>/docs/migration/verification-gate.md` - Verification commands
 
 ---
 
@@ -25,7 +25,7 @@ Prompt:
 
 ```
 Use <SPEC_PATH> "App-Specific Inputs" and "Verification Gate (Mandatory)".
-For <APP_NAME> in <APP_PATH>, create <APP_PATH>/docs/verification-gate.md with:
+For <APP_NAME> in <APP_PATH>, create <APP_PATH>/docs/migration/verification-gate.md with:
 Typecheck command, Build command, Lint command, Test command (or N/A), Sanity check command (or N/A), covered routes/flows (if any), and agent skills availability (systematic-debugging, vercel-react-best-practices).
 Update <SPEC_PATH> only if it needs generic clarifications. Do not hardcode app-specific commands in the spec.
 Do not modify any service files or components in this batch.

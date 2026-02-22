@@ -14,6 +14,12 @@ This file defines the mandatory verification gate for component migration work i
 
 `pnpm --filter admin-portal build`
 
+Build/runtime mode note:
+
+- `dev` runs with Turbopack by default (`next dev`).
+- `build` runs with `next build` (no forced `--webpack`).
+- No custom obfuscation step is applied; rely on Next.js production minification and default source-map behavior.
+
 ## 4. Turborepo Package Name
 
 - App package name: `admin-portal`

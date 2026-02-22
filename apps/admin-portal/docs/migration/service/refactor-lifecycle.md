@@ -148,12 +148,12 @@ flowchart TB
    - `$vercel-react-best-practices`: yes/no
 
 4. **Create verification gate document:**
-   - Path: `<APP_PATH>/docs/verification-gate.md`
+   - Path: `<APP_PATH>/docs/migration/verification-gate.md`
    - Use template from `refactor-spec.md`
 
 **Outputs & Deliverables:**
 
-- `<APP_PATH>/docs/verification-gate.md` created
+- `<APP_PATH>/docs/migration/verification-gate.md` created
 
 **Verification Requirements:**
 

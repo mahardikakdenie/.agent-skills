@@ -13,7 +13,7 @@
 - `apps/<app-name>/docs/migration/service/component-migration.md`
 - `apps/<app-name>/docs/migration/service/audit.md`
 - `apps/<app-name>/docs/migration/service/plan.md`
-- `apps/<app-name>/docs/verification-gate.md`
+- `apps/<app-name>/docs/migration/verification-gate.md`
 
 ---
 
@@ -559,7 +559,7 @@ pnpm build
 
 #### 5A.4 After all components migrated
 
-Run full verification gate as defined in `apps/<app-name>/docs/verification-gate.md`.
+Run full verification gate as defined in `apps/<app-name>/docs/migration/verification-gate.md`.
 
 #### 5A.5 Document results
 
@@ -726,7 +726,7 @@ Ensure legacy updates didn't break refactored functionality.
 
 #### 6.1 Run verification gate
 
-Run the verification gate as defined in `apps/<app-name>/docs/verification-gate.md`.
+Run the verification gate as defined in `apps/<app-name>/docs/migration/verification-gate.md`.
 
 This typically includes:
 

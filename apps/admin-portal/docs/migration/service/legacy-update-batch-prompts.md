@@ -12,7 +12,7 @@
 - `<APP_PATH>/docs/migration/service/component-migration.md`
 - `<APP_PATH>/docs/migration/service/audit.md`
 - `<APP_PATH>/docs/migration/service/plan.md`
-- `<APP_PATH>/docs/verification-gate.md`
+- `<APP_PATH>/docs/migration/verification-gate.md`
 
 ---
 
@@ -433,7 +433,7 @@ Verify legacy update integration for <APP_NAME> and complete documentation.
 Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
 
 0. **Read verification gate definition:**
-   - View file: <APP_PATH>/docs/verification-gate.md
+   - View file: <APP_PATH>/docs/migration/verification-gate.md
    - Extract commands: typecheck, build, lint, test, sanity
    - If file doesn't exist: create it first using refactor-spec.md App-Specific Inputs section
    - Note which commands are available vs N/A

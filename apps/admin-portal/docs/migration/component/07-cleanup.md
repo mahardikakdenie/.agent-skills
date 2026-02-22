@@ -183,9 +183,11 @@ For each dep showing `0` direct imports:
    `react-hook-form`)
    → App must own all React-related peer deps explicitly. **KEEP**.
 3. **Is it in `devDependencies` and used only during build/test?** (e.g., `postcss`,
-   `webpack-obfuscator`, `@types/*`)
+   `eslint`, `@types/*`)
    → Audit `@types/*` separately: if the underlying package is being removed, the `@types`
    for it is also removed. If the underlying package is kept, so is its `@types`.
+   → Exception: if the package is `webpack-obfuscator`, remove it per
+   [09-dependency-upgrades.md](./09-dependency-upgrades.md) Part A6 to keep Turbopack-compatible defaults.
 4. **Was it only imported inside local component files that have now been deleted?**
    → This is the only true orphan case. Confirm the files are gone, then **REMOVE**.
 

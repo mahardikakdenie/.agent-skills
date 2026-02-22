@@ -21,7 +21,61 @@ This spec is designed to be reused across **multiple apps** in a monorepo. Every
 - `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` - Visual lifecycle diagram
 - `<APP_PATH>/docs/migration/service/refactor-batch-prompts.md` - Main refactor batch prompts (Batch 0-7)
 - `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking (Batch 6 + 5A)
-- `<APP_PATH>/docs/verification-gate.md` - Per-app verification commands
+- `<APP_PATH>/docs/migration/verification-gate.md` - Per-app verification commands
+
+**Legacy Repository Updates:**
+
+- `<APP_PATH>/docs/migration/service/legacy-update-integration-guide.md` - Quick reference for integrating legacy updates
+- `<APP_PATH>/docs/migration/service/legacy-update-routines.md` - Detailed update routines
+- `<APP_PATH>/docs/migration/service/legacy-update-batch-prompts.md` - Copy-paste update prompts
+
+> [!NOTE]
+> Legacy updates are **independent of refactor phases** and can occur at any time. See `legacy-update-integration-guide.md` for pause/resume workflow and decision logic.
+
+### App-Specific Inputs (Fill Per App)
+
+For each app, define these inputs before implementation:
+
+- App name and root path
+- Dev command
+- Typecheck command
+- Build command
+- Lint command
+- Test command (or `N/A`)
+- Optional sanity checks (manual or automated) and covered routes/flows
+- **Service boundary mapping (required):** list each **base URL** (env var or absolute URL) and the **service name** you will use for it.  
+  **Rule:** One service per base URL. If multiple domains/features share a base URL, they are **one service** with subdomains, not separate services.
+
+### Documentation Grouping (Best Practice)
+
+Refactor-specific docs are temporary and must be grouped separately to avoid mixing with permanent project docs.
+
+Use this structure per app:
+
+# Service Refactor Specification
+
+> **Purpose:** This document is the specification for refactoring the service layer to an enterprise-level, colocated architecture with TanStack Query integration. It is the single source of truth for scope, requirements, and process.
+
+---
+
+## Specification Overview
+
+This specification defines how to refactor the service layer in this project to implement an **enterprise-level, colocated architecture** with the following goals:
+
+Lifecycle diagram: `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` (Mermaid).
+
+### Multi-App Applicability
+
+This spec is designed to be reused across **multiple apps** in a monorepo. Every step, audit, plan, and verification must be executed **per app**.
+
+### Related Documents
+
+**Main Refactor Lifecycle:**
+
+- `<APP_PATH>/docs/migration/service/refactor-lifecycle.md` - Visual lifecycle diagram
+- `<APP_PATH>/docs/migration/service/refactor-batch-prompts.md` - Main refactor batch prompts (Batch 0-7)
+- `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking (Batch 6 + 5A)
+- `<APP_PATH>/docs/migration/verification-gate.md` - Per-app verification commands
 
 **Legacy Repository Updates:**
 
@@ -108,7 +162,7 @@ Use this structure per app:
 
 - `<APP_PATH>/docs/migration/service/audit.md` (temporary)
 - `<APP_PATH>/docs/migration/service/plan.md` (temporary)
-- `<APP_PATH>/docs/verification-gate.md` (temporary)
+- `<APP_PATH>/docs/migration/verification-gate.md` (temporary)
 
 Permanent docs remain in `docs/`:
 
