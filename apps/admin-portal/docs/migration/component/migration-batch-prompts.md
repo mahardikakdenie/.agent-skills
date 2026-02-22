@@ -247,7 +247,38 @@ Common remaining issues after codemod:
 - `cookies() expects no arguments` → remove call args, use `.get(name)` after `await`
 - `searchParams` property access on plain object → use `const sp = await searchParams` at top
 
-### A6. Install and check for peer dep warnings
+### A6. Remove webpack-obfuscator for Turbopack compatibility (conditional)
+
+Only apply this step if the app currently uses `webpack-obfuscator` in `next.config.*` and/or forces webpack mode in scripts.
+
+```bash
+# Detect legacy webpack-only obfuscation
+rg "webpack-obfuscator|NEXT_ENABLE_OBFUSCATOR|next build --webpack|next dev --webpack" <APP_PATH>
+```
+
+If detected, remove legacy obfuscation wiring:
+
+1. Remove `webpack-obfuscator` import/plugin hook from `next.config.*`.
+2. Update scripts to use default Next.js commands (no `--webpack`):
+   - `dev`: `next dev`
+   - `build`: `next build`
+3. Remove dependency:
+```bash
+pnpm --filter <APP_PACKAGE> remove webpack-obfuscator
+```
+
+Guardrails:
+- Do **not** introduce a custom post-build obfuscation script in this migration batch.
+- Keep runtime behavior unchanged; only remove build-time webpack-only obfuscation integration.
+- Rely on Next.js production minification defaults and default source-map behavior.
+
+Verification commands (run both):
+```bash
+pnpm --filter <APP_PACKAGE> build
+pnpm --filter <APP_PACKAGE> dev
+```
+
+### A7. Install and check for peer dep warnings
 ```bash
 pnpm install
 ```
@@ -283,6 +314,8 @@ Also confirm it is not used in config files (next.config.ts, tailwind.config.ts,
 before removing.
 
 ### B2. Decide and act
+
+- **Remove legacy webpack obfuscation** - if the app still uses `webpack-obfuscator`, remove the webpack-only integration per Part A6 (do not replace with a custom obfuscation script in this batch).
 
 - **Remove** — if deprecated AND zero direct usage AND not needed in configs
   ```bash

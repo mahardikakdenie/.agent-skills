@@ -87,7 +87,7 @@ flowchart TB
     G3 -- fail --> F3[Fix issue or rollback<br/>then re-run gate]:::fix --> G3
   end
 
-  S4a --> L[Final Artifacts:<br/>ARCHITECTURE.md<br/>ADDING_SERVICES.md<br/>QUERY_PATTERNS.md]:::artifact
+  S4a --> L[Final Artifacts:<br/>SERVICE_ARCHITECTURE.md<br/>SERVICE_IMPLEMENTATION_GUIDE.md<br/>SERVICE_REACTQUERY_PATTERNS.md]:::artifact
   L --> M([Done]):::phase
 
   %% Legacy Update Integration Points
@@ -148,12 +148,12 @@ flowchart TB
    - `$vercel-react-best-practices`: yes/no
 
 4. **Create verification gate document:**
-   - Path: `<APP_PATH>/docs/verification-gate.md`
+   - Path: `<APP_PATH>/docs/migration/verification-gate.md`
    - Use template from `refactor-spec.md`
 
 **Outputs & Deliverables:**
 
-- `<APP_PATH>/docs/verification-gate.md` created
+- `<APP_PATH>/docs/migration/verification-gate.md` created
 
 **Verification Requirements:**
 
@@ -601,17 +601,21 @@ flowchart TB
    };
    ```
 
-4. **Test each component after migration:**
+4. **Enforce service hook consumption:**
+   - Replace manual `useQuery`/`useMutation` usage in components with custom hooks from `services/*/hooks/{queries,mutations}` when equivalent hooks are available
+   - If a manual wrapper is still required, document the reason in `component-migration.md`
+
+5. **Test each component after migration:**
    - Page loads without errors
    - Data fetching works
    - User interactions work
    - No console/network errors
 
-5. **Track migrations:**
+6. **Track migrations:**
    - Update `component-migration.md` for each component
    - Mark verification status per component
 
-6. **Do NOT:**
+7. **Do NOT:**
    - Delete old services yet (wait for Phase 6)
    - Migrate all at once (incremental only)
 
@@ -668,6 +672,8 @@ flowchart TB
    - Remove old HTTP client wrappers
    - Keep only new colocated structure
 
+<<<<<<< HEAD
+=======
 2. **Update imports (should be zero):**
    - Search for any remaining old service imports
    - Update if found (should not happen if Phase 5 complete)
@@ -985,6 +991,7 @@ See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
 
 ### Dual-Mode Operation
 
+>>>>>>> integrate-app/admin-portal
 **Principle:** Old and new services coexist until Phase 6.
 
 **Implementation:**

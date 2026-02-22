@@ -256,6 +256,42 @@ check the server logs for `Warning: cookies()` or `params` access errors.
 
 ---
 
+### A6. Remove webpack-obfuscator for Turbopack compatibility (conditional)
+
+If the app still uses `webpack-obfuscator` (webpack plugin hook in `next.config.*` and/or `next build --webpack` scripts), remove it during Batch 0.5 so the app remains Turbopack-compatible without custom build maintenance.
+
+Detection:
+
+```bash
+rg "webpack-obfuscator|NEXT_ENABLE_OBFUSCATOR|next build --webpack|next dev --webpack" apps/<APP_NAME>
+```
+
+Migration requirements:
+
+1. Remove webpack-only obfuscator plugin usage from `next.config.*`.
+2. Update scripts to default Next.js commands (no `--webpack`):
+   - `dev`: `next dev`
+   - `build`: `next build`
+3. Remove dependency:
+
+```bash
+pnpm --filter <APP_PACKAGE> remove webpack-obfuscator
+```
+
+Guardrails:
+- Do **not** add a custom post-build obfuscation script in this migration batch.
+- Keep runtime behavior unchanged; only remove webpack-only build tooling.
+- Rely on Next.js production minification defaults and default source-map behavior.
+
+Required verification:
+
+```bash
+pnpm --filter <APP_PACKAGE> build
+pnpm --filter <APP_PACKAGE> dev
+```
+
+---
+
 ## Part B — App-Specific Cleanup (Per-App Audit)
 
 These steps are **not prescriptive** — every app has different legacy packages.
@@ -286,6 +322,10 @@ For each package, ask:
 4. **Is it superseded by something already in the dependency tree?**
    → e.g., using both `library-X` and its modern replacement `library-X-v2` in the same app
    → Audit usage and deduplicate.
+
+> [!IMPORTANT]
+> If the package is `webpack-obfuscator`, do not keep it as-is.
+> Remove it per Part A6 and keep build scripts on default Next.js flow (no custom obfuscation script in this batch).
 
 ```bash
 # Check if a package is actually imported anywhere in source
@@ -380,6 +420,7 @@ Append to `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md`:
 - postcss.config.js: [what changed]
 - globals.css: [@tailwind → @import "tailwindcss"; @config]
 - tailwind.config.ts: [keys removed]
+- webpack-obfuscator removal + script/config cleanup (if present): [what changed]
 
 ### App-Specific Packages Removed
 | Package | Reason |

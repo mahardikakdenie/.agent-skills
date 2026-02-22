@@ -15,7 +15,7 @@ Placeholders
 - `<APP_PATH>/docs/migration/service/audit.md` - Service audit (Phase 1)
 - `<APP_PATH>/docs/migration/service/plan.md` - Migration plan (Phase 2)
 - `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking
-- `<APP_PATH>/docs/verification-gate.md` - Verification commands
+- `<APP_PATH>/docs/migration/verification-gate.md` - Verification commands
 
 ---
 
@@ -25,7 +25,7 @@ Prompt:
 
 ```
 Use <SPEC_PATH> "App-Specific Inputs" and "Verification Gate (Mandatory)".
-For <APP_NAME> in <APP_PATH>, create <APP_PATH>/docs/verification-gate.md with:
+For <APP_NAME> in <APP_PATH>, create <APP_PATH>/docs/migration/verification-gate.md with:
 Typecheck command, Build command, Lint command, Test command (or N/A), Sanity check command (or N/A), covered routes/flows (if any), and agent skills availability (systematic-debugging, vercel-react-best-practices).
 Update <SPEC_PATH> only if it needs generic clarifications. Do not hardcode app-specific commands in the spec.
 Do not modify any service files or components in this batch.
@@ -108,25 +108,74 @@ Steps:
 1. Migrate components one feature/component at a time
 2. Keep old services intact until the end
 3. Update imports to new hooks
-4. Update form submissions to use mutations where applicable
-5. Document migrations in <APP_PATH>/docs/migration/service/component-migration.md:
+4. Replace manual `useQuery`/`useMutation` with existing custom hooks from `services/*/hooks/{queries,mutations}` when equivalent hooks already exist
+5. Update form submissions to use mutation hooks where applicable
+6. Document migrations in <APP_PATH>/docs/migration/service/component-migration.md:
    - Update "Main Refactor: Batch 6" section
    - List all migrated components by service
    - Mark each component with verification status
    - Include any issues encountered and resolutions
    - Update verification results section
-6. After all component migrations are complete, run the full Verification Gate for <APP_NAME> and report results
+7. After all component migrations are complete, run the full Verification Gate for <APP_NAME> and report results
 
-Rules: If `$vercel-react-best-practices` is available, apply it to React/Next.js refactors. If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
+Rules: Do not keep manual `useQuery`/`useMutation` wrappers in components if equivalent service hooks already exist; if a manual wrapper is still required, document why in `component-migration.md`. If `$vercel-react-best-practices` is available, apply it to React/Next.js refactors. If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
 
-## Batch 7 - Cleanup + Docs (Phase 6)
+## Batch 7 - Cleanup + Enterprise Docs (Phase 6)
 
 Prompt:
 
 ```
-Use <SPEC_PATH> Phase 6. Cleanup old services only after all components are migrated.
-Rules: Remove obsolete service files. Remove unused API URLs/constants only if no longer referenced. Add/refresh documentation as defined in the spec. Run the full Verification Gate for <APP_NAME> and report results. If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
+Use <SPEC_PATH> Phase 6 and <APP_PATH>/docs/migration/service/service-doc-templates.md.
+
+Phase 6A: Cleanup old services
+- Remove obsolete service files only after all components are migrated
+- Remove unused API URLs/constants only if no longer referenced
+- Keep Shared MODULE components and shared utilities intact
+
+Phase 6B: Generate enterprise-level permanent documentation
+Using the templates in service-doc-templates.md, create the following THREE permanent documentation files in <APP_PATH>/docs/:
+
+1. SERVICE_ARCHITECTURE.md - Complete service layer architecture documentation
+   - Follow Template 1 in service-doc-templates.md
+   - Include mermaid diagrams for service discovery and data flow
+   - Document ADRs for key architectural decisions
+   - Add comparison table (layer-based vs colocated)
+   - Include concrete examples from THIS APP's services
+   - NO migration references or migration process discussion
+
+2. SERVICE_IMPLEMENTATION_GUIDE.md - Step-by-step implementation guide
+   - Follow Template 2 in service-doc-templates.md
+   - Include decision tree mermaid diagram for when to create vs extend services
+   - Provide complete implementation checklist with code examples
+   - Add troubleshooting section with common issues
+   - Document anti-patterns to avoid
+   - Include quick reference templates
+   - NO migration references or migration process discussion
+
+3. SERVICE_REACTQUERY_PATTERNS.md - TanStack Query best practices and patterns
+   - Follow Template 3 in service-doc-templates.md
+   - Comprehensive query keys, query hooks, and mutation hooks patterns
+   - Cache invalidation strategies with decision matrix
+   - Advanced patterns (pagination, infinite queries, polling, optimistic updates)
+   - Error handling and performance optimization
+   - Testing examples
+   - Common pitfalls
+   - NO migration references or migration process discussion
+
+Documentation Requirements:
+- Use ONLY examples from the actual refactored services in THIS APP
+- NO references to migration/ docs (these are permanent, standalone docs)
+- NO discussion of migration process or legacy patterns
+- Focus on "how to use this architecture going forward"
+- Include real service names, base URLs, and endpoints from THIS APP
+- All mermaid diagrams must be syntactically correct
+- All code examples must be complete and runnable
+- Cross-reference only the other permanent docs (SERVICE_*.md files)
+
+After generating documentation, run the full Verification Gate for <APP_NAME> and report results.
+
+Rules: If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
 
 ## Multi-App Usage

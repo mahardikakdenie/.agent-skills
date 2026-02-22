@@ -317,7 +317,7 @@ Use this checklist before running Batch 1:
 - [ ] Current main refactor batch at a good stopping point (step completed)
 - [ ] Pause point documented in `task.md` (if applicable)
 - [ ] Git subtree remotes configured correctly
-- [ ] `verification-gate.md` exists at `<APP_PATH>/docs/verification-gate.md`
+- [ ] `verification-gate.md` exists at `<APP_PATH>/docs/migration/verification-gate.md`
 - [ ] Team notified (if applicable)
 
 ---
