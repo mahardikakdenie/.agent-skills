@@ -2,6 +2,20 @@
 
 This file defines the mandatory verification gate for component migration work in `apps/admin-portal`.
 
+## 0. Package Manager Normalization (Prerequisite)
+
+Before running the gate, ensure pnpm-only lockfile normalization is satisfied for both scopes below:
+
+- App scope check (`apps/admin-portal`): no `yarn.lock` or `package-lock.json` under app files (exclude `node_modules` and `.next`).
+- Workspace root check: no `./yarn.lock` and no `./package-lock.json`.
+- Root `package.json` keeps `"packageManager": "pnpm@..."`.
+- Root `pnpm-lock.yaml` exists and is the single lockfile source of truth.
+
+If rogue lockfiles are found, remove them in the correct scope, then run `pnpm install` before continuing.
+
+Commit-message scope rule when lockfiles are removed:
+- App-only removal: `chore(admin-portal): enforce pnpm - remove yarn.lock / package-lock.json`
+- Root or multi-scope removal: `chore: enforce pnpm - remove yarn.lock / package-lock.json`
 ## 1. Typecheck Command
 
 `pnpm --filter admin-portal check-types`

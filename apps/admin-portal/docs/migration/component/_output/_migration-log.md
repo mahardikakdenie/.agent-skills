@@ -66,6 +66,21 @@
 Next-devtools MCP `get_errors` reported: `No errors detected in 1 browser session(s).`
 Known pre-existing runtime behavior observed during smoke: `GET /api/cookie/token 404` (present across routes).
 
+## Package Manager Normalization Check (Retroactive Recheck) - 2026-02-22
+
+Reference updates:
+- `078ce759781b04b21a5f01c89a9dcfc09567ffef` (`require pnpm-only lockfile cleanup before upgrades`)
+- `3697b94bbf5f3891f2424433939770d944c6aa87` (`clarify pnpm lockfile cleanup scope and commit rules`)
+
+Recheck result using updated scope rules:
+- App scope (`apps/admin-portal`, excluding `node_modules` and `.next`) lockfile scan: none found.
+- Workspace root lockfile scan (`./yarn.lock`, `./package-lock.json`): none found.
+- Root package manager (`package.json`): `pnpm@10.27.0`.
+- Root lockfile: `pnpm-lock.yaml` present.
+- Cleanup action: no deletion and no cleanup commit required.
+- Commit scoping rule noted: app-scoped commit message applies only when app-scope lockfiles are actually removed.
+
+Batch 1 outputs remain valid; migration can continue from the next planned batch without rerunning Batch 1.
 ## Component Audit - Batch 1 - 2026-02-22
 
 ### Batch 1 Outputs
