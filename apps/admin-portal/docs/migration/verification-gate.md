@@ -40,6 +40,10 @@ Build/runtime mode note:
 - App package name: `admin-portal`
 - Correct filter selector: `--filter admin-portal`
 
+> [!NOTE]
+> **Sections §1–5 above apply to ALL migration types** (service migration and component migration).
+> **Sections §6–7 below apply to COMPONENT MIGRATION ONLY.** Service migration uses only §1–5 from this file.
+
 ## 5. Smoke Routes (Critical Only)
 
 Auth pre-step (required when redirected to login):
@@ -61,7 +65,7 @@ Run smoke checks on these critical routes after migration changes:
 9. `/finance/billing`
 10. `/masterdata/user`
 
-## 6. Before/After Artifact Capture
+## 6. Before/After Artifact Capture — Component Migration Only
 
 Artifacts are the primary comparison object between the pre-migration baseline and the post-migration state.
 
@@ -123,7 +127,7 @@ Record diffs in `_artifacts/smoke-routes/comparison-log.md` using this structure
 
 Gate is **passed** only when all 10 routes have a completed comparison entry with no unresolved deltas.
 
-## 7. Parity Baseline (Behavior Must Be Unchanged)
+## 7. Parity Baseline — Component Migration Only
 
 For each smoke route, verify all of the following:
 
