@@ -87,6 +87,20 @@ apps/admin-portal/docs/migration/component/_artifacts/smoke-routes/
 - **Viewport** — 1440×900, full-page screenshot.
 - **Auth state** — taken while authenticated (never the login page itself).
 
+### PASS / FAIL criteria
+
+A route is **PASS** when ALL of the following hold after comparing before vs after screenshot and running one interaction pass:
+
+| Check | PASS condition |
+|-------|---------------|
+| Visual parity | Layout, spacing, hierarchy, typography, key color usage unchanged — or delta is caused solely by design system token adoption |
+| Interaction parity | Click, hover, keyboard nav, focus states behave identically |
+| State parity | Loading, empty, disabled, success, error states consistent |
+| Data/UI parity | Table columns, filters, sort, pagination unchanged |
+| Console/network sanity | Zero new console errors or failing network requests |
+
+A route is **FAIL** if any check above does not hold and the delta is **not** an approved token-level design system change.
+
 ### Comparison log
 
 Record diffs in `_artifacts/smoke-routes/comparison-log.md` using this structure per route:
@@ -94,12 +108,16 @@ Record diffs in `_artifacts/smoke-routes/comparison-log.md` using this structure
 ```markdown
 ## Route: /dashboard/transaction (#1)
 
-| Field           | Before | After | Delta |
-|----------------|--------|-------|-------|
-| Screenshot     | [before](./before/01-...) | [after](./after/01-...) | Visual diff |
-| Console errors | 0 | 0 | — |
-| Network errors | 0 | 0 | — |
-| Layout match   | ✅ | ✅ | — |
+| Field              | Before | After | Delta |
+|-------------------|--------|-------|-------|
+| Screenshot        | [before](./before/01-dashboard-transaction.png) | [after](./after/01-dashboard-transaction.png) | Visual diff |
+| Console errors    | 0 | 0 | — |
+| Network errors    | 0 | 0 | — |
+| Visual parity     | ✅ | ✅ | — |
+| Interaction parity| ✅ | ✅ | — |
+| State parity      | ✅ | ✅ | — |
+| Data/UI parity    | ✅ | ✅ | — |
+| Result            | — | — | ✅ PASS |
 | Intentional delta | — | — | none |
 ```
 
