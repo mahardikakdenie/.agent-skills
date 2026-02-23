@@ -155,7 +155,7 @@ Per app:
 - [ ] `pnpm --filter <app> check-types` passes
 - [ ] `pnpm --filter <app> lint` passes
 - [ ] `pnpm --filter <app> build` passes
-- [ ] Smoke routes pass (list provided per app)
+- [ ] Smoke routes pass (critical routes from `verification-gate.md §5`) — before/after screenshots captured and logged in `comparison-log.md` per `verification-gate.md §6`
 
 ### Apps × Components Matrix
 
@@ -280,7 +280,7 @@ None.
 ### Per-App Work (Phase 05 Batch 5)
 
 1. Run full verification gate (typecheck, lint, build)
-2. Run all smoke routes from `_parity-checklist.md`
+2. Run all smoke routes from `verification-gate.md §5` — capture before/after screenshots and complete `_artifacts/smoke-routes/comparison-log.md` per `verification-gate.md §6`
 3. Resolve any deferred items from earlier batches
 4. Mark all parity checklist items ✅ PASS or ⚠️ DOCUMENTED EXCEPTION
 5. Clear all `Post-Migration Improvement Candidates` entries (document, don't act)

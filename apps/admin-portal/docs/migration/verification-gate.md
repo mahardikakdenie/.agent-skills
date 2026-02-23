@@ -40,7 +40,7 @@ Build/runtime mode note:
 - App package name: `admin-portal`
 - Correct filter selector: `--filter admin-portal`
 
-## 5. Smoke Routes (No Visual Regression)
+## 5. Smoke Routes (Critical Only)
 
 Auth pre-step (required when redirected to login):
 
@@ -61,7 +61,51 @@ Run smoke checks on these critical routes after migration changes:
 9. `/finance/billing`
 10. `/masterdata/user`
 
-## 6. Parity Baseline (Behavior Must Be Unchanged)
+## 6. Before/After Artifact Capture
+
+Artifacts are the primary comparison object between the pre-migration baseline and the post-migration state.
+
+### Directory structure
+
+```
+apps/admin-portal/docs/migration/component/_artifacts/smoke-routes/
+├── before/
+│   ├── 01-dashboard-transaction.png
+│   ├── 02-dashboard-policy.png
+│   └── ... (one file per route above, numbered to match Section 5)
+└── after/
+    ├── 01-dashboard-transaction.png
+    ├── 02-dashboard-policy.png
+    └── ...
+```
+
+### Capture rules
+
+- **Before** — taken from baseline state before migration patches are applied.
+- **After** — taken after migration patches are applied and the build passes.
+- **Naming** — zero-padded route number + kebab-case route label (e.g., `01-dashboard-transaction.png`).
+- **Viewport** — 1440×900, full-page screenshot.
+- **Auth state** — taken while authenticated (never the login page itself).
+
+### Comparison log
+
+Record diffs in `_artifacts/smoke-routes/comparison-log.md` using this structure per route:
+
+```markdown
+## Route: /dashboard/transaction (#1)
+
+| Field           | Before | After | Delta |
+|----------------|--------|-------|-------|
+| Screenshot     | [before](./before/01-...) | [after](./after/01-...) | Visual diff |
+| Console errors | 0 | 0 | — |
+| Network errors | 0 | 0 | — |
+| Layout match   | ✅ | ✅ | — |
+| Intentional delta | — | — | none |
+```
+
+Gate is **passed** only when all 10 routes have a completed comparison entry with no unresolved deltas.
+
+## 7. Parity Baseline (Behavior Must Be Unchanged)
 
 For each smoke route, verify all of the following:
 

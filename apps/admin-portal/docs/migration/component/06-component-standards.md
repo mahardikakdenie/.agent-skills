@@ -999,8 +999,9 @@ For every ADOPT*\*, EXTEND*\*, or NEW_SHARED component in `parity-checklist.md`:
 ### Smoke Route (verify in browser)
 
 - Route: \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
-- Before screenshot: [attach or describe]
-- After screenshot: [attach or describe]
+- Before screenshot: stored under `_artifacts/smoke-routes/before/` (see [`verification-gate.md §6`](../verification-gate.md))
+- After screenshot: stored under `_artifacts/smoke-routes/after/`
+- Entry added to `_artifacts/smoke-routes/comparison-log.md`
 - Result: ✅ PASS / ❌ FAIL
 
 ### Sign-off
@@ -1466,9 +1467,10 @@ Follow SDD lifecycle in [04-build-shared-components.md](./04-build-shared-compon
 
 ```
 playwright MCP (Phase 05):
-  screenshot <smoke-route> before migration
-  screenshot <smoke-route> after migration
-  → compare, document any visual delta
+  screenshot <smoke-route> before migration → save to _artifacts/smoke-routes/before/<NN-route-name>.png
+  screenshot <smoke-route> after migration  → save to _artifacts/smoke-routes/after/<NN-route-name>.png
+  → add entry to _artifacts/smoke-routes/comparison-log.md (see verification-gate.md §6)
+  → document any visual delta under "Intentional delta" column
 ```
 
 ---

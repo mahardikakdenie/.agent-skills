@@ -396,11 +396,14 @@ For every item in `_parity-checklist.md` still showing ⬜:
 
 ### 4. Smoke Route Full Run
 
-Navigate through every route listed in `verification-gate.md`:
+Navigate through every route listed in `verification-gate.md` Section 5.
 
-- Verify no UI regression
-- Verify no broken layouts
-- Verify no console errors (runtime or hydration)
+For each route, capture before/after screenshots and record a comparison entry per `verification-gate.md §6`:
+
+- Before screenshot stored under `_artifacts/smoke-routes/before/`
+- After screenshot stored under `_artifacts/smoke-routes/after/`
+- Entry added to `_artifacts/smoke-routes/comparison-log.md`
+- Verify no UI regression, no broken layouts, no console errors (runtime or hydration)
 
 ### 5. Migration Log Finalization
 
@@ -702,7 +705,7 @@ pnpm --filter <APP_PACKAGE> lint         # zero errors
 pnpm --filter <APP_PACKAGE> build        # clean build
 ```
 
-Then: manually verify the component's smoke route still renders identically.
+Then: manually verify the component's smoke route still renders identically. Capture before/after screenshots and add a comparison entry per `verification-gate.md §6`.
 
 ### Output
 

@@ -1092,7 +1092,7 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 - Typecheck passes
 - Lint passes
 - Build passes
-- Smoke routes from `_parity-checklist.md` pass
+- Smoke routes from `verification-gate.md §5` pass — before/after screenshots captured per `verification-gate.md §6`
 - No new console errors in browser
 
 > Skills (if installed): `$monorepo-workspace` (check @APP_PACKAGE filter value, verify script names before running commands); `$turborepo` (correct `--filter <APP_PACKAGE>` used in all gate commands); `$react-query` (service hooks from `@/services/` wrap `useQuery`/`useMutation` — if any migrated Container component calls a service hook, validate the service hook's query key and cache invalidation are unchanged); `$agent-browser` (automate smoke route verification — navigate critical routes, capture screenshots, flag visual regressions)
@@ -1218,7 +1218,7 @@ FORBIDDEN:
 Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 
 - Typecheck, lint, build pass
-- All smoke routes from `_parity-checklist.md` pass
+- All smoke routes from `verification-gate.md §5` pass — before/after screenshots captured per `verification-gate.md §6`
 - Behavioral parity confirmed
 
 > Skills (if installed): `$next-best-practices` (validate RSC/client boundary is not broken after swap); `$next-cache-components` (if the swapped component wraps server-cached data — verify `use cache` / cacheTag usage is still correct); `$vercel-react-best-practices` (check for introduced waterfalls or bundle regressions after swap); `$agent-browser` (smoke route automation + visual parity screenshots); `$turborepo` (`--filter` correctness)
@@ -1274,11 +1274,14 @@ For every item in `_parity-checklist.md` still showing ⬜:
 
 ### 4. Smoke Route Full Run
 
-Navigate through every route in `verification-gate.md`:
+Navigate through every route in `verification-gate.md` Section 5.
 
-- No UI regression
-- No broken layouts
-- No console errors (runtime or hydration)
+For each route, capture before/after screenshots and record a comparison entry per `verification-gate.md §6`:
+
+- Before screenshot stored under `_artifacts/smoke-routes/before/`
+- After screenshot stored under `_artifacts/smoke-routes/after/`
+- Entry added to `_artifacts/smoke-routes/comparison-log.md`
+- No UI regression, no broken layouts, no console errors (runtime or hydration)
 
 ### 5. Migration Log Finalization
 
