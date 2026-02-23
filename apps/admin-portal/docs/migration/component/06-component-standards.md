@@ -14,7 +14,7 @@ Establish the single source of truth for component naming, prop conventions, var
 ---
 
 > **Section Navigation:**
-> [§1 Taxonomy](#1-component-taxonomy) · [§1.4 Box](#14-box--the-native-element-eliminator) · [§2 Prop Naming](#2-prop-naming-conventions) · [§3 TypeScript](#3-typescript-conventions) · [§4 Variant System](#4-variant-system-cva) · [§5 Theming & Tokens](#5-theming--token-contract) · [§6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) · [§6.2 Salvage Evaluation](#62-keepapplocal-salvage-evaluation) · [§6.3 API Consolidation](#63-component-api-consolidation-rules) · [§6.4 Storybook Taxonomy](#64-storybook-category-taxonomy) · [§7 Accessibility](#7-accessibility-baseline) · [§8 Parity Contract](#8-parity-contract--migration-guardrails)
+> [§1 Taxonomy](#1-component-taxonomy) · [§1.4 Box](#14-box--the-native-element-eliminator) · [§2 Prop Naming](#2-prop-naming-conventions) · [§3 TypeScript](#3-typescript-conventions) · [§4 Variant System](#4-variant-system-cva) · [§5 Theming & Tokens](#5-theming--token-contract) · [§6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) · [§6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) · [§6.3 API Consolidation](#63-component-api-consolidation-rules) · [§6.4 Storybook Taxonomy](#64-storybook-category-taxonomy) · [§6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) · [§6.6 Re-classification After Split](#66-re-classification-after-split) · [§7 Accessibility](#7-accessibility-baseline) · [§8 Parity Contract](#8-parity-contract--migration-guardrails)
 >
 > When referencing a section from another doc, use the anchor format: `06-component-standards.md#6-shared-vs-local-boundary-framework`
 
@@ -379,7 +379,7 @@ Does the component use next/link, next/image, or router?
 - Page-level layouts (sidebar with nav config, top bar with user info)
 - Branded full-page loaders (logo, company animation)
 - Chart data wrappers (recharts configs with domain data shapes)
-- Components with `useQuery`/`useMutation` inside
+- Container components wrapping service hooks (`use<Domain>()` from `@/services/`)
 
 ### Always Eligible for packages/ui
 
@@ -393,52 +393,92 @@ Does the component use next/link, next/image, or router?
 
 ---
 
-<a id="62-keepapplocal-salvage-evaluation"></a>
+<a id="62-universal-soc-evaluation"></a>
 
-### 6.2 KEEP_APP_LOCAL Salvage Evaluation
+### 6.2 Universal SoC Evaluation (All Components)
 
-> [!TIP]
-> Before accepting a `KEEP_APP_LOCAL` classification as final, always run this salvage check. Components with a thin app-specific layer over a reusable visual shell are candidates for extraction with one targeted abstraction.
+> [!IMPORTANT]
+> **This evaluation runs for EVERY component during Batch 1 audit — not only `KEEP_APP_LOCAL`.** Enterprise-level SoC means no monolith component survives migration without evaluation. A component that mixes domain wiring and display JSX must be split first; only then are its parts classified and migrated. HIGH and MEDIUM candidates are refactored in **Batch 1.5**, before Batch 2/3/4 begins.
 
-#### When to Attempt Salvage
+#### Step 1 — Is It a Monolith?
 
-Attempt salvage if the component has **at most 2 separable app-specific concerns**.
+A component is a **monolith** if it meets ≥ 1 of these signals:
 
-**Do NOT attempt salvage if:**
+| Signal                                                                                                                               | Example                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Calls any **service hook** (`use<Domain>()` from `@/services/<domain>/hooks/`) **AND** renders display JSX in the same function body | `PolicyCard` calls `usePolicy(policyId)` (from `@/services/policies/hooks/queries`) and also renders the card layout |
+| _(Anti-pattern flag)_ Calls `useQuery` or `useMutation` **directly** inside a component — service layer bypassed                     | Raw `useQuery({ queryKey, queryFn })` in a component body — fix service encapsulation first, then evaluate SoC       |
+| Imports domain types (`Policy`, `Claim`, etc.) directly referenced in JSX                                                            | `<span>{policy.holderName}</span>` inside display markup                                                             |
+| Contains business-logic derivations (status color, label computation, domain conditions) mixed with display code                     | `statusColor = policy.status === 'active' ? 'green' : 'red'` inside render                                           |
+| Imports `next/link` or `next/image` inside a reusable visual component                                                               | Framework import inside what should be a generic card shell                                                          |
+| Constructs URLs or performs routing inline with display                                                                              | `href={/policies/${policy.id}}` directly in rendered JSX                                                             |
 
-- Business logic lives **inside** the component JSX (not merely passed in via props)
-- The component has 3+ distinct app-specific concerns
-- The component performs its own API calls or mutations
-- The component is used only by this app and is not likely needed by any other
+If **zero** signals apply → **Not a monolith.** Record `Is monolith: NO`, `SoC potential: NONE` and proceed to classification.
 
-#### Salvage Potential Levels
+#### Step 2 — Rate SoC Potential
 
-| Level | Criteria |
-| ------ | -------- |
-| `HIGH` | 1 app-specific concern; clear abstraction path; result usable by 2+ apps |
-| `MEDIUM` | 2 concerns; abstraction possible but requires design decisions |
-| `LOW` | Marginally salvageable; effort likely outweighs benefit |
-| `NONE` | 3+ concerns, internal API calls, domain-only, or single-app use only |
+If the component IS a monolith, rate its SoC potential:
 
-#### Abstraction Pattern Reference
+| Level    | Criteria                                                                                           | Action                          |
+| -------- | -------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `HIGH`   | 1 app-specific concern; clear Container/Shell split; pure display Shell likely reusable by 2+ apps | Flag as **Batch 1.5** candidate |
+| `MEDIUM` | 2 separable concerns; SoC split creates cleaner structure even if Shell stays app-local            | Flag as **Batch 1.5** candidate |
+| `LOW`    | Marginally separable; refactoring effort outweighs structural benefit                              | Document, skip Batch 1.5        |
+| `NONE`   | 3+ tightly-coupled concerns; no clear split boundary without full rewrite                          | Document, keep as-is            |
 
-| App-specific element | Abstraction pattern | Outcome |
-| -------------------- | ------------------- | ------- |
-| Next.js `<Link>` or `<Image>` | `as` prop or `renderLink` render prop | Generic shell; framework injected by consumer |
-| Data-fetch hook inside component | Extract hook → pass data as plain props | Pure display component eligible for `packages/ui` |
-| Domain type in props (`Policy`, `Claim`, etc.) | Replace with generic shape or `<T>` generic | Type-agnostic — consumers provide concrete type |
-| Single hardcoded business string/label | Make it a required `children` or `label` prop | No business logic remains in component |
-| Conditional rendering varying by app | Slot API (`leftSlot`, `rightSlot`) or `renderX` render prop | Consumer controls the variable part |
-| URL construction or routing logic | Accept computed `href` as prop | Component stays framework-agnostic |
+#### Step 3 — Identify SoC Strategy
 
-#### Effort and Classification Rules
+For HIGH and MEDIUM candidates, document the concrete split strategy:
 
-- **HIGH or MEDIUM salvage potential:** Tag the `KEEP_APP_LOCAL` audit entry with `Salvage potential` + `Salvage strategy`. The CSV classification stays `KEEP_APP_LOCAL` — add `salvage_potential` and `salvage_strategy` columns. This flags the component for a future extraction sprint; the actual refactor is **not** done during Batch 1.
-- **LOW or NONE:** Record `Salvage potential: NONE` and proceed. No further action needed at audit time.
+| Monolith signal                           | Strategy                   | Shell receives                           | Container retains               |
+| ----------------------------------------- | -------------------------- | ---------------------------------------- | ------------------------------- |
+| Data hook + display JSX                   | `container-shell`          | Display JSX with plain-typed props       | Hook call + domain data mapping |
+| Domain types in props                     | `prop-injection`           | Generic-shaped props (no domain imports) | Maps domain type → plain props  |
+| Business logic + display                  | `container-shell`          | Pure visual rendering                    | Conditional logic, derivations  |
+| `next/link` / `next/image` in shell       | `render-prop` or `as` prop | Generic shell; consumer injects element  | App-level link/image injection  |
+| Data hook + domain types + logic combined | `hook-extraction`          | Shell with fully generic props           | `useXxxData()` hook + container |
 
-> Salvage work is scheduled **after** Batch 1 audit is complete and cross-app demand is confirmed in Phase 02. Never delay the audit to perform salvage work inline.
+#### Step 4 — Impact on Initial Classification
 
-_Cross-reference: [01-app-audit.md — step 4f](./01-app-audit.md) · [migration-batch-prompts.md — Batch 1 step 4e](./migration-batch-prompts.md)_
+```
+If initially classified as ADOPT_NOW / ADOPT_WITH_ADAPTER / EXTEND_EXISTING / NEW_SHARED_COMPONENT
+  AND SoC potential = HIGH or MEDIUM:
+  → Assign MIGRATE_AFTER_SPLIT flag (not a final batch assignment)
+  → Final classification of Shell + Container determined AFTER Batch 1.5
+  → Do NOT assign migration batch until Batch 1.5 complete for this component
+
+If initially classified as KEEP_APP_LOCAL
+  AND SoC potential = HIGH or MEDIUM:
+  → Flag as Batch 1.5 candidate
+  → Container: KEEP_APP_LOCAL (final — no change)
+  → Shell: classified separately after Batch 1.5 (may become NEW_SHARED_COMPONENT)
+
+If SoC potential = LOW or NONE:
+  → Keep initial classification; no Batch 1.5 work needed
+```
+
+#### Agent Skills for SoC Evaluation
+
+> Skills (if installed): `$vercel-composition-patterns` (detect boolean prop proliferation + missing compound component patterns indicative of a monolith); `$next-best-practices` (identify invalid RSC + client boundary mixing that creates forced monolith structure); `$systematic-debugging` (if SoC potential is ambiguous — trace data flow from hook to render before rating)
+
+#### Enterprise Guardrails (Non-Negotiable)
+
+```
+REQUIRED — for every component in _audit-report.md:
+  Is monolith: YES | NO
+  SoC potential: HIGH | MEDIUM | LOW | NONE
+  SoC strategy: <container-shell | prop-injection | render-prop | hook-extraction | none>
+  Batch 1.5 candidate: YES | NO
+
+FORBIDDEN:
+  - Omitting SoC evaluation for any component (NONE is a valid answer — silence is not)
+  - Performing the SoC split inline during Batch 1 audit (refactor runs in Batch 1.5 only)
+  - Assigning MIGRATE_AFTER_SPLIT without recording the concrete SoC strategy
+  - Rating HIGH/MEDIUM without identifying the exact split boundary in the strategy field
+  - Skipping Batch 1.5 when HIGH/MEDIUM candidates exist
+```
+
+_Cross-reference: [01-app-audit.md §SoC Evaluation step](./01-app-audit.md) · [§6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) · [§6.6 Re-classification After Split](#66-re-classification-after-split) · [migration-batch-prompts.md Batch 1.5](./migration-batch-prompts.md)_
 
 ---
 
@@ -461,14 +501,14 @@ If **all three** answers are YES → do **not** add a second component. Merge th
 
 #### Common Anti-Patterns (and Their Fixes)
 
-| Anti-pattern (wrong) | Correct approach |
-| -------------------- | ---------------- |
-| `Button` + `ButtonWithLoading` as separate components | One `Button` with `loading?: boolean` prop |
-| `Table` + `TableHeader` as separate components | One compound `Table` with `Table.Header` sub-component |
-| `Modal` + `ModalWithFooter` as separate components | One `Dialog` with `footer?: React.ReactNode` slot |
-| `Card` + `CardWithImage` as separate components | One `Card` with `image?: React.ReactNode` slot |
-| `Input` + `InputWithLabel` as separate components | One `Input` with `label?: string` + `description?: string` props |
-| `Avatar` + `AvatarWithBadge` as separate components | One `Avatar` with `badge?: React.ReactNode` slot |
+| Anti-pattern (wrong)                                  | Correct approach                                                 |
+| ----------------------------------------------------- | ---------------------------------------------------------------- |
+| `Button` + `ButtonWithLoading` as separate components | One `Button` with `loading?: boolean` prop                       |
+| `Table` + `TableHeader` as separate components        | One compound `Table` with `Table.Header` sub-component           |
+| `Modal` + `ModalWithFooter` as separate components    | One `Dialog` with `footer?: React.ReactNode` slot                |
+| `Card` + `CardWithImage` as separate components       | One `Card` with `image?: React.ReactNode` slot                   |
+| `Input` + `InputWithLabel` as separate components     | One `Input` with `label?: string` + `description?: string` props |
+| `Avatar` + `AvatarWithBadge` as separate components   | One `Avatar` with `badge?: React.ReactNode` slot                 |
 
 #### When App-Specific Variation Is OK
 
@@ -500,23 +540,23 @@ Every component exported from `packages/ui` must be assigned to exactly one Stor
 
 #### Canonical Story Groups
 
-| Story Group | Components |
-| ----------- | ---------- |
-| `Buttons` | `Button`, `IconButton`, `ToggleButton` |
-| `Inputs` | `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup`, `Switch`, `Combobox`, `DatePicker`, `DateRangePicker` |
-| `Overlays` | `Dialog`, `Drawer`, `Popover`, `Tooltip`, `DropdownMenu`, `ContextMenu`, `Sheet` |
-| `Feedback` | `Alert`, `Toast`, `Badge`, `Spinner`, `Skeleton`, `Progress` |
-| `Navigation` | `Breadcrumb`, `Tabs`, `Pagination`, `NavigationMenu`, `Menubar`, `Sidebar` |
-| `Data Display` | `Table`, `DataTable`, `DataList`, `Avatar`, `Calendar` |
-| `Layout` | `Box`, `Card`, `Separator`, `PageHeader`, `ContentLoadingWrapper` |
-| `Misc` | `Command`, `Label`, `Form` (field-level primitives) |
+| Story Group    | Components                                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------------------------- |
+| `Buttons`      | `Button`, `IconButton`, `ToggleButton`                                                                         |
+| `Inputs`       | `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup`, `Switch`, `Combobox`, `DatePicker`, `DateRangePicker` |
+| `Overlays`     | `Dialog`, `Drawer`, `Popover`, `Tooltip`, `DropdownMenu`, `ContextMenu`, `Sheet`                               |
+| `Feedback`     | `Alert`, `Toast`, `Badge`, `Spinner`, `Skeleton`, `Progress`                                                   |
+| `Navigation`   | `Breadcrumb`, `Tabs`, `Pagination`, `NavigationMenu`, `Menubar`, `Sidebar`                                     |
+| `Data Display` | `Table`, `DataTable`, `DataList`, `Avatar`, `Calendar`                                                         |
+| `Layout`       | `Box`, `Card`, `Separator`, `PageHeader`, `ContentLoadingWrapper`                                              |
+| `Misc`         | `Command`, `Label`, `Form` (field-level primitives)                                                            |
 
 #### Story `title` Convention (mandatory)
 
 ```tsx
 // ComponentName.stories.tsx
 const meta: Meta<typeof ComponentName> = {
-  title: 'Buttons/Button',   // '<Group>/<ComponentName>' — always this exact format
+  title: 'Buttons/Button', // '<Group>/<ComponentName>' — always this exact format
   component: ComponentName,
   // ...
 };
@@ -527,6 +567,7 @@ The `title` field determines which folder the story lands in inside the Storyboo
 #### Classification Tracking
 
 The `story_group` field must be populated in:
+
 - The component's `ComponentName.spec.md` (under Overview)
 - The `_component-backlog.csv` (as the `story_group` column)
 - The `11-master-component-roadmap.md` entry (under the component's record)
@@ -534,6 +575,282 @@ The `story_group` field must be populated in:
 This enables cross-app tracking: how many `Overlays` do we still need to build? Are all `Inputs` covered? The answer is always one query on the backlog CSV.
 
 _Cross-reference: [04-build-shared-components.md §Spec Template](./04-build-shared-components.md) · [Batch 1 audit template](./migration-batch-prompts.md)_
+
+---
+
+<a id="65-app-local-refactor-patterns"></a>
+
+### 6.5 App-Local Refactor Patterns (Phase 05A)
+
+> [!IMPORTANT]
+> This section governs **Phase 05A — App-Local SoC Refactor**. It defines the structural patterns for splitting a monolithic KEEP_APP_LOCAL component into a domain-wiring container and a pure-display sub-component, without changing any external API or runtime behavior.
+
+#### The Core Principle
+
+**Refactoring replaces internal structure — not external behavior.**
+
+Callers of the component see the same import path, the same props, and the same rendered output. The only change is internal decomposition. A daily user of the app cannot tell that Phase 05A happened.
+
+#### The Container/Shell Pattern (Primary Pattern)
+
+Split a monolithic component into:
+
+| Layer         | Naming                               | Responsibility                                                                       | Location               |
+| ------------- | ------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------- |
+| **Container** | `ComponentName.tsx` (unchanged name) | Domain wiring: props from API/hooks → pure props → renders Shell                     | Same file, same export |
+| **Shell**     | `ComponentNameShell.tsx`             | Pure display: only plain data types, no domain logic, no API calls, no service hooks | Same directory         |
+
+The container's export signature is **frozen** — its props, name, and file path do not change.
+
+```tsx
+// BEFORE — monolithic, all concerns mixed
+// apps/<APP_NAME>/src/components/policy/PolicyCard.tsx
+// Post-service-migration: usePolicy is already a service hook — but mixing it with display JSX is still a monolith
+// ← service hook (not raw useQuery)
+import type { Policy } from '@/services/policies/api/policies.types';
+import { usePolicy } from '@/services/policies/hooks/queries';
+
+interface PolicyCardProps {
+  policyId: string;
+}
+
+export function PolicyCard({ policyId }: PolicyCardProps) {
+  const { data: policy, isLoading, isError } = usePolicy(policyId);
+
+  if (isLoading) return <div className="animate-pulse h-24 rounded-md bg-muted" />;
+  if (isError || !policy) return <div className="text-destructive">Error loading policy.</div>;
+
+  const statusColor = policy.status === 'active' ? 'text-green-600' : 'text-red-600';
+
+  return (
+    <div className="rounded-md border border-border p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{policy.number}</span>
+        <span className={`text-xs ${statusColor}`}>{policy.status}</span>
+      </div>
+      <div className="mt-2 text-xs text-muted-foreground">{policy.holderName}</div>
+    </div>
+  );
+}
+```
+
+```tsx
+// AFTER — SoC split. External API of PolicyCard is UNCHANGED.
+// --- apps/<APP_NAME>/src/components/policy/PolicyCardShell.tsx ---
+// Pure display — no domain types, no hooks, no API calls
+// This is the packages/ui candidate
+import { Box } from '@repo/ui';
+
+// --- apps/<APP_NAME>/src/components/policy/PolicyCard.tsx (UNCHANGED export) ---
+// Domain container — wires domain data → PolicyCardShell props
+
+import { usePolicy } from '@/services/policies/hooks/queries'; // service hook — stays in Container only
+
+import { PolicyCardShell } from './PolicyCardShell';
+
+interface PolicyCardShellProps {
+  policyNumber: string;
+  status: string;
+  statusVariant: 'success' | 'destructive' | 'muted';
+  holderName: string;
+  isLoading?: boolean;
+  isError?: boolean;
+}
+
+export function PolicyCardShell({
+  policyNumber,
+  status,
+  statusVariant,
+  holderName,
+  isLoading,
+  isError,
+}: PolicyCardShellProps) {
+  if (isLoading) return <Skeleton className="h-24 w-full rounded-md" />;
+  if (isError) return <Box className="text-destructive text-sm">Error loading policy.</Box>;
+
+  return (
+    <Box className="rounded-md border border-border p-4">
+      <Box className="flex items-center justify-between">
+        <Box as="span" className="text-sm font-medium">
+          {policyNumber}
+        </Box>
+        <Badge variant={statusVariant}>{status}</Badge>
+      </Box>
+      <Box className="mt-2 text-xs text-muted-foreground">{holderName}</Box>
+    </Box>
+  );
+}
+
+interface PolicyCardProps {
+  policyId: string; // same prop as before — callers unchanged
+}
+
+export function PolicyCard({ policyId }: PolicyCardProps) {
+  const { data: policy, isLoading, isError } = usePolicy(policyId);
+
+  const statusVariant =
+    policy?.status === 'active' ? 'success' : policy?.status === 'lapsed' ? 'destructive' : 'muted';
+
+  return (
+    <PolicyCardShell
+      policyNumber={policy?.number ?? ''}
+      status={policy?.status ?? ''}
+      statusVariant={statusVariant}
+      holderName={policy?.holderName ?? ''}
+      isLoading={isLoading}
+      isError={isError}
+    />
+  );
+}
+// All callers still import { PolicyCard } from './policy/PolicyCard' — zero change.
+```
+
+#### Naming Conventions
+
+| Shell type             | Suffix    | When to use                                                            |
+| ---------------------- | --------- | ---------------------------------------------------------------------- |
+| `ComponentNameShell`   | `Shell`   | Component primarily renders a visual card/panel/container structure    |
+| `ComponentNameDisplay` | `Display` | Component primarily displays a single data entity (row, cell, badge)   |
+| `ComponentNameLayout`  | `Layout`  | Component defines a structural layout (header + body + footer pattern) |
+
+Use exactly **one** suffix — do not combine (e.g., `CardShellLayout` is wrong).
+
+#### What Makes a Good Shell (packages/ui Candidate Criteria)
+
+A Shell qualifies for eventual `packages/ui` extraction if it meets **all** of the following:
+
+- [ ] Props use only plain data types (`string`, `number`, `boolean`, `React.ReactNode`) — no domain types (`Policy`, `Claim`, etc.)
+- [ ] No service hooks (`use<Domain>()` from `@/services/`), no raw `useQuery`/`useMutation`, no `useContext` (app-specific contexts) — Shell receives everything via props only
+- [ ] No `import` from `next/link`, `next/image`, `next/router`, or `next/navigation`
+- [ ] No `process.env.NEXT_PUBLIC_*` references
+- [ ] Two or more apps would plausibly use this Shell (cross-app demand)
+- [ ] The Shell's visual structure is not hardcoded to a single domain concept
+
+If a Shell passes all criteria → classify it as `NEW_SHARED_COMPONENT` candidate in `_migration-log.md` and queue it for Phase 04 (Build packages/ui).
+
+If a Shell does **not** pass all criteria (e.g., used only in this app, or domain concept too specific) → it stays app-local, named `*Shell`, in the same `src/components/` directory. This is still a valid outcome: the SoC split improves testability and maintainability even without global extraction.
+
+#### Additional Refactor Patterns
+
+**Pattern 2 — Hook Extraction**
+
+When a component mixes data fetching with display, extract the data logic into a custom hook:
+
+```tsx
+// Extract: usePolicyCardData.ts
+export function usePolicyCardData(policyId: string) {
+  const { data, isLoading, isError } = usePolicy(policyId);
+  return {
+    policyNumber: data?.number ?? '',
+    status: data?.status ?? '',
+    statusVariant: data?.status === 'active' ? 'success' : 'destructive',
+    holderName: data?.holderName ?? '',
+    isLoading,
+    isError,
+  } as const;
+}
+
+// Container then becomes a single-line bridge:
+export function PolicyCard({ policyId }: PolicyCardProps) {
+  const displayProps = usePolicyCardData(policyId);
+  return <PolicyCardShell {...displayProps} />;
+}
+```
+
+**Pattern 3 — Prop Injection (Generic Container)**
+
+When a component's domain coupling is only in its type annotations, replace with a generic:
+
+```tsx
+// Before: domain-typed
+interface ClaimRowProps {
+  claim: Claim;
+}
+
+// After: generic — Shell accepts any shape that satisfies the display contract
+interface EntityRowProps {
+  label: string;
+  subLabel?: string;
+  status: string;
+  statusVariant: 'default' | 'success' | 'destructive';
+  href?: string;
+}
+// Caller (container) maps Claim → EntityRowProps. Shell knows nothing about Claim.
+```
+
+#### Phase 05A Guardrails (Non-Negotiable)
+
+```
+ALLOWED:
+- Extracting pure-display JSX into a new *Shell / *Display / *Layout file in the same directory
+- Extracting data-fetching logic into a co-located usXxxData hook
+- Replacing domain types in Shell props with plain generic equivalents
+- Applying the Box pass (§1.4) within the Shell during the same changeset
+- Adding the @repo/ui Skeleton/Spinner import to the Shell for loading states
+
+FORBIDDEN — same no-breaking-change contract as all migration work:
+- Changing the original container's exported name, file path, or prop interface
+- Changing any caller (usage sites of PolicyCard, ClaimRow, etc.) — zero caller changes allowed
+- Changing the rendered output visible to the user (layout, spacing, content, states)
+- Adding new state, effects, or API calls in either the Shell or the Container
+- Splitting more than one component per commit (one component per atomic commit)
+- Skipping the verification gate between components
+```
+
+#### Phase 05A Scope
+
+Only `KEEP_APP_LOCAL` components rated `HIGH` or `MEDIUM` refactor potential in `_audit-report.md` are in scope. `LOW` and `NONE` components are skipped.
+
+_Cross-reference: [05-app-migration.md §Batch 1.5](./05-app-migration.md) · [05-app-migration.md §Phase 05A](./05-app-migration.md#phase-05a) · [migration-batch-prompts.md Batch 1.5](./migration-batch-prompts.md) · [§6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) · [§6.6 Re-classification After Split](#66-re-classification-after-split)_
+
+---
+
+<a id="66-re-classification-after-split"></a>
+
+### 6.6 Re-classification After Split (Post-Batch 1.5 and Post-Phase 05A)
+
+> [!IMPORTANT]
+> After every SoC split (whether from Batch 1.5 or Phase 05A), the audit record must be updated. The original monolith entry is replaced by two separate entries: one for the Container and one for the Shell. Migration batches and cross-app demand analysis both read from the updated audit record.
+
+#### Shell Classification Matrix
+
+After the SoC split, evaluate the Shell for its correct final classification:
+
+| Shell characteristic                                               | Classification                                        |
+| ------------------------------------------------------------------ | ----------------------------------------------------- |
+| Plain props only; no framework imports; likely used by 2+ apps     | `NEW_SHARED_COMPONENT` → queue for Phase 04           |
+| Plain props only; no framework imports; single-app use             | `KEEP_APP_LOCAL` (Shell lives in app)                 |
+| Requires `next/link` / `next/image` but abstracted via render-prop | `NEW_SHARED_COMPONENT` (framework-agnostic interface) |
+| Still has domain logic residue after split                         | Requires further refactor — re-rate SoC potential     |
+
+#### Container Classification
+
+Container is always `KEEP_APP_LOCAL` after the split. Its exported name, file path, and prop interface are frozen. Callers see zero change.
+
+#### Updating the Audit Record (mandatory after Batch 1.5 / Phase 05A)
+
+```
+In _audit-report.md:
+  - Original monolith entry: mark as SPLIT (do not delete)
+  - Add new entry: <ComponentName> Container (KEEP_APP_LOCAL)
+  - Add new entry: <ComponentNameShell> (NEW_SHARED_COMPONENT | KEEP_APP_LOCAL)
+
+In _component-backlog.csv:
+  - Mark original row: classification = SPLIT, notes = "split into <Container> + <Shell>"
+  - Add row: <ComponentNameShell>, classification per matrix above
+
+In _per-app-baseline-summary.md:
+  - Append ## Phase 05A Amendment (or ## Batch 1.5 Amendment) section:
+    - Components split: N
+    - NEW_SHARED_COMPONENT candidates from split: N (list component names)
+    - KEEP_APP_LOCAL-only Shells: N
+  - This amendment is read by Phase 02 cross-app reconciliation
+```
+
+> [!IMPORTANT]
+> The `_per-app-baseline-summary.md` amendment is critical for cross-app demand analysis. Phase 02 runs on `feat/ui` and reads this file to decide which components enter Phase 04. Without the amendment, Shell candidates from Batch 1.5 / Phase 05A are invisible to Phase 02.
+
+_Cross-reference: [01-app-audit.md](./01-app-audit.md) · [§6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) · [§6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) · [05-app-migration.md §Batch 1.5](./05-app-migration.md)_
 
 ---
 
