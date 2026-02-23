@@ -86,7 +86,7 @@ Produce a complete, evidence-based component audit for `apps/<APP_NAME>` that:
 | `NEW_SHARED_COMPONENT` | Not in @repo/ui, used by this app, likely needed by others                 |
 | `KEEP_APP_LOCAL`       | Business-specific — stays in app (forms, table configs, domain components) |
 
-> **After assigning `KEEP_APP_LOCAL`:** Always run Salvage Evaluation ([06-component-standards.md §6.2](./06-component-standards.md#62-keepapplocal-salvage-evaluation)). Rate `Salvage potential` (HIGH / MEDIUM / LOW / NONE) and record `Salvage strategy` in the audit entry. This step is mandatory for every KEEP_APP_LOCAL classification.
+> **Universal SoC Evaluation (applies to ALL components):** After assigning any classification, always run the SoC Evaluation ([06-component-standards.md §6.2](./06-component-standards.md#62-universal-soc-evaluation)). For every component, record `Is monolith`, `SoC potential`, `SoC strategy`, and `Batch 1.5 candidate`. Do NOT skip this step — `NONE` is a valid and expected answer for non-monolith components. Components rated HIGH or MEDIUM are Batch 1.5 candidates and must NOT be assigned a migration batch yet. Their final classification is determined after Batch 1.5 splits them into Shell + Container.
 
 ## Normalization Requirements
 
@@ -105,7 +105,7 @@ For each component, document:
 
 ### ComponentName
 
-- **Classification:** <CLASS>
+- **Classification:** <CLASS> | MIGRATE_AFTER_SPLIT
 - **Source:** `apps/<APP_NAME>/src/components/path/to/component.tsx`
 - **@repo/ui equivalent:** `<ComponentName>` from `@repo/ui` | None
 - **Used in:** [list of pages/views/hooks that use it]
@@ -113,8 +113,13 @@ For each component, document:
 - **Behavior parity risks:** [what must not change]
 - **Native element count:** [number of bare div/span/etc directly in this component's JSX — "0" if none]
 - **Migration notes:** [what exactly needs to happen]
-- **Salvage potential:** HIGH | MEDIUM | LOW | NONE  ← KEEP_APP_LOCAL only; omit for all other classifications
-- **Salvage strategy:** `<render-prop | slot | DI | as-prop | generic | none>` — [brief rationale]  ← KEEP_APP_LOCAL only
+- **Is monolith:** YES | NO ← ALL components; required field
+- **SoC potential:** HIGH | MEDIUM | LOW | NONE ← ALL components; required field
+- **SoC strategy:** `<container-shell | prop-injection | render-prop | hook-extraction | none>` — [what becomes the Shell, what stays in Container] ← ALL components; required field
+- **Batch 1.5 candidate:** YES | NO ← ALL components; YES only if SoC potential is HIGH or MEDIUM
+- **Refactor potential:** HIGH | MEDIUM | LOW | NONE ← KEEP_APP_LOCAL only; omit for all other classifications
+- **Refactor strategy:** `<container-shell | hook-extraction | prop-injection | none>` — [brief rationale] ← KEEP_APP_LOCAL only
+- **Story group:** `Buttons` | `Inputs` | `Overlays` | `Feedback` | `Navigation` | `Data Display` | `Layout` | `Misc` ← NEW_SHARED_COMPONENT and EXTEND_EXISTING only
 
 ```
 
@@ -200,7 +205,10 @@ A fully self-contained one-page summary. Must include:
 6. **Normalization deltas** — most critical naming/API inconsistencies found
 7. **High-risk parity items** — the top 5 behaviors that must not regress
 8. **Backlog CSV row count** — for aggregation verification
-9. **KEEP_APP_LOCAL salvage candidates** — total KEEP_APP_LOCAL count; number rated HIGH or MEDIUM salvage potential; top 3 candidates with strategy noted
+9. **SoC Evaluation Summary** — total Batch 1.5 candidates; breakdown by SoC potential (HIGH/MEDIUM/LOW/NONE); monolith count; projected NEW_SHARED_COMPONENT candidates from Batch 1.5 splits
+10. **KEEP_APP_LOCAL refactor candidates** — KEEP_APP_LOCAL components rated HIGH or MEDIUM SoC potential; top 3 with SoC strategy and whether their Shell layer is a `packages/ui` candidate
+
+> After Batch 1.5 or Phase 05A completes, append `## Batch 1.5 Amendment` or `## Phase 05A Amendment` section recording: components split, NEW_SHARED_COMPONENT candidates surfaced, and KEEP_APP_LOCAL-only Shells. Phase 02 cross-app reconciliation reads this amendment.
 
 ## Acceptance Criteria
 - Every component import in `apps/<APP_NAME>/src/**` is accounted for (no unknowns)

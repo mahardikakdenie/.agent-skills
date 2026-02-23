@@ -43,12 +43,13 @@ During component migration, each app maintains two branch types:
 
 Legacy update routines can be applied at **any point** during component migration:
 
-| Current Migration Phase                    | Risk Level | Approach                                                                                         |
-| ------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------ |
-| **Before Batch 1** (migration not started) | ✅ Low     | Direct integration — nothing migrated yet                                                        |
-| **During Batch 1/2** (import swaps)        | ⚠️ Medium  | Pause → Update → Verify import changes still valid                                               |
-| **During Batch 3/4** (extend/new build)    | ⚠️ Medium  | Pause → Update → Check if legacy added components that overlap with in-progress packages/ui work |
-| **After Batch 5/6** (stabilized/cleanup)   | 🔴 High    | Must use incremental intake for new legacy components                                            |
+| Current Migration Phase                      | Risk Level | Approach                                                                                                                                    |
+| -------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Before Batch 1** (migration not started)   | ✅ Low     | Direct integration — nothing migrated yet                                                                                                   |
+| **During Batch 1.5** (SoC split in progress) | ⚠️ Medium  | Finish current component split commit first → then integrate → re-run SoC evaluation on any new legacy components before resuming Batch 1.5 |
+| **During Batch 1/2** (import swaps)          | ⚠️ Medium  | Pause → Update → Verify import changes still valid                                                                                          |
+| **During Batch 3/4** (extend/new build)      | ⚠️ Medium  | Pause → Update → Check if legacy added components that overlap with in-progress packages/ui work                                            |
+| **After Batch 5/6** (stabilized/cleanup)     | 🔴 High    | Must use incremental intake for new legacy components                                                                                       |
 
 ---
 
@@ -142,15 +143,16 @@ Stop. Do NOT force-push or guess resolutions. Proceed to **Routine 3**.
 
 For each conflicted file, assign exactly one category:
 
-| Category                   | Indicators                                                                                               | Resolution Strategy                                                |
-| -------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **Migrated component**     | In `migration-log.md` as DONE; imports use `@repo/ui`                                                    | `git checkout --ours <file>`                                       |
-| **Non-migrated component** | Not in migration-log.md; still uses local imports or old service patterns                                | `git checkout --theirs <file>`                                     |
-| **In-progress batch item** | In migration-log.md as IN PROGRESS                                                                       | Manually merge — keep ours base, apply legacy additions only       |
-| **Shared infrastructure**  | `packages/config/**`, `packages/helper/**`, `packages/typescript-config/**`, `packages/eslint-config/**` | Manually merge both — prefer ours for migration-specific additions |
-| **App configuration**      | `package.json`, `tsconfig.json`, `tailwind.config.*`, `.env.example`, `vite.config.*`                    | Manually merge — apply new deps/settings, keep migration overrides |
-| **Static assets**          | Images, fonts, icons in `public/` or `assets/`                                                           | `git checkout --theirs <file>` unless we intentionally replaced    |
-| **New file (no conflict)** | Git reports as "added by them"                                                                           | Accept automatically — classify in next routine                    |
+| Category                   | Indicators                                                                                               | Resolution Strategy                                                                                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Migrated component**     | In `migration-log.md` as DONE; imports use `@repo/ui`                                                    | `git checkout --ours <file>`                                                                                                                                                       |
+| **MIGRATE_AFTER_SPLIT**    | In `_audit-report.md` with `Classification: MIGRATE_AFTER_SPLIT`; Batch 1.5 not yet run                  | `git checkout --theirs <file>` — treat as non-migrated. **Do NOT remove the `MIGRATE_AFTER_SPLIT` flag from audit.md.** Re-run SoC evaluation in Routine 4 after merge stabilizes. |
+| **Non-migrated component** | Not in migration-log.md; still uses local imports or old service patterns                                | `git checkout --theirs <file>`                                                                                                                                                     |
+| **In-progress batch item** | In migration-log.md as IN PROGRESS                                                                       | Manually merge — keep ours base, apply legacy additions only                                                                                                                       |
+| **Shared infrastructure**  | `packages/config/**`, `packages/helper/**`, `packages/typescript-config/**`, `packages/eslint-config/**` | Manually merge both — prefer ours for migration-specific additions                                                                                                                 |
+| **App configuration**      | `package.json`, `tsconfig.json`, `tailwind.config.*`, `.env.example`, `vite.config.*`                    | Manually merge — apply new deps/settings, keep migration overrides                                                                                                                 |
+| **Static assets**          | Images, fonts, icons in `public/` or `assets/`                                                           | `git checkout --theirs <file>` unless we intentionally replaced                                                                                                                    |
+| **New file (no conflict)** | Git reports as "added by them"                                                                           | Accept automatically — classify in next routine                                                                                                                                    |
 
 ### Decision Flow
 
@@ -216,9 +218,14 @@ For config, dependency, and style changes:
 If legacy added a new component that belongs to app-local (domain form, table config, page layout):
 
 1. Conflict already resolved via `--theirs` in Routine 3
-2. Classify in `audit.md` — add entry with class `KEEP_APP_LOCAL`
-3. Update `component-backlog.csv` — add row with batch = `N/A`
-4. No further migration action needed
+2. **Universal SoC Evaluation** — before finalizing the audit entry, run the monolith check per [06-component-standards.md §6.2](./06-component-standards.md#62-universal-soc-evaluation):
+   - Is monolith? (data hook + display JSX / domain types in JSX / business logic in render)
+   - Rate SoC potential: `HIGH | MEDIUM | LOW | NONE`
+   - Identify SoC strategy: `container-shell | prop-injection | render-prop | hook-extraction | none`
+   - Set `Batch 1.5 candidate: YES` if HIGH or MEDIUM → classification becomes `MIGRATE_AFTER_SPLIT` (not `KEEP_APP_LOCAL` yet)
+3. Add entry to `_audit-report.md` with all SoC fields populated (`Is monolith`, `SoC potential`, `SoC strategy`, `Batch 1.5 candidate`)
+4. Update `_component-backlog.csv` — `batch = N/A` if `Batch 1.5 candidate: NO`; `batch = 1.5` if YES
+5. If `Batch 1.5 candidate: YES` — add to Batch 1.5 queue; final classification (Shell + Container) determined after split
 
 ### 4.5 Create Update Log
 
@@ -381,10 +388,12 @@ Create a separate file per update at:
 
 - **New component files:** <list or "None">
 - **Modified components (non-migrated):** <list or "None">
+- **Modified components (MIGRATE_AFTER_SPLIT — re-evaluated):** <list or "None">
 - **Modified components (migrated — review needed):** <list or "None">
 - **Config/dependency changes:** <list or "None">
 - **Asset changes:** <list or "None">
 - **packages/ui intake candidates:** <list or "None">
+- **New Batch 1.5 candidates (from legacy):** <list or "None">
 
 ## Conflict Resolution Summary
 
@@ -416,8 +425,11 @@ Create a separate file per update at:
 ## Current Migration Status
 
 - **Batch position:** <e.g., "Batch 1 complete, Batch 2 3/7 done">
+- **Batch 1.5 status:** Pending | In Progress | Complete | N/A
+- **Batch 1.5 candidates affected by this update:** <list or "None">
 - **Components DONE:** <count>
 - **Components IN PROGRESS:** <count or "none">
+- **Components MIGRATE_AFTER_SPLIT (Batch 1.5 pending):** <count or "none">
 
 ## Next Steps
 

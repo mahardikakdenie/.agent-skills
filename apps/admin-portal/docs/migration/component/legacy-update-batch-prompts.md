@@ -56,7 +56,7 @@ Replace these in every prompt before running:
 | `<APP_PATH>`      | `apps/admin-portal`  | Monorepo-relative path to app root        |
 | `<APP_PACKAGE>`   | `@repo/admin-portal` | Package name for `pnpm --filter`          |
 | `<LEGACY_REMOTE>` | `admin-portal`       | Git remote name for the legacy repo       |
-| `<LEGACY_BRANCH>` | `stage`               | Default branch of the legacy repo         |
+| `<LEGACY_BRANCH>` | `stage`              | Default branch of the legacy repo         |
 
 ---
 
@@ -113,6 +113,7 @@ Follow <APP_PATH>/docs/migration/component/legacy-update-routines.md Routine 3:
 | Category | Indicator | Resolution |
 |---|---|---|
 | Migrated component | In migration-log.md with Status=DONE; imports use @repo/ui | git checkout --ours <file> |
+| MIGRATE_AFTER_SPLIT | In _audit-report.md with Classification=MIGRATE_AFTER_SPLIT; Batch 1.5 not yet run | git checkout --theirs <file> (treat as non-migrated). Do NOT remove MIGRATE_AFTER_SPLIT flag from audit.md. Re-evaluate SoC in Batch 3 after merge stabilizes. |
 | Non-migrated component | Not in migration-log.md; still uses local imports | git checkout --theirs <file> |
 | In-progress batch item | In migration-log.md with Status=IN PROGRESS | Manual merge — keep our base, apply legacy additions |
 | Shared infrastructure | packages/config/**, packages/helper/**, tsconfig | Manual merge — prefer ours, apply new additions |
@@ -167,7 +168,20 @@ git diff migrate-app/<APP_NAME>..integrate/<APP_NAME> --name-only
 Apply the shared-vs-local boundary from <APP_PATH>/docs/migration/component/06-component-standards.md:
 - Is it purely visual (no API calls, no domain types)?
   YES → Used by 2+ apps? → NEW_SHARED_COMPONENT or EXTEND_EXISTING
-  NO  → KEEP_APP_LOCAL
+  NO  → Classify as KEEP_APP_LOCAL, then run Universal SoC Evaluation:
+
+**Universal SoC Evaluation (required for all KEEP_APP_LOCAL from legacy):**
+Per 06-component-standards.md §6.2:
+- Is monolith? (data hook + display JSX / domain types in JSX / business logic in render)
+- Rate SoC potential: HIGH | MEDIUM | LOW | NONE
+- Identify SoC strategy: container-shell | prop-injection | render-prop | hook-extraction | none
+- Set Batch 1.5 candidate: YES (if HIGH or MEDIUM) | NO
+- If Batch 1.5 candidate = YES:
+  → Classification = MIGRATE_AFTER_SPLIT (not KEEP_APP_LOCAL yet)
+  → batch = 1.5 in _component-backlog.csv
+  → Add to Batch 1.5 queue in update log
+- If Batch 1.5 candidate = NO:
+  → Classification = KEEP_APP_LOCAL; batch = N/A
 
 **Step 4 — Create update log:**
 - Create directory if needed: mkdir -p <APP_PATH>/docs/migration/component/legacy-updates
@@ -423,14 +437,15 @@ Fill in:
 
 ## Quick Reference: Scenario → Batch Sequence
 
-| Scenario                                                              | Batch Sequence     | Est. Time |
-| --------------------------------------------------------------------- | ------------------ | --------- |
-| Clean merge, no new components                                        | 1 → 3 → 4 → 6      | 30–60 min |
-| Conflicts, no new components                                          | 1 → 2 → 3 → 4 → 6  | 1–2 hours |
-| Clean merge, new KEEP_APP_LOCAL only                                  | 1 → 3 → 4 → 6      | 30–60 min |
-| Clean merge, new packages/ui candidate                                | 1 → 3 → 5 → 6      | 1–3 hours |
-| Conflicts + new packages/ui candidate                                 | 1 → 2 → 3 → 5 → 6  | 2–4 hours |
-| Post-cleanup (Batch 5 done) + new candidate now available in @repo/ui | 1 → 3 → 5 → 5A → 6 | 3–5 hours |
+| Scenario                                                                     | Batch Sequence                   | Est. Time |
+| ---------------------------------------------------------------------------- | -------------------------------- | --------- |
+| Clean merge, no new components                                               | 1 → 3 → 4 → 6                    | 30–60 min |
+| Conflicts, no new components                                                 | 1 → 2 → 3 → 4 → 6                | 1–2 hours |
+| Clean merge, new KEEP_APP_LOCAL only (SoC = LOW/NONE)                        | 1 → 3 → 4 → 6                    | 30–60 min |
+| Clean merge, new KEEP_APP_LOCAL with HIGH/MEDIUM SoC (→ MIGRATE_AFTER_SPLIT) | 1 → 3 → 4 → 6 + Batch 1.5 queued | 1–2 hours |
+| Clean merge, new packages/ui candidate                                       | 1 → 3 → 5 → 6                    | 1–3 hours |
+| Conflicts + new packages/ui candidate                                        | 1 → 2 → 3 → 5 → 6                | 2–4 hours |
+| Post-cleanup (Batch 5 done) + new candidate now available in @repo/ui        | 1 → 3 → 5 → 5A → 6               | 3–5 hours |
 
 ---
 

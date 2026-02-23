@@ -20,6 +20,8 @@ Migrate `apps/<APP_NAME>` from local component copies to shared `@repo/ui` compo
 
 - [ ] You are on branch `migrate-app/<APP_NAME>`
 - [ ] Phase 01 audit is complete for this app
+- [ ] SoC Evaluation completed for all components in `_audit-report.md` (fields: Is monolith / SoC potential / SoC strategy / Batch 1.5 candidate)
+- [ ] If any Batch 1.5 candidates (HIGH or MEDIUM) exist → Batch 1.5 must run before Batch 2/3/4
 - [ ] The target Batch's components are available in `@repo/ui` (check `packages/ui/src/index.ts`)
 - [ ] `packages/ui/docs/normalization/_output/21-adapter-mapping.md` is accessible
 
@@ -35,6 +37,91 @@ Migrate `apps/<APP_NAME>` from local component copies to shared `@repo/ui` compo
 | `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md`    | Append-only log of every change made             |
 | `apps/<APP_NAME>/docs/migration/component/_output/_parity-checklist.md` | Updated status (from ⬜ to ✅ as items complete) |
 | Code changes in `apps/<APP_NAME>/src/**`                                | Updated imports, deleted local copies            |
+
+---
+
+## §Batch 1.5 — SoC Pre-Migration Refactor
+
+> **Run:** After Phase 01 audit is complete, before Batch 2/3/4 begins.
+> **Skip if:** Zero components rated `Batch 1.5 candidate: YES` in `_audit-report.md`.
+> **Scope:** ALL components (any classification) where `SoC potential: HIGH` or `MEDIUM` — not just `KEEP_APP_LOCAL`.
+> **Standard:** [06-component-standards.md §6.2](./06-component-standards.md#62-universal-soc-evaluation) · [§6.5](./06-component-standards.md#65-app-local-refactor-patterns) · [§6.6](./06-component-standards.md#66-re-classification-after-split)
+> **Prompt:** [migration-batch-prompts.md Batch 1.5](./migration-batch-prompts.md)
+
+### Objective
+
+Split monolith components into a domain-wiring **Container** and a pure-display **Shell** before any migration batch runs. This ensures:
+
+- Migration batches (2/3/4) operate on clean, separated components
+- Shells that qualify as `packages/ui` candidates are surfaced early (not after stabilization)
+- Callers see zero change — the Container retains the same export name, path, and props
+
+### Non-Breaking Change Contract
+
+> [!IMPORTANT]
+> The external API of the Container is **completely frozen**. This is the same contract as all migration work — a user of the app cannot observe that Batch 1.5 happened.
+
+```
+VERIFIABLE: zero diff in any file that imports the original component
+VERIFIABLE: rendered output is pixel-identical before/after (smoke route check)
+VERIFIABLE: TypeScript types pass without changes to callers
+```
+
+### What Is Refactored
+
+Only components from `_audit-report.md` where `Batch 1.5 candidate: YES`. Processed one component per atomic commit.
+
+### Patterns
+
+See [06-component-standards.md §6.5](./06-component-standards.md#65-app-local-refactor-patterns) for full pattern code examples.
+
+| Pattern                   | When to use                                                           |
+| ------------------------- | --------------------------------------------------------------------- |
+| `container-shell`         | Component mixes data hook + display JSX                               |
+| `prop-injection`          | Domain coupling is only in type annotations                           |
+| `render-prop` / `as` prop | Framework imports (`next/link`, `next/image`) inside a reusable shell |
+| `hook-extraction`         | Data hook + domain types + logic all combined in one component        |
+
+### Verification Gate (per component — non-negotiable)
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types  # zero new errors
+pnpm --filter <APP_PACKAGE> lint         # zero new errors
+pnpm --filter <APP_PACKAGE> build        # clean build
+# Then: smoke-check the component's primary render route visually
+# Then: grep -r "ComponentName" src/ -- confirm zero caller files changed
+```
+
+### Guardrails (same as §6.5 — non-negotiable)
+
+```
+ALLOWED:
+- Creating *Shell.tsx / *Display.tsx / *Layout.tsx in the same directory
+- Extracting pure-display JSX into the Shell
+- Extracting data-fetching logic into a co-located useXxxData hook
+- Replacing domain types in Shell props with plain generic equivalents
+- Applying the Box pass within the Shell during the same changeset
+- Importing @repo/ui Skeleton/Spinner in the Shell for loading states
+
+FORBIDDEN — zero tolerance:
+- Changing the Container's exported name, file path, or prop interface
+- Touching any caller of the original component
+- Changing any rendered output visible to the user
+- Adding new state, effects, or API calls to either Shell or Container
+- Processing more than one component per atomic commit
+- Skipping the verification gate between components
+```
+
+### Output (mandatory after Batch 1.5)
+
+1. **`_audit-report.md` amended:** Original monolith entry marked `SPLIT`; two new entries added (Container + Shell) with their classifications
+2. **`_component-backlog.csv` amended:** Original row marked `SPLIT`; new Shell row added
+3. **`_migration-log.md`:** Append `## Batch 1.5 — SoC Pre-Migration Refactor` section
+4. **`_per-app-baseline-summary.md`:** Append `## Batch 1.5 Amendment` block (components split, NEW_SHARED_COMPONENT candidates, KEEP_APP_LOCAL-only Shells)
+
+### Shell → packages/ui Pathway
+
+Shells that pass the [§6.6 Shell Classification Matrix](./06-component-standards.md#66-re-classification-after-split) (`NEW_SHARED_COMPONENT`) are queued for Phase 04 on `feat/ui`. This makes Batch 1.5 a **primary source of packages/ui candidates from app-local monoliths**.
 
 ---
 
@@ -550,6 +637,84 @@ next-devtools MCP:
   → verify no "use server" marker appears inside @repo/ui subtree
   → check Time to First Byte hasn't regressed (PPR-enabled apps)
 ```
+
+---
+
+<a id="phase-05a"></a>
+
+## §Phase 05A — App-Local SoC Refactor
+
+> [!IMPORTANT]
+> **When to run:** After Batch 9 (Stabilization) acceptance criteria all pass, before Batch 10 (Cleanup). Use the [Batch 9.5 prompt in migration-batch-prompts.md](./migration-batch-prompts.md#batch-95--app-local-soc-refactor-phase-05a).
+>
+> **Skip if:** Zero KEEP_APP_LOCAL components rated HIGH or MEDIUM in `_audit-report.md` under `Refactor potential`.
+
+### Objective
+
+Refactor KEEP_APP_LOCAL components for better separation of concerns by splitting them into:
+
+- **Container** (same file, same export) — domain logic + data wiring
+- **Shell** (new `*Shell.tsx` file, same directory) — pure display, no domain logic
+
+**Callers see zero change.** External API of every container remains frozen.
+
+### Trigger: What Gets Refactored
+
+Only components from `_audit-report.md` where `Refactor potential: HIGH` or `Refactor potential: MEDIUM`. These were tagged during Batch 1 audit.
+
+`LOW` and `NONE` components are **not** in scope for Phase 05A.
+
+### Patterns
+
+See [06-component-standards.md §6.5](./06-component-standards.md#65-app-local-refactor-patterns) for full patterns with code examples.
+
+| Pattern                                                              | When to use                                                                                                    |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Container/Shell** — split monolithic into container + `*Shell.tsx` | Component mixes domain data + display JSX                                                                      |
+| **Hook Extraction** — pull data logic into `useXxxData` hook         | Component calls a service hook (`use<Domain>()`) directly inside render logic, mixing data wiring with display |
+| **Prop Injection** — replace domain types with plain props in Shell  | Domain coupling is only in type annotations                                                                    |
+
+### Phase 05A Guardrails
+
+```
+ALLOWED:
+- Creating *Shell.tsx / *Display.tsx / *Layout.tsx in the same directory
+- Extracting pure-display JSX into the Shell
+- Extracting data-fetching logic into a co-located useXxxData hook
+- Replacing domain types in Shell props with plain generic equivalents
+- Applying the Box pass (§1.4) within the Shell during the same changeset
+- Importing @repo/ui Skeleton/Spinner in the Shell for loading states
+
+FORBIDDEN — zero tolerance, violation = rollback this component:
+- Changing the container's exported name, file path, or prop interface
+- Changing ANY caller (zero caller files may be touched)
+- Changing any rendered output visible to the user
+- Adding new state, effects, or API calls in either Shell or Container
+- Processing more than one component per atomic commit
+- Skipping the verification gate between components
+```
+
+### Verification Gate (per component)
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types  # zero errors
+pnpm --filter <APP_PACKAGE> lint         # zero errors
+pnpm --filter <APP_PACKAGE> build        # clean build
+```
+
+Then: manually verify the component's smoke route still renders identically.
+
+### Output
+
+All Phase 05A results are logged under `## Phase 05A — App-Local Refactor` in `_migration-log.md`.
+
+For each component, record: refactor strategy applied, container/shell file paths, domain logic removed, packages/ui candidacy result, Box pass count, gate results, and grep confirmation of zero caller changes.
+
+### Shell → packages/ui Pathway
+
+When a Shell passes the §6.5 "Good Shell Criteria" checklist (plain props only, no framework imports, no env vars, cross-app demand) → classify it as a `NEW_SHARED_COMPONENT` candidate in `_migration-log.md` and queue it for Phase 04 (Build packages/ui).
+
+This makes Phase 05A a **secondary source of packages/ui candidates** — components that were previously missed or not yet ready during Phase 01 audit.
 
 ---
 

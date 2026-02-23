@@ -65,7 +65,7 @@ The following skills may be installed in this project (`skills/`). **Only use a 
 > **Run:** Once per app, before anything else
 > **Blocks:** All subsequent batches
 
-```
+````
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 
 Read `<APP_PATH>/docs/migration/component/00-overview.md` Branch Model section.
@@ -83,7 +83,7 @@ find <APP_PATH> -name "package-lock.json" -not -path "*/node_modules/*"
 # Detect lock files only at workspace root
 find . -maxdepth 1 -name "yarn.lock"
 find . -maxdepth 1 -name "package-lock.json"
-```
+````
 
 If any are found, **delete them immediately**:
 
@@ -108,10 +108,13 @@ pnpm install
 > wrong — do not proceed. Confirm the root `package.json` has `"packageManager": "pnpm@..."`.
 
 Commit the cleanup if any lock files were removed:
+
 ```bash
 git add -A
 ```
+
 Use commit scope by lock-file location:
+
 - If removed files are only under `apps/<APP_NAME>`: `git commit -m "chore(<APP_NAME>): enforce pnpm - remove yarn.lock / package-lock.json"`
 - If removed files include workspace root (or multiple apps): `git commit -m "chore: enforce pnpm - remove yarn.lock / package-lock.json"`
 
@@ -123,6 +126,7 @@ Create or update `<APP_PATH>/docs/migration/verification-gate.md` with the exact
 commands for THIS app:
 
 Required sections:
+
 1. Typecheck command: `pnpm --filter <APP_PACKAGE> check-types`
 2. Lint command: `pnpm --filter <APP_PACKAGE> lint`
 3. Build command: `pnpm --filter <APP_PACKAGE> build`
@@ -136,6 +140,7 @@ pre-existing issue (do not modify component or migration files).
 > Skills (if installed): `$monorepo-workspace` (confirm correct --filter selector for this app, script names available); `$turborepo` (confirm correct --filter values, verify task pipeline is set up); `$next-upgrade` (if Next.js version needs updating before migration begins); `$systematic-debugging` (if any gate command fails — trace root cause before attempting fixes)
 
 Do NOT create any migration output files yet.
+
 ```
 
 ---
@@ -147,10 +152,12 @@ Do NOT create any migration output files yet.
 > **Blocks:** All subsequent batches — do NOT start Batch 1 until this gate passes
 > **Spec doc:** `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md`
 
-````
+```
+
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 
 Read before starting:
+
 - `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md` (full spec — Part A for platform standards, Part B for app-specific audit)
 - `<APP_PATH>/docs/migration/verification-gate.md`
 - `<APP_PATH>/package.json` (current installed versions)
@@ -174,6 +181,7 @@ These are monorepo-wide requirements — not optional per-app decisions.
 ### A1. Pre-Upgrade Snapshot
 
 Capture current versions before making any changes:
+
 ```bash
 cat <APP_PATH>/package.json | jq '{
   react: .dependencies.react,
@@ -188,12 +196,14 @@ cat <APP_PATH>/package.json | jq '{
 ```
 
 ### A2. Upgrade React → 19
+
 ```bash
 pnpm --filter <APP_PACKAGE> add react@^19 react-dom@^19
 pnpm --filter <APP_PACKAGE> add -D @types/react@^19 @types/react-dom@^19
 ```
 
 ### A3. Align TypeScript + ESLint toolchain
+
 ```bash
 # Pin TypeScript to match root workspace and packages/ui
 pnpm --filter <APP_PACKAGE> add -D typescript@5.9.2
@@ -215,6 +225,7 @@ pnpm --filter <APP_PACKAGE> add -D tailwindcss@^4 @tailwindcss/postcss@^4
 Apply **mandatory config changes**:
 
 **`postcss.config.js` (or `.cjs`):**
+
 ```diff
 -module.exports = {
 -  plugins: {
@@ -228,9 +239,11 @@ Apply **mandatory config changes**:
 +  },
 +};
 ```
+
 > autoprefixer is bundled in Tailwind v4 — removing it from postcss is correct.
 
 **`globals.css` (or `app/globals.css`):**
+
 ```diff
 -@tailwind base;
 -@tailwind components;
@@ -238,10 +251,12 @@ Apply **mandatory config changes**:
 +@import "tailwindcss";
 +@config "../tailwind.config.ts";
 ```
+
 > `@config` preserves all existing `tailwind.config.ts` customizations.
 > Adjust the relative path to match your config file location.
 
 **`tailwind.config.ts` — remove v3-only keys (do not touch theme/content):**
+
 ```diff
 -  mode: 'jit',         // v4 default, ignored
 -  future: {},          // v3-only
@@ -264,6 +279,7 @@ npx @next/codemod@canary upgrade latest
 ```
 
 Review the codemod diff carefully — accept all proposed changes. It patches:
+
 - `page.tsx`, `layout.tsx`, `route.ts` — `await params` / `await searchParams`
 - Server Components calling `cookies()` or `headers()` — adds `await`
 - `generateMetadata` functions — adds `await params`
@@ -278,6 +294,7 @@ pnpm --filter <APP_PACKAGE> add -D eslint-config-next@16
 #### Step A5-3 — Verify with next-devtools MCP
 
 Use next-devtools MCP after starting the dev server:
+
 - Inspect component tree on 3–5 key routes from `verification-gate.md` smoke list
 - Confirm no `"params is not a Promise"` or `"cookies() was called outside"` warnings in server logs
 - Verify no `"use server"` marker appears inside `@repo/ui` component subtree
@@ -291,6 +308,7 @@ pnpm --filter <APP_PACKAGE> check-types
 ```
 
 Common remaining issues after codemod:
+
 - `Type 'Promise<Params>' is not assignable` → manually add `await` + mark function `async`
 - `cookies() expects no arguments` → remove call args, use `.get(name)` after `await`
 - `searchParams` property access on plain object → use `const sp = await searchParams` at top
@@ -311,25 +329,30 @@ If detected, remove legacy obfuscation wiring:
    - `dev`: `next dev`
    - `build`: `next build`
 3. Remove dependency:
+
 ```bash
 pnpm --filter <APP_PACKAGE> remove webpack-obfuscator
 ```
 
 Guardrails:
+
 - Do **not** introduce a custom post-build obfuscation script in this migration batch.
 - Keep runtime behavior unchanged; only remove build-time webpack-only obfuscation integration.
 - Rely on Next.js production minification defaults and default source-map behavior.
 
 Verification commands (run both):
+
 ```bash
 pnpm --filter <APP_PACKAGE> build
 pnpm --filter <APP_PACKAGE> dev
 ```
 
 ### A7. Install and check for peer dep warnings
+
 ```bash
 pnpm install
 ```
+
 Review output. Document any warnings.
 
 ---
@@ -346,6 +369,7 @@ cat <APP_PATH>/package.json | jq '{dependencies, devDependencies}'
 ```
 
 For each package, determine:
+
 1. **Is it deprecated?** (npm warns at install, package archived, no releases in 2+ years)
 2. **Is it made redundant by a platform upgrade?** (e.g., a utility now built into React 19, Tailwind v4, or Next.js 16)
 3. **Does it have no maintained upgrade path?** (deep dependency on React 16/17-era APIs)
@@ -366,9 +390,11 @@ before removing.
 - **Remove legacy webpack obfuscation** - if the app still uses `webpack-obfuscator`, remove the webpack-only integration per Part A6 (do not replace with a custom obfuscation script in this batch).
 
 - **Remove** — if deprecated AND zero direct usage AND not needed in configs
+
   ```bash
   pnpm --filter <APP_PACKAGE> remove <package-name>
   ```
+
   Re-run `check-types` immediately after each removal.
 
 - **Keep and defer** — if still used in source but has no clean upgrade path:
@@ -402,6 +428,7 @@ pnpm --filter <APP_PACKAGE> dev
 ```
 
 Targeted scans:
+
 ```bash
 # Confirm React 19 removed import is gone
 rg "from 'react-dom/test-utils'" <APP_PATH>/src <APP_PATH>/app
@@ -419,21 +446,22 @@ rg "\.cookies\(\)\." <APP_PATH>/app --include="*.tsx" --include="*.ts"
 
 ## Common Issues and Fixes
 
-| Problem | Fix |
-| ------- | --- |
-| `Property 'children' does not exist` on `React.FC` | Add `children?: React.ReactNode` to the Props interface |
-| `Type 'X' is not assignable to 'ReactNode'` | Fix the return type — stricter in React 19 |
-| `Module 'react-dom/test-utils' has no export 'act'` | `import { act } from 'react'` |
-| ESLint rule errors after `eslint-config-next` bump | Check `.eslintrc` for renamed rule keys |
-| CSS not loading | `postcss.config.js` still uses old tailwindcss plugin — switch to `@tailwindcss/postcss` |
-| Theme tokens missing | Add `@config "../tailwind.config.ts"` to `globals.css` |
-| `Type 'Promise<Params>' is not assignable to...` | Codemod missed a params access — add `await` manually, mark fn `async` |
-| Route behaves differently after codemod | Check server logs for `cookies()` or `params` sync-access warning — add `await` where flagged |
-| ESLint errors on `next/config` imports | Removed in Next.js 16 — replace with `process.env` or Next.js runtime config |
+| Problem                                             | Fix                                                                                           |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `Property 'children' does not exist` on `React.FC`  | Add `children?: React.ReactNode` to the Props interface                                       |
+| `Type 'X' is not assignable to 'ReactNode'`         | Fix the return type — stricter in React 19                                                    |
+| `Module 'react-dom/test-utils' has no export 'act'` | `import { act } from 'react'`                                                                 |
+| ESLint rule errors after `eslint-config-next` bump  | Check `.eslintrc` for renamed rule keys                                                       |
+| CSS not loading                                     | `postcss.config.js` still uses old tailwindcss plugin — switch to `@tailwindcss/postcss`      |
+| Theme tokens missing                                | Add `@config "../tailwind.config.ts"` to `globals.css`                                        |
+| `Type 'Promise<Params>' is not assignable to...`    | Codemod missed a params access — add `await` manually, mark fn `async`                        |
+| Route behaves differently after codemod             | Check server logs for `cookies()` or `params` sync-access warning — add `await` where flagged |
+| ESLint errors on `next/config` imports              | Removed in Next.js 16 — replace with `process.env` or Next.js runtime config                  |
 
 ## Guardrails
 
 ALLOWED:
+
 - Upgrading packages per Part A (React 19, Next.js 16, Tailwind v4, TypeScript 5.9.2)
 - Running `npx @next/codemod@canary upgrade latest` and accepting all its proposed changes
 - Adding `await` to `params`, `searchParams`, `cookies()`, `headers()` calls (codemod output)
@@ -442,6 +470,7 @@ ALLOWED:
 - Fixing type errors introduced directly by React 19 / Next.js 16 upgrade
 
 FORBIDDEN:
+
 - Refactoring component logic (even if it would look cleaner in React 19)
 - Removing `forwardRef` wrappers — they still work; record as improvement candidate
 - Removing packages that appear unused without first checking config files and indirect usage
@@ -453,6 +482,7 @@ Use the template in `09-dependency-upgrades.md` Part D to append to
 `<APP_PATH>/docs/migration/component/_output/_migration-log.md`.
 
 Key sections to fill:
+
 - **Platform Packages Upgraded** — record all Part A changes with from/to versions
 - **Config Changes** — list every config file changed and what changed
 - **App-Specific Packages Removed** — only packages confirmed-dead from Part B
@@ -462,6 +492,7 @@ Key sections to fill:
 > Skills (if installed): `$next-upgrade` (React + Next.js version alignment steps); `$systematic-debugging` (if check-types fails — trace before fixing); `$monorepo-workspace` (confirm --filter selector, script names); `$next-best-practices` (validate RSC/client boundaries after React 19 + Next.js 16 upgrade); `next-devtools MCP` (component tree inspection, server log analysis, RSC boundary verification — use after A5-3 dev server smoke check)
 
 Do NOT start Batch 1 (Component Audit) until this gate passes.
+
 ````
 
 
@@ -496,12 +527,16 @@ Do NOT start Batch 1 (Component Audit) until this gate passes.
    b. Check if it exists in `packages/ui/src/index.ts`
    c. Compare prop API if it exists
    d. Assign one classification using the rules above
-   e. Note parity risk (LOW / MEDIUM / HIGH) based on behavioral complexity
-   f. **If KEEP_APP_LOCAL:** run Salvage Evaluation ([06-component-standards.md §6.2](./06-component-standards.md#62-keepapplocal-salvage-evaluation))
-      - Rate: HIGH (1 concern, clear abstraction path) | MEDIUM (2 concerns) | LOW (marginal) | NONE (3+ concerns or internal API calls)
-      - If HIGH or MEDIUM: identify the abstraction strategy (as-prop / render-prop / slot / DI / generic)
-      - Record in `Salvage potential` and `Salvage strategy` fields of the audit entry
-   g. **If NEW_SHARED_COMPONENT:** run Consolidation Quality Gate ([06-component-standards.md §6.3](./06-component-standards.md#63-component-api-consolidation-rules))
+   e. **Universal SoC Evaluation (ALL components):** Run the monolith check per [06-component-standards.md §6.2](./06-component-standards.md#62-universal-soc-evaluation)
+      - Is monolith? (service hook call + display JSX in same function / domain types in JSX / business logic in render / next/link in shell / URL construction in render)
+        — **Service hook** = any `use<Domain>()` from `@/services/<domain>/hooks/` (per SERVICE_ARCHITECTURE.md). Raw `useQuery`/`useMutation` in a component = service layer bypassed — fix separately.
+      - Rate SoC potential: HIGH | MEDIUM | LOW | NONE
+      - Identify SoC strategy: `container-shell | prop-injection | render-prop | hook-extraction | none`
+      - Set Batch 1.5 candidate: YES (if HIGH or MEDIUM) | NO
+      - If Batch 1.5 candidate = YES: do NOT assign a migration batch number yet (classification = MIGRATE_AFTER_SPLIT)
+   f. If KEEP_APP_LOCAL: also fill `Refactor potential` and `Refactor strategy` fields (subset of SoC eval already done in step 4e)
+   g. Note parity risk (LOW / MEDIUM / HIGH) based on behavioral complexity
+   h. **Consolidation Gate — If NEW_SHARED_COMPONENT:** run Consolidation Quality Gate ([06-component-standards.md §6.3](./06-component-standards.md#63-component-api-consolidation-rules))
       - Same root? Small delta (≤ 2 props/slots)? No domain logic? → If YES to all 3: reclassify as `EXTEND_EXISTING`
       - Assign `story_group` from §6.4 taxonomy (e.g. `Buttons`, `Overlays`, `Feedback`)
 5. Build parity checklist for all shared-candidate components
@@ -516,22 +551,26 @@ One entry per component:
 ### ComponentName
 
 - **File:** `src/components/path/ComponentName.tsx`
-- **Classification:** ADOPT_NOW | ADOPT_WITH_ADAPTER | EXTEND_EXISTING | NEW_SHARED_COMPONENT | KEEP_APP_LOCAL
-- **Batch:** 1 | 2 | 3 | 4 | N/A
+- **Classification:** ADOPT_NOW | ADOPT_WITH_ADAPTER | EXTEND_EXISTING | NEW_SHARED_COMPONENT | KEEP_APP_LOCAL | MIGRATE_AFTER_SPLIT
+- **Batch:** 1 | 2 | 3 | 4 | 1.5 | N/A
 - **@repo/ui status:** exists (exact export name) | partial | missing
 - **API delta:** (props that differ, if any)
 - **Parity risk:** LOW | MEDIUM | HIGH
 - **Risk notes:** (what could regress)
 - **Reason kept app-local:** (if KEEP_APP_LOCAL — domain logic / API call / app-specific)
-- **Salvage potential:** HIGH | MEDIUM | LOW | NONE  ← KEEP_APP_LOCAL only; omit for all other classifications
-- **Salvage strategy:** `<render-prop | slot | DI | as-prop | generic | none>` — [brief rationale]  ← KEEP_APP_LOCAL only
+- **Is monolith:** YES | NO  ← ALL components; required
+- **SoC potential:** HIGH | MEDIUM | LOW | NONE  ← ALL components; required
+- **SoC strategy:** `<container-shell | prop-injection | render-prop | hook-extraction | none>`  ← ALL components; required
+- **Batch 1.5 candidate:** YES | NO  ← ALL components; YES only if SoC potential HIGH or MEDIUM
+- **Refactor potential:** HIGH | MEDIUM | LOW | NONE  ← KEEP_APP_LOCAL only
+- **Refactor strategy:** `<container-shell | hook-extraction | prop-injection | none>` — [brief rationale]  ← KEEP_APP_LOCAL only
 - **Story group:** `Buttons` | `Inputs` | `Overlays` | `Feedback` | `Navigation` | `Data Display` | `Layout` | `Misc`  ← NEW_SHARED_COMPONENT and EXTEND_EXISTING only
 
 ```
 
 ### `<APP_PATH>/docs/migration/component/_output/_component-backlog.csv`
 
-Columns: `component_name,classification,batch,priority,risk_level,source_path,repo_ui_export,effort,parity_risk,salvage_potential,salvage_strategy,story_group`
+Columns: `component_name,classification,batch,priority,risk_level,source_path,repo_ui_export,effort,parity_risk,is_monolith,soc_potential,soc_strategy,batch_15_candidate,refactor_potential,refactor_strategy,story_group`
 
 ### `<APP_PATH>/docs/migration/component/_output/_parity-checklist.md`
 
@@ -549,12 +588,134 @@ Summary for Phase 02 cross-app reconciliation:
 - Top 5 highest-parity-risk items with notes
 - Components that EXTEND_EXISTING: what variants are missing in @repo/ui
 - Components that are NEW_SHARED_COMPONENT: full visual spec (props, variants, states)
-- KEEP_APP_LOCAL salvage candidates: total KEEP_APP_LOCAL count; count rated HIGH or MEDIUM; top 3 with strategy noted
+- KEEP_APP_LOCAL refactor candidates: total KEEP_APP_LOCAL count; count with SoC potential HIGH or MEDIUM; top 3 with SoC strategy and whether Shell is a `packages/ui` candidate
+- SoC Evaluation Summary: total Batch 1.5 candidates; breakdown HIGH/MEDIUM/LOW/NONE; projected NEW_SHARED_COMPONENT from splits
 
-> Skills (if installed): `$vercel-composition-patterns` (identify components with boolean prop proliferation that need compound patterns); `$next-best-practices` (flag components with invalid RSC usage, async client components)
+> Skills (if installed): `$vercel-composition-patterns` (identify monolith components with mixed domain+display, boolean prop proliferation); `$next-best-practices` (flag invalid RSC+client boundary mixing as forced monolith signal); `$systematic-debugging` (for ambiguous SoC potential — trace data flow from hook to render before rating)
 
 Do NOT modify any source files. Do NOT modify packages/ui.
 ```
+
+---
+
+## Batch 1.5 — SoC Pre-Migration Refactor
+
+> **Branch:** `migrate-app/<APP_NAME>`
+> **Run:** Once per app — after Batch 1 (Audit) passes, before Batch 2/3/4 begins
+> **Prerequisite:** Batch 1 Acceptance Criteria all ✅. All components have SoC Evaluation fields in `_audit-report.md`.
+> **Skip if:** Zero components are rated `Batch 1.5 candidate: YES` in `_audit-report.md`.
+> **Spec:** `<APP_PATH>/docs/migration/component/05-app-migration.md` §Batch 1.5
+> **Standards:** `<APP_PATH>/docs/migration/component/06-component-standards.md` §6.2 · §6.5 · §6.6
+
+````
+
+You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
+
+Enterprise mandate: no monolith component survives migration. Components mixing domain wiring and display JSX must be split into a Container + Shell before migration batches run. No runtime behavior changes are allowed. Callers of the original component see zero diff.
+
+## Pre-Flight Check
+
+1. Read `<APP_PATH>/docs/migration/component/_output/_audit-report.md`
+2. Filter: collect all entries where `Batch 1.5 candidate: YES`
+3. If zero entries → STOP. Print "Batch 1.5: No candidates. Skip."
+4. List candidates ordered by SoC potential (HIGH first), then by component name
+5. Read `<APP_PATH>/docs/migration/component/06-component-standards.md` §6.2, §6.5, §6.6 before proceeding
+
+## Execution (one component per commit, atomic)
+
+For each Batch 1.5 candidate (ordered HIGH → MEDIUM):
+
+### Step 1 — Plan the Split
+
+- Read the component file
+- Confirm the SoC strategy recorded in the audit entry (`container-shell | prop-injection | render-prop | hook-extraction`)
+- Identify exactly: what JSX moves to Shell, what logic stays in Container
+- Identify the Shell's prop interface (only plain data types — no domain imports, no React Query hooks, no Next.js imports)
+
+### Step 2 — Create the Shell file
+
+- Create `<ComponentName>Shell.tsx` (or `*Display.tsx` / `*Layout.tsx` per §6.5 naming convention) in the same directory
+- Shell contains ONLY: pure display JSX, typed with plain props, no domain imports, no hook calls, no API calls
+- Shell may import from `@repo/ui` (Box, Skeleton, Spinner, etc.)
+- Shell may NOT import from `@/hooks`, `@/services`, `@/types/domain`, or `next/*`
+- Apply Box pass (§1.4) to eliminate bare native HTML elements within the Shell
+
+### Step 3 — Refactor the Container
+
+- Container file name, export name, and prop interface are FROZEN — do not change them
+- Container calls the data hook / maps domain types → plain props → renders Shell
+- All existing callers continue to import and use the Container unchanged
+
+### Step 4 — Verification Gate (per component, non-negotiable)
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types    # zero new type errors
+pnpm --filter <APP_PACKAGE> lint           # zero new lint errors
+pnpm --filter <APP_PACKAGE> build          # clean build
+```
+
+Then:
+
+- Manually smoke-check the component's primary render route
+- Run: `grep -r "<OriginalComponentName>" src/ --include="*.tsx" --include="*.ts"` → confirm zero caller files changed
+- Compare rendered HTML before/after (dev tools snapshot) → must be identical
+
+If gate fails: rollback this component (`git checkout -- .`) and re-assess SoC strategy. Do NOT skip the gate.
+
+### Step 5 — Classify the Shell
+
+Apply the [06-component-standards.md §6.6 Shell Classification Matrix](./06-component-standards.md#66-re-classification-after-split):
+
+- Plain props only + no framework imports + 2+ app demand → `NEW_SHARED_COMPONENT` → queue for Phase 04
+- Plain props only + single-app use → `KEEP_APP_LOCAL` (Shell stays in app)
+- Framework dependency abstracted via render-prop → `NEW_SHARED_COMPONENT` (framework-agnostic interface)
+
+### Step 6 — Update Audit Records
+
+In `_audit-report.md`:
+
+- Mark original entry: `Classification: SPLIT` (do not delete)
+- Add Container entry: `Classification: KEEP_APP_LOCAL`, `Batch 1.5 candidate: DONE`
+- Add Shell entry: `Classification: <per Step 5 result>`, note created file path
+
+In `_component-backlog.csv`:
+
+- Update original row: `classification = SPLIT`, add note "split into <Container> + <Shell>"
+- Add Shell row with its final classification
+
+### Logging Format (`_migration-log.md`)
+
+Append under `## Batch 1.5 — SoC Pre-Migration Refactor`:
+
+```
+### <ComponentName> — <date>
+- Strategy: <container-shell | prop-injection | render-prop | hook-extraction>
+- Container: <file path> — frozen export, KEEP_APP_LOCAL
+- Shell: <file path> — <classification: NEW_SHARED_COMPONENT | KEEP_APP_LOCAL>
+- Domain logic removed from Shell: <description>
+- Box pass: <N> elements replaced
+- Gate result: types ✅ | lint ✅ | build ✅ | smoke ✅
+- Caller grep: ✅ zero caller files changed
+- packages/ui candidate: YES (<Shell name>, queued for Phase 04) | NO
+```
+
+## Batch 1.5 Completion Criteria
+
+- [ ] All Batch 1.5 candidates (`Batch 1.5 candidate: YES`) have been processed or explicitly skipped with documented reason
+- [ ] No component failed the gate without rollback
+- [ ] `_audit-report.md` updated: every split is marked SPLIT with new Container + Shell entries
+- [ ] `_component-backlog.csv` updated: SPLIT rows marked, Shell rows added
+- [ ] `_migration-log.md` has a Batch 1.5 section with one entry per component
+- [ ] `_per-app-baseline-summary.md` amended with `## Batch 1.5 Amendment` section:
+  - Components split: N
+  - NEW_SHARED_COMPONENT candidates from splits: N (list names)
+  - KEEP_APP_LOCAL-only Shells: N
+- [ ] Zero callers changed (grep verified)
+- [ ] `pnpm --filter <APP_PACKAGE> build` passes cleanly after all splits
+
+> Skills (if installed): `$vercel-composition-patterns` (verify Shell has no boolean prop proliferation); `$next-best-practices` (confirm no RSC+client boundary violations introduced); `$systematic-debugging` (if gate fails — trace the regression before reverting)
+
+````
 
 ---
 
@@ -845,7 +1006,7 @@ Add to `packages/ui/src/<ComponentName>/index.ts` and `packages/ui/src/index.ts`
 - [ ] No `next/*` imports
 - [ ] No app-specific packages
 - [ ] No hardcoded strings
-- [ ] No `fetch`/`axios`/`useQuery`/`useMutation`
+- [ ] No `fetch`/`axios`/raw `useQuery`/`useMutation`, and no service hooks (`use<Domain>()` from `@/services/`) — Shell receives all data via props
 - [ ] No auth/permission logic
 - [ ] No `process.env.NEXT_PUBLIC_*`
 - [ ] TypeScript props exported from `index.ts`
@@ -934,7 +1095,7 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 - Smoke routes from `_parity-checklist.md` pass
 - No new console errors in browser
 
-> Skills (if installed): `$monorepo-workspace` (check @APP_PACKAGE filter value, verify script names before running commands); `$turborepo` (correct `--filter <APP_PACKAGE>` used in all gate commands); `$react-query` (if any migrated component wraps a `useQuery` or `useMutation` call — validate query key and service integration unchanged); `$agent-browser` (automate smoke route verification — navigate critical routes, capture screenshots, flag visual regressions)
+> Skills (if installed): `$monorepo-workspace` (check @APP_PACKAGE filter value, verify script names before running commands); `$turborepo` (correct `--filter <APP_PACKAGE>` used in all gate commands); `$react-query` (service hooks from `@/services/` wrap `useQuery`/`useMutation` — if any migrated Container component calls a service hook, validate the service hook's query key and cache invalidation are unchanged); `$agent-browser` (automate smoke route verification — navigate critical routes, capture screenshots, flag visual regressions)
 ```
 
 ---
@@ -946,9 +1107,11 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 > **Prerequisite:** Batch 6 complete and gate passed
 
 ````
+
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 
 Read before starting:
+
 - `<APP_PATH>/docs/migration/component/05-app-migration.md` (Batch 2 section)
 - `<APP_PATH>/docs/migration/component/_output/_audit-report.md` (ADOPT_WITH_ADAPTER only)
 - `packages/ui/docs/normalization/_output/21-adapter-mapping.md`
@@ -973,7 +1136,7 @@ export function ComponentName({ type, ...rest }: ComponentNameProps) {
   const variant = type === 'danger' ? 'destructive' : type ?? 'default';
   return <BaseComponentName {...rest} variant={variant} />;
 }
-````
+```
 
 ## Rules
 
@@ -1139,6 +1302,168 @@ Report: batch position, component counts DONE/DEFERRED, any adapters still activ
 
 ---
 
+## Batch 9.5 — App-Local SoC Refactor (Phase 05A)
+
+> **Branch:** `migrate-app/<APP_NAME>`
+> **Run:** Once per app — after Batch 9 (Stabilization) passes, before Batch 10 (Cleanup)
+> **Prerequisite:** Batch 9 Acceptance Criteria all ✅. `_audit-report.md` must have Refactor Evaluation completed for all KEEP_APP_LOCAL entries.
+> **Skip if:** Zero KEEP_APP_LOCAL components are rated HIGH or MEDIUM refactor potential in `_audit-report.md`.
+> **Spec doc:** `<APP_PATH>/docs/migration/component/05-app-migration.md` §Phase 05A
+> **Standards:** `<APP_PATH>/docs/migration/component/06-component-standards.md` §6.5
+
+```
+
+You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
+
+Read ALL of these before starting:
+
+- `<APP_PATH>/docs/migration/component/06-component-standards.md` §6.5 (App-Local Refactor Patterns — full section)
+- `<APP_PATH>/docs/migration/component/05-app-migration.md` §Phase 05A
+- `<APP_PATH>/docs/migration/component/_output/_audit-report.md` (KEEP_APP_LOCAL entries only — read `Refactor potential` and `Refactor strategy` for each)
+- `<APP_PATH>/docs/migration/component/_output/_migration-log.md` (current state)
+- `<APP_PATH>/docs/migration/verification-gate.md` (gate commands)
+
+## Objective
+
+Execute Phase 05A: refactor KEEP_APP_LOCAL components rated HIGH or MEDIUM refactor potential
+for better separation of concerns. Split each monolithic component into:
+
+- A **domain-wiring container** (same file, same export, same callers — frozen)
+- A **pure-display Shell** (new file, `*Shell.tsx`, same directory — no domain types, no hooks, no API calls)
+
+**The user must not be able to tell Phase 05A happened. Zero behavior changes.**
+
+## Pre-Flight Check
+
+Before writing any code:
+
+1. Filter `_audit-report.md` for entries where `Refactor potential: HIGH` or `Refactor potential: MEDIUM`
+2. Sort by Refactor potential DESC (HIGH first), then by component name
+3. List them. If the list is empty → stop, report "No Phase 05A candidates found", skip to Batch 10.
+
+## Execution (ONE COMPONENT AT A TIME)
+
+For each candidate component (process HIGH before MEDIUM):
+
+### Step 1 — Read and understand the original component
+
+- Read the full source file
+- Identify: what is domain logic? what is pure display JSX?
+- Confirm the `Refactor strategy` from the audit entry matches what you see; if not, document the discrepancy
+
+### Step 2 — Create the Shell file (`*Shell.tsx` / `*Display.tsx` / `*Layout.tsx`)
+
+Follow the naming convention from [06-component-standards.md §6.5](./06-component-standards.md#65-app-local-refactor-patterns):
+
+- `ComponentNameShell` — visual card/panel/container
+- `ComponentNameDisplay` — single data entity display
+- `ComponentNameLayout` — structural layout (header + body + footer)
+
+Shell rules (ALL mandatory):
+
+- Props: only plain data types (`string`, `number`, `boolean`, `React.ReactNode`) — NO domain types
+- No service hooks (`use<Domain>()` from `@/services/`), no raw `useQuery`/`useMutation` — Shell receives all data via props
+- No `import` from `next/link`, `next/image`, `next/router`, `next/navigation`
+- No `process.env.NEXT_PUBLIC_*`
+- Apply Box pass inline (§1.4): replace bare native elements with `<Box>` from `@repo/ui`
+- Use `@repo/ui` Skeleton/Spinner for loading states (already imported in the app)
+
+### Step 3 — Refactor the Container (same file, same export)
+
+- Remove the pure-display JSX (now in Shell)
+- Keep all: hooks, API calls, domain types, business logic, data mapping
+- Add import for the new `*Shell` file
+- Container renders `<ComponentNameShell {...mappedProps} />`
+- **Container's export name, file path, and prop interface are FROZEN** — zero changes
+
+### Step 4 — Verify (after each component — do NOT proceed to next without passing)
+
+```bash
+# TypeScript — zero errors
+pnpm --filter <APP_PACKAGE> check-types
+
+# Lint — zero errors
+pnpm --filter <APP_PACKAGE> lint
+
+# Build — clean
+pnpm --filter <APP_PACKAGE> build
+```
+
+Also: manually verify the component's smoke route from `verification-gate.md` still renders identically.
+
+### Step 5 — Evaluate the Shell for packages/ui candidacy
+
+Run the checklist from §6.5 "What Makes a Good Shell":
+
+- [ ] Props: only plain data types
+- [ ] No data-fetching hooks
+- [ ] No Next.js framework imports
+- [ ] No env vars
+- [ ] Two or more apps would plausibly need this Shell
+- [ ] Visual structure not hardcoded to a single domain concept
+
+**If ALL pass** → classify as `NEW_SHARED_COMPONENT` candidate
+**If ANY fail** → Shell stays app-local (still a valid SoC improvement)
+
+### Step 6 — Log
+
+Append to `_migration-log.md` under `## Phase 05A — App-Local Refactor`:
+
+```
+### <ComponentName> — <date>
+
+- **Refactor strategy applied:** container-shell | hook-extraction | prop-injection
+- **Container:** `<src/components/path/ComponentName.tsx>` — export signature unchanged
+- **Shell created:** `<src/components/path/ComponentNameShell.tsx>`
+  - Props: [list the new plain-typed props]
+  - Domain logic removed: [what was moved out]
+- **packages/ui candidate:** YES — `NEW_SHARED_COMPONENT` queued | NO — app-local Shell only
+  - If YES: reason why it qualifies cross-app
+  - If NO: reason why it stays app-local
+- **Box pass:** replaced N bare native elements in Shell
+- **Typecheck:** PASS
+- **Build:** PASS
+- **Smoke route:** [route URL] — PASS
+- **No caller changes:** CONFIRMED (grep verified — zero files touched outside the component directory)
+```
+
+## Guardrails Reference (from §6.5)
+
+```
+ALLOWED:
+- Creating the *Shell file in the same directory
+- Extracting pure-display JSX into the Shell
+- Extracting data-fetching logic into a co-located use<Name>Data hook (Pattern 2)
+- Replacing domain types in Shell props with plain generic equivalents (Pattern 3)
+- Applying Box pass (§1.4) within the Shell
+- Importing @repo/ui Skeleton/Spinner in the Shell
+
+FORBIDDEN — zero tolerance, violation = rollback this component:
+- Changing the container's exported name, file path, or prop interface
+- Changing ANY caller (zero caller files touched)
+- Changing rendered output visible to the user
+- Adding new state, effects, or API calls in Shell or Container
+- Processing more than one component per atomic commit
+- Skipping the verification gate between components
+```
+
+## Completion Criteria (ALL required before declaring Batch 9.5 done)
+
+- [ ] All HIGH refactor potential components processed
+- [ ] All MEDIUM refactor potential components processed (or documented skip with reason)
+- [ ] Every processed component has a log entry in `_migration-log.md §Phase 05A`
+- [ ] Every processed component passed: typecheck ✅ lint ✅ build ✅ smoke route ✅
+- [ ] `packages/ui` candidates listed (or "None found")
+- [ ] Zero caller files changed (grep confirmed)
+
+> Skills (if installed): `$vercel-composition-patterns` (validate Shell API avoids boolean prop proliferation and follows compound component conventions); `$next-best-practices` (verify Shell has no RSC/client boundary violations after refactor); `$systematic-debugging` (if typecheck fails after split — trace before fixing, do NOT revert blindly); `$turborepo` (correct --filter and pipeline usage for gate commands)
+
+Report: list of components refactored, packages/ui candidates surfaced (if any), components skipped with reason.
+
+````
+
+---
+
 ## Batch 10 — Cleanup & Deprecation (Phase 07)
 
 > **Branch:** `migrate-app/<APP_NAME>` for app cleanup, then `feat/ui` for cross-app synthesis
@@ -1287,10 +1612,12 @@ Switch to `feat/ui` → create cross-app `30-cleanup-report.md` and `31-deprecat
 > **Prerequisite:** Batch 10 `_cleanup-report.md` complete; Batch 0.5 Deferred Items list exists
 > **Spec doc:** `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md` (Part B)
 
-````
+```
+
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 
 Read before starting:
+
 - `<APP_PATH>/docs/migration/component/09-dependency-upgrades.md` Part B (app-specific audit pattern)
 - `<APP_PATH>/docs/migration/component/_output/_migration-log.md` — find the "Deferred Items" section
   written by Batch 0.5. This is your authoritative list for this batch.
@@ -1315,6 +1642,7 @@ Work through each item individually using this decision framework:
 ### For each deferred package:
 
 **1. Audit actual source usage:**
+
 ```bash
 # Substitute <package-name> with the actual package from the deferred list
 rg "from '<package-name>'" <APP_PATH>/src <APP_PATH>/app --type ts
@@ -1324,16 +1652,17 @@ rg "require\('<package-name>'\)" <APP_PATH>/src <APP_PATH>/app
 
 **2. Decide based on usage count:**
 
-| Usage count | Decision |
-| ----------- | -------- |
-| 0 usages | Remove — confirmed dead dep |
-| Low (< threshold set in Batch 0.5 plan) | Migrate to replacement and remove |
-| High (≥ threshold) | Keep at current version; document as remaining tech debt with sprint plan |
-| Used only in configs, not source | Keep if still needed in config; remove if config section was also deleted |
+| Usage count                             | Decision                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------- |
+| 0 usages                                | Remove — confirmed dead dep                                               |
+| Low (< threshold set in Batch 0.5 plan) | Migrate to replacement and remove                                         |
+| High (≥ threshold)                      | Keep at current version; document as remaining tech debt with sprint plan |
+| Used only in configs, not source        | Keep if still needed in config; remove if config section was also deleted |
 
 **3. Act:**
 
 Remove if dead:
+
 ```bash
 pnpm --filter <APP_PACKAGE> remove <package-name>
 pnpm --filter <APP_PACKAGE> check-types  # must still pass after each removal
@@ -1408,6 +1737,7 @@ check-types: PASS · lint: PASS · build: PASS
 > Skills (if installed): `$systematic-debugging` (if removing a package causes type errors — trace before attempting fixes); `$monorepo-workspace` (pnpm remove --filter and dep ownership rules)
 
 Do NOT start Batch 11 until this gate passes.
+
 ````
 
 ---
@@ -1730,11 +2060,13 @@ For every component in migration-log.md with Status=DONE:
 - Typecheck/lint errors: fix narrowly in the affected file, re-run gate
 - Reverted migrated import: `git checkout HEAD <file>`, re-run gate
 - Critical failure (cannot recover without risk):
-  ```
-  git reset --hard <commit-before-merge>
-  git push -f origin migrate-app/<APP_NAME>
-  ```
-  Document rollback in update log and STOP. Notify team.
+```
+
+git reset --hard <commit-before-merge>
+git push -f origin migrate-app/<APP_NAME>
+
+```
+Document rollback in update log and STOP. Notify team.
 
 **Step 4 — Complete the update log:**
 Fill in `legacy-update-<YYYYMMDD-HHMMSS>.md`:
@@ -1750,12 +2082,15 @@ Fill in `legacy-update-<YYYYMMDD-HHMMSS>.md`:
 Update `_migration-plan.md` Pause Record:
 
 ```
+
 ## Pause Record
+
 - <Component>
 - Status: ▶️ Resumed after legacy update
 - Legacy update integrated: <timestamp>
 - Affected components: <list or "none">
 - New packages/ui intake items: <list or "none">
+
 ```
 
 Report: verification gate results, components integrity check, next steps.
@@ -1768,15 +2103,15 @@ Report: verification gate results, components integrity check, next steps.
 
 ## Scenario Quick Reference
 
-| Scenario | Run these batches |
-|---|---|
-| Normal migration (no legacy updates) | 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 10.5 → 11 |
-| Legacy update — clean merge, no new components | L1 → L3 → L4 → L6, then resume |
-| Legacy update — conflicts, no new components | L1 → L2 → L3 → L4 → L6, then resume |
-| Legacy update — clean merge, new KEEP_APP_LOCAL | L1 → L3 → L4 → L6, then resume |
-| Legacy update — clean merge, new packages/ui candidate | L1 → L3 → L5 → L6, then resume |
-| Legacy update — conflicts + new packages/ui candidate | L1 → L2 → L3 → L5 → L6, then resume |
-| Legacy update — post-cleanup (Batch 9 done) + new packages/ui candidate now shipped | L1 → L3 → L5 → Batch 8 → L6 |
+| Scenario                                                                            | Run these batches                                            |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Normal migration (no legacy updates)                                                | 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 10.5 → 11 |
+| Legacy update — clean merge, no new components                                      | L1 → L3 → L4 → L6, then resume                               |
+| Legacy update — conflicts, no new components                                        | L1 → L2 → L3 → L4 → L6, then resume                          |
+| Legacy update — clean merge, new KEEP_APP_LOCAL                                     | L1 → L3 → L4 → L6, then resume                               |
+| Legacy update — clean merge, new packages/ui candidate                              | L1 → L3 → L5 → L6, then resume                               |
+| Legacy update — conflicts + new packages/ui candidate                               | L1 → L2 → L3 → L5 → L6, then resume                          |
+| Legacy update — post-cleanup (Batch 9 done) + new packages/ui candidate now shipped | L1 → L3 → L5 → Batch 8 → L6                                  |
 
 ---
 
@@ -1788,4 +2123,7 @@ Legacy Batches L1–L6 run **per app** whenever the legacy repo updates.
 
 > Batch 0.5 = pre-migration dependency upgrade (React 19, Tailwind v4, TypeScript alignment)
 > Batch 10.5 = post-cleanup deferred item resolution (moment, draft-js, react-router-dom)
+
+```
+
 ```
