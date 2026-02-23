@@ -44,8 +44,8 @@ Build/runtime mode note:
 
 Auth pre-step (required when redirected to login):
 
-- Email: `rendra@yopmail.com`
-- Password: `7u5tdo@IT`
+- Email: process.env.SMOKE_TEST_EMAIL
+- Password: process.env.SMOKE_TEST_PASSWORD
 - If any smoke route redirects to login, authenticate first with the credentials above, then continue route checks in the same browser session.
 
 Run smoke checks on these critical routes after migration changes:
