@@ -1,5 +1,6 @@
-import React, { CSSProperties } from "react";
+﻿import React, { CSSProperties } from "react";
 import Image from "next/image";
+import OptimizeImageShell from "./OptimizeImageShell";
 
 interface ImageProps {
   onClick?: () => void;
@@ -23,7 +24,7 @@ const OptimizeImage: React.FC<ImageProps> = ({
   priority = false,
 }) => {
   return (
-    <Image
+    <OptimizeImageShell
       onClick={onClick}
       alt={alt}
       src={src}
@@ -32,6 +33,7 @@ const OptimizeImage: React.FC<ImageProps> = ({
       className={className}
       style={style}
       priority={priority}
+      renderImage={(imageProps) => <Image {...imageProps} />}
     />
   );
 };

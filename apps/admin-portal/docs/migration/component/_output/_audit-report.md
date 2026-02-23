@@ -1,7 +1,7 @@
 ﻿# Admin Portal Component Audit Report (Batch 1)
 
-- Generated on: 2026-02-23 10:12:02
-- Total components audited: 267
+- Generated on: 2026-02-23 10:23:36
+- Total components audited: 275
 
 ### HistoryPage
 
@@ -11,7 +11,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -20,7 +20,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/claim/list/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/claim/list/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -28,7 +28,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -45,7 +45,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -54,7 +54,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportPage [src/app/claim/list/export/page.tsx]
+### ExportPage
 
 - **File:** src/app/claim/list/export/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -62,7 +62,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -71,7 +71,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ImportPage [src/app/claim/list/import/page.tsx]
+### ImportPage
 
 - **File:** src/app/claim/list/import/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -79,7 +79,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -96,7 +96,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -105,7 +105,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListPage [src/app/claim/list/page.tsx]
+### ListPage
 
 - **File:** src/app/claim/list/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -113,7 +113,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -122,7 +122,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ClaimPage [src/app/dashboard/claim/page.tsx]
+### ClaimPage
 
 - **File:** src/app/dashboard/claim/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -130,7 +130,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -147,7 +147,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -164,7 +164,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -181,7 +181,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -190,7 +190,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/finance/billing/add/page.tsx]
+### AddPage
 
 - **File:** src/app/finance/billing/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -198,7 +198,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -215,14 +215,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### BillingDetailInfo
 
@@ -232,16 +232,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
-### ExportPage [src/app/finance/billing/detail/[id]/export/page.tsx]
+### ExportPage
 
 - **File:** src/app/finance/billing/detail/[id]/export/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -249,7 +249,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -258,7 +258,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ImportPage [src/app/finance/billing/detail/[id]/import/page.tsx]
+### ImportPage
 
 - **File:** src/app/finance/billing/detail/[id]/import/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -266,7 +266,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -283,7 +283,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -292,7 +292,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/finance/billing/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/finance/billing/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -300,7 +300,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -317,7 +317,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -326,7 +326,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/finance/broker-fee/add/page.tsx]
+### AddPage
 
 - **File:** src/app/finance/broker-fee/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -334,7 +334,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -343,7 +343,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/finance/broker-fee/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/finance/broker-fee/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -351,7 +351,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -368,7 +368,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -377,7 +377,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/finance/partner-comm/add/page.tsx]
+### AddPage
 
 - **File:** src/app/finance/partner-comm/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -385,7 +385,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -394,7 +394,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/finance/partner-comm/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/finance/partner-comm/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -402,7 +402,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -419,7 +419,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -436,7 +436,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -453,16 +453,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - route boundary component; defer to Phase 05A route-focused refactor
 
-### AddPage [src/app/masterdata/channel/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/channel/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -470,7 +470,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -479,7 +479,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/channel/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/channel/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -487,7 +487,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -504,7 +504,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -513,7 +513,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/currency/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/currency/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -521,7 +521,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -530,7 +530,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/currency/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/currency/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -538,7 +538,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -555,7 +555,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -564,7 +564,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/email-tag/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/email-tag/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -572,7 +572,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -581,7 +581,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/email-tag/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/email-tag/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -589,7 +589,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -606,7 +606,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -615,7 +615,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/email-template/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/email-template/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -623,7 +623,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -632,7 +632,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/email-template/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/email-template/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -640,7 +640,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -657,7 +657,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -666,7 +666,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/email-template/tag/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/email-template/tag/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -674,7 +674,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -691,7 +691,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -700,7 +700,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/group/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/group/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -708,7 +708,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -717,7 +717,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/group/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/group/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -725,7 +725,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -742,7 +742,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -751,7 +751,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/holiday-date/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/holiday-date/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -759,7 +759,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -768,7 +768,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/holiday-date/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/holiday-date/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -776,7 +776,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -793,7 +793,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -810,7 +810,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -819,7 +819,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UploadPage [src/app/masterdata/hospital/upload/page.tsx]
+### UploadPage
 
 - **File:** src/app/masterdata/hospital/upload/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -827,7 +827,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -836,7 +836,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/insurance/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/insurance/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -844,7 +844,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -853,7 +853,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/insurance/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/insurance/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -861,7 +861,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -878,7 +878,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -887,7 +887,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/page-management/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/page-management/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -895,7 +895,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -904,7 +904,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/page-management/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/page-management/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -912,7 +912,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -929,7 +929,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -938,7 +938,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/partner-management/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/partner-management/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -946,7 +946,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -963,16 +963,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** HIGH
 - **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
-### DetailPage [src/app/masterdata/partner-management/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/partner-management/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -980,7 +980,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -997,7 +997,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1006,7 +1006,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/product/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/product/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1014,7 +1014,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1023,7 +1023,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/product/detail/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/product/detail/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1031,7 +1031,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1048,7 +1048,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1057,7 +1057,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/product-category/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/product-category/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1065,7 +1065,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1074,7 +1074,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/product-category/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/product-category/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1082,7 +1082,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1091,7 +1091,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ProductCategoryPage [src/app/masterdata/product-category/page.tsx]
+### ProductCategoryPage
 
 - **File:** src/app/masterdata/product-category/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1099,7 +1099,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1108,7 +1108,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/role/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/role/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1116,7 +1116,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1125,7 +1125,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/role/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/role/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1133,7 +1133,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1150,7 +1150,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1159,7 +1159,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/masterdata/user/add/page.tsx]
+### AddPage
 
 - **File:** src/app/masterdata/user/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1167,7 +1167,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1176,7 +1176,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/masterdata/user/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/masterdata/user/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1184,7 +1184,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1201,7 +1201,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1210,7 +1210,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/membership/list/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/membership/list/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1218,7 +1218,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1227,7 +1227,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportPage [src/app/membership/list/export/page.tsx]
+### ExportPage
 
 - **File:** src/app/membership/list/export/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1235,7 +1235,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1244,7 +1244,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListPage [src/app/membership/list/page.tsx]
+### ListPage
 
 - **File:** src/app/membership/list/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1252,7 +1252,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1261,7 +1261,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UploadPage [src/app/membership/list/upload/page.tsx]
+### UploadPage
 
 - **File:** src/app/membership/list/upload/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1269,7 +1269,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1278,7 +1278,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### NotFoundPage [src/app/not-found.tsx]
+### NotFoundPage
 
 - **File:** src/app/not-found.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1286,14 +1286,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - route boundary component; defer to Phase 05A route-focused refactor
 
 ### AppPage
 
@@ -1303,7 +1303,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1312,7 +1312,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/policy/endorsement/list/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/policy/endorsement/list/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1320,7 +1320,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1329,7 +1329,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UploadPage [src/app/policy/endorsement/list/detail/[id]/upload/page.tsx]
+### UploadPage
 
 - **File:** src/app/policy/endorsement/list/detail/[id]/upload/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1337,7 +1337,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1346,7 +1346,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportPage [src/app/policy/endorsement/list/export/page.tsx]
+### ExportPage
 
 - **File:** src/app/policy/endorsement/list/export/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1354,7 +1354,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1363,7 +1363,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListPage [src/app/policy/endorsement/list/page.tsx]
+### ListPage
 
 - **File:** src/app/policy/endorsement/list/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1371,7 +1371,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1380,7 +1380,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UploadPage [src/app/policy/endorsement/list/upload/page.tsx]
+### UploadPage
 
 - **File:** src/app/policy/endorsement/list/upload/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1388,7 +1388,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1397,7 +1397,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/policy/list/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/policy/list/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1405,7 +1405,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1414,7 +1414,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportPage [src/app/policy/list/export/page.tsx]
+### ExportPage
 
 - **File:** src/app/policy/list/export/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1422,7 +1422,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1431,7 +1431,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ImportPage [src/app/policy/list/import/page.tsx]
+### ImportPage
 
 - **File:** src/app/policy/list/import/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1439,7 +1439,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1448,7 +1448,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListPage [src/app/policy/list/page.tsx]
+### ListPage
 
 - **File:** src/app/policy/list/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1456,7 +1456,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1473,7 +1473,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1482,7 +1482,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/product-category/[category]/add/page.tsx]
+### AddPage
 
 - **File:** src/app/product-category/[category]/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1490,7 +1490,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1507,7 +1507,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1524,7 +1524,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1541,14 +1541,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** HIGH
 - **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### BenefitsPage
 
@@ -1558,7 +1558,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1575,14 +1575,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### ChannelList
 
@@ -1592,14 +1592,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** HIGH
 - **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### DetailList
 
@@ -1609,14 +1609,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** HIGH
 - **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### DetailsPage
 
@@ -1626,7 +1626,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1643,7 +1643,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1660,16 +1660,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** HIGH
 - **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
-### DetailPage [src/app/product-category/[category]/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/product-category/[category]/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1677,7 +1677,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1694,16 +1694,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
-### UploadPage [src/app/product-category/[category]/detail/[id]/upload/page.tsx]
+### UploadPage
 
 - **File:** src/app/product-category/[category]/detail/[id]/upload/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1711,7 +1711,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1728,7 +1728,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1745,7 +1745,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1754,7 +1754,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ProductCategoryPage [src/app/product-category/[category]/page.tsx]
+### ProductCategoryPage
 
 - **File:** src/app/product-category/[category]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1762,7 +1762,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1771,7 +1771,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ProductCategoryPage [src/app/product-category/page.tsx]
+### ProductCategoryPage
 
 - **File:** src/app/product-category/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1779,7 +1779,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1788,7 +1788,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/promotion/campaign/add/page.tsx]
+### AddPage
 
 - **File:** src/app/promotion/campaign/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1796,7 +1796,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1805,7 +1805,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/promotion/campaign/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/promotion/campaign/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1813,7 +1813,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1830,7 +1830,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1839,7 +1839,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### CampaignPage [src/app/promotion/campaign/page.tsx]
+### CampaignPage
 
 - **File:** src/app/promotion/campaign/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1847,7 +1847,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1864,14 +1864,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### InsuranceSelectionModal
 
@@ -1881,14 +1881,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** HIGH
 - **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### PlanSelectionModal
 
@@ -1898,14 +1898,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
 ### ProductSelectionModal
 
@@ -1915,16 +1915,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - tightly coupled to route/service context; defer to Phase 05A
 
-### CampaignPage [src/app/report/campaign/page.tsx]
+### CampaignPage
 
 - **File:** src/app/report/campaign/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1932,7 +1932,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1949,7 +1949,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1958,7 +1958,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ClaimPage [src/app/report/claim/page.tsx]
+### ClaimPage
 
 - **File:** src/app/report/claim/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -1966,7 +1966,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1983,7 +1983,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -1992,7 +1992,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/sanction/list/add/page.tsx]
+### AddPage
 
 - **File:** src/app/sanction/list/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2000,7 +2000,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2009,7 +2009,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/sanction/list/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/sanction/list/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2017,7 +2017,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2026,7 +2026,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListPage [src/app/sanction/list/page.tsx]
+### ListPage
 
 - **File:** src/app/sanction/list/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2034,7 +2034,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2043,7 +2043,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UploadPage [src/app/sanction/list/upload/page.tsx]
+### UploadPage
 
 - **File:** src/app/sanction/list/upload/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2051,7 +2051,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2060,7 +2060,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/source/list/add/page.tsx]
+### AddPage
 
 - **File:** src/app/source/list/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2068,7 +2068,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2077,7 +2077,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/source/list/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/source/list/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2085,7 +2085,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2094,7 +2094,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListPage [src/app/source/list/page.tsx]
+### ListPage
 
 - **File:** src/app/source/list/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2102,7 +2102,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2111,7 +2111,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddPage [src/app/transaction/list/add/page.tsx]
+### AddPage
 
 - **File:** src/app/transaction/list/add/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2119,7 +2119,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2128,7 +2128,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailPage [src/app/transaction/list/detail/[id]/page.tsx]
+### DetailPage
 
 - **File:** src/app/transaction/list/detail/[id]/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2136,7 +2136,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2145,7 +2145,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportPage [src/app/transaction/list/export/page.tsx]
+### ExportPage
 
 - **File:** src/app/transaction/list/export/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2153,7 +2153,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2162,7 +2162,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ImportPage [src/app/transaction/list/import/import/page.tsx]
+### ImportPage
 
 - **File:** src/app/transaction/list/import/import/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2170,7 +2170,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2179,7 +2179,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListPage [src/app/transaction/list/page.tsx]
+### ListPage
 
 - **File:** src/app/transaction/list/page.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2187,7 +2187,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2196,7 +2196,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### Button [src/components/button.tsx]
+### Button
 
 - **File:** src/components/button.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2204,14 +2204,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### ButtonCalendar
 
@@ -2221,16 +2221,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### Calendar [src/components/calendar.tsx]
+### Calendar
 
 - **File:** src/components/calendar.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2238,14 +2238,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### Chart
 
@@ -2255,14 +2255,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### Datepicker
 
@@ -2272,16 +2272,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### DateRangePicker [src/components/date-range-picker.tsx]
+### DateRangePicker
 
 - **File:** src/components/date-range-picker.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2289,14 +2289,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### DragDropExcel
 
@@ -2306,16 +2306,33 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### ExtendedSidemenu
+
+- **File:** src/components/extended-sidemenu.tsx
+- **Classification:** SPLIT
+- **Batch:** 1.5
+- **@repo/ui status:** n/a (split marker)
+- **API delta:** Split marker - split into ExtendedSidemenuContainer + ExtendedSidemenuShell
+- **Parity risk:** MEDIUM
+- **Risk notes:** Batch 1.5 split completed; container and shell entries added.
+- **Reason kept app-local:** N/A
+- **Is monolith:** YES
+- **SoC potential:** HIGH
+- **SoC strategy:** render-prop
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** HIGH
+- **Refactor strategy:** split into ExtendedSidemenuContainer + ExtendedSidemenuShell
+
+### ExtendedSidemenuContainer
 
 - **File:** src/components/extended-sidemenu.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2323,14 +2340,31 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
-- **Is monolith:** YES
-- **SoC potential:** HIGH
-- **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
-- **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
+- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** NONE
+- **Refactor strategy:** container frozen; delegates view rendering to shell
+
+### ExtendedSidemenuShell
+
+- **File:** src/components/ExtendedSidemenuShell.tsx
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** missing
+- **API delta:** N/A (stays app-local in Batch 1).
+- **Parity risk:** MEDIUM
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
+- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** NONE
+- **Refactor strategy:** none - shell extracted in Batch 1.5
 
 ### BrokerFeeForm
 
@@ -2340,7 +2374,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2357,7 +2391,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2374,7 +2408,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2391,7 +2425,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2408,7 +2442,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2425,7 +2459,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2442,7 +2476,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2459,7 +2493,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2476,7 +2510,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2493,7 +2527,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2510,7 +2544,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2527,7 +2561,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2544,7 +2578,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2561,7 +2595,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2578,7 +2612,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2595,7 +2629,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2604,7 +2638,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ProductCategoryForm [src/components/forms/product-category.form.tsx]
+### ProductCategoryForm
 
 - **File:** src/components/forms/product-category.form.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2612,7 +2646,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2621,7 +2655,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ProductCategoryForm [src/components/forms/ProductCategoryForm/index.tsx]
+### ProductCategoryForm
 
 - **File:** src/components/forms/ProductCategoryForm/index.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2629,7 +2663,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2646,7 +2680,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2663,7 +2697,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2680,7 +2714,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2697,7 +2731,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2714,7 +2748,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2731,7 +2765,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2748,7 +2782,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2757,7 +2791,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UserForm [src/components/forms/UserForm/components/user-form.tsx]
+### UserForm
 
 - **File:** src/components/forms/UserForm/components/user-form.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2765,7 +2799,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2782,7 +2816,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2799,7 +2833,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2816,7 +2850,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2825,7 +2859,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UserForm [src/components/forms/UserForm/index.tsx]
+### UserForm
 
 - **File:** src/components/forms/UserForm/index.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2833,7 +2867,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -2842,7 +2876,24 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### Image [src/components/image.tsx]
+### Image
+
+- **File:** src/components/image.tsx
+- **Classification:** SPLIT
+- **Batch:** 1.5
+- **@repo/ui status:** n/a (split marker)
+- **API delta:** Split marker - split into ImageContainer + OptimizeImageShell
+- **Parity risk:** LOW
+- **Risk notes:** Batch 1.5 split completed; container and shell entries added.
+- **Reason kept app-local:** N/A
+- **Is monolith:** YES
+- **SoC potential:** HIGH
+- **SoC strategy:** render-prop
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** HIGH
+- **Refactor strategy:** split into ImageContainer + OptimizeImageShell
+
+### ImageContainer
 
 - **File:** src/components/image.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2850,16 +2901,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
-- **Is monolith:** YES
-- **SoC potential:** HIGH
-- **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
-- **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
+- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** NONE
+- **Refactor strategy:** container frozen; delegates view rendering to shell
 
-### ImageOrDefault [src/components/image-or-default.tsx]
+### ImageOrDefault
 
 - **File:** src/components/image-or-default.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2867,16 +2918,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### Input [src/components/input.tsx]
+### Input
 
 - **File:** src/components/input.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2884,14 +2935,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### Loader
 
@@ -2901,14 +2952,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### Modal
 
@@ -2918,14 +2969,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### MultipleSelect
 
@@ -2935,14 +2986,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### NoRecentData
 
@@ -2952,16 +3003,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### NotFoundPage [src/components/not-found.tsx]
+### NotFoundPage
 
 - **File:** src/components/not-found.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2969,16 +3020,34 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### Pagination [src/components/pagination.tsx]
+### OptimizeImageShell
+
+- **File:** src/components/OptimizeImageShell.tsx
+- **Classification:** NEW_SHARED_COMPONENT
+- **Batch:** 4
+- **@repo/ui status:** missing
+- **API delta:** N/A (@repo/ui export missing)
+- **Parity risk:** LOW
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
+- **Reason kept app-local:** N/A
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** N/A
+- **Refactor strategy:** N/A
+- **Story group:** Data Display
+
+### Pagination
 
 - **File:** src/components/pagination.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -2986,16 +3055,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### Popover [src/components/popover.tsx]
+### Popover
 
 - **File:** src/components/popover.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3003,16 +3072,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### BarchartHorizontal [src/components/recharts/barchart-horizontal.tsx]
+### BarchartHorizontal
 
 - **File:** src/components/recharts/barchart-horizontal.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3020,7 +3089,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3029,7 +3098,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### BarchartVertical [src/components/recharts/barchart-vertical.tsx]
+### BarchartVertical
 
 - **File:** src/components/recharts/barchart-vertical.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3037,7 +3106,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3046,7 +3115,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Dashedlinechart [src/components/recharts/dashedlinechart.tsx]
+### Dashedlinechart
 
 - **File:** src/components/recharts/dashedlinechart.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3054,7 +3123,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3063,7 +3132,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Linechart [src/components/recharts/linechart.tsx]
+### Linechart
 
 - **File:** src/components/recharts/linechart.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3071,7 +3140,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3080,7 +3149,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### LinechartPolicy [src/components/recharts/linechart-policy.tsx]
+### LinechartPolicy
 
 - **File:** src/components/recharts/linechart-policy.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3088,7 +3157,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3097,7 +3166,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Piechart [src/components/recharts/piechart.tsx]
+### Piechart
 
 - **File:** src/components/recharts/piechart.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3105,7 +3174,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3114,7 +3183,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### TablePolicy [src/components/recharts/table-policy.tsx]
+### TablePolicy
 
 - **File:** src/components/recharts/table-policy.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3122,7 +3191,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3131,7 +3200,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Select [src/components/select.tsx]
+### Select
 
 - **File:** src/components/select.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3139,16 +3208,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### Textarea [src/components/textarea.tsx]
+### Textarea
 
 - **File:** src/components/textarea.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3156,16 +3225,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
-### Tooltip [src/components/tooltip.tsx]
+### Tooltip
 
 - **File:** src/components/tooltip.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3173,14 +3242,14 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
+- **Risk notes:** Batch 1.5 reviewed and skipped; see migration log for explicit reason.
+- **Reason kept app-local:** Skipped in Batch 1.5 due route/context coupling or no safe split boundary.
 - **Is monolith:** YES
 - **SoC potential:** MEDIUM
 - **SoC strategy:** container-shell
-- **Batch 1.5 candidate:** YES
+- **Batch 1.5 candidate:** SKIPPED
 - **Refactor potential:** MEDIUM
-- **Refactor strategy:** container-shell - isolate domain wiring from presentational shell while preserving API parity
+- **Refactor strategy:** skipped - existing component already presentation-focused; no safe split found
 
 ### Alert
 
@@ -3190,7 +3259,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3208,7 +3277,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3226,7 +3295,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3236,7 +3305,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Navigation
 
-### Button [src/components/ui/button.tsx]
+### Button
 
 - **File:** src/components/ui/button.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3244,7 +3313,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3254,7 +3323,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Buttons
 
-### Calendar [src/components/ui/calendar.tsx]
+### Calendar
 
 - **File:** src/components/ui/calendar.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3262,7 +3331,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3280,7 +3349,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3298,7 +3367,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3316,7 +3385,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3334,7 +3403,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3352,7 +3421,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3362,7 +3431,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Data Display
 
-### DateRangePicker [src/components/ui/date-range-picker.tsx]
+### DateRangePicker
 
 - **File:** src/components/ui/date-range-picker.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3370,7 +3439,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3388,7 +3457,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3406,7 +3475,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3424,7 +3493,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3442,7 +3511,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3460,7 +3529,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3478,7 +3547,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3488,7 +3557,24 @@
 - **Refactor strategy:** N/A
 - **Story group:** Inputs
 
-### Image [src/components/ui/image.tsx]
+### Image
+
+- **File:** src/components/ui/image.tsx
+- **Classification:** SPLIT
+- **Batch:** 1.5
+- **@repo/ui status:** n/a (split marker)
+- **API delta:** Split marker - split into ImageContainer + OptimizeImageShell
+- **Parity risk:** LOW
+- **Risk notes:** Batch 1.5 split completed; container and shell entries added.
+- **Reason kept app-local:** N/A
+- **Is monolith:** YES
+- **SoC potential:** HIGH
+- **SoC strategy:** render-prop
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** HIGH
+- **Refactor strategy:** split into ImageContainer + OptimizeImageShell
+
+### ImageContainer
 
 - **File:** src/components/ui/image.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3496,16 +3582,16 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
-- **Is monolith:** YES
-- **SoC potential:** HIGH
-- **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
-- **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
+- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** NONE
+- **Refactor strategy:** container frozen; delegates view rendering to shell
 
-### ImageOrDefault [src/components/ui/image-or-default.tsx]
+### ImageOrDefault
 
 - **File:** src/components/ui/image-or-default.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3513,7 +3599,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3522,7 +3608,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** hook-extraction - move data fetching and derivation logic into dedicated hooks/container
 
-### Input [src/components/ui/input.tsx]
+### Input
 
 - **File:** src/components/ui/input.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3530,7 +3616,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3548,7 +3634,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3565,7 +3651,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3575,7 +3661,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Inputs
 
-### Loading [src/components/ui/loading.tsx]
+### Loading
 
 - **File:** src/components/ui/loading.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3583,7 +3669,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3593,7 +3679,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Feedback
 
-### Loading [src/components/ui/Loading/index.tsx]
+### Loading
 
 - **File:** src/components/ui/Loading/index.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3601,7 +3687,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3619,7 +3705,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3637,7 +3723,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3647,7 +3733,42 @@
 - **Refactor strategy:** N/A
 - **Story group:** Navigation
 
+### OptimizeImageShell
+
+- **File:** src/components/ui/OptimizeImageShell.tsx
+- **Classification:** NEW_SHARED_COMPONENT
+- **Batch:** 4
+- **@repo/ui status:** missing
+- **API delta:** N/A (@repo/ui export missing)
+- **Parity risk:** LOW
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
+- **Reason kept app-local:** N/A
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** N/A
+- **Refactor strategy:** N/A
+- **Story group:** Data Display
+
 ### PageHeader
+
+- **File:** src/components/ui/PageHeader/index.tsx
+- **Classification:** SPLIT
+- **Batch:** 1.5
+- **@repo/ui status:** n/a (split marker)
+- **API delta:** Split marker - split into PageHeaderContainer + PageHeaderShell
+- **Parity risk:** LOW
+- **Risk notes:** Batch 1.5 split completed; container and shell entries added.
+- **Reason kept app-local:** N/A
+- **Is monolith:** YES
+- **SoC potential:** HIGH
+- **SoC strategy:** render-prop
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** HIGH
+- **Refactor strategy:** split into PageHeaderContainer + PageHeaderShell
+
+### PageHeaderContainer
 
 - **File:** src/components/ui/PageHeader/index.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3655,16 +3776,33 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Mixed domain orchestration and UI rendering; refactor must preserve behavior and route contracts.
-- **Reason kept app-local:** Contains domain workflows and mixed orchestration/rendering concerns that remain app-owned after SoC split.
-- **Is monolith:** YES
-- **SoC potential:** HIGH
-- **SoC strategy:** render-prop
-- **Batch 1.5 candidate:** YES
-- **Refactor potential:** HIGH
-- **Refactor strategy:** render-prop - inject framework-specific navigation or media concerns from the app layer
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
+- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** NONE
+- **Refactor strategy:** container frozen; delegates view rendering to shell
 
-### Pagination [src/components/ui/pagination.tsx]
+### PageHeaderShell
+
+- **File:** src/components/ui/PageHeader/PageHeaderShell.tsx
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** missing
+- **API delta:** N/A (stays app-local in Batch 1).
+- **Parity risk:** LOW
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
+- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** DONE
+- **Refactor potential:** NONE
+- **Refactor strategy:** none - shell extracted in Batch 1.5
+
+### Pagination
 
 - **File:** src/components/ui/pagination.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3672,7 +3810,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3682,7 +3820,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Navigation
 
-### Popover [src/components/ui/popover.tsx]
+### Popover
 
 - **File:** src/components/ui/popover.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3690,7 +3828,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3708,7 +3846,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3718,7 +3856,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Inputs
 
-### BarchartHorizontal [src/components/ui/recharts/barchart-horizontal.tsx]
+### BarchartHorizontal
 
 - **File:** src/components/ui/recharts/barchart-horizontal.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3726,7 +3864,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3735,7 +3873,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### BarchartVertical [src/components/ui/recharts/barchart-vertical.tsx]
+### BarchartVertical
 
 - **File:** src/components/ui/recharts/barchart-vertical.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3743,7 +3881,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3752,7 +3890,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Dashedlinechart [src/components/ui/recharts/dashedlinechart.tsx]
+### Dashedlinechart
 
 - **File:** src/components/ui/recharts/dashedlinechart.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3760,7 +3898,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3769,7 +3907,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Linechart [src/components/ui/recharts/linechart.tsx]
+### Linechart
 
 - **File:** src/components/ui/recharts/linechart.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3777,7 +3915,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3786,7 +3924,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### LinechartPolicy [src/components/ui/recharts/linechart-policy.tsx]
+### LinechartPolicy
 
 - **File:** src/components/ui/recharts/linechart-policy.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3794,7 +3932,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3803,7 +3941,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Piechart [src/components/ui/recharts/piechart.tsx]
+### Piechart
 
 - **File:** src/components/ui/recharts/piechart.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3811,7 +3949,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3820,7 +3958,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### TablePolicy [src/components/ui/recharts/table-policy.tsx]
+### TablePolicy
 
 - **File:** src/components/ui/recharts/table-policy.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3828,7 +3966,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** MEDIUM
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** YES
 - **SoC potential:** LOW
@@ -3837,7 +3975,7 @@
 - **Refactor potential:** LOW
 - **Refactor strategy:** prop-injection - convert domain-shaped inputs into plain props for a reusable shell
 
-### Select [src/components/ui/select.tsx]
+### Select
 
 - **File:** src/components/ui/select.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3845,7 +3983,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3863,7 +4001,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3881,7 +4019,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3899,7 +4037,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3917,7 +4055,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3935,7 +4073,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3945,7 +4083,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Navigation
 
-### Textarea [src/components/ui/textarea.tsx]
+### Textarea
 
 - **File:** src/components/ui/textarea.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3953,7 +4091,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3963,7 +4101,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Inputs
 
-### Tooltip [src/components/ui/tooltip.tsx]
+### Tooltip
 
 - **File:** src/components/ui/tooltip.tsx
 - **Classification:** NEW_SHARED_COMPONENT
@@ -3971,7 +4109,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (@repo/ui export missing)
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive; migration risk is mainly API and visual parity alignment with @repo/ui.
+- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
 - **Reason kept app-local:** N/A
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3981,7 +4119,7 @@
 - **Refactor strategy:** N/A
 - **Story group:** Overlays
 
-### DetailView [src/views/claim/detail/detail.view.tsx]
+### DetailView
 
 - **File:** src/views/claim/detail/detail.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -3989,7 +4127,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -3998,7 +4136,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportView [src/views/claim/export/export.view.tsx]
+### ExportView
 
 - **File:** src/views/claim/export/export.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4006,7 +4144,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4015,7 +4153,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListView [src/views/claim/list/list.view.tsx]
+### ListView
 
 - **File:** src/views/claim/list/list.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4023,7 +4161,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4040,7 +4178,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4049,7 +4187,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddView [src/views/customer/add/add.view.tsx]
+### AddView
 
 - **File:** src/views/customer/add/add.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4057,7 +4195,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4066,7 +4204,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListView [src/views/customer/list/list.view.tsx]
+### ListView
 
 - **File:** src/views/customer/list/list.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4074,7 +4212,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4091,7 +4229,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4108,7 +4246,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4125,7 +4263,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4134,7 +4272,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailView [src/views/employment-benefit/membership/detail/detail.view.tsx]
+### DetailView
 
 - **File:** src/views/employment-benefit/membership/detail/detail.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4142,7 +4280,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4151,7 +4289,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListView [src/views/employment-benefit/membership/list/list.view.tsx]
+### ListView
 
 - **File:** src/views/employment-benefit/membership/list/list.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4159,7 +4297,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4168,7 +4306,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailView [src/views/finance/billing/detail/detail.view.tsx]
+### DetailView
 
 - **File:** src/views/finance/billing/detail/detail.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4176,7 +4314,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4185,7 +4323,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportView [src/views/finance/billing/export/export.view.tsx]
+### ExportView
 
 - **File:** src/views/finance/billing/export/export.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4193,7 +4331,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4202,7 +4340,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListView [src/views/finance/billing/list/list.view.tsx]
+### ListView
 
 - **File:** src/views/finance/billing/list/list.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4210,7 +4348,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4227,7 +4365,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4244,7 +4382,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4261,7 +4399,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4278,7 +4416,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4287,7 +4425,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddView [src/views/plan/add/add.view.tsx]
+### AddView
 
 - **File:** src/views/plan/add/add.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4295,7 +4433,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4304,7 +4442,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailView [src/views/plan/detail/detail.view.tsx]
+### DetailView
 
 - **File:** src/views/plan/detail/detail.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4312,7 +4450,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4321,7 +4459,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListView [src/views/plan/list/list.view.tsx]
+### ListView
 
 - **File:** src/views/plan/list/list.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4329,7 +4467,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4338,7 +4476,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UploadView [src/views/plan/upload/upload.view.tsx]
+### UploadView
 
 - **File:** src/views/plan/upload/upload.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4346,7 +4484,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4355,7 +4493,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailView [src/views/policy/detail/detail.view.tsx]
+### DetailView
 
 - **File:** src/views/policy/detail/detail.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4363,7 +4501,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4372,7 +4510,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### DetailView [src/views/policy/endorsement/detail/detail.view.tsx]
+### DetailView
 
 - **File:** src/views/policy/endorsement/detail/detail.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4380,7 +4518,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4389,7 +4527,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListView [src/views/policy/endorsement/list/list.view.tsx]
+### ListView
 
 - **File:** src/views/policy/endorsement/list/list.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4397,7 +4535,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4406,7 +4544,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### UploadView [src/views/policy/endorsement/upload/upload.view.tsx]
+### UploadView
 
 - **File:** src/views/policy/endorsement/upload/upload.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4414,7 +4552,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4423,7 +4561,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportView [src/views/policy/export/export.view.tsx]
+### ExportView
 
 - **File:** src/views/policy/export/export.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4431,7 +4569,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4448,7 +4586,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4457,7 +4595,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ListView [src/views/policy/list/list.view.tsx]
+### ListView
 
 - **File:** src/views/policy/list/list.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4465,7 +4603,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4474,7 +4612,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### AddView [src/views/transaction/add/add.view.tsx]
+### AddView
 
 - **File:** src/views/transaction/add/add.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4482,7 +4620,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4499,7 +4637,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4508,7 +4646,7 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### ExportView [src/views/transaction/export/export.view.tsx]
+### ExportView
 
 - **File:** src/views/transaction/export/export.view.tsx
 - **Classification:** KEEP_APP_LOCAL
@@ -4516,7 +4654,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4533,7 +4671,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4550,7 +4688,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE
@@ -4567,7 +4705,7 @@
 - **@repo/ui status:** missing
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** HIGH
-- **Risk notes:** Contains app-specific domain or routing concerns and should remain local to avoid abstraction leakage.
+- **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Reason kept app-local:** Contains app-specific domain, routing, or API concerns that should remain local.
 - **Is monolith:** NO
 - **SoC potential:** NONE

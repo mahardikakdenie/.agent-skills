@@ -102,13 +102,13 @@
 - [ ] State parity (loading, error, disabled, empty)
 - [ ] Prop API still compiles after swap
 
-## Loading [src/components/ui/loading.tsx]
+## Loading
 - [ ] Interaction parity (click, hover, keyboard)
 - [ ] Visual parity (layout, spacing, color - token delta OK)
 - [ ] State parity (loading, error, disabled, empty)
 - [ ] Prop API still compiles after swap
 
-## Loading [src/components/ui/Loading/index.tsx]
+## Loading
 - [ ] Interaction parity (click, hover, keyboard)
 - [ ] Visual parity (layout, spacing, color - token delta OK)
 - [ ] State parity (loading, error, disabled, empty)
@@ -121,6 +121,18 @@
 - [ ] Prop API still compiles after swap
 
 ## NavigationMenu
+- [ ] Interaction parity (click, hover, keyboard)
+- [ ] Visual parity (layout, spacing, color - token delta OK)
+- [ ] State parity (loading, error, disabled, empty)
+- [ ] Prop API still compiles after swap
+
+## OptimizeImageShell
+- [ ] Interaction parity (click, hover, keyboard)
+- [ ] Visual parity (layout, spacing, color - token delta OK)
+- [ ] State parity (loading, error, disabled, empty)
+- [ ] Prop API still compiles after swap
+
+## OptimizeImageShell
 - [ ] Interaction parity (click, hover, keyboard)
 - [ ] Visual parity (layout, spacing, color - token delta OK)
 - [ ] State parity (loading, error, disabled, empty)
