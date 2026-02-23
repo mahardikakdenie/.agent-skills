@@ -19,14 +19,24 @@ Placeholders
 
 ---
 
-## Batch 0 - Verification Gate Setup (No Smoke Required)
+## Batch 0 - Verification Gate Setup (Service Migration Sections Only)
 
 Prompt:
 
 ```
 Use <SPEC_PATH> "App-Specific Inputs" and "Verification Gate (Mandatory)".
-For <APP_NAME> in <APP_PATH>, create <APP_PATH>/docs/migration/verification-gate.md with:
-Typecheck command, Build command, Lint command, Test command (or N/A), Sanity check command (or N/A), covered routes/flows (if any), and agent skills availability (systematic-debugging, vercel-react-best-practices).
+
+If <APP_PATH>/docs/migration/verification-gate.md does NOT yet exist, create it with sections §1–§5 only:
+- §1 Typecheck command: pnpm --filter <APP_PACKAGE> check-types
+- §2 Lint command: pnpm --filter <APP_PACKAGE> lint
+- §3 Build command: pnpm --filter <APP_PACKAGE> build (include build/runtime mode note)
+- §4 Turborepo package name and --filter selector
+- §5 Smoke routes: list 5–10 critical routes that must not regress (no visual artifact capture — just navigation + console check)
+
+If the file ALREADY EXISTS (created by component migration Batch 0), update ONLY §1–§5 if anything is incorrect for this app.
+Do NOT create, modify, or overwrite §6 (Before/After Artifact Capture) or §7 (Parity Baseline) — those sections are component-migration-only and managed by the component migration workflow.
+
+After creating/updating the file, run §1–§4 commands and verify §5 routes are accessible.
 Update <SPEC_PATH> only if it needs generic clarifications. Do not hardcode app-specific commands in the spec.
 Do not modify any service files or components in this batch.
 ```
