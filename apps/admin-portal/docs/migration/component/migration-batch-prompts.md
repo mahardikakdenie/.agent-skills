@@ -122,19 +122,159 @@ Use commit scope by lock-file location:
 
 ## Step 0b — Verification Gate Setup
 
-Create or update `<APP_PATH>/docs/migration/verification-gate.md` with the exact
-commands for THIS app:
+Create `<APP_PATH>/docs/migration/verification-gate.md` using the **exact template below**.
+Replace `<APP_NAME>`, `<APP_PACKAGE>`, and the smoke routes list with values for THIS app
+before writing the file. The structure must remain identical across all apps.
 
-Required sections:
+To discover the correct smoke routes, run:
+```bash
+find <APP_PATH>/src/app -name "page.tsx" | sed 's|.*/src/app||' | sed 's|/page.tsx||' | sort
+```
+Pick the 5–10 most critical routes (dashboards, main list pages, key detail pages).
 
-1. Typecheck command: `pnpm --filter <APP_PACKAGE> check-types`
-2. Lint command: `pnpm --filter <APP_PACKAGE> lint`
-3. Build command: `pnpm --filter <APP_PACKAGE> build`
-4. Turborepo package name: (confirm correct --filter value)
-5. Smoke routes: list 5–10 critical routes that must not visually regress
-6. Parity baseline: how to confirm component behavior unchanged (e.g., visual + interaction)
+---
 
-Run the verification gate now and report results. If any command fails, fix only the
+**Template — write this verbatim (with placeholders filled) as `verification-gate.md`:**
+
+````markdown
+# Verification Gate - <APP_NAME>
+
+This file defines the mandatory verification gate for component migration work in `apps/<APP_NAME>`.
+
+## 0. Package Manager Normalization (Prerequisite)
+
+Before running the gate, ensure pnpm-only lockfile normalization is satisfied for both scopes below:
+
+- App scope check (`apps/<APP_NAME>`): no `yarn.lock` or `package-lock.json` under app files (exclude `node_modules` and `.next`).
+- Workspace root check: no `./yarn.lock` and no `./package-lock.json`.
+- Root `package.json` keeps `"packageManager": "pnpm@..."`.
+- Root `pnpm-lock.yaml` exists and is the single lockfile source of truth.
+
+If rogue lockfiles are found, remove them in the correct scope, then run `pnpm install` before continuing.
+
+Commit-message scope rule when lockfiles are removed:
+- App-only removal: `chore(<APP_NAME>): enforce pnpm - remove yarn.lock / package-lock.json`
+- Root or multi-scope removal: `chore: enforce pnpm - remove yarn.lock / package-lock.json`
+
+## 1. Typecheck Command
+
+`pnpm --filter <APP_PACKAGE> check-types`
+
+## 2. Lint Command
+
+`pnpm --filter <APP_PACKAGE> lint`
+
+## 3. Build Command
+
+`pnpm --filter <APP_PACKAGE> build`
+
+Build/runtime mode note:
+
+- `dev` runs with Turbopack by default (`next dev`).
+- `build` runs with `next build` (no forced `--webpack`).
+- No custom obfuscation step is applied; rely on Next.js production minification and default source-map behavior.
+
+## 4. Turborepo Package Name
+
+- App package name: `<APP_PACKAGE>`
+- Correct filter selector: `--filter <APP_PACKAGE>`
+
+## 5. Smoke Routes (Critical Only)
+
+Auth pre-step (required when redirected to login):
+
+- Email: process.env.SMOKE_TEST_EMAIL
+- Password: process.env.SMOKE_TEST_PASSWORD
+- If any smoke route redirects to login, authenticate first with the credentials above, then continue route checks in the same browser session.
+
+Run smoke checks on these critical routes after migration changes:
+
+1. <!-- fill in critical route -->
+2. <!-- fill in critical route -->
+3. <!-- fill in critical route -->
+4. <!-- fill in critical route -->
+5. <!-- fill in critical route -->
+
+## 6. Before/After Artifact Capture
+
+Artifacts are the primary comparison object between the pre-migration baseline and the post-migration state.
+
+### Directory structure
+
+```
+apps/<APP_NAME>/docs/migration/component/_artifacts/smoke-routes/
+├── before/
+│   ├── 01-<route-label>.png
+│   └── ... (one file per route above, numbered to match Section 5)
+└── after/
+    ├── 01-<route-label>.png
+    └── ...
+```
+
+### Capture rules
+
+- **Before** — taken from baseline state before migration patches are applied.
+- **After** — taken after migration patches are applied and the build passes.
+- **Naming** — zero-padded route number + kebab-case route label (e.g., `01-dashboard-transaction.png`).
+- **Viewport** — 1440×900, full-page screenshot.
+- **Auth state** — taken while authenticated (never the login page itself).
+
+### PASS / FAIL criteria
+
+A route is **PASS** when ALL of the following hold after comparing before vs after screenshot and running one interaction pass:
+
+| Check | PASS condition |
+|-------|---------------|
+| Visual parity | Layout, spacing, hierarchy, typography, key color usage unchanged — or delta is caused solely by design system token adoption |
+| Interaction parity | Click, hover, keyboard nav, focus states behave identically |
+| State parity | Loading, empty, disabled, success, error states consistent |
+| Data/UI parity | Table columns, filters, sort, pagination unchanged |
+| Console/network sanity | Zero new console errors or failing network requests |
+
+A route is **FAIL** if any check above does not hold and the delta is **not** an approved token-level design system change.
+
+### Comparison log
+
+Record diffs in `_artifacts/smoke-routes/comparison-log.md` using this structure per route:
+
+```markdown
+## Route: <path> (#<N>)
+
+| Field              | Before | After | Delta |
+|-------------------|--------|-------|-------|
+| Screenshot        | [before](./before/<NN-label>.png) | [after](./after/<NN-label>.png) | Visual diff |
+| Console errors    | 0 | 0 | — |
+| Network errors    | 0 | 0 | — |
+| Visual parity     | ✅ | ✅ | — |
+| Interaction parity| ✅ | ✅ | — |
+| State parity      | ✅ | ✅ | — |
+| Data/UI parity    | ✅ | ✅ | — |
+| Result            | — | — | ✅ PASS |
+| Intentional delta | — | — | none |
+```
+
+Gate is **passed** only when all routes have a completed comparison entry with no unresolved deltas.
+
+## 7. Parity Baseline (Behavior Must Be Unchanged)
+
+For each smoke route, verify all of the following:
+
+- Visual parity: layout, spacing, hierarchy, typography, and key color usage are unchanged except for approved token-level deltas.
+- Interaction parity: click, hover, keyboard navigation, and focus states behave the same as baseline.
+- State parity: loading, empty, disabled, success, and error states remain consistent.
+- Data/UI parity: table columns, filters, sort behavior, and pagination controls match current behavior.
+- Console/network sanity: no new console errors or failing network requests introduced by migration.
+
+Evidence method:
+
+1. Capture before/after screenshots of each smoke route and store them under `apps/<APP_NAME>/docs/migration/component/_artifacts/smoke-routes/`.
+2. Run one interaction pass per route (filter, navigate, submit, modal open/close where available).
+3. Record any intentional deltas and approval context in the migration output docs.
+````
+
+---
+
+After writing the file, run the verification gate and report results. If any command fails, fix only the
 pre-existing issue (do not modify component or migration files).
 
 > Skills (if installed): `$monorepo-workspace` (confirm correct --filter selector for this app, script names available); `$turborepo` (confirm correct --filter values, verify task pipeline is set up); `$next-upgrade` (if Next.js version needs updating before migration begins); `$systematic-debugging` (if any gate command fails — trace root cause before attempting fixes)
