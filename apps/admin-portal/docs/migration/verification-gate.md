@@ -1,4 +1,4 @@
-# Verification Gate - admin-portal
+﻿# Verification Gate - admin-portal
 
 This file defines the mandatory verification gate for component migration work in `apps/admin-portal`.
 
@@ -16,6 +16,7 @@ If rogue lockfiles are found, remove them in the correct scope, then run `pnpm i
 Commit-message scope rule when lockfiles are removed:
 - App-only removal: `chore(admin-portal): enforce pnpm - remove yarn.lock / package-lock.json`
 - Root or multi-scope removal: `chore: enforce pnpm - remove yarn.lock / package-lock.json`
+
 ## 1. Typecheck Command
 
 `pnpm --filter admin-portal check-types`
@@ -40,6 +41,12 @@ Build/runtime mode note:
 - Correct filter selector: `--filter admin-portal`
 
 ## 5. Smoke Routes (No Visual Regression)
+
+Auth pre-step (required when redirected to login):
+
+- Email: `rendra@yopmail.com`
+- Password: `7u5tdo@IT`
+- If any smoke route redirects to login, authenticate first with the credentials above, then continue route checks in the same browser session.
 
 Run smoke checks on these critical routes after migration changes:
 
@@ -66,6 +73,6 @@ For each smoke route, verify all of the following:
 
 Evidence method:
 
-1. Capture before/after screenshots of each smoke route.
+1. Capture before/after screenshots of each smoke route and store them under `apps/admin-portal/docs/migration/component/_artifacts/smoke-routes/`.
 2. Run one interaction pass per route (filter, navigate, submit, modal open/close where available).
 3. Record any intentional deltas and approval context in the migration output docs.
