@@ -54,7 +54,7 @@ Replace these in every prompt before running:
 | ----------------- | -------------------- | ----------------------------------------- |
 | `<APP_NAME>`      | `admin-portal`       | App slug (matches `apps/` directory name) |
 | `<APP_PATH>`      | `apps/admin-portal`  | Monorepo-relative path to app root        |
-| `<APP_PACKAGE>`   | `@repo/admin-portal` | Package name for `pnpm --filter`          |
+| `<APP_PACKAGE>`   | `admin-portal` | Package name for `pnpm --filter`          |
 | `<LEGACY_REMOTE>` | `admin-portal`       | Git remote name for the legacy repo       |
 | `<LEGACY_BRANCH>` | `stage`              | Default branch of the legacy repo         |
 
