@@ -672,8 +672,6 @@ flowchart TB
    - Remove old HTTP client wrappers
    - Keep only new colocated structure
 
-<<<<<<< HEAD
-=======
 2. **Update imports (should be zero):**
    - Search for any remaining old service imports
    - Update if found (should not happen if Phase 5 complete)

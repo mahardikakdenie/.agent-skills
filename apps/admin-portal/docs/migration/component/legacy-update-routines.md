@@ -135,6 +135,22 @@ git push origin migrate-app/<APP_NAME>
 
 Stop. Do NOT force-push or guess resolutions. Proceed to **Routine 3**.
 
+### Merge Health Check (MHC) — Run in Both Cases
+
+> [!IMPORTANT]
+> Run this **immediately after merge** (whether or not there were conflicts), before any further code changes. This catches merge-introduced build/type breakages early.
+
+```bash
+# Must pass before proceeding to Routine 3 or 4
+pnpm --filter <APP_PACKAGE_NAME> check-types
+pnpm --filter <APP_PACKAGE_NAME> build
+```
+
+**If MHC fails:**
+- Identify whether the failure is merge-introduced or pre-existing
+- Fix narrowly (conflicted files only), then re-run MHC
+- If failure cannot be safely resolved → `git merge --abort`, document, plan alternative
+
 ---
 
 ## Routine 3: Conflict Resolution by Component Category
@@ -190,7 +206,19 @@ git log integrate/<APP_NAME>~5..integrate/<APP_NAME> --oneline
 git diff migrate-app/<APP_NAME>..integrate/<APP_NAME> --name-only
 ```
 
-### 4.2 Categorize Changes
+### 4.3 Backward-Compatibility Constraint
+
+> [!IMPORTANT]
+> **All changes in this routine must maintain backward compatibility.** No change introduced by a legacy update is permitted to break current app behavior or break existing consumers of migrated outputs:
+
+- **No component prop API changes for existing callers** — added props must be optional; removing props requires migration notice
+- **No removal of existing exports from `@repo/ui`** — deprecate first if removal is planned
+- **No type narrowing** — widening exported types is OK; narrowing is NOT unless every consumer is verified
+- **No hook signature changes** — if the service track has refactored hooks, legacy updates must not alter their `queryKey` or `queryFn` contracts
+
+If a legacy update introduces a change that CANNOT be applied without a breaking change, document it in the update log under `## Breaking Changes (Escalated)` and raise with the team before merging to `migrate-app/`.
+
+### 4.4 Categorize Changes
 
 For each changed file, determine:
 
@@ -382,6 +410,7 @@ Create a separate file per update at:
 
 - **Subtree pull:** ✅ Success
 - **Merge to migrate-app/<APP_NAME>:** ✅ Clean / ⚠️ Conflicts resolved (N files)
+- **Merge Health Check (MHC):** ✅ typecheck + build passed after merge
 - **Routines used:** <list, e.g., Routine 1 → 2 → 3 → 4 → 6>
 
 ## Changes Identified
@@ -424,7 +453,9 @@ Create a separate file per update at:
 
 ## Current Migration Status
 
-- **Batch position:** <e.g., "Batch 1 complete, Batch 2 3/7 done">
+- **Batch position (component track):** <e.g., "Batch 1 complete, Batch 2 3/7 done">
+- **Batch position (service track):** <e.g., "Batch 5 complete — all hooks done" or "N/A — not started">
+- **Cross-track impact:** <"None" or describe what was affected in the service track>
 - **Batch 1.5 status:** Pending | In Progress | Complete | N/A
 - **Batch 1.5 candidates affected by this update:** <list or "None">
 - **Components DONE:** <count>

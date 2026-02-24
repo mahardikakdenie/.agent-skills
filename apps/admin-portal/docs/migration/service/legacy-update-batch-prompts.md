@@ -22,6 +22,24 @@
 
 ---
 
+## Batch Number Convention
+
+> [!NOTE]
+> The batches in this file (Batch 1–6) are **legacy update batches**, NOT the same as the main service refactor batches (Batch 0–7 in `refactor-batch-prompts.md`).
+>
+> | This file | Main refactor | They are different |
+> | --------- | ------------- | ------------------ |
+> | Batch 1 = Subtree Pull & Merge | Batch 1 = Foundation setup | ✅ Different scope |
+> | Batch 2 = Conflict Resolution | Batch 2 = API client/setup | ✅ Different scope |
+> | Batch 3 = Analyze Changes | Batch 3 = Audit services | ✅ Different scope |
+> | Batch 4 = Apply Adjustments | Batch 4 = Implement API layer | ✅ Different scope |
+> | Batch 5 = New Service | Batch 5 = Hooks | ✅ Different scope |
+> | Batch 6 = Verify & Document | Batch 6 = Component migration | ✅ Different scope |
+>
+> When using these in AI-assisted workflows alongside `refactor-batch-prompts.md`, always prefix with "Legacy Update" to avoid confusion.
+
+---
+
 ## Placeholders
 
 - `<APP_NAME>`: admin-portal
@@ -52,6 +70,13 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routines 1-2:
 2. Routine 2: Merge to migrate/<APP_NAME>
    - Switch to migrate/<APP_NAME>
    - Merge integrate/<APP_NAME>
+   - **Immediately run Merge Health Check (MHC):**
+     ```
+     pnpm --filter <APP_PACKAGE_NAME> check-types
+     pnpm --filter <APP_PACKAGE_NAME> build
+     ```
+     - If MHC fails: stop, fix narrowly, re-run MHC before continuing
+     - If MHC passes:
    - If NO conflicts: push and proceed to Batch 3
    - If conflicts: STOP and notify me, proceed to Batch 2
 
@@ -208,7 +233,12 @@ For each affected service:
 Rules:
 - Do NOT modify old services
 - Follow existing patterns exactly
-- Maintain backward compatibility
+- **Backward-compatibility contract (mandatory for all changes in this batch):**
+  - [ ] No existing hook signatures changed — `queryKey`, `queryFn`, and parameter shapes must remain identical for callers
+  - [ ] No existing exported types narrowed — type widening is OK; type narrowing or removal is NOT without migration notice
+  - [ ] No existing service function signatures changed for current consumers
+  - [ ] No exports deleted without a deprecation comment first
+  - If any of the above cannot be maintained, document it explicitly in `legacy-update-YYYYMMDD-HHMMSS.md` under "Breaking Changes" and notify the team before merging
 
 Proceed to Batch 6 (verification) after completing adjustments.
 ```
