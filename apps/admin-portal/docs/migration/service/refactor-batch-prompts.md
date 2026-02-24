@@ -16,6 +16,9 @@ Placeholders
 - `<APP_PATH>/docs/migration/service/plan.md` - Migration plan (Phase 2)
 - `<APP_PATH>/docs/migration/service/component-migration.md` - Component migration tracking
 - `<APP_PATH>/docs/migration/verification-gate.md` - Verification commands
+- `<APP_PATH>/docs/migration/service/legacy-update-integration-guide.md` - Legacy update quick reference
+- `<APP_PATH>/docs/migration/service/legacy-update-routines.md` - Detailed legacy update workflows
+- `<APP_PATH>/docs/migration/service/legacy-update-batch-prompts.md` - Legacy update batch prompts (L1–L6)
 
 ---
 
@@ -128,6 +131,13 @@ Steps:
    - Update verification results section
 7. After all component migrations are complete, run the full Verification Gate for <APP_NAME> and report results
 
+> [!IMPORTANT]
+> **Legacy Update Interruption Guard:** `component-migration.md` is the authoritative record of which components are fully migrated (Status=DONE). If a legacy update arrives mid-batch:
+> - Complete the current component before pausing
+> - Components marked Status=DONE must NOT be reverted by the merge — they own their code at `@/services/*` hooks
+> - For conflict-resolution details see `legacy-update-routines.md` Routine 3 conflict table
+> See the **Legacy Update Interruption** section below for the full pause/resume workflow.
+
 Rules: Do not keep manual `useQuery`/`useMutation` wrappers in components if equivalent service hooks already exist; if a manual wrapper is still required, document why in `component-migration.md`. If `$vercel-react-best-practices` is available, apply it to React/Next.js refactors. If verification fails, use `$systematic-debugging` (if available), fix and re-run the gate. Rollback only if a safe fix is not possible within the step.
 ```
 
@@ -191,3 +201,61 @@ Rules: If verification fails, use `$systematic-debugging` (if available), fix an
 ## Multi-App Usage
 
 Repeat Batch 0 to Batch 7 for each app. Each app must have its own verification gate file.
+
+---
+
+## Legacy Update Interruption
+
+> **When to run:** Whenever the legacy repo has new commits to pull, at ANY point during Batches 0–7.
+> **Safe stopping point:** Complete the current service (Phase 4A/4B) or current component (Batch 6) before pausing. Never stop mid-step.
+> **Branch:** `migrate-app/<APP_NAME>`
+> **Reference:** `<APP_PATH>/docs/migration/service/legacy-update-integration-guide.md` · `<APP_PATH>/docs/migration/service/legacy-update-routines.md` · `<APP_PATH>/docs/migration/service/legacy-update-batch-prompts.md` (L1–L6)
+
+### Pause Protocol (before running L1)
+
+If currently at an active migration step, complete the current service or component first.
+Then document the pause point in `<APP_PATH>/docs/migration/service/plan.md` or a `task.md` file:
+
+```
+## Pause Record
+
+- Current batch: <e.g., Batch 6 — ClaimsTable component>
+- Item in progress: <ServiceName or ComponentName> — <last completed step>
+- Status: ⏸️ Paused for legacy update
+- Timestamp: <YYYY-MM-DD HH:MM>
+```
+
+Commit and push current work, then run L1–L6 from `legacy-update-batch-prompts.md`.
+
+```bash
+git add .
+git commit -m "chore(<APP_NAME>): pause Batch 6 migration for legacy update"
+git push origin migrate-app/<APP_NAME>
+```
+
+### Resume Protocol (after L6 completes)
+
+1. Review the legacy update log (`legacy-updates/legacy-update-<timestamp>.md`) for any changes that affect in-progress service work
+2. Run the Cross-Track Impact Review from `legacy-update-integration-guide.md` if component migration is also running in parallel
+3. Update the pause record:
+
+```
+- Status: ▶️ Resumed after legacy update
+- Legacy update integrated: <timestamp>
+- Services affected: <list or "none">
+- New endpoints added: <list or "none">
+- Impact on current batch: <description or "none">
+```
+
+4. Continue from the documented pause step
+
+### Scenario Quick Reference
+
+| Scenario | Run these legacy batches |
+| -------- | ------------------------ |
+| Clean merge, no new services or endpoints | L1 → L3 → L4 → L6, then resume |
+| Conflicts present | L1 → L2 → L3 → L4 → L6, then resume |
+| New base URL (new service) | L1 → L3 → L5 (full new service) → L6, then resume |
+| New endpoints in existing service | L1 → L3 → L4 (extend service + hooks) → L6, then resume |
+| Conflicts + new endpoints | L1 → L2 → L3 → L4 → L6, then resume |
+| Update arrives after Batch 7 (old services deleted) | L1 → L3 → L5 (incremental refactor) → L6 |

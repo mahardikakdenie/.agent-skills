@@ -672,8 +672,6 @@ flowchart TB
    - Remove old HTTP client wrappers
    - Keep only new colocated structure
 
-<<<<<<< HEAD
-=======
 2. **Update imports (should be zero):**
    - Search for any remaining old service imports
    - Update if found (should not happen if Phase 5 complete)
@@ -825,7 +823,7 @@ git log --oneline
 
 # Rollback to safe state
 git reset --hard <commit-before-phase>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 
 # Document in task.md why rollback occurred
 ```
@@ -991,7 +989,6 @@ See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
 
 ### Dual-Mode Operation
 
->>>>>>> integrate-app/admin-portal
 **Principle:** Old and new services coexist until Phase 6.
 
 **Implementation:**
@@ -1030,7 +1027,7 @@ git log --oneline
 
 # Rollback migrate-app/* branch
 git reset --hard <commit-before-phase>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 ```
 
 **After rollback:**
@@ -1093,7 +1090,7 @@ pnpm dev  # manual sanity check
 ```bash
 git checkout integrate/<app-name>
 git subtree pull --prefix=apps/<app-name> <remote> <branch>
-git checkout migrate/<app-name>
+git checkout migrate-app/<APP_NAME>
 git merge integrate/<app-name>
 ```
 
@@ -1101,7 +1098,7 @@ git merge integrate/<app-name>
 
 ```bash
 git reset --hard <safe-commit>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 ```
 
 ### Document Cross-Reference

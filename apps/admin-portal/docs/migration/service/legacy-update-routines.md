@@ -126,10 +126,10 @@ Synchronize the refactored `migrate-app/*` branch with the updated baseline.
 
 ### Steps
 
-#### 2.1 Switch to migrate/\* branch
+#### 2.1 Switch to migrate-app/\* branch
 
 ```bash
-git checkout migrate/<app-name>
+git checkout migrate-app/<APP_NAME>
 ```
 
 #### 2.2 Merge integrate/_ into migrate/_
@@ -143,10 +143,27 @@ git merge integrate/<app-name>
 - ✅ **No conflicts**: Clean merge → skip to Routine 4
 - ⚠️ **Conflicts**: Conflicts detected → proceed to Routine 3
 
-#### 2.3 Push migrate/\* branch (if no conflicts)
+#### 2.3 Merge Health Check (MHC) — Run Before Proceeding
+
+> [!IMPORTANT]
+> Run these checks **immediately after merge**, before any conflict resolution or code adjustment. Catch merge-introduced breakages early.
 
 ```bash
-git push origin migrate/<app-name>
+# Quick health check — must pass before Routine 3/4
+pnpm --filter <APP_PACKAGE_NAME> check-types
+pnpm --filter <APP_PACKAGE_NAME> build
+```
+
+**If health check fails:**
+- Do NOT proceed to Routine 3/4 yet
+- Identify whether the failure is merge-introduced or pre-existing
+- Fix narrowly in the conflicted files, then re-run MHC
+- If failure cannot be fixed safely → rollback merge (`git merge --abort`), document, and plan alternative
+
+#### 2.4 Push migrate-app/\* branch (if no conflicts)
+
+```bash
+git push origin migrate-app/<APP_NAME>
 ```
 
 ---
@@ -174,14 +191,18 @@ Analyze conflicted files based on **conceptual categories**, not specific paths 
 
 **Conflict Categories:**
 
-| Category                    | Description                                                                 | Resolution Strategy          |
-| --------------------------- | --------------------------------------------------------------------------- | ---------------------------- |
-| **Old/Legacy Services**     | Files that will be deleted in Phase 6 cleanup (services not yet refactored) | Accept incoming (legacy)     |
-| **New/Refactored Services** | Files created during refactoring (new architecture)                         | Keep ours (refactored)       |
-| **Migrated Components**     | Components already using new service hooks                                  | Keep ours                    |
-| **Non-Migrated Components** | Components still using old services                                         | Accept incoming (legacy)     |
-| **Shared Infrastructure**   | Foundation code (API clients, query setup, utils)                           | Carefully merge, prefer ours |
-| **Configuration**           | Config files (package.json, tsconfig, env, etc.)                            | Carefully merge both         |
+| Category                        | Description                                                                          | Resolution Strategy                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| **Old/Legacy Services**         | Files that will be deleted in Phase 6 cleanup (services not yet refactored)          | Accept incoming (legacy)                                |
+| **New/Refactored Services**     | Files created during refactoring (new architecture)                                  | Keep ours (refactored)                                  |
+| **Migrated Components**         | Components already using new service hooks                                           | Keep ours                                               |
+| **MIGRATE_AFTER_SPLIT**         | Component classified as `MIGRATE_AFTER_SPLIT` in component migration `_audit-report.md` — SoC split not yet run | **Accept incoming (legacy)** — treat as non-migrated. Do NOT remove its `MIGRATE_AFTER_SPLIT` flag from audit. |
+| **Non-Migrated Components**     | Components still using old services                                                  | Accept incoming (legacy)                                |
+| **Shared Infrastructure**       | Foundation code (API clients, query setup, utils)                                    | Carefully merge, prefer ours                            |
+| **Configuration**               | Config files (package.json, tsconfig, env, etc.)                                     | Carefully merge both                                    |
+
+> [!IMPORTANT]
+> **MIGRATE_AFTER_SPLIT check (when component migration is active):** If component migration has started, before resolving component file conflicts check `apps/<APP_NAME>/docs/migration/component/_output/_audit-report.md` for any `Classification: MIGRATE_AFTER_SPLIT` entries. Files with that classification are NOT yet owned by the migration — always accept incoming (`--theirs`) for them, even if they appear to be "ours" based on commit history.
 
 **How to categorize a conflicted file:**
 
@@ -259,8 +280,8 @@ Manually merge:
 
 ```bash
 git add .
-git commit -m "chore: merge integrate/<app-name> to migrate/<app-name>"
-git push origin migrate/<app-name>
+git commit -m "chore: merge integrate/<APP_NAME> to migrate-app/<APP_NAME>"
+git push origin migrate-app/<APP_NAME>
 ```
 
 ---
@@ -757,7 +778,7 @@ If verification fails and cannot be fixed safely:
 ```bash
 # Rollback migrate-app/* branch
 git reset --hard <commit-before-legacy-update-merge>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 ```
 
 Document rollback in `legacy-update-YYYYMMDD-HHMMSS.md` and notify team.
@@ -771,34 +792,65 @@ If main task.md exists at `apps/<app-name>/docs/migration/service/task.md`:
 - Note services affected and new services added
 
 > [!NOTE]
-> All documentation is created on the `migrate/<app-name>` branch, NOT on `integrate-app/*`.
+> All documentation is created on the `migrate-app/<APP_NAME>` branch, NOT on `integrate-app/*`.
 
 #### 6.6 Document results
 
 Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
 
 ```markdown
-# Legacy Update - <app-name> - YYYY-MM-DD HH:MM:SS
+# Legacy Update — <APP_NAME> — YYYY-MM-DD HH:MM:SS
 
-## Legacy Commit
+## Legacy Repo Commit
 
-- SHA: <sha>
-- Date: <date>
-- Summary: <what changed>
+- **Commit:** `<sha>`
+- **Date:** `<date>`
+- **Summary:** <what changed at a high level>
 
-## Integration
+## Integration Status
 
-- Subtree pull: ✅
-- Merge to migrate/\*: ✅ Clean / ⚠️ Conflicts resolved
-- New services: <list or none>
-- Modified endpoints: <list or none>
+- **Subtree pull:** ✅ Success
+- **Merge to migrate-app/<APP_NAME>:** ✅ Clean / ⚠️ Conflicts resolved (N files)
+- **Merge Health Check (MHC):** ✅ typecheck + build passed after merge
+- **Routines used:** <list, e.g., Routine 1 → 2 → 3 → 4 → 6>
+- **Update Batches used (if AI-assisted):** <list, e.g., Batch 1 → 3 → 4 → 6>
 
-## Verification
+## Changes Identified
 
-- Typecheck: ✅/❌
-- Build: ✅/❌
-- Tests: ✅/❌/N/A
-- Sanity: ✅/❌
+- **New services:** <list or "None">
+- **New endpoints:** <list or "None">
+- **Modified endpoints/types:** <list or "None">
+- **Breaking changes:** <list or "None">
+- **Component changes only:** <list or "None">
+- **Config/dependency changes:** <list or "None">
+
+## Conflict Resolution Summary
+
+| File | Category | Strategy | Notes |
+| ---- | -------- | -------- | ----- |
+| `src/services/xxx.ts` | New/Refactored Service | `--ours` | |
+| `src/components/Yyy.tsx` | Non-Migrated Component | `--theirs` | |
+
+## Backward Compatibility Check
+
+- [ ] No existing hook signatures changed (`queryKey`, `queryFn`, param shapes)
+- [ ] No existing exported types narrowed (widening only)
+- [ ] No existing service function signatures changed for consumers
+- [ ] No exports removed without deprecation first
+
+## Verification Results
+
+- **Typecheck:** ✅/❌
+- **Build:** ✅/❌
+- **Lint:** ✅/❌/N/A
+- **Tests:** ✅/❌/N/A
+- **Sanity:** ✅/❌
+
+## Cross-Track State
+
+- **Service migration batch position:** <e.g., "Batch 5 complete — all hooks done">
+- **Component migration batch position:** <e.g., "Batch 1.5 in progress" or "N/A — not started">
+- **Cross-track impact:** <"None" or describe what was affected>
 
 ## Actions
 
@@ -943,7 +995,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
    ```bash
    git add .
    git commit -m "chore: pause main refactor for legacy update"
-   git push origin migrate/<app-name>
+   git push origin migrate-app/<APP_NAME>
    ```
 4. **Proceed** with legacy update Routine 1
 
@@ -964,11 +1016,22 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
    - New services added: <list or "none">
    ```
 
-2. **Review changes** that might affect current work:
+2. **Cross-Track Impact Review:**
+
+   > [!IMPORTANT]
+   > **If component migration is also active on this app**, check whether the legacy update affects any work in the component migration track before resuming:
+
+   - Did this legacy update modify any service that component migration is currently using? → Update hooks/types if needed before resuming
+   - Did this legacy update add new endpoints to a service already refactored? → Extend those hooks before component migration resumes consuming them
+   - Did this legacy update touch a component currently IN PROGRESS in `migration-log.md`? → Notify the component migration agent to re-verify that component
+   - Document impact (or "no cross-track impact") in `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`
+
+3. **Review changes** that might affect current work:
    - Check if services you're currently refactoring were modified
    - Check if new endpoints were added to services you've already implemented
    - Check if dependencies changed
-3. **Resume main batch** from documented step
+
+4. **Resume main batch** from documented step
 
 ---
 

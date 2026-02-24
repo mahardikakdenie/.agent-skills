@@ -84,8 +84,13 @@ Follow <APP_PATH>/docs/migration/component/legacy-update-routines.md Routines 1 
 **Routine 2 — Merge to migrate-app/<APP_NAME>:**
 1. Switch to migrate-app/<APP_NAME>
 2. Run: git merge integrate/<APP_NAME>
-3. If NO conflicts: push migrate-app/<APP_NAME> and report "Ready for Batch 3"
-4. If conflicts: STOP, report conflict list, proceed to Batch 2
+3. **Immediately run Merge Health Check (MHC):**
+   pnpm --filter <APP_PACKAGE> check-types
+   pnpm --filter <APP_PACKAGE> build
+   - If MHC fails: stop. Fix narrowly (conflicted files only). Re-run MHC before continuing. Do NOT proceed to Batch 2 or 3 yet.
+   - If MHC passes: continue below
+4. If NO conflicts: push migrate-app/<APP_NAME> and report "Ready for Batch 3"
+5. If conflicts: STOP, report conflict list, proceed to Batch 2
 
 Do NOT make any code adjustments yet. Do NOT resolve conflicts yet.
 Report the outcome clearly.
@@ -250,6 +255,12 @@ Rules:
 - Do NOT modify components classified as DONE in migration-log.md
 - Do NOT reintroduce local copies of migrated components
 - Keep changes minimal and localized
+- **Backward-compatibility contract (mandatory for all changes in this batch):**
+  - [ ] No changes to existing component prop APIs for callers — new props must be optional; no props removed without migration notice
+  - [ ] No removal of existing exports from `@repo/ui` — deprecate first if removal is planned
+  - [ ] No TypeScript type narrowing — widening is OK; narrowing is NOT unless every consumer verified
+  - [ ] No hook `queryKey` / `queryFn` signature changes — if service track has refactored hooks, legacy updates must not alter those contracts
+  - If any of the above cannot be maintained, document in update log under `## Breaking Changes (Escalated)` and raise with team before merging
 
 Proceed to Batch 6 after completing adjustments.
 ```

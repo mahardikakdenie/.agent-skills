@@ -39,6 +39,12 @@ Legacy updates can arrive at **any batch**. Risk and workflow vary by current po
 
 ### Before Running a Legacy Update
 
+> [!IMPORTANT]
+> **Cross-Track State Check (if running parallel migrations):** Before starting, record the current state of BOTH tracks:
+> - **Component migration:** Current batch and last completed component (e.g., "Batch 4 — paused after ClaimsTable SoC")
+> - **Service migration:** Current phase and batch (e.g., "Phase 4B / Batch 5 — all claims hooks done" or "N/A")
+> This snapshot is required to correctly restore both tracks after the legacy update and enables cross-track impact review.
+
 If currently at an active batch step:
 
 1. **Complete the current component** being migrated (don't stop mid-migration)
@@ -61,7 +67,17 @@ If currently at an active batch step:
    git push origin migrate-app/<APP_NAME>
    ```
 
-4. **Proceed** with legacy update Batch 1
+4. **Immediately after merge, run Merge Health Check (MHC):**
+
+   ```bash
+   pnpm --filter <APP_PACKAGE_NAME> check-types
+   pnpm --filter <APP_PACKAGE_NAME> build
+   ```
+
+   - If MHC fails: stop, fix narrowly (conflicted files only), re-run MHC before proceeding to Batch 2 or Batch 3
+   - If MHC passes: proceed with Batch 2/3
+
+5. **Proceed** with legacy update Batch 1
 
 ### After Legacy Update Verification
 
@@ -85,7 +101,16 @@ Once Batch 6 (verification) passes:
    - Did legacy add a component that overlaps with a packages/ui build in progress on `feat/ui`? → Coordinate with packages/ui work
    - Did any config change break current component builds? → Fix before resuming batch
 
-3. **Resume batch** from the documented component step
+3. **Cross-Track Impact Review (if service migration is active):**
+
+   > [!IMPORTANT]
+   > Before resuming component migration, check whether the legacy update also affects the service migration track:
+   - Did this update add new endpoints to a service currently being hooked by the service migration batch? → Alert the service migration agent to include those new endpoints before hooks are finalized
+   - Did this update introduce new TypeScript types that change the contract with the already-refactored service layer? → Verify API client types are still aligned
+   - Did this update touch infrastructure files (API client, query setup) that service migration depends on? → Coordinate with the service migration track before resuming either track
+   - Document impact (or `cross-track impact: none`) in `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`
+
+4. **Resume batch** from the documented component step
 
 ---
 

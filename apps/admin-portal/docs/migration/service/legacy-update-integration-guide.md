@@ -52,7 +52,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
    ```bash
    git add .
    git commit -m "chore: pause main refactor for legacy update"
-   git push origin migrate/<app-name>
+   git push origin migrate-app/<APP_NAME>
    ```
 4. **Proceed** with legacy update Batch 1
 
@@ -77,7 +77,17 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
    - Check if services you're currently refactoring were modified
    - Check if new endpoints were added to services you've already implemented
    - Check if dependencies changed
-3. **Resume main batch** from documented step
+
+3. **Cross-Track Impact Review (if component migration is active):**
+
+   > [!IMPORTANT]
+   > Before resuming either track, verify the legacy update didn't invalidate in-progress work on the other track:
+   - Did this update modify a service currently being consumed by a component in the component migration batch? → Verify hooks/types still valid before component migration resumes
+   - Did this update add new endpoints to an already-refactored service? → Extend hooks before the next component migration step
+   - Did this update touch a component with `Status=IN PROGRESS` in `migration-log.md`? → Notify the component migration agent to re-verify that component
+   - Document impact (or `cross-track impact: none`) in `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`
+
+4. **Resume main batch** from documented step
 
 ---
 
@@ -275,7 +285,7 @@ flowchart TD
 5. If fix is not safe or would expand scope, consider rollback:
    ```bash
    git reset --hard <commit-before-legacy-update-merge>
-   git push -f origin migrate/<app-name>
+   git push -f origin migrate-app/<APP_NAME>
    ```
 6. Document failure and plan alternative approach
 
@@ -310,6 +320,12 @@ Also check recent task.md or commit history for component migration checklist.
 
 ## Checklist: Before Starting Legacy Update
 
+> [!IMPORTANT]
+> **Cross-Track State Check (if running parallel migrations):** Before starting, record the current state of BOTH tracks:
+> - **Service migration:** Current phase and batch (e.g., "Phase 4B / Batch 5 — paused at claims hooks")
+> - **Component migration:** Current batch and last completed component (e.g., "Batch 1.5 — paused after SoC split of ClaimsForm")
+> This snapshot is required to correctly restore both tracks after the legacy update.
+
 Use this checklist before running Batch 1:
 
 - [ ] Legacy repo has new commits confirmed
@@ -318,6 +334,7 @@ Use this checklist before running Batch 1:
 - [ ] Pause point documented in `task.md` (if applicable)
 - [ ] Git subtree remotes configured correctly
 - [ ] `verification-gate.md` exists at `<APP_PATH>/docs/migration/verification-gate.md`
+- [ ] **If component migration active:** Check `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md` for components with `Status=DONE` (needed for correct conflict resolution)
 - [ ] Team notified (if applicable)
 
 ---

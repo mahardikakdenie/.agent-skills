@@ -1962,7 +1962,7 @@ Commit to feat/ui. This closes the migration program.
 ```
 
 If currently at an active migration step, complete the current component first.
-Then document pause point in `_migration-plan.md`:
+Then document pause point in `_migration-log.md`:
 
 ## Pause Record
 
@@ -2004,8 +2004,17 @@ Read: `<APP_PATH>/docs/migration/component/legacy-update-routines.md` Routines 1
 3. If NO conflicts: push migrate-app/<APP_NAME> and report "Ready for L3"
 4. If conflicts: STOP — list conflict files — proceed to L2
 
-Do NOT make any code adjustments. Do NOT resolve conflicts yet.
-Report outcome clearly: clean merge or conflict list.
+**Merge Health Check (MHC) — run immediately after a clean merge (step 3 above):**
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types
+pnpm --filter <APP_PACKAGE> build
+```
+
+If either command fails, do NOT proceed to L3. Diagnose and fix the merge-introduced breakage first, then re-run the MHC before continuing.
+
+Do NOT make any code adjustments beyond what is needed to pass the MHC. Do NOT resolve semantic conflicts yet.
+Report outcome clearly: clean merge + MHC pass, or conflict list.
 
 ```
 
@@ -2226,7 +2235,7 @@ Fill in `legacy-update-<YYYYMMDD-HHMMSS>.md`:
 - Next steps (e.g., "Resume Batch 8 — continue with DataTable")
 
 **Step 5 — Resume Protocol:**
-Update `_migration-plan.md` Pause Record:
+Update `_migration-log.md` Pause Record:
 
 ```
 
@@ -2239,6 +2248,13 @@ Update `_migration-plan.md` Pause Record:
 - New packages/ui intake items: <list or "none">
 
 ```
+
+**Cross-Track Impact Review:**
+If service migration (`migrate-app/<APP_NAME>` service track) is also in progress:
+
+- Review the legacy update log for changes to endpoints, API types, or service contracts
+- Assess whether those changes invalidate any in-progress service refactor work (audit.md / plan.md entries not yet implemented)
+- If affected: document the impact and required adjustments in the legacy update log before resuming component migration
 
 Report: verification gate results, components integrity check, next steps.
 
