@@ -823,7 +823,7 @@ git log --oneline
 
 # Rollback to safe state
 git reset --hard <commit-before-phase>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 
 # Document in task.md why rollback occurred
 ```
@@ -989,7 +989,6 @@ See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
 
 ### Dual-Mode Operation
 
->>>>>>> integrate-app/admin-portal
 **Principle:** Old and new services coexist until Phase 6.
 
 **Implementation:**
@@ -1028,7 +1027,7 @@ git log --oneline
 
 # Rollback migrate-app/* branch
 git reset --hard <commit-before-phase>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 ```
 
 **After rollback:**
