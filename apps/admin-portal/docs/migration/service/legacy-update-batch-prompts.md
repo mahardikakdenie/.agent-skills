@@ -67,8 +67,8 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routines 1-2:
    - Expected: Clean merge (no conflicts, since integrate-app/* is 1:1 with legacy)
    - Push integrate/<APP_NAME>
 
-2. Routine 2: Merge to migrate/<APP_NAME>
-   - Switch to migrate/<APP_NAME>
+2. Routine 2: Merge to migrate-app/<APP_NAME>
+   - Switch to migrate-app/<APP_NAME>
    - Merge integrate/<APP_NAME>
    - **Immediately run Merge Health Check (MHC):**
      ```
@@ -85,14 +85,14 @@ Do not make code adjustments yet.
 
 ---
 
-## Update Batch 2: Resolve Conflicts on migrate/\*
+## Update Batch 2: Resolve Conflicts on migrate-app/\*
 
 Use when conflicts occurred in Batch 1.
 
 ### Prompt
 
 ```
-Resolve conflicts on migrate/<APP_NAME> from merging integrate/<APP_NAME>.
+Resolve conflicts on migrate-app/<APP_NAME> from merging integrate/<APP_NAME>.
 
 Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 3:
 
@@ -117,8 +117,8 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 3:
    - Infrastructure/Config: manually merge
 
 3. Commit and push:
-   - git commit -m "chore: merge integrate/<APP_NAME> to migrate/<APP_NAME>"
-   - git push origin migrate/<APP_NAME>
+   - git commit -m "chore: merge integrate/<APP_NAME> to migrate-app/<APP_NAME>"
+   - git push origin migrate-app/<APP_NAME>
 
 4. Provide summary of conflicts resolved by category
 
@@ -178,7 +178,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 4:
    - Cross-check base URLs with <APP_PATH>/docs/migration/service/audit.md
    - Cross-check existing services with <APP_PATH>/docs/migration/service/plan.md
 
-5. Create <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md (on migrate/<APP_NAME> branch) with:
+5. Create <APP_PATH>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md (on migrate-app/<APP_NAME> branch) with:
    - Update timestamp
    - Legacy commit SHA
    - List of changes
@@ -496,7 +496,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
    - **If catastrophic failure (cannot fix safely):**
      * Rollback migrate-app/* branch:
        git reset --hard <commit-before-legacy-update-merge>
-       git push -f origin migrate/<app-name>
+       git push -f origin migrate-app/<APP_NAME>
      * Document rollback in legacy-update-YYYYMMDD-HHMMSS.md
      * Notify team and plan alternative approach
      * STOP - do not proceed

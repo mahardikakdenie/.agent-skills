@@ -1090,7 +1090,7 @@ pnpm dev  # manual sanity check
 ```bash
 git checkout integrate/<app-name>
 git subtree pull --prefix=apps/<app-name> <remote> <branch>
-git checkout migrate/<app-name>
+git checkout migrate-app/<APP_NAME>
 git merge integrate/<app-name>
 ```
 
@@ -1098,7 +1098,7 @@ git merge integrate/<app-name>
 
 ```bash
 git reset --hard <safe-commit>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 ```
 
 ### Document Cross-Reference

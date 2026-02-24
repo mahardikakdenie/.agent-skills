@@ -126,10 +126,10 @@ Synchronize the refactored `migrate-app/*` branch with the updated baseline.
 
 ### Steps
 
-#### 2.1 Switch to migrate/\* branch
+#### 2.1 Switch to migrate-app/\* branch
 
 ```bash
-git checkout migrate/<app-name>
+git checkout migrate-app/<APP_NAME>
 ```
 
 #### 2.2 Merge integrate/_ into migrate/_
@@ -160,10 +160,10 @@ pnpm --filter <APP_PACKAGE_NAME> build
 - Fix narrowly in the conflicted files, then re-run MHC
 - If failure cannot be fixed safely → rollback merge (`git merge --abort`), document, and plan alternative
 
-#### 2.4 Push migrate/\* branch (if no conflicts)
+#### 2.4 Push migrate-app/\* branch (if no conflicts)
 
 ```bash
-git push origin migrate/<app-name>
+git push origin migrate-app/<APP_NAME>
 ```
 
 ---
@@ -280,8 +280,8 @@ Manually merge:
 
 ```bash
 git add .
-git commit -m "chore: merge integrate/<app-name> to migrate/<app-name>"
-git push origin migrate/<app-name>
+git commit -m "chore: merge integrate/<APP_NAME> to migrate-app/<APP_NAME>"
+git push origin migrate-app/<APP_NAME>
 ```
 
 ---
@@ -778,7 +778,7 @@ If verification fails and cannot be fixed safely:
 ```bash
 # Rollback migrate-app/* branch
 git reset --hard <commit-before-legacy-update-merge>
-git push -f origin migrate/<app-name>
+git push -f origin migrate-app/<APP_NAME>
 ```
 
 Document rollback in `legacy-update-YYYYMMDD-HHMMSS.md` and notify team.
@@ -792,7 +792,7 @@ If main task.md exists at `apps/<app-name>/docs/migration/service/task.md`:
 - Note services affected and new services added
 
 > [!NOTE]
-> All documentation is created on the `migrate/<app-name>` branch, NOT on `integrate-app/*`.
+> All documentation is created on the `migrate-app/<APP_NAME>` branch, NOT on `integrate-app/*`.
 
 #### 6.6 Document results
 
@@ -810,7 +810,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 ## Integration Status
 
 - **Subtree pull:** ✅ Success
-- **Merge to migrate/<APP_NAME>:** ✅ Clean / ⚠️ Conflicts resolved (N files)
+- **Merge to migrate-app/<APP_NAME>:** ✅ Clean / ⚠️ Conflicts resolved (N files)
 - **Merge Health Check (MHC):** ✅ typecheck + build passed after merge
 - **Routines used:** <list, e.g., Routine 1 → 2 → 3 → 4 → 6>
 - **Update Batches used (if AI-assisted):** <list, e.g., Batch 1 → 3 → 4 → 6>
@@ -995,7 +995,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
    ```bash
    git add .
    git commit -m "chore: pause main refactor for legacy update"
-   git push origin migrate/<app-name>
+   git push origin migrate-app/<APP_NAME>
    ```
 4. **Proceed** with legacy update Routine 1
 

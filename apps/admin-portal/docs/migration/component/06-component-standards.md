@@ -1008,11 +1008,6 @@ For every ADOPT*\*, EXTEND*\*, or NEW_SHARED component in `parity-checklist.md`:
 
 - Migrated by: \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
 - Date: \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
-
-### Sign-off
-
-- Migrated by: \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
-- Date: \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
 - Approved visual delta (if any): \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
 
 ### Migration PR Template (Copy-Paste)

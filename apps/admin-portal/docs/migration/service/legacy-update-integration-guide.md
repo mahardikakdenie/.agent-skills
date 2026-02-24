@@ -52,7 +52,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
    ```bash
    git add .
    git commit -m "chore: pause main refactor for legacy update"
-   git push origin migrate/<app-name>
+   git push origin migrate-app/<APP_NAME>
    ```
 4. **Proceed** with legacy update Batch 1
 
@@ -285,7 +285,7 @@ flowchart TD
 5. If fix is not safe or would expand scope, consider rollback:
    ```bash
    git reset --hard <commit-before-legacy-update-merge>
-   git push -f origin migrate/<app-name>
+   git push -f origin migrate-app/<APP_NAME>
    ```
 6. Document failure and plan alternative approach
 
