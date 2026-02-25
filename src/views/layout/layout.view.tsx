@@ -208,7 +208,7 @@ export const LayoutView = ({
           <div className="bg-white rounded-md shadow flex flex-col items-center justify-center py-10">
             <div className="flex items-center justify-center mb-3 -ml-5">
               <div
-                className={`${!!process.env.NEXT_PUBLIC_LOGO && "py-5 px-2"}`}
+                className={`${!!process.env.NEXT_PUBLIC_LOGO && "py-4 px-2"}`}
               >
                 {/*TODO: change for customization in env*/}
                 {process.env.NEXT_PUBLIC_MODE === "whitelable" ? (
@@ -222,8 +222,8 @@ export const LayoutView = ({
                 ) : (
                   <OptimizeImage
                     priority
-                    width={logoWidth}
-                    height={logoHeight}
+                    width={logoWidth || 189}
+                    height={logoHeight || 83}
                     alt="logo-login"
                     src={logo}
                   />
@@ -231,6 +231,29 @@ export const LayoutView = ({
               </div>
             </div>
             <div className="w-3/4">
+            {!isEmpty(loginProviders) && (
+              <>
+                <p className="text-center mb-4">Welcome!</p>
+                <div>
+                  {loginProviders.map((provider) => (
+                    <div key={`provider-${provider.client_id}`} className="w-full mt-2">
+                      <MicrosoftLoginButton
+                        clientId={provider.client_id || ""}
+                        tenantId={provider.tenant_id || ""}
+                        redirectUri={provider.redirect_url || ""}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center w-full text-gray-300 my-5">
+                  <div className="flex-grow h-px bg-gray-300" />
+                  <span className="px-4 text-sm">Or</span>
+                  <div className="flex-grow h-px bg-gray-300" />
+                </div>
+              </>
+            )}
+            
+            
               <div className="mb-5">
                 <Input
                   value={email}
@@ -251,25 +274,9 @@ export const LayoutView = ({
                 />
               </div>
             </div>
-            <Button additionalClassName="my-5" onClick={doLogin}>
+            <Button additionalClassName="my-5 w-3/4 py-3" onClick={doLogin} variant="warning">
               Login
             </Button>
-            {
-              isEmpty(loginProviders) ? null : (
-                loginProviders.map((provider, index) => (
-                  <div key={`provider-${index}`}>
-                    <div className="w-full flex justify-center mt-2">
-                      <div className="text-xs text-gray-500">OR</div>
-                    </div>
-                    <MicrosoftLoginButton
-                      clientId={provider.client_id || ""}
-                      tenantId={provider.tenant_id || ""}
-                      redirectUri={provider.redirect_url || ""}
-                    />
-                  </div>
-                ))
-              )
-            }
           </div>
         </Modal>
       )}
