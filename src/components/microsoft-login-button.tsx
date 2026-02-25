@@ -1,8 +1,7 @@
 "use client";
 
 import { msalConfig } from "@/config/msal.config";
-import { primary } from "@/constants/app-common.const";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 // Storage key for our code_verifier
 export const PKCE_CODE_VERIFIER_KEY = "pkce_code_verifier";
@@ -53,7 +52,6 @@ export const MicrosoftLoginButton = ({
   tenantId,
   redirectUri,
 }: MicrosoftLoginButtonProps) => {
-  const primaryColor = useMemo(() => primary, []);
   const [isLoading, setIsLoading] = useState(false);
   
   const authority = msalConfig.auth.authority(tenantId) || "";
@@ -96,7 +94,7 @@ export const MicrosoftLoginButton = ({
   return (
     <button 
       type="button"
-      className={`mt-3 px-4 py-2.5 rounded-3xl text-xs flex justify-center items-center gap-2 bg-[${primaryColor}] hover:bg-[${primaryColor}]/90 text-white transition-opacity hover:opacity-80 w-full`}
+      className={`mt-3 px-4 py-2.5 rounded-3xl text-xs flex justify-center items-center gap-2 bg-[#016DA1] hover:bg-[#016DA1]/90 text-white transition-opacity hover:opacity-80 w-full`}
       onClick={handleLogin}
       disabled={isLoading}
     >
@@ -106,7 +104,3 @@ export const MicrosoftLoginButton = ({
     </button>
   );
 };
-
-
-
-
