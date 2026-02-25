@@ -19,6 +19,8 @@ const getSimpleNumber = (val: number) => {
 
 export const AUTH_TOKEN = "token";
 
+export const REFRESH_TOKEN = "refresh_token";
+
 export const delimiter = ";;;";
 
 export const minWidthContainer = 640;

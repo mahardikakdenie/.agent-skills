@@ -8,7 +8,7 @@ import {
   setCookie,
   toastNotification,
 } from "@/helpers/app.helper";
-import { AUTH_TOKEN } from "@/constants/app-common.const";
+import { AUTH_TOKEN, REFRESH_TOKEN } from "@/constants/app-common.const";
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { authService } from "@/services/api.service";
@@ -264,6 +264,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           await setCookie(AUTH_TOKEN, token);
           authToken.token = token;
           setGlobalToken(token);
+          if (response.data.refresh_token) {
+            await setCookie(REFRESH_TOKEN, response.data.refresh_token);
+          }
           if (token) await getUserInformation(token, true);
         }
       } catch (error: any) {
@@ -291,6 +294,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           await setCookie(AUTH_TOKEN, token);
           authToken.token = token;
           setGlobalToken(token);
+          const refreshToken = (data as any).refresh_token || (data as any).token?.refresh_token;
+          if (refreshToken) {
+            await setCookie(REFRESH_TOKEN, refreshToken);
+          }
           if (token) await getUserInformation(token, true);
         } else {
             console.error("No access_token found in Entra response");
@@ -331,7 +338,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const logout = React.useCallback(async () => {
+    try {
+      const refreshToken = await getCookie(REFRESH_TOKEN);
+      if (refreshToken) {
+        authService.post(ApiURL.loginLogout, { refresh_token: refreshToken }).catch(() => {});
+      }
+    } catch {
+      // Fire-and-forget — don't block logout
+    }
     await removeCookie(AUTH_TOKEN);
+    await removeCookie(REFRESH_TOKEN);
     removeAllLocalStorage();
     authToken.clearToken();
     setGlobalToken(null);
