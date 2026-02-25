@@ -65,8 +65,7 @@ const createApiService = (
 
         if (
           !isStaticToken &&
-          status !== undefined &&
-          ApiURL.errorStatusCodeToGetToken.includes(status) &&
+          status === 401 &&
           !originalRequest._retry
         ) {
           originalRequest._retry = true;
