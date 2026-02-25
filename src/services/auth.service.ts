@@ -9,6 +9,7 @@ interface LoginCredentials {
 
 interface LoginResponse {
   access_token: string;
+  refresh_token: string;
 }
 
 interface LoginProvidersRequest {

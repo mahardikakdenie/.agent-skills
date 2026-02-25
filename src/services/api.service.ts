@@ -1,12 +1,26 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { getCookie } from "@/helpers/app.helper";
-import { AUTH_TOKEN } from "@/constants/app-common.const";
+import { getCookie, setCookie } from "@/helpers/app.helper";
+import { AUTH_TOKEN, REFRESH_TOKEN } from "@/constants/app-common.const";
 import ApiURL from "@/constants/api-url.const";
 import { authToken } from "@/types/auth-token";
+import { setGlobalToken } from "@/lib/token-storage";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
+
+// Refresh token mutex to prevent concurrent refresh calls
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+const onRefreshed = (token: string) => {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback: (token: string) => void) => {
+  refreshSubscribers.push(callback);
+};
 
 const createApiService = (
   baseURL: string,
@@ -33,9 +47,9 @@ const createApiService = (
 
   apiService.interceptors.request.use(
     async (config) => {
-      const authToken = await getAuthToken();
-      if (authToken) {
-        config.headers.Authorization = `Bearer ${authToken}`;
+      const token = await getAuthToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
     },
@@ -57,30 +71,60 @@ const createApiService = (
         ) {
           originalRequest._retry = true;
 
-          let retryCount = 0;
-          while (retryCount < ApiURL.maxRetries) {
-            const newAuthToken = await getAuthToken();
-            if (newAuthToken) {
-              if (originalRequest.headers)
-                originalRequest.headers.Authorization = `Bearer ${newAuthToken}`;
+          if (isRefreshing) {
+            // Another refresh is in progress — wait for it to complete
+            return new Promise((resolve, reject) => {
+              addRefreshSubscriber((newToken: string) => {
+                if (originalRequest.headers)
+                  originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                resolve(apiService(originalRequest));
+              });
+            });
+          }
 
-              try {
-                return await apiService(originalRequest);
-              } catch (err) {
-                if (
-                  axios.isAxiosError(err) &&
-                  err.response?.status !== undefined &&
-                  ApiURL.errorStatusCodeToGetToken.includes(err.response.status)
-                ) {
-                  retryCount++;
-                  await new Promise((resolve) =>
-                    setTimeout(() => resolve(null), ApiURL.timeoutInterval)
-                  );
-                } else {
-                  return Promise.reject(err);
-                }
-              }
+          isRefreshing = true;
+
+          try {
+            const refreshToken = await getCookie(REFRESH_TOKEN);
+            if (!refreshToken) {
+              return Promise.reject(error);
             }
+
+            const refreshResponse = await axios.post(
+              `${process.env.NEXT_PUBLIC_AUTH_SERVICE_URL}${ApiURL.loginRefresh}`,
+              { token: refreshToken },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.NEXT_PUBLIC_AUTH_TOKEN}`,
+                },
+              }
+            );
+
+            const newAccessToken = refreshResponse.data.access_token;
+            const newRefreshToken = refreshResponse.data.refresh_token;
+
+            // Update stored tokens
+            await setCookie(AUTH_TOKEN, newAccessToken);
+            authToken.token = newAccessToken;
+            setGlobalToken(newAccessToken);
+
+            if (newRefreshToken) {
+              await setCookie(REFRESH_TOKEN, newRefreshToken);
+            }
+
+            // Notify queued requests
+            onRefreshed(newAccessToken);
+
+            // Retry original request
+            if (originalRequest.headers)
+              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return apiService(originalRequest);
+          } catch (refreshError) {
+            refreshSubscribers = [];
+            return Promise.reject(refreshError);
+          } finally {
+            isRefreshing = false;
           }
         }
       }
