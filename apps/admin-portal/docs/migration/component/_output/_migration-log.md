@@ -552,3 +552,21 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
   - `/finance/billing` - PASS route load; page displays `403 - Forbidden` (permission-gated)
   - `/masterdata/user` - PASS
 - Console/runtime summary: no crash/exception page observed; known pre-existing `GET /api/cookie/token 404` still appears.
+### Legacy Update Snapshot - 2026-03-04 09:50 (+07)
+- Source branch: integrate-app/admin-portal (legacy remote admin-portal, branch stage)
+- Integrate update SHA: 09c6e6707ef9e9edc3fc301c542446ce3e290bfc
+- Migrate merge commit: 66ae178d2eee76bd49e79c0b641185ee497d2cbb
+- L1 result: subtree pull succeeded on integrate worktree and merge to migrate worktree completed.
+- L2 conflicts resolved:
+  - src/context/auth.context.tsx - non-migrated component context -> accepted legacy (--theirs)
+  - src/views/layout/layout.view.tsx - non-migrated layout shell -> accepted legacy (--theirs) with follow-up import compatibility fix for Next.js build
+  - src/services/api.service.ts - restored from legacy tree to satisfy merged OAuth/auth imports
+- L3 classification summary:
+  - Config/dependency: package.json, src/constants/app-common.const.tsx, src/constants/api-url.const.tsx
+  - Existing non-migrated updates: src/context/auth.context.tsx, src/views/layout/layout.view.tsx, src/app/claim/list/detail/[id]/page.tsx
+  - New app-local files: src/app/oauth/*, src/config/msal.config.ts, src/services/api.service.ts, src/services/auth.service.ts, src/views/oauth/msal-callback.view.tsx
+  - New component: src/components/microsoft-login-button.tsx -> KEEP_APP_LOCAL
+  - Shared candidate (NEW_SHARED_COMPONENT/EXTEND_EXISTING): none
+- Path taken: L4
+- L6 gate: check-types PASS, lint PASS (warnings only), build PASS
+- Resume point: ready to continue Batch 2 on migrate-app/admin-portal.

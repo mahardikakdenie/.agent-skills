@@ -274,3 +274,4 @@
 "ListAdminView","KEEP_APP_LOCAL","N/A","P3","HIGH","src/views/transaction/list/list-admin.view.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "ListTransactionView","KEEP_APP_LOCAL","N/A","P3","HIGH","src/views/transaction/list/list-transaction.view.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "RevenueView","KEEP_APP_LOCAL","N/A","P3","HIGH","src/views/transaction/revenue/revenue.view.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
+"MicrosoftLoginButton","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/microsoft-login-button.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - keep local until multi-app reuse signal appears",""

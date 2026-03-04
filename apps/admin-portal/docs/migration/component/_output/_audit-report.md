@@ -4715,3 +4715,19 @@
 - **Refactor strategy:** none - no practical split boundary identified
 
 
+### MicrosoftLoginButton
+
+- **File:** src/components/microsoft-login-button.tsx
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** missing
+- **API delta:** N/A (stays app-local; legacy OAuth login flow component)
+- **Parity risk:** HIGH
+- **Risk notes:** Implements app-specific Microsoft OAuth PKCE flow and redirect behavior tied to admin-portal auth contracts.
+- **Reason kept app-local:** Depends on app auth endpoints, tenant/client runtime config, and session PKCE handling not yet standardized across apps.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** NO
+- **Refactor potential:** NONE
+- **Refactor strategy:** none - keep local until multi-app reuse signal appears
