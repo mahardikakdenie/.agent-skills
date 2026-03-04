@@ -1,6 +1,6 @@
 # 09 — Dependency Version Upgrades
 
-> **Phase:** Pre-Migration Setup (runs immediately after Batch 0, before Batch 1)
+> **Batch:** Batch 0.5 - Dependency Version Upgrades
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run count:** Once per app
 > **Prerequisite:** Batch 0 (Verification Gate Setup) complete

@@ -6,9 +6,9 @@
 
 ---
 
-## Phase Documents
+## Batch Guides
 
-| #   | Document                                                         | Phase      | Branch              | Run           |
+| #   | Document                                                         | Batch Scope | Branch              | Run           |
 | --- | ---------------------------------------------------------------- | ---------- | ------------------- | ------------- |
 | —   | [**00 Branch Model & Lifecycle**](./00-overview.md)              | Pre-work   | Reference           | always-on     |
 | 01  | [Per-App Component Audit](./01-app-audit.md)                     | Audit      | `migrate-app/<app>` | per app       |
@@ -23,7 +23,7 @@
 
 ---
 
-## Support Documents (always-on, not phase-gated)
+## Support Documents (always-on, not batch-gated)
 
 These apply at any point during migration — particularly when a legacy update arrives:
 
@@ -40,12 +40,12 @@ These apply at any point during migration — particularly when a legacy update 
 
 ## Execution Flow
 
-> **Where to start:** New to this migration? Read [00-overview.md](./00-overview.md) first (branch model + full lifecycle), then return here and follow the phase table top-to-bottom. Your first action on an app branch is always **Batch 0** (verification gate setup) then **Batch 0.5** (dependency upgrades) in [`migration-batch-prompts.md`](./migration-batch-prompts.md) — both must pass before Batch 1 begins.
+> **Where to start:** New to this migration? Read [00-overview.md](./00-overview.md) first (branch model + full lifecycle), then return here and follow the batch guide table top-to-bottom. Your first action on an app branch is always **Batch 0** (verification gate setup) then **Batch 0.5** (dependency upgrades) in [`migration-batch-prompts.md`](./migration-batch-prompts.md) — both must pass before Batch 1 begins.
 
 ```
-[Reference]             Phase 06 (Standards) — Governs all phases
+[Reference]             Phase 06 (Standards) — Governs all batches
                         │
-[migrate-app/<app>]         Phase 01 (per app, per branch)
+[migrate-app/<app>]         Batch 1 (per app, per branch)
         │
         │  handoff: per-app-baseline-summary.md
         ▼
@@ -62,23 +62,23 @@ These apply at any point during migration — particularly when a legacy update 
 
 ---
 
-## Key Rules (non-negotiable across all phases)
+## Key Rules (non-negotiable across all batches)
 
 1. **Spec first** — no component enters `packages/ui` without a written spec + Storybook story
 2. **App-agnostic** — `packages/ui` has zero business logic, API calls, domain types, or framework-specific imports
 3. **Behavior parity** — 100% behavioral backward compatibility is mandatory. Users must not be able to detect that migration occurred. See [`06-component-standards.md` Section 8](./06-component-standards.md) for the full contract
 4. **No opportunistic refactoring** — migration changes imports only. Document improvements in `migration-log.md` under "Post-Migration Improvement Candidates" — do not act on them during migration
 5. **Evidence-based** — every claim references a real repo path
-6. **Phase gate** — a phase may not start until its prerequisites are verified complete
+6. **Batch gate** — a batch may not start until its prerequisites are verified complete
 7. **Read verification-gate.md first** — always read `apps/<APP_NAME>/docs/migration/verification-gate.md` before running any verification commands
 8. **UX continuity** — after migration, the app must feel identical. Minor visual delta from design system token adoption is the only acceptable change
-9. **Wrong branch recovery** — if you realize you are on the wrong branch mid-phase: (a) `git stash` all uncommitted work, (b) `git checkout <correct-branch>`, (c) `git stash pop`, (d) verify you're in the right `apps/` directory before continuing. Never commit phase work to the wrong branch. If already committed to the wrong branch, revert the commit (`git revert HEAD`) and cherry-pick to the correct branch.
+9. **Wrong branch recovery** — if you realize you are on the wrong branch mid-batch: (a) `git stash` all uncommitted work, (b) `git checkout <correct-branch>`, (c) `git stash pop`, (d) verify you're in the right `apps/` directory before continuing. Never commit phase work to the wrong branch. If already committed to the wrong branch, revert the commit (`git revert HEAD`) and cherry-pick to the correct branch.
 
 ---
 
-## Post-Migration Permanent Docs (created in Phase 08)
+## Post-Migration Permanent Docs (created in Batch 11)
 
-After all apps complete migration and Phase 08 runs on `feat/ui`, the following permanent documentation is produced in `packages/ui/docs/`:
+After all apps complete migration and Batch 11 runs on `feat/ui`, the following permanent documentation is produced in `packages/ui/docs/`:
 
 | File                                 | Purpose                                                                       |
 | ------------------------------------ | ----------------------------------------------------------------------------- |
@@ -89,7 +89,7 @@ After all apps complete migration and Phase 08 runs on `feat/ui`, the following 
 | `SHARED_UI_MIGRATION_PLAYBOOK.md`    | Step-by-step guide to onboard a new app to `@repo/ui`                         |
 | `SHARED_UI_CHANGELOG.md`             | Component addition/change history (seeded from `20-foundation-change-log.md`) |
 
-> These docs live only in `packages/ui/docs/` and are produced **once** by [Phase 08](./08-operational-standards.md). They are not duplicated in app directories.
+> These docs live only in `packages/ui/docs/` and are produced **once** by [Batch 11](./08-operational-standards.md). They are not duplicated in app directories.
 
 ---
 

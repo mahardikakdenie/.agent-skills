@@ -1,6 +1,6 @@
 # 08 — Operational Standards & Ongoing Maintenance
 
-> **Phase:** Operational Standards
+> **Batch:** Batch 11 - Operational Standards
 > **Branch:** `feat/ui`
 > **Run count:** Once — after Phase 07 cleanup complete
 > **Prerequisite:** Phase 07 cleanup report and deprecation map exist
@@ -29,7 +29,7 @@ Convert all migration outcomes into permanent operating documentation that stand
 
 ## Document Structure Templates
 
-The AI executing Batch 11 must produce documents conforming to these structures. These are skeleton headers — expand each section using the migration inputs listed in the Phase Prompt.
+The AI executing Batch 11 must produce documents conforming to these structures. These are skeleton headers — expand each section using the migration inputs listed in the Batch Prompt.
 
 ### `SHARED_UI_ARCHITECTURE.md` skeleton
 
@@ -155,7 +155,7 @@ The AI executing Batch 11 must produce documents conforming to these structures.
 
 ---
 
-## Phase Prompt
+## Batch Prompt
 
 ```md
 You are a Principal Engineering Documentation Lead on branch `feat/ui`.

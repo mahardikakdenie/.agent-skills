@@ -133,7 +133,7 @@ import { Box } from '@repo/ui';
 
 #### Migration rule for Phase 05
 
-When executing app migration (Phase 05), **every component returned from audit that contains bare native HTML elements qualifies for a Box pass** as part of its migration batch — no additional batch needed, this is part of the normal import swap. See [05-app-migration.md](./05-app-migration.md) §Native Element Replacement for the exact guardrails.
+When executing app migration (Batches 6-9), **every component returned from audit that contains bare native HTML elements qualifies for a Box pass** as part of its migration batch — no additional batch needed, this is part of the normal import swap. See [05-app-migration.md](./05-app-migration.md) §Native Element Replacement for the exact guardrails.
 
 #### Do NOT use Box for
 
@@ -1461,7 +1461,7 @@ Follow SDD lifecycle in [04-build-shared-components.md](./04-build-shared-compon
 ### Step 5 — Verify visual parity after app migration
 
 ```
-playwright MCP (Phase 05):
+playwright MCP (Batches 6-9):
   screenshot <smoke-route> before migration → save to _artifacts/smoke-routes/before/<NN-route-name>.png
   screenshot <smoke-route> after migration  → save to _artifacts/smoke-routes/after/<NN-route-name>.png
   → add entry to _artifacts/smoke-routes/comparison-log.md (see verification-gate.md §6)

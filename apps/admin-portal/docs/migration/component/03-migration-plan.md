@@ -1,6 +1,6 @@
 # 03 — Migration Plan & Batches
 
-> **Phase:** Planning
+> **Batch:** Batch 3 - Migration Plan
 > **Branch:** `feat/ui`
 > **Run count:** Once
 > **Prerequisite:** Phase 02 foundation complete (`packages/ui/docs/normalization/00-foundation.md` through `06-risk-register.md` exist)
@@ -56,7 +56,7 @@ Convert all per-app audits + the foundation into a single, executable, batch-bas
 
 ---
 
-## Phase Prompt
+## Batch Prompt
 
 ```md
 You are a Principal Program Architect for UI platform migration on branch `feat/ui`.
@@ -144,7 +144,7 @@ Total: N components.
 
 None. (Or: minimal — run check to confirm existing components pass current foundation API standards)
 
-### Per-App Work (Phase 05)
+### Per-App Work (Batches 6-9)
 
 Each app updates imports from local path to `@repo/ui`.
 
@@ -176,7 +176,7 @@ Total: N components.
 Minimal. Update `packages/ui/docs/normalization/_output/21-adapter-mapping.md` with canonical API
 for each component so apps know what interface to adapt to.
 
-### Per-App Work (Phase 05)
+### Per-App Work (Batches 6-9)
 
 For each component:
 
@@ -218,7 +218,7 @@ For each component to extend, apply SDD:
 4. Update `index.ts` if new types exported
 5. Run packages/ui verification gate before apps consume
 
-### Per-App Work (Phase 05)
+### Per-App Work (Batches 6-9)
 
 After packages/ui ships the extension, each app consuming the extended component:
 

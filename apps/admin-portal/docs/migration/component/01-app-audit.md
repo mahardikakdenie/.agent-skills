@@ -1,6 +1,6 @@
 # 01 — Per-App Component Audit
 
-> **Phase:** Audit
+> **Batch:** Batch 1 - Per-App Component Audit
 > **Branch:** `migrate-app/<APP_NAME>` — run on EACH app's dedicated branch
 > **Run count:** Once per app
 > **Produces:** `per-app-baseline-summary.md` (key handoff to Phase 02)
@@ -39,7 +39,7 @@ Produce a comprehensive, classified inventory of every UI component in `apps/<AP
 
 ---
 
-## Phase Prompt
+## Batch Prompt
 
 Replace `<APP_NAME>` before running.
 
@@ -74,7 +74,7 @@ Produce a complete, evidence-based component audit for `apps/<APP_NAME>` that:
 - All import statements across `apps/<APP_NAME>/src/**` referencing local UI
 - `apps/<APP_NAME>/components.json` (if exists — shadcn config)
 - `apps/<APP_NAME>/package.json` — UI dependencies in use
-- **Bare native HTML elements** — scan for JSX files that return bare `div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, `h1`–`h6`, `strong`, `em` without routing them through a `@repo/ui` component. These are candidates for the Box pass (Phase 05).
+- **Bare native HTML elements** — scan for JSX files that return bare `div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, `h1`–`h6`, `strong`, `em` without routing them through a `@repo/ui` component. These are candidates for the Box pass (Batches 6-9).
 
 ## Component Classification Model (assign exactly ONE per component need)
 

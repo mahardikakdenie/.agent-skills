@@ -1,6 +1,6 @@
 # 05 — Per-App Migration
 
-> **Phase:** Migrate
+> **Batch:** Batches 6-9 (+9.5) - Per-App Migration
 > **Branch:** `migrate-app/<APP_NAME>` — run on EACH app's dedicated branch
 > **Run count:** Once per app per batch
 > **Prerequisite:** Phase 04 batch available (components merged into `@repo/ui` on `feat/ui` and accessible from this branch)
@@ -125,7 +125,7 @@ Shells that pass the [§6.6 Shell Classification Matrix](./06-component-standard
 
 ---
 
-## Phase Prompt (Batch 1 — ADOPT_NOW)
+## Batch Prompt (Batch 1 — ADOPT_NOW)
 
 Replace `<APP_NAME>` before running.
 
@@ -201,7 +201,7 @@ If you find something that should be improved, add it to migration-log.md under
 
 ---
 
-## Phase Prompt (Batch 2 — ADOPT_WITH_ADAPTER)
+## Batch Prompt (Batch 2 — ADOPT_WITH_ADAPTER)
 
 ````md
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
@@ -270,7 +270,7 @@ If you find something that should be improved, add it to migration-log.md under
 
 ---
 
-## Phase Prompt (Batch 3/4 — EXTEND or NEW)
+## Batch Prompt (Batch 3/4 — EXTEND or NEW)
 
 ```md
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
@@ -347,7 +347,7 @@ Update `apps/<APP_NAME>/docs/migration/component/_output/_migration-plan.md` aft
 
 ---
 
-## Phase Prompt (Batch 5 — Stabilization)
+## Batch Prompt (Batch 5 — Stabilization)
 
 > Run after ALL Batch 1–4 items are complete for this app.
 
