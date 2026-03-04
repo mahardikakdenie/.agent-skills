@@ -1,16 +1,15 @@
-﻿"use client";
+"use client";
 
-import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu } from "react-feather";
 // TODO: change for customization in env
-import whitelableLogo from "@public/whitelable-logo.svg";
-import AppMenu from "@/constants/app-menu.const";
-import { useScreen } from "@/context/screen.context";
-import Modal from "@/components/modal";
 import Button from "@/components/button";
 import OptimizeImage from "@/components/image";
-import { useAuth } from "@/context/auth.context";
+import Input from "@/components/input";
+import { MicrosoftLoginButton } from "@/components/microsoft-login-button";
+import Modal from "@/components/modal";
+import ApiURL from "@/constants/api-url.const";
 import {
   backgroundImageApp,
   logo,
@@ -19,11 +18,15 @@ import {
   primary10,
   primaryRed,
 } from "@/constants/app-common.const";
-import Input from "@/components/input";
-import { useChangeAccountPassword } from "@/services/auth/hooks/mutations";
+import AppMenu from "@/constants/app-menu.const";
+import { useAuth } from "@/context/auth.context";
+import { useScreen } from "@/context/screen.context";
 import { toastNotification } from "@/helpers/app.helper";
 import ChecklistIcon from "@/images/checklist.icon";
 import XIcon from "@/images/x.icon";
+import { authService } from "@/services/api.service";
+import { isEmpty } from "lodash";
+import whitelableLogo from "@public/whitelable-logo.svg";
 
 export const LayoutView = ({
   children,
@@ -58,8 +61,9 @@ export const LayoutView = ({
     isForbidden,
     login,
     logout,
+    getLoginProviders,
+    loginProviders
   } = useAuth();
-  const { mutateAsync: changeAccountPassword } = useChangeAccountPassword();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -109,12 +113,9 @@ export const LayoutView = ({
 
   const changePassword = async () => {
     try {
-      await changeAccountPassword({
-        id: user.sub,
-        payload: {
-          newPassword,
-          oldPassword,
-        },
+      await authService.put(ApiURL.v1ChangePassword(user.sub), {
+        newPassword,
+        oldPassword,
       });
       setIsModalChangePassword(false);
       logout();
@@ -181,6 +182,11 @@ export const LayoutView = ({
     );
   };
 
+  useEffect(() => {
+    const hostname = window.location.host;
+    getLoginProviders(hostname);
+  }, [user])
+
   return (
     <div>
       {!isAuthenticated && !searchParams.get("session_code") && (
@@ -202,7 +208,7 @@ export const LayoutView = ({
           <div className="bg-white rounded-md shadow flex flex-col items-center justify-center py-10">
             <div className="flex items-center justify-center mb-3 -ml-5">
               <div
-                className={`${!!process.env.NEXT_PUBLIC_LOGO && "py-5 px-2"}`}
+                className={`${!!process.env.NEXT_PUBLIC_LOGO && "py-4 px-2"}`}
               >
                 {/*TODO: change for customization in env*/}
                 {process.env.NEXT_PUBLIC_MODE === "whitelable" ? (
@@ -216,8 +222,8 @@ export const LayoutView = ({
                 ) : (
                   <OptimizeImage
                     priority
-                    width={logoWidth}
-                    height={logoHeight}
+                    width={logoWidth || 189}
+                    height={logoHeight || 83}
                     alt="logo-login"
                     src={logo}
                   />
@@ -225,6 +231,29 @@ export const LayoutView = ({
               </div>
             </div>
             <div className="w-3/4">
+            {!isEmpty(loginProviders) && (
+              <>
+                <p className="text-center mb-4">Welcome!</p>
+                <div>
+                  {loginProviders.map((provider) => (
+                    <div key={`provider-${provider.client_id}`} className="w-full mt-2">
+                      <MicrosoftLoginButton
+                        clientId={provider.client_id || ""}
+                        tenantId={provider.tenant_id || ""}
+                        redirectUri={provider.redirect_url || ""}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center w-full text-gray-300 my-5">
+                  <div className="flex-grow h-px bg-gray-300" />
+                  <span className="px-4 text-sm">Or</span>
+                  <div className="flex-grow h-px bg-gray-300" />
+                </div>
+              </>
+            )}
+            
+            
               <div className="mb-5">
                 <Input
                   value={email}
@@ -245,7 +274,7 @@ export const LayoutView = ({
                 />
               </div>
             </div>
-            <Button additionalClassName="my-5" onClick={doLogin}>
+            <Button additionalClassName="my-5 w-3/4 py-3" onClick={doLogin} variant="warning">
               Login
             </Button>
           </div>
@@ -342,6 +371,9 @@ export const LayoutView = ({
             </p>
           </div>
         ) : isAuthenticated && user ? (
+          children
+        ) : path.startsWith("/oauth/") ? (
+          // Allow OAuth callback pages to render without authentication
           children
         ) : null}
       </main>
@@ -556,4 +588,3 @@ export const LayoutView = ({
     </div>
   );
 };
-

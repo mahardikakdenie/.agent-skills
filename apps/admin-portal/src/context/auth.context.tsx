@@ -8,11 +8,14 @@ import {
   setCookie,
   toastNotification,
 } from "@/helpers/app.helper";
-import { AUTH_TOKEN } from "@/constants/app-common.const";
+import { AUTH_TOKEN, REFRESH_TOKEN } from "@/constants/app-common.const";
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { authService } from "@/services/auth/api/auth.service";
+import { authService } from "@/services/api.service";
+import { AuthService, LoginProvidersResponse } from "@/services/auth.service";
 import ApiURL from "@/constants/api-url.const";
+import { LoginResponse } from "@/types/common";
+import { AxiosResponse } from "axios";
 import AppMenu from "@/constants/app-menu.const";
 import { authToken } from "@/types/auth-token";
 import { setGlobalToken } from "@/lib/token-storage";
@@ -22,10 +25,13 @@ interface AuthContextType {
   menuList: any[];
   submenuList: any[];
   permissionList: any[];
+  loginProviders: LoginProvidersResponse[];
   isAuthenticated: boolean;
   isForbidden: boolean;
   isNetworkActive: boolean;
   login: (data: any) => void;
+  loginEntra: (code: string, codeVerifier: string) => Promise<void>;
+  getLoginProviders: (originUrl: string) => Promise<void>;
   logout: () => void;
   handleChangeNetwork: (value: boolean) => void;
   handleResponseError: (error: any) => void;
@@ -53,7 +59,7 @@ interface JwtPayload {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-let isOnce = false;
+const authServiceEntra = new AuthService();
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -65,22 +71,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [menuList, setMenuList] = useState<any[]>([]);
   const [submenuList, setSubmenuList] = useState<any[]>([]);
   const [permissionList, setPermissionList] = useState<any[]>([]);
+  const [loginProviders, setLoginProviders] = useState<LoginProvidersResponse[]>([]);
   const path = usePathname();
   const router = useRouter();
+  
+  // Use useRef for locking instead of module-level variable
+  const isProcessing = React.useRef(false);
 
   useEffect(() => {
     const fetchTokenAndUserInfo = async () => {
+      // Skip auth check on OAuth callback pages - let them complete the login flow first
+      if (path.startsWith("/oauth/")) {
+        return;
+      }
+
       try {
         const token = await getCookie(AUTH_TOKEN);
-        if (token) await getUserInformation(token);
+        if (token) {
+          await getUserInformation(token);
+        }
         setIsAuthenticated(!!token);
       } catch (error) {
+        console.error("[AuthProvider] Error in fetchTokenAndUserInfo:", error);
         setIsAuthenticated(false);
       }
     };
     fetchTokenAndUserInfo().then();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [path]);
 
   useEffect(() => {
     setIsForbidden(false);
@@ -106,43 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return null;
   };
 
-  const login = async (data: any) => {
-    if (!isOnce) {
-      isOnce = true;
-      try {
-        const response = await authService.login({
-          username: data.email,
-          password: data.password,
-        });
-        if (response?.access_token) {
-          const token = response.access_token;
-          await setCookie(AUTH_TOKEN, token);
-          authToken.token = token;
-          setGlobalToken(token);
-          if (token) await getUserInformation(token, true);
-        }
-      } catch (error: any) {
-        toastNotification(
-          error?.response?.data?.message || "Failed to login.",
-          "error"
-        );
-        isOnce = false;
-      }
-    }
-  };
-
-  const logout = async () => {
-    await removeCookie(AUTH_TOKEN);
-    removeAllLocalStorage();
-    authToken.clearToken();
-    setGlobalToken(null);
-    setUser(null);
-    setIsAuthenticated(false);
-    isOnce = false;
-    router.push("/");
-  };
-
-  const getUserInformation = async (
+  const getUserInformation = React.useCallback(async (
     token: string,
     isLogin: boolean = false
   ) => {
@@ -264,11 +246,116 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } else if (matchingMenu) {
         setIsAuthenticated(true);
         router.push(matchingMenu.url);
-      } else {
-        logout().then();
+      }
+      // Note: Removed the recursive logout call here to avoid potential loops if access is denied immediately after login
+    }
+  }, [path, router]);
+
+  const login = React.useCallback(async (data: any) => {
+    if (!isProcessing.current) {
+      isProcessing.current = true;
+      try {
+        const response: AxiosResponse<LoginResponse> = await authService.post(
+          ApiURL.login,
+          { username: data.email, password: data.password }
+        );
+        if (response && response.data && response.data.access_token) {
+          const token = response.data.access_token;
+          await setCookie(AUTH_TOKEN, token);
+          authToken.token = token;
+          setGlobalToken(token);
+          if (response.data.refresh_token) {
+            await setCookie(REFRESH_TOKEN, response.data.refresh_token);
+          }
+          if (token) await getUserInformation(token, true);
+        }
+      } catch (error: any) {
+        console.error("[AuthProvider] Login error:", error);
+        toastNotification(
+          error?.response?.data?.message || "Failed to login.",
+          "error"
+        );
+      } finally {
+        isProcessing.current = false;
       }
     }
-  };
+  }, [getUserInformation]);
+
+  const loginEntra = React.useCallback(async (code: string, codeVerifier: string) => {
+    if (!isProcessing.current) {
+      isProcessing.current = true;
+      try {
+        const data = await authServiceEntra.loginEntra(code, codeVerifier);
+        // Handle potential nested structure from Entra login response
+        // Based on logs, it might be { token: { access_token: "..." }, user: ... }
+        const token = (data as any).access_token || (data as any).token?.access_token;
+        
+        if (token) {
+          await setCookie(AUTH_TOKEN, token);
+          authToken.token = token;
+          setGlobalToken(token);
+          const refreshToken = (data as any).refresh_token || (data as any).token?.refresh_token;
+          if (refreshToken) {
+            await setCookie(REFRESH_TOKEN, refreshToken);
+          }
+          if (token) await getUserInformation(token, true);
+        } else {
+            console.error("No access_token found in Entra response");
+            toastNotification("Failed to retrieve access token", "error");
+        }
+      } catch (error: any) {
+        console.error("Entra login error:", error);
+        toastNotification(
+          error?.response?.data?.message || "Failed to login with Microsoft.",
+          "error"
+        );
+        throw error;
+      } finally {
+        isProcessing.current = false;
+      }
+    }
+  }, [getUserInformation]);
+
+  const getLoginProviders = React.useCallback(async (originUrl: any) => {
+    if (!isProcessing.current) {
+      isProcessing.current = true;
+      try {
+        const response = await authServiceEntra.getProviders({ originUrl });
+
+        if(response && response?.data?.length > 0){
+          setLoginProviders(response.data);
+        }
+      } catch (error: any) {
+        console.error("Get login providers error:", error);
+        toastNotification(
+          error?.response?.data?.message || "Failed to get login providers.",
+          "error"
+        );
+      } finally {
+        isProcessing.current = false;
+      }
+    }
+  }, []);
+
+  const logout = React.useCallback(async () => {
+    try {
+      const refreshToken = await getCookie(REFRESH_TOKEN);
+      if (refreshToken) {
+        authService.post(ApiURL.loginLogout, { refresh_token: refreshToken }).catch(() => {});
+      }
+    } catch {
+      // Fire-and-forget — don't block logout
+    }
+    await removeCookie(AUTH_TOKEN);
+    await removeCookie(REFRESH_TOKEN);
+    removeAllLocalStorage();
+    authToken.clearToken();
+    setGlobalToken(null);
+    setUser(null);
+    setIsAuthenticated(false);
+    isProcessing.current = false;
+    router.push("/");
+  }, [router]);
 
   const handleResponseError = (error: any) => {
     if (!error.response) setIsNetworkActive(false);
@@ -289,10 +376,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         menuList,
         submenuList,
         permissionList,
+        loginProviders,
         isAuthenticated,
         isForbidden,
         isNetworkActive,
         login,
+        loginEntra,
+        getLoginProviders,
         logout,
         handleChangeNetwork,
         handleResponseError,
