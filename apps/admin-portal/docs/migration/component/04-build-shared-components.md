@@ -1,6 +1,6 @@
 # 04 — Build Shared Components (packages/ui)
 
-> **Phase:** Build (Spec-Driven Development)
+> **Batch:** Batches 4-5 - Build Shared Components
 > **Branch:** `feat/ui` — all packages/ui development happens exclusively here
 > **Run count:** Iteratively per batch (Batch 3 → Batch 4)
 > **Prerequisite:** Phase 03 master plan and batch structure complete
@@ -232,7 +232,7 @@ pnpm turbo run check-types --filter=@repo/ui
 
 ---
 
-## Phase Prompt (Batch 3 — Extend Existing)
+## Batch Prompt (Batch 3 — Extend Existing)
 
 Replace `<COMPONENT_NAME>` before running.
 
@@ -289,7 +289,7 @@ Extend the existing `<COMPONENT_NAME>` in packages/ui to add:
 
 ---
 
-## Phase Prompt (Batch 4 — New Component)
+## Batch Prompt (Batch 4 — New Component)
 
 Replace `<COMPONENT_NAME>` before running.
 

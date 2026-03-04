@@ -1,6 +1,6 @@
 # 07 — Cleanup & Deprecation
 
-> **Phase:** Cleanup
+> **Batch:** Batch 10 (+10.5) - Cleanup & Deprecation
 > **Branch:** `migrate-app/<app>`
 > **Run count:** Once per app — after Batch 5 stabilization
 > **Prerequisite:** Phase 05 Batch 5 (Stabilization) complete
@@ -45,7 +45,7 @@ After the app is fully migrated and stabilized (Batch 5), perform final cleanup 
 
 ---
 
-## Phase Prompt
+## Batch Prompt
 
 ````md
 You are a Principal Frontend Engineer on branch `migrate-app/<app>`.

@@ -1,6 +1,6 @@
 # 02 — Design System Foundation
 
-> **Phase:** Foundation
+> **Batch:** Batch 2 - Design System Foundation
 > **Branch:** `feat/ui` — run ONCE after ALL apps have completed Phase 01
 > **Run count:** Once
 > **Prerequisite:** All `_per-app-baseline-summary.md` files copied from each `migrate-app/*` branch to `packages/ui/docs/normalization/per-app/`
@@ -42,7 +42,7 @@ Before running the Phase 02 prompt, verify:
 
 ---
 
-## Phase Prompt
+## Batch Prompt
 
 ```md
 You are a Principal Design System Architect operating on branch `feat/ui`.

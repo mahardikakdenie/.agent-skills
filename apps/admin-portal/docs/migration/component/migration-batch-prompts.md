@@ -23,14 +23,14 @@ Replace these in every prompt before running:
 ## Related Documents
 
 - `<APP_PATH>/docs/migration/component/00-overview.md` — Branch model & lifecycle
-- `<APP_PATH>/docs/migration/component/01-app-audit.md` — Phase 01 spec
-- `<APP_PATH>/docs/migration/component/02-design-system-foundation.md` — Phase 02 spec
-- `<APP_PATH>/docs/migration/component/03-migration-plan.md` — Phase 03 spec
-- `<APP_PATH>/docs/migration/component/04-build-shared-components.md` — Phase 04 spec
-- `<APP_PATH>/docs/migration/component/05-app-migration.md` — Phase 05 spec
+- `<APP_PATH>/docs/migration/component/01-app-audit.md` — Batch 1 spec
+- `<APP_PATH>/docs/migration/component/02-design-system-foundation.md` — Batch 2 spec
+- `<APP_PATH>/docs/migration/component/03-migration-plan.md` — Batch 3 spec
+- `<APP_PATH>/docs/migration/component/04-build-shared-components.md` — Batches 4-5 spec
+- `<APP_PATH>/docs/migration/component/05-app-migration.md` — Batches 6-9 spec
 - `<APP_PATH>/docs/migration/component/06-component-standards.md` — Component standards (always-on)
-- `<APP_PATH>/docs/migration/component/07-cleanup.md` — Phase 07 spec
-- `<APP_PATH>/docs/migration/component/08-operational-standards.md` — Phase 08 spec
+- `<APP_PATH>/docs/migration/component/07-cleanup.md` — Batch 10 spec
+- `<APP_PATH>/docs/migration/component/08-operational-standards.md` — Batch 11 spec
 - `<APP_PATH>/docs/migration/component/legacy-update-routines.md` — Legacy update routines (Routine 1–6)
 - `<APP_PATH>/docs/migration/component/legacy-update-integration-guide.md` — Legacy update quick reference
 - `<APP_PATH>/docs/migration/verification-gate.md` — App-specific verification commands
@@ -642,7 +642,7 @@ Do NOT start Batch 1 (Component Audit) until this gate passes.
 
 ---
 
-## Batch 1 — Per-App Component Audit (Phase 01)
+## Batch 1 — Per-App Component Audit
 
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run:** Once per app (run all apps before moving to Batch 2)
@@ -726,7 +726,7 @@ For each non-KEEP_APP_LOCAL component, list:
 
 ### `<APP_PATH>/docs/migration/component/_output/_per-app-baseline-summary.md`
 
-Summary for Phase 02 cross-app reconciliation:
+Summary for Batch 2 cross-app reconciliation:
 - Total components audited
 - Count per classification
 - Top 5 highest-parity-risk items with notes
@@ -810,7 +810,7 @@ If gate fails: rollback this component (`git checkout -- .`) and re-assess SoC s
 
 Apply the [06-component-standards.md §6.6 Shell Classification Matrix](./06-component-standards.md#66-re-classification-after-split):
 
-- Plain props only + no framework imports + 2+ app demand → `NEW_SHARED_COMPONENT` → queue for Phase 04
+- Plain props only + no framework imports + 2+ app demand → `NEW_SHARED_COMPONENT` → queue for Batches 4-5
 - Plain props only + single-app use → `KEEP_APP_LOCAL` (Shell stays in app)
 - Framework dependency abstracted via render-prop → `NEW_SHARED_COMPONENT` (framework-agnostic interface)
 
@@ -840,7 +840,7 @@ Append under `## Batch 1.5 — SoC Pre-Migration Refactor`:
 - Box pass: <N> elements replaced
 - Gate result: types ✅ | lint ✅ | build ✅ | smoke ✅
 - Caller grep: ✅ zero caller files changed
-- packages/ui candidate: YES (<Shell name>, queued for Phase 04) | NO
+- packages/ui candidate: YES (<Shell name>, queued for Batches 4-5) | NO
 ```
 
 ## Batch 1.5 Completion Criteria
@@ -863,7 +863,7 @@ Append under `## Batch 1.5 — SoC Pre-Migration Refactor`:
 
 ---
 
-## Batch 2 — Design System Foundation (Phase 02)
+## Batch 2 — Design System Foundation
 
 > **Branch:** `feat/ui`
 > **Run:** ONCE — only after ALL apps have completed Batch 1
@@ -884,7 +884,7 @@ If ANY per-app baseline summary is missing, list the missing apps and STOP.
 ## Objective
 
 Produce the governing foundation that defines how packages/ui will be built and maintained.
-This is the constitution: once locked, all Phase 03–05 work must conform to it.
+This is the constitution: once locked, all Batch 3–05 work must conform to it.
 
 ## Cross-App Reconciliation (do this before writing ANY output)
 
@@ -929,7 +929,7 @@ After completing, commit to feat/ui.
 
 ---
 
-## Batch 3 — Migration Plan (Phase 03)
+## Batch 3 — Migration Plan
 
 > **Branch:** `feat/ui`
 > **Run:** Once — after Batch 2 complete
@@ -947,7 +947,7 @@ Read ALL of these before starting:
 
 ## Objective
 
-Convert all per-app audits + the Phase 02 foundation into one executable program plan.
+Convert all per-app audits + the Batch 2 foundation into one executable program plan.
 
 ## Required Outputs (create all 4 in `packages/ui/docs/normalization/_output/`)
 
@@ -1017,7 +1017,7 @@ Do NOT modify any apps. Commit to feat/ui when complete.
 
 ---
 
-## Batch 4 — Build packages/ui: Extend Existing (Phase 04 — Batch 3 items)
+## Batch 4 - Build packages/ui: Extend Existing (from Batch 3 items)
 
 > **Branch:** `feat/ui`
 > **Run:** Once per EXTEND_EXISTING component — repeat this prompt per component
@@ -1075,7 +1075,7 @@ Update `packages/ui/docs/normalization/_output/13-implementation-batches.md` tra
 
 ---
 
-## Batch 5 — Build packages/ui: New Components (Phase 04 — Batch 4 items)
+## Batch 5 - Build packages/ui: New Components (from Batch 4 items)
 
 > **Branch:** `feat/ui`
 > **Run:** Once per NEW_SHARED_COMPONENT — repeat this prompt per component
@@ -1181,7 +1181,7 @@ Update `13-implementation-batches.md` tracker.
 
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run:** Once per app
-> **Prerequisite:** Phase 04 Batch 1 components confirmed in `packages/ui/src/index.ts`
+> **Prerequisite:** Batches 4-5 Batch 1 components confirmed in `packages/ui/src/index.ts`
 
 ```
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
@@ -1371,11 +1371,11 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 
 ---
 
-## Batch 9 — Per-App Stabilization (Phase 05 Batch 5)
+## Batch 9 - Per-App Stabilization
 
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run:** Once per app — after ALL Batch 1–4 items are complete for this app
-> **This clears the app for Phase 07 Cleanup**
+> **This clears the app for Batch 10 Cleanup**
 
 ```
 
@@ -1392,7 +1392,7 @@ Read before starting:
 ## Objective
 
 Comprehensive parity audit of `<APP_NAME>` after completing all migration batches.
-Confirms zero regressions. Clears this app for Phase 07.
+Confirms zero regressions. Clears this app for Batch 10.
 
 ## Tasks
 
@@ -1407,7 +1407,7 @@ For every adapter in `<APP_PATH>/src/components/ui/adapted/`:
 
 - Is it still needed? (Has the upstream API gap been closed in @repo/ui?)
 - Document adapter status in `_migration-log.md` under "Adapter Status"
-- Flag adapters ready for deletion in `_migration-log.md` — will be processed in Phase 07
+- Flag adapters ready for deletion in `_migration-log.md` — will be processed in Batch 10
 
 ### 3. Parity Checklist Final Sign-Off
 
@@ -1439,7 +1439,7 @@ For each route, capture before/after screenshots and record a comparison entry p
 - [ ] Zero TypeScript errors, lint errors, or build errors
 - [ ] No unreviewed adapters remain
 - [ ] `_migration-log.md` complete — no components missing status
-- [ ] App cleared for Phase 07 Cleanup
+- [ ] App cleared for Batch 10 Cleanup
 
 Report: batch position, component counts DONE/DEFERRED, any adapters still active and why.
 
@@ -1449,13 +1449,13 @@ Report: batch position, component counts DONE/DEFERRED, any adapters still activ
 
 ---
 
-## Batch 9.5 — App-Local SoC Refactor (Phase 05A)
+## Batch 9.5 — App-Local SoC Refactor
 
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run:** Once per app — after Batch 9 (Stabilization) passes, before Batch 10 (Cleanup)
 > **Prerequisite:** Batch 9 Acceptance Criteria all ✅. `_audit-report.md` must have Refactor Evaluation completed for all KEEP_APP_LOCAL entries.
 > **Skip if:** Zero KEEP_APP_LOCAL components are rated HIGH or MEDIUM refactor potential in `_audit-report.md`.
-> **Spec doc:** `<APP_PATH>/docs/migration/component/05-app-migration.md` §Phase 05A
+> **Spec doc:** `<APP_PATH>/docs/migration/component/05-app-migration.md` §Batch 9.5
 > **Standards:** `<APP_PATH>/docs/migration/component/06-component-standards.md` §6.5
 
 ```
@@ -1465,20 +1465,20 @@ You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 Read ALL of these before starting:
 
 - `<APP_PATH>/docs/migration/component/06-component-standards.md` §6.5 (App-Local Refactor Patterns — full section)
-- `<APP_PATH>/docs/migration/component/05-app-migration.md` §Phase 05A
+- `<APP_PATH>/docs/migration/component/05-app-migration.md` §Batch 9.5
 - `<APP_PATH>/docs/migration/component/_output/_audit-report.md` (KEEP_APP_LOCAL entries only — read `Refactor potential` and `Refactor strategy` for each)
 - `<APP_PATH>/docs/migration/component/_output/_migration-log.md` (current state)
 - `<APP_PATH>/docs/migration/verification-gate.md` (gate commands)
 
 ## Objective
 
-Execute Phase 05A: refactor KEEP_APP_LOCAL components rated HIGH or MEDIUM refactor potential
+Execute Batch 9.5: refactor KEEP_APP_LOCAL components rated HIGH or MEDIUM refactor potential
 for better separation of concerns. Split each monolithic component into:
 
 - A **domain-wiring container** (same file, same export, same callers — frozen)
 - A **pure-display Shell** (new file, `*Shell.tsx`, same directory — no domain types, no hooks, no API calls)
 
-**The user must not be able to tell Phase 05A happened. Zero behavior changes.**
+**The user must not be able to tell Batch 9.5 happened. Zero behavior changes.**
 
 ## Pre-Flight Check
 
@@ -1486,7 +1486,7 @@ Before writing any code:
 
 1. Filter `_audit-report.md` for entries where `Refactor potential: HIGH` or `Refactor potential: MEDIUM`
 2. Sort by Refactor potential DESC (HIGH first), then by component name
-3. List them. If the list is empty → stop, report "No Phase 05A candidates found", skip to Batch 10.
+3. List them. If the list is empty → stop, report "No Batch 9.5 candidates found", skip to Batch 10.
 
 ## Execution (ONE COMPONENT AT A TIME)
 
@@ -1554,7 +1554,7 @@ Run the checklist from §6.5 "What Makes a Good Shell":
 
 ### Step 6 — Log
 
-Append to `_migration-log.md` under `## Phase 05A — App-Local Refactor`:
+Append to `_migration-log.md` under `## Batch 9.5 — App-Local Refactor`:
 
 ```
 ### <ComponentName> — <date>
@@ -1598,7 +1598,7 @@ FORBIDDEN — zero tolerance, violation = rollback this component:
 
 - [ ] All HIGH refactor potential components processed
 - [ ] All MEDIUM refactor potential components processed (or documented skip with reason)
-- [ ] Every processed component has a log entry in `_migration-log.md §Phase 05A`
+- [ ] Every processed component has a log entry in `_migration-log.md §Batch 9.5`
 - [ ] Every processed component passed: typecheck ✅ lint ✅ build ✅ smoke route ✅
 - [ ] `packages/ui` candidates listed (or "None found")
 - [ ] Zero caller files changed (grep confirmed)
@@ -1611,10 +1611,10 @@ Report: list of components refactored, packages/ui candidates surfaced (if any),
 
 ---
 
-## Batch 10 — Cleanup & Deprecation (Phase 07)
+## Batch 10 — Cleanup & Deprecation
 
 > **Branch:** `migrate-app/<APP_NAME>` for app cleanup, then `feat/ui` for cross-app synthesis
-> **Run:** Once per app (Phase 07 is per-app scope)
+> **Run:** Once per app (Batch 10 is per-app scope)
 > **Prerequisite:** Batch 9 stabilization complete for this app
 
 ```
@@ -1629,9 +1629,9 @@ Read before starting:
 
 ## Scope Note
 
-This phase runs PER APP on `migrate-app/<APP_NAME>`.
+This batch runs PER APP on `migrate-app/<APP_NAME>`.
 Cross-app synthesis outputs (`30-cleanup-report.md`, `31-deprecation-map.md`) in packages/ui
-are produced ONLY after ALL apps complete Phase 07, on `feat/ui`.
+are produced ONLY after ALL apps complete Batch 10, on `feat/ui`.
 
 ## Tasks
 
@@ -1653,7 +1653,7 @@ For adapters flagged in `_migration-log.md` as "Adapter Status: READY FOR DELETI
 
 ### 2.5 Dependency Audit & Cleanup
 
-> Read **Phase 4** of `<APP_PATH>/docs/migration/component/07-cleanup.md` for the full spec,
+> Read **Section 4** of `<APP_PATH>/docs/migration/component/07-cleanup.md` for the full spec,
 > decision table, examples of legitimately app-owned deps, and the never-remove list.
 
 **Principle:** The question is never "does another package already have this dep?" — it is
@@ -1889,11 +1889,11 @@ Do NOT start Batch 11 until this gate passes.
 
 ---
 
-## Batch 11 — Operational Standards (Phase 08)
+## Batch 11 — Operational Standards
 
 > **Branch:** `feat/ui`
 > **Run:** Once — after ALL apps complete Batch 10 and Batch 10.5
-> **This is the final phase of the migration**
+> **This is the final batch of the migration program**
 
 ```
 
@@ -1911,7 +1911,7 @@ Read before starting:
 ## Objective
 
 Convert all migration outcomes into permanent operating documentation.
-After this phase, no more migration project is needed — new apps follow the playbook,
+After this batch, no more migration project is needed — new apps follow the playbook,
 new components follow the intake process.
 
 ## Required Outputs (create all 6 in `packages/ui/docs/`)
