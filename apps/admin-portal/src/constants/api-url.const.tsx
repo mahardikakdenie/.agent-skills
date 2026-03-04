@@ -15,6 +15,8 @@ class ApiURL {
   static ssoLogin = `${ApiURL.sso}/login`;
 
   static login = "/login";
+  static loginRefresh = "/login/refresh";
+  static loginLogout = "/login/logout";
 
   static account = "/account";
   static v1Account = `/v1${ApiURL.account}`;

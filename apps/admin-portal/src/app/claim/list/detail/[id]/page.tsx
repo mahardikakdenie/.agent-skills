@@ -73,6 +73,7 @@ const DetailClaim = () => {
     phone: true,
   });
   const [danaInfoVisibility, setDanaInfoVisibility] = useState(true);
+  const [integrationInfoVisibility, setIntegrationInfoVisibility] = useState(true);
 
   const imageUrl =
     claim?.participant_data?.data?.ktp ||
@@ -188,6 +189,7 @@ const DetailClaim = () => {
         "Claim.View.Policy.HidePhone",
       );
       const isShowDanaInfo = permissionList.includes("Claim.View.ShowDanaInfo");
+      const isShowIntegrationInfo = permissionList.includes("Claim.View.ShowIntegrationInfo");
       setHasAccess(access);
       setPolicyVisibility({
         name: true,
@@ -195,6 +197,7 @@ const DetailClaim = () => {
         phone: !isHidePolicyPhone,
       });
       setDanaInfoVisibility(isShowDanaInfo);
+      setIntegrationInfoVisibility(isShowIntegrationInfo);
       if (!access) {
         router.push(AppURL.forbidden);
       }
@@ -810,6 +813,28 @@ const DetailClaim = () => {
                     <div>{claim?.bank_info?.account_number || "-"}</div>
                   </div>
                 </div>
+                {integrationInfoVisibility && (
+                  <div className="bg-white rounded-md flex flex-col gap-3 p-4 sm:p-6">
+                    <p className="font-semibold">Informasi Integrasi Asuransi</p>
+                    {claim?.other_info?.third_party?.identifiers && 
+                    typeof claim.other_info.third_party.identifiers === 'object' && (
+                      Object.entries(claim.other_info.third_party.identifiers).map(
+                        ([key, value]: [string, any]) => (
+                          <div key={key} className="flex gap-2 text-sm font-medium">
+                            <div className="sm:min-w-40 sm:w-40 min-w-32 w-32">
+                              {key
+                                .split('_')
+                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ')}
+                            </div>
+                            <div className="max-w-1 w-1">:</div>
+                            <div>{String(value || "-")}</div>
+                          </div>
+                        )
+                      )
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
