@@ -1,39 +1,693 @@
-# API Conventions (Batch 2 Refresh)
+# 02 — API Conventions
 
-## Global Rules
-- Canonical props: `variant`, `size`, `disabled`, `loading`, `error`, `className`
-- Controlled state pairs: `open/onOpenChange`, `value/onValueChange`
-- Canonical event names: `onClick`, `onChange`, `onValueChange`, `onOpenChange`, `onSubmit`
-- Canonical slot names: `children`, `label`, `description`, `icon`, `leftIcon`, `rightIcon`, `actions`, `footer`
+> **Batch:** Batch 2 — Design System Foundation
+> **Branch:** `feat/ui`
+> **Run date:** 2026-03-06
+> **Source:** `06-component-standards.md §2 Prop Naming Conventions`
+> **Breaking change rule:** After Batch 3 begins, any change to canonical prop names or variant values requires a Foundation Amendment PR.
 
-## Legacy to Canonical Mapping
-| Legacy | Canonical |
-| --- | --- |
-| `isDisabled` | `disabled` |
-| `isLoading`, `pending` | `loading` |
-| `kind`, visual `type` | `variant` |
-| `onChangeValue` | `onValueChange` |
-| `isOpen` + close-only callbacks | `open` + `onOpenChange` |
-| `additionalClassName` | `className` |
+---
+
+## Global Naming Rules
+
+Source: `06-component-standards.md §2`
+
+| Convention | Canonical | Forbidden |
+|---|---|---|
+| Variant prop | `variant` | `kind`, `type`, `mode`, `color`, `intent` |
+| Size prop | `size` | `width`, `scale`, `height`, small/medium/large literals |
+| Size values | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` — **default: `'md'`** | `'small'`, `'medium'`, `'large'`, `'tiny'`, `'huge'` |
+| Variant values | `'default' \| 'primary' \| 'secondary' \| 'destructive' \| 'outline' \| 'ghost' \| 'link'` | `'danger'` (use `'destructive'`), `'warning-style'`, `'info-color'` |
+| Disabled | `disabled` | `isDisabled`, `readOnly` (unless semantically distinct) |
+| Loading | `loading` | `isLoading`, `pending`, `busy` |
+| Error | `error?: string \| boolean` | `hasError`, `isError`, `errorMessage` (use `error` for both) |
+| Required | `required` | `isRequired` |
+| Class override | `className` | `additionalClassName`, `classNames`, `extraClass` |
+| Open/close trigger | `open` + `onClose` | `isOpen` + `onDismiss`, `show` + `hide` |
+| Value change | `onChange` or `onValueChange` | `onChangeValue`, `handleChange` |
+| Close callback | `onClose` | `onDismiss`, `handleClose` |
+| Open callback | `onOpen` | `handleOpen` |
+| Select | `onSelect` | `onPick`, `onChoose` |
+| Slot naming | `children`, `label`, `description`, `icon`, `leftIcon`, `rightIcon`, `actions`, `footer`, `trigger` | ad-hoc slot names |
+
+---
+
+## Legacy → Canonical Prop Mapping
+
+Cross-app conflicts identified across all 27 baselines:
+
+| Legacy pattern | Canonical | Apps affected |
+|---|---|---|
+| `isDisabled` | `disabled` | teman-affiliate-microsite, haruuz-microsite, gelm-xproject-microsite, ticket-portal |
+| `isLoading` / `pending` / `filled` | `loading` | customer-portal, ticket-portal, teman-affiliate-microsite |
+| `kind="primary"` | `variant="primary"` | partner-portal, affiliate-admin |
+| `danger` (variant) | `destructive` | partner-portal, affiliate-admin, affiliate-portal |
+| `isOpen` + `onClose` | `open` + `onClose` | partner-portal, affiliate-admin, teman-affiliate-admin, claim-portal |
+| `onChangeValue` / `onSelect` | `onChange` or `onValueChange` | customer-portal, ecommerce-teman |
+| `additionalClassName` | `className` | partner-portal, affiliate-admin |
+| `withBorder` (boolean) | `variant="outline"` | affiliate-admin, partner-portal |
+| `isCurrency`, `isFormatNumber` | `inputMode="currency"` / `inputMode="number"` | partner-portal, agent-admin |
+| `isForceClear` | `clearable` | partner-portal |
+| `isWithShadow` | `shadow` | partner-portal (deprecated; use `className` instead) |
+| `onPress` (NextUI/HeroUI) | `onClick` | teman-affiliate-microsite, haruuz-microsite, agent-microsite |
+| `allOptions` / `options` divergence | `options: SelectOption[]` | partner-portal, affiliate-admin |
+| `placeholderSelectClassName`, `bgSelect`, `chevronColor` | `className` + `variant` | partner-portal (style overrides → collapse) |
+| `isLongDate` | `dateFormat` (string token) | customer-portal |
+| `titleModal` | `label` | partner-portal MultipleSelect |
+
+---
+
+## TypeScript Conventions
+
+Source: `06-component-standards.md §3`
+
+### Component Interface Pattern
+
+```ts
+// Always export the props interface
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  loading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  asChild?: boolean;
+}
+```
+
+### Generic Data Components
+
+```ts
+// Use generics for data-display components
+export interface DataTableProps<TData> {
+  data: TData[];
+  columns: ColumnDef<TData>[];
+  loading?: boolean;
+}
+export function DataTable<TData>({ data, columns, loading }: DataTableProps<TData>) { ... }
+```
+
+### Ref Forwarding (mandatory for all Tier 1 and focusable Tier 2)
+
+```ts
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, ...props }, ref) => (
+    <input ref={ref} className={cn(inputVariants(), className)} {...props} />
+  )
+);
+Input.displayName = 'Input';
+```
+
+> **React 19 note:** Projects using React 19 can accept `ref` as a regular prop without `forwardRef`. Check consuming app `package.json`. Both patterns are valid — use `forwardRef` as the safe default.
+
+---
 
 ## Canonical Component Contracts
-| Family | Canonical contract focus |
-| --- | --- |
-| Button | `variant`, `size`, `loading`, `disabled`, icon slots |
-| Input | typed input modes, formatter hooks, `error`, `onValueChange` |
-| Select | single/multi/searchable modes with one normalized API |
-| Checkbox/RadioGroup/Switch | controlled checked/value model with strict accessibility |
-| Dialog/Drawer | controlled open state, content slots, action/footer slots |
-| Table/DataTable | structural slots, sorting/filter/pagination callback consistency |
-| DatePicker family | single source API for date/date-range/date-time state changes |
-| Alert/Notification family | severity variants and dismiss handling |
-| Form | react-hook-form aligned wrappers with stable field conventions |
+
+### Button
+
+```ts
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link' | 'warning'
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'  // default: 'md'
+  loading?: boolean
+  disabled?: boolean
+  asChild?: boolean
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
+  children?: React.ReactNode
+  className?: string
+}
+```
+
+Story group: `Buttons`
+
+---
+
+### Input
+
+```ts
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  variant?: 'default' | 'outline' | 'ghost'
+  size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
+  inputMode?: 'text' | 'email' | 'phone' | 'currency' | 'number' | 'password'
+  error?: string | boolean
+  loading?: boolean
+  disabled?: boolean
+  required?: boolean
+  label?: string
+  placeholder?: string
+  helperText?: string
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
+  clearable?: boolean
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onValueChange?: (value: string) => void
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Textarea
+
+```ts
+export interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
+  error?: string | boolean
+  disabled?: boolean
+  required?: boolean
+  label?: string
+  placeholder?: string
+  helperText?: string
+  clearable?: boolean
+  onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
+  onValueChange?: (value: string) => void
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Select
+
+```ts
+export interface SelectOption {
+  label: string
+  value: string
+  disabled?: boolean
+}
+
+export interface SelectProps {
+  value?: string | string[]
+  onValueChange?: (value: string | string[]) => void
+  options: SelectOption[]
+  placeholder?: string
+  disabled?: boolean
+  loading?: boolean
+  required?: boolean
+  error?: string | boolean
+  multi?: boolean
+  searchable?: boolean
+  phoneCodeMode?: boolean
+  label?: string
+  className?: string
+  open?: boolean
+  onClose?: () => void
+  onOpen?: () => void
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Checkbox
+
+```ts
+export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  checked?: boolean
+  onCheckedChange?: (checked: boolean) => void
+  disabled?: boolean
+  required?: boolean
+  label?: string
+  description?: string
+  size?: 'sm' | 'md' | 'lg'  // default: 'md'
+  error?: string | boolean
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### RadioGroup
+
+```ts
+export interface RadioGroupProps {
+  value?: string
+  onValueChange?: (value: string) => void
+  disabled?: boolean
+  required?: boolean
+  orientation?: 'horizontal' | 'vertical'
+  children: React.ReactNode
+  className?: string
+}
+
+export interface RadioGroupItemProps {
+  value: string
+  disabled?: boolean
+  label?: string
+  description?: string
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Switch
+
+```ts
+export interface SwitchProps {
+  checked?: boolean
+  onCheckedChange?: (checked: boolean) => void
+  disabled?: boolean
+  required?: boolean
+  label?: string
+  size?: 'sm' | 'md' | 'lg'  // default: 'md'
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Dialog
+
+```ts
+export interface DialogProps {
+  open?: boolean
+  onClose?: () => void
+  defaultOpen?: boolean
+  children: React.ReactNode
+}
+
+export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  title?: string
+  description?: string
+  actions?: React.ReactNode
+  footer?: React.ReactNode
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'  // default: 'md'
+  className?: string
+  children: React.ReactNode
+}
+```
+
+Story group: `Overlays`
+
+Migration note: `isOpen` + `onClose` → `open` + `onClose` (canonical per `06-component-standards.md §2`). `bgColor`, `widthClassName`, `heightClassName` → use `size` + `className`.
+
+---
+
+### Drawer
+
+```ts
+export interface DrawerProps {
+  open?: boolean
+  onClose?: () => void
+  direction?: 'bottom' | 'right' | 'left' | 'top'  // default: 'bottom'
+  children: React.ReactNode
+}
+
+export interface DrawerContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  title?: string
+  description?: string
+  actions?: React.ReactNode
+  footer?: React.ReactNode
+  className?: string
+  children: React.ReactNode
+}
+```
+
+Story group: `Overlays`
+
+---
+
+### Popover
+
+```ts
+export interface PopoverProps {
+  open?: boolean
+  onClose?: () => void
+  defaultOpen?: boolean
+  children: React.ReactNode
+}
+
+export interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  align?: 'start' | 'center' | 'end'
+  side?: 'top' | 'right' | 'bottom' | 'left'
+  sideOffset?: number
+  className?: string
+  children: React.ReactNode
+}
+```
+
+Story group: `Overlays`
+
+---
+
+### Tooltip
+
+```ts
+export interface TooltipProps {
+  content: React.ReactNode
+  children: React.ReactNode
+  side?: 'top' | 'right' | 'bottom' | 'left'
+  align?: 'start' | 'center' | 'end'
+  delay?: number
+  disabled?: boolean
+  className?: string
+}
+```
+
+Story group: `Overlays`
+
+---
+
+### Alert
+
+```ts
+export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'success' | 'info' | 'warning' | 'error' | 'destructive'
+  title?: string
+  description?: string
+  children?: React.ReactNode
+  dismissible?: boolean
+  onClose?: () => void
+  icon?: React.ReactNode
+  className?: string
+}
+```
+
+Story group: `Feedback`
+
+Migration note: `severity="error"` → `variant="error"`. `type` → `variant`. `autoHideMs` → `dismissible` + `onClose` caller logic.
+
+---
+
+### ContentLoadingWrapper
+
+```ts
+export interface ContentLoadingWrapperProps {
+  loading: boolean
+  variant?: 'overlay' | 'inline' | 'page'  // default: 'inline'
+  label?: string
+  size?: 'sm' | 'md' | 'lg'  // default: 'md'
+  children?: React.ReactNode
+  className?: string
+}
+```
+
+Story group: `Layout` — **canonical name from `06-component-standards.md §1 Tier 2`**
+
+---
+
+### Skeleton
+
+```ts
+export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+}
+```
+
+Story group: `Feedback`
+
+---
+
+### Table (structural primitive)
+
+```ts
+// Structural HTML table wrappers — no logic, no data fetching
+// Sub-components: TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter
+export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  className?: string
+}
+```
+
+Story group: `Data Display`
+
+---
+
+### DataTable
+
+```ts
+export interface DataTableProps<TData, TValue> {
+  data: TData[]
+  columns: ColumnDef<TData, TValue>[]
+  loading?: boolean
+  pagination?: {
+    pageIndex: number
+    pageSize: number
+    pageCount: number
+    onPageChange: (page: number) => void
+    onPageSizeChange?: (size: number) => void
+  }
+  toolbar?: React.ReactNode
+  className?: string
+}
+```
+
+Story group: `Data Display`
+
+**Dependency:** `@tanstack/react-table` v8. Apps using react-table v7 must upgrade before adopting `DataTable`.
+
+---
+
+### Pagination
+
+```ts
+export interface PaginationProps {
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+  pageSize?: number
+  onPageSizeChange?: (size: number) => void
+  pageSizeOptions?: number[]
+  className?: string
+}
+```
+
+Story group: `Navigation`
+
+---
+
+### Calendar
+
+```ts
+export interface CalendarProps {
+  mode?: 'single' | 'multiple' | 'range'
+  selected?: Date | Date[] | DateRange
+  onSelect?: (date: Date | Date[] | DateRange | undefined) => void
+  disabled?: boolean | ((date: Date) => boolean)
+  className?: string
+}
+```
+
+Story group: `Data Display`
+
+**Dependency:** `react-day-picker` + `date-fns`
+
+---
+
+### DatePicker
+
+```ts
+export interface DatePickerProps {
+  value?: Date | null
+  onChange?: (date: Date | null) => void
+  mode?: 'single'  // use DateRangePicker for 'range', DateTimePicker for 'datetime'
+  minDate?: Date
+  maxDate?: Date
+  disabled?: boolean
+  clearable?: boolean
+  required?: boolean
+  label?: string
+  placeholder?: string
+  error?: string | boolean
+  open?: boolean
+  onClose?: () => void
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+Migration note: `initialValue` → `value`; `minimumDate`/`maximumDate` → `minDate`/`maxDate`; `isForceClear` → `clearable`; `isDisabled` → `disabled`.
+
+---
+
+### Combobox
+
+```ts
+export interface ComboboxOption {
+  label: string
+  value: string
+  disabled?: boolean
+}
+
+export interface ComboboxProps {
+  value?: string
+  onValueChange?: (value: string) => void
+  options: ComboboxOption[]
+  placeholder?: string
+  searchPlaceholder?: string
+  disabled?: boolean
+  loading?: boolean
+  required?: boolean
+  error?: string | boolean
+  label?: string
+  className?: string
+  open?: boolean
+  onClose?: () => void
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### FileUpload
+
+```ts
+export interface FileUploadProps {
+  value?: File | File[] | null
+  onChange?: (file: File | File[] | null) => void
+  accept?: string
+  multiple?: boolean
+  disabled?: boolean
+  maxSize?: number
+  error?: string | boolean
+  clearable?: boolean
+  onClear?: () => void
+  label?: string
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### OtpInput
+
+```ts
+export interface OtpInputProps {
+  value?: string
+  onValueChange?: (value: string) => void
+  length?: number  // default: 6
+  disabled?: boolean
+  error?: string | boolean
+  autoFocus?: boolean
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Badge
+
+```ts
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' | 'info'
+  size?: 'sm' | 'md' | 'lg'  // default: 'md'
+  className?: string
+  children: React.ReactNode
+}
+```
+
+Story group: `Feedback`
+
+---
+
+### Card
+
+```ts
+// Compound: Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+  children?: React.ReactNode
+}
+```
+
+Story group: `Layout`
+
+---
+
+### Form (react-hook-form aligned)
+
+```ts
+// Compound: Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage
+// FormField uses RHF Controller internally — do NOT expose RHF types in prop surface
+```
+
+Story group: `Misc`
+
+---
 
 ## Ref Forwarding Policy
-- Required for Tier 1 primitives
-- Required for Tier 2 when focus/measurement semantics are relevant
 
-## Forbidden in @repo/ui API
-- App domain props (`policy`, `claim`, app-specific models)
-- App runtime props (`apiUrl`, service callbacks)
-- Next.js-specific route/runtime coupling in component contracts
+| Tier | Requirement |
+|---|---|
+| Tier 1 Primitives | **Required** on all |
+| Tier 2 Composites | Required when the root element is focusable or needs external measurement (Dialog, Popover, Tooltip, Combobox) |
+| Pure structural sub-components | Not required unless independently focusable |
+
+---
+
+## CVA Variant Pattern (canonical)
+
+Source: `06-component-standards.md §4`
+
+```ts
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../utils/cn';
+
+const componentVariants = cva(
+  'base-classes-here',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground',
+        destructive: 'bg-destructive text-destructive-foreground',
+        outline: 'border border-input bg-background',
+        secondary: 'bg-secondary text-secondary-foreground',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
+      },
+      size: {
+        sm: 'h-8 px-3 text-xs',
+        md: 'h-10 px-4 text-sm',   // DEFAULT
+        lg: 'h-12 px-8 text-base',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'md',
+    },
+  },
+);
+```
+
+Merge order: `cn(variantClasses, className)` — consumer `className` always wins.
+
+---
+
+## Forbidden in `@repo/ui` API
+
+Source: `06-component-standards.md §2`
+
+```ts
+// FORBIDDEN — domain-specific props
+apiUrl?: string
+fetchData?: () => Promise<T>
+policy?: Policy
+claim?: Claim
+affiliateId?: string
+
+// FORBIDDEN — Next.js specific
+href?: import('next/link').LinkProps['href']   // use: href?: string
+src?: import('next/image').ImageProps['src']   // use: src?: string
+
+// FORBIDDEN — env vars
+process.env.NEXT_PUBLIC_*
+
+// FORBIDDEN — boolean proliferation (> 3 booleans → use variant or mode)
+```
