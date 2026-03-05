@@ -1,4 +1,4 @@
-﻿# Per-App Baseline Summary - ticket-portal
+# Per-App Baseline Summary - ticket-portal
 
 ## App Overview
 - Framework: Next.js App Router (upgraded to Next.js 16)
@@ -6,12 +6,12 @@
 - Styling/UI foundations: Tailwind CSS v4, Headless UI, local UI wrappers, @repo/ui (currently Box export only)
 
 ## Component Count Summary
-- Total components audited: 150
+- Total components audited: 158
 - ADOPT_NOW: 0
 - ADOPT_WITH_ADAPTER: 0
 - EXTEND_EXISTING: 0
-- NEW_SHARED_COMPONENT: 18
-- KEEP_APP_LOCAL: 87
+- NEW_SHARED_COMPONENT: 19
+- KEEP_APP_LOCAL: 94
 - MIGRATE_AFTER_SPLIT: 45
 
 ## Top 5 Highest-Parity-Risk Items
@@ -92,3 +92,35 @@
 
 
 
+
+## Legacy Update Amendment - 2026-03-04 13:40 (+07)
+- Legacy intake summary:
+  - RichTextEditor -> NEW_SHARED_COMPONENT (queued via L5)
+  - 7 new components/pages -> KEEP_APP_LOCAL
+- Updated totals:
+  - Total components audited: 158
+  - NEW_SHARED_COMPONENT: 19
+  - KEEP_APP_LOCAL: 94
+  - Backlog CSV rows: 206
+## Legacy Update Amendment - 2026-03-05 10:02 (+07)
+- Legacy intake summary:
+  - 10 new routes/components documented from project epic feature drop
+  - 3 queued as Batch 1.5 (`MIGRATE_AFTER_SPLIT`): `ProjectEpicView`, `EpicSidebar`, `ProjectTaskSidebar`
+  - 7 classified as KEEP_APP_LOCAL (N/A batch)
+  - No new shared candidate in this update (L4 path)
+- Updated totals:
+  - Total components audited: 168
+  - NEW_SHARED_COMPONENT: 19
+  - KEEP_APP_LOCAL: 101
+  - MIGRATE_AFTER_SPLIT: 48
+  - Backlog CSV rows: 216
+
+
+## Batch 1.5 Amendment (2026-03-05)
+
+- Legacy intake follow-up handled for epic workflow set.
+- Marked as `SKIPPED` with explicit reasons:
+  - `src/views/masterdata/project/epic/index.tsx`
+  - `src/views/masterdata/project/epic/components/EpicSidebar.tsx`
+  - `src/views/masterdata/project/epic/components/TaskSidebar.tsx`
+- Rationale: defer split to dedicated follow-up tranche to reduce regression risk while feature is still in active legacy churn.

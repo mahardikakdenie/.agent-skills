@@ -181,3 +181,28 @@
   - pnpm --filter haruuz-microsite check-types PASS
   - pnpm --filter haruuz-microsite lint PASS (warnings only)
   - pnpm --filter haruuz-microsite build PASS
+
+## Legacy Update Amendment - 2026-03-04 11:51 (+07)
+
+- Legacy update integrated via `integrate-app/haruuz-microsite` -> `migrate-app/haruuz-microsite` with conflict-safe merge.
+- No new component files introduced by this legacy delta.
+- No shared-component intake candidate introduced (`L5` not required).
+- Baseline counters unchanged:
+  - Total components audited: 45
+  - NEW_SHARED_COMPONENT: 7
+  - KEEP_APP_LOCAL: 13
+  - MIGRATE_AFTER_SPLIT: 24
+  - SPLIT: 24
+
+## Legacy Update Amendment - 2026-03-05 09:21 (+07)
+
+- Legacy update integrated via `integrate-app/haruuz-microsite` -> `migrate-app/haruuz-microsite` (`de886751cf8f7d513a965c8cfca669111766c496`).
+- Conflict handling preserved all Batch 1.5 split container/shell boundaries (`callback/login`, `declaration`, `datepicker`, `upload-crop-image`).
+- No new component files detected in this delta.
+- No shared-component intake candidates introduced (`L5` not required).
+- Baseline counters unchanged:
+  - Total components audited: 45
+  - NEW_SHARED_COMPONENT: 7
+  - KEEP_APP_LOCAL: 13
+  - MIGRATE_AFTER_SPLIT: 24
+  - SPLIT: 24

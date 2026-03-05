@@ -142,3 +142,27 @@
 - Remaining Batch 1.5 candidates (explicitly deferred in this pass): 0
   - None.
 - Backlog CSV row count after Batch 1.5 updates: 77
+
+## Legacy Update Amendment (2026-03-04)
+
+- Legacy intake added 6 component files from `stage`.
+- New `MIGRATE_AFTER_SPLIT` candidates queued for Batch 1.5:
+  - ConnectionErrorModal
+  - EventItem
+  - EventQuiz
+- New `KEEP_APP_LOCAL` components recorded:
+  - LoadingData
+  - ResultNotFound
+  - BubbleOrnament
+- Shared-component intake additions from this legacy update: none.
+- Backlog CSV row count after legacy intake updates: 83.
+
+## Batch 1.5 Amendment (2026-03-05, Legacy Intake Tranche)
+
+- Additional candidates processed this tranche: 3 (status: SKIPPED)
+- SKIPPED candidates:
+  - components/ConnectionErrorModal.js
+  - components/elements/event/item.js
+  - components/elements/event/quiz.js
+- Deferral reason: legacy intake introduced high-risk socket/timer/state-machine behavior; split execution deferred to dedicated parity tranche.
+- Legacy-intake Batch 1.5 queue snapshot: 3 total, 3 processed (SKIPPED), 0 unresolved.

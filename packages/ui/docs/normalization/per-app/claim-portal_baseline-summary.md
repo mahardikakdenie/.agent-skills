@@ -105,3 +105,15 @@
   - NomineeViewShell
 - Deferred Batch 1.5 candidates (with reason): 0
   - None
+
+## Legacy Update Amendment - 2026-03-04 11:24 (+07)
+
+- Legacy update integrated via `integrate-app/claim-portal` -> `migrate-app/claim-portal` (with conflict resolution).
+- New legacy additions absorbed as app-local support artifacts: `helpers/jwt.helper.ts`, `hook/use-user-info.hook.ts`.
+- No new shared-component intake candidate created in this cycle (`L5` not required).
+- Batch 1.5 split architecture preserved (no rollback to monolith containers).
+- Baseline counters unchanged:
+  - KEEP_APP_LOCAL: 28
+  - MIGRATE_AFTER_SPLIT: 22
+  - NEW_SHARED_COMPONENT: 15
+  - `_component-backlog.csv` rows: 109

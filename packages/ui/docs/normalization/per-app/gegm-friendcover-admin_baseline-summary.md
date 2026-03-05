@@ -58,3 +58,14 @@
 - NEW_SHARED_COMPONENT candidates from splits: 0
 - KEEP_APP_LOCAL-only Shells: 15
 - Batch 1.5 skipped MEDIUM candidates: 41 (documented in migration log)
+## Legacy Update Amendment - 2026-03-04 11:38 (+07)
+
+- Legacy update integrated via `integrate-app/gegm-friendcover-admin` -> `migrate-app/gegm-friendcover-admin`.
+- Delta only touched existing dashboard files (type + card + hook), without adding new component files.
+- No shared-component intake candidate introduced (`L5` not required).
+- Baseline counters unchanged:
+  - Total components audited: 178
+  - NEW_SHARED_COMPONENT: 15
+  - KEEP_APP_LOCAL: 114
+  - MIGRATE_AFTER_SPLIT: 34
+  - SPLIT: 15

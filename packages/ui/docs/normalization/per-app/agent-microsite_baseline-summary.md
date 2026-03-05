@@ -125,3 +125,18 @@
 - LOW: 53
 - NONE: 37
 - Projected NEW_SHARED_COMPONENT from splits: 0
+## Legacy Update - 2026-03-04 10:48 (+07)
+- Source: subtree pull from agent-microsite/stage into integrate-app/agent-microsite, then merge to migrate-app/agent-microsite.
+- Net changed files from this legacy sync: 3.
+- Changed files:
+  - src/app/payment/[idTrans]/method/page.tsx
+  - src/app/payment/[idTrans]/method/components/radio-group.tsx
+  - src/app/payment/[idTrans]/method/hooks.tsx
+- New component introduced by legacy: none (new file is hook/helper, not shared UI primitive).
+- packages/ui intake queue impact:
+  - NEW_SHARED_COMPONENT: none
+  - EXTEND_EXISTING: none
+- Verification after merge:
+  - pnpm --filter agent-microsite check-types -> PASS
+  - pnpm --filter agent-microsite lint -> PASS (warnings only)
+  - pnpm --filter agent-microsite build -> PASS

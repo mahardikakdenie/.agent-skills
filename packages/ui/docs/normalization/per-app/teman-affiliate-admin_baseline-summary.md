@@ -1,12 +1,12 @@
 # Per-App Baseline Summary - teman-affiliate-admin
 
-- Total components audited: 387
+- Total components audited: 393
 - Count per classification:
   - ADOPT_NOW: 0
   - ADOPT_WITH_ADAPTER: 0
   - EXTEND_EXISTING: 0
   - NEW_SHARED_COMPONENT: 61
-  - KEEP_APP_LOCAL: 304
+  - KEEP_APP_LOCAL: 310
   - MIGRATE_AFTER_SPLIT: 22
 
 ## Top 5 Highest-Parity-Risk Items
@@ -89,14 +89,14 @@
   - Modal (`src/components/ui/modal/Modal.tsx`) - props/state audit required in Phase 02
 
 ## KEEP_APP_LOCAL Refactor Candidates
-- Total KEEP_APP_LOCAL count: 304
+- Total KEEP_APP_LOCAL count: 310
 - KEEP_APP_LOCAL with SoC HIGH/MEDIUM: 0
 - Top 3 candidates:
   - None
 
 ## SoC Evaluation Summary
 - Total Batch 1.5 candidates: 22
-- Breakdown: HIGH 0 | MEDIUM 22 | LOW 298 | NONE 67
+- Breakdown: HIGH 0 | MEDIUM 22 | LOW 303 | NONE 68
 - Projected NEW_SHARED_COMPONENT from splits: 8 (estimate based on container-shell candidates)
 
 ## Notes
@@ -116,3 +116,18 @@
   - SelectShell
   - PaginationShell
 - KEEP_APP_LOCAL-only Shells: 14
+
+## Legacy Update Amendment - 2026-03-04
+
+- Legacy commit integrated: `575aac29c0229a20e799eacc39bfaffd402c3494` via `11054323e38e2d9e36fad57949ebd3c491bc6a99`.
+- Added new KEEP_APP_LOCAL components from legacy delta:
+  - `src/components/ui/form/RadioButton.tsx`
+  - `src/views/claim/claim/detail/components/sections/PayeeConfigurationSection.tsx`
+  - `src/views/customer/alteration/main/components/AlterationDashboard.tsx`
+  - `src/views/customer/alteration/main/components/FloatingUpdateStatus.tsx`
+  - `src/views/masterdata/amla/main/components/MatchListModal.tsx`
+  - `src/views/masterdata/amla/main/components/MatchListTable.tsx`
+- Updated renamed/decomposed legacy paths:
+  - `ClaimAssessmentForm` -> `ClaimAssessmentSection`
+  - `PayeeConfig` -> `PanelPayment`
+- packages/ui intake decision: no NEW_SHARED_COMPONENT / EXTEND_EXISTING queued in this update.

@@ -2,9 +2,9 @@
 
 ## Totals
 
-- Total components audited: 75
-- KEEP_APP_LOCAL: 53
-- NEW_SHARED_COMPONENT: 22
+- Total components audited: 77
+- KEEP_APP_LOCAL: 54
+- NEW_SHARED_COMPONENT: 23
 
 ## Top 5 Highest Parity Risk Items
 
@@ -202,7 +202,7 @@ Each candidate below captures current local API/visual behavior to preserve duri
 
 ## KEEP_APP_LOCAL Refactor Candidates
 
-- Total KEEP_APP_LOCAL: 53
+- Total KEEP_APP_LOCAL: 54
 - KEEP_APP_LOCAL with SoC potential HIGH or MEDIUM: 0
 
 | Component | Source | SoC strategy | SoC potential | Shell as packages/ui candidate |
@@ -216,8 +216,20 @@ Each candidate below captures current local API/visual behavior to preserve duri
 - Total Batch 1.5 candidates: 0
 - SoC potential HIGH: 0
 - SoC potential MEDIUM: 0
-- SoC potential LOW: 36
-- SoC potential NONE: 39
+- SoC potential LOW: 37
+- SoC potential NONE: 40
 - Projected NEW_SHARED_COMPONENT from splits: 0
 - MIGRATE_AFTER_SPLIT entries in current baseline: 0
 
+
+## Legacy Update Amendment - 2026-03-04 12:32 (+07)
+
+- Legacy update integrated via integrate-app/partner-portal -> migrate-app/partner-portal.
+- New components from legacy classified as:
+  - MonthPicker -> NEW_SHARED_COMPONENT (queued via L5)
+  - TableClaim -> KEEP_APP_LOCAL
+- Baseline counters updated:
+  - Total components audited: 77
+  - KEEP_APP_LOCAL: 54
+  - NEW_SHARED_COMPONENT: 23
+  - _component-backlog.csv rows (excluding header): 77

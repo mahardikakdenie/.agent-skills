@@ -1,12 +1,12 @@
 ## Batch 1 - Per-App Baseline Summary (sso-portal)
 
 ### Total components audited
-- Total audited: 21
+- Total audited: 22
 
 ### Count per classification
 - MIGRATE_AFTER_SPLIT: 6
 - NEW_SHARED_COMPONENT: 4
-- KEEP_APP_LOCAL: 11
+- KEEP_APP_LOCAL: 12
 - ADOPT_NOW: 0
 - ADOPT_WITH_ADAPTER: 0
 - EXTEND_EXISTING: 0
@@ -49,7 +49,7 @@
 - Story group: `Feedback`.
 
 ### KEEP_APP_LOCAL refactor candidates
-- Total KEEP_APP_LOCAL components: 11
+- Total KEEP_APP_LOCAL components: 12
 - KEEP_APP_LOCAL with SoC potential HIGH or MEDIUM: 2
 - Top candidates:
   - LoginPage - strategy `container-shell`; Shell as `packages/ui` candidate: NO (route-specific).
@@ -60,7 +60,7 @@
 - SoC potential breakdown:
   - HIGH: 1
   - MEDIUM: 7
-  - LOW: 8
+  - LOW: 9
   - NONE: 5
 - Projected NEW_SHARED_COMPONENT from splits (post Batch 1.5): 4
   - SelectPhoneCodeShell, NavigationBarShell, ModalSuccessShell, FileUploadShell (tentative).
@@ -77,3 +77,12 @@
 - KEEP_APP_LOCAL-only Shells: 2
   - LoginPageShell
   - OtpPageShell
+
+## Legacy Update Amendment - 2026-03-04 12:49 (+07)
+- Legacy intake classified:
+  - MicrosoftLoginButton -> KEEP_APP_LOCAL
+- Guardrail applied:
+  - select-phone-code.tsx kept in Container/Shell architecture (no monolith rollback), with country list update retained (+7 Russia).
+- Updated totals:
+  - Total audited: 22
+  - KEEP_APP_LOCAL: 12

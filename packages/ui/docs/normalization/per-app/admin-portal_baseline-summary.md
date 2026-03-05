@@ -84,3 +84,15 @@
 - _component-backlog.csv rows (excluding header): 275
 
 
+## Legacy Update - 2026-03-04 09:50 (+07)
+- Source: subtree pull from admin-portal/stage into integrate-app/admin-portal, then merge to migrate-app/admin-portal.
+- Net changed files from this legacy sync: 15.
+- New component introduced by legacy:
+  - src/components/microsoft-login-button.tsx -> KEEP_APP_LOCAL (auth-domain specific, PKCE/session handling, app contract dependent).
+- packages/ui intake queue impact:
+  - NEW_SHARED_COMPONENT: none
+  - EXTEND_EXISTING: none
+- Verification after merge-resolution:
+  - pnpm --filter admin-portal check-types -> PASS
+  - pnpm --filter admin-portal lint -> PASS (warnings only)
+  - pnpm --filter admin-portal build -> PASS

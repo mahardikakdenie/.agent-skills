@@ -91,3 +91,18 @@
   - `DaView` (dashboard da) -> `DaDashboardContainer` + `DaDashboardShell`
   - `GetRevView` (dashboard getrev) -> `GetRevDashboardContainer` + `GetRevDashboardShell`
 - Deferred candidates from this run: none.
+
+## Legacy Update - 2026-03-04 10:34 (+07)
+- Source: subtree pull from agent-admin/stage into integrate-app/agent-admin, then merge to migrate-app/agent-admin.
+- Net changed files from this legacy sync: 2.
+- Changed files:
+  - src/views/dashboard/da/dashboard.view.tsx
+  - src/@types/dashboard.d.ts
+- New component introduced by legacy: none.
+- packages/ui intake queue impact:
+  - NEW_SHARED_COMPONENT: none
+  - EXTEND_EXISTING: none
+- Verification after merge:
+  - pnpm --filter agent-admin check-types -> PASS
+  - pnpm --filter agent-admin lint -> PASS (warnings only)
+  - pnpm --filter agent-admin build -> PASS
