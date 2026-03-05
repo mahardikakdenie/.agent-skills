@@ -78,7 +78,7 @@ Based on cross-app reconciliation of all 27 baseline summaries:
 | Domain forms embeded in Dialog | ❌ LOCAL — content stays in app | Business logic in dialog body |
 | `Select` (single, multi, searchable, phone code) | ✅ SHARED — `@repo/ui` | 25 apps; consolidated via mode prop |
 | `Select` with API call for options | ❌ LOCAL — container wraps Select primitive | Data fetching not in shared layer |
-| `DataTable` | ✅ SHARED — generic (no domain columns) | 12 apps; TanStack Table v8 headless |
+| `DataTable` | ✅ SHARED — generic (no domain columns) | 6 apps are explicit `DataTable` candidates; broader `Table` primitives are needed by 12 apps |
 | Domain table column configs | ❌ LOCAL | Schema-specific |
 | `ContentLoadingWrapper` (inline/overlay/page) | ✅ SHARED | 18 apps need unified loading UI |
 | Branded full-page loaders (logo) | ❌ LOCAL | App identity |
@@ -116,6 +116,8 @@ After Batch 1.5 splits, each app's component set is classified. These rules gove
 | `MIGRATE_AFTER_SPLIT` (pending) | Blocked until Batch 1.5 complete | Re-process after split |
 
 **Zombie code rule:** Any local `src/components/ui/` file that is a structural duplicate of a shipped `@repo/ui` component MUST be deleted in the same migration PR that introduces the `@repo/ui` import. No parallel existence of dead duplicates is allowed more than 1 sprint after migration.
+
+Adapter note: any candidate classified as `ADOPT_WITH_ADAPTER` must normalize at the app boundary in a later migration batch. Shared package APIs stay canonical even when the app transition is staged.
 
 ---
 

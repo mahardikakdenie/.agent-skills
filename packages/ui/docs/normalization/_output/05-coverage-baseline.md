@@ -153,7 +153,7 @@
 | admin-portal-boost | 68 | 28 | 0 | 24 | 16 | explicit |
 | affiliate-admin | 88 | 11 | 0 | 54 | 23 | explicit |
 | affiliate-portal | 38 | 9 | 0 | 22 | 7 | explicit |
-| agent-admin | 127 | 16 | 0 | 92 | 0 | explicit |
+| agent-admin | 127 | 16 | 0 | 92 | 19 | explicit |
 | agent-microsite | 90 | 17 | 0 | 73 | 0 | explicit |
 | agent-portal | 44 | 0 | 0 | 29 | 15 | explicit |
 | agent-web-portal | 157 | 21 | 0 | 118 | 17 | explicit |
@@ -168,15 +168,18 @@
 | gen-ai-portal | 23 | 5 | 0 | 8 | 10 | explicit |
 | getrev-da-microsite | 84 | 27 | 0 | 41 | 16 | explicit |
 | grab-landing-page | 48 | 20 | 0 | 17 | 11 | explicit |
-| haruuz-microsite | 45 | 7 | 0 | 13 | 24 | explicit |
+| haruuz-microsite | 45 | 7 | 1 | 13 | 24 | explicit |
 | mykawan-website | 60 | 12 | 0 | 31 | 17 | explicit |
 | partner-portal | 77 | 23 | 0 | 54 | n/a | explicit |
 | sso-portal | 22 | 4 | 0 | 12 | 6 | derived-total |
 | teman-affiliate-admin | 393 | 61 | 0 | 310 | 22 | explicit |
 | teman-affiliate-microsite | 151 | 19 | 0 | 82 | 50 | explicit |
-| teman-affiliate-portal | 58 | 18 | 0 | 20 | 20 | derived-total |
-| ticket-portal | 158 | 19 | 0 | 94 | 45 | explicit |
+| teman-affiliate-portal | 59 | 18 | 0 | 20 | 20 | explicit |
+| ticket-portal | 168 | 19 | 0 | 101 | 48 | amended-explicit |
 
 Notes:
 - derived-total means total was not explicitly stated and was derived as NEW + KEEP + split from the same baseline file.
+- latest-effective snapshot means a later amendment block explicitly updated the baseline totals, and those updated totals override the earlier header summary for traceability purposes.
+- amendment and execution-history sections are treated as chronology only unless they explicitly restate updated totals or queue counts.
+- `teman-affiliate-portal` also carries `ADOPT_WITH_ADAPTER: 1`; that signal is intentionally outside this Batch 2 matrix and is handled in downstream planning/migration work.
 - This matrix is for traceability and planning confidence; canonical component scope is defined by Sections 1-3.

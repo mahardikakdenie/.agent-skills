@@ -17,7 +17,8 @@ Source: `06-component-standards.md §2`
 | Variant prop | `variant` | `kind`, `type`, `mode`, `color`, `intent` |
 | Size prop | `size` | `width`, `scale`, `height`, small/medium/large literals |
 | Size values | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` — **default: `'md'`** | `'small'`, `'medium'`, `'large'`, `'tiny'`, `'huge'` |
-| Variant values | `'default' \| 'primary' \| 'secondary' \| 'destructive' \| 'outline' \| 'ghost' \| 'link'` | `'danger'` (use `'destructive'`), `'warning-style'`, `'info-color'` |
+| Core variant values | `'default' \| 'primary' \| 'secondary' \| 'destructive' \| 'outline' \| 'ghost' \| 'link'` | ad-hoc aliases such as `'danger'`, `'warning-style'`, `'info-color'` |
+| Extended semantic variants | `'success' \| 'warning' \| 'info'` only when the component communicates status/feedback or a Batch 2 parity ruling explicitly allows it | undocumented one-off literals or `'error'` (map to `'destructive'`) |
 | Disabled | `disabled` | `isDisabled`, `readOnly` (unless semantically distinct) |
 | Loading | `loading` | `isLoading`, `pending`, `busy` |
 | Error | `error?: string \| boolean` | `hasError`, `isError`, `errorMessage` (use `error` for both) |
@@ -40,6 +41,7 @@ Cross-app conflicts identified across all 27 baselines:
 |---|---|---|
 | `isDisabled` | `disabled` | teman-affiliate-microsite, haruuz-microsite, gelm-xproject-microsite, ticket-portal |
 | `isLoading` / `pending` / `filled` | `loading` | customer-portal, ticket-portal, teman-affiliate-microsite |
+| `errorMessage` | `error` | partner-portal, affiliate-admin, affiliate-portal, customer-portal |
 | `kind="primary"` | `variant="primary"` | partner-portal, affiliate-admin |
 | `danger` (variant) | `destructive` | partner-portal, affiliate-admin, affiliate-portal |
 | `isOpen` + `onClose` | `open` + `onClose` | partner-portal, affiliate-admin, teman-affiliate-admin, claim-portal |
@@ -99,6 +101,11 @@ Input.displayName = 'Input';
 ```
 
 > **React 19 note:** Projects using React 19 can accept `ref` as a regular prop without `forwardRef`. Check consuming app `package.json`. Both patterns are valid — use `forwardRef` as the safe default.
+
+Variant vocabulary rule:
+- Start from the core variant set.
+- Only status-bearing components (`Alert`, `Badge`) and explicitly approved parity-preserving components may add `success`, `warning`, or `info`.
+- Legacy `error` and `danger` values normalize to `destructive`.
 
 ---
 
@@ -365,7 +372,7 @@ Story group: `Overlays`
 
 ```ts
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'success' | 'info' | 'warning' | 'error' | 'destructive'
+  variant?: 'default' | 'success' | 'info' | 'warning' | 'destructive'
   title?: string
   description?: string
   children?: React.ReactNode
@@ -378,7 +385,7 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
 
 Story group: `Feedback`
 
-Migration note: `severity="error"` → `variant="error"`. `type` → `variant`. `autoHideMs` → `dismissible` + `onClose` caller logic.
+Migration note: `severity="error"` → `variant="destructive"`. `type` → `variant`. `autoHideMs` → `dismissible` + `onClose` caller logic.
 
 ---
 

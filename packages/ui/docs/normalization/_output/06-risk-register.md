@@ -13,10 +13,11 @@
 |---|---|---|
 | Semantic token missing in app `globals.css` | HIGH | Token contract doc + pre-migration lint rule; prefer `@repo/config` presets |
 | HeroUI / MUI coupling (gelm-xproject-microsite, haruuz-microsite, teman-affiliate-microsite, grab-landing-page) | HIGH | Token normalization required BEFORE adopting any `@repo/ui` primitive; run in parallel with B4 build |
+| Shared package readiness gaps (`@repo/helper` empty; missing `tailwind-merge`, `cmdk`, `date-fns`, `@tanstack/react-table`, `tailwindcss-animate`) | HIGH | Treat Batch 2 as the locked target contract; install and wire all prerequisites before Phase 04/05 implementation starts |
 | `react-table` v7 apps upgrading to TanStack v8 for `DataTable` | HIGH | Audit each app's `react-table` usage before DataTable migration; upgrade path per app |
 | 450+ `MIGRATE_AFTER_SPLIT` queue not yet processed | HIGH | Block shared extraction on any unprocessed monolith; enforce in PR review |
-| `onClose` vs `onOpenChange` prop mismatch at usage sites | MEDIUM | Adapter shim pattern mandatory at all site-level usages before PR close |
-| `isDisabled` / `isLoading` legacy prop naming | MEDIUM | Adapter pattern; `02-api-conventions.md` legacy→canonical mapping enforced by PR template |
+| `onClose` vs `onOpenChange` prop mismatch at usage sites | MEDIUM | Adapter shim pattern mandatory at all site-level usages before PR close; track each exception during downstream planning/migration work |
+| `isDisabled` / `isLoading` legacy prop naming | MEDIUM | Adapter pattern; `02-api-conventions.md` legacy→canonical mapping enforced by PR template and downstream migration docs |
 | Missing `DialogTitle` / `DialogDescription` (a11y regression) | HIGH | Radix warns; zero axe-core violations gate in Storybook CI |
 | Consuming apps declare wrong CSS variable format | MEDIUM | Token contract reference sheet; provide `@repo/config` CSS preset |
 | Multiple skipped Batch 1.5 candidates (gegm-friendcover: 17, ticket-portal: 21+3 deferred) | MEDIUM | Phase 05A re-evaluation required before these apps can advance past B4 migration |
@@ -101,7 +102,7 @@ Source: `06-component-standards.md §8`
 
 | Risk dimension | Details |
 |---|---|
-| Apps affected | 12+ apps (most via generic Table; DataTable adoption gradual) |
+| Apps affected | 6 apps are explicit `DataTable` candidates; broader `Table` primitives still apply to 12 apps |
 | Library mandate | `@tanstack/react-table` v8. Apps on v7 must upgrade |
 | Column definition | `ColumnDef<TData>` generic — no domain column schemas in shared package |
 | Pagination | Controlled or uncontrolled mode; `pageIndex`, `pageSize`, `onPageChange` |
