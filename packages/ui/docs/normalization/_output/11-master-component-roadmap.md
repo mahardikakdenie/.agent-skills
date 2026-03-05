@@ -1,0 +1,105 @@
+# 11 - Master Component Roadmap
+
+> Batch: Batch 3 - Migration Plan
+> Branch: `feat/ui`
+> Run date: 2026-03-06
+> Input authority: `03-migration-plan.md`, `00`-`06` normalization outputs only
+
+## 1. Planning Assumptions
+
+### Shared readiness prerequisites
+
+| Prerequisite | Why it must exist before shared rollout | Owner lane | Blocks |
+| --- | --- | --- | --- |
+| Semantic token preset in `@repo/config` | Shared components cannot depend on app-specific CSS variable drift | `feat/ui` foundation | Batch 3 and Batch 4 |
+| Missing shared dependencies installed and version-locked | `cmdk`, `date-fns`, `@tanstack/react-table`, `tailwindcss-animate`, `react-day-picker`, `vaul`, and required Radix packages gate multiple roadmap entries | `feat/ui` foundation | B4-B5.4 |
+| `@repo/ui` remains app-agnostic | No `next/*`, no business logic, no env coupling inside shared components | `feat/ui` packages/ui | All rows |
+| `02-api-conventions.md` is extended where required | Several roadmap items still need canonical API sections mirrored back into `02` before build | `feat/ui` design-system lane | All rows marked `02 amendment` |
+| `05` app readiness is honored downstream | Ready vs conditional app adoption must not be bypassed | Downstream app lanes | Batch 5 and Batch 6 |
+
+### Roadmap operating rules
+
+- `Box` is the only Batch 3 extension item in this rerun.
+- All non-`Box` shared items remain Batch 4 build scope, regardless of sub-wave sequencing.
+- Consumer demand is represented as normalized counts from `05-coverage-baseline.md`, not raw per-app export lists.
+- `RichTextEditor` remains visible for traceability but stays decision-gated.
+
+## 2. Batch 3 - Extend Existing
+
+| Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Box | 1 (Primitive) | `@radix-ui/react-slot` | `asChild`, `padding`, `container`, `centered` | none | Standard | `Box.Default`, `Box.Padding`, `Box.Container`, `Box.Centered` | Existing primitive; 27-app baseline footprint in `01` | S | Extend only the layout primitive contract; do not absorb app-specific page shells |
+
+## 3. Wave B4 - Core Foundation Build
+
+| Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Alert | 2 (Composite) | Tier 1 composition | `02` §Alert | none | Standard | `Alert.Default`, `Alert.Variants`, `Alert.WithIcon`, `Alert.Dismissible` | 22 apps; see `05` | S | Presentational feedback only |
+| Badge | 1 (Primitive) | none | `02` §Badge | none | Simple | `Badge.Default`, `Badge.Variants`, `Badge.Dot` | 11 apps; see `05` | XS | Small visual primitive only |
+| Button | 1 (Primitive) | `@radix-ui/react-slot` | `02` §Button | none | Standard | `Button.Default`, `Button.Variants`, `Button.Sizes`, `Button.Loading`, `Button.AsChild` | 23 apps; see `05` | M | First broad shared primitive wave |
+| Card | 2 (Composite) | Tier 1 composition | `02` §Card | none | Standard | `Card.Basic`, `Card.HeaderFooter`, `Card.Interactive` | 12 apps; see `05` | S | Structural card only |
+| Checkbox | 1 (Primitive) | `@radix-ui/react-checkbox` | `02` §Checkbox | `@radix-ui/react-checkbox` | Standard | `Checkbox.Default`, `Checkbox.Indeterminate`, `Checkbox.Disabled` | 20 apps; see `05` | S | Must cover invalid and indeterminate states |
+| ContentLoadingWrapper | 2 (Composite) | `Skeleton` composition | `02` §ContentLoadingWrapper | none | Standard | `ContentLoadingWrapper.Page`, `ContentLoadingWrapper.Inline`, `ContentLoadingWrapper.WithSkeleton` | 18 apps; see `05` | M | Shared loading layout only |
+| Dialog | 2 (Composite) | `@radix-ui/react-dialog` | `02` §Dialog | `@radix-ui/react-dialog` | Complex | `Dialog.Basic`, `Dialog.Scrollable`, `Dialog.Destructive`, `Dialog.AsyncClose`, `Dialog.A11y` | 26 apps; see `05` | L | Explicit a11y risk gate |
+| Drawer | 2 (Composite) | `vaul` | `02` §Drawer | `vaul` | Complex | `Drawer.Basic`, `Drawer.Sides`, `Drawer.Scrollable`, `Drawer.FormAction` | 10 apps; see `05` | M | Keep distinct from modal semantics |
+| Input | 1 (Primitive) | native `<input>` | `02` §Input | none | Standard | `Input.Default`, `Input.Types`, `Input.WithAffix`, `Input.Error`, `Input.Disabled` | 26 apps; see `05` | M | Core primitive for later waves |
+| Label | 1 (Primitive) | `@radix-ui/react-label` | `02` amendment: `htmlFor`, `required`, `disabled`, `tone` | `@radix-ui/react-label` | Simple | `Label.Default`, `Label.Required`, `Label.Disabled` | 10 apps; see `05` | XS | Needed before `Form` |
+| Pagination | 2 (Composite) | Tier 1 composition | `02` §Pagination | none | Standard | `Pagination.Basic`, `Pagination.Compact`, `Pagination.Disabled` | 16 apps; see `05` | S | UI navigation only |
+| RadioGroup | 1 (Primitive) | `@radix-ui/react-radio-group` | `02` §RadioGroup | `@radix-ui/react-radio-group` | Standard | `RadioGroup.Default`, `RadioGroup.Disabled`, `RadioGroup.Description` | 11 apps; see `05` | S | Align with `Form` naming |
+| Select | 1 (Primitive) | `@radix-ui/react-select` | `02` §Select | `@radix-ui/react-select` | Standard | `Select.Default`, `Select.Placeholder`, `Select.LongList`, `Select.Error`, `Select.Disabled` | 25 apps; see `05` | L | Static select only |
+| Skeleton | 1 (Primitive) | none | `02` §Skeleton | none | Simple | `Skeleton.Block`, `Skeleton.Text`, `Skeleton.Card` | 10 apps; see `05` | XS | Small composable primitive |
+| Spinner | 1 (Primitive) | none | `02` amendment: `size`, `label`, `inline`, `overlay` | none | Simple | `Spinner.Inline`, `Spinner.Overlay`, `Spinner.Sizes` | 8 apps; see `05` | XS | Separate from wrapper loading |
+| Switch | 1 (Primitive) | `@radix-ui/react-switch` | `02` §Switch | `@radix-ui/react-switch` | Standard | `Switch.Default`, `Switch.Disabled`, `Switch.Description` | 9 apps; see `05` | XS | Toggle primitive only |
+| Table | 1 (Primitive) | native `<table>` | `02` §Table | none | Standard | `Table.Basic`, `Table.Dense`, `Table.Empty`, `Table.Responsive` | 12 apps; see `05` | S | Foundation for `DataTable` |
+| Tabs | 2 (Composite) | `@radix-ui/react-tabs` | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation` | `@radix-ui/react-tabs` | Standard | `Tabs.Basic`, `Tabs.Disabled`, `Tabs.Scrollable` | 13 apps; see `05` | S | Route sync stays local |
+| Textarea | 1 (Primitive) | native `<textarea>` | `02` §Textarea | none | Standard | `Textarea.Default`, `Textarea.Resize`, `Textarea.Error`, `Textarea.Disabled` | 18 apps; see `05` | S | Plain-text multiline input only |
+
+## 4. Wave B5.1 - Date and Overlay Normalization
+
+| Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Breadcrumb | 2 (Composite) | Tier 1 composition | `02` amendment: `items[]`, `separator`, `currentLabel` | none | Standard | `Breadcrumb.Basic`, `Breadcrumb.Truncated`, `Breadcrumb.WithCurrent` | 12 apps; see `05` | S | Shared shell only |
+| Calendar | 2 (Composite) | `react-day-picker` | `02` §Calendar | `react-day-picker`, `date-fns` | Standard | `Calendar.Single`, `Calendar.DisabledDates`, `Calendar.RangePreview` | 9 apps; see `05` | M | Build before picker wrappers |
+| DatePicker | 2 (Composite) | `Calendar` + `Popover` | `02` §DatePicker | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DatePicker.Basic`, `DatePicker.WithMinMax`, `DatePicker.Invalid`, `DatePicker.FormField` | 22 apps; see `05` | L | High-demand date control |
+| DropdownMenu | 2 (Composite) | `@radix-ui/react-dropdown-menu` | `02` amendment: `items`, `align`, `side`, `onAction` | `@radix-ui/react-dropdown-menu` | Complex | `DropdownMenu.Basic`, `DropdownMenu.CheckboxItem`, `DropdownMenu.Submenu` | 12 apps; see `05` | M | Shared action menu only |
+| Form | 2 (Composite) | `react-hook-form` + `Label` + `Input` | `02` §Form | none | Complex | `Form.Field`, `Form.Error`, `Form.Description`, `Form.ArrayField` | 9 apps; see `05` | M | Shared field scaffolding only |
+| Popover | 2 (Composite) | `@radix-ui/react-popover` | `02` §Popover | `@radix-ui/react-popover` | Standard | `Popover.Basic`, `Popover.Form`, `Popover.Controlled` | 9 apps; see `05` | S | Overlay foundation dependency |
+| Tooltip | 2 (Composite) | `@radix-ui/react-tooltip` | `02` §Tooltip | `@radix-ui/react-tooltip` | Standard | `Tooltip.Basic`, `Tooltip.SideVariants`, `Tooltip.LongContent` | 9 apps; see `05` | XS | Small a11y-sensitive surface |
+
+## 5. Wave B5.2 - Advanced Input and Data Display
+
+| Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Avatar | 1 (Primitive) | `@radix-ui/react-avatar` | `02` amendment: `src`, `alt`, `fallback`, `size` | `@radix-ui/react-avatar` | Simple | `Avatar.Image`, `Avatar.Fallback`, `Avatar.Sizes` | 6 apps; see `05` | XS | Visual identity primitive only |
+| Combobox | 2 (Composite) | `Command` + `Popover` | `02` §Combobox | `cmdk`, `@radix-ui/react-popover` | Complex | `Combobox.Basic`, `Combobox.Search`, `Combobox.Empty`, `Combobox.Async` | 8 apps; see `05` | L | Searchable selection contract |
+| DataTable | 2 (Composite) | `Table` + `@tanstack/react-table` v8 | `02` §DataTable | `@tanstack/react-table` | Complex | `DataTable.Basic`, `DataTable.Sorting`, `DataTable.Filtering`, `DataTable.Empty`, `DataTable.Pagination` | 6 apps; see `05` | XL | Highest-risk data-display item |
+| DateRangePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `presets`, `minDate`, `maxDate` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateRangePicker.Basic`, `DateRangePicker.Presets`, `DateRangePicker.Invalid` | 7 apps; see `05` | L | Start after `DatePicker` stabilizes |
+| FileUpload | 2 (Composite) | Tier 1 composition | `02` §FileUpload | none | Standard | `FileUpload.Basic`, `FileUpload.Multiple`, `FileUpload.Error`, `FileUpload.Disabled` | 12 apps; see `05` | M | Upload transport stays local |
+| Image | 2 (Composite) | native `img` + fallback composition | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | optional `@radix-ui/react-avatar` fallback pattern | Standard | `Image.Basic`, `Image.Fallback`, `Image.AspectRatio` | 13 apps; see `05` | M | No `next/image` coupling |
+| NavigationMenu | 2 (Composite) | `@radix-ui/react-navigation-menu` | `02` amendment: `items`, `orientation`, `collapsed`, `onNavigate` | `@radix-ui/react-navigation-menu` | Complex | `NavigationMenu.Basic`, `NavigationMenu.Nested`, `NavigationMenu.MobileFallback` | 8 apps; see `05` | M | Route trees stay local |
+| OtpInput | 2 (Composite) | Tier 1 composition | `02` §OtpInput | none | Standard | `OtpInput.Basic`, `OtpInput.Error`, `OtpInput.Disabled` | 6 apps; see `05` | S | Segmented input contract |
+| PageHeader | 2 (Composite) | Tier 1 composition | `02` amendment: `title`, `description`, `actions`, `meta` | none | Standard | `PageHeader.Basic`, `PageHeader.WithActions`, `PageHeader.WithMetadata` | 8 apps; see `05` | S | Structural page header only |
+
+## 6. Wave B5.3 - Remaining Medium-Demand Components
+
+| Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Accordion | 2 (Composite) | `@radix-ui/react-accordion` | `02` amendment: `type`, `collapsible`, `value`, `onValueChange` | `@radix-ui/react-accordion` | Complex | `Accordion.Basic`, `Accordion.Multiple`, `Accordion.Disabled` | 4 apps; see `05` | M | Lower-demand compound component |
+| Command | 2 (Composite) | `cmdk` | `02` amendment: `items`, `value`, `onValueChange`, `emptyState` | `cmdk` | Complex | `Command.Basic`, `Command.Empty`, `Command.Groups`, `Command.Shortcuts` | 5 apps; see `05` | M | Shared command surface |
+| DateTimePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `minDateTime`, `maxDateTime`, `timezone` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateTimePicker.Basic`, `DateTimePicker.Timezone`, `DateTimePicker.Invalid` | 5 apps; see `05` | L | Depends on settled date semantics |
+
+## 7. Wave B5.4 - Long Tail and Decision-Gated Work
+
+| Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Menubar | 2 (Composite) | `@radix-ui/react-menubar` | `02` amendment: `items`, `onAction`, `disabled` | `@radix-ui/react-menubar` | Complex | `Menubar.Basic`, `Menubar.Shortcuts`, `Menubar.Disabled` | 4 apps; see `05` | M | Long-tail admin demand |
+| MonthPicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `minMonth`, `maxMonth` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `MonthPicker.Basic`, `MonthPicker.MinMax` | 3 apps; see `05` | M | Distinct month-only contract |
+| Timeline | 2 (Composite) | Tier 1 composition | `02` amendment: `items`, `orientation`, `statusTone` | none | Standard | `Timeline.Basic`, `Timeline.Dense`, `Timeline.Status` | 3 apps; see `05` | S | Presentation-only timeline |
+| RichTextEditor | 2 (Composite) | external editor engine (TBD) | Decision-gated API: `value`, `onChange`, `toolbar`, `readonly`, `sanitize` | editor engine TBD, sanitization tooling TBD | Complex | `RichTextEditor.Basic`, `RichTextEditor.Toolbar`, `RichTextEditor.Sanitization`, `RichTextEditor.Readonly` | 1 app; see `05` | XL | Do not start until engine and security review are approved |
+
+## 8. Roadmap Operating Notes
+
+- This roadmap is shared-program planning only; it does not re-merge raw app audit exports.
+- `consumer apps` in this rerun means normalized demand counts from `05`, not explicit app-name lists.
+- Any API marked `02 amendment` must be mirrored back into `02-api-conventions.md` before implementation starts.
+- `RichTextEditor` is visible for completeness but remains outside the initial critical path.
