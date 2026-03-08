@@ -12,8 +12,8 @@
 | Package | Current state | Batch 2 ruling |
 |---|---|---|
 | `@repo/config` | Exports `tailwind.css` with brand-scale `@theme` colors and icon utilities only | This is not yet the semantic CSS-variable preset required by shared components |
-| `@repo/helper` | `index.ts` is empty | The target foundation expects `@repo/helper` to be the single `cn()` source for both apps and `packages/ui`, but that export does not exist yet |
-| `@repo/ui` | Does not yet depend on `@repo/helper` for `cn()` | Shared components cannot standardize on the single-source helper path until the dependency boundary is updated |
+| `@repo/helper` | Root `index.ts` is now a barrel and `src/cn.ts` contains the canonical implementation | Keep `@repo/helper` as the single `cn()` source for both apps and `packages/ui`, while scaling future helpers through modular `src/*` files |
+| `@repo/ui` | Depends on `@repo/helper` for `cn()` | Shared components should keep consuming the package export path while `@repo/helper` evolves internally through its own module structure |
 
 Operational meaning:
 - The token contract below is the locked target state for Batch 3 onward.
@@ -205,13 +205,17 @@ Source: `06-component-standards.md` Section 9
 ### `cn()` Utility (canonical)
 
 ```ts
-// packages/helper/index.ts
+// packages/helper/src/cn.ts
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+// packages/helper/index.ts
+export { cn } from './src/cn';
+export type { ClassValue } from './src/cn';
 ```
 
 Import rules:
@@ -221,8 +225,8 @@ Import rules:
 - Do not keep a second private `cn()` implementation inside `@repo/ui`
 
 Current-state note:
-- `@repo/helper` still does not export the shared `cn()` helper.
-- `@repo/ui` still needs its import path adjusted to consume the shared helper.
+- `@repo/helper` exports `cn()` from the package root, while the implementation itself lives in `src/cn.ts`.
+- `@repo/ui` already consumes the shared helper through the stable package import path.
 - `tailwind-merge` should live with the canonical helper implementation in `@repo/helper`.
 
 ### Class Composition Rules
@@ -264,8 +268,8 @@ Current-state note:
 | Item | Current state | Blocks | Required action |
 |---|---|---|---|
 | Semantic preset in `@repo/config` | missing | Any shared component that depends on semantic CSS variables | Add exported semantic token preset |
-| `@repo/helper` public `cn()` export | missing | Single canonical class merge helper for apps and `packages/ui` | Implement the export and standardize all imports on `@repo/helper` |
-| `tailwind-merge` | missing from `@repo/helper` | Canonical merge behavior for the shared `cn()` utility | Add dependency in `@repo/helper` before the workspace standardizes on the single helper path |
+| `@repo/helper` public `cn()` export | implemented through a root barrel that re-exports `src/cn.ts` | Single canonical class merge helper for apps and `packages/ui` | Keep all consumers on `@repo/helper` while growing internals through modular helper files |
+| `tailwind-merge` | installed in `@repo/helper` | Canonical merge behavior for the shared `cn()` utility | Keep it colocated with the canonical helper implementation inside `@repo/helper` |
 | `tailwindcss-animate` | missing from `@repo/ui` | Documented motion patterns for overlays and menus | Add dependency before animated components ship |
 
 ---
