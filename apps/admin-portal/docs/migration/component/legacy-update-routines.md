@@ -66,7 +66,7 @@ flowchart TD
     G --> F
     F --> H{New components in legacy?}
     H -->|No — config/style/asset changes only| I[Routine 4.3: Apply non-component adjustments]
-    H -->|Yes — new component files| J{Already classified in audit.md?}
+    H -->|Yes — new component files| J{Already classified in _audit-report.md?}
     J -->|KEEP_APP_LOCAL| K[Routine 4.4: Accept theirs, keep app-local]
     J -->|Candidate for @repo/ui| L[Routine 5: packages/ui Intake]
     J -->|Unknown| M[Classify now — check 01-app-audit.md criteria]
@@ -140,10 +140,8 @@ Stop. Do NOT force-push or guess resolutions. Proceed to **Routine 3**.
 > [!IMPORTANT]
 > Run this **immediately after merge** (whether or not there were conflicts), before any further code changes. This catches merge-introduced build/type breakages early.
 
-```bash
-# Must pass before proceeding to Routine 3 or 4
-pnpm --filter <APP_PACKAGE_NAME> check-types
-pnpm --filter <APP_PACKAGE_NAME> build
+```text
+Use the exact app typecheck and build commands defined in `verification-gate.md` §1 and §3 before proceeding to Routine 3 or 4.
 ```
 
 **If MHC fails:**
@@ -161,10 +159,10 @@ For each conflicted file, assign exactly one category:
 
 | Category                   | Indicators                                                                                               | Resolution Strategy                                                                                                                                                                |
 | -------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Migrated component**     | In `migration-log.md` as DONE; imports use `@repo/ui`                                                    | `git checkout --ours <file>`                                                                                                                                                       |
-| **MIGRATE_AFTER_SPLIT**    | In `_audit-report.md` with `Classification: MIGRATE_AFTER_SPLIT`; Batch 1.5 not yet run                  | `git checkout --theirs <file>` — treat as non-migrated. **Do NOT remove the `MIGRATE_AFTER_SPLIT` flag from audit.md.** Re-run SoC evaluation in Routine 4 after merge stabilizes. |
-| **Non-migrated component** | Not in migration-log.md; still uses local imports or old service patterns                                | `git checkout --theirs <file>`                                                                                                                                                     |
-| **In-progress batch item** | In migration-log.md as IN PROGRESS                                                                       | Manually merge — keep ours base, apply legacy additions only                                                                                                                       |
+| **Migrated component**     | In `_output/_migration-log.md` as DONE; imports use `@repo/ui`                                                    | `git checkout --ours <file>`                                                                                                                                                       |
+| **MIGRATE_AFTER_SPLIT**    | In `_audit-report.md` with `Classification: MIGRATE_AFTER_SPLIT`; Batch 1.5 not yet run                  | `git checkout --theirs <file>` — treat as non-migrated. **Do NOT remove the `MIGRATE_AFTER_SPLIT` flag from `_audit-report.md`.** Re-run SoC evaluation in Routine 4 after merge stabilizes. |
+| **Non-migrated component** | Not in _output/_migration-log.md; still uses local imports or old service patterns                                | `git checkout --theirs <file>`                                                                                                                                                     |
+| **In-progress batch item** | In _output/_migration-log.md as IN PROGRESS                                                                       | Manually merge — keep ours base, apply legacy additions only                                                                                                                       |
 | **Shared infrastructure**  | `packages/config/**`, `packages/helper/**`, `packages/typescript-config/**`, `packages/eslint-config/**` | Manually merge both — prefer ours for migration-specific additions                                                                                                                 |
 | **App configuration**      | `package.json`, `tsconfig.json`, `tailwind.config.*`, `.env.example`, `vite.config.*`                    | Manually merge — apply new deps/settings, keep migration overrides                                                                                                                 |
 | **Static assets**          | Images, fonts, icons in `public/` or `assets/`                                                           | `git checkout --theirs <file>` unless we intentionally replaced                                                                                                                    |
@@ -173,7 +171,7 @@ For each conflicted file, assign exactly one category:
 ### Decision Flow
 
 ```
-Is the file listed in migration-log.md?
+Is the file listed in _output/_migration-log.md?
   YES, Status=DONE     → OUR version (we own this file now)
   YES, Status=IN PROG  → Manual merge
   NO                   → Check if file is in packages/* → Manual merge
@@ -294,15 +292,15 @@ Is it purely visual (no API calls, no domain types)?
 **Option A — Extends an existing @repo/ui component** (EXTEND_EXISTING):
 
 1. Note the missing variant/prop required
-2. Add to `spec-input.md` — document the API gap
+2. Add to `_output/_spec-input.md` — document the API gap
 3. Open packages/ui work on `feat/ui` following `04-build-shared-components.md` Batch 3 process
 4. On `migrate-app/<APP_NAME>`: keep the legacy file temporarily until packages/ui has the extension
 5. Once packages/ui ships the extension → follow Batch 3 migration steps in `05-app-migration.md`
 
 **Option B — Genuinely new component** (NEW_SHARED_COMPONENT):
 
-1. Add to `spec-input.md` — document visual spec, variants, states, accessibility requirements
-2. Add to `component-backlog.csv` with batch = 4
+1. Add to `_output/_spec-input.md` — document visual spec, variants, states, accessibility requirements
+2. Add to `_component-backlog.csv` with batch = 4
 3. Flag for `feat/ui` packages/ui intake (SDD lifecycle in `04-build-shared-components.md`)
 4. Keep legacy file in app until packages/ui ships it
 5. Once packages/ui ships → migrate via Batch 4 steps in `05-app-migration.md`
@@ -314,7 +312,7 @@ Add to `legacy-update-YYYYMMDD-HHMMSS.md`:
 - Component name, file path
 - Classification decision and rationale
 - Expected packages/ui batch (3 or 4)
-- Whether spec-input.md was updated
+- Whether _output/_spec-input.md was updated
 
 ---
 
@@ -326,20 +324,17 @@ Add to `legacy-update-YYYYMMDD-HHMMSS.md`:
 > Verification commands are defined per-app at `apps/<APP_NAME>/docs/migration/verification-gate.md`.
 > Always read that file first to get the exact commands for this app.
 
-```bash
-# On migrate-app/<APP_NAME> — use exact commands from verification-gate.md
-pnpm --filter <APP_PACKAGE_NAME> check-types
-pnpm --filter <APP_PACKAGE_NAME> lint
-pnpm --filter <APP_PACKAGE_NAME> build
+```text
+On `migrate-app/<APP_NAME>`, use the exact app typecheck, lint, and build commands defined in `verification-gate.md` §1-§3.
 
 # If Batch 3/4 items exist in packages/ui
 pnpm --filter @repo/ui build
-pnpm storybook:build   # verify no story regressions
+pnpm --filter @repo/ui build-storybook   # verify no story regressions
 ```
 
 ### 6.2 Verify Migration-Locked Files
 
-For every component in `migration-log.md` with status DONE:
+For every component in `_output/_migration-log.md` with status DONE:
 
 - [ ] Import still resolves to `@repo/ui` (not accidentally reverted to local)
 - [ ] No local duplicate re-appeared from legacy merge
@@ -355,17 +350,20 @@ For every component in `migration-log.md` with status DONE:
 
 **Migrated component reverted (critical):**
 
-- `git checkout HEAD <file>` to restore our migration
+- `git restore --source=HEAD -- <file>` to restore our migration
 - Re-run verification
 
 **Critical Failure (cannot recover without risk):**
 
 ```bash
-# Rollback migrate-app/<APP_NAME> to pre-merge state
-git reset --hard <commit-before-merge>
-git push -f origin migrate-app/<APP_NAME>
+# Create a safety branch before rollback
+git branch backup/migrate-app-<APP_NAME>-pre-legacy-update
+
+# Revert the offending commit or merge commit on migrate-app/<APP_NAME>
+git revert <commit-or-merge-commit>
+
 # Document rollback in legacy-update-YYYYMMDD-HHMMSS.md
-# Notify team — plan alternative approach
+# Re-run the verification gate and coordinate manually if risk remains
 ```
 
 ### 6.4 Complete the Update Log
@@ -386,9 +384,9 @@ Fill in `legacy-update-YYYYMMDD-HHMMSS.md`:
 - [ ] Legacy repo has new commits to pull
 - [ ] Working tree is clean (`git status` clear)
 - [ ] Current batch step is at a safe stopping point (not mid-component)
-- [ ] `migration-log.md` is up to date (know which components have Status=DONE)
+- [ ] `_output/_migration-log.md` is up to date (know which components have Status=DONE)
 - [ ] Git subtree remote configured correctly
-- [ ] `audit.md` accessible for classification decisions
+- [ ] `_audit-report.md` accessible for classification decisions
 
 ---
 
@@ -440,8 +438,8 @@ Create a separate file per update at:
 
 | Component | Type                 | Action                                           |
 | --------- | -------------------- | ------------------------------------------------ |
-| <name>    | EXTEND_EXISTING      | Added to spec-input.md, Batch 3 queued           |
-| <name>    | NEW_SHARED_COMPONENT | Added to spec-input.md + backlog, Batch 4 queued |
+| <name>    | EXTEND_EXISTING      | Added to _output/_spec-input.md, Batch 3 queued           |
+| <name>    | NEW_SHARED_COMPONENT | Added to _output/_spec-input.md + _component-backlog.csv, Batch 4 queued |
 
 ## Verification Results
 

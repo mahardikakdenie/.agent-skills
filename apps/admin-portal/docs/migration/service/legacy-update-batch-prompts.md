@@ -18,7 +18,7 @@
 
 ## Key Principle
 
-**`integrate-app/*` is 1:1 with legacy repo** (read-only, never modified). Subtree pull to `integrate-app/*` will NEVER have conflicts. Conflicts only occur when merging `integrate-app/*` to `migrate-app/*`.
+**`integrate/<APP_NAME>` is 1:1 with the legacy repo** (read-only, never modified). Subtree pull to `integrate/<APP_NAME>` will NEVER have conflicts. Conflicts only occur when merging `integrate/<APP_NAME>` to `migrate-app/<APP_NAME>`.
 
 ---
 
@@ -29,11 +29,11 @@
 >
 > | This file | Main refactor | They are different |
 > | --------- | ------------- | ------------------ |
-> | Batch 1 = Subtree Pull & Merge | Batch 1 = Foundation setup | ✅ Different scope |
-> | Batch 2 = Conflict Resolution | Batch 2 = API client/setup | ✅ Different scope |
-> | Batch 3 = Analyze Changes | Batch 3 = Audit services | ✅ Different scope |
+> | Batch 1 = Subtree Pull & Merge | Batch 1 = Audit | ✅ Different scope |
+> | Batch 2 = Conflict Resolution | Batch 2 = Plan | ✅ Different scope |
+> | Batch 3 = Analyze Changes | Batch 3 = Foundation | ✅ Different scope |
 > | Batch 4 = Apply Adjustments | Batch 4 = Implement API layer | ✅ Different scope |
-> | Batch 5 = New Service | Batch 5 = Hooks | ✅ Different scope |
+> | Batch 5 = New Service | Batch 5 = Query Keys + Hooks | ✅ Different scope |
 > | Batch 6 = Verify & Document | Batch 6 = Component migration | ✅ Different scope |
 >
 > When using these in AI-assisted workflows alongside `refactor-batch-prompts.md`, always prefix with "Legacy Update" to avoid confusion.
@@ -64,7 +64,7 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routines 1-2:
 1. Routine 1: Subtree pull to integrate/<APP_NAME>
    - Switch to integrate/<APP_NAME>
    - Run: git subtree pull --prefix=<SUBTREE_PREFIX> <REMOTE_NAME> <REMOTE_BRANCH>
-   - Expected: Clean merge (no conflicts, since integrate-app/* is 1:1 with legacy)
+   - Expected: Clean merge (no conflicts, since integrate/<APP_NAME> is 1:1 with legacy)
    - Push integrate/<APP_NAME>
 
 2. Routine 2: Merge to migrate-app/<APP_NAME>
@@ -72,8 +72,8 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routines 1-2:
    - Merge integrate/<APP_NAME>
    - **Immediately run Merge Health Check (MHC):**
      ```
-     pnpm --filter <APP_PACKAGE_NAME> check-types
-     pnpm --filter <APP_PACKAGE_NAME> build
+     Use the exact app typecheck command from `<APP_PATH>/docs/migration/verification-gate.md` §1
+     Use the exact app build command from `<APP_PATH>/docs/migration/verification-gate.md` §3
      ```
      - If MHC fails: stop, fix narrowly, re-run MHC before continuing
      - If MHC passes:
@@ -226,7 +226,7 @@ For each affected service:
    - Check migrated components
 
 3. If non-service changes:
-   - Install new dependencies (pnpm install <package>)
+   - Install new dependencies with the appropriate pnpm add command for the target package (for example: `pnpm --filter <APP_PACKAGE> add <package>` or `pnpm --filter <APP_PACKAGE> add -D <package>`)
    - Apply config changes
    - Apply business logic changes
 
@@ -259,12 +259,12 @@ This batch creates the API layer and hooks (Phase 4A + 4B) for the new service.
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Before Batch 6-7** (old services still exist)                  | → Skip to **Batch 6** (verification only)<br/>Components still use old services, no migration needed yet                                    |
 | **After Batch 6** (component migration done, but before cleanup) | → **Batch 5A** (migrate affected components)<br/>→ **Batch 5B** (cleanup old service if exists)<br/>→ **Batch 6** (verification)            |
-| **After Batch 7** (cleanup complete, no old services)            | → **Batch 5A** (migrate affected components)<br/>→ **Batch 5B** (cleanup if old service added from legacy)<br/>→ **Batch 6** (verification) |
+| **After Batch 7** (cleanup complete, no old services)            | → **Batch 5** (create API + hooks first)<br/>→ **Batch 5A** (migrate affected components)<br/>→ **Batch 5B** (cleanup if old service added from legacy)<br/>→ **Batch 6** (verification) |
 
 **Decision Logic:**
 
 - Use **Batch 5 only** if components don't need the new service yet (before component migration phase)
-- Use **Batch 5 → 5A → 5B** if components need to use the new service immediately (after/during component migration)
+- Use **Batch 5 → 5A → 5B** if components need to use the new service immediately (after/during component migration, or after cleanup)
 
 ### Prompt
 
@@ -495,8 +495,9 @@ Follow <APP_PATH>/docs/migration/service/legacy-update-routines.md Routine 6:
    - If fix is safe and passes: continue to step 5
    - **If catastrophic failure (cannot fix safely):**
      * Rollback migrate-app/* branch:
-       git reset --hard <commit-before-legacy-update-merge>
-       git push -f origin migrate-app/<APP_NAME>
+       git branch backup/migrate-app-<APP_NAME>-pre-legacy-update
+       git revert <commit-or-merge-commit>
+       re-run the verification gate
      * Document rollback in legacy-update-YYYYMMDD-HHMMSS.md
      * Notify team and plan alternative approach
      * STOP - do not proceed

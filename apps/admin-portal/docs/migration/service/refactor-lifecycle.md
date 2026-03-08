@@ -133,10 +133,10 @@ flowchart TB
 **Step-by-Step Instructions:**
 
 1. **Identify verification commands:**
-   - Typecheck: `pnpm typecheck` or equivalent
-   - Build: `pnpm build` or equivalent
-   - Lint: `pnpm lint` or `N/A`
-   - Test: `pnpm test` or `N/A`
+   - Typecheck: exact command from `apps/<APP_NAME>/docs/migration/verification-gate.md` §1
+   - Build: exact command from `apps/<APP_NAME>/docs/migration/verification-gate.md` §3
+   - Lint: exact command from `apps/<APP_NAME>/docs/migration/verification-gate.md` §2 or `N/A`
+   - Test: use only if the app explicitly defines tests; otherwise mark `N/A`
    - Sanity: Define manual checks or automated E2E tests
 
 2. **Document covered routes/flows:**
@@ -734,10 +734,10 @@ Verification gates are **mandatory** at these points:
 
 For each gate, run **all** of these checks (per `verification-gate.md`):
 
-1. **Typecheck:** `pnpm typecheck` or equivalent
-2. **Build:** `pnpm build` or equivalent
-3. **Lint:** `pnpm lint` or `N/A`
-4. **Tests:** `pnpm test` or `N/A`
+1. **Typecheck:** exact command from `verification-gate.md` §1
+2. **Build:** exact command from `verification-gate.md` §3
+3. **Lint:** exact command from `verification-gate.md` §2 or `N/A`
+4. **Tests:** run only if the app explicitly defines tests; otherwise `N/A`
 5. **Sanity Check:** Manual or automated tests of critical flows
 6. **Console Errors:** Check browser console (should be zero on working pages)
 7. **Network Errors:** Check network tab (should match expected behavior)
@@ -818,12 +818,12 @@ flowchart TD
 **Rollback Procedure:**
 
 ```bash
-# Identify commit before phase started
+# Identify the commit(s) to undo
 git log --oneline
 
-# Rollback to safe state
-git reset --hard <commit-before-phase>
-git push -f origin migrate-app/<APP_NAME>
+# Preserve current state, then revert the specific phase commit(s)
+git branch backup/migrate-app-<APP_NAME>-pre-phase
+git revert <commit-or-merge-commit>
 
 # Document in task.md why rollback occurred
 ```
@@ -1022,12 +1022,16 @@ See `legacy-update-routines.md` for detailed Routine 5A and 5B procedures.
 **How to rollback:**
 
 ```bash
-# Identify safe commit
+# Identify the offending commit or merge commit
 git log --oneline
 
-# Rollback migrate-app/* branch
-git reset --hard <commit-before-phase>
-git push -f origin migrate-app/<APP_NAME>
+# Create a safety branch before rollback
+git branch backup/refactor-<APP_NAME>-pre-rollback
+
+# Revert on migrate-app/<APP_NAME>
+git revert <commit-or-merge-commit>
+
+# Re-run the verification gate
 ```
 
 **After rollback:**
@@ -1077,28 +1081,24 @@ git push -f origin migrate-app/<APP_NAME>
 
 **Verification:**
 
-```bash
-pnpm typecheck
-pnpm build
-pnpm lint
-pnpm test
-pnpm dev  # manual sanity check
+```text
+Use the exact app commands defined in verification-gate.md §1-§5.
 ```
 
 **Git (legacy updates):**
 
 ```bash
-git checkout integrate/<app-name>
-git subtree pull --prefix=apps/<app-name> <remote> <branch>
+git checkout integrate/<APP_NAME>
+git subtree pull --prefix=apps/<APP_NAME> <remote> <branch>
 git checkout migrate-app/<APP_NAME>
-git merge integrate/<app-name>
+git merge integrate/<APP_NAME>
 ```
 
 **Rollback:**
 
 ```bash
-git reset --hard <safe-commit>
-git push -f origin migrate-app/<APP_NAME>
+git revert <commit-or-merge-commit>
+re-run the verification gate
 ```
 
 ### Document Cross-Reference

@@ -222,14 +222,12 @@ The app is a first-class consumer, not a pass-through.
 
 ```bash
 # Only after Step 2 confirms zero legitimate usage:
-pnpm --filter <APP_PACKAGE_NAME> remove <orphan-dep>
+pnpm --filter <APP_PACKAGE> remove <orphan-dep>
 
-# Verify immediately:
-pnpm --filter <APP_PACKAGE_NAME> check-types   # must pass
-pnpm --filter <APP_PACKAGE_NAME> build         # must pass
+# Verify immediately using the exact app typecheck/build commands from `verification-gate.md` §1 and §3.
 
 # Confirm the dep still resolves transitively if it's in a workspace package:
-pnpm --filter <APP_PACKAGE_NAME> list <removed-dep>
+pnpm --filter <APP_PACKAGE> list <removed-dep>
 ```
 
 ### Packages Always Kept at App Level (Never Remove)
@@ -342,9 +340,9 @@ A `packages/ui` component with zero usages across ALL currently migrated apps is
 
 ## Verification Gate (ALL must pass)
 
-- App typecheck: `pnpm check-types --filter=<app-name>`
-- App lint: `pnpm lint --filter=<app-name>`
-- App build: `pnpm build --filter=<app-name>`
+- App typecheck: use the exact command from `verification-gate.md` §1
+- App lint: use the exact command from `verification-gate.md` §2
+- App build: use the exact command from `verification-gate.md` §3
 - Smoke checks on critical flows (parity-checklist)
 - No new console/runtime errors
 - `jq '.dependencies | keys[]' apps/<APP>/package.json` — confirm removed deps are gone

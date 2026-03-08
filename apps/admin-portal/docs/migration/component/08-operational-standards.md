@@ -208,7 +208,7 @@ Any team should be able to follow this without agent assistance:
 
 1. **Setup** — add `@repo/ui` to app's package.json, configure globals.css tokens
 2. **Phase 01 audit** — run per-app baseline audit (link to [01-app-audit.md](./01-app-audit.md))
-3. **Contribute baseline** — how to hand off per-app-baseline-summary.md to feat/ui
+3. **Contribute baseline** — how to hand off `_per-app-baseline-summary.md` and the app `_output/` folder to `feat/ui`
 4. **Wait for master plan** — what happens on feat/ui (reference Phase 02-03)
 5. **Execute migration** — follow batch plan (link to [05-app-migration.md](./05-app-migration.md))
 6. **Verification** — per-batch verification gate checklist
@@ -309,9 +309,9 @@ To reduce human error, the Platform Team will implement `pnpm migrate:verify`. T
 interface VerificationCheck {
   phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   checks: [
-    { type: 'file-existence', paths: ['docs/migration/component/_output/audit.md'] },
+    { type: 'file-existence', paths: ['docs/migration/component/_output/_audit-report.md'] },
     { type: 'content-grep', pattern: 'TODO', forbidden: true },
-    { type: 'type-check', command: 'pnpm check-types' },
+    { type: 'type-check', command: '<verification-gate.md §1 typecheck command>' },
     { type: 'visual-diff', command: 'pnpm test:visual' } // Phase 2
   ]
 }

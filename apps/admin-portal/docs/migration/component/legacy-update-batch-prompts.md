@@ -85,8 +85,7 @@ Follow <APP_PATH>/docs/migration/component/legacy-update-routines.md Routines 1 
 1. Switch to migrate-app/<APP_NAME>
 2. Run: git merge integrate/<APP_NAME>
 3. **Immediately run Merge Health Check (MHC):**
-   pnpm --filter <APP_PACKAGE> check-types
-   pnpm --filter <APP_PACKAGE> build
+   Use the exact app typecheck and build commands defined in `verification-gate.md` §1 and §3.
    - If MHC fails: stop. Fix narrowly (conflicted files only). Re-run MHC before continuing. Do NOT proceed to Batch 2 or 3 yet.
    - If MHC passes: continue below
 4. If NO conflicts: push migrate-app/<APP_NAME> and report "Ready for Batch 3"
@@ -113,20 +112,20 @@ Resolve merge conflicts on migrate-app/<APP_NAME> from merging integrate/<APP_NA
 
 Follow <APP_PATH>/docs/migration/component/legacy-update-routines.md Routine 3:
 
-**Categorize each conflicted file using migration-log.md:**
+**Categorize each conflicted file using `_output/_migration-log.md`:**
 
 | Category | Indicator | Resolution |
 |---|---|---|
-| Migrated component | In migration-log.md with Status=DONE; imports use @repo/ui | git checkout --ours <file> |
-| MIGRATE_AFTER_SPLIT | In _audit-report.md with Classification=MIGRATE_AFTER_SPLIT; Batch 1.5 not yet run | git checkout --theirs <file> (treat as non-migrated). Do NOT remove MIGRATE_AFTER_SPLIT flag from audit.md. Re-evaluate SoC in Batch 3 after merge stabilizes. |
-| Non-migrated component | Not in migration-log.md; still uses local imports | git checkout --theirs <file> |
-| In-progress batch item | In migration-log.md with Status=IN PROGRESS | Manual merge — keep our base, apply legacy additions |
+| Migrated component | In `_output/_migration-log.md` with Status=DONE; imports use @repo/ui | git checkout --ours <file> |
+| MIGRATE_AFTER_SPLIT | In `_audit-report.md` with Classification=MIGRATE_AFTER_SPLIT; Batch 1.5 not yet run | git checkout --theirs <file> (treat as non-migrated). Do NOT remove the MIGRATE_AFTER_SPLIT flag from `_audit-report.md`. Re-evaluate SoC in Batch 3 after merge stabilizes. |
+| Non-migrated component | Not in `_output/_migration-log.md`; still uses local imports | git checkout --theirs <file> |
+| In-progress batch item | In `_output/_migration-log.md` with Status=IN PROGRESS | Manual merge - keep our base, apply legacy additions |
 | Shared infrastructure | packages/config/**, packages/helper/**, tsconfig | Manual merge — prefer ours, apply new additions |
 | App configuration | package.json, tailwind.config.*, tsconfig.json | Manual merge — apply new deps/settings, keep migration overrides |
 | Static assets | public/**, assets/** | git checkout --theirs unless we intentionally replaced |
 
 **Steps:**
-1. Read <APP_PATH>/docs/migration/component/migration-log.md to know which components are DONE
+1. Read <APP_PATH>/docs/migration/component/_output/_migration-log.md to know which components are DONE
 2. For each conflicted file, assign exactly one category
 3. Apply the correct resolution strategy
 4. After all conflicts resolved:
@@ -200,7 +199,7 @@ Per 06-component-standards.md §6.2:
 
 **Cross-reference:**
 - Check <APP_PATH>/docs/migration/component/01-app-audit.md for existing classifications
-- Check <APP_PATH>/docs/migration/component/migration-log.md for batch status
+- Check <APP_PATH>/docs/migration/component/_output/_migration-log.md for batch status
 
 Report all findings and wait for confirmation before proceeding.
 ```
@@ -240,7 +239,7 @@ Context from Batch 3:
 
 3. tsconfig / path alias changes:
    - Apply changes
-   - Run: pnpm --filter <APP_PACKAGE> check-types to verify paths still resolve
+   - Run the exact app typecheck command from `verification-gate.md` §1 to verify paths still resolve
 
 4. Global CSS changes:
    - Apply new styles
@@ -249,10 +248,10 @@ Context from Batch 3:
 5. New KEEP_APP_LOCAL components (if any):
    - Confirm conflict was already resolved with --theirs in Batch 2
    - Add entry to <APP_PATH>/docs/migration/component/01-app-audit.md if not present
-   - Add row to component-backlog.csv with batch=N/A
+   - Add row to _component-backlog.csv with batch=N/A
 
 Rules:
-- Do NOT modify components classified as DONE in migration-log.md
+- Do NOT modify components classified as DONE in `_output/_migration-log.md`
 - Do NOT reintroduce local copies of migrated components
 - Keep changes minimal and localized
 - **Backward-compatibility contract (mandatory for all changes in this batch):**
@@ -289,7 +288,7 @@ Context from Batch 3:
 
 **For EXTEND_EXISTING:**
 1. Identify which existing @repo/ui component needs the extension
-2. Document the API gap in <APP_PATH>/docs/migration/component/spec-input.md:
+2. Document the API gap in <APP_PATH>/docs/migration/component/_output/_spec-input.md:
    ### <ComponentName>
    - API Intent: [what new props/variants are needed in @repo/ui]
    - Source: <source-path in legacy>
@@ -301,7 +300,7 @@ Context from Batch 3:
 5. Proceed to Batch 6
 
 **For NEW_SHARED_COMPONENT:**
-1. Document in <APP_PATH>/docs/migration/component/spec-input.md:
+1. Document in <APP_PATH>/docs/migration/component/_output/_spec-input.md:
    ### <ComponentName>
    - API Intent: [full prop API the app needs]
    - Visual spec: [key visual requirements]
@@ -309,7 +308,7 @@ Context from Batch 3:
    - States needed: [default, hover, focus, disabled, loading, error — as applicable]
    - Accessibility: [ARIA role, keyboard requirements]
    - Consumer usage example: <ComponentName variant="..." />
-2. Add row to component-backlog.csv:
+2. Add row to _component-backlog.csv:
    <APP_NAME>,<ComponentName>,NEW_SHARED_COMPONENT,<P0-P3>,<HIGH/MED/LOW>,<source-path>,None,<effort>,<parity-risk>
 3. Keep the legacy local file on migrate-app/<APP_NAME> — do NOT delete it yet
    (it will be deleted when packages/ui ships it and Batch 4 migration runs)
@@ -333,7 +332,7 @@ Use **only** after Batch 5/6 (cleanup done, local copies deleted) when a new pac
 ### When to Use
 
 - After Batch 5 queues a NEW_SHARED_COMPONENT intake
-- After Batch 6 cleanup is complete (migration-log.md shows all items DONE)
+- After Batch 6 cleanup is complete (`_output/_migration-log.md` shows all items DONE)
 - When the newly built @repo/ui component is now available in `packages/ui/src/index.ts`
 
 ### Prompt
@@ -357,17 +356,14 @@ Follow <APP_PATH>/docs/migration/component/05-app-migration.md Batch 3/4 pattern
 3. Migrate each usage site (ONE at a time):
    - Update import to: import { <ComponentName> } from '@repo/ui'
    - Adapt props at usage site if API differs (use adapter pattern if needed)
-   - Verify: pnpm --filter <APP_PACKAGE> check-types still passes
+   - Verify the exact app typecheck command from `verification-gate.md` §1 still passes
    - Do NOT change unrelated code
 
 4. After ALL usage sites migrated:
-   - Run full verification gate:
-     pnpm --filter <APP_PACKAGE> check-types
-     pnpm --filter <APP_PACKAGE> lint
-     pnpm --filter <APP_PACKAGE> build
+   - Run the full verification gate using the exact app commands from `verification-gate.md` §1-§3
    - Verify app still renders correctly on key routes
 
-5. Update migration-log.md:
+5. Update `_output/_migration-log.md`:
    ## <ComponentName> — Batch 4 (Incremental — legacy update YYYYMMDD)
    - Imports updated: [list files]
    - @repo/ui version: <ComponentName> from @repo/ui
@@ -401,27 +397,25 @@ Follow <APP_PATH>/docs/migration/component/legacy-update-routines.md Routine 6:
    commands for this app (typecheck, lint, build, test, sanity — as defined).
    Do NOT guess commands — use exactly what is in that file.
 
-pnpm --filter <APP_PACKAGE> check-types
-pnpm --filter <APP_PACKAGE> lint
-pnpm --filter <APP_PACKAGE> build
+Use the exact app typecheck, lint, and build commands from `verification-gate.md` §1-§3.
 
 If any packages/ui changes were made on feat/ui:
 pnpm --filter @repo/ui check-types
 pnpm --filter @repo/ui build
 
 **Step 2 — Verify migrated component integrity:**
-For every component in migration-log.md with Status=DONE:
+For every component in `_output/_migration-log.md` with Status=DONE:
 - [ ] Import still resolves to @repo/ui (not reverted to local path)
 - [ ] No local duplicate re-appeared from the merge
 - [ ] Prop API at usage sites still compiles correctly
 
 **Step 3 — If verification fails:**
 - Typecheck/lint errors: fix narrowly, re-run gate
-- Reverted migrated import: git checkout HEAD <file>, re-run gate
+- Reverted migrated import: git restore --source=HEAD -- <file>, re-run gate
 - If critical failure:
-  git reset --hard <commit-before-merge>
-  git push -f origin migrate-app/<APP_NAME>
-  Document rollback in legacy-update-YYYYMMDD-HHMMSS.md and STOP
+  git branch backup/migrate-app-<APP_NAME>-pre-legacy-update
+  git revert <commit-or-merge-commit>
+  Document rollback in legacy-update-YYYYMMDD-HHMMSS.md, re-run the verification gate, and STOP
 
 **Step 4 — Complete the update log at:**
 <APP_PATH>/docs/migration/component/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md

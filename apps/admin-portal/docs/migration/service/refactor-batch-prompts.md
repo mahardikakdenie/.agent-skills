@@ -30,9 +30,9 @@ Prompt:
 Use <SPEC_PATH> "App-Specific Inputs" and "Verification Gate (Mandatory)".
 
 If <APP_PATH>/docs/migration/verification-gate.md does NOT yet exist, create it with sections §1–§5 only:
-- §1 Typecheck command: pnpm --filter <APP_PACKAGE> check-types
-- §2 Lint command: pnpm --filter <APP_PACKAGE> lint
-- §3 Build command: pnpm --filter <APP_PACKAGE> build (include build/runtime mode note)
+- §1 Typecheck command: the exact command that actually passes for this app (use the app script if present; otherwise record the workspace-level command used for this app)
+- §2 Lint command: the exact lint command that actually passes for this app
+- §3 Build command: the exact build command that actually passes for this app (include build/runtime mode note)
 - §4 Turborepo package name and --filter selector
 - §5 Smoke routes: list 5–10 critical routes that must not regress (no visual artifact capture — just navigation + console check)
 

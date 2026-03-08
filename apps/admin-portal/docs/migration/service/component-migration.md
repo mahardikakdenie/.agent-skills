@@ -34,12 +34,14 @@
 - [ ] `src/path/to/component.tsx` - [Brief description]
   - **Before:** [Old pattern, e.g., "useState + useEffect"]
   - **After:** [New hook, e.g., "useServiceData"]
+  - **Status:** NOT_STARTED / IN_PROGRESS / DONE
   - **Verified:** ⏸️ / ✅ / ❌
   - **Issues:** [None or describe]
 
 - [ ] `src/path/to/another.tsx` - [Brief description]
   - **Before:** [Old pattern]
   - **After:** [New hook]
+  - **Status:** NOT_STARTED / IN_PROGRESS / DONE
   - **Verified:** ⏸️ / ✅ / ❌
   - **Issues:** [None or describe]
 
@@ -113,11 +115,13 @@ _(This section tracks component migrations from legacy update Batch 5A)_
 - [x] `src/path/to/component.tsx` - [Description]
   - **Before:** [Old pattern]
   - **After:** [New hook from new service]
+  - **Status:** DONE
   - **Verified:** ✅
 
 - [x] `src/path/to/another.tsx` - [Description]
   - **Before:** [Old pattern]
   - **After:** [New hook]
+  - **Status:** DONE
   - **Verified:** ✅
 
 **Verification:** ✅ All passed (Typecheck, Build, Tests, Sanity)
@@ -159,6 +163,7 @@ _(Template for future incremental updates - copy and fill in)_
 
 - **Main Batch 6** migrates ALL components to use services created in Batch 4-5
 - **Incremental Batch 5A** migrates ONLY components affected by new service from legacy update
+- `Status: DONE` is the merge-ownership signal used during legacy-update conflict resolution
 - Each migration must pass verification gate before marking complete
 - See [`refactor-batch-prompts.md`](./refactor-batch-prompts.md) for main refactor guidance
 - See [`legacy-update-batch-prompts.md`](./legacy-update-batch-prompts.md) for incremental update guidance

@@ -6,14 +6,14 @@
 
 ## Related Documents
 
-- `apps/<app-name>/docs/migration/service/refactor-spec.md`
-- `apps/<app-name>/docs/migration/service/refactor-lifecycle.md`
-- `apps/<app-name>/docs/migration/service/refactor-batch-prompts.md`
-- `apps/<app-name>/docs/migration/service/legacy-update-batch-prompts.md`
-- `apps/<app-name>/docs/migration/service/component-migration.md`
-- `apps/<app-name>/docs/migration/service/audit.md`
-- `apps/<app-name>/docs/migration/service/plan.md`
-- `apps/<app-name>/docs/migration/verification-gate.md`
+- `apps/<APP_NAME>/docs/migration/service/refactor-spec.md`
+- `apps/<APP_NAME>/docs/migration/service/refactor-lifecycle.md`
+- `apps/<APP_NAME>/docs/migration/service/refactor-batch-prompts.md`
+- `apps/<APP_NAME>/docs/migration/service/legacy-update-batch-prompts.md`
+- `apps/<APP_NAME>/docs/migration/service/component-migration.md`
+- `apps/<APP_NAME>/docs/migration/service/audit.md`
+- `apps/<APP_NAME>/docs/migration/service/plan.md`
+- `apps/<APP_NAME>/docs/migration/verification-gate.md`
 
 ---
 
@@ -23,13 +23,13 @@
 
 During monorepo migration, each app in `apps/` maintains two branch types:
 
-- **`integrate-app/*`** = Read-only baseline branch (1:1 copy of legacy repo via git subtree)
-- **`migrate-app/*`** = Work/refactor branch created from `integrate-app/*`
+- **`integrate/<APP_NAME>`** = Read-only baseline branch (1:1 copy of legacy repo via git subtree)
+- **`migrate-app/*`** = Work/refactor branch created from `integrate/<APP_NAME>`
 
-**Key principle:** The `integrate-app/*` branch is 1:1 with the legacy repo and never has local modifications. Therefore, subtree pull to `integrate-app/*` will NEVER have conflicts. Conflicts only occur when merging `integrate-app/*` to `migrate-app/*`.
+**Key principle:** The `integrate/<APP_NAME>` branch is 1:1 with the legacy repo and never has local modifications. Therefore, subtree pull to `integrate/<APP_NAME>` will NEVER have conflicts. Conflicts only occur when merging `integrate/<APP_NAME>` to `migrate-app/*`.
 
 > [!IMPORTANT]
-> **All legacy update documentation and refactoring work** happens on the `migrate-app/*` branch, NOT on `integrate-app/*`. The `integrate-app/*` branch remains untouched except for git subtree pull operations.
+> **All legacy update documentation and refactoring work** happens on the `migrate-app/*` branch, NOT on `integrate/<APP_NAME>`. The `integrate/<APP_NAME>` branch remains untouched except for git subtree pull operations.
 
 ### Goals
 
@@ -55,9 +55,9 @@ During monorepo migration, each app in `apps/` maintains two branch types:
 
 ```mermaid
 flowchart TD
-    A[Legacy Repo Updated] --> B[Subtree Pull to integrate-app/*]
-    B --> C[Push integrate-app/*]
-    C --> D[Merge integrate-app/* to migrate-app/*]
+    A[Legacy Repo Updated] --> B[Subtree Pull to integrate/<APP_NAME>]
+    B --> C[Push integrate/<APP_NAME>]
+    C --> D[Merge integrate/<APP_NAME> to migrate-app/*]
     D --> E{Conflicts?}
     E -->|No| F[Adjust Refactored Code]
     E -->|Yes| G[Resolve Conflicts]
@@ -78,37 +78,37 @@ flowchart TD
 
 ### Objective
 
-Pull latest changes from legacy repo into the read-only `integrate-app/*` branch.
+Pull latest changes from legacy repo into the read-only `integrate/<APP_NAME>` branch.
 
 ### Pre-conditions
 
 - Legacy repo has new commits
 - Clean working tree
-- `integrate-app/*` is 1:1 with legacy repo (never modified)
+- `integrate/<APP_NAME>` is 1:1 with legacy repo (never modified)
 
 ### Steps
 
 #### 1.1 Switch to integrate/\* branch
 
 ```bash
-git checkout integrate/<app-name>
+git checkout integrate/<APP_NAME>
 ```
 
 #### 1.2 Perform subtree pull
 
 ```bash
-# No conflicts expected since integrate-app/* is 1:1 with legacy
-git subtree pull --prefix=apps/<app-name> <remote-name> <remote-branch>
+# No conflicts expected since integrate/<APP_NAME> is 1:1 with legacy
+git subtree pull --prefix=apps/<APP_NAME> <remote-name> <remote-branch>
 ```
 
 **Expected:** Clean merge (100% of the time)
 
-**If conflicts occur:** `integrate-app/*` was modified (should NEVER happen). Investigate and fix.
+**If conflicts occur:** `integrate/<APP_NAME>` was modified (should NEVER happen). Investigate and fix.
 
 #### 1.3 Push integrate/\* branch
 
 ```bash
-git push origin integrate/<app-name>
+git push origin integrate/<APP_NAME>
 ```
 
 ---
@@ -121,7 +121,7 @@ Synchronize the refactored `migrate-app/*` branch with the updated baseline.
 
 ### Pre-conditions
 
-- `integrate-app/*` successfully updated and pushed
+- `integrate/<APP_NAME>` successfully updated and pushed
 - Clean working tree
 
 ### Steps
@@ -135,7 +135,7 @@ git checkout migrate-app/<APP_NAME>
 #### 2.2 Merge integrate/_ into migrate/_
 
 ```bash
-git merge integrate/<app-name>
+git merge integrate/<APP_NAME>
 ```
 
 **Expected Outcomes:**
@@ -148,10 +148,8 @@ git merge integrate/<app-name>
 > [!IMPORTANT]
 > Run these checks **immediately after merge**, before any conflict resolution or code adjustment. Catch merge-introduced breakages early.
 
-```bash
-# Quick health check — must pass before Routine 3/4
-pnpm --filter <APP_PACKAGE_NAME> check-types
-pnpm --filter <APP_PACKAGE_NAME> build
+```text
+Use the exact app typecheck and build commands from `apps/<APP_NAME>/docs/migration/verification-gate.md` §1-§3 before proceeding to Routine 3 or 4.
 ```
 
 **If health check fails:**
@@ -176,7 +174,7 @@ Resolve conflicts between legacy updates and refactored code.
 
 ### Pre-conditions
 
-- Merge from `integrate-app/*` to `migrate-app/*` resulted in conflicts
+- Merge from `integrate/<APP_NAME>` to `migrate-app/*` resulted in conflicts
 
 ### Steps
 
@@ -303,8 +301,8 @@ Integrate new services, features, or breaking changes from legacy repo.
 
 ```bash
 # Check what changed
-git log integrate/<app-name>~5..integrate/<app-name> --oneline
-git diff <previous-integrate-commit> integrate/<app-name> --name-status
+git log integrate/<APP_NAME>~5..integrate/<APP_NAME> --oneline
+git diff <previous-integrate-commit> integrate/<APP_NAME> --name-status
 ```
 
 **Look for:**
@@ -348,8 +346,10 @@ git diff <previous-integrate-commit> integrate/<app-name> --name-status
 #### 4.4 Handle non-service changes
 
 ```bash
-# Install new dependencies
-pnpm install <package>
+# Install new dependencies with pnpm add in the target package
+pnpm --filter <APP_PACKAGE> add <package>
+# or, for dev-only packages:
+pnpm --filter <APP_PACKAGE> add -D <package>
 ```
 
 - Config changes: Already merged
@@ -379,7 +379,7 @@ Refactor new services added from legacy into the new architecture.
 #### 5.1 Update audit document
 
 ```markdown
-# In apps/<app-name>/docs/migration/service/audit.md
+# In apps/<APP_NAME>/docs/migration/service/audit.md
 
 ## Service: <new-service-name>
 
@@ -404,7 +404,7 @@ Refactor new services added from legacy into the new architecture.
 #### 5.2 Update refactoring plan
 
 ```markdown
-# In apps/<app-name>/docs/migration/service/plan.md
+# In apps/<APP_NAME>/docs/migration/service/plan.md
 
 ## Service: <new-service-name>
 
@@ -564,23 +564,14 @@ Create list of affected components (pages, forms, dashboards, etc.)
 
 After each component migration:
 
-```bash
-# Typecheck
-pnpm typecheck
-
-# Build (if fast enough)
-pnpm build
-
-# Manual test
-# - Open page in browser
-# - Test all interactions
-# - Check network tab
-# - Check console
+```text
+Use the exact app typecheck/build commands from `verification-gate.md` §1-§3.
+Then run the listed manual tests for the affected page.
 ```
 
 #### 5A.4 After all components migrated
 
-Run full verification gate as defined in `apps/<app-name>/docs/migration/verification-gate.md`.
+Run full verification gate as defined in `apps/<APP_NAME>/docs/migration/verification-gate.md`.
 
 #### 5A.5 Document results
 
@@ -608,7 +599,7 @@ Run full verification gate as defined in `apps/<app-name>/docs/migration/verific
 
 **Also update `component-migration.md`** for centralized tracking:
 
-In `apps/<app-name>/docs/migration/service/component-migration.md`, add new section under "Incremental Updates":
+In `apps/<APP_NAME>/docs/migration/service/component-migration.md`, add new section under "Incremental Updates":
 
 ```markdown
 ### Update: YYYY-MM-DD HH:MM ([Service Name] - Batch 5A)
@@ -682,11 +673,8 @@ Common patterns:
 
 ```bash
 # Delete ONLY files related to new service
-rm apps/<app>/src/services/<old-service-name>.service.ts
-
-# Update any remaining imports (should be none if 5A was complete)
-# Check for broken imports:
-pnpm typecheck
+# Delete ONLY files related to new service
+# Then check for broken imports with the exact app typecheck command from verification-gate.md §1
 ```
 
 **Rules:**
@@ -701,15 +689,9 @@ Document: "No cleanup needed, old service doesn't exist (brand new service)"
 
 #### 5B.3 Verify cleanup
 
-```bash
-# Typecheck
-pnpm typecheck
-
-# Build
-pnpm build
-
-# Verify no broken imports
-# Verify app still runs
+```text
+Use the exact app typecheck/build commands from `verification-gate.md` §1-§3.
+Then verify there are no broken imports and the app still runs.
 ```
 
 #### 5B.4 Run verification gate
@@ -747,7 +729,7 @@ Ensure legacy updates didn't break refactored functionality.
 
 #### 6.1 Run verification gate
 
-Run the verification gate as defined in `apps/<app-name>/docs/migration/verification-gate.md`.
+Run the verification gate as defined in `apps/<APP_NAME>/docs/migration/verification-gate.md`.
 
 This typically includes:
 
@@ -776,27 +758,31 @@ This typically includes:
 If verification fails and cannot be fixed safely:
 
 ```bash
-# Rollback migrate-app/* branch
-git reset --hard <commit-before-legacy-update-merge>
-git push -f origin migrate-app/<APP_NAME>
+# Preserve the current state first
+git branch backup/migrate-app-<APP_NAME>-pre-legacy-update
+
+# Revert the merge/update commit(s) that caused the failure
+git revert <commit-or-merge-commit>
 ```
 
-Document rollback in `legacy-update-YYYYMMDD-HHMMSS.md` and notify team.
+Document rollback in legacy-update-YYYYMMDD-HHMMSS.md and notify team.
+
+If a destructive reset seems necessary, stop and coordinate manually. Do not use git reset --hard / git push -f as the standard recovery path.
 
 #### 6.5 Update task.md
 
-If main task.md exists at `apps/<app-name>/docs/migration/service/task.md`:
+If main task.md exists at `apps/<APP_NAME>/docs/migration/service/task.md`:
 
 - Mark legacy update as integrated
 - Update current phase/batch status
 - Note services affected and new services added
 
 > [!NOTE]
-> All documentation is created on the `migrate-app/<APP_NAME>` branch, NOT on `integrate-app/*`.
+> All documentation is created on the `migrate-app/<APP_NAME>` branch, NOT on `integrate/<APP_NAME>`.
 
 #### 6.6 Document results
 
-Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
+Create `apps/<APP_NAME>/docs/migration/service/legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md` (use actual datetime):
 
 ```markdown
 # Legacy Update — <APP_NAME> — YYYY-MM-DD HH:MM:SS
@@ -943,7 +929,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 
 ### Before Batch 0
 
-- Ensure `integrate-app/*` is up to date
+- Ensure `integrate/<APP_NAME>` is up to date
 - Run routines 1-6 if needed
 
 ### During Batch 0-5 (Before Component Migration; covers Phases 0-4B)
@@ -1023,7 +1009,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 
    - Did this legacy update modify any service that component migration is currently using? → Update hooks/types if needed before resuming
    - Did this legacy update add new endpoints to a service already refactored? → Extend those hooks before component migration resumes consuming them
-   - Did this legacy update touch a component currently IN PROGRESS in `migration-log.md`? → Notify the component migration agent to re-verify that component
+   - Did this legacy update touch a component currently IN PROGRESS in `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md`? -> Notify the component migration agent to re-verify that component
    - Document impact (or "no cross-track impact") in `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`
 
 3. **Review changes** that might affect current work:
@@ -1038,7 +1024,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 ## Checklist Template
 
 ```markdown
-## Legacy Update - <app-name> - YYYY-MM-DD
+## Legacy Update - <APP_NAME> - YYYY-MM-DD
 
 - [ ] Routine 1: Subtree pull to integrate/\*
   - [ ] Clean merge
@@ -1076,7 +1062,7 @@ Create `apps/<app-name>/docs/migration/service/legacy-updates/legacy-update-YYYY
 
 ## Summary
 
-✅ **Safe Integration** - Conflicts only on `migrate-app/*`, never on `integrate-app/*`  
+✅ **Safe Integration** - Conflicts only on `migrate-app/*`, never on `integrate/<APP_NAME>`  
 ✅ **No Breaking Changes** - Verification at every step  
 ✅ **Incremental Growth** - New services refactored incrementally  
 ✅ **Full Documentation** - All updates tracked and logged

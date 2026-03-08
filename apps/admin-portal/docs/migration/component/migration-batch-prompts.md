@@ -158,15 +158,15 @@ Commit-message scope rule when lockfiles are removed:
 
 ## 1. Typecheck Command
 
-`pnpm --filter <APP_PACKAGE> check-types`
+`<verification-gate.md §1 typecheck command>`
 
 ## 2. Lint Command
 
-`pnpm --filter <APP_PACKAGE> lint`
+`<verification-gate.md §2 lint command>`
 
 ## 3. Build Command
 
-`pnpm --filter <APP_PACKAGE> build`
+`<verification-gate.md §3 build command>`
 
 Build/runtime mode note:
 
@@ -448,7 +448,7 @@ Use next-devtools MCP after starting the dev server:
 #### Step A5-4 — Run check-types after codemod
 
 ```bash
-pnpm --filter <APP_PACKAGE> check-types
+<verification-gate.md §1 typecheck command>
 ```
 
 Common remaining issues after codemod:
@@ -487,7 +487,7 @@ Guardrails:
 Verification commands (run both):
 
 ```bash
-pnpm --filter <APP_PACKAGE> build
+<verification-gate.md §3 build command>
 pnpm --filter <APP_PACKAGE> dev
 ```
 
@@ -558,13 +558,13 @@ before removing.
 
 ```bash
 # TypeScript — zero errors
-pnpm --filter <APP_PACKAGE> check-types
+<verification-gate.md §1 typecheck command>
 
 # Lint — zero errors
-pnpm --filter <APP_PACKAGE> lint
+<verification-gate.md §2 lint command>
 
 # Build — clean
-pnpm --filter <APP_PACKAGE> build
+<verification-gate.md §3 build command>
 
 # Dev server — start and smoke check 3–5 key routes
 # Confirm: no CSS regressions, no console errors, layout identical to pre-upgrade
@@ -793,9 +793,9 @@ For each Batch 1.5 candidate (ordered HIGH → MEDIUM):
 ### Step 4 — Verification Gate (per component, non-negotiable)
 
 ```bash
-pnpm --filter <APP_PACKAGE> check-types    # zero new type errors
-pnpm --filter <APP_PACKAGE> lint           # zero new lint errors
-pnpm --filter <APP_PACKAGE> build          # clean build
+<verification-gate.md §1 typecheck command>    # zero new type errors
+<verification-gate.md §2 lint command>           # zero new lint errors
+<verification-gate.md §3 build command>          # clean build
 ```
 
 Then:
@@ -855,7 +855,7 @@ Append under `## Batch 1.5 — SoC Pre-Migration Refactor`:
   - NEW_SHARED_COMPONENT candidates from splits: N (list names)
   - KEEP_APP_LOCAL-only Shells: N
 - [ ] Zero callers changed (grep verified)
-- [ ] `pnpm --filter <APP_PACKAGE> build` passes cleanly after all splits
+- [ ] `<verification-gate.md §3 build command>` passes cleanly after all splits
 
 > Skills (if installed): `$vercel-composition-patterns` (verify Shell has no boolean prop proliferation); `$next-best-practices` (confirm no RSC+client boundary violations introduced); `$systematic-debugging` (if gate fails — trace the regression before reverting)
 
@@ -1215,7 +1215,7 @@ If you find something to improve: add to `_migration-log.md` under "Post-Migrati
 1. Confirm exact export name from `packages/ui/src/index.ts`
 2. Find ALL import locations in `<APP_PATH>/src/**`
 3. Update import from local path → `@repo/ui`
-4. Verify props still compile: `pnpm --filter <APP_PACKAGE> check-types`
+4. Verify props still compile: `<verification-gate.md §1 typecheck command>`
 5. Delete local component file ONLY after all imports updated and typecheck passes
 6. Record in `_migration-log.md`:
 ```
@@ -1527,13 +1527,13 @@ Shell rules (ALL mandatory):
 
 ```bash
 # TypeScript — zero errors
-pnpm --filter <APP_PACKAGE> check-types
+<verification-gate.md §1 typecheck command>
 
 # Lint — zero errors
-pnpm --filter <APP_PACKAGE> lint
+<verification-gate.md §2 lint command>
 
 # Build — clean
-pnpm --filter <APP_PACKAGE> build
+<verification-gate.md §3 build command>
 ```
 
 Also: manually verify the component's smoke route from `verification-gate.md` still renders identically.
@@ -1685,9 +1685,9 @@ done | sort -n
 **Step 3 — Remove confirmed orphan deps only:**
 
 ```bash
-pnpm --filter <APP_PACKAGE_NAME> remove <orphan-dep>
-pnpm --filter <APP_PACKAGE_NAME> check-types   # must pass
-pnpm --filter <APP_PACKAGE_NAME> build         # must pass
+pnpm --filter <APP_PACKAGE> remove <orphan-dep>
+<verification-gate.md §1 typecheck command>   # must pass
+<verification-gate.md §3 build command>         # must pass
 ```
 
 Also remove `@types/<pkg>` for any removed package (if present). Cover both `dependencies`
@@ -1721,7 +1721,7 @@ If any deps were removed, also confirm:
 # Confirm removed dep is gone from direct deps
 jq '.dependencies["<removed-dep>"]' apps/<APP_NAME>/package.json  # must be null
 # Confirm it still resolves transitively (runtime still works)
-pnpm --filter <APP_PACKAGE_NAME> list <removed-dep>
+pnpm --filter <APP_PACKAGE> list <removed-dep>
 ```
 
 ### 5. Create Per-App Cleanup Report
@@ -1812,7 +1812,7 @@ Remove if dead:
 
 ```bash
 pnpm --filter <APP_PACKAGE> remove <package-name>
-pnpm --filter <APP_PACKAGE> check-types  # must still pass after each removal
+<verification-gate.md §1 typecheck command>  # must still pass after each removal
 ```
 
 Migrate if low-usage: apply the replacement approach documented in Batch 0.5 plan.
@@ -1849,9 +1849,9 @@ node -e "console.log('tailwindcss:', require('./apps/<APP_NAME>/node_modules/tai
 ## Step 3 — Verification Gate
 
 ```bash
-pnpm --filter <APP_PACKAGE> check-types  # zero errors
-pnpm --filter <APP_PACKAGE> lint         # zero errors
-pnpm --filter <APP_PACKAGE> build        # clean build
+<verification-gate.md §1 typecheck command>  # zero errors
+<verification-gate.md §2 lint command>         # zero errors
+<verification-gate.md §3 build command>        # clean build
 ```
 
 ---
@@ -2007,8 +2007,8 @@ Read: `<APP_PATH>/docs/migration/component/legacy-update-routines.md` Routines 1
 **Merge Health Check (MHC) — run immediately after a clean merge (step 3 above):**
 
 ```bash
-pnpm --filter <APP_PACKAGE> check-types
-pnpm --filter <APP_PACKAGE> build
+<verification-gate.md §1 typecheck command>
+<verification-gate.md §3 build command>
 ```
 
 If either command fails, do NOT proceed to L3. Diagnose and fix the merge-introduced breakage first, then re-run the MHC before continuing.
@@ -2033,9 +2033,9 @@ For each conflicted file, assign exactly one category and apply the resolution:
 
 | Category               | Indicator                                             | Resolution                                                       |
 | ---------------------- | ----------------------------------------------------- | ---------------------------------------------------------------- |
-| Migrated component     | In migration-log.md Status=DONE; imports use @repo/ui | git checkout --ours <file>                                       |
-| Non-migrated component | Not in migration-log.md; still uses local imports     | git checkout --theirs <file>                                     |
-| In-progress batch item | In migration-log.md Status=IN PROGRESS                | Manual merge — keep our base, apply legacy additions only        |
+| Migrated component     | In `_output/_migration-log.md` Status=DONE; imports use @repo/ui | git checkout --ours <file>                                       |
+| Non-migrated component | Not in `_output/_migration-log.md`; still uses local imports     | git checkout --theirs <file>                                     |
+| In-progress batch item | In `_output/_migration-log.md` Status=IN PROGRESS                | Manual merge - keep our base, apply legacy additions only        |
 | Shared infrastructure  | packages/config/**, packages/helper/**, tsconfig      | Manual merge — prefer ours, apply new additions                  |
 | App configuration      | package.json, tailwind.config.\*, tsconfig.json       | Manual merge — apply new deps/settings, keep migration overrides |
 | Static assets          | public/**, assets/**                                  | git checkout --theirs (unless intentionally replaced)            |
@@ -2113,7 +2113,7 @@ Context from L3 (fill in before running):
 
 1. New dependencies in package.json → run `pnpm install`, verify no peer dependency conflicts
 2. Tailwind config changes → apply, verify CSS variable contract still satisfied (06-component-standards.md Section 5), verify @repo/ui tokens still resolve
-3. tsconfig / path alias changes → apply, run `pnpm --filter <APP_PACKAGE> check-types`
+3. tsconfig / path alias changes → apply, run `<verification-gate.md §1 typecheck command>`
 4. Global CSS changes → apply, ensure migration-specific tokens preserved
 5. New KEEP_APP_LOCAL components:
    - Confirm conflict resolved with --theirs in L2
@@ -2122,10 +2122,10 @@ Context from L3 (fill in before running):
 
 Hard rules:
 
-- Do NOT modify components with Status: DONE in migration-log.md
+- Do NOT modify components with Status: DONE in `_output/_migration-log.md`
 - Do NOT reintroduce local copies of migrated components
 
-> Skills (if installed): `$turborepo` (`pnpm install` and `pnpm --filter <APP_PACKAGE> check-types` — ensure correct filter value from verification-gate.md)
+> Skills (if installed): `$turborepo` (`pnpm install` and `<verification-gate.md §1 typecheck command>` — ensure correct filter value from verification-gate.md)
 
 Proceed to L6 after completing.
 
@@ -2195,9 +2195,9 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands. Do NOT
 
 Run:
 
-- `pnpm --filter <APP_PACKAGE> check-types`
-- `pnpm --filter <APP_PACKAGE> lint`
-- `pnpm --filter <APP_PACKAGE> build`
+- `<verification-gate.md §1 typecheck command>`
+- `<verification-gate.md §2 lint command>`
+- `<verification-gate.md §3 build command>`
 
 If packages/ui changes were made on feat/ui:
 
@@ -2205,7 +2205,7 @@ If packages/ui changes were made on feat/ui:
 - `pnpm --filter @repo/ui build`
 
 **Step 2 — Verify migrated component integrity:**
-For every component in migration-log.md with Status=DONE:
+For every component in `_output/_migration-log.md` with Status=DONE:
 
 - [ ] Import still resolves to @repo/ui (not reverted to local path)
 - [ ] No local duplicate re-appeared from the merge
@@ -2214,13 +2214,11 @@ For every component in migration-log.md with Status=DONE:
 **Step 3 — If verification fails:**
 
 - Typecheck/lint errors: fix narrowly in the affected file, re-run gate
-- Reverted migrated import: `git checkout HEAD <file>`, re-run gate
+- Reverted migrated import: `git restore --source=HEAD -- <file>`, re-run gate
 - Critical failure (cannot recover without risk):
 ```
-
-git reset --hard <commit-before-merge>
-git push -f origin migrate-app/<APP_NAME>
-
+git branch backup/migrate-app-<APP_NAME>-pre-legacy-update
+git revert <commit-or-merge-commit>
 ```
 Document rollback in update log and STOP. Notify team.
 
