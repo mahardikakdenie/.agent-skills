@@ -84,7 +84,7 @@ Legacy updates can occur at **any time** during the refactor lifecycle. The risk
    > Before resuming either track, verify the legacy update didn't invalidate in-progress work on the other track:
    - Did this update modify a service currently being consumed by a component in the component migration batch? → Verify hooks/types still valid before component migration resumes
    - Did this update add new endpoints to an already-refactored service? → Extend hooks before the next component migration step
-   - Did this update touch a component with `Status=IN PROGRESS` in `migration-log.md`? → Notify the component migration agent to re-verify that component
+   - Did this update touch a component with `Status=IN PROGRESS` in `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md`? -> Notify the component migration agent to re-verify that component
    - Document impact (or `cross-track impact: none`) in `legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md`
 
 4. **Resume main batch** from documented step
@@ -134,7 +134,7 @@ flowchart TD
 **Use When:** Simple endpoint additions or minor updates
 
 ```
-Batch 1: Subtree pull to integrate-app/* and merge to migrate-app/*
+Batch 1: Subtree pull to integrate/<APP_NAME> and merge to migrate-app/<APP_NAME>
          ↓ (no conflicts)
 Batch 3: Analyze changes → identify new endpoints in existing service
          ↓ (decision: Batch 4)
@@ -152,7 +152,7 @@ Batch 6: Verify + document
 **Use When:** Legacy and refactored code overlap
 
 ```
-Batch 1: Subtree pull to integrate-app/* and merge to migrate-app/*
+Batch 1: Subtree pull to integrate/<APP_NAME> and merge to migrate-app/<APP_NAME>
          ↓ (conflicts detected)
 Batch 2: Resolve conflicts using categorization strategy
          ↓
@@ -172,7 +172,7 @@ Batch 6: Verify + document
 **Use When:** New base URL detected
 
 ```
-Batch 1: Subtree pull to integrate-app/* and merge to migrate-app/*
+Batch 1: Subtree pull to integrate/<APP_NAME> and merge to migrate-app/<APP_NAME>
          ↓ (clean or after conflict resolution)
 Batch 3: Analyze changes → detect new base URL
          ↓ (decision: Batch 5)
@@ -218,7 +218,7 @@ Batch 6: Extensive verification
 
 ### Scenario E: Update After Cleanup (Phase 6 Complete)
 
-**Batch Sequence:** 1 → 3 → 5A → 5B → 6  
+**Batch Sequence:** 1 → 3 → 5 → 5A → 5B → 6  
 **Time:** 2-4 hours  
 **Risk:** 🔴 Critical - no old services to fall back on  
 **Use When:** Legacy update occurs after old services are deleted
@@ -228,6 +228,10 @@ Batch 1: Subtree pull and merge
          ↓
 Batch 3: Analyze changes
          ↓ (Incremental refactor MANDATORY)
+Batch 5: New Service API + Hooks
+         - Create the new base-URL service first
+         - No component migration yet
+         ↓
 Batch 5A: Component Migration (Incremental)
          - Migrate ONLY affected components to new service
          - Use component-migration.md to track
@@ -242,8 +246,8 @@ Batch 6: Verify + document
 
 **Key Difference from Scenario C:**
 
-- Scenario C (pre-cleanup): Full Batch 5 (new service from scratch)
-- Scenario E (post-cleanup): Batch 5A + 5B (incremental migration only)
+- Scenario C (pre-cleanup): Batch 5 may stop after API + hooks if components still use old services
+- Scenario E (post-cleanup): Batch 5 is still required, and must be followed immediately by 5A + 5B
 
 ---
 
@@ -284,10 +288,12 @@ flowchart TD
 4. If fix is safe and passes, continue
 5. If fix is not safe or would expand scope, consider rollback:
    ```bash
-   git reset --hard <commit-before-legacy-update-merge>
-   git push -f origin migrate-app/<APP_NAME>
+   git branch backup/migrate-app-<APP_NAME>-pre-legacy-update
+   git revert <commit-or-merge-commit>
    ```
 6. Document failure and plan alternative approach
+
+If a destructive reset seems necessary, stop and coordinate manually rather than force-pushing by default.
 
 ### Q: How do I know which components are migrated vs non-migrated during Batch 2?
 
@@ -361,7 +367,7 @@ Use this checklist before running Batch 1:
 
 ## Summary
 
-✅ **Safe Integration** - Conflicts only on `migrate-app/*`, never on `integrate-app/*`  
+✅ **Safe Integration** - Conflicts only on `migrate-app/<APP_NAME>`, never on `integrate/<APP_NAME>`  
 ✅ **Phase-Aware** - Different workflows for different refactor phases  
 ✅ **No Breaking Changes** - Verification at every step  
 ✅ **Incremental Growth** - New services refactored incrementally  

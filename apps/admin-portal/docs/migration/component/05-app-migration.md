@@ -84,12 +84,10 @@ See [06-component-standards.md §6.5](./06-component-standards.md#65-app-local-r
 
 ### Verification Gate (per component — non-negotiable)
 
-```bash
-pnpm --filter <APP_PACKAGE> check-types  # zero new errors
-pnpm --filter <APP_PACKAGE> lint         # zero new errors
-pnpm --filter <APP_PACKAGE> build        # clean build
-# Then: smoke-check the component's primary render route visually
-# Then: grep -r "ComponentName" src/ -- confirm zero caller files changed
+```text
+Use the exact app typecheck, lint, and build commands defined in `verification-gate.md` §1-§3.
+Then smoke-check the component's primary render route visually.
+Then run `rg "ComponentName" src/` and confirm zero caller files changed.
 ```
 
 ### Guardrails (same as §6.5 — non-negotiable)
@@ -159,7 +157,7 @@ FORBIDDEN — will result in rollback:
 - Adding new features, removing existing features, changing text content
 - Any change not directly required to complete the import swap
 
-If you find something that should be improved, add it to migration-log.md under
+If you find something that should be improved, add it to _migration-log.md under
 "Post-Migration Improvement Candidates" — do NOT act on it now.
 
 ## Execution Rules
@@ -171,7 +169,7 @@ If you find something that should be improved, add it to migration-log.md under
    d. Verify props still compile (no prop API mismatches)
    e. Delete local component file ONLY after all imports updated and typecheck passes
 2. Do NOT change any component logic, props passed at usage sites, or visual output
-3. Record every changed file in migration-log.md
+3. Record every changed file in _migration-log.md
 
 ## \_migration-log.md Format (append per component)
 ```
@@ -248,7 +246,7 @@ FORBIDDEN — will result in rollback:
 - Refactoring unrelated code in any file you touch
 - Changing visual output beyond what design system token adoption causes
 
-If you find something that should be improved, add it to migration-log.md under
+If you find something that should be improved, add it to _migration-log.md under
 "Post-Migration Improvement Candidates" — do NOT act on it now.
 
 ## Execution Rules
@@ -257,7 +255,7 @@ If you find something that should be improved, add it to migration-log.md under
 2. Adapter lives in `apps/<APP_NAME>/src/components/ui/adapted/`
 3. Usage sites import from adapter (not directly from @repo/ui)
 4. Local original component deleted after adapter is in place and all gates pass
-5. Document adapter rationale in migration-log.md
+5. Document adapter rationale in _migration-log.md
 
 ## Acceptance Criteria
 
@@ -300,7 +298,7 @@ FORBIDDEN — will result in rollback:
 - Refactoring or cleaning up unrelated code in files you touch
 - Introducing visual changes beyond design system token adoption
 
-If you find something that should be improved, add it to migration-log.md under
+If you find something that should be improved, add it to _migration-log.md under
 "Post-Migration Improvement Candidates" — do NOT act on it now.
 
 ## Execution Rules
@@ -373,9 +371,9 @@ and the app is fully ready for cleanup (Phase 07).
 
 Run the complete verification suite from `verification-gate.md`:
 
-- `pnpm check-types --filter=<app-name>`
-- `pnpm lint --filter=<app-name>`
-- `pnpm build --filter=<app-name>`
+- App typecheck: use the exact command from `verification-gate.md` §1
+- App lint: use the exact command from `verification-gate.md` §2
+- App build: use the exact command from `verification-gate.md` §3
 
 Zero errors allowed.
 
@@ -699,10 +697,8 @@ FORBIDDEN — zero tolerance, violation = rollback this component:
 
 ### Verification Gate (per component)
 
-```bash
-pnpm --filter <APP_PACKAGE> check-types  # zero errors
-pnpm --filter <APP_PACKAGE> lint         # zero errors
-pnpm --filter <APP_PACKAGE> build        # clean build
+```text
+Use the exact app typecheck, lint, and build commands defined in `verification-gate.md` §1-§3.
 ```
 
 Then: manually verify the component's smoke route still renders identically. Capture before/after screenshots and add a comparison entry per `verification-gate.md §6`.

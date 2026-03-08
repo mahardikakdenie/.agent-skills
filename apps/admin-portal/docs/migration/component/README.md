@@ -47,12 +47,12 @@ These apply at any point during migration — particularly when a legacy update 
                         │
 [migrate-app/<app>]         Batch 1 (per app, per branch)
         │
-        │  handoff: per-app-baseline-summary.md
+        │  handoff: _per-app-baseline-summary.md
         ▼
 [feat/ui]               Phase 02  →  Phase 03  →  Phase 04 (per batch)
                         Foundation    Batches       packages/ui Build
         │
-        │  handoff: @repo/ui updated exports + adapter-mapping.md
+        │  handoff: @repo/ui updated exports + _output/21-adapter-mapping.md
         ▼
 [migrate-app/<app>]         Phase 05 (per app, consume @repo/ui) → Phase 07 (cleanup)
         │
@@ -67,7 +67,7 @@ These apply at any point during migration — particularly when a legacy update 
 1. **Spec first** — no component enters `packages/ui` without a written spec + Storybook story
 2. **App-agnostic** — `packages/ui` has zero business logic, API calls, domain types, or framework-specific imports
 3. **Behavior parity** — 100% behavioral backward compatibility is mandatory. Users must not be able to detect that migration occurred. See [`06-component-standards.md` Section 8](./06-component-standards.md) for the full contract
-4. **No opportunistic refactoring** — migration changes imports only. Document improvements in `migration-log.md` under "Post-Migration Improvement Candidates" — do not act on them during migration
+4. **No opportunistic refactoring** — migration changes imports only. Document improvements in `_migration-log.md` under "Post-Migration Improvement Candidates" — do not act on them during migration
 5. **Evidence-based** — every claim references a real repo path
 6. **Batch gate** — a batch may not start until its prerequisites are verified complete
 7. **Read verification-gate.md first** — always read `apps/<APP_NAME>/docs/migration/verification-gate.md` before running any verification commands

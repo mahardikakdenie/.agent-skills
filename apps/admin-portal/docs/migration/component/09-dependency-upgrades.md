@@ -274,8 +274,8 @@ next-devtools MCP:
 
 #### Step 4 — Check-types after codemod
 
-```bash
-pnpm --filter <APP_PACKAGE> check-types
+```text
+Use the exact app typecheck command defined in `verification-gate.md` §1.
 ```
 
 Common remaining type errors after the codemod:
@@ -327,9 +327,9 @@ Guardrails:
 
 Required verification:
 
-```bash
-pnpm --filter <APP_PACKAGE> build
-pnpm --filter <APP_PACKAGE> dev
+```text
+Use the exact app build command defined in `verification-gate.md` §3.
+Then start the app's normal dev command from `apps/<APP_NAME>/package.json` for smoke testing.
 ```
 
 ---
@@ -400,17 +400,9 @@ This ensures nothing is forgotten and creates a clear handoff for the cleanup ph
 
 All of the following must pass **before proceeding to Batch 1**:
 
-```bash
-# TypeScript — zero errors
-pnpm --filter <APP_PACKAGE> check-types
-
-# Lint — zero errors
-pnpm --filter <APP_PACKAGE> lint
-
-# Production build — clean
-pnpm --filter <APP_PACKAGE> build
-
-# Dev server smoke check — no CSS regressions, no console errors
+```text
+Use the exact app typecheck, lint, and build commands defined in `verification-gate.md` §1-§3.
+Then run the app's normal dev command and smoke-check for CSS regressions and console/runtime errors.
 pnpm --filter <APP_PACKAGE> dev
 ```
 

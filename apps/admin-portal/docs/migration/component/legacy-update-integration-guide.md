@@ -69,10 +69,9 @@ If currently at an active batch step:
 
 4. **Immediately after merge, run Merge Health Check (MHC):**
 
-   ```bash
-   pnpm --filter <APP_PACKAGE_NAME> check-types
-   pnpm --filter <APP_PACKAGE_NAME> build
-   ```
+   ```text
+Use the exact app typecheck and build commands defined in `verification-gate.md` §1 and §3.
+```
 
    - If MHC fails: stop, fix narrowly (conflicted files only), re-run MHC before proceeding to Batch 2 or Batch 3
    - If MHC passes: proceed with Batch 2/3
@@ -120,16 +119,16 @@ After Batch 3 identifies new component files from the legacy update:
 
 ```mermaid
 flowchart TD
-    A[New component file from legacy] --> B{Is it in audit.md?}
+    A[New component file from legacy] --> B{Is it in _audit-report.md?}
     B -->|Yes, with classification| C{Classification?}
     B -->|No / Unknown| D[Classify now using 06-component-standards.md]
     D --> C
     C -->|KEEP_APP_LOCAL| SOC{Universal SoC Evaluation<br/>per §6.2 — Is monolith?}
-    SOC -->|HIGH or MEDIUM SoC potential| MAF[Classification = MIGRATE_AFTER_SPLIT<br/>Add to Batch 1.5 queue<br/>Record SoC fields in audit.md]
-    SOC -->|LOW or NONE| E[Accept theirs ✅<br/>Add to audit.md with SoC fields<br/>batch = N/A]
+    SOC -->|HIGH or MEDIUM SoC potential| MAF[Classification = MIGRATE_AFTER_SPLIT<br/>Add to Batch 1.5 queue<br/>Record SoC fields in _audit-report.md]
+    SOC -->|LOW or NONE| E[Accept theirs OK<br/>Add to _audit-report.md with SoC fields<br/>batch = N/A]
     C -->|ADOPT_NOW| F[Check if @repo/ui already has it<br/>If yes → immediate Batch 1 swap<br/>If no → re-classify]
-    C -->|EXTEND_EXISTING| G[Add to spec-input.md<br/>Queue for packages/ui Batch 3<br/>Keep legacy local file until Batch 3 ships]
-    C -->|NEW_SHARED_COMPONENT| H[Add to spec-input.md + backlog.csv<br/>Queue for packages/ui Batch 4<br/>Keep legacy local file until Batch 4 ships]
+    C -->|EXTEND_EXISTING| G[Add to _output/_spec-input.md<br/>Queue for packages/ui Batch 3<br/>Keep legacy local file until Batch 3 ships]
+    C -->|NEW_SHARED_COMPONENT| H[Add to _output/_spec-input.md + _component-backlog.csv<br/>Queue for packages/ui Batch 4<br/>Keep legacy local file until Batch 4 ships]
 ```
 
 ### Quick Classification Shortcut
@@ -200,7 +199,7 @@ L1 → L3 → L5 → L6
 
 _Time: 1–3 hours (depending on packages/ui intake complexity)_
 
-> **Gate:** L5 intake must be fully documented (spec-input updated, backlog.csv updated, update log complete) before L6. L6 must pass before resuming migration.
+> **Gate:** L5 intake must be fully documented (`_output/_spec-input.md` updated, `_component-backlog.csv` updated, update log complete) before L6. L6 must pass before resuming migration.
 
 ---
 
@@ -240,7 +239,7 @@ _Time: 3–5 hours_
 
 **Q: A new legacy component looks like it could go in packages/ui but it's low priority. Should I block the update?**
 
-> No. Accept the file (`--theirs`), classify it as `NEW_SHARED_COMPONENT` in `audit.md` and `spec-input.md`, and proceed. The intake is queued — the legacy update itself should not be blocked.
+> No. Accept the file (`--theirs`), classify it as `NEW_SHARED_COMPONENT` in `_audit-report.md` and `_output/_spec-input.md`, and proceed. The intake is queued; the legacy update itself should not be blocked.
 
 **Q: Legacy changed a config file that breaks our Tailwind setup. What do I do?**
 

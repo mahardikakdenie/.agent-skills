@@ -3,7 +3,7 @@
 > **Batch:** Batch 3 - Migration Plan
 > **Branch:** `feat/ui`
 > **Run count:** Once
-> **Prerequisite:** Phase 02 foundation complete (`packages/ui/docs/normalization/00-foundation.md` through `06-risk-register.md` exist)
+> **Prerequisite:** Phase 02 foundation complete (`packages/ui/docs/normalization/_output/00-foundation.md` through `_output/06-risk-register.md` exist)
 > **Prev:** [02-design-system-foundation.md](./02-design-system-foundation.md) · **Next:** [04-build-shared-components.md](./04-build-shared-components.md)
 
 ---
@@ -68,13 +68,13 @@ migration program plan.
 
 ## Inputs (all must be read first)
 
-- `packages/ui/docs/normalization/00-foundation.md`
-- `packages/ui/docs/normalization/01-component-taxonomy.md`
-- `packages/ui/docs/normalization/02-api-conventions.md`
-- `packages/ui/docs/normalization/03-token-theming-contract.md`
-- `packages/ui/docs/normalization/04-shared-vs-local-boundary.md`
-- `packages/ui/docs/normalization/05-coverage-baseline.md`
-- `packages/ui/docs/normalization/06-risk-register.md`
+- `packages/ui/docs/normalization/_output/00-foundation.md`
+- `packages/ui/docs/normalization/_output/01-component-taxonomy.md`
+- `packages/ui/docs/normalization/_output/02-api-conventions.md`
+- `packages/ui/docs/normalization/_output/03-token-theming-contract.md`
+- `packages/ui/docs/normalization/_output/04-shared-vs-local-boundary.md`
+- `packages/ui/docs/normalization/_output/05-coverage-baseline.md`
+- `packages/ui/docs/normalization/_output/06-risk-register.md`
 - ALL `apps/*/docs/migration/component/_output/_audit-report.md`
 - ALL `apps/*/docs/migration/component/_output/_component-backlog.csv`
 - ALL `apps/*/docs/migration/component/_output/_parity-checklist.md`
@@ -86,7 +86,7 @@ For each unique component need across all apps:
 
 ### ComponentName
 
-- **Classification:** (final ruling: ADOPT_NOW / EXTEND / NEW / LOCAL)
+- **Classification:** (final ruling: ADOPT_NOW / ADOPT_WITH_ADAPTER / EXTEND_EXISTING / NEW_SHARED_COMPONENT / KEEP_APP_LOCAL / MIGRATE_AFTER_SPLIT)
 - **Apps that need it:** [list]
 - **Current @repo/ui status:** exists | missing | partial
 - **Canonical API:** (reference 02-api-conventions.md section)

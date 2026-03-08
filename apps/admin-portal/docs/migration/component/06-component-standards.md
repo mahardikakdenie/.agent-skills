@@ -963,7 +963,7 @@ FORBIDDEN — will result in rollback:
 - Adding new features, removing existing features
 - Changing text content, copy, error messages, or placeholders
 
-If you identify something that should be improved, document it in migration-log.md
+If you identify something that should be improved, document it in _migration-log.md
 under "Post-Migration Improvement Candidates" and skip it for now.
 ```
 

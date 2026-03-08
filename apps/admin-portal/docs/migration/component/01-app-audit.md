@@ -3,7 +3,7 @@
 > **Batch:** Batch 1 - Per-App Component Audit
 > **Branch:** `migrate-app/<APP_NAME>` — run on EACH app's dedicated branch
 > **Run count:** Once per app
-> **Produces:** `per-app-baseline-summary.md` (key handoff to Phase 02)
+> **Produces:** `_per-app-baseline-summary.md` (key handoff to Phase 02)
 > **Prev:** [00-overview.md](./00-overview.md) · **Next (on feat/ui):** [02-design-system-foundation.md](./02-design-system-foundation.md)
 
 ---
@@ -60,7 +60,7 @@ Produce a complete, evidence-based component audit for `apps/<APP_NAME>` that:
 1. Inventories every UI component in the app
 2. Classifies each component against `@repo/ui` capabilities
 3. Normalizes naming, variants, and props against shared standards (see [06-component-standards.md](./06-component-standards.md))
-4. Prepares `per-app-baseline-summary.md` for cross-app aggregation on `feat/ui`
+4. Prepares `_per-app-baseline-summary.md` for cross-app aggregation on `feat/ui`
 
 ## Required Discovery (full traversal, no shortcuts)
 
@@ -213,7 +213,7 @@ A fully self-contained one-page summary. Must include:
 ## Acceptance Criteria
 - Every component import in `apps/<APP_NAME>/src/**` is accounted for (no unknowns)
 - No component left with class `UNCLASSIFIED`
-- `per-app-baseline-summary.md` is self-contained: readable without the full audit
+- `_per-app-baseline-summary.md` is self-contained: readable without the full audit
 - Backlog CSV is valid (correct columns, no empty required fields)
 - Parity checklist covers all `ADOPT_*` and `EXTEND_*` items
 ```
@@ -236,10 +236,12 @@ apps/<APP_NAME>/docs/migration/component/_output/
 ## After Completing Phase 01
 
 1. Commit all output files on `migrate-app/<APP_NAME>` branch
-2. Copy `per-app-baseline-summary.md` to `feat/ui` branch at:
+2. Copy `_per-app-baseline-summary.md` to `feat/ui` at:
    `packages/ui/docs/normalization/per-app/<APP_NAME>-baseline-summary.md`
-3. Repeat Phase 01 on each remaining `migrate-app/*` branch
-4. When ALL apps are done → switch to `feat/ui` → run [Phase 02](./02-design-system-foundation.md)
+3. Copy the rest of the app audit artifacts (`_audit-report.md`, `_spec-input.md`, `_component-backlog.csv`, `_parity-checklist.md`) to the matching app path on `feat/ui`:
+   `apps/<APP_NAME>/docs/migration/component/_output/`
+4. Repeat Phase 01 on each remaining `migrate-app/*` branch
+5. When ALL apps are done -> switch to `feat/ui` -> run [Phase 02](./02-design-system-foundation.md)
 
 ---
 

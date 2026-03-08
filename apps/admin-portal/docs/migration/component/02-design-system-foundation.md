@@ -23,7 +23,7 @@ Before running the Phase 02 prompt, verify:
 - [ ] You are on branch `feat/ui`
 - [ ] All `migrate-app/*` Phase 01 audits are complete
 - [ ] All `_per-app-baseline-summary.md` files are present at:
-      `packages/ui/docs/normalization/per-app/<app-name>_baseline-summary.md`
+      `packages/ui/docs/normalization/per-app/<APP_NAME>-baseline-summary.md`
 - [ ] [06-component-standards.md](./06-component-standards.md) has been reviewed and is accessible
 
 ---
@@ -54,7 +54,7 @@ You are a Principal Design System Architect operating on branch `feat/ui`.
   `packages/ui/docs/normalization/per-app/`
 - Current packages/ui state: `packages/ui/src/**`
 - Shared workspace packages (consumed by all `packages/*` and `apps/*`): `packages/config/`, `packages/helper/`, `packages/interface/`
-- Normalization reference: [06-component-standards.md](../../apps/admin-portal/docs/migration/component/06-component-standards.md)
+- Normalization reference: [06-component-standards.md](./06-component-standards.md)
 
 ## Objective
 

@@ -473,9 +473,9 @@ import { claimsService } from '@/services/claims/api/claims.service';
 1. Install dependencies:
 
    ```bash
-   npm install @tanstack/react-query @tanstack/react-query-devtools
-   npm install zod  # optional
-   npm install axios  # if needed
+   pnpm --filter <APP_PACKAGE> add @tanstack/react-query @tanstack/react-query-devtools
+   pnpm --filter <APP_PACKAGE> add zod  # optional
+   pnpm --filter <APP_PACKAGE> add axios  # if needed
    ```
 
 2. Create `src/lib/api-client/client.ts`:
