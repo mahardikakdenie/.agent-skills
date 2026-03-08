@@ -41,6 +41,10 @@ export type PolymorphicComponentPropsWithRef<
 // Box-specific types
 // ---------------------------------------------------------------------------
 
+export type BoxPadding = 'none' | 'sm' | 'md' | 'lg';
+
+export type BoxContainer = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
 /** Own props unique to `Box` (beyond HTML passthrough + polymorphism). */
 export interface BoxOwnProps {
   /**
@@ -51,6 +55,22 @@ export interface BoxOwnProps {
    * @default false
    */
   asChild?: boolean;
+  /**
+   * Applies a responsive horizontal padding preset.
+   *
+   * @default 'none'
+   */
+  padding?: BoxPadding;
+  /**
+   * Applies a max-width container preset and centers the rendered element.
+   */
+  container?: BoxContainer;
+  /**
+   * Centers child content with a minimal flex preset.
+   *
+   * @default false
+   */
+  centered?: boolean;
 }
 
 /** Full props for `Box` when used with a specific element type `C`. */

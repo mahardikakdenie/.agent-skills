@@ -118,7 +118,7 @@
 
 | Target | Component | Action | Status | Notes |
 | --- | --- | --- | --- | --- |
-| `@repo/ui` | `Box` | Extend existing layout primitive | PLANNED | Only approved Batch 3 shared change |
+| `@repo/ui` | `Box` | Extend existing layout primitive | DONE | `padding`, `container`, and `centered` presets shipped; verification gate passed on 2026-03-08 |
 
 ## 5. Batch 4 - NEW_SHARED_COMPONENT
 
