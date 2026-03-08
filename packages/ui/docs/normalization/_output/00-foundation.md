@@ -48,7 +48,7 @@ Implementation consequence:
 | Package | Responsibility | Batch 2 ruling |
 |---|---|---|
 | `@repo/config` | Shared token and styling contract | Becomes the semantic token source of truth after a Batch 3 bootstrap update |
-| `@repo/helper` | Shared app-agnostic utilities | May host `cn()` and other neutral helpers, but must stay free of app/domain logic |
+| `@repo/helper` | Shared app-agnostic utilities | Hosts the shared `cn()` helper and other neutral utilities; this is the single class-merge source for both apps and `@repo/ui` |
 | `@repo/interface` | Shared cross-app types | Type-only contracts; no app domain leakage and no premature extraction |
 | `apps/*` | Product applications | Never imported by `packages/ui` |
 
@@ -62,7 +62,7 @@ The prompt required reading the current workspace packages before locking the fo
 |---|---|---|---|
 | `@repo/ui` | Only `Box` is exported from `src/index.ts`; several Radix/calendar/form deps are already installed | Treat coverage as `Box` only. No other component is "existing" until exported and documented | Keep taxonomy and coverage docs anchored to the real export surface |
 | `@repo/config` | Exports `tailwind.css` with brand palette `@theme` tokens and icon utilities only | This is not yet the semantic CSS-variable contract required by shared components | Add a semantic token preset and publish the contract described in `03-token-theming-contract.md` |
-| `@repo/helper` | `index.ts` is empty | The app-side `cn()` import rule is a foundation requirement, not a current capability | Export `cn()` and only app-agnostic helpers before app migrations rely on it |
+| `@repo/helper` | `index.ts` is empty | This blocks the intended single-source `cn()` setup because both app code and `packages/ui` should import from `@repo/helper` | Export `cn()` before shared components and downstream app migrations standardize on the shared helper path |
 | `@repo/interface` | `index.ts` is empty | Keep it reserved for proven cross-app UI-facing types only | Add shared option/item contracts only when at least 2 apps need the same type |
 
 ---
@@ -75,7 +75,7 @@ The Batch 2 prompt explicitly requires dependency-gap analysis. The following ma
 |---|---|---|
 | Core primitives | Radix `avatar`, `checkbox`, `dialog`, `label`, `popover`, `radio-group`, `select`, `slot`, `switch`, `tabs`, `tooltip` already installed | These packages are ready for Batch 3 implementation work |
 | Calendar/form primitives | `react-day-picker`, `react-hook-form`, `vaul`, `lucide-react`, `class-variance-authority`, `clsx` already installed | These packages are available, but only count as "ready" once canonical wrappers are built |
-| `cn()` utility | `clsx` is installed, but `tailwind-merge` is not | Add `tailwind-merge` before any shared component relies on the canonical `cn()` implementation |
+| `cn()` utility | `@repo/helper` does not yet export the shared helper and `tailwind-merge` is still missing there | Move the canonical `cn()` implementation into `@repo/helper` and add `tailwind-merge` there before shared code standardizes on the single import path |
 | Overlay/data/menu primitives not yet installed | No `@radix-ui/react-dropdown-menu`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-menubar`, `@radix-ui/react-accordion` | Install per implementation batch before those components ship |
 | Headless input/data packages not yet installed | No `cmdk`, `@tanstack/react-table`, or `date-fns` in `@repo/ui` | These are blockers for `Command`/`Combobox`, `DataTable`, and the DatePicker family |
 | Animation utility | No `tailwindcss-animate` in `@repo/ui` | Add before using the motion patterns documented in `03-token-theming-contract.md` |

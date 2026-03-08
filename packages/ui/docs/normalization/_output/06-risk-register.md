@@ -13,7 +13,7 @@
 |---|---|---|
 | Semantic token missing in app `globals.css` | HIGH | Token contract doc + pre-migration lint rule; prefer `@repo/config` presets |
 | HeroUI / MUI coupling (gelm-xproject-microsite, haruuz-microsite, teman-affiliate-microsite, grab-landing-page) | HIGH | Token normalization required BEFORE adopting any `@repo/ui` primitive; run in parallel with B4 build |
-| Shared package readiness gaps (`@repo/helper` empty; missing `tailwind-merge`, `cmdk`, `date-fns`, `@tanstack/react-table`, `tailwindcss-animate`) | HIGH | Treat Batch 2 as the locked target contract; install and wire all prerequisites before Phase 04/05 implementation starts |
+| Shared package readiness gaps (single-source `cn()` move to `@repo/helper` not done yet; `cmdk`, `date-fns`, `@tanstack/react-table`, `tailwindcss-animate`, and `tailwind-merge` in `@repo/helper` still incomplete) | HIGH | Standardize `cn()` in `@repo/helper`, update `@repo/ui` to consume it, then close the remaining dependency gaps only when their implementation batch requires them |
 | `react-table` v7 apps upgrading to TanStack v8 for `DataTable` | HIGH | Audit each app's `react-table` usage before DataTable migration; upgrade path per app |
 | 450+ `MIGRATE_AFTER_SPLIT` queue not yet processed | HIGH | Block shared extraction on any unprocessed monolith; enforce in PR review |
 | `onClose` vs `onOpenChange` prop mismatch at usage sites | MEDIUM | Adapter shim pattern mandatory at all site-level usages before PR close; track each exception during downstream planning/migration work |

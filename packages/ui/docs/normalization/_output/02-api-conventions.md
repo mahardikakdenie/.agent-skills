@@ -111,6 +111,33 @@ Variant vocabulary rule:
 
 ## Canonical Component Contracts
 
+### Box
+
+```ts
+export type BoxPadding = 'none' | 'sm' | 'md' | 'lg'
+export type BoxContainer = 'sm' | 'md' | 'lg' | 'xl' | 'full'
+
+export interface BoxOwnProps {
+  asChild?: boolean
+  padding?: BoxPadding
+  container?: BoxContainer
+  centered?: boolean
+  className?: string
+}
+
+export type BoxProps<C extends React.ElementType = 'div'> =
+  PolymorphicComponentPropsWithRef<C, BoxOwnProps>
+```
+
+Rules:
+- `padding` is the only shared spacing preset API for `Box`; use `className` for anything more specific.
+- `container` is a max-width preset only; do not fold route shells, sidebar chrome, or app layout policy into `Box`.
+- `centered` is layout-only (`flex items-center justify-center`) and must stay generic.
+
+Story group: `Layout`
+
+---
+
 ### Button
 
 ```ts
@@ -646,7 +673,7 @@ Source: `06-component-standards.md §4`
 
 ```ts
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../../utils/cn';
+import { cn } from '@repo/helper';
 
 const componentVariants = cva(
   'base-classes-here',
