@@ -636,7 +636,7 @@ export const ResponsiveLayout: Story = {
 > - Replace any raw hex/named colors → CSS variable tokens (`bg-primary`, `text-destructive`)
 > - Wrap with `React.forwardRef` + set `displayName`
 > - Extract variant logic into CVA
-> - `cn()` import: inside `packages/ui` use **`import { cn } from '../../utils/cn'`** (internal). Do NOT import from `@repo/helper` inside the package itself.
+> - `cn()` import: use **`import { cn } from '@repo/helper'`** in both `packages/ui` and app code so the workspace shares a single helper. Do NOT import `clsx` or `tailwind-merge` directly inside component files.
 > - Verify no `next/*` imports remain
 
 > **context7 MCP tip:** For any Radix primitive used:
@@ -662,7 +662,7 @@ Add adapter notes if needed to `packages/ui/docs/normalization/_output/21-adapte
 ## App-Agnostic Checklist (mandatory before PR)
 
 ### Implementation Standards (per [06-component-standards.md](./06-component-standards.md) Sections 9–10)
-- [ ] `cn()` from internal `'../../utils/cn'` — `import { cn } from '../../utils/cn'` (never from `@repo/helper` or directly from `tailwind-merge`)
+- [ ] `cn()` from `@repo/helper` — `import { cn } from '@repo/helper'` (single shared helper; never import `clsx` or `tailwind-merge` directly in component files)
 - [ ] Variant logic defined with CVA; `cn(variantClasses, className)` merge order correct
 - [ ] Tailwind classes use only CSS variable tokens (no hardcoded hex/rgb/named colors)
 - [ ] Radix `data-[state=*]` selectors used for interactive states (no style props for state)
