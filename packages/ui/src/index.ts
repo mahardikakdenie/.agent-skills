@@ -6,5 +6,8 @@ export * from './Alert';
 export * from './Badge';
 export * from './Button';
 
+// Inputs
+export * from './Checkbox';
+
 // Layout
 export * from './Card';

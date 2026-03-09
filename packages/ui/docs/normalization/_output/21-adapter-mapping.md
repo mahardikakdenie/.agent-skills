@@ -75,3 +75,20 @@ Keep local:
 - Domain-specific statistic, product, transaction, and plan cards that still encode business formatting, computed labels, or workflow state.
 - Cards that encapsulate routing, service orchestration, permission checks, or API-driven side effects beyond plain composition.
 - Branded marketing or campaign cards whose identity depends on app-specific illustration systems, copy policy, or campaign logic.
+
+## Checkbox
+
+Direct adoption guidance:
+
+- Legacy consent checkboxes, settings toggles, and row-selection controls map to `Checkbox`.
+- Existing `checked`, `defaultChecked`, `onChange`, or `onCheckedChange` flows normalize to `checked`, `defaultChecked`, and `onCheckedChange`.
+- Inline field copy maps to `label`, `description`, and `error`; required indicators stay on `required` instead of app-local suffix markup.
+- Partial-selection or “select all” states map to `checked="indeterminate"`.
+- Dense list or table controls map to `size="sm"`; general form usage maps to `size="md"`.
+
+Keep local:
+
+- Checkbox groups that still own domain validation, conditional side effects, or submission orchestration.
+- Composite multi-select shells that fetch options, compute summaries, or persist selection state beyond a single checkbox field.
+- Route- or workflow-specific wrappers that combine checkbox rendering with business copy, navigation, auth, or service logic.
+

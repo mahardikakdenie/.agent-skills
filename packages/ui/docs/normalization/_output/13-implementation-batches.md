@@ -291,7 +291,7 @@
 | Badge | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, canonical size/variant coverage, and Box-composed dot support |
 | Button | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, canonical variant/size coverage, loading state, and Box-authored `asChild` composition |
 | Card | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound slot exports, and consumer-owned interactive composition |
-| Checkbox | 4 | B4 | PLANNED | Needs invalid and indeterminate coverage |
+| Checkbox | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored field markup, and invalid + indeterminate coverage |
 | ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
 | Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
 | Drawer | 4 | B4 | PLANNED | Depends on `vaul` |
@@ -329,3 +329,4 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+

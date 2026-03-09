@@ -256,9 +256,12 @@ Story group: `Inputs`
 ### Checkbox
 
 ```ts
-export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
-  checked?: boolean
-  onCheckedChange?: (checked: boolean) => void
+export type CheckboxCheckedState = boolean | 'indeterminate'
+
+export interface CheckboxProps extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, 'checked' | 'defaultChecked' | 'onCheckedChange'> {
+  checked?: CheckboxCheckedState
+  defaultChecked?: CheckboxCheckedState
+  onCheckedChange?: (checked: CheckboxCheckedState) => void
   disabled?: boolean
   required?: boolean
   label?: string
@@ -1059,4 +1062,5 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+
 
