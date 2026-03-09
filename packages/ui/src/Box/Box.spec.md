@@ -2,77 +2,76 @@
 
 ## Metadata
 
-| Field | Value |
-| --- | --- |
-| Storybook Group | `Layout` |
-| Tier | 1 - Primitive |
-| Based on | `@radix-ui/react-slot` |
-| Status | Approved |
+| Field           | Value                  |
+| --------------- | ---------------------- |
+| Storybook Group | `Layout`               |
+| Tier            | 1 - Primitive          |
+| Based on        | `@radix-ui/react-slot` |
 
 ## Overview
 
 `Box` is the foundational layout primitive in `@repo/ui`. It is a polymorphic wrapper that renders semantic HTML directly via `as` or merges onto a child element via `asChild`, while keeping the prop and ref surface type-safe.
 
-This Batch 3 extension keeps `Box` intentionally small. It adds only the migration-safe layout presets discovered across app baselines: `padding`, `container`, and `centered`. It must not absorb route chrome, page shells, or app-specific layout policy.
-
 When to use:
+
 - Replace bare structural elements such as `div`, `section`, `article`, `main`, `aside`, `ul`, or `li`.
 - Apply shared max-width, horizontal padding, or simple centering without introducing a higher-level layout component.
 
 When not to use:
+
 - Route shells, branded page frames, sidebar layouts, or any app-specific composition.
 - Interactive widgets that need their own semantic primitive or Radix component.
 
 ## Design Decisions
 
-| Decision | Choice | Rationale |
-| --- | --- | --- |
-| Primitive | `@radix-ui/react-slot` | Keeps `asChild` composition renderless and consistent with the approved Radix pattern. |
-| Polymorphism | `as` + `asChild` | Supports semantic HTML replacement and child-slot composition without separate wrapper components. |
-| Variant strategy | CVA presets only | `padding`, `container`, and `centered` stay token-safe and limited to migration-backed layout behavior. |
-| Controlled state | None | `Box` is purely structural and non-interactive. |
-| Public API limit | No visual variants | Prevents `Box` from turning into a page-shell or surface abstraction. |
+| Decision         | Choice                 | Rationale                                                                                               |
+| ---------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| Primitive        | `@radix-ui/react-slot` | Keeps `asChild` composition renderless and consistent with the approved Radix pattern.                  |
+| Polymorphism     | `as` + `asChild`       | Supports semantic HTML replacement and child-slot composition without separate wrapper components.      |
+| Variant strategy | CVA presets only       | `padding`, `container`, and `centered` stay token-safe and limited to migration-backed layout behavior. |
+| Controlled state | None                   | `Box` is purely structural and non-interactive.                                                         |
+| Public API limit | No visual variants     | Prevents `Box` from turning into a page-shell or surface abstraction.                                   |
 
 ## Props Interface
 
-| Prop | Type | Default | Required | Description |
-| --- | --- | --- | --- | --- |
-| `as` | `React.ElementType` | `"div"` | No | Native element or component to render when `asChild` is false. |
-| `asChild` | `boolean` | `false` | No | Merges props onto the single child element via Radix `Slot`. |
-| `padding` | `'none' \| 'sm' \| 'md' \| 'lg'` | `'none'` | No | Shared horizontal padding presets for body-wrapper migration. |
-| `container` | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `undefined` | No | Max-width container preset with centered horizontal alignment. |
-| `centered` | `boolean` | `false` | No | Adds `flex items-center justify-center` for generic centering wrappers. |
-| `className` | `string` | `undefined` | No | Additional classes merged after presets. |
-| `ref` | `React.Ref<...>` | `undefined` | No | Forwarded ref typed to the chosen element. |
-| `...rest` | `React.ComponentPropsWithoutRef<C>` | `undefined` | No | Passthrough props for the chosen element type. |
+| Prop        | Type                                     | Default     | Required | Description                                                             |
+| ----------- | ---------------------------------------- | ----------- | -------- | ----------------------------------------------------------------------- |
+| `as`        | `React.ElementType`                      | `"div"`     | No       | Native element or component to render when `asChild` is false.          |
+| `asChild`   | `boolean`                                | `false`     | No       | Merges props onto the single child element via Radix `Slot`.            |
+| `padding`   | `'none' \| 'sm' \| 'md' \| 'lg'`         | `'none'`    | No       | Shared horizontal padding presets for body-wrapper migration.           |
+| `container` | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `undefined` | No       | Max-width container preset with centered horizontal alignment.          |
+| `centered`  | `boolean`                                | `false`     | No       | Adds `flex items-center justify-center` for generic centering wrappers. |
+| `className` | `string`                                 | `undefined` | No       | Additional classes merged after presets.                                |
+| `ref`       | `React.Ref<...>`                         | `undefined` | No       | Forwarded ref typed to the chosen element.                              |
+| `...rest`   | `React.ComponentPropsWithoutRef<C>`      | `undefined` | No       | Passthrough props for the chosen element type.                          |
 
 ## Layout Presets
 
 ### Padding
 
-| Value | Behavior | Intended use |
-| --- | --- | --- |
-| `none` | No preset spacing | Consumer owns all spacing through `className` |
-| `sm` | Compact horizontal padding | Small inline shells and narrow content blocks |
-| `md` | Default responsive horizontal padding | Standard content areas |
-| `lg` | Wide responsive horizontal padding | Broader dashboard and marketing shells |
+| Value  | Behavior                              | Intended use                                  |
+| ------ | ------------------------------------- | --------------------------------------------- |
+| `none` | No preset spacing                     | Consumer owns all spacing through `className` |
+| `sm`   | Compact horizontal padding            | Small inline shells and narrow content blocks |
+| `md`   | Default responsive horizontal padding | Standard content areas                        |
+| `lg`   | Wide responsive horizontal padding    | Broader dashboard and marketing shells        |
 
 ### Container
 
-| Value | Behavior | Intended use |
-| --- | --- | --- |
-| `sm` | `max-w-screen-sm` | Compact forms and narrow reading widths |
-| `md` | `max-w-screen-md` | Standard content column |
-| `lg` | `max-w-screen-lg` | Wider dashboard or management content |
-| `xl` | `max-w-screen-xl` | Large content surfaces |
-| `full` | `max-w-full` | Full-width content while preserving `mx-auto w-full` |
+| Value  | Behavior          | Intended use                                         |
+| ------ | ----------------- | ---------------------------------------------------- |
+| `sm`   | `max-w-screen-sm` | Compact forms and narrow reading widths              |
+| `md`   | `max-w-screen-md` | Standard content column                              |
+| `lg`   | `max-w-screen-lg` | Wider dashboard or management content                |
+| `xl`   | `max-w-screen-xl` | Large content surfaces                               |
+| `full` | `max-w-full`      | Full-width content while preserving `mx-auto w-full` |
 
 ### Centered
 
-| Value | Behavior | Intended use |
-| --- | --- | --- |
-| `false` | No centering preset | Default structural wrapper |
-| `true` | `flex items-center justify-center` | Generic empty/loading/placeholder alignment only |
+| Value   | Behavior                           | Intended use                                     |
+| ------- | ---------------------------------- | ------------------------------------------------ |
+| `false` | No centering preset                | Default structural wrapper                       |
+| `true`  | `flex items-center justify-center` | Generic empty/loading/placeholder alignment only |
 
 ## States
 
@@ -117,13 +116,13 @@ When not to use:
 
 ## Do / Don't
 
-| Do | Don't |
-| --- | --- |
-| Use `Box` to eliminate bare structural HTML in shared and app code. | Put business logic, routing, or data loading into `Box`. |
-| Choose `as` semantically, such as `main`, `nav`, `section`, or `ul`. | Treat `Box` as a replacement for semantic thinking. |
-| Use `padding`, `container`, and `centered` only for generic layout presets. | Expand `Box` into branded shells, page frames, or layout policy. |
-| Use `asChild` when you need renderless composition onto one child. | Combine `asChild` with child components that do not spread props or forward refs. |
-| Layer app-specific spacing and layout details with `className`. | Add visual variants, tone props, or domain-specific aliases. |
+| Do                                                                          | Don't                                                                             |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Use `Box` to eliminate bare structural HTML in shared and app code.         | Put business logic, routing, or data loading into `Box`.                          |
+| Choose `as` semantically, such as `main`, `nav`, `section`, or `ul`.        | Treat `Box` as a replacement for semantic thinking.                               |
+| Use `padding`, `container`, and `centered` only for generic layout presets. | Expand `Box` into branded shells, page frames, or layout policy.                  |
+| Use `asChild` when you need renderless composition onto one child.          | Combine `asChild` with child components that do not spread props or forward refs. |
+| Layer app-specific spacing and layout details with `className`.             | Add visual variants, tone props, or domain-specific aliases.                      |
 
 ## Storybook Stories Required
 
@@ -138,7 +137,6 @@ When not to use:
 
 ## Changelog
 
-| Date | Author | Change |
-| --- | --- | --- |
-| 2026-03-08 | Codex | Initial Batch 3 extension spec for `padding`, `container`, and `centered`. |
-| 2026-03-10 | Codex | Re-executed Box against the Batch 4 procedural contract; aligned Storybook taxonomy, explicit `className` contract, and story coverage. |
+| Date       | Change           |
+| ---------- | ---------------- |
+| 2026-03-10 | Initial Box spec |

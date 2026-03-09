@@ -30,7 +30,7 @@
 - This rerun plans the canonical shared program on top of the raw deduplicated backlog captured in `12-master-backlog.csv`.
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
-- Cross-check on 2026-03-09 confirms the current `@repo/ui` export surface is still `Box` only; Batch 4 tracker rows remain planning state until code lands in `packages/ui/src`.
+- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box` and `Alert`; remaining Batch 4 tracker rows stay planning state until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -160,7 +160,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; it remains `PLANNED` because component implementation beyond `Box` has not started.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
 
 ### packages/ui work required
 
@@ -168,6 +168,7 @@
 - Create or update `ComponentName.spec.md` before stories or code for every Batch 4 row.
 - Match each component folder to its `Simple`, `Standard`, or `Complex` structure tier before implementation starts.
 - Use `Box` for structural wrappers; native markup is reserved for semantic primitives and Radix/browser-required elements only.
+- Do not hand-author inline SVG markup in `packages/ui` source when a shared icon component is available; for Lucide usage, import named icons from `'lucide-react'` only and never from `dist/*` or default imports.
 - Avoid same-component parallelism.
 - Update the shared tracker in this file when any component changes state.
 
@@ -181,6 +182,7 @@
 - Shared component gate, for every component:
   - `ComponentName.spec.md` exists and matches the shipped API
   - Structural wrappers use `Box` unless the element is a semantic primitive or Radix/browser-required
+  - Stories/examples do not deep-import `lucide-react`, and authored source does not contain hand-written `<svg>` / `<path>` markup unless a browser or headless primitive makes it unavoidable
   - `pnpm --filter @repo/ui check-types`
   - `pnpm --filter @repo/ui lint`
   - `pnpm --filter @repo/ui build`
@@ -285,21 +287,21 @@
 | Component | Program batch | Wave | Status | Blocker / note |
 | --- | --- | --- | --- | --- |
 | Box | 3 | B3 | DONE | `padding`, `container`, and `centered` presets verified on 2026-03-08; re-executed for Batch 4 compliance on 2026-03-10 |
-| Alert | 4 | B4 | PLANNED | Depends on foundation readiness only |
-| Badge | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
+| Alert | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, semantic variants, and controlled dismiss behavior |
+| Badge | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
 | Button | 4 | B4 | PLANNED | High-demand primitive |
-| Card | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
+| Card | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
 | Checkbox | 4 | B4 | PLANNED | Needs invalid and indeterminate coverage |
 | ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
 | Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
 | Drawer | 4 | B4 | PLANNED | Depends on `vaul` |
 | Input | 4 | B4 | PLANNED | Core primitive |
-| Label | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
+| Label | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
 | Pagination | 4 | B4 | PLANNED | Shared navigation primitive |
 | RadioGroup | 4 | B4 | PLANNED | Form-aligned control |
 | Select | 4 | B4 | PLANNED | Static select only |
-| Skeleton | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
-| Spinner | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
+| Skeleton | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
+| Spinner | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
 | Switch | 4 | B4 | PLANNED | Toggle control |
 | Table | 4 | B4 | PLANNED | Foundation for `DataTable` |
 | Tabs | 4 | B4 | PLANNED | Route sync remains local |
@@ -327,4 +329,5 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 

@@ -69,3 +69,18 @@ Impact:
 - Batch 3A status is now evidence-backed and internally consistent across the normalization outputs.
 - Batch 4 is unblocked from a token-foundation perspective.
 - Batch 5 remains gated by shared component delivery, not by missing token infrastructure.
+
+---
+
+## 2026-03-10 - Alert Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Alert` as the first new Batch 4 shared feedback component after `Box`.
+- Added the canonical Alert spec, Storybook coverage, typed exports, and token-only semantic variants (`default`, `success`, `info`, `warning`, `destructive`).
+- Locked dismiss behavior to a controlled callback model so inline alerts stay app-agnostic and do not absorb toast/snackbar orchestration.
+- Normalized icon authoring guidance for the next waves: authored `packages/ui` source should not hand-write inline SVG markup when a shared icon component exists, and Lucide usage must stay on named imports from `'lucide-react'`.
+
+Impact:
+- `@repo/ui` export surface now includes `Alert` alongside `Box`.
+- Inline flash-message, notification-bar, and banner-style feedback can start mapping toward a single shared Alert contract during downstream adoption.
+
