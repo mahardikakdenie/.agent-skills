@@ -996,7 +996,7 @@ Columns: `component_name,final_classification,batch,priority,risk_level,effort,c
 
 ### `13-implementation-batches.md`
 
-For each batch (1 through 6):
+For each batch (1 through 6, plus explicit Batch 3A between Batch 3 and Batch 4):
 - Scope description
 - packages/ui work required
 - Per-app work required
@@ -1017,11 +1017,67 @@ Do NOT modify any apps. Commit to feat/ui when complete.
 
 ---
 
-## Batch 4 - Build packages/ui: Extend Existing (from Batch 3 items)
+## Batch 3A - Token Foundation Bootstrap
+
+> **Branch:** `feat/ui`
+> **Run:** Once - immediately after Batch 3 complete, before Batch 4 or Batch 5 begins
+> **Prerequisite:** Batch 3 outputs (`10-cross-app-reconciliation.md`, `11-master-component-roadmap.md`, `12-master-backlog.csv`, `13-implementation-batches.md`) exist and `03-token-theming-contract.md` is locked
+
+```
+You are a Principal Frontend Engineer on branch `feat/ui`.
+
+Read before starting:
+- `<APP_PATH>/docs/migration/component/04-build-shared-components.md` (shared implementation and verification expectations)
+- `<APP_PATH>/docs/migration/component/06-component-standards.md` (Sections 5 and 9-13)
+- `packages/ui/docs/normalization/_output/00-foundation.md`
+- `packages/ui/docs/normalization/_output/03-token-theming-contract.md`
+- `packages/ui/docs/normalization/_output/11-master-component-roadmap.md`
+- `packages/config/**`
+- `packages/helper/**`
+- `packages/ui/src/**` (current shared styling entry points)
+
+## Objective
+
+Execute the token and theming contract from `03-token-theming-contract.md` as real shared infrastructure before any Batch 4 or Batch 5 shared component work begins.
+This batch converts the token contract from docs into the workspace bootstrap that `@repo/ui` and consuming apps will rely on.
+
+## Required Changes
+
+1. Add and export the semantic token preset in `packages/config` as the source of truth for shared components.
+2. Keep legacy palette-based `@theme` tokens only as temporary backward-compatible support for existing app code during rollout.
+3. Ensure shared components consume semantic tokens only (`bg-primary`, `text-foreground`, `border-input`, etc.) and do not introduce raw palette tokens, hardcoded hex, `rgb(...)`, or named color values.
+4. Define the consuming-app contract explicitly: apps import the preset in `globals.css`, then override app-brand values locally.
+5. Wire dark mode through `[data-theme="dark"]` only.
+6. Update setup or foundation docs if they still point consumers to the old palette-only contract.
+
+## Explicit Non-Goals
+
+- Do NOT migrate app usage sites yet.
+- Do NOT build new shared components yet.
+- Do NOT change app-specific business styling beyond what is required to bootstrap the token contract.
+
+## Acceptance Criteria
+
+- A semantic token preset is exported from `@repo/config`
+- The preset covers every required token from `03-token-theming-contract.md`
+- `@repo/ui` can rely on semantic tokens without fallback to app-local variable definitions
+- `pnpm --filter @repo/ui check-types`
+- `pnpm --filter @repo/ui lint`
+- `pnpm --filter @repo/ui build`
+- `13-implementation-batches.md` explicitly marks Batch 4 and Batch 5 as blocked on Batch 3A completion
+
+> Skills (if installed): `$design-system` (token naming, semantic scale rules, dark-mode contract); `$monorepo-workspace` (shared package boundaries, correct package ownership for config/helper/ui); `$turborepo` (verification commands and dependency sequencing)
+
+Do NOT modify app migration usage sites in this batch. Commit to feat/ui when complete.
+```
+
+---
+
+## Batch 4 - Build packages/ui: Extend Existing (from Batch 3 items; Batch 3A required)
 
 > **Branch:** `feat/ui`
 > **Run:** Once per EXTEND_EXISTING component — repeat this prompt per component
-> **Prerequisite:** `11-master-component-roadmap.md` and `02-api-conventions.md` exist
+> **Prerequisite:** `11-master-component-roadmap.md` and `02-api-conventions.md` exist, and Batch 3A token bootstrap is complete
 
 ```
 You are a Principal Frontend Engineer on branch `feat/ui`.
@@ -1075,11 +1131,11 @@ Update `packages/ui/docs/normalization/_output/13-implementation-batches.md` tra
 
 ---
 
-## Batch 5 - Build packages/ui: New Components (from Batch 4 items)
+## Batch 5 - Build packages/ui: New Components (from Batch 4 items; Batch 3A required)
 
 > **Branch:** `feat/ui`
 > **Run:** Once per NEW_SHARED_COMPONENT — repeat this prompt per component
-> **Prerequisite:** `11-master-component-roadmap.md` and `02-api-conventions.md` exist
+> **Prerequisite:** `11-master-component-roadmap.md` and `02-api-conventions.md` exist, and Batch 3A token bootstrap is complete
 
 ```
 You are a Principal Frontend Engineer on branch `feat/ui`.
