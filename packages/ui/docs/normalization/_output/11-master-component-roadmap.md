@@ -19,19 +19,19 @@
 
 ### Roadmap operating rules
 
-- Box is the only Batch 3 extension item in this rerun.
-- Batch 3A must complete immediately after Box planning is locked and before any Wave B4 execution starts.
-- All non-`Box` shared items remain Batch 4 build scope, regardless of sub-wave sequencing.
+- Box is the only canonical Batch 4 `EXTEND_EXISTING` item in this rerun, and it was fast-tracked during Batch 3 foundation prep.
+- Batch 3A must complete immediately after Batch 3 planning is locked and before any remaining Batch 4 or Batch 5 execution starts.
+- All non-`Box` shared items remain Batch 5 build scope, regardless of sub-wave sequencing.
 - Consumer demand is represented as normalized counts from `05-coverage-baseline.md`, not raw per-app export lists.
 - `RichTextEditor` remains visible for traceability but stays decision-gated.
 
-## 2. Batch 3 - Extend Existing
+## 2. Batch 4 - Extend Existing
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Box | 1 (Primitive) | `@radix-ui/react-slot` | `asChild`, `padding`, `container`, `centered` | none | Standard | `Box.Default`, `Box.Padding`, `Box.Container`, `Box.Centered` | Existing primitive; 27-app baseline footprint in `01` | S | Extend only the layout primitive contract; do not absorb app-specific page shells |
+| Box | 1 (Primitive) | `@radix-ui/react-slot` | `asChild`, `padding`, `container`, `centered` | none | Standard | `Box.Default`, `Box.Padding`, `Box.Container`, `Box.Centered` | Existing primitive; 27-app baseline footprint in `01` | S | Canonical Batch 4 `EXTEND_EXISTING` item, fast-tracked during Batch 3 foundation prep; do not absorb app-specific page shells |
 
-## 3. Wave B4 - Core Foundation Build
+## 3. Batch 5 Wave 5.0 - Core Foundation Build
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -55,7 +55,7 @@
 | Tabs | 2 (Composite) | `@radix-ui/react-tabs` | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation` | `@radix-ui/react-tabs` | Standard | `Tabs.Basic`, `Tabs.Disabled`, `Tabs.Scrollable` | 13 apps; see `05` | S | Route sync stays local |
 | Textarea | 1 (Primitive) | native `<textarea>` | `02` §Textarea | none | Standard | `Textarea.Default`, `Textarea.Resize`, `Textarea.Error`, `Textarea.Disabled` | 18 apps; see `05` | S | Plain-text multiline input only |
 
-## 4. Wave B5.1 - Date and Overlay Normalization
+## 4. Batch 5 Wave 5.1 - Date and Overlay Normalization
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -67,7 +67,7 @@
 | Popover | 2 (Composite) | `@radix-ui/react-popover` | `02` §Popover | `@radix-ui/react-popover` | Standard | `Popover.Basic`, `Popover.Form`, `Popover.Controlled` | 9 apps; see `05` | S | Overlay foundation dependency |
 | Tooltip | 2 (Composite) | `@radix-ui/react-tooltip` | `02` §Tooltip | `@radix-ui/react-tooltip` | Standard | `Tooltip.Basic`, `Tooltip.SideVariants`, `Tooltip.LongContent` | 9 apps; see `05` | XS | Small a11y-sensitive surface |
 
-## 5. Wave B5.2 - Advanced Input and Data Display
+## 5. Batch 5 Wave 5.2 - Advanced Input and Data Display
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -81,7 +81,7 @@
 | OtpInput | 2 (Composite) | Tier 1 composition | `02` §OtpInput | none | Standard | `OtpInput.Basic`, `OtpInput.Error`, `OtpInput.Disabled` | 6 apps; see `05` | S | Segmented input contract |
 | PageHeader | 2 (Composite) | Tier 1 composition | `02` amendment: `title`, `description`, `actions`, `meta` | none | Standard | `PageHeader.Basic`, `PageHeader.WithActions`, `PageHeader.WithMetadata` | 8 apps; see `05` | S | Structural page header only |
 
-## 6. Wave B5.3 - Remaining Medium-Demand Components
+## 6. Batch 5 Wave 5.3 - Remaining Medium-Demand Components
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -89,7 +89,7 @@
 | Command | 2 (Composite) | `cmdk` | `02` amendment: `items`, `value`, `onValueChange`, `emptyState` | `cmdk` | Complex | `Command.Basic`, `Command.Empty`, `Command.Groups`, `Command.Shortcuts` | 5 apps; see `05` | M | Shared command surface |
 | DateTimePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `minDateTime`, `maxDateTime`, `timezone` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateTimePicker.Basic`, `DateTimePicker.Timezone`, `DateTimePicker.Invalid` | 5 apps; see `05` | L | Depends on settled date semantics |
 
-## 7. Wave B5.4 - Long Tail and Decision-Gated Work
+## 7. Batch 5 Wave 5.4 - Long Tail and Decision-Gated Work
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -103,5 +103,5 @@
 - This roadmap is the canonical shared-program implementation view layered on top of the raw deduplicated backlog in `12-master-backlog.csv`.
 - `consumer apps` in this rerun means normalized demand counts from `05`, not explicit app-name lists.
 - Any API marked 2 amendment must be mirrored back into 2-api-conventions.md before implementation starts.
-- Batch 3A token bootstrap is a hard gate for every row after Box.
+- Batch 3A token bootstrap is a hard gate for every remaining Batch 4 or Batch 5 row after Box.
 - `RichTextEditor` is visible for completeness but remains outside the initial critical path.
