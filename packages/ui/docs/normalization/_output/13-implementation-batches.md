@@ -167,7 +167,7 @@
 - Implement the roadmap in the exact order defined by `11-master-component-roadmap.md`.
 - Create or update `ComponentName.spec.md` before stories or code for every Batch 4 row.
 - Match each component folder to its `Simple`, `Standard`, or `Complex` structure tier before implementation starts.
-- Use `Box` for structural wrappers; native markup is reserved for semantic primitives and Radix/browser-required elements only.
+- Use `Box` as the authored DOM primitive everywhere in shared source; semantic HTML and SVG output must be expressed via `Box as="..."`, not direct native JSX tags.
 - Do not hand-author inline SVG markup in `packages/ui` source when a shared icon component is available; for Lucide usage, import named icons from `'lucide-react'` only and never from `dist/*` or default imports.
 - Avoid same-component parallelism.
 - Update the shared tracker in this file when any component changes state.
@@ -181,8 +181,8 @@
 
 - Shared component gate, for every component:
   - `ComponentName.spec.md` exists and matches the shipped API
-  - Structural wrappers use `Box` unless the element is a semantic primitive or Radix/browser-required
-  - Stories/examples do not deep-import `lucide-react`, and authored source does not contain hand-written `<svg>` / `<path>` markup unless a browser or headless primitive makes it unavoidable
+  - Authored JSX in shared source and stories uses `Box` for every DOM node; semantic HTML and SVG output is expressed via `Box as="..."`
+  - Stories/examples do not deep-import `lucide-react`, and authored source does not contain direct native JSX tags such as `div`, `button`, `input`, `textarea`, `table`, `svg`, or `path`
   - `pnpm --filter @repo/ui check-types`
   - `pnpm --filter @repo/ui lint`
   - `pnpm --filter @repo/ui build`

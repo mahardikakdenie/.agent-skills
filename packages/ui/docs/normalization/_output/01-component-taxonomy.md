@@ -22,21 +22,21 @@
 
 ## Tier 1 - Primitive Components
 
-> Atomic, single-element. Wrap a single Radix UI primitive or HTML element. All require `React.forwardRef`, `displayName`, and exported props interface.
+> Atomic, single-element. Wrap a single Radix UI primitive or semantic DOM target through `Box as="..."` rather than authored native JSX tags. All require `React.forwardRef`, `displayName`, and exported props interface.
 > Source: `06-component-standards.md 1`
 
 | Component | Canonical Export | Radix Primitive | `@repo/ui` Status | Apps Needing | Notes |
 |---|---|---|---|---|---|
 | Box | `Box` | `@radix-ui/react-slot` | [x] exists | 27 | Polymorphic layout primitive; `as` prop; element eliminator |
 | Button | `Button` | `@radix-ui/react-slot` | [ ] missing | 23 | Consolidates: `Button`, `UiButton`, `button.tsx` across 15+ apps |
-| Input | `Input` | `<input>` | [ ] missing | 26 | Consolidates: `Input`, `InputText`, `InputEmail`, `InputPhone`, `InputCurrency`, `InputName`, `InputNumber`, `FormInput`, `UiInput` |
-| Textarea | `Textarea` | `<textarea>` | [ ] missing | 18 | Consolidates: `Textarea`, `TextArea`, `TextInput` (text-area variant) |
+| Input | `Input` | semantic input target via `Box as="input"` | [ ] missing | 26 | Consolidates: `Input`, `InputText`, `InputEmail`, `InputPhone`, `InputCurrency`, `InputName`, `InputNumber`, `FormInput`, `UiInput` |
+| Textarea | `Textarea` | semantic textarea target via `Box as="textarea"` | [ ] missing | 18 | Consolidates: `Textarea`, `TextArea`, `TextInput` (text-area variant) |
 | Label | `Label` | `@radix-ui/react-label` | [ ] missing | 10 | Standalone label primitive; story group: Misc |
 | Checkbox | `Checkbox` | `@radix-ui/react-checkbox` | [ ] missing | 20 | Present in admin-portal, customer-portal, teman-affiliate-microsite, ecommerce-teman, claim-portal, agent-microsite, gelm-xproject-microsite, ticket-portal, getrev-da-microsite, grab-landing-page |
 | RadioGroup | `RadioGroup` | `@radix-ui/react-radio-group` | [ ] missing | 11 | Consolidates: `RadioGroup`, `RadioButton`, `CustomRadio`, `CustomRadioGroup` |
 | Switch | `Switch` | `@radix-ui/react-switch` | [ ] missing | 9 | Present in teman-affiliate-admin, admin-portal, customer-portal, ticket-portal, teman-affiliate-portal |
 | Select | `Select` | `@radix-ui/react-select` | [ ] missing | 25 | Consolidates all Select/MultiSelect/SelectAutocomplete variants; mode flags |
-| Table | `Table` | `<table>` | [ ] missing | 12 | Structural only - no data. Sub-components: `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`, `TableFooter` |
+| Table | `Table` | semantic table targets via `Box as="table"` and related tags | [ ] missing | 12 | Structural only - no data. Sub-components: `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`, `TableFooter` |
 | Badge | `Badge` | - | [ ] missing | 11 | Consolidates: `Badge` across 7+ apps; short status chip |
 | Avatar | `Avatar` | `@radix-ui/react-avatar` | [ ] missing | 6 | Consolidates: `Avatar` across teman-affiliate-admin, gegm-friendcover-admin, claim-portal |
 | Skeleton | `Skeleton` | - | [ ] missing | 10 | Structural skeleton loader. Distinct from `ContentLoadingWrapper` |
@@ -74,12 +74,20 @@
 | PageHeader | `PageHeader` | Tier 1 | [ ] missing | 8 | Layout | Top-page header shell (title, actions slot); framework-agnostic |
 | ContentLoadingWrapper | `ContentLoadingWrapper` | `Skeleton` | [ ] missing | 18 | Layout | Consolidates: `Loader`, `Loading`, `LoadingWrapper`, `SuspenseFallback`; overlay/inline/page variants. **Canonical name per `06-component-standards.md 1`** |
 | FileUpload | `FileUpload` | Tier 1 | [ ] missing | 12 | Inputs | Consolidates: `FileUpload`, `FileInput`, `DropFile`, `DragDropExcel`, `UploadFile`, `FileDropzone` |
-| Image | `Image` | `@radix-ui/react-avatar` (fallback) | [ ] missing | 13 | Data Display | Consolidates: `ImageOrDefault`, `OptimizeImageShell`, `ViewImage`; fallback + alt semantics |
+| Image | `Image` | semantic `img` target via `Box as="img"` with fallback composition | [ ] missing | 13 | Data Display | Consolidates: `ImageOrDefault`, `OptimizeImageShell`, `ViewImage`; fallback + alt semantics |
 | OtpInput | `OtpInput` | Tier 1 | [ ] missing | 6 | Inputs | Consolidates: `OtpInput` from customer-portal, ecommerce-teman, sso-portal, grab-landing-page |
 | Accordion | `Accordion` | `@radix-ui/react-accordion` | [ ] missing | 4 | Layout | Compound: `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent` |
 | Timeline | `Timeline` | Tier 1 | [ ] missing | 3 | Data Display | Compound: `Timeline`, `TimelineItem`; from teman-affiliate-admin |
 | MonthPicker | `MonthPicker` | `Calendar` + `Popover` | [ ] missing | 3 | Inputs | Month-only picker; from partner-portal, teman-affiliate-portal |
 | RichTextEditor | `RichTextEditor` | external editor (TBD) | [ ] missing | 1 | Inputs | From ticket-portal legacy intake; queued for Phase 3 scope decision |
+
+---
+
+## Box Authorship Policy
+
+- `Box` remains the authored DOM primitive for shared source in `packages/ui`.
+- When a component needs semantic output such as `input`, `textarea`, `table`, `img`, or SVG tags, author the JSX as `Box` with the matching `as` prop.
+- Do not hand-author native JSX tags directly in shared component source or stories.
 
 ---
 

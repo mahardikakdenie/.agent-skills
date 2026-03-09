@@ -140,6 +140,15 @@ Notable cross-app shared shell candidates surfaced from Batch 1.5:
 
 ---
 
+## Shared DOM Authorship Rule
+
+- Boundary-safe shared components still must follow the Box authorship model.
+- Authored JSX inside `packages/ui` must not use direct native DOM or SVG tags.
+- When semantic output is required, render it through `Box` with `as`, including `input`, `textarea`, `table`, `img`, `svg`, and `path`.
+- `asChild` remains valid for consumer-injected framework elements such as `next/link`, but shared authored structure should still originate from `Box` or Radix primitives that accept `asChild`.
+
+---
+
 ## `@repo/ui` Package Boundary Enforcement
 
 These imports are **forbidden** inside `packages/ui` source files:

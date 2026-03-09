@@ -94,7 +94,12 @@ export function DataTable<TData>({ data, columns, loading }: DataTableProps<TDat
 ```ts
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => (
-    <input ref={ref} className={cn(inputVariants(), className)} {...props} />
+    <Box
+      as="input"
+      ref={ref}
+      className={cn(inputVariants(), className)}
+      {...props}
+    />
   )
 );
 Input.displayName = 'Input';
@@ -133,8 +138,17 @@ Rules:
 - `padding` is the only shared spacing preset API for `Box`; use `className` for anything more specific.
 - `container` is a max-width preset only; do not fold route shells, sidebar chrome, or app layout policy into `Box`.
 - `centered` is layout-only (`flex items-center justify-center`) and must stay generic.
+- `Box` is the authored DOM primitive for shared source. Semantic HTML and SVG output must be expressed through `Box` with the `as` prop instead of direct native JSX tags.
 
 Story group: `Layout`
+
+### Authored DOM Policy
+
+- Shared component source and stories in `packages/ui` must author DOM nodes through `Box`.
+- Do not hand-write native JSX tags such as `div`, `span`, `button`, `input`, `textarea`, `table`, `svg`, or `path` in shared authored JSX.
+- When semantic output is required, express it as `Box` with `as`, for example `Box as="button"`, `Box as="input"`, `Box as="table"`, `Box as="svg"`, or `Box as="path"`.
+- `asChild` remains the escape hatch for consumer-provided elements or Radix composition, but authored shared markup still starts from `Box`.
+- Prefer icon slots as `ReactNode`; if inline SVG is unavoidable, author it with `Box as="svg"` and `Box as="path"`.
 
 ---
 

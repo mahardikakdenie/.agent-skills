@@ -40,7 +40,7 @@ const meta = {
     docs: {
       description: {
         component:
-          '`Box` is the foundational layout primitive. It renders any HTML element via the `as` prop, supports `asChild` for renderless composition, and exposes a narrow set of migration-safe layout presets: `padding`, `container`, and `centered`.',
+          '`Box` is the foundational layout primitive and the authored DOM primitive for shared source. It renders semantic targets via the `as` prop, supports `asChild` for renderless composition, and exposes a narrow set of migration-safe layout presets: `padding`, `container`, and `centered`.',
       },
     },
   },
@@ -60,14 +60,14 @@ export const Default: Story = {
         Default Box
       </Box>
       <Box as="p" className="text-sm text-muted-foreground">
-        Renders semantic HTML directly while staying fully polymorphic and type-safe.
+        Routes semantic output through Box while staying fully polymorphic and type-safe.
       </Box>
     </Box>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Renders semantic HTML directly and keeps the wrapper app-agnostic.',
+        story: 'Routes semantic output through Box and keeps the wrapper app-agnostic.',
       },
     },
   },
@@ -173,14 +173,14 @@ export const AsChild: Story = {
       asChild
       className="flex items-center justify-center rounded-md bg-primary px-4 py-2 text-primary-foreground"
     >
-      <button type="button">Button via asChild</button>
+      <Box as="button" type="button">Button via asChild</Box>
     </Box>
   ),
   parameters: {
     docs: {
       description: {
         story:
-          'Composes onto a single child element and keeps the styling on the child rather than adding an extra wrapper.',
+          'Composes onto a single child element and keeps authored JSX on Box rather than adding an extra wrapper.',
       },
     },
   },
@@ -192,7 +192,7 @@ function RefForwardingDemo() {
   return (
     <Box ref={ref} className="rounded-md border border-border p-4 text-sm">
       <Box as="p">
-        This Box has a <code>ref</code> forwarded to the underlying <code>&lt;div&gt;</code>.
+        This Box has a <code>ref</code> forwarded to the underlying semantic target.
       </Box>
     </Box>
   );

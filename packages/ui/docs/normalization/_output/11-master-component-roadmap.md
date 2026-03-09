@@ -22,7 +22,7 @@
 - Box is the only Batch 3 extension item in this rerun.
 - Batch 3A must complete immediately after Box planning is locked and before any Wave B4 execution starts.
 - Every Batch 4 and Batch 5 component starts with `ComponentName.spec.md`; stories and implementation cannot begin before that spec exists.
-- Structural wrappers inside shared components must render through `Box`; direct native markup is reserved for semantic primitives and Radix/browser-required elements.
+- Shared authored JSX must render through `Box`, including semantic HTML and SVG output via `Box as="..."`; do not hand-write native JSX tags in shared component source.
 - All non-`Box` shared items remain Batch 4 build scope, regardless of sub-wave sequencing.
 - Consumer demand is represented as normalized counts from `05-coverage-baseline.md`, not raw per-app export lists.
 - `RichTextEditor` remains visible for traceability but stays decision-gated.
@@ -46,7 +46,7 @@
 | ContentLoadingWrapper | 2 (Composite) | `Skeleton` composition | `02` ContentLoadingWrapper | none | Standard | `ContentLoadingWrapper.Page`, `ContentLoadingWrapper.Inline`, `ContentLoadingWrapper.WithSkeleton` | 18 apps; see `05` | M | Shared loading layout only |
 | Dialog | 2 (Composite) | `@radix-ui/react-dialog` | `02` Dialog | `@radix-ui/react-dialog` | Complex | `Dialog.Basic`, `Dialog.Scrollable`, `Dialog.Destructive`, `Dialog.AsyncClose`, `Dialog.A11y` | 26 apps; see `05` | L | Explicit a11y risk gate |
 | Drawer | 2 (Composite) | `vaul` | `02` Drawer | `vaul` | Complex | `Drawer.Basic`, `Drawer.Sides`, `Drawer.Scrollable`, `Drawer.FormAction` | 10 apps; see `05` | M | Keep distinct from modal semantics |
-| Input | 1 (Primitive) | native `<input>` | `02` Input | none | Standard | `Input.Default`, `Input.Types`, `Input.WithAffix`, `Input.Error`, `Input.Disabled` | 26 apps; see `05` | M | Core primitive for later waves |
+| Input | 1 (Primitive) | semantic `input` target via `Box as="input"` | `02` Input | none | Standard | `Input.Default`, `Input.Types`, `Input.WithAffix`, `Input.Error`, `Input.Disabled` | 26 apps; see `05` | M | Core primitive for later waves |
 | Label | 1 (Primitive) | `@radix-ui/react-label` | `02` amendment: `htmlFor`, `required`, `disabled`, `tone` | `@radix-ui/react-label` | Simple | `Label.Default`, `Label.Required`, `Label.Disabled` | 10 apps; see `05` | XS | Needed before `Form` |
 | Pagination | 2 (Composite) | Tier 1 composition | `02` Pagination | none | Standard | `Pagination.Basic`, `Pagination.Compact`, `Pagination.Disabled` | 16 apps; see `05` | S | UI navigation only |
 | RadioGroup | 1 (Primitive) | `@radix-ui/react-radio-group` | `02` RadioGroup | `@radix-ui/react-radio-group` | Standard | `RadioGroup.Default`, `RadioGroup.Disabled`, `RadioGroup.Description` | 11 apps; see `05` | S | Align with `Form` naming |
@@ -54,9 +54,9 @@
 | Skeleton | 1 (Primitive) | none | `02` Skeleton | none | Simple | `Skeleton.Block`, `Skeleton.Text`, `Skeleton.Card` | 10 apps; see `05` | XS | Small composable primitive |
 | Spinner | 1 (Primitive) | none | `02` amendment: `size`, `label`, `inline`, `overlay` | none | Simple | `Spinner.Inline`, `Spinner.Overlay`, `Spinner.Sizes` | 8 apps; see `05` | XS | Separate from wrapper loading |
 | Switch | 1 (Primitive) | `@radix-ui/react-switch` | `02` Switch | `@radix-ui/react-switch` | Standard | `Switch.Default`, `Switch.Disabled`, `Switch.Description` | 9 apps; see `05` | XS | Toggle primitive only |
-| Table | 1 (Primitive) | native `<table>` | `02` Table | none | Standard | `Table.Basic`, `Table.Dense`, `Table.Empty`, `Table.Responsive` | 12 apps; see `05` | S | Foundation for `DataTable` |
+| Table | 1 (Primitive) | semantic table targets via `Box as="table"` and related tags | `02` Table | none | Standard | `Table.Basic`, `Table.Dense`, `Table.Empty`, `Table.Responsive` | 12 apps; see `05` | S | Foundation for `DataTable` |
 | Tabs | 2 (Composite) | `@radix-ui/react-tabs` | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation` | `@radix-ui/react-tabs` | Standard | `Tabs.Basic`, `Tabs.Disabled`, `Tabs.Scrollable` | 13 apps; see `05` | S | Route sync stays local |
-| Textarea | 1 (Primitive) | native `<textarea>` | `02` Textarea | none | Standard | `Textarea.Default`, `Textarea.Resize`, `Textarea.Error`, `Textarea.Disabled` | 18 apps; see `05` | S | Plain-text multiline input only |
+| Textarea | 1 (Primitive) | semantic `textarea` target via `Box as="textarea"` | `02` Textarea | none | Standard | `Textarea.Default`, `Textarea.Resize`, `Textarea.Error`, `Textarea.Disabled` | 18 apps; see `05` | S | Plain-text multiline input only |
 
 ## 4. Wave B5.1 - Date and Overlay Normalization
 
@@ -79,7 +79,7 @@
 | DataTable | 2 (Composite) | `Table` + `@tanstack/react-table` v8 | `02` DataTable | `@tanstack/react-table` | Complex | `DataTable.Basic`, `DataTable.Sorting`, `DataTable.Filtering`, `DataTable.Empty`, `DataTable.Pagination` | 6 apps; see `05` | XL | Highest-risk data-display item |
 | DateRangePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `presets`, `minDate`, `maxDate` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateRangePicker.Basic`, `DateRangePicker.Presets`, `DateRangePicker.Invalid` | 7 apps; see `05` | L | Start after `DatePicker` stabilizes |
 | FileUpload | 2 (Composite) | Tier 1 composition | `02` FileUpload | none | Standard | `FileUpload.Basic`, `FileUpload.Multiple`, `FileUpload.Error`, `FileUpload.Disabled` | 12 apps; see `05` | M | Upload transport stays local |
-| Image | 2 (Composite) | native `img` + fallback composition | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | optional `@radix-ui/react-avatar` fallback pattern | Standard | `Image.Basic`, `Image.Fallback`, `Image.AspectRatio` | 13 apps; see `05` | M | No `next/image` coupling |
+| Image | 2 (Composite) | semantic `img` target via `Box as="img"` + fallback composition | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | optional `@radix-ui/react-avatar` fallback pattern | Standard | `Image.Basic`, `Image.Fallback`, `Image.AspectRatio` | 13 apps; see `05` | M | No `next/image` coupling |
 | NavigationMenu | 2 (Composite) | `@radix-ui/react-navigation-menu` | `02` amendment: `items`, `orientation`, `collapsed`, `onNavigate` | `@radix-ui/react-navigation-menu` | Complex | `NavigationMenu.Basic`, `NavigationMenu.Nested`, `NavigationMenu.MobileFallback` | 8 apps; see `05` | M | Route trees stay local |
 | OtpInput | 2 (Composite) | Tier 1 composition | `02` OtpInput | none | Standard | `OtpInput.Basic`, `OtpInput.Error`, `OtpInput.Disabled` | 6 apps; see `05` | S | Segmented input contract |
 | PageHeader | 2 (Composite) | Tier 1 composition | `02` amendment: `title`, `description`, `actions`, `meta` | none | Standard | `PageHeader.Basic`, `PageHeader.WithActions`, `PageHeader.WithMetadata` | 8 apps; see `05` | S | Structural page header only |

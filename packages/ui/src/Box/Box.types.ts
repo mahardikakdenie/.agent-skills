@@ -9,7 +9,7 @@ import type React from 'react';
  * over the HTML attribute of the same name when there is a conflict.
  */
 type AsProp<C extends React.ElementType> = {
-  /** The HTML tag or React component to render as. Defaults to `"div"`. */
+  /** The semantic DOM target or React component to render as. Defaults to `"div"`. */
   as?: C;
 };
 
@@ -18,8 +18,8 @@ type AsProp<C extends React.ElementType> = {
  *
  * It merges:
  *  1. `OwnProps` - the component's explicit prop interface
- *  2. All native HTML attribute props from `React.ComponentPropsWithoutRef<C>`
- *     minus any keys already declared in `OwnProps` (no conflicts)
+ *  2. All valid props from `React.ComponentPropsWithoutRef<C>` minus any keys
+ *     already declared in `OwnProps` (no conflicts)
  */
 export type PolymorphicComponentProps<C extends React.ElementType, OwnProps = object> = AsProp<C> &
   OwnProps &
@@ -45,7 +45,7 @@ export type BoxPadding = 'none' | 'sm' | 'md' | 'lg';
 
 export type BoxContainer = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
-/** Own props unique to `Box` (beyond HTML passthrough + polymorphism). */
+/** Own props unique to `Box` (beyond semantic-target passthrough + polymorphism). */
 export interface BoxOwnProps {
   /**
    * When `true`, `Box` uses Radix `<Slot>` to merge all props onto the

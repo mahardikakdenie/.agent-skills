@@ -9,13 +9,13 @@ import type { BoxComponent, BoxProps } from './Box.types';
 /**
  * `Box` - the foundational layout primitive.
  *
- * A polymorphic, type-safe wrapper around any native HTML element (or custom
- * component). Its job is to forward all props - including `ref` and
- * `className` - to the rendered element while offering a small, app-agnostic
- * set of layout presets for migration work.
+ * A polymorphic, type-safe authored DOM primitive for shared source. Its job
+ * is to route semantic DOM output through `Box` itself, forward all props -
+ * including `ref` and `className` - to the rendered target, and offer a
+ * small, app-agnostic set of layout presets for migration work.
  *
  * @example
- * // Replace a bare <div>
+ * // Use Box as the authored DOM primitive for structural wrappers
  * <Box className="flex items-center gap-4">...</Box>
  *
  * // Render as a <section>
@@ -29,7 +29,7 @@ import type { BoxComponent, BoxProps } from './Box.types';
  *
  * // asChild - merges props onto the child element, Box renders no DOM node
  * <Box asChild className="flex justify-center">
- *   <button onClick={handleClick}>Submit</button>
+ *   <Box as="button" type="button" onClick={handleClick}>Submit</Box>
  * </Box>
  */
 // We cannot use React.forwardRef with a fully-generic polymorphic signature
@@ -58,8 +58,8 @@ BoxImpl.displayName = 'Box';
 /**
  * Exported as a typed polymorphic component.
  *
- * When `as` is provided, all valid HTML attributes for that element are
- * available and type-checked. The `ref` type is also narrowed accordingly.
+ * When `as` is provided, all valid attributes for that semantic DOM target
+ * are available and type-checked. The `ref` type is also narrowed accordingly.
  *
  * ```tsx
  * // Valid - `href` is a valid <a> attribute

@@ -84,3 +84,15 @@ Impact:
 - `@repo/ui` export surface now includes `Alert` alongside `Box`.
 - Inline flash-message, notification-bar, and banner-style feedback can start mapping toward a single shared Alert contract during downstream adoption.
 
+---
+
+## 2026-03-10 - Box Authorship Rule Tightened
+
+Changed:
+- Normalized the `_output` rule set so shared authored JSX now treats `Box` as the required DOM primitive, not just a layout wrapper.
+- Replaced wording that previously allowed direct native markup for semantic or browser-required elements.
+- Clarified in taxonomy, API, roadmap, and batch tracker docs that semantic HTML and SVG output must be authored via `Box as="..."`, including `input`, `textarea`, `table`, `img`, `svg`, and `path`.
+
+Impact:
+- Future Batch 4 and Batch 5 implementations should no longer hand-write native JSX tags in shared source or stories.
+- Verification and review should now treat any authored native DOM or SVG tag in `packages/ui` as a documentation-policy violation unless an explicit amendment changes the rule.

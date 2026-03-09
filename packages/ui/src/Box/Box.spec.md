@@ -10,11 +10,11 @@
 
 ## Overview
 
-`Box` is the foundational layout primitive in `@repo/ui`. It is a polymorphic wrapper that renders semantic HTML directly via `as` or merges onto a child element via `asChild`, while keeping the prop and ref surface type-safe.
+`Box` is the foundational layout primitive in `@repo/ui` and the authored DOM primitive for shared source. It renders semantic HTML or SVG targets via `as` or merges onto a child element via `asChild`, while keeping the prop and ref surface type-safe.
 
 When to use:
 
-- Replace bare structural elements such as `div`, `section`, `article`, `main`, `aside`, `ul`, or `li`.
+- Author shared DOM structure through `Box`, including structural elements such as `div`, `section`, `article`, `main`, `aside`, `ul`, or `li`.
 - Apply shared max-width, horizontal padding, or simple centering without introducing a higher-level layout component.
 
 When not to use:
@@ -36,7 +36,7 @@ When not to use:
 
 | Prop        | Type                                     | Default     | Required | Description                                                             |
 | ----------- | ---------------------------------------- | ----------- | -------- | ----------------------------------------------------------------------- |
-| `as`        | `React.ElementType`                      | `"div"`     | No       | Native element or component to render when `asChild` is false.          |
+| `as`        | `React.ElementType`                      | `"div"`     | No       | Semantic DOM target or component to render when `asChild` is false.     |
 | `asChild`   | `boolean`                                | `false`     | No       | Merges props onto the single child element via Radix `Slot`.            |
 | `padding`   | `'none' \| 'sm' \| 'md' \| 'lg'`         | `'none'`    | No       | Shared horizontal padding presets for body-wrapper migration.           |
 | `container` | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `undefined` | No       | Max-width container preset with centered horizontal alignment.          |
@@ -83,6 +83,7 @@ When not to use:
 
 - `Box` does not add implicit roles or ARIA attributes.
 - Consumers must choose the correct semantic element with `as` or provide an accessible child when using `asChild`.
+- Shared authored JSX should route semantic HTML and SVG output through `Box as="..."` rather than direct native tags.
 - `centered` changes layout only and must not be treated as an accessibility feature.
 
 ### Keyboard and Focus
@@ -110,7 +111,7 @@ When not to use:
 </Box>
 
 <Box asChild className="inline-flex rounded-md border border-border px-4 py-2">
-  <button type="button">Composed action</button>
+  <Box as="button" type="button">Composed action</Box>
 </Box>
 ```
 
@@ -118,7 +119,7 @@ When not to use:
 
 | Do                                                                          | Don't                                                                             |
 | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Use `Box` to eliminate bare structural HTML in shared and app code.         | Put business logic, routing, or data loading into `Box`.                          |
+| Use `Box` as the authored DOM primitive in shared code.                     | Put business logic, routing, or data loading into `Box`.                          |
 | Choose `as` semantically, such as `main`, `nav`, `section`, or `ul`.        | Treat `Box` as a replacement for semantic thinking.                               |
 | Use `padding`, `container`, and `centered` only for generic layout presets. | Expand `Box` into branded shells, page frames, or layout policy.                  |
 | Use `asChild` when you need renderless composition onto one child.          | Combine `asChild` with child components that do not spread props or forward refs. |
