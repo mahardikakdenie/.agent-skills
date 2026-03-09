@@ -121,3 +121,14 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Button` alongside `Box`, `Alert`, and `Badge`.
 - App-local CTA, toolbar, and submit button shells can begin mapping toward a single shared Button contract without routing or business-logic coupling.
+
+## 2026-03-10 - Card Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Card` as the next eligible Wave B4 shared layout component after `Button`.
+- Added the canonical Card spec, Storybook coverage, typed subcomponent exports, and Box-authored slot structure aligned to `02-api-conventions.md`.
+- Kept the public API structural by using named composition parts instead of introducing dedicated `variant`, `size`, or interactive boolean props.
+
+Impact:
+- `@repo/ui` export surface now includes `Card` alongside `Box`, `Alert`, `Badge`, and `Button`.
+- App-local content panels, summary shells, and reusable section containers can begin mapping toward one shared Card contract while keeping domain-specific formatting and interaction policy local.

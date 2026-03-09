@@ -5,3 +5,6 @@ export * from './Box';
 export * from './Alert';
 export * from './Badge';
 export * from './Button';
+
+// Layout
+export * from './Card';

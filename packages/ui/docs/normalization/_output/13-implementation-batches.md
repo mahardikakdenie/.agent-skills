@@ -30,7 +30,7 @@
 - This rerun plans the canonical shared program on top of the raw deduplicated backlog captured in `12-master-backlog.csv`.
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
-- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box` and `Alert`; remaining Batch 4 tracker rows stay planning state until their code lands in `packages/ui/src`.
+- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, and `Card`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -160,7 +160,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, and `Button`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, `Button`, and `Card`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
 
 ### packages/ui work required
 
@@ -197,7 +197,7 @@
 
 | Wave | Shared components | Entry gate | Exit gate | Status |
 | --- | --- | --- | --- | --- |
-| B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | PLANNED |
+| B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | IN PROGRESS |
 | B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | PLANNED |
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput`, `PageHeader` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | PLANNED |
 | B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | PLANNED |
@@ -290,7 +290,7 @@
 | Alert | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, semantic variants, and controlled dismiss behavior |
 | Badge | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, canonical size/variant coverage, and Box-composed dot support |
 | Button | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, canonical variant/size coverage, loading state, and Box-authored `asChild` composition |
-| Card | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
+| Card | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound slot exports, and consumer-owned interactive composition |
 | Checkbox | 4 | B4 | PLANNED | Needs invalid and indeterminate coverage |
 | ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
 | Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
@@ -329,4 +329,3 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
-

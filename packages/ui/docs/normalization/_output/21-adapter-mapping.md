@@ -61,3 +61,17 @@ Keep local:
 - Auth-provider, SSO, payment, or SDK-backed buttons that encapsulate third-party logic.
 - Buttons whose disabled/loading state still depends on domain permissions, workflow guards, or service orchestration beyond plain props.
 - Route-aware wrappers that still own navigation construction instead of receiving a child element.
+
+## Card
+
+Direct adoption guidance:
+
+- Legacy neutral content panels, dashboard summary shells, and reusable section containers map to `Card` plus `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, and `CardFooter`.
+- Existing bordered or elevated card treatments should map to the shared structural surface first, then keep any extra shadow or density tuning in `className`.
+- Clickable cards should keep interaction semantics consumer-owned by passing `role`, `tabIndex`, keyboard handlers, and hover classes rather than introducing a shared interactive prop.
+
+Keep local:
+
+- Domain-specific statistic, product, transaction, and plan cards that still encode business formatting, computed labels, or workflow state.
+- Cards that encapsulate routing, service orchestration, permission checks, or API-driven side effects beyond plain composition.
+- Branded marketing or campaign cards whose identity depends on app-specific illustration systems, copy policy, or campaign logic.
