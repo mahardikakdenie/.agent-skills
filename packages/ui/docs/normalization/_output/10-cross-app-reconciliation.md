@@ -2,27 +2,32 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Run date: 2026-03-06
-> Inputs read: `03-migration-plan.md` and `00`-`06` normalization outputs only
+> Run date: 2026-03-09
+> Inputs read: `03-migration-plan.md`, `00`-`06` normalization outputs, and all per-app `_audit-report.md`, `_component-backlog.csv`, `_parity-checklist.md` artifacts from `migrate-app_*`
 
 ## 1. Program Summary
 
 | Metric | Value |
 | --- | --- |
-| Authoritative planning base | Phase 02 normalization outputs only |
+| Raw per-app backlog rows read | 3,412 |
+| Unique deduplicated backlog entries in `12-master-backlog.csv` | 2,524 |
+| Shared-track candidates present in deduplicated backlog | 296 plus canonical `Box` carry-forward |
+| Split / migrate-after-split candidates | 491 |
+| Keep-app-local candidates | 1,906 |
 | Canonical shared set | 43 components including `Box` |
 | Existing in `@repo/ui` | 1 (`Box`) |
 | Shared build or extension scope | 42 |
 | Batch 3 extension scope | 1 (`Box`) |
 | Batch 4 new shared components | 41 approved + 1 decision-gated (`RichTextEditor`) |
-| Planning backlog scope in `12-master-backlog.csv` | Canonical shared-program backlog only |
-| Raw app-local, split, and SharePoint-export queues | Intentionally out of scope for this rerun |
+| Planning backlog scope in `12-master-backlog.csv` | Full deduplicated union of all per-app backlog exports |
+| Canonical shared implementation scope in this document | Consolidated shared program only |
 
 ### Final rulings
 
-- This rerun is program-level and cross-app, but only through the normalized Batch 2 outputs already locked in `00`-`06`.
-- `12-master-backlog.csv` now represents the normalized shared-program backlog only. It is not a raw merge of per-app backlog exports.
-- App-local, adapter-only, and split-only queues remain downstream execution concerns and are not re-derived here without an approved raw artifact source.
+- This rerun is program-level and cross-app, using the locked Batch 2 foundation plus the current per-app Batch 1 outputs from the `migrate-app_*` lanes.
+- `12-master-backlog.csv` now represents the full deduplicated union of all per-app backlog exports, not just the canonical shared program.
+- The canonical shared implementation scope is still intentionally consolidated in Section 3 and the roadmap in `11-master-component-roadmap.md`.
+- App-local, adapter-only, and split-only queues remain visible in `12-master-backlog.csv`, but they do not automatically enter the shared build roadmap.
 
 ## 2. Reconciliation Rules Applied
 
@@ -41,11 +46,10 @@
 
 ### Traceability rule for `12-master-backlog.csv`
 
-- `12-master-backlog.csv` is derived only from the canonical shared program already normalized in `01`, `04`, `05`, and `06`.
-- Each row is a single canonical shared component entry, not a raw per-app artifact row.
-- `consumer_apps` is represented as a normalized demand count reference, not an app-name export list.
-- Batch labels are limited to the authoritative shared implementation lanes in this rerun: `3` for `EXTEND_EXISTING`, `4` for `NEW_SHARED_COMPONENT`.
-
+- `12-master-backlog.csv` is derived from the deduplicated union of all per-app `_component-backlog.csv` exports from `migrate-app_*`, plus the canonical `Box` Batch 3 row carried forward from the normalization outputs.
+- Each row is a deduplicated component-name entry with merged `consumer_apps`, a selected `final_classification`, and one planning batch.
+- `consumer_apps` is an explicit pipe-separated app list, not a demand-count shorthand.
+- The canonical shared roadmap in this document is a filtered program view on top of that merged backlog.
 ## 3. Canonical Shared Track
 
 ### Batch 3 - Extend Existing
@@ -138,11 +142,12 @@
 2. Extend `Box` first because it is the only approved Batch 3 shared change.
 3. Build Wave B4 in strict SDD order before any long-tail work starts.
 4. Hold high-risk items behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, `DateRangePicker`, `DateTimePicker`, `RichTextEditor`.
-5. Use `05` app readiness as the authoritative downstream sequencing input for Batch 5 and Batch 6.
+5. Complete Batch 3A token foundation bootstrap before any Batch 4 shared build begins.
+6. Use 5 app readiness as the authoritative downstream sequencing input for Batch 5 and Batch 6.
 
 ## 6. Governance Notes
 
 - `05-coverage-baseline.md` is the source of truth for demand counts and wave ordering.
 - `11-master-component-roadmap.md` is the source of truth for shared implementation structure, dependencies, and effort.
-- `12-master-backlog.csv` is limited to the canonical shared-program backlog for this rerun.
-- `13-implementation-batches.md` remains the execution contract for batches `1` through `6`.
+- `12-master-backlog.csv` is the full deduplicated per-app backlog merge for this rerun.
+- `13-implementation-batches.md` remains the execution contract for batches `1` through `6`, with explicit Batch `3A` between Batch `3` and Batch `4`.

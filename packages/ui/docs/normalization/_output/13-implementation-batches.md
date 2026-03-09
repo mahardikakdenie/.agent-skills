@@ -2,15 +2,15 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Run date: 2026-03-06
-> Companion artifacts: `10-cross-app-reconciliation.md`, `11-master-component-roadmap.md`, `12-master-backlog.csv`
+> Run date: 2026-03-09
+> Companion artifacts: `10-cross-app-reconciliation.md`, `11-master-component-roadmap.md`, `12-master-backlog.csv`, `03-token-theming-contract.md`
 
 ## 1. Program Controls
 
 ### Critical path
 
-1. Close shared readiness gaps from `00`, `03`, and `06`.
-2. Finish Batch 3 `Box` extension first.
+1. Finish Batch 3 `Box` extension first.
+2. Complete Batch 3A token foundation bootstrap before any shared build beyond `Box`.
 3. Execute Wave B4 in strict SDD order before any long-tail work starts.
 4. Hold high-risk components behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, `DateRangePicker`, `DateTimePicker`, `RichTextEditor`.
 5. Use `05` app readiness as the downstream stabilization and cleanup sequencing contract.
@@ -27,9 +27,9 @@
 
 ### Scope note
 
-- This rerun plans only the normalized shared program.
-- Raw per-app adapter, split, and local-only queues are intentionally not re-derived because `packages/ui/docs/pm/sharepoint-publish/**` is excluded.
-- Batch 1 and Batch 2 therefore remain structurally present but empty in this authoritative rerun.
+- This rerun plans the canonical shared program on top of the raw deduplicated backlog captured in `12-master-backlog.csv`.
+- Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
+- Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -120,7 +120,39 @@
 | --- | --- | --- | --- | --- |
 | `@repo/ui` | `Box` | Extend existing layout primitive | DONE | `padding`, `container`, and `centered` presets shipped; verification gate passed on 2026-03-08 |
 
-## 5. Batch 4 - NEW_SHARED_COMPONENT
+## 5. Batch 3A - Token Foundation Bootstrap
+
+### Scope description
+
+- Batch 3A converts `03-token-theming-contract.md` from a locked document into real shared workspace infrastructure.
+- This is the mandatory bridge between Batch 3 planning and any Batch 4 shared component build.
+
+### packages/ui work required
+
+- Add and export the semantic token preset in `@repo/config`.
+- Keep legacy palette tokens only as temporary migration support.
+- Ensure new shared components rely on semantic tokens only.
+- Lock the app-consumer contract for `globals.css` and `[data-theme="dark"]`.
+
+### Per-app work required
+
+- None in this lane. Apps consume the contract later during downstream migration.
+
+### Verification gate
+
+- `pnpm --filter @repo/ui check-types`
+- `pnpm --filter @repo/ui lint`
+- `pnpm --filter @repo/ui build`
+- Confirm `13-implementation-batches.md` blocks Batch 4 and Batch 5 until Batch 3A is complete
+
+### Apps x Components matrix
+
+| Target | Scope | Action | Status | Notes |
+| --- | --- | --- | --- | --- |
+| `@repo/config` | Semantic token preset | Bootstrap shared token source of truth | PLANNED | Must complete before any B4 component build |
+| `@repo/ui` | Token consumption contract | Enforce semantic-token-only styling | PLANNED | No raw palette, hex, or `rgb(...)` in new shared work |
+
+## 6. Batch 4 - NEW_SHARED_COMPONENT
 
 ### Scope description
 
@@ -155,7 +187,7 @@
 
 | Wave | Shared components | Entry gate | Exit gate | Status |
 | --- | --- | --- | --- | --- |
-| B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and shared readiness gaps closed | All B4 items marked `DONE` | PLANNED |
+| B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | PLANNED |
 | B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | PLANNED |
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput`, `PageHeader` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | PLANNED |
 | B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | PLANNED |
@@ -169,7 +201,7 @@
 | Ready cohort | `admin-portal`, `admin-portal-boost`, `affiliate-admin`, `affiliate-portal`, `agent-admin`, `agent-microsite`, `agent-portal`, `agent-web-portal`, `boost-product-fe`, `claim-portal`, `customer-portal`, `ecommerce-gelm`, `ecommerce-teman`, `gegm-friendcover-admin`, `gen-ai-portal`, `getrev-da-microsite`, `mykawan-website`, `partner-portal`, `sso-portal`, `teman-affiliate-admin`, `teman-affiliate-portal`, `ticket-portal` | May adopt shared components after the relevant shared item is `DONE` |
 | Conditional cohort | `gegm-friendcover`, `gelm-xproject-microsite`, `grab-landing-page`, `haruuz-microsite`, `teman-affiliate-microsite` | Must close token or readiness constraints from `05` before adoption |
 
-## 6. Batch 5 - Per-App Stabilization
+## 7. Batch 5 - Per-App Stabilization
 
 ### Scope description
 
@@ -204,7 +236,7 @@
 | Ready cohort | Close parity deltas for adopted shared components | PLANNED | May run in parallel across apps |
 | Conditional cohort | Stabilize only after readiness constraints are closed | PLANNED | Do not bypass `05` constraints |
 
-## 7. Batch 6 - Cleanup + Deprecation
+## 8. Batch 6 - Cleanup + Deprecation
 
 ### Scope description
 
@@ -239,11 +271,11 @@
 | All consuming apps | Remove dead local duplicates after parity is green | PLANNED | Shared adoption must already be stable |
 | `@repo/ui` | Remove deprecated compatibility exports | PLANNED | Execute once downstream usage is confirmed clean |
 
-## 8. Shared Component Tracker
+## 9. Shared Component Tracker
 
 | Component | Program batch | Wave | Status | Blocker / note |
 | --- | --- | --- | --- | --- |
-| Box | 3 | B3 | PLANNED | First shared task |
+| Box | 3 | B3 | DONE | `padding`, `container`, and `centered` presets verified on 2026-03-08 |
 | Alert | 4 | B4 | PLANNED | Depends on foundation readiness only |
 | Badge | 4 | B4 | PLANNED | Low-risk primitive |
 | Button | 4 | B4 | PLANNED | High-demand primitive |

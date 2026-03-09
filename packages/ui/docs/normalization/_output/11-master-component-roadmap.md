@@ -2,8 +2,8 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Run date: 2026-03-06
-> Input authority: `03-migration-plan.md`, `00`-`06` normalization outputs only
+> Run date: 2026-03-09
+> Input authority: `03-migration-plan.md`, `00`-`06` normalization outputs, and the deduplicated per-app backlog merge in `12-master-backlog.csv`
 
 ## 1. Planning Assumptions
 
@@ -11,7 +11,7 @@
 
 | Prerequisite | Why it must exist before shared rollout | Owner lane | Blocks |
 | --- | --- | --- | --- |
-| Semantic token preset in `@repo/config` | Shared components cannot depend on app-specific CSS variable drift | `feat/ui` foundation | Batch 3 and Batch 4 |
+| Semantic token preset in `@repo/config` | Shared components cannot depend on app-specific CSS variable drift | `feat/ui` foundation | Batch 3A, Batch 4, and Batch 5 |
 | Missing shared dependencies installed and version-locked | `cmdk`, `date-fns`, `@tanstack/react-table`, `tailwindcss-animate`, `react-day-picker`, `vaul`, and required Radix packages gate multiple roadmap entries | `feat/ui` foundation | B4-B5.4 |
 | `@repo/ui` remains app-agnostic | No `next/*`, no business logic, no env coupling inside shared components | `feat/ui` packages/ui | All rows |
 | `02-api-conventions.md` is extended where required | Several roadmap items still need canonical API sections mirrored back into `02` before build | `feat/ui` design-system lane | All rows marked `02 amendment` |
@@ -19,7 +19,8 @@
 
 ### Roadmap operating rules
 
-- `Box` is the only Batch 3 extension item in this rerun.
+- Box is the only Batch 3 extension item in this rerun.
+- Batch 3A must complete immediately after Box planning is locked and before any Wave B4 execution starts.
 - All non-`Box` shared items remain Batch 4 build scope, regardless of sub-wave sequencing.
 - Consumer demand is represented as normalized counts from `05-coverage-baseline.md`, not raw per-app export lists.
 - `RichTextEditor` remains visible for traceability but stays decision-gated.
@@ -99,7 +100,8 @@
 
 ## 8. Roadmap Operating Notes
 
-- This roadmap is shared-program planning only; it does not re-merge raw app audit exports.
+- This roadmap is the canonical shared-program implementation view layered on top of the raw deduplicated backlog in `12-master-backlog.csv`.
 - `consumer apps` in this rerun means normalized demand counts from `05`, not explicit app-name lists.
-- Any API marked `02 amendment` must be mirrored back into `02-api-conventions.md` before implementation starts.
+- Any API marked 2 amendment must be mirrored back into 2-api-conventions.md before implementation starts.
+- Batch 3A token bootstrap is a hard gate for every row after Box.
 - `RichTextEditor` is visible for completeness but remains outside the initial critical path.
