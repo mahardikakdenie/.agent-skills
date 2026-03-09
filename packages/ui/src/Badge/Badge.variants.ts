@@ -1,17 +1,5 @@
 import { cva } from 'class-variance-authority';
 
-export const badgeVariantValues = [
-  'default',
-  'secondary',
-  'destructive',
-  'outline',
-  'success',
-  'warning',
-  'info',
-] as const;
-
-export const badgeSizeValues = ['sm', 'md', 'lg'] as const;
-
 export const badgeVariants = cva(
   [
     'inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border font-medium',

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Box } from '../Box';
 import { Badge } from './Badge';
-import { badgeSizeValues, badgeVariantValues } from './Badge.variants';
+import { badgeSizeValues, badgeVariantValues } from './Badge.types';
 
 const meta = {
   title: 'Feedback/Badge',
