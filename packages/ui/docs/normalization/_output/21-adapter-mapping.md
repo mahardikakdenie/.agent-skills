@@ -46,3 +46,18 @@ Keep local:
 - Interactive pills that behave like filters, tabs, or navigation controls.
 - Domain status helpers that still compute text, tone, or visibility from business logic before rendering.
 - Large notification bodies or rich feedback shells that should instead map to `Alert`.
+
+## Button
+
+Direct adoption guidance:
+
+- Legacy CTA, submit, and toolbar action controls map to `Button`.
+- Existing primary/filled treatments map to `variant="default"` or `variant="primary"`; outlined actions map to `variant="outline"`; danger maps to `variant="destructive"`; warning maps to `variant="warning"`.
+- Legacy `isLoading` or `pending` props map to `loading`; `withIcon` patterns map to `leftIcon` or `rightIcon`.
+- Consumer-owned anchors or router wrappers that only need button styling map to `asChild`.
+
+Keep local:
+
+- Auth-provider, SSO, payment, or SDK-backed buttons that encapsulate third-party logic.
+- Buttons whose disabled/loading state still depends on domain permissions, workflow guards, or service orchestration beyond plain props.
+- Route-aware wrappers that still own navigation construction instead of receiving a child element.

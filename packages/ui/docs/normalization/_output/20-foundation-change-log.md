@@ -108,3 +108,16 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Badge` alongside `Box` and `Alert`.
 - App-local status pills, chips, and compact metadata labels can begin mapping toward a single shared Badge contract without introducing extra API sprawl.
+---
+
+## 2026-03-10 - Button Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Button` as the next eligible Wave B4 primitive after `Alert` and `Badge`.
+- Added the canonical Button spec, Storybook coverage, typed exports, and CVA-backed `variant` + `size` support aligned to `02-api-conventions.md`.
+- Normalized legacy button deltas into the shared API: `loading`, `leftIcon`, `rightIcon`, `asChild`, and the explicit `warning` variant while keeping `default` as the shared filled CTA baseline.
+- Locked authored shared markup to the Box-only DOM rule, including the standard button root and story examples, while using Radix Slot composition for the `asChild` path.
+
+Impact:
+- `@repo/ui` export surface now includes `Button` alongside `Box`, `Alert`, and `Badge`.
+- App-local CTA, toolbar, and submit button shells can begin mapping toward a single shared Button contract without routing or business-logic coupling.

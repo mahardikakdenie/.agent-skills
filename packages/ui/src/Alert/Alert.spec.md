@@ -5,7 +5,6 @@
 | Field           | Value              |
 | --------------- | ------------------ |
 | Storybook Group | `Feedback`         |
-| Tier            | `2 - Composite`    |
 | Based on        | custom composition |
 
 ---

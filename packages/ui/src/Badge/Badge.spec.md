@@ -2,11 +2,10 @@
 
 ## Metadata
 
-| Field | Value |
-| --- | --- |
-| Storybook Group | `Feedback` |
-| Tier | `1 - Primitive` |
-| Based on | `Box`-backed custom composition |
+| Field           | Value                           |
+| --------------- | ------------------------------- |
+| Storybook Group | `Feedback`                      |
+| Based on        | `Box`-backed custom composition |
 
 ---
 
@@ -31,58 +30,58 @@ This component stays intentionally flat. Cross-app baselines converge on a small
 
 ## Design Decisions
 
-| Decision | Choice | Rationale |
-| --- | --- | --- |
-| Root primitive | `Box` with default `div` target | Keeps authored shared DOM inside the Box-only policy while matching the canonical `React.HTMLAttributes<HTMLDivElement>` contract in `02-api-conventions.md`. |
-| CVA strategy | Flat root variants | A single root surface is enough; no compound family or internal context is needed. |
-| Controlled vs uncontrolled | none | `Badge` is pure display and has no behavioral state. |
-| API sprawl | no `dot`, `icon`, or `asChild` prop | Per `vercel-composition-patterns`, child composition is enough for leading visuals, and the primitive does not need element polymorphism. |
-| Box-only DOM rule | explicit | Authored JSX in the implementation and stories must use `Box`; no direct native tags are authored for the badge or its examples. |
+| Decision                   | Choice                              | Rationale                                                                                                                                                     |
+| -------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root primitive             | `Box` with default `div` target     | Keeps authored shared DOM inside the Box-only policy while matching the canonical `React.HTMLAttributes<HTMLDivElement>` contract in `02-api-conventions.md`. |
+| CVA strategy               | Flat root variants                  | A single root surface is enough; no compound family or internal context is needed.                                                                            |
+| Controlled vs uncontrolled | none                                | `Badge` is pure display and has no behavioral state.                                                                                                          |
+| API sprawl                 | no `dot`, `icon`, or `asChild` prop | Per `vercel-composition-patterns`, child composition is enough for leading visuals, and the primitive does not need element polymorphism.                     |
+| Box-only DOM rule          | explicit                            | Authored JSX in the implementation and stories must use `Box`; no direct native tags are authored for the badge or its examples.                              |
 
 ---
 
 ## Props Interface
 
-| Prop | Type | Default | Required | Description |
-| --- | --- | --- | --- | --- |
-| `variant` | `'default' \| 'secondary' \| 'destructive' \| 'outline' \| 'success' \| 'warning' \| 'info'` | `'default'` | No | Semantic surface style for neutral, secondary, and status-bearing labels. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | No | Compact density control for badge height and padding. |
-| `className` | `string` | `undefined` | No | Consumer override merged last through `cn()`. |
-| `children` | `React.ReactNode` | - | Yes | Badge label content; may include a composed leading dot or decorative icon. |
-| `...props` | `React.HTMLAttributes<HTMLDivElement>` | - | No | Native container attributes such as `id`, `role`, `aria-label`, and `data-*`. |
+| Prop        | Type                                                                                         | Default     | Required | Description                                                                   |
+| ----------- | -------------------------------------------------------------------------------------------- | ----------- | -------- | ----------------------------------------------------------------------------- |
+| `variant`   | `'default' \| 'secondary' \| 'destructive' \| 'outline' \| 'success' \| 'warning' \| 'info'` | `'default'` | No       | Semantic surface style for neutral, secondary, and status-bearing labels.     |
+| `size`      | `'sm' \| 'md' \| 'lg'`                                                                       | `'md'`      | No       | Compact density control for badge height and padding.                         |
+| `className` | `string`                                                                                     | `undefined` | No       | Consumer override merged last through `cn()`.                                 |
+| `children`  | `React.ReactNode`                                                                            | -           | Yes      | Badge label content; may include a composed leading dot or decorative icon.   |
+| `...props`  | `React.HTMLAttributes<HTMLDivElement>`                                                       | -           | No       | Native container attributes such as `id`, `role`, `aria-label`, and `data-*`. |
 
 ---
 
 ## Variants
 
-| Variant | Description | When to use |
-| --- | --- | --- |
-| `default` | Primary emphasis filled badge | General-purpose highlighted status or count. |
-| `secondary` | Muted filled badge | Low-emphasis categorization or secondary metadata. |
-| `destructive` | High-severity filled badge | Error or failure state labels. |
-| `outline` | Border-only badge on background | Neutral labels that should stay visually quiet. |
-| `success` | Positive semantic badge | Approved, active, or completed status. |
-| `warning` | Caution semantic badge | Pending review or attention-needed status. |
-| `info` | Informational semantic badge | Supporting status or informational metadata. |
+| Variant       | Description                     | When to use                                        |
+| ------------- | ------------------------------- | -------------------------------------------------- |
+| `default`     | Primary emphasis filled badge   | General-purpose highlighted status or count.       |
+| `secondary`   | Muted filled badge              | Low-emphasis categorization or secondary metadata. |
+| `destructive` | High-severity filled badge      | Error or failure state labels.                     |
+| `outline`     | Border-only badge on background | Neutral labels that should stay visually quiet.    |
+| `success`     | Positive semantic badge         | Approved, active, or completed status.             |
+| `warning`     | Caution semantic badge          | Pending review or attention-needed status.         |
+| `info`        | Informational semantic badge    | Supporting status or informational metadata.       |
 
 ## Sizes
 
-| Size | Behavior | Intended use |
-| --- | --- | --- |
-| `sm` | Tightest padding and height | Dense tables or supporting metadata rows. |
-| `md` | Default compact size | Standard cards, lists, and status labels. |
-| `lg` | Larger height and padding | Prominent inline status in cards or hero summaries. |
+| Size | Behavior                    | Intended use                                        |
+| ---- | --------------------------- | --------------------------------------------------- |
+| `sm` | Tightest padding and height | Dense tables or supporting metadata rows.           |
+| `md` | Default compact size        | Standard cards, lists, and status labels.           |
+| `lg` | Larger height and padding   | Prominent inline status in cards or hero summaries. |
 
 ---
 
 ## States
 
-| State | Visual Behavior | Accessibility |
-| --- | --- | --- |
-| Default | Compact pill surface with semantic background and text color | No implicit role; announced as normal text unless consumers add semantics. |
-| Variants | Tone changes via semantic token colors only | Status meaning should not rely on color alone in isolation. |
-| Dot composition | Leading dot inherits current text color and stays aligned with the label | Decorative dots should use `aria-hidden="true"`. |
-| Long content | Consumers may opt into wrapping with `className` for narrow layouts | Keep badge copy short where possible for scannability. |
+| State           | Visual Behavior                                                          | Accessibility                                                              |
+| --------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| Default         | Compact pill surface with semantic background and text color             | No implicit role; announced as normal text unless consumers add semantics. |
+| Variants        | Tone changes via semantic token colors only                              | Status meaning should not rely on color alone in isolation.                |
+| Dot composition | Leading dot inherits current text color and stays aligned with the label | Decorative dots should use `aria-hidden="true"`.                           |
+| Long content    | Consumers may opt into wrapping with `className` for narrow layouts      | Keep badge copy short where possible for scannability.                     |
 
 `Badge` has no interactive hover, focus, disabled, loading, or error behavior of its own.
 
@@ -147,13 +146,13 @@ This component stays intentionally flat. Cross-app baselines converge on a small
 
 ## Do / Don't
 
-| Do | Don't |
-| --- | --- |
+| Do                                                                            | Don't                                                                       |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | Use the semantic variants from `02-api-conventions.md` exactly as documented. | Reintroduce legacy variant names such as `danger` or ad-hoc status strings. |
-| Compose a dot through `children` when parity requires a leading visual. | Add extra boolean props such as `dot`, `pill`, or `soft`. |
-| Keep badge text short and scannable. | Use `Badge` as a container for full sentences or action controls. |
-| Keep authored JSX on `Box` in stories and implementation. | Hand-write native `div`, `span`, or SVG tags in shared authored JSX. |
-| Use `className` for local density or wrapping overrides. | Add app-specific business logic or route behavior to the primitive. |
+| Compose a dot through `children` when parity requires a leading visual.       | Add extra boolean props such as `dot`, `pill`, or `soft`.                   |
+| Keep badge text short and scannable.                                          | Use `Badge` as a container for full sentences or action controls.           |
+| Keep authored JSX on `Box` in stories and implementation.                     | Hand-write native `div`, `span`, or SVG tags in shared authored JSX.        |
+| Use `className` for local density or wrapping overrides.                      | Add app-specific business logic or route behavior to the primitive.         |
 
 ---
 
@@ -171,6 +170,6 @@ This component stays intentionally flat. Cross-app baselines converge on a small
 
 ## Changelog
 
-| Date | Change |
-| --- | --- |
+| Date       | Change             |
+| ---------- | ------------------ |
 | 2026-03-10 | Initial Badge spec |
