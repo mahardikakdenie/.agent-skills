@@ -2,8 +2,8 @@
 
 > Batch: Batch 2 - Design System Foundation
 > Branch: feat/ui
-> Run date: 2026-03-06
-> Source: 06-component-standards.md 5 + 9, current `feat_ui/packages/config`, current `feat_ui/packages/helper`, current `feat_ui/packages/ui/package.json`
+> Run date: 2026-03-10
+> Source: 06-component-standards.md 5 + 9, current `feat_ui/packages/config`, current `feat_ui/packages/helper`, current `feat_ui/packages/ui/package.json`, Batch 3A rerun verification
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Package | Current state | Batch 2 ruling |
 |---|---|---|
-| `@repo/config` | Exports `tailwind.css` with brand-scale `@theme` colors and icon utilities only | This is not yet the semantic CSS-variable preset required by shared components |
+| `@repo/config` | Exports both `tailwind.css` and `semantic-tokens.css`; `tailwind.css` loads the semantic preset first and keeps the legacy palette `@theme` utilities for migration support | Batch 3A is implemented. `semantic-tokens.css` is the semantic CSS-variable source of truth and the legacy palette remains temporary compatibility support only |
 | `@repo/helper` | Root `index.ts` is now a barrel and `src/cn.ts` contains the canonical implementation | Keep `@repo/helper` as the single `cn()` source for both apps and `packages/ui`, while scaling future helpers through modular `src/*` files |
-| `@repo/ui` | Depends on `@repo/helper` for `cn()` | Shared components should keep consuming the package export path while `@repo/helper` evolves internally through its own module structure |
+| `@repo/ui` | Depends on `@repo/helper` for `cn()` and the current shipped `Box` stories/components consume semantic classes such as `bg-background`, `border-border`, and `text-muted-foreground` | Shared components must keep consuming semantic tokens only while `@repo/helper` evolves internally through its own module structure |
 
 Operational meaning:
-- The token contract below is the locked target state for Batch 3 onward.
-- No existing workspace package should be described as already meeting this contract unless the file actually exists in `feat_ui`.
+- The token contract below is no longer only a target state; Batch 3A has implemented it in `@repo/config`.
+- Future shared component work must preserve semantic-token-only styling and continue treating the legacy palette as migration-only compatibility.
 
 ---
 
@@ -120,13 +120,13 @@ Batch 2 ruling:
 
 ---
 
-## 4. Current `@repo/config` Gap and Required Migration
+## 4. `@repo/config` Implementation State and Guardrails
 
-| Current asset | Gap against the foundation contract | Required action |
+| Current asset | State against the foundation contract | Required action |
 |---|---|---|
-| `@repo/config/tailwind.css` brand palette via `@theme` | No semantic CSS-variable preset for shared components | Add an exported semantic token preset consumed by both apps and `packages/ui` |
-| Legacy palette tokens such as `primary-50` | Useful for older app code, but not sufficient for shared components | Keep temporarily for backward compatibility; do not use in new `packages/ui` code |
-| `@repo/config` docs | Describe direct palette usage, not the semantic contract | Update README/setup docs after the semantic preset ships |
+| `@repo/config/semantic-tokens.css` | Implemented and exported; defines the semantic CSS-variable preset used by shared components | Keep this file as the semantic source of truth for Batch 4+ shared work |
+| `@repo/config/tailwind.css` | Implemented; layers Tailwind v4, the semantic preset, legacy palette utilities, and icon utilities | Keep legacy palette tokens only as temporary app-migration support; do not consume them from new `@repo/ui` code |
+| `@repo/config` docs (`README.md`, `SETUP_GUIDE.md`) | Implemented and aligned with the current import/override setup | Keep app-consumer setup guidance aligned with this file during future token amendments |
 
 ---
 
@@ -267,7 +267,7 @@ Current-state note:
 
 | Item | Current state | Blocks | Required action |
 |---|---|---|---|
-| Semantic preset in `@repo/config` | missing | Any shared component that depends on semantic CSS variables | Add exported semantic token preset |
+| Semantic preset in `@repo/config` | implemented via exported `semantic-tokens.css` and loaded by `tailwind.css` | No longer blocks Batch 4 foundation work | Preserve the contract and route any future token changes through foundation docs first |
 | `@repo/helper` public `cn()` export | implemented through a root barrel that re-exports `src/cn.ts` | Single canonical class merge helper for apps and `packages/ui` | Keep all consumers on `@repo/helper` while growing internals through modular helper files |
 | `tailwind-merge` | installed in `@repo/helper` | Canonical merge behavior for the shared `cn()` utility | Keep it colocated with the canonical helper implementation inside `@repo/helper` |
 | `tailwindcss-animate` | missing from `@repo/ui` | Documented motion patterns for overlays and menus | Add dependency before animated components ship |

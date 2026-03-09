@@ -2,7 +2,7 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Run date: 2026-03-09
+> Run date: 2026-03-10
 > Companion artifacts: `10-cross-app-reconciliation.md`, `11-master-component-roadmap.md`, `12-master-backlog.csv`, `03-token-theming-contract.md`
 
 ## 1. Program Controls
@@ -144,14 +144,15 @@
 - `pnpm --filter @repo/ui check-types`
 - `pnpm --filter @repo/ui lint`
 - `pnpm --filter @repo/ui build`
+- `@repo/config` has no package-level verification scripts in its current `package.json`; verify the shared token preset by file-contract inspection during the Batch 3A rerun
 - Confirm `13-implementation-batches.md` blocks Batch 4 and Batch 5 until Batch 3A is complete
 
 ### Apps x Components matrix
 
 | Target | Scope | Action | Status | Notes |
 | --- | --- | --- | --- | --- |
-| `@repo/config` | Semantic token preset | Bootstrap shared token source of truth | DONE | Exported via `@repo/config/semantic-tokens.css` and `@repo/config/tailwind.css` on 2026-03-09 |
-| `@repo/ui` | Token consumption contract | Enforce semantic-token-only styling | DONE | Batch 3A gate passed; shared work stays semantic-token only |
+| `@repo/config` | Semantic token preset | Bootstrap shared token source of truth | DONE | Re-executed on 2026-03-10; `@repo/config/semantic-tokens.css` and `@repo/config/tailwind.css` satisfy the Batch 3A contract while keeping legacy palette utilities as temporary migration support |
+| `@repo/ui` | Token consumption contract | Enforce semantic-token-only styling | DONE | Re-executed on 2026-03-10; `pnpm --filter @repo/ui check-types`, `lint`, and `build` all pass and `packages/ui/src` stays semantic-token only |
 
 ## 6. Batch 4 - NEW_SHARED_COMPONENT
 
@@ -159,6 +160,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
+- Batch 4 is no longer blocked by token-foundation readiness; it remains `PLANNED` because component implementation beyond `Box` has not started.
 
 ### packages/ui work required
 
@@ -212,6 +214,7 @@
 ### Scope description
 
 - Batch 5 begins only after the relevant shared components are already `DONE`.
+- Batch 5 is no longer blocked by Batch 3A itself, but it remains operationally gated until shared Batch 4 components are built and verified.
 
 ### packages/ui work required
 

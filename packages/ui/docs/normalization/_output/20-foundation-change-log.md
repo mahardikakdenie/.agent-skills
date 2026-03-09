@@ -54,3 +54,18 @@ Changed:
 Impact:
 - `Box` remains the only valid `EXTEND_EXISTING` component in the current shared-program state, but its spec, stories, and exported prop surface are now consistent with the authoritative procedural contract.
 
+
+---
+
+## 2026-03-10 - Batch 3A Token Foundation Rerun
+
+Changed:
+- Re-executed the Batch 3A gate and confirmed `pnpm --filter @repo/ui check-types`, `pnpm --filter @repo/ui lint`, and `pnpm --filter @repo/ui build` all pass.
+- Confirmed the real shared token foundation already ships from `@repo/config/semantic-tokens.css` and `@repo/config/tailwind.css`.
+- Corrected `03-token-theming-contract.md` sections that still described the semantic preset as missing even though the files existed.
+- Clarified the downstream gating language in `13-implementation-batches.md`: Batch 4 is foundation-ready, while Batch 5 still waits on actual shared component completion.
+
+Impact:
+- Batch 3A status is now evidence-backed and internally consistent across the normalization outputs.
+- Batch 4 is unblocked from a token-foundation perspective.
+- Batch 5 remains gated by shared component delivery, not by missing token infrastructure.
