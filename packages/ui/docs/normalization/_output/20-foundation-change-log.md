@@ -2,7 +2,7 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-09
+> Last reconciled: 2026-03-10
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
 
 ---
@@ -42,4 +42,15 @@ Changed:
 Impact:
 - The `_output` document set is internally aligned again.
 - Actual implementation state is now explicit: `Box` and Batch 3A are done; Batch 4+ shared components remain planned or blocked until code exists.
+---
+
+## 2026-03-10 - Box Batch 4 Re-execution Alignment
+
+Changed:
+- Re-executed `Box` against the Batch 4 extend-existing procedure instead of relying on the earlier Batch 3 pass alone.
+- Made the `Box` type surface explicitly match `02-api-conventions.md` by declaring `className` on `BoxOwnProps`.
+- Realigned Storybook metadata and stories to the canonical `Layout/Box` taxonomy and documented the approved semantic/layout usage cases.
+
+Impact:
+- `Box` remains the only valid `EXTEND_EXISTING` component in the current shared-program state, but its spec, stories, and exported prop surface are now consistent with the authoritative procedural contract.
 

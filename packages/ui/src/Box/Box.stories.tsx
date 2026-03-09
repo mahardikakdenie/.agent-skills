@@ -4,10 +4,22 @@ import { useRef } from 'react';
 import { Box } from './Box';
 
 const meta = {
-  title: 'Primitives/Box',
+  title: 'Layout/Box',
   component: Box,
   tags: ['autodocs'],
+  args: {
+    as: 'div',
+    asChild: false,
+    padding: 'none',
+    centered: false,
+  },
   argTypes: {
+    as: {
+      control: 'text',
+    },
+    asChild: {
+      control: 'boolean',
+    },
     padding: {
       control: 'select',
       options: ['none', 'sm', 'md', 'lg'],
@@ -19,8 +31,12 @@ const meta = {
     centered: {
       control: 'boolean',
     },
+    className: {
+      control: 'text',
+    },
   },
   parameters: {
+    layout: 'padded',
     docs: {
       description: {
         component:
@@ -48,6 +64,13 @@ export const Default: Story = {
       </Box>
     </Box>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Renders semantic HTML directly and keeps the wrapper app-agnostic.',
+      },
+    },
+  },
 };
 
 export const Padding: Story = {
@@ -65,6 +88,13 @@ export const Padding: Story = {
       ))}
     </Box>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows the shared horizontal padding presets used by migrated body wrappers.',
+      },
+    },
+  },
 };
 
 export const Container: Story = {
@@ -79,6 +109,13 @@ export const Container: Story = {
       ))}
     </Box>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compares the approved max-width container presets without introducing app-specific shells.',
+      },
+    },
+  },
 };
 
 export const Centered: Story = {
@@ -92,6 +129,42 @@ export const Centered: Story = {
       </Box>
     </Box>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Applies the generic centering preset for empty or placeholder wrappers.',
+      },
+    },
+  },
+};
+
+export const SemanticElements: Story = {
+  render: () => (
+    <Box
+      as="article"
+      aria-labelledby="semantic-elements-heading"
+      className="space-y-3 rounded-lg border border-border p-4"
+    >
+      <Box as="h3" id="semantic-elements-heading" className="text-base font-semibold">
+        Semantic structure stays explicit
+      </Box>
+      <Box as="p" className="text-sm text-muted-foreground">
+        `Box` should preserve semantic HTML choices instead of hiding them behind app-specific wrappers.
+      </Box>
+      <Box as="ul" className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+        <Box as="li">Use `main` or `section` for landmark structure.</Box>
+        <Box as="li">Use `ul` and `li` for real list content.</Box>
+        <Box as="li">Use `span` only for inline semantics.</Box>
+      </Box>
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Demonstrates semantic element selection, which remains the caller responsibility.',
+      },
+    },
+  },
 };
 
 export const AsChild: Story = {
@@ -107,64 +180,51 @@ export const AsChild: Story = {
     docs: {
       description: {
         story:
-          'When `asChild={true}`, Box delegates rendering to the child element and merges all props onto it. Inspect the DOM — there is no wrapping div.',
+          'Composes onto a single child element and keeps the styling on the child rather than adding an extra wrapper.',
       },
     },
   },
 };
 
-function WithRefDemo() {
+function RefForwardingDemo() {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
     <Box ref={ref} className="rounded-md border border-border p-4 text-sm">
-      <p>
-        This Box has a <code>ref</code> forwarded to the underlying <code>&lt;div&gt;</code>. Open
-        the browser console and run <code>window.__boxRef</code> to inspect after Storybook mounts.
-      </p>
+      <Box as="p">
+        This Box has a <code>ref</code> forwarded to the underlying <code>&lt;div&gt;</code>.
+      </Box>
     </Box>
   );
 }
 
-export const WithRef: Story = {
-  render: () => <WithRefDemo />,
+export const ResponsiveLayout: Story = {
+  render: () => (
+    <Box container="md" padding="md" className="rounded-lg border border-border bg-muted/20 py-6">
+      <Box className="rounded-md border border-border bg-background px-4 py-6 text-sm text-muted-foreground">
+        This wrapper keeps its responsive horizontal padding while remaining app-agnostic.
+      </Box>
+    </Box>
+  ),
   parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
     docs: {
       description: {
-        story:
-          'Box forwards `ref` to the underlying element. When `as="div"` (default) the ref type is `React.RefObject<HTMLDivElement>`.',
+        story: 'Checks the approved `container` and `padding` presets in a mobile viewport.',
       },
     },
   },
 };
 
-export const TypeSafetyDemo: Story = {
-  render: () => (
-    <Box as="article" className="space-y-3 rounded-md border border-border p-4">
-      <Box as="h3" className="font-semibold">
-        Box is fully type-safe
-      </Box>
-      <Box as="p" className="text-sm text-muted-foreground">
-        When you write <code className="rounded bg-muted px-1">{'<Box as="a" href="/home">'}</code>,
-        TypeScript knows <code>href</code> is valid for <code>&lt;a&gt;</code>.
-      </Box>
-      <Box as="p" className="text-sm text-muted-foreground">
-        Writing <code className="rounded bg-muted px-1">{'<Box href="/home">'}</code> (default div)
-        produces a compile-time error — <code>href</code> is not a valid <code>&lt;div&gt;</code>{' '}
-        attribute.
-      </Box>
-      <Box as="code" className="block rounded bg-muted p-2 text-xs">
-        {'// valid\n<Box as="a" href="/home">Home</Box>'}
-        {'\n'}
-        {'// TypeScript error: href not valid on div\n<Box href="/home">Home</Box>'}
-      </Box>
-    </Box>
-  ),
+export const RefForwarding: Story = {
+  render: () => <RefForwardingDemo />,
   parameters: {
     docs: {
       description: {
         story:
-          "This story documents Box's type-safety guarantee. The TypeScript errors shown are compile-time and do not appear at runtime.",
+          'Confirms the forwarded ref resolves to the rendered element when `asChild` is not used.',
       },
     },
   },

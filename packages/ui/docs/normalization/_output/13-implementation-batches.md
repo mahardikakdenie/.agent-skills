@@ -119,7 +119,7 @@
 
 | Target | Component | Action | Status | Notes |
 | --- | --- | --- | --- | --- |
-| `@repo/ui` | `Box` | Extend existing layout primitive | DONE | `padding`, `container`, and `centered` presets shipped; verification gate passed on 2026-03-08 |
+| `@repo/ui` | `Box` | Extend existing layout primitive | DONE | `padding`, `container`, and `centered` presets shipped on 2026-03-08; Batch 4 procedural re-execution aligned spec/stories/types on 2026-03-10 |
 
 ## 5. Batch 3A - Token Foundation Bootstrap
 
@@ -281,7 +281,7 @@
 
 | Component | Program batch | Wave | Status | Blocker / note |
 | --- | --- | --- | --- | --- |
-| Box | 3 | B3 | DONE | `padding`, `container`, and `centered` presets verified on 2026-03-08 |
+| Box | 3 | B3 | DONE | `padding`, `container`, and `centered` presets verified on 2026-03-08; re-executed for Batch 4 compliance on 2026-03-10 |
 | Alert | 4 | B4 | PLANNED | Depends on foundation readiness only |
 | Badge | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
 | Button | 4 | B4 | PLANNED | High-demand primitive |

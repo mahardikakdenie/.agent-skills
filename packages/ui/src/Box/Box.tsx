@@ -4,14 +4,14 @@ import React from 'react';
 import { cn } from '@repo/helper';
 
 import { boxVariants } from './Box.variants';
-import type { BoxProps } from './Box.types';
+import type { BoxComponent, BoxProps } from './Box.types';
 
 /**
- * `Box` — the foundational layout primitive.
+ * `Box` - the foundational layout primitive.
  *
  * A polymorphic, type-safe wrapper around any native HTML element (or custom
- * component). Its job is to forward all props — including `ref` and
- * `className` — to the rendered element while offering a small, app-agnostic
+ * component). Its job is to forward all props - including `ref` and
+ * `className` - to the rendered element while offering a small, app-agnostic
  * set of layout presets for migration work.
  *
  * @example
@@ -27,14 +27,14 @@ import type { BoxProps } from './Box.types';
  * // Shared shell preset
  * <Box as="main" container="xl" padding="md">...</Box>
  *
- * // asChild — merges props onto the child element, Box renders no DOM node
+ * // asChild - merges props onto the child element, Box renders no DOM node
  * <Box asChild className="flex justify-center">
  *   <button onClick={handleClick}>Submit</button>
  * </Box>
  */
 // We cannot use React.forwardRef with a fully-generic polymorphic signature
 // because forwardRef does not support generic type parameters. The workaround
-// is to cast the function to the exported `BoxComponent` type AFTER definition,
+// is to cast the function to the exported `BoxComponent` type after definition,
 // preserving generics at the call site while still forwarding refs internally.
 const BoxImpl = React.forwardRef(function Box(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,13 +62,11 @@ BoxImpl.displayName = 'Box';
  * available and type-checked. The `ref` type is also narrowed accordingly.
  *
  * ```tsx
- * // Valid — `href` is a valid <a> attribute
+ * // Valid - `href` is a valid <a> attribute
  * <Box as="a" href="/home">Home</Box>
  *
- * // TypeScript error — `href` is not valid on <div>
+ * // TypeScript error - `href` is not valid on <div>
  * <Box href="/home">Home</Box>
  * ```
  */
-export const Box = BoxImpl as unknown as <C extends React.ElementType = 'div'>(
-  props: BoxProps<C>,
-) => React.ReactElement | null;
+export const Box = BoxImpl as unknown as BoxComponent;
