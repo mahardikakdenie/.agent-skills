@@ -160,7 +160,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert` and `Badge`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
 
 ### packages/ui work required
 
@@ -288,7 +288,7 @@
 | --- | --- | --- | --- | --- |
 | Box | 3 | B3 | DONE | `padding`, `container`, and `centered` presets verified on 2026-03-08; re-executed for Batch 4 compliance on 2026-03-10 |
 | Alert | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, semantic variants, and controlled dismiss behavior |
-| Badge | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
+| Badge | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, canonical size/variant coverage, and Box-composed dot support |
 | Button | 4 | B4 | PLANNED | High-demand primitive |
 | Card | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
 | Checkbox | 4 | B4 | PLANNED | Needs invalid and indeterminate coverage |
@@ -329,5 +329,4 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
-
 

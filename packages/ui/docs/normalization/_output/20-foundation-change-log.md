@@ -96,3 +96,15 @@ Changed:
 Impact:
 - Future Batch 4 and Batch 5 implementations should no longer hand-write native JSX tags in shared source or stories.
 - Verification and review should now treat any authored native DOM or SVG tag in `packages/ui` as a documentation-policy violation unless an explicit amendment changes the rule.
+---
+
+## 2026-03-10 - Badge Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Badge` as the next eligible Wave B4 primitive after `Alert`.
+- Added the canonical Badge spec, Storybook coverage, typed exports, and CVA-backed `variant` + `size` support aligned to `02-api-conventions.md`.
+- Locked the dot treatment to child composition through `children` and Box-authored markup instead of adding new `dot` or `icon` props.
+
+Impact:
+- `@repo/ui` export surface now includes `Badge` alongside `Box` and `Alert`.
+- App-local status pills, chips, and compact metadata labels can begin mapping toward a single shared Badge contract without introducing extra API sprawl.

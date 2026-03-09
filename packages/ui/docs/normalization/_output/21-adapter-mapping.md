@@ -31,3 +31,18 @@ Keep local:
 - Toast/snackbar timers, portal positioning, and auto-hide orchestration.
 - Modal-style confirmations or blocking error states that should instead migrate to `Dialog` or `Drawer`.
 - Alert wrappers that still embed routing, domain recovery actions, or service retry logic beyond a simple callback.
+
+## Badge
+
+Direct adoption guidance:
+
+- Legacy status pills, chips, and compact metadata labels map to `Badge`.
+- Existing semantic states such as approved, active, pending, blocked, or failed map to `variant=success | info | warning | destructive | default | secondary | outline` as appropriate.
+- Dense table/list labels map to `size="sm"`; general inline labels map to `size="md"`.
+- Leading dots remain child composition inside `children` rather than a dedicated shared prop.
+
+Keep local:
+
+- Interactive pills that behave like filters, tabs, or navigation controls.
+- Domain status helpers that still compute text, tone, or visibility from business logic before rendering.
+- Large notification bodies or rich feedback shells that should instead map to `Alert`.
