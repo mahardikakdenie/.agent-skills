@@ -1,4 +1,4 @@
-# 13 - Implementation Batches
+﻿# 13 - Implementation Batches
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -295,8 +295,8 @@
 | ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
 | Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
 | Drawer | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound exports, direction variants, and Box-authored shell layout on top of `vaul` |
-| Input | 4 | B4 | PLANNED | Core primitive |
-| Label | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
+| Input | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, normalized input modes, affix slots, clearable behavior, and Box-authored field markup |
+| Label | 4 | B4 | PLANNED | Next eligible Wave B4 primitive after `Input` |
 | Pagination | 4 | B4 | PLANNED | Shared navigation primitive |
 | RadioGroup | 4 | B4 | PLANNED | Form-aligned control |
 | Select | 4 | B4 | PLANNED | Static select only |
@@ -329,5 +329,6 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 
 

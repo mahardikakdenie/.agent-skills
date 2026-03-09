@@ -1,4 +1,4 @@
-# 21 - Adapter Mapping
+Ôªø# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -83,7 +83,7 @@ Direct adoption guidance:
 - Legacy consent checkboxes, settings toggles, and row-selection controls map to `Checkbox`.
 - Existing `checked`, `defaultChecked`, `onChange`, or `onCheckedChange` flows normalize to `checked`, `defaultChecked`, and `onCheckedChange`.
 - Inline field copy maps to `label`, `description`, and `error`; required indicators stay on `required` instead of app-local suffix markup.
-- Partial-selection or ìselect allî states map to `checked="indeterminate"`.
+- Partial-selection or ‚Äúselect all‚Äù states map to `checked="indeterminate"`.
 - Dense list or table controls map to `size="sm"`; general form usage maps to `size="md"`.
 
 Keep local:
@@ -107,3 +107,20 @@ Keep local:
 - Drawers that still embed auth, payment, data fetching, workflow guards, or domain submission logic beyond shell composition.
 - Centered modal confirmations that should instead migrate to `Dialog`.
 - Branded or campaign-specific sheets whose art direction, animation, or content policy is intentionally app-owned.
+## Input
+
+Direct adoption guidance:
+
+- Legacy text, email, password, phone, and numeric field shells map to `Input`.
+- Local `errorMessage`, `hasError`, and similar invalid props normalize to `error`; helper and supporting copy map to `helperText`.
+- Leading and trailing inline adornments map to `leftIcon` and `rightIcon`; local clear affordances map to `clearable`.
+- Existing semantic entry hints such as `isCurrency`, `isFormatNumber`, or phone intent normalize to `inputMode="currency" | "number" | "phone"` while formatting and masking stay local.
+- Native form attributes such as `placeholder`, `name`, `autoComplete`, `maxLength`, `min`, and `max` remain standard input props on the shared primitive.
+
+Keep local:
+
+- Currency masking, password-visibility toggles, and phone-code pickers that still require workflow-specific formatting or extra controls.
+- Async autocomplete, remote validation, option fetching, or search-result panels that should migrate to `Select`, `Combobox`, or an app-local shell.
+- Domain-aware field wrappers that still compute validation copy, submit readiness, or service-side state before rendering.
+
+

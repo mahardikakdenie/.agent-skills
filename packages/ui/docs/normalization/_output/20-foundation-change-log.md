@@ -1,4 +1,4 @@
-# 20 - Foundation Change Log
+﻿# 20 - Foundation Change Log
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -158,3 +158,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Drawer` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, and `Checkbox`.
 - Bottom sheets, side panels, and reusable secondary-detail overlays can now normalize toward one shared drawer shell while keeping domain workflows and modal-specific semantics local.
+---
+
+## 2026-03-10 - Input Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Input` as the next eligible Wave B4 primitive after `Drawer`.
+- Added the canonical Input spec, Storybook coverage, typed exports, and CVA-backed slot styling aligned to `02-api-conventions.md`.
+- Normalized repeated per-app field deltas into the shared contract: `variant`, `size`, `inputMode`, `label`, `helperText`, `error`, `leftIcon`, `rightIcon`, `loading`, `clearable`, and `onValueChange`.
+- Kept authored shared markup on `Box`, including the label, semantic input, helper and error copy, and the clear action button.
+
+Impact:
+- `@repo/ui` export surface now includes `Input` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, and `Drawer`.
+- App-local text, email, phone, numeric, and search field shells can begin converging on one shared Input primitive while keeping masking, password toggles, currency formatting, and domain validation local.
+
