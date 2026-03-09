@@ -87,6 +87,15 @@ The following MCP servers may be available in this workspace. Use them only if t
 
 ---
 
+## Box Authorship Policy
+
+- Treat `Box` as the authored DOM primitive for shared `packages/ui` source and for app Shell files created during Box pass work.
+- Do not hand-write native JSX tags directly in authored Shell or shared component JSX when the node can be expressed as `Box`.
+- When semantic HTML or SVG output is required, author it as `Box` with `as`, for example `Box as="button"`, `Box as="input"`, `Box as="table"`, `Box as="img"`, `Box as="svg"`, or `Box as="path"`.
+- `asChild` remains valid when composition must merge onto a child element, but the authored JSX should still start from `Box` wherever possible.
+- If a third-party primitive hard-requires a DOM node, stop and document the constraint instead of silently introducing direct native JSX.
+
+---
 ## Batch 0 - Verification Gate Setup
 
 > **Branch:** `migrate-app/<APP_NAME>`
@@ -810,7 +819,7 @@ For each Batch 1.5 candidate (ordered HIGH -> MEDIUM):
 - Shell contains ONLY: pure display JSX, typed with plain props, no domain imports, no hook calls, no API calls
 - Shell may import from `@repo/ui` (Box, Skeleton, Spinner, etc.)
 - Shell may NOT import from `@/hooks`, `@/services`, `@/types/domain`, or `next/*`
-- Apply Box pass (Section 1.4) to eliminate bare native HTML elements within the Shell
+- Apply Box pass (Section 1.4) to eliminate authored native JSX within the Shell by routing semantic HTML and SVG output through `<Box as="...">`
 
 ### Step 3 - Refactor the Container
 
@@ -1139,7 +1148,7 @@ Use the structure tier from the roadmap (Simple | Standard | Complex).
 - All new props must follow `02-api-conventions.md` naming
 - All new variants must use CVA pattern
 - `cn()` imported from `@repo/helper` (single shared helper - never import `clsx` or `tailwind-merge` directly inside component files)
-- Use `Box` for structural wrappers; native elements are reserved for semantic primitives and Radix/browser-required elements only
+- Use `Box` as the authored DOM primitive; semantic HTML and SVG output must be expressed through `Box as="..."`, not direct native JSX tags
 
 ## Verification Gate (ALL must pass before marking DONE)
 
@@ -1221,7 +1230,7 @@ Add to `packages/ui/src/<ComponentName>/index.ts` and `packages/ui/src/index.ts`
 
 ### Implementation
 - [ ] `cn()` from `@repo/helper` - `import { cn } from '@repo/helper'`
-- [ ] Structural wrappers use `Box`; native elements are used only for semantic primitives or Radix/browser-required nodes
+- [ ] Authored JSX uses `Box` for DOM output; semantic HTML and SVG targets are expressed via `Box as="..."`
 - [ ] CVA for variants; `cn(variantClasses, className)` merge order correct
 - [ ] CSS variable tokens only - no hardcoded hex/rgb/named colors
 - [ ] Radix `data-[state=*]` selectors for interactive states
@@ -1598,7 +1607,7 @@ Shell rules (ALL mandatory):
 - No service hooks (`use<Domain>()` from `@/services/`), no raw `useQuery`/`useMutation` - Shell receives all data via props
 - No `import` from `next/link`, `next/image`, `next/router`, `next/navigation`
 - No `process.env.NEXT_PUBLIC_*`
-- Apply Box pass inline (Section 1.4): replace bare native elements with `<Box>` from `@repo/ui`
+- Apply Box pass inline (Section 1.4): replace authored native JSX in the Shell with `<Box>` from `@repo/ui`, using `as` for semantic HTML or SVG targets
 - Use `@repo/ui` Skeleton/Spinner for loading states (already imported in the app)
 
 ### Step 3 - Refactor the Container (same file, same export)
@@ -1653,7 +1662,7 @@ Append to `_migration-log.md` under `## Batch 9.5 - App-Local Refactor`:
 - **packages/ui candidate:** YES - `NEW_SHARED_COMPONENT` queued | NO - app-local Shell only
   - If YES: reason why it qualifies cross-app
   - If NO: reason why it stays app-local
-- **Box pass:** replaced N bare native elements in Shell
+- **Box pass:** replaced N authored native JSX nodes in Shell
 - **Typecheck:** PASS
 - **Build:** PASS
 - **Smoke route:** [route URL] - PASS
@@ -1668,7 +1677,7 @@ ALLOWED:
 - Extracting pure-display JSX into the Shell
 - Extracting data-fetching logic into a co-located use<Name>Data hook (Pattern 2)
 - Replacing domain types in Shell props with plain generic equivalents (Pattern 3)
-- Applying Box pass (Section 1.4) within the Shell
+- Applying Box pass (Section 1.4) within the Shell so authored semantic HTML and SVG nodes route through `Box as="..."`
 - Importing @repo/ui Skeleton/Spinner in the Shell
 
 FORBIDDEN - zero tolerance, violation = rollback this component:
