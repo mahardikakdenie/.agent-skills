@@ -1,10 +1,10 @@
-# 03 — Migration Plan & Batches
+# 03 â€” Migration Plan & Batches
 
 > **Batch:** Batch 3 - Migration Plan
 > **Branch:** `feat/ui`
 > **Run count:** Once
 > **Prerequisite:** Phase 02 foundation complete (`packages/ui/docs/normalization/_output/00-foundation.md` through `_output/06-risk-register.md` exist)
-> **Prev:** [02-design-system-foundation.md](./02-design-system-foundation.md) · **Next:** [04-build-shared-components.md](./04-build-shared-components.md)
+> **Prev:** [02-design-system-foundation.md](./02-design-system-foundation.md) Â· **Next:** [04-build-shared-components.md](./04-build-shared-components.md)
 
 ---
 
@@ -35,24 +35,24 @@ Convert all per-app audits + the foundation into a single, executable, batch-bas
 
 | Batch       | Scope                  | packages/ui changes                             | Branch work                                                                          | Can run in parallel?                                                         |
 | ----------- | ---------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| **Batch 1** | `ADOPT_NOW`            | None — components exist                         | `migrate-app/<app>` only: swap imports                                               | ✅ All apps run Batch 1 in parallel                                          |
-| **Batch 2** | `ADOPT_WITH_ADAPTER`   | Minimal — adapter guidance only                 | `migrate-app/<app>`: add local adapter wrappers                                      | ✅ All apps run Batch 2 in parallel                                          |
-| **Batch 3** | `EXTEND_EXISTING`      | New variants/props added to existing components | `feat/ui` then `migrate-app/<app>`                                                   | ⚠️ `feat/ui` work is sequential; app work runs in parallel after             |
-| **Batch 4** | `NEW_SHARED_COMPONENT` | New components built from scratch               | `feat/ui` (SDD lifecycle) then `migrate-app/<app>`                                   | ⚠️ Each new component is sequential on `feat/ui`; apps run in parallel after |
-| **Batch 5** | Per-app stabilization  | None                                            | `migrate-app/<app>`: smoke test + stabilize                                          | ✅ All apps run Batch 5 in parallel                                          |
-| **Batch 6** | Cleanup + deprecation  | Remove dead code from `packages/ui`             | `migrate-app/<app>`: delete dead local copies · `feat/ui`: remove deprecated exports | ✅ App cleanup in parallel; `feat/ui` cleanup is one-time at end             |
+| **Batch 1** | `ADOPT_NOW`            | None â€” components exist                         | `migrate-app/<app>` only: swap imports                                               | âœ… All apps run Batch 1 in parallel                                          |
+| **Batch 2** | `ADOPT_WITH_ADAPTER`   | Minimal â€” adapter guidance only                 | `migrate-app/<app>`: add local adapter wrappers                                      | âœ… All apps run Batch 2 in parallel                                          |
+| **Batch 3** | `EXTEND_EXISTING`      | New variants/props added to existing components | `feat/ui` then `migrate-app/<app>`                                                   | âš ï¸ `feat/ui` work is sequential; app work runs in parallel after             |
+| **Batch 4** | `NEW_SHARED_COMPONENT` | New components built from scratch               | `feat/ui` (SDD lifecycle) then `migrate-app/<app>`                                   | âš ï¸ Each new component is sequential on `feat/ui`; apps run in parallel after |
+| **Batch 5** | Per-app stabilization  | None                                            | `migrate-app/<app>`: smoke test + stabilize                                          | âœ… All apps run Batch 5 in parallel                                          |
+| **Batch 6** | Cleanup + deprecation  | Remove dead code from `packages/ui`             | `migrate-app/<app>`: delete dead local copies Â· `feat/ui`: remove deprecated exports | âœ… App cleanup in parallel; `feat/ui` cleanup is one-time at end             |
 
 ### Batch 3 vs Batch 4 Parallelism Rules
 
 **Can Batch 3 and Batch 4 run simultaneously?**
 
-> ✅ **YES — with conditions.** They both produce work on `feat/ui`, but on different components, so parallel work is safe if:
+> âœ… **YES â€” with conditions.** They both produce work on `feat/ui`, but on different components, so parallel work is safe if:
 >
 > 1. Each developer works on a **different component** (no two in-flight changes to the same component file)
 > 2. Both branches off `feat/ui` main; short-lived feature branches merged via PR before apps consume the changes
 > 3. `13-implementation-batches.md` explicitly lists which components are in-flight (status: `IN PROGRESS` / `DONE`) so there is no ambiguity
 >
-> ⛔ **Do NOT start Batch 4 component build if Batch 3 is extending the same component** (e.g., cannot add `Select.Async` variant in Batch 3 while Batch 4 is rebuilding `Select` from scratch). Coordinate in `13-implementation-batches.md`.
+> â›” **Do NOT start Batch 4 component build if Batch 3 is extending the same component** (e.g., cannot add `Select.Async` variant in Batch 3 while Batch 4 is rebuilding `Select` from scratch). Coordinate in `13-implementation-batches.md`.
 
 ---
 
@@ -133,7 +133,7 @@ For each batch (1 through 6):
 
 ```
 
-## Batch 1 — ADOPT_NOW
+## Batch 1 â€” ADOPT_NOW
 
 ### Scope
 
@@ -142,7 +142,7 @@ Total: N components.
 
 ### packages/ui Work Required
 
-None. (Or: minimal — run check to confirm existing components pass current foundation API standards)
+None. (Or: minimal â€” run check to confirm existing components pass current foundation API standards)
 
 ### Per-App Work (Batches 6-9)
 
@@ -155,16 +155,16 @@ Per app:
 - [ ] `pnpm --filter <app> check-types` passes
 - [ ] `pnpm --filter <app> lint` passes
 - [ ] `pnpm --filter <app> build` passes
-- [ ] Smoke routes pass (critical routes from `verification-gate.md §5`) — before/after screenshots captured and logged in `comparison-log.md` per `verification-gate.md §6`
+- [ ] Smoke routes pass (critical routes from `verification-gate.md Â§5`) â€” before/after screenshots captured and logged in `comparison-log.md` per `verification-gate.md Â§6`
 
-### Apps × Components Matrix
+### Apps Ã— Components Matrix
 
 | App | Components to adopt | Count |
 |[app-name] | [list] | N |
 
 ---
 
-## Batch 2 — ADOPT_WITH_ADAPTER
+## Batch 2 â€” ADOPT_WITH_ADAPTER
 
 ### Scope
 
@@ -194,14 +194,14 @@ Per app:
 - [ ] All original prop usages compile via adapter (no TypeScript errors at usage sites)
 - [ ] No behavioral change at any usage site
 
-### Apps × Components Matrix
+### Apps Ã— Components Matrix
 
 | App | Components needing adapter | API delta | Count |
 | [app-name] | [list] | [prop mapping] | N |
 
 ---
 
-## Batch 3 — EXTEND_EXISTING
+## Batch 3 â€” EXTEND_EXISTING
 
 ### Scope
 
@@ -247,7 +247,7 @@ Per app (after packages/ui gate):
 
 ---
 
-## Batch 4 — NEW_SHARED_COMPONENT (within Batch 4, process SDD order)
+## Batch 4 â€” NEW_SHARED_COMPONENT (within Batch 4, process SDD order)
 
 For each new component:
 
@@ -266,11 +266,11 @@ For each new component:
 
 ---
 
-## Batch 5 — Per-App Stabilization
+## Batch 5 â€” Per-App Stabilization
 
 ### Scope
 
-Full smoke test and stabilization of the entire app after Batches 1–4 complete.
+Full smoke test and stabilization of the entire app after Batches 1â€“4 complete.
 Run once per app after all batch work for that app is done.
 
 ### packages/ui Work Required
@@ -280,9 +280,9 @@ None.
 ### Per-App Work (Phase 05 Batch 5)
 
 1. Run full verification gate (typecheck, lint, build)
-2. Run all smoke routes from `verification-gate.md §5` — capture before/after screenshots and complete `_artifacts/smoke-routes/comparison-log.md` per `verification-gate.md §6`
+2. Run all smoke routes from `verification-gate.md Â§5` â€” capture before/after screenshots and complete `_artifacts/smoke-routes/comparison-log.md` per `verification-gate.md Â§6`
 3. Resolve any deferred items from earlier batches
-4. Mark all parity checklist items ✅ PASS or ⚠️ DOCUMENTED EXCEPTION
+4. Mark all parity checklist items âœ… PASS or âš ï¸ DOCUMENTED EXCEPTION
 5. Clear all `Post-Migration Improvement Candidates` entries (document, don't act)
 
 ### Verification Gate
@@ -292,14 +292,14 @@ Per app:
 - [ ] `pnpm --filter <app> check-types` passes
 - [ ] `pnpm --filter <app> lint` passes
 - [ ] `pnpm --filter <app> build` passes
-- [ ] All items in `_parity-checklist.md` are ✅ or have documented exception
+- [ ] All items in `_parity-checklist.md` are âœ… or have documented exception
 - [ ] No unreviewed adapter wrappers remain
 - [ ] `_migration-log.md` complete (every component has a status entry)
-- [ ] Platform version alignment still correct: React 19.x, Tailwind 4.x, TypeScript 5.9.2 (run `node -e "console.log(require('./apps/<APP_NAME>/node_modules/react/package.json').version)"` to confirm — versions must not have drifted from Batch 0.5 baseline)
+- [ ] Platform version alignment still correct: React 19.x, Tailwind 4.x, TypeScript 5.9.2 (run `node -e "console.log(require('./apps/<APP_NAME>/node_modules/react/package.json').version)"` to confirm â€” versions must not have drifted from Batch 0.5 baseline)
 
 ---
 
-## Batch 6 — Cleanup + Deprecation
+## Batch 6 â€” Cleanup + Deprecation
 
 ### Scope
 
@@ -335,12 +335,12 @@ Per app:
 ## Acceptance Criteria
 - Master backlog has zero duplicate component entries
 - Every per-app backlog item maps to exactly one batch + master backlog row
-- Batches are ordered: lowest risk → highest risk
+- Batches are ordered: lowest risk â†’ highest risk
 - Every batch has explicit verification gates
 - Critical path identified (which batch blocks the most apps)
 
 > [!IMPORTANT]
-> **Phase gate — do NOT proceed to Phase 04 until:**
+> **Phase gate â€” do NOT proceed to Phase 04 until:**
 > - `13-implementation-batches.md` has been reviewed and approved by the team (all batch templates filled, no TODO entries in critical path)
 > - `11-master-component-roadmap.md` has been shared with all app teams (each app team knows what is coming in Batch 3/4)
 > - `12-master-backlog.csv` has zero rows with empty `batch` or `priority` columns
@@ -358,4 +358,4 @@ Per app:
 
 ---
 
-_Related: [02-design-system-foundation.md](./02-design-system-foundation.md) · [04-build-shared-components.md](./04-build-shared-components.md) · [05-app-migration.md](./05-app-migration.md)_
+_Related: [02-design-system-foundation.md](./02-design-system-foundation.md) Â· [04-build-shared-components.md](./04-build-shared-components.md) Â· [05-app-migration.md](./05-app-migration.md)_

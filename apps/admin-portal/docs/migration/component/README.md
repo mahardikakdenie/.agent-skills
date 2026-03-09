@@ -1,7 +1,7 @@
-# UI Component Migration — Master Index
+# UI Component Migration â€” Master Index
 
 > **Coverage:** All apps in `apps/`, shared library `packages/ui`, internal support in `packages/*`
-> **Branch model:** `migrate-app/<app>` per app · `feat/ui` for shared library work
+> **Branch model:** `migrate-app/<app>` per app Â· `feat/ui` for shared library work
 > **Standard:** Spec-driven development (SDD)
 
 ---
@@ -10,7 +10,7 @@
 
 | #   | Document                                                         | Batch Scope | Branch              | Run           |
 | --- | ---------------------------------------------------------------- | ---------- | ------------------- | ------------- |
-| —   | [**00 Branch Model & Lifecycle**](./00-overview.md)              | Pre-work   | Reference           | always-on     |
+| â€”   | [**00 Branch Model & Lifecycle**](./00-overview.md)              | Pre-work   | Reference           | always-on     |
 | 01  | [Per-App Component Audit](./01-app-audit.md)                     | Audit      | `migrate-app/<app>` | per app       |
 | 02  | [Design System Foundation](./02-design-system-foundation.md)     | Foundation | `feat/ui`           | once          |
 | 03  | [Migration Plan & Batches](./03-migration-plan.md)               | Planning   | `feat/ui`           | once          |
@@ -25,14 +25,14 @@
 
 ## Support Documents (always-on, not batch-gated)
 
-These apply at any point during migration — particularly when a legacy update arrives:
+These apply at any point during migration â€” particularly when a legacy update arrives:
 
 | File                                                                         | Purpose                                                                |
 | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [`migration-batch-prompts.md`](./migration-batch-prompts.md)                 | **Master execution file** — Batches 0–11 + Legacy L1–L6 (copy-paste)   |
-| [`legacy-update-routines.md`](./legacy-update-routines.md)                   | Step-by-step legacy update workflow (Routine 1–6)                      |
+| [`migration-batch-prompts.md`](./migration-batch-prompts.md)                 | **Master execution file** â€” Batches 0â€“11 + Legacy L1â€“L6 (copy-paste)   |
+| [`legacy-update-routines.md`](./legacy-update-routines.md)                   | Step-by-step legacy update workflow (Routine 1â€“6)                      |
 | [`legacy-update-integration-guide.md`](./legacy-update-integration-guide.md) | Quick reference: when to update, pause/resume by batch                 |
-| [`legacy-update-batch-prompts.md`](./legacy-update-batch-prompts.md)         | Copy-paste AI prompts (Batch 1–6 + 5A)                                 |
+| [`legacy-update-batch-prompts.md`](./legacy-update-batch-prompts.md)         | Copy-paste AI prompts (Batch 1â€“6 + 5A)                                 |
 | [`legacy-updates/`](./legacy-updates/)                                       | Per-update timestamped audit logs (`legacy-update-YYYYMMDD-HHMMSS.md`) |
 | [`../verification-gate.md`](../verification-gate.md)                         | App-specific verification commands (typecheck/lint/build/test)         |
 
@@ -40,39 +40,39 @@ These apply at any point during migration — particularly when a legacy update 
 
 ## Execution Flow
 
-> **Where to start:** New to this migration? Read [00-overview.md](./00-overview.md) first (branch model + full lifecycle), then return here and follow the batch guide table top-to-bottom. Your first action on an app branch is always **Batch 0** (verification gate setup) then **Batch 0.5** (dependency upgrades) in [`migration-batch-prompts.md`](./migration-batch-prompts.md) — both must pass before Batch 1 begins.
+> **Where to start:** New to this migration? Read [00-overview.md](./00-overview.md) first (branch model + full lifecycle), then return here and follow the batch guide table top-to-bottom. Your first action on an app branch is always **Batch 0** (verification gate setup) then **Batch 0.5** (dependency upgrades) in [`migration-batch-prompts.md`](./migration-batch-prompts.md) â€” both must pass before Batch 1 begins.
 
 ```
-[Reference]             Phase 06 (Standards) — Governs all batches
-                        │
+[Reference]             Phase 06 (Standards) â€” Governs all batches
+                        â”‚
 [migrate-app/<app>]         Batch 1 (per app, per branch)
-        │
-        │  handoff: _per-app-baseline-summary.md
-        ▼
-[feat/ui]               Phase 02  →  Phase 03  →  Phase 04 (per batch)
+        â”‚
+        â”‚  handoff: _per-app-baseline-summary.md
+        â–¼
+[feat/ui]               Phase 02  â†’  Phase 03  â†’  Phase 04 (per batch)
                         Foundation    Batches       packages/ui Build
-        │
-        │  handoff: @repo/ui updated exports + _output/21-adapter-mapping.md
-        ▼
-[migrate-app/<app>]         Phase 05 (per app, consume @repo/ui) → Phase 07 (cleanup)
-        │
-        ▼
-[feat/ui]               Phase 08 (standards) → SHARED_UI_* permanent docs
+        â”‚
+        â”‚  handoff: @repo/ui updated exports + _output/21-adapter-mapping.md
+        â–¼
+[migrate-app/<app>]         Phase 05 (per app, consume @repo/ui) â†’ Phase 07 (cleanup)
+        â”‚
+        â–¼
+[feat/ui]               Phase 08 (standards) â†’ SHARED_UI_* permanent docs
 ```
 
 ---
 
 ## Key Rules (non-negotiable across all batches)
 
-1. **Spec first** — no component enters `packages/ui` without a written spec + Storybook story
-2. **App-agnostic** — `packages/ui` has zero business logic, API calls, domain types, or framework-specific imports
-3. **Behavior parity** — 100% behavioral backward compatibility is mandatory. Users must not be able to detect that migration occurred. See [`06-component-standards.md` Section 8](./06-component-standards.md) for the full contract
-4. **No opportunistic refactoring** — migration changes imports only. Document improvements in `_migration-log.md` under "Post-Migration Improvement Candidates" — do not act on them during migration
-5. **Evidence-based** — every claim references a real repo path
-6. **Batch gate** — a batch may not start until its prerequisites are verified complete
-7. **Read verification-gate.md first** — always read `apps/<APP_NAME>/docs/migration/verification-gate.md` before running any verification commands
-8. **UX continuity** — after migration, the app must feel identical. Minor visual delta from design system token adoption is the only acceptable change
-9. **Wrong branch recovery** — if you realize you are on the wrong branch mid-batch: (a) `git stash` all uncommitted work, (b) `git checkout <correct-branch>`, (c) `git stash pop`, (d) verify you're in the right `apps/` directory before continuing. Never commit phase work to the wrong branch. If already committed to the wrong branch, revert the commit (`git revert HEAD`) and cherry-pick to the correct branch.
+1. **Spec first** â€” no component enters `packages/ui` without a written spec + Storybook story
+2. **App-agnostic** â€” `packages/ui` has zero business logic, API calls, domain types, or framework-specific imports
+3. **Behavior parity** â€” 100% behavioral backward compatibility is mandatory. Users must not be able to detect that migration occurred. See [`06-component-standards.md` Section 8](./06-component-standards.md) for the full contract
+4. **No opportunistic refactoring** â€” migration changes imports only. Document improvements in `_migration-log.md` under "Post-Migration Improvement Candidates" â€” do not act on them during migration
+5. **Evidence-based** â€” every claim references a real repo path
+6. **Batch gate** â€” a batch may not start until its prerequisites are verified complete
+7. **Read verification-gate.md first** â€” always read `apps/<APP_NAME>/docs/migration/verification-gate.md` before running any verification commands
+8. **UX continuity** â€” after migration, the app must feel identical. Minor visual delta from design system token adoption is the only acceptable change
+9. **Wrong branch recovery** â€” if you realize you are on the wrong branch mid-batch: (a) `git stash` all uncommitted work, (b) `git checkout <correct-branch>`, (c) `git stash pop`, (d) verify you're in the right `apps/` directory before continuing. Never commit phase work to the wrong branch. If already committed to the wrong branch, revert the commit (`git revert HEAD`) and cherry-pick to the correct branch.
 
 ---
 
