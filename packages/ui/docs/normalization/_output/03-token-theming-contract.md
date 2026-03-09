@@ -3,7 +3,7 @@
 > Batch: Batch 2 - Design System Foundation
 > Branch: feat/ui
 > Run date: 2026-03-06
-> Source: 06-component-standards.md Section 5 + Section 9, current `feat_ui/packages/config`, current `feat_ui/packages/helper`, current `feat_ui/packages/ui/package.json`
+> Source: 06-component-standards.md 5 + 9, current `feat_ui/packages/config`, current `feat_ui/packages/helper`, current `feat_ui/packages/ui/package.json`
 
 ---
 
@@ -200,7 +200,7 @@ The following apps have identified token normalization as a prerequisite to shar
 
 ## 8. Tailwind Composition Rules
 
-Source: `06-component-standards.md` Section 9
+Source: `06-component-standards.md` 9
 
 ### `cn()` Utility (canonical)
 
@@ -276,7 +276,7 @@ Current-state note:
 
 ## 10. Forbidden Styling in `packages/ui`
 
-Source: `06-component-standards.md` Section 5
+Source: `06-component-standards.md` 5
 
 ```ts
 // FORBIDDEN - hardcoded values

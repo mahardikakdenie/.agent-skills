@@ -1,22 +1,22 @@
-# 02 — API Conventions
+# 02 - API Conventions
 
-> **Batch:** Batch 2 — Design System Foundation
+> **Batch:** Batch 2 - Design System Foundation
 > **Branch:** `feat/ui`
 > **Run date:** 2026-03-06
-> **Source:** `06-component-standards.md §2 Prop Naming Conventions`
+> **Source:** `06-component-standards.md 2 Prop Naming Conventions`
 > **Breaking change rule:** After Batch 3 begins, any change to canonical prop names or variant values requires a Foundation Amendment PR.
 
 ---
 
 ## Global Naming Rules
 
-Source: `06-component-standards.md §2`
+Source: `06-component-standards.md 2`
 
 | Convention | Canonical | Forbidden |
 |---|---|---|
 | Variant prop | `variant` | `kind`, `type`, `mode`, `color`, `intent` |
 | Size prop | `size` | `width`, `scale`, `height`, small/medium/large literals |
-| Size values | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` — **default: `'md'`** | `'small'`, `'medium'`, `'large'`, `'tiny'`, `'huge'` |
+| Size values | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` - **default: `'md'`** | `'small'`, `'medium'`, `'large'`, `'tiny'`, `'huge'` |
 | Core variant values | `'default' \| 'primary' \| 'secondary' \| 'destructive' \| 'outline' \| 'ghost' \| 'link'` | ad-hoc aliases such as `'danger'`, `'warning-style'`, `'info-color'` |
 | Extended semantic variants | `'success' \| 'warning' \| 'info'` only when the component communicates status/feedback or a Batch 2 parity ruling explicitly allows it | undocumented one-off literals or `'error'` (map to `'destructive'`) |
 | Disabled | `disabled` | `isDisabled`, `readOnly` (unless semantically distinct) |
@@ -33,7 +33,7 @@ Source: `06-component-standards.md §2`
 
 ---
 
-## Legacy → Canonical Prop Mapping
+## Legacy -> Canonical Prop Mapping
 
 Cross-app conflicts identified across all 27 baselines:
 
@@ -53,7 +53,7 @@ Cross-app conflicts identified across all 27 baselines:
 | `isWithShadow` | `shadow` | partner-portal (deprecated; use `className` instead) |
 | `onPress` (NextUI/HeroUI) | `onClick` | teman-affiliate-microsite, haruuz-microsite, agent-microsite |
 | `allOptions` / `options` divergence | `options: SelectOption[]` | partner-portal, affiliate-admin |
-| `placeholderSelectClassName`, `bgSelect`, `chevronColor` | `className` + `variant` | partner-portal (style overrides → collapse) |
+| `placeholderSelectClassName`, `bgSelect`, `chevronColor` | `className` + `variant` | partner-portal (style overrides -> collapse) |
 | `isLongDate` | `dateFormat` (string token) | customer-portal |
 | `titleModal` | `label` | partner-portal MultipleSelect |
 
@@ -61,7 +61,7 @@ Cross-app conflicts identified across all 27 baselines:
 
 ## TypeScript Conventions
 
-Source: `06-component-standards.md §3`
+Source: `06-component-standards.md 3`
 
 ### Component Interface Pattern
 
@@ -100,7 +100,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 ```
 
-> **React 19 note:** Projects using React 19 can accept `ref` as a regular prop without `forwardRef`. Check consuming app `package.json`. Both patterns are valid — use `forwardRef` as the safe default.
+> **React 19 note:** Projects using React 19 can accept `ref` as a regular prop without `forwardRef`. Check consuming app `package.json`. Both patterns are valid - use `forwardRef` as the safe default.
 
 Variant vocabulary rule:
 - Start from the core variant set.
@@ -326,7 +326,7 @@ export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement>
 
 Story group: `Overlays`
 
-Migration note: `isOpen` + `onClose` → `open` + `onClose` (canonical per `06-component-standards.md §2`). `bgColor`, `widthClassName`, `heightClassName` → use `size` + `className`.
+Migration note: `isOpen` + `onClose` -> `open` + `onClose` (canonical per `06-component-standards.md 2`). `bgColor`, `widthClassName`, `heightClassName` -> use `size` + `className`.
 
 ---
 
@@ -412,7 +412,7 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
 
 Story group: `Feedback`
 
-Migration note: `severity="error"` → `variant="destructive"`. `type` → `variant`. `autoHideMs` → `dismissible` + `onClose` caller logic.
+Migration note: `severity="error"` -> `variant="destructive"`. `type` -> `variant`. `autoHideMs` -> `dismissible` + `onClose` caller logic.
 
 ---
 
@@ -429,7 +429,7 @@ export interface ContentLoadingWrapperProps {
 }
 ```
 
-Story group: `Layout` — **canonical name from `06-component-standards.md §1 Tier 2`**
+Story group: `Layout` - **canonical name from `06-component-standards.md 1 Tier 2`**
 
 ---
 
@@ -448,7 +448,7 @@ Story group: `Feedback`
 ### Table (structural primitive)
 
 ```ts
-// Structural HTML table wrappers — no logic, no data fetching
+// Structural HTML table wrappers - no logic, no data fetching
 // Sub-components: TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter
 export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   className?: string
@@ -543,7 +543,7 @@ export interface DatePickerProps {
 
 Story group: `Inputs`
 
-Migration note: `initialValue` → `value`; `minimumDate`/`maximumDate` → `minDate`/`maxDate`; `isForceClear` → `clearable`; `isDisabled` → `disabled`.
+Migration note: `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`.
 
 ---
 
@@ -650,7 +650,7 @@ Story group: `Layout`
 
 ```ts
 // Compound: Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage
-// FormField uses RHF Controller internally — do NOT expose RHF types in prop surface
+// FormField uses RHF Controller internally - do NOT expose RHF types in prop surface
 ```
 
 Story group: `Misc`
@@ -669,7 +669,7 @@ Story group: `Misc`
 
 ## CVA Variant Pattern (canonical)
 
-Source: `06-component-standards.md §4`
+Source: `06-component-standards.md 4`
 
 ```ts
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -700,28 +700,28 @@ const componentVariants = cva(
 );
 ```
 
-Merge order: `cn(variantClasses, className)` — consumer `className` always wins.
+Merge order: `cn(variantClasses, className)` - consumer `className` always wins.
 
 ---
 
 ## Forbidden in `@repo/ui` API
 
-Source: `06-component-standards.md §2`
+Source: `06-component-standards.md 2`
 
 ```ts
-// FORBIDDEN — domain-specific props
+// FORBIDDEN - domain-specific props
 apiUrl?: string
 fetchData?: () => Promise<T>
 policy?: Policy
 claim?: Claim
 affiliateId?: string
 
-// FORBIDDEN — Next.js specific
+// FORBIDDEN - Next.js specific
 href?: import('next/link').LinkProps['href']   // use: href?: string
 src?: import('next/image').ImageProps['src']   // use: src?: string
 
-// FORBIDDEN — env vars
+// FORBIDDEN - env vars
 process.env.NEXT_PUBLIC_*
 
-// FORBIDDEN — boolean proliferation (> 3 booleans → use variant or mode)
+// FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```

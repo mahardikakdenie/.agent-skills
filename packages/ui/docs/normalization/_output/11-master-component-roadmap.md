@@ -37,50 +37,50 @@
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Alert | 2 (Composite) | Tier 1 composition | `02` Section Alert | none | Standard | `Alert.Default`, `Alert.Variants`, `Alert.WithIcon`, `Alert.Dismissible` | 22 apps; see `05` | S | Presentational feedback only |
-| Badge | 1 (Primitive) | none | `02` Section Badge | none | Simple | `Badge.Default`, `Badge.Variants`, `Badge.Dot` | 11 apps; see `05` | XS | Small visual primitive only |
-| Button | 1 (Primitive) | `@radix-ui/react-slot` | `02` Section Button | none | Standard | `Button.Default`, `Button.Variants`, `Button.Sizes`, `Button.Loading`, `Button.AsChild` | 23 apps; see `05` | M | First broad shared primitive wave |
-| Card | 2 (Composite) | Tier 1 composition | `02` Section Card | none | Standard | `Card.Basic`, `Card.HeaderFooter`, `Card.Interactive` | 12 apps; see `05` | S | Structural card only |
-| Checkbox | 1 (Primitive) | `@radix-ui/react-checkbox` | `02` Section Checkbox | `@radix-ui/react-checkbox` | Standard | `Checkbox.Default`, `Checkbox.Indeterminate`, `Checkbox.Disabled` | 20 apps; see `05` | S | Must cover invalid and indeterminate states |
-| ContentLoadingWrapper | 2 (Composite) | `Skeleton` composition | `02` Section ContentLoadingWrapper | none | Standard | `ContentLoadingWrapper.Page`, `ContentLoadingWrapper.Inline`, `ContentLoadingWrapper.WithSkeleton` | 18 apps; see `05` | M | Shared loading layout only |
-| Dialog | 2 (Composite) | `@radix-ui/react-dialog` | `02` Section Dialog | `@radix-ui/react-dialog` | Complex | `Dialog.Basic`, `Dialog.Scrollable`, `Dialog.Destructive`, `Dialog.AsyncClose`, `Dialog.A11y` | 26 apps; see `05` | L | Explicit a11y risk gate |
-| Drawer | 2 (Composite) | `vaul` | `02` Section Drawer | `vaul` | Complex | `Drawer.Basic`, `Drawer.Sides`, `Drawer.Scrollable`, `Drawer.FormAction` | 10 apps; see `05` | M | Keep distinct from modal semantics |
-| Input | 1 (Primitive) | native `<input>` | `02` Section Input | none | Standard | `Input.Default`, `Input.Types`, `Input.WithAffix`, `Input.Error`, `Input.Disabled` | 26 apps; see `05` | M | Core primitive for later waves |
+| Alert | 2 (Composite) | Tier 1 composition | `02` Alert | none | Standard | `Alert.Default`, `Alert.Variants`, `Alert.WithIcon`, `Alert.Dismissible` | 22 apps; see `05` | S | Presentational feedback only |
+| Badge | 1 (Primitive) | none | `02` Badge | none | Simple | `Badge.Default`, `Badge.Variants`, `Badge.Dot` | 11 apps; see `05` | XS | Small visual primitive only |
+| Button | 1 (Primitive) | `@radix-ui/react-slot` | `02` Button | none | Standard | `Button.Default`, `Button.Variants`, `Button.Sizes`, `Button.Loading`, `Button.AsChild` | 23 apps; see `05` | M | First broad shared primitive wave |
+| Card | 2 (Composite) | Tier 1 composition | `02` Card | none | Standard | `Card.Basic`, `Card.HeaderFooter`, `Card.Interactive` | 12 apps; see `05` | S | Structural card only |
+| Checkbox | 1 (Primitive) | `@radix-ui/react-checkbox` | `02` Checkbox | `@radix-ui/react-checkbox` | Standard | `Checkbox.Default`, `Checkbox.Indeterminate`, `Checkbox.Disabled` | 20 apps; see `05` | S | Must cover invalid and indeterminate states |
+| ContentLoadingWrapper | 2 (Composite) | `Skeleton` composition | `02` ContentLoadingWrapper | none | Standard | `ContentLoadingWrapper.Page`, `ContentLoadingWrapper.Inline`, `ContentLoadingWrapper.WithSkeleton` | 18 apps; see `05` | M | Shared loading layout only |
+| Dialog | 2 (Composite) | `@radix-ui/react-dialog` | `02` Dialog | `@radix-ui/react-dialog` | Complex | `Dialog.Basic`, `Dialog.Scrollable`, `Dialog.Destructive`, `Dialog.AsyncClose`, `Dialog.A11y` | 26 apps; see `05` | L | Explicit a11y risk gate |
+| Drawer | 2 (Composite) | `vaul` | `02` Drawer | `vaul` | Complex | `Drawer.Basic`, `Drawer.Sides`, `Drawer.Scrollable`, `Drawer.FormAction` | 10 apps; see `05` | M | Keep distinct from modal semantics |
+| Input | 1 (Primitive) | native `<input>` | `02` Input | none | Standard | `Input.Default`, `Input.Types`, `Input.WithAffix`, `Input.Error`, `Input.Disabled` | 26 apps; see `05` | M | Core primitive for later waves |
 | Label | 1 (Primitive) | `@radix-ui/react-label` | `02` amendment: `htmlFor`, `required`, `disabled`, `tone` | `@radix-ui/react-label` | Simple | `Label.Default`, `Label.Required`, `Label.Disabled` | 10 apps; see `05` | XS | Needed before `Form` |
-| Pagination | 2 (Composite) | Tier 1 composition | `02` Section Pagination | none | Standard | `Pagination.Basic`, `Pagination.Compact`, `Pagination.Disabled` | 16 apps; see `05` | S | UI navigation only |
-| RadioGroup | 1 (Primitive) | `@radix-ui/react-radio-group` | `02` Section RadioGroup | `@radix-ui/react-radio-group` | Standard | `RadioGroup.Default`, `RadioGroup.Disabled`, `RadioGroup.Description` | 11 apps; see `05` | S | Align with `Form` naming |
-| Select | 1 (Primitive) | `@radix-ui/react-select` | `02` Section Select | `@radix-ui/react-select` | Standard | `Select.Default`, `Select.Placeholder`, `Select.LongList`, `Select.Error`, `Select.Disabled` | 25 apps; see `05` | L | Static select only |
-| Skeleton | 1 (Primitive) | none | `02` Section Skeleton | none | Simple | `Skeleton.Block`, `Skeleton.Text`, `Skeleton.Card` | 10 apps; see `05` | XS | Small composable primitive |
+| Pagination | 2 (Composite) | Tier 1 composition | `02` Pagination | none | Standard | `Pagination.Basic`, `Pagination.Compact`, `Pagination.Disabled` | 16 apps; see `05` | S | UI navigation only |
+| RadioGroup | 1 (Primitive) | `@radix-ui/react-radio-group` | `02` RadioGroup | `@radix-ui/react-radio-group` | Standard | `RadioGroup.Default`, `RadioGroup.Disabled`, `RadioGroup.Description` | 11 apps; see `05` | S | Align with `Form` naming |
+| Select | 1 (Primitive) | `@radix-ui/react-select` | `02` Select | `@radix-ui/react-select` | Standard | `Select.Default`, `Select.Placeholder`, `Select.LongList`, `Select.Error`, `Select.Disabled` | 25 apps; see `05` | L | Static select only |
+| Skeleton | 1 (Primitive) | none | `02` Skeleton | none | Simple | `Skeleton.Block`, `Skeleton.Text`, `Skeleton.Card` | 10 apps; see `05` | XS | Small composable primitive |
 | Spinner | 1 (Primitive) | none | `02` amendment: `size`, `label`, `inline`, `overlay` | none | Simple | `Spinner.Inline`, `Spinner.Overlay`, `Spinner.Sizes` | 8 apps; see `05` | XS | Separate from wrapper loading |
-| Switch | 1 (Primitive) | `@radix-ui/react-switch` | `02` Section Switch | `@radix-ui/react-switch` | Standard | `Switch.Default`, `Switch.Disabled`, `Switch.Description` | 9 apps; see `05` | XS | Toggle primitive only |
-| Table | 1 (Primitive) | native `<table>` | `02` Section Table | none | Standard | `Table.Basic`, `Table.Dense`, `Table.Empty`, `Table.Responsive` | 12 apps; see `05` | S | Foundation for `DataTable` |
+| Switch | 1 (Primitive) | `@radix-ui/react-switch` | `02` Switch | `@radix-ui/react-switch` | Standard | `Switch.Default`, `Switch.Disabled`, `Switch.Description` | 9 apps; see `05` | XS | Toggle primitive only |
+| Table | 1 (Primitive) | native `<table>` | `02` Table | none | Standard | `Table.Basic`, `Table.Dense`, `Table.Empty`, `Table.Responsive` | 12 apps; see `05` | S | Foundation for `DataTable` |
 | Tabs | 2 (Composite) | `@radix-ui/react-tabs` | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation` | `@radix-ui/react-tabs` | Standard | `Tabs.Basic`, `Tabs.Disabled`, `Tabs.Scrollable` | 13 apps; see `05` | S | Route sync stays local |
-| Textarea | 1 (Primitive) | native `<textarea>` | `02` Section Textarea | none | Standard | `Textarea.Default`, `Textarea.Resize`, `Textarea.Error`, `Textarea.Disabled` | 18 apps; see `05` | S | Plain-text multiline input only |
+| Textarea | 1 (Primitive) | native `<textarea>` | `02` Textarea | none | Standard | `Textarea.Default`, `Textarea.Resize`, `Textarea.Error`, `Textarea.Disabled` | 18 apps; see `05` | S | Plain-text multiline input only |
 
 ## 4. Wave B5.1 - Date and Overlay Normalization
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Breadcrumb | 2 (Composite) | Tier 1 composition | `02` amendment: `items[]`, `separator`, `currentLabel` | none | Standard | `Breadcrumb.Basic`, `Breadcrumb.Truncated`, `Breadcrumb.WithCurrent` | 12 apps; see `05` | S | Shared shell only |
-| Calendar | 2 (Composite) | `react-day-picker` | `02` Section Calendar | `react-day-picker`, `date-fns` | Standard | `Calendar.Single`, `Calendar.DisabledDates`, `Calendar.RangePreview` | 9 apps; see `05` | M | Build before picker wrappers |
-| DatePicker | 2 (Composite) | `Calendar` + `Popover` | `02` Section DatePicker | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DatePicker.Basic`, `DatePicker.WithMinMax`, `DatePicker.Invalid`, `DatePicker.FormField` | 22 apps; see `05` | L | High-demand date control |
+| Calendar | 2 (Composite) | `react-day-picker` | `02` Calendar | `react-day-picker`, `date-fns` | Standard | `Calendar.Single`, `Calendar.DisabledDates`, `Calendar.RangePreview` | 9 apps; see `05` | M | Build before picker wrappers |
+| DatePicker | 2 (Composite) | `Calendar` + `Popover` | `02` DatePicker | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DatePicker.Basic`, `DatePicker.WithMinMax`, `DatePicker.Invalid`, `DatePicker.FormField` | 22 apps; see `05` | L | High-demand date control |
 | DropdownMenu | 2 (Composite) | `@radix-ui/react-dropdown-menu` | `02` amendment: `items`, `align`, `side`, `onAction` | `@radix-ui/react-dropdown-menu` | Complex | `DropdownMenu.Basic`, `DropdownMenu.CheckboxItem`, `DropdownMenu.Submenu` | 12 apps; see `05` | M | Shared action menu only |
-| Form | 2 (Composite) | `react-hook-form` + `Label` + `Input` | `02` Section Form | none | Complex | `Form.Field`, `Form.Error`, `Form.Description`, `Form.ArrayField` | 9 apps; see `05` | M | Shared field scaffolding only |
-| Popover | 2 (Composite) | `@radix-ui/react-popover` | `02` Section Popover | `@radix-ui/react-popover` | Standard | `Popover.Basic`, `Popover.Form`, `Popover.Controlled` | 9 apps; see `05` | S | Overlay foundation dependency |
-| Tooltip | 2 (Composite) | `@radix-ui/react-tooltip` | `02` Section Tooltip | `@radix-ui/react-tooltip` | Standard | `Tooltip.Basic`, `Tooltip.SideVariants`, `Tooltip.LongContent` | 9 apps; see `05` | XS | Small a11y-sensitive surface |
+| Form | 2 (Composite) | `react-hook-form` + `Label` + `Input` | `02` Form | none | Complex | `Form.Field`, `Form.Error`, `Form.Description`, `Form.ArrayField` | 9 apps; see `05` | M | Shared field scaffolding only |
+| Popover | 2 (Composite) | `@radix-ui/react-popover` | `02` Popover | `@radix-ui/react-popover` | Standard | `Popover.Basic`, `Popover.Form`, `Popover.Controlled` | 9 apps; see `05` | S | Overlay foundation dependency |
+| Tooltip | 2 (Composite) | `@radix-ui/react-tooltip` | `02` Tooltip | `@radix-ui/react-tooltip` | Standard | `Tooltip.Basic`, `Tooltip.SideVariants`, `Tooltip.LongContent` | 9 apps; see `05` | XS | Small a11y-sensitive surface |
 
 ## 5. Wave B5.2 - Advanced Input and Data Display
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Avatar | 1 (Primitive) | `@radix-ui/react-avatar` | `02` amendment: `src`, `alt`, `fallback`, `size` | `@radix-ui/react-avatar` | Simple | `Avatar.Image`, `Avatar.Fallback`, `Avatar.Sizes` | 6 apps; see `05` | XS | Visual identity primitive only |
-| Combobox | 2 (Composite) | `Command` + `Popover` | `02` Section Combobox | `cmdk`, `@radix-ui/react-popover` | Complex | `Combobox.Basic`, `Combobox.Search`, `Combobox.Empty`, `Combobox.Async` | 8 apps; see `05` | L | Searchable selection contract |
-| DataTable | 2 (Composite) | `Table` + `@tanstack/react-table` v8 | `02` Section DataTable | `@tanstack/react-table` | Complex | `DataTable.Basic`, `DataTable.Sorting`, `DataTable.Filtering`, `DataTable.Empty`, `DataTable.Pagination` | 6 apps; see `05` | XL | Highest-risk data-display item |
+| Combobox | 2 (Composite) | `Command` + `Popover` | `02` Combobox | `cmdk`, `@radix-ui/react-popover` | Complex | `Combobox.Basic`, `Combobox.Search`, `Combobox.Empty`, `Combobox.Async` | 8 apps; see `05` | L | Searchable selection contract |
+| DataTable | 2 (Composite) | `Table` + `@tanstack/react-table` v8 | `02` DataTable | `@tanstack/react-table` | Complex | `DataTable.Basic`, `DataTable.Sorting`, `DataTable.Filtering`, `DataTable.Empty`, `DataTable.Pagination` | 6 apps; see `05` | XL | Highest-risk data-display item |
 | DateRangePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `presets`, `minDate`, `maxDate` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateRangePicker.Basic`, `DateRangePicker.Presets`, `DateRangePicker.Invalid` | 7 apps; see `05` | L | Start after `DatePicker` stabilizes |
-| FileUpload | 2 (Composite) | Tier 1 composition | `02` Section FileUpload | none | Standard | `FileUpload.Basic`, `FileUpload.Multiple`, `FileUpload.Error`, `FileUpload.Disabled` | 12 apps; see `05` | M | Upload transport stays local |
+| FileUpload | 2 (Composite) | Tier 1 composition | `02` FileUpload | none | Standard | `FileUpload.Basic`, `FileUpload.Multiple`, `FileUpload.Error`, `FileUpload.Disabled` | 12 apps; see `05` | M | Upload transport stays local |
 | Image | 2 (Composite) | native `img` + fallback composition | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | optional `@radix-ui/react-avatar` fallback pattern | Standard | `Image.Basic`, `Image.Fallback`, `Image.AspectRatio` | 13 apps; see `05` | M | No `next/image` coupling |
 | NavigationMenu | 2 (Composite) | `@radix-ui/react-navigation-menu` | `02` amendment: `items`, `orientation`, `collapsed`, `onNavigate` | `@radix-ui/react-navigation-menu` | Complex | `NavigationMenu.Basic`, `NavigationMenu.Nested`, `NavigationMenu.MobileFallback` | 8 apps; see `05` | M | Route trees stay local |
-| OtpInput | 2 (Composite) | Tier 1 composition | `02` Section OtpInput | none | Standard | `OtpInput.Basic`, `OtpInput.Error`, `OtpInput.Disabled` | 6 apps; see `05` | S | Segmented input contract |
+| OtpInput | 2 (Composite) | Tier 1 composition | `02` OtpInput | none | Standard | `OtpInput.Basic`, `OtpInput.Error`, `OtpInput.Disabled` | 6 apps; see `05` | S | Segmented input contract |
 | PageHeader | 2 (Composite) | Tier 1 composition | `02` amendment: `title`, `description`, `actions`, `meta` | none | Standard | `PageHeader.Basic`, `PageHeader.WithActions`, `PageHeader.WithMetadata` | 8 apps; see `05` | S | Structural page header only |
 
 ## 6. Wave B5.3 - Remaining Medium-Demand Components
