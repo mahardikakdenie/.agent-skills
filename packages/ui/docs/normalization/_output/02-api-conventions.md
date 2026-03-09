@@ -691,7 +691,7 @@ export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> 
 }
 ```
 
-Story group: `Misc`
+Story group: `Inputs`
 
 ---
 
@@ -1062,5 +1062,3 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
-
-

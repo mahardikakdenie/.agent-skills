@@ -1,4 +1,4 @@
-﻿// Primitives
+// Primitives
 export * from './Box';
 
 // Feedback
@@ -9,11 +9,10 @@ export * from './Button';
 // Inputs
 export * from './Checkbox';
 export * from './Input';
+export * from './Label';
 
 // Layout
 export * from './Card';
 
 // Overlays
 export * from './Drawer';
-
-

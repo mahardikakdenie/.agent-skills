@@ -1,4 +1,4 @@
-﻿# 21 - Adapter Mapping
+# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -83,7 +83,7 @@ Direct adoption guidance:
 - Legacy consent checkboxes, settings toggles, and row-selection controls map to `Checkbox`.
 - Existing `checked`, `defaultChecked`, `onChange`, or `onCheckedChange` flows normalize to `checked`, `defaultChecked`, and `onCheckedChange`.
 - Inline field copy maps to `label`, `description`, and `error`; required indicators stay on `required` instead of app-local suffix markup.
-- Partial-selection or “select all” states map to `checked="indeterminate"`.
+- Partial-selection or "select all" states map to `checked="indeterminate"`.
 - Dense list or table controls map to `size="sm"`; general form usage maps to `size="md"`.
 
 Keep local:
@@ -123,4 +123,16 @@ Keep local:
 - Async autocomplete, remote validation, option fetching, or search-result panels that should migrate to `Select`, `Combobox`, or an app-local shell.
 - Domain-aware field wrappers that still compute validation copy, submit readiness, or service-side state before rendering.
 
+## Label
 
+Direct adoption guidance:
+
+- Legacy field captions, checkbox labels, radio labels, and simple form-copy wrappers map to `Label`.
+- Existing `htmlFor` or `for` linkage should map directly to `htmlFor`; visual required suffixes map to the shared `required` prop.
+- Local muted or invalid caption styling should normalize to `tone="muted"` or `tone="destructive"` instead of app-specific color classes.
+
+Keep local:
+
+- Field wrappers that also render helper text, descriptions, validation copy, or layout composition beyond the caption itself.
+- Domain-aware captions that still compute copy, localization fallbacks, or workflow state before rendering.
+- Route- or form-library-specific wrappers that inject validation orchestration instead of plain label semantics.

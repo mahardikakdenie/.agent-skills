@@ -1,4 +1,4 @@
-﻿# 20 - Foundation Change Log
+# 20 - Foundation Change Log
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -172,3 +172,15 @@ Impact:
 - `@repo/ui` export surface now includes `Input` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, and `Drawer`.
 - App-local text, email, phone, numeric, and search field shells can begin converging on one shared Input primitive while keeping masking, password toggles, currency formatting, and domain validation local.
 
+---
+
+## 2026-03-10 - Label Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Label` as the next eligible Wave B4 primitive after `Input`.
+- Added the canonical Label spec, Storybook coverage, typed exports, and token-backed tone support aligned to `02-api-conventions.md`.
+- Kept authored shared markup on `Box` by composing `@radix-ui/react-label` through `asChild`, while limiting the shared API to `htmlFor`, `required`, `disabled`, and `tone`.
+
+Impact:
+- `@repo/ui` export surface now includes `Label` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, and `Input`.
+- App-local field captions can begin converging on one shared Label primitive before `Form`, `RadioGroup`, `Select`, and later field-shell work lands.
