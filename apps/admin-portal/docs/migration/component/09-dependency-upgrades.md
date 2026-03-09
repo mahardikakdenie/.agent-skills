@@ -1,10 +1,10 @@
-# 09 â€” Dependency Version Upgrades
+﻿# 09 — Dependency Version Upgrades
 
 > **Batch:** Batch 0.5 - Dependency Version Upgrades
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run count:** Once per app
 > **Prerequisite:** Batch 0 (Verification Gate Setup) complete
-> **Prev:** [00-overview.md](./00-overview.md) Â· **Next:** [01-app-audit.md](./01-app-audit.md)
+> **Prev:** [00-overview.md](./00-overview.md) · **Next:** [01-app-audit.md](./01-app-audit.md)
 > **AI execution:** Use **Batch 0.5** in [`migration-batch-prompts.md`](./migration-batch-prompts.md)
 
 ---
@@ -13,13 +13,13 @@
 
 The component migration is a **platform alignment event**, not just an import-swap exercise.
 `packages/ui` is built at specific dependency versions and all consuming `apps/*` must align
-to those versions â€” otherwise peer dependency resolution is incorrect and `@repo/ui` types
+to those versions — otherwise peer dependency resolution is incorrect and `@repo/ui` types
 will conflict with app-level types.
 
 > [!IMPORTANT]
 > `packages/ui` already targets **React 19**, **Tailwind CSS v4**, and **TypeScript 5.9.2**.
 > An app still on React 18 + Tailwind v3 will experience type conflicts and CSS build
-> inconsistencies from batch 1 onward. **Align all platform deps â€” including their configs â€”
+> inconsistencies from batch 1 onward. **Align all platform deps — including their configs —
 > before migrating any components.**
 
 **Principle:** If an upgrade requires a config file change, make the config change.
@@ -27,10 +27,10 @@ A config update is part of the upgrade, not a reason to skip it.
 
 ---
 
-## Part A â€” Platform-Wide Upgrade Standards
+## Part A — Platform-Wide Upgrade Standards
 
 > [!IMPORTANT]
-> **A0 â€” Package Manager Normalization (run before A1â€“A7)**
+> **A0 — Package Manager Normalization (run before A1–A7)**
 >
 > This monorepo uses **pnpm exclusively**. Before upgrading any dependency, confirm the
 > current migration scope (`<APP_PATH>`) and workspace root are clean of other package
@@ -72,7 +72,7 @@ A config update is part of the upgrade, not a reason to skip it.
 
 
 These versions are **monorepo-wide requirements** driven by `packages/ui`. Every app must
-align to these â€” they are not optional per-app decisions.
+align to these — they are not optional per-app decisions.
 
 ### A1. Upgrade Matrix (Platform Standards)
 
@@ -82,33 +82,33 @@ align to these â€” they are not optional per-app decisions.
 | `react-dom` | `^19` | must match `react` |
 | `@types/react` | `^19` | must match runtime |
 | `@types/react-dom` | `^19` | must match runtime |
-| `next` | `^16` | Monorepo platform standard â€” upgrade from 15.x |
+| `next` | `^16` | Monorepo platform standard — upgrade from 15.x |
 | `tailwindcss` | `^4` | packages/ui uses Tailwind v4 |
 | `@tailwindcss/postcss` | `^4` | PostCSS plugin for Tailwind v4 (add if not present) |
 | `typescript` | `5.9.2` (pin) | Matches root workspace + packages/ui |
 | `eslint-config-next` | `16` (match `next` major) | Must be upgraded alongside `next` |
 | `@types/node` | `^22` (range, unpinned) | Avoid exact version pins |
 
-### A2. React 18 â†’ 19 Upgrade
+### A2. React 18 → 19 Upgrade
 
 #### Breaking changes to know
 
-**`forwardRef` â€” soft deprecated, still works (zero breakage)**
+**`forwardRef` — soft deprecated, still works (zero breakage)**
 
 ```tsx
-// Still valid in React 19 â€” do NOT refactor during migration
+// Still valid in React 19 — do NOT refactor during migration
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => (
   <button ref={ref} {...props} />
 ));
 ```
 Record any `forwardRef` occurrences in `_migration-log.md` under "Post-Migration Improvement
-Candidates" â€” do not refactor them now.
+Candidates" — do not refactor them now.
 
-**Context `.Provider` â€” non-breaking, old syntax still valid**
+**Context `.Provider` — non-breaking, old syntax still valid**
 
 No action needed. Both `<ThemeContext.Provider>` and `<ThemeContext>` work in React 19.
 
-**`react-dom/test-utils` â€” removed in React 19**
+**`react-dom/test-utils` — removed in React 19**
 
 ```tsx
 // Before (React 18)
@@ -121,7 +121,7 @@ Search for this pattern after upgrading and fix any occurrences.
 **`React.FC` and `children`**
 
 `React.FC<Props>` no longer infers `children` if not declared in `Props`.
-After upgrading, run `check-types` â€” any "Property 'children' does not exist" error
+After upgrading, run `check-types` — any "Property 'children' does not exist" error
 means you need to add `children?: React.ReactNode` to that component's Props interface.
 
 #### Upgrade commands
@@ -140,19 +140,19 @@ pnpm --filter <APP_PACKAGE> add -D typescript@5.9.2
 # eslint-config-next must match installed next major
 pnpm --filter <APP_PACKAGE> add -D eslint-config-next@<NEXT_MAJOR>
 
-# Use range for @types/node â€” do not pin to exact version
+# Use range for @types/node — do not pin to exact version
 pnpm --filter <APP_PACKAGE> add -D @types/node@^22
 ```
 
-### A4. Tailwind CSS v3 â†’ v4 Migration
+### A4. Tailwind CSS v3 → v4 Migration
 
-#### Step 1 â€” Install Tailwind v4 + PostCSS plugin
+#### Step 1 — Install Tailwind v4 + PostCSS plugin
 
 ```bash
 pnpm --filter <APP_PACKAGE> add -D tailwindcss@^4 @tailwindcss/postcss@^4
 ```
 
-#### Step 2 â€” Update `postcss.config.js` (or `.cjs`)
+#### Step 2 — Update `postcss.config.js` (or `.cjs`)
 
 ```diff
 -module.exports = {
@@ -168,9 +168,9 @@ pnpm --filter <APP_PACKAGE> add -D tailwindcss@^4 @tailwindcss/postcss@^4
 +};
 ```
 
-> Tailwind v4 bundles autoprefixer internally â€” removing it from postcss is correct.
+> Tailwind v4 bundles autoprefixer internally — removing it from postcss is correct.
 
-#### Step 3 â€” Update CSS entry point (`globals.css` or `app/globals.css`)
+#### Step 3 — Update CSS entry point (`globals.css` or `app/globals.css`)
 
 ```diff
 -@tailwind base;
@@ -183,42 +183,42 @@ pnpm --filter <APP_PACKAGE> add -D tailwindcss@^4 @tailwindcss/postcss@^4
 > The `@config` directive preserves all existing `tailwind.config.ts` customizations
 > (theme, colors, content paths, plugins). Adjust the relative path to match your config location.
 
-#### Step 4 â€” Clean up `tailwind.config.ts` â€” remove v3-only keys
+#### Step 4 — Clean up `tailwind.config.ts` — remove v3-only keys
 
 ```diff
--  mode: 'jit',         // remove â€” default in v4, ignored
--  future: {},          // remove â€” v3-only
--  experimental: {},    // remove â€” v3-only
+-  mode: 'jit',         // remove — default in v4, ignored
+-  future: {},          // remove — v3-only
+-  experimental: {},    // remove — v3-only
 ```
 
-Keep all `theme`, `content`, and `plugins` entries untouched â€” they are still valid in v4.
+Keep all `theme`, `content`, and `plugins` entries untouched — they are still valid in v4.
 
 > [!NOTE]
 > If the app uses Tailwind plugins (e.g. `@tailwindcss/forms`, `@tailwindcss/typography`),
 > check whether they have a v4-compatible release.
-> Tailwind v4 built-ins like `line-clamp` no longer need a plugin â€” remove their plugin entry.
+> Tailwind v4 built-ins like `line-clamp` no longer need a plugin — remove their plugin entry.
 
-#### Step 5 â€” Smoke check CSS after upgrade
+#### Step 5 — Smoke check CSS after upgrade
 
-After `pnpm build`, run the dev server and navigate 3â€“5 key routes. Confirm layout looks
+After `pnpm build`, run the dev server and navigate 3–5 key routes. Confirm layout looks
 identical to pre-upgrade.
 
 Common visual differences to watch for:
 
 | Utility | v3 behavior | v4 behavior |
 | ------- | ----------- | ----------- |
-| `ring` | `ring-3` for 3px | `ring` defaults to 1px â€” add explicit `ring-3` where needed |
+| `ring` | `ring-3` for 3px | `ring` defaults to 1px — add explicit `ring-3` where needed |
 | `divide-x/y` | Works | Same |
 | `@apply` in CSS | Works | Same |
-| Built-in `line-clamp-*` | via plugin | Built-in â€” remove plugin entry |
+| Built-in `line-clamp-*` | via plugin | Built-in — remove plugin entry |
 
 ---
 
-### A5. Next.js 15.x â†’ 16 Upgrade
+### A5. Next.js 15.x → 16 Upgrade
 
 #### Why this is a Part A standard
 
-Next.js 16 ships React 19 as the default runtime. Running React 19 on Next.js 15.0â€“15.2
+Next.js 16 ships React 19 as the default runtime. Running React 19 on Next.js 15.0–15.2
 is technically valid but you lose Server Action improvements, streaming stability, and
 the aligned `use()` hook behavior. The Next.js version is part of the platform baseline.
 
@@ -226,17 +226,17 @@ the aligned `use()` hook behavior. The Next.js version is part of the platform b
 
 | Area | Change | Impact on runtime behavior |
 | ---- | ------ | -------------------------- |
-| `params` / `searchParams` | Now `Promise<...>` in page/layout components | Sync access throws â€” **must `await`** |
-| `cookies()` / `headers()` | Async in Server Components | Sync access breaks â€” **must `await`** |
-| Turbopack default | Default compiler in `next dev` | Build-only â€” zero runtime impact |
-| `fetch` caching | Already changed in Next.js 15 | No new change from 15.4.x â†’ 16 |
+| `params` / `searchParams` | Now `Promise<...>` in page/layout components | Sync access throws — **must `await`** |
+| `cookies()` / `headers()` | Async in Server Components | Sync access breaks — **must `await`** |
+| Turbopack default | Default compiler in `next dev` | Build-only — zero runtime impact |
+| `fetch` caching | Already changed in Next.js 15 | No new change from 15.4.x → 16 |
 
 > [!IMPORTANT]
-> **The goal is zero runtime behavior change.** All `await` additions are mechanical â€”
+> **The goal is zero runtime behavior change.** All `await` additions are mechanical —
 > they do not change what the code does, only how it accesses the value.
 > The codemod handles the majority automatically.
 
-#### Step 1 â€” Run the official upgrade codemod
+#### Step 1 — Run the official upgrade codemod
 
 Next.js ships a codemod that mechanically applies the `async params` / `async cookies` fixes:
 
@@ -246,36 +246,36 @@ npx @next/codemod@canary upgrade latest
 ```
 
 This patches:
-- `page.tsx`, `layout.tsx`, `route.ts` â€” adds `await` to `params` / `searchParams`
-- Server Components that call `cookies()`, `headers()` â€” adds `await`
-- `generateMetadata` â€” adds `await params`
+- `page.tsx`, `layout.tsx`, `route.ts` — adds `await` to `params` / `searchParams`
+- Server Components that call `cookies()`, `headers()` — adds `await`
+- `generateMetadata` — adds `await params`
 
-Review the codemod's diff before committing â€” accept everything it proposes.
+Review the codemod's diff before committing — accept everything it proposes.
 
-#### Step 2 â€” Upgrade next and eslint-config-next
+#### Step 2 — Upgrade next and eslint-config-next
 
 ```bash
 pnpm --filter <APP_PACKAGE> add next@^16
 pnpm --filter <APP_PACKAGE> add -D eslint-config-next@16
 ```
 
-#### Step 3 â€” Verify with next-devtools MCP (if installed)
+#### Step 3 — Verify with next-devtools MCP (if installed)
 
 After the codemod and upgrade, use the next-devtools MCP to confirm:
 
 ```
 next-devtools MCP:
-  â†’ inspect component tree on key routes from smoke-routes list
-  â†’ confirm no "params is not a Promise" or "cookies() was called outside" warnings in server logs
-  â†’ verify no "use server" marker appears inside @repo/ui subtree
-  â†’ check Time to First Byte hasn't regressed (PPR-enabled apps)
-  â†’ confirm RSC vs client component tree is intact
+  → inspect component tree on key routes from smoke-routes list
+  → confirm no "params is not a Promise" or "cookies() was called outside" warnings in server logs
+  → verify no "use server" marker appears inside @repo/ui subtree
+  → check Time to First Byte hasn't regressed (PPR-enabled apps)
+  → confirm RSC vs client component tree is intact
 ```
 
-#### Step 4 â€” Check-types after codemod
+#### Step 4 — Check-types after codemod
 
-```text
-Use the exact app typecheck command defined in `verification-gate.md` Â§1.
+```bash
+pnpm --filter <APP_PACKAGE> check-types
 ```
 
 Common remaining type errors after the codemod:
@@ -286,14 +286,14 @@ Common remaining type errors after the codemod:
 | `Property 'searchParams' does not exist` | Old prop access pattern | Use `const sp = await searchParams` at top of component |
 | `cookies() expects no arguments` | API change | Remove any arguments (use `.get(name)` after `await cookies()`) |
 
-#### Step 5 â€” Smoke check
+#### Step 5 — Smoke check
 
 ```bash
 pnpm --filter <APP_PACKAGE> dev
 ```
 
 Navigate the routes in `verification-gate.md` smoke-routes list. Zero behavior changes
-are acceptable. If a route behaves differently, the codemod likely missed an async access â€”
+are acceptable. If a route behaves differently, the codemod likely missed an async access —
 check the server logs for `Warning: cookies()` or `params` access errors.
 
 ---
@@ -327,16 +327,16 @@ Guardrails:
 
 Required verification:
 
-```text
-Use the exact app build command defined in `verification-gate.md` Â§3.
-Then start the app's normal dev command from `apps/<APP_NAME>/package.json` for smoke testing.
+```bash
+pnpm --filter <APP_PACKAGE> build
+pnpm --filter <APP_PACKAGE> dev
 ```
 
 ---
 
-## Part B â€” App-Specific Cleanup (Per-App Audit)
+## Part B — App-Specific Cleanup (Per-App Audit)
 
-These steps are **not prescriptive** â€” every app has different legacy packages.
+These steps are **not prescriptive** — every app has different legacy packages.
 The job is to audit what **this specific app** actually has and make decisions based on that.
 
 ### B1. Identify and Remove Deprecated or Dead Packages
@@ -351,19 +351,19 @@ cat apps/<APP_NAME>/package.json | jq '{dependencies, devDependencies}'
 For each package, ask:
 
 1. **Is it deprecated?** (npm warns, package archived, no updates in 2+ years)
-   â†’ Remove if confirmed unused. If still used, flag as tech debt.
+   → Remove if confirmed unused. If still used, flag as tech debt.
 
 2. **Is it made redundant by a platform upgrade?**
-   â†’ e.g., a utility now built into React 19, Tailwind v4, or Next.js 16 core
-   â†’ Remove the package and its plugin/import if applicable.
+   → e.g., a utility now built into React 19, Tailwind v4, or Next.js 16 core
+   → Remove the package and its plugin/import if applicable.
 
 3. **Does it have no maintained upgrade path?** (major dependency on React 16/17-era APIs, no types, etc.)
-   â†’ Keep for now at current version. Flag in `_migration-log.md` as a Deferred Item
+   → Keep for now at current version. Flag in `_migration-log.md` as a Deferred Item
    with a replacement plan and estimated sprint.
 
 4. **Is it superseded by something already in the dependency tree?**
-   â†’ e.g., using both `library-X` and its modern replacement `library-X-v2` in the same app
-   â†’ Audit usage and deduplicate.
+   → e.g., using both `library-X` and its modern replacement `library-X-v2` in the same app
+   → Audit usage and deduplicate.
 
 > [!IMPORTANT]
 > If the package is `webpack-obfuscator`, do not keep it as-is.
@@ -376,7 +376,7 @@ rg 'from "<package-name>"' apps/<APP_NAME>/src apps/<APP_NAME>/app --type ts
 # Zero results = candidate for removal (still verify it's not used in configs)
 ```
 
-### B2. Deferred Items â€” Flag, Plan, Don't Block
+### B2. Deferred Items — Flag, Plan, Don't Block
 
 Any package that cannot be cleanly upgraded within this migration window should be:
 
@@ -396,20 +396,28 @@ This ensures nothing is forgotten and creates a clear handoff for the cleanup ph
 
 ---
 
-## Part C â€” Verification Gate
+## Part C — Verification Gate
 
 All of the following must pass **before proceeding to Batch 1**:
 
-```text
-Use the exact app typecheck, lint, and build commands defined in `verification-gate.md` Â§1-Â§3.
-Then run the app's normal dev command and smoke-check for CSS regressions and console/runtime errors.
+```bash
+# TypeScript — zero errors
+pnpm --filter <APP_PACKAGE> check-types
+
+# Lint — zero errors
+pnpm --filter <APP_PACKAGE> lint
+
+# Production build — clean
+pnpm --filter <APP_PACKAGE> build
+
+# Dev server smoke check — no CSS regressions, no console errors
 pnpm --filter <APP_PACKAGE> dev
 ```
 
 Targeted scans to confirm no legacy patterns remain:
 
 ```bash
-# React 19: removed export â€” check if any test files use old import
+# React 19: removed export — check if any test files use old import
 rg "from 'react-dom/test-utils'" apps/<APP_NAME>/src apps/<APP_NAME>/app
 rg 'from "react-dom/test-utils"' apps/<APP_NAME>/src apps/<APP_NAME>/app
 
@@ -430,12 +438,12 @@ rg "@tailwind base\|@tailwind components\|@tailwind utilities" apps/<APP_NAME>
 
 ---
 
-## Part D â€” Migration Log Template
+## Part D — Migration Log Template
 
 Append to `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md`:
 
 ```md
-## Dependency Upgrade â€” <date>
+## Dependency Upgrade — <date>
 
 ### Platform Packages Upgraded
 | Package | From | To |
@@ -448,18 +456,18 @@ Append to `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md`:
 | eslint-config-next | [old] | [new] |
 | @types/node | [old] | ^22 |
 | tailwindcss | [old] | ^4 |
-| @tailwindcss/postcss | â€” | ^4 (added) |
+| @tailwindcss/postcss | — | ^4 (added) |
 
 ### Config Changes
 - postcss.config.js: [what changed]
-- globals.css: [@tailwind â†’ @import "tailwindcss"; @config]
+- globals.css: [@tailwind → @import "tailwindcss"; @config]
 - tailwind.config.ts: [keys removed]
 - webpack-obfuscator removal + script/config cleanup (if present): [what changed]
 
 ### App-Specific Packages Removed
 | Package | Reason |
 | ------- | ------ |
-| [package] | [reason â€” deprecated / redundant / zero usage] |
+| [package] | [reason — deprecated / redundant / zero usage] |
 
 ### App-Specific Deferred Items
 | Package | Version kept | Reason deferred | Plan |
@@ -473,7 +481,7 @@ Append to `apps/<APP_NAME>/docs/migration/component/_output/_migration-log.md`:
 [list or "None"]
 
 ### Verification Gate
-check-types: PASS Â· lint: PASS Â· build: PASS Â· dev smoke: PASS
+check-types: PASS · lint: PASS · build: PASS · dev smoke: PASS
 ```
 
 ---
@@ -489,4 +497,4 @@ check-types: PASS Â· lint: PASS Â· build: PASS Â· dev smoke: PASS
 
 ---
 
-_Related: [00-overview.md](./00-overview.md) Â· [07-cleanup.md](./07-cleanup.md) Â· [migration-batch-prompts.md](./migration-batch-prompts.md)_
+_Related: [00-overview.md](./00-overview.md) · [07-cleanup.md](./07-cleanup.md) · [migration-batch-prompts.md](./migration-batch-prompts.md)_
