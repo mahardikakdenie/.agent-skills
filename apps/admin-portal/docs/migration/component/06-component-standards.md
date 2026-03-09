@@ -11,6 +11,13 @@
 
 Establish the single source of truth for component naming, prop conventions, variant systems, theming rules, and the shared-vs-local boundary. Every phase references this doc to ensure consistency across all 28+ apps and `packages/ui`.
 
+## Execution Skill Policy
+
+- For component build and migration work, `$web-design-guidelines` and `$vercel-react-best-practices` are baseline review lenses, not optional follow-up checks.
+- `$vercel-composition-patterns` must be evaluated for every component before finalizing the public API, especially when compound structure, slots, or shared context might emerge.
+- `$systematic-debugging` must remain available in every batch. If spec intent, implementation behavior, Storybook output, or verification results do not line up, trace before changing code or classification.
+- `shadcn MCP` and `context7 MCP` are the default external references for Phase 04 component work when a registry baseline or primitive API lookup will reduce ambiguity.
+
 ---
 
 > **Section Navigation:**
@@ -459,7 +466,7 @@ If SoC potential = LOW or NONE:
 
 #### Agent Skills for SoC Evaluation
 
-> Skills (if installed): `$vercel-composition-patterns` (detect boolean prop proliferation + missing compound component patterns indicative of a monolith); `$next-best-practices` (identify invalid RSC + client boundary mixing that creates forced monolith structure); `$systematic-debugging` (if SoC potential is ambiguous - trace data flow from hook to render before rating)
+> Skills (if installed): `$vercel-composition-patterns` (evaluate every candidate for boolean prop proliferation, missing compound patterns, and API clarity before rating); `$next-best-practices` (identify invalid RSC + client boundary mixing that creates forced monolith structure); `$systematic-debugging` (available in every batch; if SoC potential is ambiguous - trace data flow from hook to render before rating)
 
 #### Enterprise Guardrails (Non-Negotiable)
 
@@ -1443,6 +1450,24 @@ $design-system skill:
   Read COMPONENTS.md -> Component Rules + JSDoc Standards sections
   -> Extract keyboard bindings, ARIA attributes, focus-visible ring requirements
      and incorporate them into the spec's Accessibility section
+```txt
+
+### Step 2.5 - Apply baseline review lenses
+
+```
+$web-design-guidelines skill:
+  Audit semantics, focus order, visible focus states, and interaction clarity
+  before the component leaves spec/story review
+
+$vercel-react-best-practices skill:
+  Review render behavior, bundle shape, wrapper count, and unnecessary client work
+  before implementation stabilizes
+
+$vercel-composition-patterns skill:
+  Evaluate whether the component should stay flat or become compound before locking the API
+
+$systematic-debugging skill:
+  If Storybook, a11y, or implementation behavior is unclear, trace first and only then change the plan
 ```txt
 
 ### Step 3 - Scaffold baseline from shadcn

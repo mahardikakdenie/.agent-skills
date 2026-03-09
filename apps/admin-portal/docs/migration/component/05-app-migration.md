@@ -14,6 +14,14 @@ Migrate `apps/<APP_NAME>` from local component copies to shared `@repo/ui` compo
 
 > **Process per batch:** Batch 1 (easy swaps) can be done as one batch. Batch 4 (new components) should be done component by component to limit risk surface.
 
+## Skill and MCP Policy
+
+- Always use `$monorepo-workspace` and `$turborepo` for app-side component migration work so filter selection, package boundaries, and verification commands stay correct.
+- Always use `$web-design-guidelines` and `$vercel-react-best-practices` during Batches 6-9 to protect semantics, focus behavior, accessibility parity, render behavior, and bundle/runtime quality after each swap.
+- Always evaluate `$vercel-composition-patterns` for every migrated component. Apply it when adapters, shells, or swapped components show API sprawl, slot composition, or compound-structure concerns.
+- Keep `$systematic-debugging` available in every app-side batch. If parity, build, route behavior, or usage-site behavior is unclear, trace the root cause before fixing.
+- Use `$agent-browser` or browser automation for smoke-route parity, `next-devtools MCP` when Next.js runtime boundaries need inspection, and only pull in conditional skills such as `$react-query`, `$forms-validation`, `$next-best-practices`, or `$next-cache-components` when the migrated component genuinely touches those concerns.
+
 ---
 
 ## Prerequisites Checklist
@@ -627,6 +635,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 ### Debugging Boundaries Post-Migration
+
+This runtime inspection step complements the baseline use of `$web-design-guidelines`, `$vercel-react-best-practices`, and `$systematic-debugging` during app-side migration work.
 
 After migrating components, use **`next-devtools MCP`** to inspect:
 
