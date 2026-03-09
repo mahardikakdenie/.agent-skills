@@ -1,77 +1,53 @@
 # @repo/config
 
-Shared Tailwind CSS v4 configuration for the monorepo.
+Shared styling contract for the monorepo.
 
-## Installation
+## Exports
 
-This package is already set up in your monorepo. To use it in your apps or packages:
+- `@repo/config/tailwind.css`
+  Legacy-friendly Tailwind v4 entrypoint. Imports Tailwind itself, the semantic token preset, and the existing palette-scale utilities.
+- `@repo/config/semantic-tokens.css`
+  Semantic CSS variable preset for shared components. This is the source of truth for `background`, `foreground`, `primary`, `border`, `ring`, chart tokens, and dark-mode overrides.
 
-### 1. Install Tailwind CSS in your app
+## Recommended app setup
 
-```bash
-npm install -D tailwindcss@next
-```
-
-### 2. Import the shared configuration
-
-In your app's main CSS file (e.g., `app/globals.css` or `styles/globals.css`):
+In your app `globals.css`:
 
 ```css
 @import '@repo/config/tailwind.css';
+
+:root {
+  --primary: 201 98% 32%;
+  --primary-foreground: 210 40% 98%;
+  --radius: 0.75rem;
+}
+
+[data-theme='dark'] {
+  --primary: 201 100% 42%;
+}
 ```
 
-## Available Colors
+This keeps legacy palette utilities available during migration while also satisfying the semantic token contract used by `@repo/ui`.
 
-### Primary (Blue)
+## Semantic token classes available to shared UI
 
-- `primary-10` - #CCE2EC
-- `primary-20` - #AACEE0
-- `primary-40` - #569EC0
-- `primary-50` - #016DA1 (default)
-- `primary-60` - #015B86
-- `primary-80` - #013751
-- `primary-100` - #001620
+The semantic preset maps CSS variables to Tailwind utilities such as:
 
-### Danger (Red)
+- `bg-background`, `text-foreground`
+- `bg-primary`, `text-primary-foreground`
+- `bg-secondary`, `text-secondary-foreground`
+- `bg-muted`, `text-muted-foreground`
+- `bg-accent`, `text-accent-foreground`
+- `border-border`, `border-input`, `ring-ring`
+- `text-destructive`, `bg-success`, `bg-warning`, `bg-info`
+- `bg-card`, `text-card-foreground`, `bg-popover`, `text-popover-foreground`
 
-- `danger-10` - #FFCDCC
-- `danger-20` - #FEABAA
-- `danger-40` - #FE5755
-- `danger-50` - #FD0300 (default)
-- `danger-60` - #D30300
-- `danger-80` - #7F0200
-- `danger-100` - #330100
+## Legacy palette support
 
-### Warning (Yellow)
+The older palette tokens remain available for temporary app-side compatibility:
 
-- `warning-10` - #FDF1D9
-- `warning-20` - #FCE8C0
-- `warning-40` - #F8D180
-- `warning-50` - #F7C661 (default)
-- `warning-60` - #CC9B36
-- `warning-80` - #7B5D21
-- `warning-100` - #312500
+- `primary-10` through `primary-100`
+- `danger-10` through `danger-100`
+- `warning-10` through `warning-100`
 
-## Usage Examples
-
-```tsx
-// Using in components
-<button className="bg-primary text-white">Primary Button</button>
-<button className="bg-danger-50 text-white">Danger Button</button>
-<div className="text-warning-80 border-warning">Warning Message</div>
-
-// Using with hover states
-<button className="bg-primary hover:bg-primary-60">Hover Effect</button>
-
-// Using with opacity
-<div className="bg-primary/50">Semi-transparent</div>
-```
-
-## Tailwind v4 Features
-
-This configuration uses Tailwind CSS v4, which:
-
-- Uses CSS-based configuration instead of JavaScript
-- Leverages CSS variables with the `@theme` directive
-- Provides better performance and smaller bundle sizes
-- No need for `tailwind.config.js` or `tailwind.config.ts`
+Do not use these palette utilities in new `@repo/ui` components.

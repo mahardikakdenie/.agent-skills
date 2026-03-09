@@ -149,8 +149,8 @@
 
 | Target | Scope | Action | Status | Notes |
 | --- | --- | --- | --- | --- |
-| `@repo/config` | Semantic token preset | Bootstrap shared token source of truth | PLANNED | Must complete before any B4 component build |
-| `@repo/ui` | Token consumption contract | Enforce semantic-token-only styling | PLANNED | No raw palette, hex, or `rgb(...)` in new shared work |
+| `@repo/config` | Semantic token preset | Bootstrap shared token source of truth | DONE | Exported via `@repo/config/semantic-tokens.css` and `@repo/config/tailwind.css` on 2026-03-09 |
+| `@repo/ui` | Token consumption contract | Enforce semantic-token-only styling | DONE | Batch 3A gate passed; shared work stays semantic-token only |
 
 ## 6. Batch 4 - NEW_SHARED_COMPONENT
 
