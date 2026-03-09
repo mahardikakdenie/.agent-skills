@@ -1,14 +1,45 @@
 # 20 - Foundation Change Log
 
-> Batch: Batch 4 - Build Shared Components
+> Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Run date: 2026-03-08
+> Last reconciled: 2026-03-09
+> Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
 
-## 2026-03-08
+---
 
-### Box
+## 2026-03-08 - Box Foundation Amendment Applied
 
-- Extended `Box` with shared layout presets: `padding`, `container`, and `centered`.
-- Preserved the app-agnostic boundary: no routing, no page-shell abstraction, no visual tone variants.
-- Added canonical API coverage to `02-api-conventions.md`.
-- Updated Storybook coverage for `Box.Default`, `Box.Padding`, `Box.Container`, `Box.Centered`, plus `AsChild`, `WithRef`, and type-safety documentation.
+Changed:
+- Confirmed `Box` as the only implemented shared export in `@repo/ui`.
+- Locked the extended `Box` API surface: `asChild`, `padding`, `container`, and `centered`.
+- Confirmed `21-adapter-mapping.md` only covers `Box` because no other shared component is implemented yet.
+
+Impact:
+- All downstream planning artifacts must continue treating `Box` as the sole shipped shared primitive until another component is actually exported from `packages/ui/src/index.ts`.
+
+---
+
+## 2026-03-09 - Batch 3A Token Bootstrap Completed
+
+Changed:
+- Confirmed the semantic token preset exists at `@repo/config/semantic-tokens.css`.
+- Confirmed Batch 3A is complete and remains the hard gate before any Batch 4 shared build.
+- Reaffirmed that shared styling must stay semantic-token-only.
+
+Impact:
+- Batch 4 may start from a foundation perspective, but component tracker rows stay `PLANNED` until implementation lands in `@repo/ui`.
+
+---
+
+## 2026-03-09 - Output Cross-Check Normalization Pass
+
+Changed:
+- Added the missing canonical API sections in `02-api-conventions.md` for every component previously referenced as `02 amendment`.
+- Normalized `10-cross-app-reconciliation.md` target batch labels to `B3`, `B4`, and `B5.x` wave names.
+- Corrected `13-implementation-batches.md` so Batch 4 status reflects the actual workspace state instead of prematurely marking components `DONE`.
+- Updated `11-master-component-roadmap.md` to treat `02` alignment as an active contract, not a missing future task.
+
+Impact:
+- The `_output` document set is internally aligned again.
+- Actual implementation state is now explicit: `Box` and Batch 3A are done; Batch 4+ shared components remain planned or blocked until code exists.
+

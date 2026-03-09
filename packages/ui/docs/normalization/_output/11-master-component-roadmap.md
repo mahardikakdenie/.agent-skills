@@ -14,7 +14,7 @@
 | Semantic token preset in `@repo/config` | Shared components cannot depend on app-specific CSS variable drift | `feat/ui` foundation | Batch 3A, Batch 4, and Batch 5 |
 | Missing shared dependencies installed and version-locked | `cmdk`, `date-fns`, `@tanstack/react-table`, `tailwindcss-animate`, `react-day-picker`, `vaul`, and required Radix packages gate multiple roadmap entries | `feat/ui` foundation | B4-B5.4 |
 | `@repo/ui` remains app-agnostic | No `next/*`, no business logic, no env coupling inside shared components | `feat/ui` packages/ui | All rows |
-| `02-api-conventions.md` is extended where required | Several roadmap items still need canonical API sections mirrored back into `02` before build | `feat/ui` design-system lane | All rows marked `02 amendment` |
+| `02-api-conventions.md` stays aligned with roadmap amendments | Every roadmap row that cites `02 amendment` must remain mirrored in `02` before implementation starts | `feat/ui` design-system lane | All rows marked `02 amendment` |
 | `05` app readiness is honored downstream | Ready vs conditional app adoption must not be bypassed | Downstream app lanes | Batch 5 and Batch 6 |
 
 ### Roadmap operating rules
@@ -26,6 +26,7 @@
 - All non-`Box` shared items remain Batch 4 build scope, regardless of sub-wave sequencing.
 - Consumer demand is represented as normalized counts from `05-coverage-baseline.md`, not raw per-app export lists.
 - `RichTextEditor` remains visible for traceability but stays decision-gated.
+- Cross-check on 2026-03-09 confirms the current `@repo/ui` export surface is still `Box` only; no Batch 4 row may move to `DONE` until that changes.
 
 ## 2. Batch 3 - Extend Existing
 
@@ -107,3 +108,4 @@
 - Any API marked 2 amendment must be mirrored back into 2-api-conventions.md before implementation starts.
 - Batch 3A token bootstrap is a hard gate for every row after Box.
 - `RichTextEditor` is visible for completeness but remains outside the initial critical path.
+

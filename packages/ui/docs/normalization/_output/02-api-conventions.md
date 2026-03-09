@@ -657,6 +657,326 @@ Story group: `Misc`
 
 ---
 
+## Roadmap Amendment Contracts
+
+The following sections close the `02 amendment` references used by `10-cross-app-reconciliation.md`, `11-master-component-roadmap.md`, and `13-implementation-batches.md`.
+They are locked planning contracts and must stay aligned with those documents before implementation starts.
+
+### Label
+
+```ts
+export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+  required?: boolean
+  disabled?: boolean
+  tone?: 'default' | 'muted' | 'destructive'
+  className?: string
+  children?: React.ReactNode
+}
+```
+
+Story group: `Misc`
+
+---
+
+### Spinner
+
+```ts
+export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
+  size?: 'sm' | 'md' | 'lg'  // default: 'md'
+  label?: string
+  inline?: boolean
+  overlay?: boolean
+  className?: string
+}
+```
+
+Story group: `Feedback`
+
+---
+
+### Tabs
+
+```ts
+export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void
+  orientation?: 'horizontal' | 'vertical'
+  className?: string
+  children?: React.ReactNode
+}
+```
+
+Story group: `Navigation`
+
+---
+
+### Breadcrumb
+
+```ts
+export interface BreadcrumbItem {
+  label: string
+  href?: string
+  current?: boolean
+}
+
+export interface BreadcrumbProps extends React.HTMLAttributes<HTMLElement> {
+  items: BreadcrumbItem[]
+  separator?: React.ReactNode
+  currentLabel?: string
+  className?: string
+}
+```
+
+Story group: `Navigation`
+
+---
+
+### DropdownMenu
+
+```ts
+export interface DropdownMenuItem {
+  label: string
+  value: string
+  disabled?: boolean
+  destructive?: boolean
+}
+
+export interface DropdownMenuProps {
+  items: DropdownMenuItem[]
+  align?: 'start' | 'center' | 'end'
+  side?: 'top' | 'right' | 'bottom' | 'left'
+  onAction?: (value: string) => void
+  disabled?: boolean
+  className?: string
+}
+```
+
+Story group: `Overlays`
+
+---
+
+### Avatar
+
+```ts
+export interface AvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
+  src?: string
+  alt?: string
+  fallback?: React.ReactNode
+  size?: 'sm' | 'md' | 'lg' | 'xl'  // default: 'md'
+  className?: string
+}
+```
+
+Story group: `Data Display`
+
+---
+
+### DateRangePicker
+
+```ts
+export interface DateRangeValue {
+  from?: Date
+  to?: Date
+}
+
+export interface DateRangePickerProps {
+  value?: DateRangeValue | null
+  onChange?: (value: DateRangeValue | null) => void
+  presets?: Array<{ label: string; value: DateRangeValue }>
+  minDate?: Date
+  maxDate?: Date
+  disabled?: boolean
+  clearable?: boolean
+  error?: string | boolean
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Image
+
+```ts
+export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  src: string
+  alt: string
+  fallback?: React.ReactNode
+  ratio?: 'square' | 'video' | 'portrait' | 'auto'
+  fit?: 'cover' | 'contain' | 'fill'
+  className?: string
+}
+```
+
+Story group: `Data Display`
+
+---
+
+### NavigationMenu
+
+```ts
+export interface NavigationMenuItem {
+  label: string
+  value: string
+  href?: string
+  disabled?: boolean
+  children?: NavigationMenuItem[]
+}
+
+export interface NavigationMenuProps {
+  items: NavigationMenuItem[]
+  orientation?: 'horizontal' | 'vertical'
+  collapsed?: boolean
+  onNavigate?: (value: string) => void
+  className?: string
+}
+```
+
+Story group: `Navigation`
+
+---
+
+### PageHeader
+
+```ts
+export interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
+  title: React.ReactNode
+  description?: React.ReactNode
+  actions?: React.ReactNode
+  meta?: React.ReactNode
+  className?: string
+}
+```
+
+Story group: `Layout`
+
+---
+
+### Accordion
+
+```ts
+export interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
+  type?: 'single' | 'multiple'  // default: 'single'
+  collapsible?: boolean
+  value?: string | string[]
+  onValueChange?: (value: string | string[]) => void
+  className?: string
+  children?: React.ReactNode
+}
+```
+
+Story group: `Layout`
+
+---
+
+### Command
+
+```ts
+export interface CommandItem {
+  label: string
+  value: string
+  keywords?: string[]
+  disabled?: boolean
+  group?: string
+}
+
+export interface CommandProps {
+  items: CommandItem[]
+  value?: string
+  onValueChange?: (value: string) => void
+  emptyState?: React.ReactNode
+  loading?: boolean
+  className?: string
+}
+```
+
+Story group: `Misc`
+
+---
+
+### DateTimePicker
+
+```ts
+export interface DateTimePickerProps {
+  value?: Date | null
+  onChange?: (value: Date | null) => void
+  minDateTime?: Date
+  maxDateTime?: Date
+  timezone?: string
+  disabled?: boolean
+  clearable?: boolean
+  error?: string | boolean
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Menubar
+
+```ts
+export interface MenubarItem {
+  label: string
+  value: string
+  disabled?: boolean
+}
+
+export interface MenubarProps {
+  items: MenubarItem[]
+  onAction?: (value: string) => void
+  disabled?: boolean
+  className?: string
+}
+```
+
+Story group: `Navigation`
+
+---
+
+### MonthPicker
+
+```ts
+export interface MonthPickerProps {
+  value?: Date | null
+  onChange?: (value: Date | null) => void
+  minMonth?: Date
+  maxMonth?: Date
+  disabled?: boolean
+  clearable?: boolean
+  error?: string | boolean
+  className?: string
+}
+```
+
+Story group: `Inputs`
+
+---
+
+### Timeline
+
+```ts
+export interface TimelineItem {
+  id: string
+  title: React.ReactNode
+  description?: React.ReactNode
+  statusTone?: 'default' | 'success' | 'warning' | 'destructive' | 'info'
+}
+
+export interface TimelineProps extends React.HTMLAttributes<HTMLDivElement> {
+  items: TimelineItem[]
+  orientation?: 'vertical' | 'horizontal'
+  statusTone?: 'default' | 'success' | 'warning' | 'destructive' | 'info'
+  className?: string
+}
+```
+
+Story group: `Data Display`
+
+---
 ## Ref Forwarding Policy
 
 | Tier | Requirement |
@@ -725,3 +1045,4 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+

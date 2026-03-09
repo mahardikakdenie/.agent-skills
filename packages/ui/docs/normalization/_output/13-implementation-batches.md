@@ -30,6 +30,7 @@
 - This rerun plans the canonical shared program on top of the raw deduplicated backlog captured in `12-master-backlog.csv`.
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
+- Cross-check on 2026-03-09 confirms the current `@repo/ui` export surface is still `Box` only; Batch 4 tracker rows remain planning state until code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -192,7 +193,7 @@
 
 | Wave | Shared components | Entry gate | Exit gate | Status |
 | --- | --- | --- | --- | --- |
-| B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | IN PROGRESS |
+| B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | PLANNED |
 | B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | PLANNED |
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput`, `PageHeader` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | PLANNED |
 | B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | PLANNED |
@@ -282,20 +283,20 @@
 | --- | --- | --- | --- | --- |
 | Box | 3 | B3 | DONE | `padding`, `container`, and `centered` presets verified on 2026-03-08 |
 | Alert | 4 | B4 | PLANNED | Depends on foundation readiness only |
-| Badge | 4 | B4 | DONE | Initial Wave B4 implementation shipped on 2026-03-09 |
+| Badge | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
 | Button | 4 | B4 | PLANNED | High-demand primitive |
-| Card | 4 | B4 | DONE | Initial Wave B4 implementation shipped on 2026-03-09 |
+| Card | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
 | Checkbox | 4 | B4 | PLANNED | Needs invalid and indeterminate coverage |
 | ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
 | Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
 | Drawer | 4 | B4 | PLANNED | Depends on `vaul` |
 | Input | 4 | B4 | PLANNED | Core primitive |
-| Label | 4 | B4 | DONE | Initial Wave B4 implementation shipped on 2026-03-09 |
+| Label | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
 | Pagination | 4 | B4 | PLANNED | Shared navigation primitive |
 | RadioGroup | 4 | B4 | PLANNED | Form-aligned control |
 | Select | 4 | B4 | PLANNED | Static select only |
-| Skeleton | 4 | B4 | DONE | Initial Wave B4 implementation shipped on 2026-03-09 |
-| Spinner | 4 | B4 | DONE | Initial Wave B4 implementation shipped on 2026-03-09 |
+| Skeleton | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
+| Spinner | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet; current export surface remains `Box` only |
 | Switch | 4 | B4 | PLANNED | Toggle control |
 | Table | 4 | B4 | PLANNED | Foundation for `DataTable` |
 | Tabs | 4 | B4 | PLANNED | Route sync remains local |
@@ -323,3 +324,4 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
