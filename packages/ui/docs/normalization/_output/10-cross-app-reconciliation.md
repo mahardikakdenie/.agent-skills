@@ -17,8 +17,8 @@
 | Canonical shared set | 43 components including `Box` |
 | Existing in `@repo/ui` | 1 (`Box`) |
 | Shared build or extension scope | 42 |
-| Batch 4 extend-existing scope | 1 (`Box`) |
-| Batch 5 new shared components | 41 approved + 1 decision-gated (`RichTextEditor`) |
+| Batch 3 extension scope | 1 (`Box`) |
+| Batch 4 new shared components | 41 approved + 1 decision-gated (`RichTextEditor`) |
 | Planning backlog scope in `12-master-backlog.csv` | Full deduplicated union of all per-app backlog exports |
 | Canonical shared implementation scope in this document | Consolidated shared program only |
 
@@ -28,7 +28,6 @@
 - `12-master-backlog.csv` now represents the full deduplicated union of all per-app backlog exports, not just the canonical shared program.
 - The canonical shared implementation scope is still intentionally consolidated in Section 3 and the roadmap in `11-master-component-roadmap.md`.
 - App-local, adapter-only, and split-only queues remain visible in `12-master-backlog.csv`, but they do not automatically enter the shared build roadmap.
-- `Box` is the only canonical `EXTEND_EXISTING` item and it was fast-tracked during Batch 3 foundation prep; all remaining shared build scope is Batch 5 `NEW_SHARED_COMPONENT` work.
 
 ## 2. Reconciliation Rules Applied
 
@@ -53,13 +52,13 @@
 - The canonical shared roadmap in this document is a filtered program view on top of that merged backlog.
 ## 3. Canonical Shared Track
 
-### Batch 4 - Extend Existing
+### Batch 3 - Extend Existing
 
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Box | EXTEND_EXISTING | Existing primitive with 27-app baseline footprint; see `01` | exists | `02` amendment: `asChild`, `padding`, `container`, `centered` | Keep `Box` as the only layout primitive extension path; do not turn it into app-specific page chrome | P0 | LOW | 4 |
+| Box | EXTEND_EXISTING | Existing primitive with 27-app baseline footprint; see `01` | exists | `02` amendment: `asChild`, `padding`, `container`, `centered` | Keep `Box` as the only layout primitive extension path; do not turn it into app-specific page chrome | P0 | LOW | 3 |
 
-### Batch 5 Wave 5.0 - Core Foundation Build
+### Wave B4 - Core Foundation Build
 
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -83,7 +82,7 @@
 | Tabs | NEW_SHARED_COMPONENT | 13 apps; see `05` | missing | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation` | Shared tabs only; route syncing stays local | P1 | MEDIUM | 5 |
 | Textarea | NEW_SHARED_COMPONENT | 18 apps; see `05` | missing | `02` §Textarea | Multiline plain-text input only | P0 | LOW | 5 |
 
-### Batch 5 Wave 5.1 - Date and Overlay Normalization
+### Wave B5.1 - Date and Overlay Normalization
 
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -95,7 +94,7 @@
 | Popover | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` §Popover | Generic floating surface only | P1 | LOW | 5 |
 | Tooltip | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` §Tooltip | Assistive content only; guided flows stay local | P1 | LOW | 5 |
 
-### Batch 5 Wave 5.2 - Advanced Input and Data Display
+### Wave B5.2 - Advanced Input and Data Display
 
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -109,7 +108,7 @@
 | OtpInput | NEW_SHARED_COMPONENT | 6 apps; see `05` | missing | `02` §OtpInput | Segmented code entry only | P2 | MEDIUM | 5 |
 | PageHeader | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` amendment: `title`, `description`, `actions`, `meta` | Structural page header only | P2 | LOW | 5 |
 
-### Batch 5 Wave 5.3 - Remaining Medium-Demand Components
+### Wave B5.3 - Remaining Medium-Demand Components
 
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -117,7 +116,7 @@
 | Command | NEW_SHARED_COMPONENT | 5 apps; see `05` | missing | `02` amendment: `items`, `value`, `onValueChange`, `emptyState` | Shared command surface only | P2 | HIGH | 5 |
 | DateTimePicker | NEW_SHARED_COMPONENT | 5 apps; see `05` | missing | `02` amendment: `value`, `onChange`, `minDateTime`, `maxDateTime`, `timezone` | Time-enabled picking remains separate from base date input | P2 | HIGH | 5 |
 
-### Batch 5 Wave 5.4 - Long Tail and Decision-Gated Work
+### Wave B5.4 - Long Tail and Decision-Gated Work
 
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -140,15 +139,15 @@
 ## 5. Critical Path Ruling
 
 1. Close shared readiness gaps recorded in `00`, `03`, and `06` before implementation starts.
-2. Treat `Box` as the only canonical Batch 4 `EXTEND_EXISTING` item; it was fast-tracked during Batch 3 foundation prep.
-3. Execute Batch 5 Wave 5.0 in strict SDD order before any longer-tail Batch 5 work starts.
+2. Extend `Box` first because it is the only approved Batch 3 shared change.
+3. Build Wave B4 in strict SDD order before any long-tail work starts.
 4. Hold high-risk items behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, `DateRangePicker`, `DateTimePicker`, `RichTextEditor`.
-5. Complete Batch 3A token foundation bootstrap before any remaining Batch 4 or Batch 5 shared build begins.
-6. Use `05` app readiness as the authoritative downstream sequencing input for Batches 6 through 10.
+5. Complete Batch 3A token foundation bootstrap before any Batch 4 shared build begins.
+6. Use 5 app readiness as the authoritative downstream sequencing input for Batch 5 and Batch 6.
 
 ## 6. Governance Notes
 
 - `05-coverage-baseline.md` is the source of truth for demand counts and wave ordering.
 - `11-master-component-roadmap.md` is the source of truth for shared implementation structure, dependencies, and effort.
 - `12-master-backlog.csv` is the full deduplicated per-app backlog merge for this rerun.
-- `13-implementation-batches.md` remains the execution contract for shared Batches `1` through `5`, with explicit Batch `3A` between Batch `3` and Batch `4`, plus downstream app-lane references for Batches `6` through `10`.
+- `13-implementation-batches.md` remains the execution contract for batches `1` through `6`, with explicit Batch `3A` between Batch `3` and Batch `4`.

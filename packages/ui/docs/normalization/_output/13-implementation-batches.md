@@ -9,11 +9,11 @@
 
 ### Critical path
 
-1. Close the canonical Batch 4 `EXTEND_EXISTING` track with `Box`; in this rerun the work was fast-tracked during Batch 3 foundation prep.
-2. Complete Batch 3A token foundation bootstrap before any remaining Batch 4 or Batch 5 shared build begins.
-3. Execute Batch 5 Wave 5.0 in strict SDD order before any longer-tail Batch 5 work starts.
+1. Finish Batch 3 `Box` extension first.
+2. Complete Batch 3A token foundation bootstrap before any shared build beyond `Box`.
+3. Execute Wave B4 in strict SDD order before any long-tail work starts.
 4. Hold high-risk components behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, `DateRangePicker`, `DateTimePicker`, `RichTextEditor`.
-5. Use `05` app readiness as the downstream sequencing contract for app-lane Batches 6 through 10.
+5. Use `05` app readiness as the downstream stabilization and cleanup sequencing contract.
 
 ### Status vocabulary
 
@@ -88,12 +88,11 @@
 | --- | --- | --- | --- | --- |
 | None | None | No Batch 2 workload in authoritative rerun | DONE | Structural placeholder only |
 
-## 4. Batch 4 - EXTEND_EXISTING
+## 4. Batch 3 - EXTEND_EXISTING
 
 ### Scope description
 
-- Batch 4 is the canonical `EXTEND_EXISTING` track in the shared lane.
-- In this rerun, `Box` is the only approved `EXTEND_EXISTING` item and it was fast-tracked during Batch 3 foundation prep.
+- Batch 3 contains exactly one shared change: `Box`.
 
 ### packages/ui work required
 
@@ -119,14 +118,14 @@
 
 | Target | Component | Action | Status | Notes |
 | --- | --- | --- | --- | --- |
-| `@repo/ui` | `Box` | Extend existing layout primitive | DONE | Canonical Batch 4 item, fast-tracked during Batch 3 foundation prep; verification gate passed on 2026-03-08 |
+| `@repo/ui` | `Box` | Extend existing layout primitive | DONE | `padding`, `container`, and `centered` presets shipped; verification gate passed on 2026-03-08 |
 
 ## 5. Batch 3A - Token Foundation Bootstrap
 
 ### Scope description
 
 - Batch 3A converts `03-token-theming-contract.md` from a locked document into real shared workspace infrastructure.
-- This is the mandatory bridge between Batch 3 planning and any Batch 4 or Batch 5 shared component build.
+- This is the mandatory bridge between Batch 3 planning and any Batch 4 shared component build.
 
 ### packages/ui work required
 
@@ -153,11 +152,11 @@
 | `@repo/config` | Semantic token preset | Bootstrap shared token source of truth | DONE | Exported via `@repo/config/semantic-tokens.css` and `@repo/config/tailwind.css` on 2026-03-09 |
 | `@repo/ui` | Token consumption contract | Enforce semantic-token-only styling | DONE | Batch 3A gate passed; shared work stays semantic-token only |
 
-## 6. Batch 5 - NEW_SHARED_COMPONENT
+## 6. Batch 4 - NEW_SHARED_COMPONENT
 
 ### Scope description
 
-- Batch 5 is the main shared build program for `NEW_SHARED_COMPONENT` work.
+- Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
 
 ### packages/ui work required
@@ -188,8 +187,8 @@
 
 | Wave | Shared components | Entry gate | Exit gate | Status |
 | --- | --- | --- | --- | --- |
-| B5.0 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Canonical Batch 4 `Box` item closed and Batch 3A token bootstrap complete | All B5.0 items marked `DONE` | PLANNED |
-| B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B5.0 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | PLANNED |
+| B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `ContentLoadingWrapper`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | PLANNED |
+| B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | PLANNED |
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput`, `PageHeader` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | PLANNED |
 | B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | PLANNED |
 | B5.4 | `Menubar`, `MonthPicker`, `Timeline` | No open P0/P1 blocker remains | Long-tail items marked `DONE` or explicitly deferred | PLANNED |
@@ -202,11 +201,11 @@
 | Ready cohort | `admin-portal`, `admin-portal-boost`, `affiliate-admin`, `affiliate-portal`, `agent-admin`, `agent-microsite`, `agent-portal`, `agent-web-portal`, `boost-product-fe`, `claim-portal`, `customer-portal`, `ecommerce-gelm`, `ecommerce-teman`, `gegm-friendcover-admin`, `gen-ai-portal`, `getrev-da-microsite`, `mykawan-website`, `partner-portal`, `sso-portal`, `teman-affiliate-admin`, `teman-affiliate-portal`, `ticket-portal` | May adopt shared components after the relevant shared item is `DONE` |
 | Conditional cohort | `gegm-friendcover`, `gelm-xproject-microsite`, `grab-landing-page`, `haruuz-microsite`, `teman-affiliate-microsite` | Must close token or readiness constraints from `05` before adoption |
 
-## 7. Batches 6-9 - Per-App Migration and Stabilization
+## 7. Batch 5 - Per-App Stabilization
 
 ### Scope description
 
-- App-lane Batches 6 through 9 begin only after the relevant shared components are already `DONE`.
+- Batch 5 begins only after the relevant shared components are already `DONE`.
 
 ### packages/ui work required
 
@@ -237,7 +236,7 @@
 | Ready cohort | Close parity deltas for adopted shared components | PLANNED | May run in parallel across apps |
 | Conditional cohort | Stabilize only after readiness constraints are closed | PLANNED | Do not bypass `05` constraints |
 
-## 8. Batch 10 - Cleanup + Deprecation
+## 8. Batch 6 - Cleanup + Deprecation
 
 ### Scope description
 
@@ -276,46 +275,46 @@
 
 | Component | Program batch | Wave | Status | Blocker / note |
 | --- | --- | --- | --- | --- |
-| Box | 4 | B4 | DONE | Canonical Batch 4 item, fast-tracked during Batch 3 foundation prep; `padding`, `container`, and `centered` presets verified on 2026-03-08 |
-| Alert | 5 | B5.0 | PLANNED | Depends on foundation readiness only |
-| Badge | 5 | B5.0 | PLANNED | Low-risk primitive |
-| Button | 5 | B5.0 | PLANNED | High-demand primitive |
-| Card | 5 | B5.0 | PLANNED | Structural composite |
-| Checkbox | 5 | B5.0 | PLANNED | Needs invalid and indeterminate coverage |
-| ContentLoadingWrapper | 5 | B5.0 | PLANNED | Align with `Skeleton` and `Spinner` |
-| Dialog | 5 | B5.0 | PLANNED | A11y gate is explicit |
-| Drawer | 5 | B5.0 | PLANNED | Depends on `vaul` |
-| Input | 5 | B5.0 | PLANNED | Core primitive |
-| Label | 5 | B5.0 | PLANNED | Needed before `Form` |
-| Pagination | 5 | B5.0 | PLANNED | Shared navigation primitive |
-| RadioGroup | 5 | B5.0 | PLANNED | Form-aligned control |
-| Select | 5 | B5.0 | PLANNED | Static select only |
-| Skeleton | 5 | B5.0 | PLANNED | Small placeholder primitive |
-| Spinner | 5 | B5.0 | PLANNED | Wait-state primitive |
-| Switch | 5 | B5.0 | PLANNED | Toggle control |
-| Table | 5 | B5.0 | PLANNED | Foundation for `DataTable` |
-| Tabs | 5 | B5.0 | PLANNED | Route sync remains local |
-| Textarea | 5 | B5.0 | PLANNED | Plain multiline input |
-| Breadcrumb | 5 | B5.1 | PLANNED | Build after B5.0 stability |
-| Calendar | 5 | B5.1 | PLANNED | Requires `react-day-picker` + `date-fns` |
-| DatePicker | 5 | B5.1 | PLANNED | Depends on `Calendar` and `Popover` |
-| DropdownMenu | 5 | B5.1 | PLANNED | Compound menu surface |
-| Form | 5 | B5.1 | PLANNED | Needs `Label` and `Input` first |
-| Popover | 5 | B5.1 | PLANNED | Overlay foundation dependency |
-| Tooltip | 5 | B5.1 | PLANNED | Small but a11y-sensitive |
-| Avatar | 5 | B5.2 | PLANNED | Low-risk visual primitive |
-| Combobox | 5 | B5.2 | PLANNED | Searchable selection contract |
-| DataTable | 5 | B5.2 | BLOCKED | Wait for `Table` maturity and TanStack readiness |
-| DateRangePicker | 5 | B5.2 | BLOCKED | Start after `DatePicker` stabilizes |
-| FileUpload | 5 | B5.2 | PLANNED | Transport logic stays local |
-| Image | 5 | B5.2 | PLANNED | No framework coupling |
-| NavigationMenu | 5 | B5.2 | BLOCKED | Route-tree API must remain app-agnostic |
-| OtpInput | 5 | B5.2 | PLANNED | Segmented input contract |
-| PageHeader | 5 | B5.2 | PLANNED | Structural header only |
-| Accordion | 5 | B5.3 | PLANNED | Lower-demand compound component |
-| Command | 5 | B5.3 | PLANNED | Shared command surface |
-| DateTimePicker | 5 | B5.3 | BLOCKED | Needs settled date/time policy |
-| Menubar | 5 | B5.4 | PLANNED | Long-tail navigation primitive |
-| MonthPicker | 5 | B5.4 | PLANNED | Month-only contract |
-| Timeline | 5 | B5.4 | PLANNED | Presentation-only data display |
-| RichTextEditor | 5 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+| Box | 3 | B3 | DONE | `padding`, `container`, and `centered` presets verified on 2026-03-08 |
+| Alert | 4 | B4 | PLANNED | Depends on foundation readiness only |
+| Badge | 4 | B4 | PLANNED | Low-risk primitive |
+| Button | 4 | B4 | PLANNED | High-demand primitive |
+| Card | 4 | B4 | PLANNED | Structural composite |
+| Checkbox | 4 | B4 | PLANNED | Needs invalid and indeterminate coverage |
+| ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
+| Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
+| Drawer | 4 | B4 | PLANNED | Depends on `vaul` |
+| Input | 4 | B4 | PLANNED | Core primitive |
+| Label | 4 | B4 | PLANNED | Needed before `Form` |
+| Pagination | 4 | B4 | PLANNED | Shared navigation primitive |
+| RadioGroup | 4 | B4 | PLANNED | Form-aligned control |
+| Select | 4 | B4 | PLANNED | Static select only |
+| Skeleton | 4 | B4 | PLANNED | Small placeholder primitive |
+| Spinner | 4 | B4 | PLANNED | Wait-state primitive |
+| Switch | 4 | B4 | PLANNED | Toggle control |
+| Table | 4 | B4 | PLANNED | Foundation for `DataTable` |
+| Tabs | 4 | B4 | PLANNED | Route sync remains local |
+| Textarea | 4 | B4 | PLANNED | Plain multiline input |
+| Breadcrumb | 4 | B5.1 | PLANNED | Build after B5.0 stability |
+| Calendar | 4 | B5.1 | PLANNED | Requires `react-day-picker` + `date-fns` |
+| DatePicker | 4 | B5.1 | PLANNED | Depends on `Calendar` and `Popover` |
+| DropdownMenu | 4 | B5.1 | PLANNED | Compound menu surface |
+| Form | 4 | B5.1 | PLANNED | Needs `Label` and `Input` first |
+| Popover | 4 | B5.1 | PLANNED | Overlay foundation dependency |
+| Tooltip | 4 | B5.1 | PLANNED | Small but a11y-sensitive |
+| Avatar | 4 | B5.2 | PLANNED | Low-risk visual primitive |
+| Combobox | 4 | B5.2 | PLANNED | Searchable selection contract |
+| DataTable | 4 | B5.2 | BLOCKED | Wait for `Table` maturity and TanStack readiness |
+| DateRangePicker | 4 | B5.2 | BLOCKED | Start after `DatePicker` stabilizes |
+| FileUpload | 4 | B5.2 | PLANNED | Transport logic stays local |
+| Image | 4 | B5.2 | PLANNED | No framework coupling |
+| NavigationMenu | 4 | B5.2 | BLOCKED | Route-tree API must remain app-agnostic |
+| OtpInput | 4 | B5.2 | PLANNED | Segmented input contract |
+| PageHeader | 4 | B5.2 | PLANNED | Structural header only |
+| Accordion | 4 | B5.3 | PLANNED | Lower-demand compound component |
+| Command | 4 | B5.3 | PLANNED | Shared command surface |
+| DateTimePicker | 4 | B5.3 | BLOCKED | Needs settled date/time policy |
+| Menubar | 4 | B5.4 | PLANNED | Long-tail navigation primitive |
+| MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
+| Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
+| RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
