@@ -1,6 +1,6 @@
-﻿# 00 — Branch Model & Migration Lifecycle
+﻿# 00 - Branch Model & Migration Lifecycle
 
-> **Role:** Pre-work orientation — read this before running any migration prompt.
+> **Role:** Pre-work orientation - read this before running any migration prompt.
 > **Scope:** Branch topology, lifecycle flow, verification gates, legacy update integration, and handoff contracts.
 > **Branch:** Any (reference doc, kept on `migrate-app/<APP_NAME>` as read-only anchor).
 > **Next:** [01-app-audit.md](./01-app-audit.md)
@@ -66,40 +66,40 @@ To ensure multi-app reusability, we strictly separate **instructions** from **da
 
 ### 1.1 Full Merge Flow
 
-```
-feat/ui ──────────────────────────────────────────── packages/ui development only
-    │
-    │  PR merged into stage
-    ▼
-stage ────────────────────────────────────────────── integration / staging gate
-    │
-    │  merged into main
-    ▼
-main ─────────────────   integrate/<APP_NAME> ──────── READ-ONLY (git subtree pull only)
-(stable base)                     │
-                                  │  merged into migrate-app/<APP_NAME>
-                                  ▼
-                            migrate-app/<APP_NAME> ──────── refactor / migration work branch
-                                  │
-                                  │  merged into migrate-app/base (incrementally per app)
-                                  ▼
-                            migrate-app/base ────────────── (all apps accumulate here)
-                                  │
-                                  │  merged into stage ONLY when ALL apps are migrated
-                                  ▼
-                                stage  ◀── (final merge, closes the loop)
+```txt
+feat/ui -------------------------------------------- packages/ui development only
+    |
+    |  PR merged into stage
+    v
+stage ---------------------------------------------- integration / staging gate
+    |
+    |  merged into main
+    v
+main -----------------   integrate/<APP_NAME> -------- READ-ONLY (git subtree pull only)
+(stable base)                     |
+                                  |  merged into migrate-app/<APP_NAME>
+                                  v
+                            migrate-app/<APP_NAME> -------- refactor / migration work branch
+                                  |
+                                  |  merged into migrate-app/base (incrementally per app)
+                                  v
+                            migrate-app/base -------------- (all apps accumulate here)
+                                  |
+                                  |  merged into stage ONLY when ALL apps are migrated
+                                  v
+                                stage  <--- (final merge, closes the loop)
 ```
 
 ### 1.2 Branch Purpose & Rules
 
 | Branch                   | Writeable?       | Merge Direction                                     | Notes                                                 |
 | :----------------------- | :--------------- | :-------------------------------------------------- | :---------------------------------------------------- |
-| `feat/ui`                | ✅ Yes           | → `stage`                                           | `packages/ui` development only; never touches `apps/` |
-| `stage`                  | ✅ PR-gated      | → `main`, → `integrate/<APP_NAME>`                  | Integration gate; all PRs land here first             |
-| `main`                   | ✅ PR-gated      | —                                                   | Stable monorepo base; no direct commits               |
-| `integrate/<APP_NAME>`   | ❌ **READ-ONLY** | ← legacy remote, → `migrate-app/<APP_NAME>`         | 1:1 mirror of legacy repo via `git subtree pull` only |
-| `migrate-app/<APP_NAME>` | ✅ Yes           | ← `integrate/<APP_NAME>`, → `migrate-app/base`      | All refactor/migration work per app                   |
-| `migrate-app/base`       | ✅ PR-gated      | ← `migrate-app/<APP_NAME>` (incremental), → `stage` | Accumulates all migrated apps                         |
+| `feat/ui`                | Yes           | -> `stage`                                           | `packages/ui` development only; never touches `apps/` |
+| `stage`                  | PR-gated      | -> `main`, -> `integrate/<APP_NAME>`                  | Integration gate; all PRs land here first             |
+| `main`                   | PR-gated      | -                                                   | Stable monorepo base; no direct commits               |
+| `integrate/<APP_NAME>`   | **READ-ONLY** | <- legacy remote, -> `migrate-app/<APP_NAME>`         | 1:1 mirror of legacy repo via `git subtree pull` only |
+| `migrate-app/<APP_NAME>` | Yes           | <- `integrate/<APP_NAME>`, -> `migrate-app/base`      | All refactor/migration work per app                   |
+| `migrate-app/base`       | PR-gated      | <- `migrate-app/<APP_NAME>` (incremental), -> `stage` | Accumulates all migrated apps                         |
 
 > [!IMPORTANT]
 > On any `migrate-app/<APP_NAME>` branch, **only that app's directory exists** in `apps/`.
@@ -108,28 +108,28 @@ main ─────────────────   integrate/<APP_NAME> 
 
 ### 1.3 `integrate/*` Read-Only Contract
 
-`integrate/<APP_NAME>` is a **git-subtree mirror** of the legacy repository — 1:1 at all times.
+`integrate/<APP_NAME>` is a **git-subtree mirror** of the legacy repository - 1:1 at all times.
 
 ```bash
-# ✅ ONLY allowed write operation on integrate/<APP_NAME>
+# ONLY allowed write operation on integrate/<APP_NAME>
 git checkout integrate/<APP_NAME>
 git subtree pull --prefix=<APP_PATH> <LEGACY_REMOTE> <LEGACY_BRANCH>
 git push origin integrate/<APP_NAME>
-```
+```txt
 
-**Key consequence:** Because `integrate/<APP_NAME>` is never locally modified, subtree pulls are **always conflict-free**. Conflicts only surface when merging `integrate/<APP_NAME>` → `migrate-app/<APP_NAME>`.
+**Key consequence:** Because `integrate/<APP_NAME>` is never locally modified, subtree pulls are **always conflict-free**. Conflicts only surface when merging `integrate/<APP_NAME>` -> `migrate-app/<APP_NAME>`.
 
 ### 1.4 Legacy Update Workflow
 
 When the legacy repo receives new commits, propagate them using this flow:
 
 ```
-1. git subtree pull → integrate/<APP_NAME>   (always clean)
-2. git merge integrate/<APP_NAME>            (on migrate-app/<APP_NAME> — may conflict)
+1. git subtree pull -> integrate/<APP_NAME>   (always clean)
+2. git merge integrate/<APP_NAME>            (on migrate-app/<APP_NAME> - may conflict)
 3. Resolve conflicts on migrate-app/<APP_NAME>   (categorize: migrated / non-migrated component)
-4. Analyze & adjust                          (Batch 3 → 4 / 5 / 5A depending on scenario)
-5. Verify + document                         (Batch 6 → legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md)
-```
+4. Analyze & adjust                          (Batch 3 -> 4 / 5 / 5A depending on scenario)
+5. Verify + document                         (Batch 6 -> legacy-updates/legacy-update-YYYYMMDD-HHMMSS.md)
+```md
 
 For detailed routines, conflict resolution strategy, batch sequences, and copy-paste AI prompts, see:
 
@@ -152,13 +152,13 @@ For detailed routines, conflict resolution strategy, batch sequences, and copy-p
 
 ```
 packages/
-├── ui/            ← @repo/ui — the shared component library
-├── config/        ← shared configs (tailwind, postcss, etc.)
-├── eslint-config/ ← shared ESLint rules
-├── typescript-config/ ← shared tsconfig bases
-├── helper/        ← shared utility helpers
-└── interface/     ← shared TypeScript interfaces/types
-```
+|-- ui/            <- @repo/ui - the shared component library
+|-- config/        <- shared configs (tailwind, postcss, etc.)
+|-- eslint-config/ <- shared ESLint rules
+|-- typescript-config/ <- shared tsconfig bases
+|-- helper/        <- shared utility helpers
+|-- interface/     <- shared TypeScript interfaces/types
+```mermaid
 
 ---
 
@@ -176,60 +176,60 @@ flowchart TB
 
   START([Start: Scope Selected]):::stage
 
-  subgraph MIGRATE_BRANCH["migrate-app/<APP_NAME> — per app"]
+  subgraph MIGRATE_BRANCH["migrate-app/<APP_NAME> - per app"]
     P01[Batch 0: Per-App Audit<br/>Inventory + classify all components]:::stage
-    A01[audit.md · spec-input.md<br/>component-backlog.csv<br/>per-app-baseline-summary.md]:::artifact
+    A01[_audit-report.md - _spec-input.md<br/>_component-backlog.csv<br/>_per-app-baseline-summary.md]:::artifact
     P01 --> A01
   end
 
-  subgraph FEAT_UI_BRANCH["feat/ui — cross-app, run once"]
-    P02[Foundation Setup: Design System Foundation<br/>Cross-app reconciliation → @repo/ui foundation]:::stage
-    A02[00-foundation.md … 06-risk-register.md]:::artifact
+  subgraph FEAT_UI_BRANCH["feat/ui - cross-app, run once"]
+    P02[Foundation Setup: Design System Foundation<br/>Cross-app reconciliation -> @repo/ui foundation]:::stage
+    A02[00-foundation.md ... 06-risk-register.md]:::artifact
     P02 --> A02
 
-    P03[Batch Planning: Migration Plan<br/>Batch design 1 → 2 → 3 → 4 → 5 → 6]:::stage
-    A03[master-roadmap.md<br/>implementation-batches.md<br/>adapter-mapping.md]:::artifact
+    P03[Batch Planning: Migration Plan<br/>Batch design 1 -> 2 -> 3 -> 3A -> 4 -> 5 -> 6]:::stage
+    A03[10-cross-app-reconciliation.md<br/>11-master-component-roadmap.md<br/>13-implementation-batches.md]:::artifact
     P03 --> A03
 
-    P04[Shared Build: Build Shared Components<br/>SDD — SPEC → STORY → BUILD → GATE per batch]:::stage
+    P04[Shared Build: Build Shared Components<br/>SDD - SPEC -> STORY -> BUILD -> GATE per batch]:::stage
     G04{Verification Gate<br/>per batch item}:::gate
     F04[Fix or rollback<br/>re-run gate]:::fix
-    A04[Component specs + stories<br/>packages/ui index.ts exports]:::artifact
+    A04[Component specs + stories<br/>packages/ui index.ts exports<br/>20-foundation-change-log.md<br/>21-adapter-mapping.md]:::artifact
     P04 --> G04
     G04 -- pass --> A04
     G04 -- fail --> F04 --> G04
   end
 
-  subgraph MIGRATE_BRANCH2["migrate-app/<APP_NAME> — per app, per batch"]
-    P09[Batch 0.5: Dependency Upgrades<br/>Batch 0.5 — React 19 · Tailwind v4 · TS 5.9.2<br/>Must pass gate before Batch 1]:::stage
+  subgraph MIGRATE_BRANCH2["migrate-app/<APP_NAME> - per app, per batch"]
+    P09[Batch 0.5: Dependency Upgrades<br/>Batch 0.5 - React 19 - Tailwind v4 - TS 5.9.2<br/>Must pass gate before Batch 1]:::stage
     G09{Verification Gate<br/>Batch 0.5}:::gate
     F09[Fix type errors<br/>fix config]:::fix
     P09 --> G09
-    G09 -- pass --> P05[Per-App Migration<br/>Batch 1 → 2 → 3 → 4 — consume @repo/ui]:::stage
+    G09 -- pass --> P05[Per-App Migration<br/>Batch 1 -> 2 -> 3 -> 4 - consume @repo/ui]:::stage
     G09 -- fail --> F09 --> G09
 
     G05{Verification Gate<br/>per batch}:::gate
     F05[Fix or rollback<br/>re-run gate]:::fix
-    A05[migration-plan.md · migration-log.md<br/>parity-checklist.md]:::artifact
+    A05[_migration-plan.md - _migration-log.md<br/>_parity-checklist.md]:::artifact
     P05 --> G05
     G05 -- pass --> A05
     G05 -- fail --> F05 --> G05
 
-    P05A["Batch 9.5: App-Local SoC Refactor<br/>Batch 9.5 — container/shell split<br/>KEEP_APP_LOCAL HIGH+MEDIUM only"]:::stage
-    G05A{"Gate: Batch 9.5<br/>types · lint · build · smoke"}:::gate
+    P05A["Batch 9.5: App-Local SoC Refactor<br/>Batch 9.5 - container/shell split<br/>KEEP_APP_LOCAL HIGH+MEDIUM only"]:::stage
+    G05A{"Gate: Batch 9.5<br/>types - lint - build - smoke"}:::gate
     F05A[Fix or rollback]:::fix
     P05[Per-App Migration]:::stage --> P05A --> G05A
     G05A -- pass --> P07[Batch 10: Cleanup]:::stage
     G05A -- fail --> F05A --> G05A
     G07{Verification Gate<br/>per app}:::gate
     F07[Fix or rollback]:::fix
-    A07[cleanup-report.md]:::artifact
+    A07[_cleanup-report.md]:::artifact
     P07 --> G07
     G07 -- pass --> A07
     G07 -- fail --> F07 --> G07
   end
 
-  subgraph FINAL["feat/ui — final standards"]
+  subgraph FINAL["feat/ui - final standards"]
     P08[Batch 11: Operational Standards]:::stage
     A08[SHARED_UI_ARCHITECTURE.md<br/>SHARED_UI_IMPLEMENTATION_GUIDE.md<br/>SHARED_UI_MIGRATION_PLAYBOOK.md<br/>SHARED_UI_OPERATIONAL_STANDARDS.md<br/>SHARED_UI_CONTRIBUTING.md<br/>SHARED_UI_CHANGELOG.md]:::artifact
     P08 --> A08
@@ -242,7 +242,7 @@ flowchart TB
   START --> MIGRATE_BRANCH
   A01 -->|"handoff"| P02
   A01 -->|"SoC split before Batch 2+"| P15["Batch 1.5: SoC Pre-Migration Refactor\nSplit HIGH/MEDIUM monolith candidates"]:::stage
-  P15 --> G15{"Gate: Batch 1.5\ntypes · lint · build · smoke"}:::gate
+  P15 --> G15{"Gate: Batch 1.5\ntypes - lint - build - smoke"}:::gate
   G15 -- pass --> P05
   G15 -- fail --> F15[Fix or rollback]:::fix --> G15
   A02 --> P03
@@ -260,11 +260,11 @@ flowchart TB
   P06 -.- P05
 ```
 
-**Legend:** Gray = Lifecycle stages · 🟠 Orange = Verification gates · Green = Artifacts · Red = Fix/rollback · Yellow = Legacy update
+**Legend:** Gray = Lifecycle stages -  Orange = Verification gates - Green = Artifacts - Red = Fix/rollback - Yellow = Legacy update
 
 ### 3.2 Batch Execution Decision Tree (Per-App Migration)
 
-Each component from `audit.md` maps to exactly one batch:
+Each component from `_audit-report.md` maps to exactly one batch:
 
 ```mermaid
 flowchart TD
@@ -274,7 +274,7 @@ flowchart TD
 
   classDef soc fill:#f3e8ff,stroke:#9333ea,color:#3b0764,stroke-width:2px;
 
-  START([Component from audit.md]) --> Q1S{"SoC Potential? (All components)"}:::soc
+  START([Component from _audit-report.md]) --> Q1S{"SoC Potential? (All components)"}:::soc
 
   Q1S --> |"HIGH or MEDIUM - Batch 1.5 candidate"| W15["Batch 1.5: SoC Pre-Migration Refactor<br/>Split into Container + Shell"]:::batch
   W15 --> G15{Gate: Batch 1.5}:::gate
@@ -290,7 +290,7 @@ flowchart TD
   Q1 --> |NEW_SHARED_COMPONENT| WD[Batch 4: Build new in @repo/ui<br/>on feat/ui, then import swap]:::batch
   Q1 --> |KEEP_APP_LOCAL| Q1K{Refactor potential?}:::decision
   Q1K --> |HIGH or MEDIUM| WK[Batch 9.5: App-Local SoC Refactor<br/>Batch 9.5 - container/shell split]:::batch
-  Q1K --> |LOW or NONE| SKIP[No migration - stays app-local<br/>Record in audit.md as N/A]:::batch
+  Q1K --> |LOW or NONE| SKIP[No migration - stays app-local<br/>Record in _audit-report.md as N/A]:::batch
 
   WA --> GA{Gate: Batch 1}:::gate
   WB --> GB{Gate: Batch 2}:::gate
@@ -302,20 +302,20 @@ flowchart TD
   GC -- pass --> WE
   GD -- pass --> WE
 
-  GA -- fail --> FA[Fix → re-run]:::decision --> GA
-  GB -- fail --> FB[Fix → re-run]:::decision --> GB
-  GC -- fail --> FC[Fix → re-run]:::decision --> GC
-  GD -- fail --> FD[Fix → re-run]:::decision --> GD
+  GA -- fail --> FA[Fix -> re-run]:::decision --> GA
+  GB -- fail --> FB[Fix -> re-run]:::decision --> GB
+  GC -- fail --> FC[Fix -> re-run]:::decision --> GC
+  GD -- fail --> FD[Fix -> re-run]:::decision --> GD
 
   WE --> GE{Gate: Batch 5<br/>all adapters audited}:::gate
-  GE -- pass --> WF[Batch 9.5 — if candidates exist<br/>Batch 9.5 SoC Refactor<br/>Then Batch 10: Cleanup]:::batch
+  GE -- pass --> WF[Batch 9.5 - if candidates exist<br/>Batch 9.5 SoC Refactor<br/>Then Batch 10: Cleanup]:::batch
   WK --> GK{Gate: Batch 9.5}:::gate
   GK -- pass --> WF
-  GK -- fail --> FK[Fix → re-run]:::decision --> GK
+  GK -- fail --> FK[Fix -> re-run]:::decision --> GK
   GE -- fail --> FE[Fix parity issues]:::decision --> GE
 
-  WF --> BATCHDONE([Batch complete — app ready for Batch 10])
-```
+  WF --> BATCHDONE([Batch complete - app ready for Batch 10])
+```mermaid
 
 ### 3.3 Failure Handling (applies to all gates)
 
@@ -326,12 +326,12 @@ flowchart TD
   classDef stage fill:#f4f6f8,stroke:#6b7280,color:#111,stroke-width:2px;
 
   FAIL[Verification Gate Fails]:::gate --> B{Critical Failure?}
-  B -->|No — fixable| C[Diagnose root cause]:::fix --> D[Minimal fix<br/>do NOT touch unrelated code]:::fix --> RERUN[Re-run gate]:::gate
+  B -->|No - fixable| C[Diagnose root cause]:::fix --> D[Minimal fix<br/>do NOT touch unrelated code]:::fix --> RERUN[Re-run gate]:::gate
   RERUN --> P{Pass?}
   P -->|Yes| NEXT[Continue to next stage]:::stage
   P -->|No| C
-  B -->|Yes — too risky| ROLLBACK[git reset --hard<br/>git push -f origin migrate-app/<APP_NAME>]:::fix
-  ROLLBACK --> DOC[Document in migration-log.md]:::fix --> REASSESS[Reassess approach<br/>reclassify if needed]:::fix
+  B -->|Yes - too risky| ROLLBACK[git reset --hard<br/>git push -f origin migrate-app/<APP_NAME>]:::fix
+  ROLLBACK --> DOC[Document in _migration-log.md]:::fix --> REASSESS[Reassess approach<br/>reclassify if needed]:::fix
 ```
 
 ---
@@ -340,20 +340,20 @@ flowchart TD
 
 > [!IMPORTANT]
 > Exact commands for each app are in `apps/<APP_NAME>/docs/migration/verification-gate.md`.
-> Always read that file first — do NOT guess commands.
+> Always read that file first - do NOT guess commands.
 
 | Batch/Stage                  | Gate Scope                 | Commands                                                                                        |
 | ---------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------- |
-| 01 — Audit                   | None (docs only)           | —                                                                                               |
-| 02 — Foundation              | None (docs only)           | —                                                                                               |
-| 03 — Migration Plan          | None (docs only)           | —                                                                                               |
-| 04 — Build UI                | Per batch item: `@repo/ui` | `check-types` · `build` · `storybook:build` · a11y addon                                        |
-| 09/Batch 0.5 — Dep Upgrade   | Per app                    | `check-types` · `lint` · `build` · version alignment check (React 19.x, Tailwind 4.x, TS 5.9.2) |
-| 05 — Per-App Migration       | Per batch: app             | From `verification-gate.md` + visual/behavior parity                                            |
-| 05A — App-Local SoC Refactor | Per component (Batch 9.5)  | `check-types` · `lint` · `build` · smoke route per component                                    |
-| 07 — Cleanup                 | Full monorepo              | All apps `check-types` · `build` + no broken imports scan                                       |
-| 09/Batch 10.5 — Dep Deferred | Per app                    | `check-types` · `lint` · `build` · deferred item table logged                                   |
-| 08 — Operational Standards   | Docs review                | —                                                                                               |
+| 01 - Audit                   | None (docs only)           | -                                                                                               |
+| 02 - Foundation              | None (docs only)           | -                                                                                               |
+| 03 - Migration Plan          | None (docs only)           | -                                                                                               |
+| 04 - Build UI                | Per batch item: `@repo/ui` | `check-types` - `build` - `storybook:build` - a11y addon                                        |
+| 09/Batch 0.5 - Dep Upgrade   | Per app                    | `check-types` - `lint` - `build` - version alignment check (React 19.x, Tailwind 4.x, TS 5.9.2) |
+| 05 - Per-App Migration       | Per batch: app             | From `verification-gate.md` + visual/behavior parity                                            |
+| 05A - App-Local SoC Refactor | Per component (Batch 9.5)  | `check-types` - `lint` - `build` - smoke route per component                                    |
+| 07 - Cleanup                 | Full monorepo              | All apps `check-types` - `build` + no broken imports scan                                       |
+| 09/Batch 10.5 - Dep Deferred | Per app                    | `check-types` - `lint` - `build` - deferred item table logged                                   |
+| 08 - Operational Standards   | Docs review                | -                                                                                               |
 
 ---
 
@@ -363,11 +363,11 @@ These are the critical handoff contracts between batch/stage steps on different 
 
 | From                           | To                             | Artifact                                                     | Location                                          |
 | ------------------------------ | ------------------------------ | ------------------------------------------------------------ | ------------------------------------------------- |
-| Batch 0 (`migrate-app/<app>`)  | Foundation Setup (`feat/ui`)   | `per-app-baseline-summary.md`                                | Copy to `packages/ui/docs/normalization/per-app/` |
-| Foundation Setup (`feat/ui`)   | All apps                       | `02-api-conventions.md`                                      | `packages/ui/docs/normalization/`                 |
-| Batch Planning (`feat/ui`)     | Shared Build                   | `13-implementation-batches.md`                               | `packages/ui/docs/normalization/`                 |
-| Shared Build (`feat/ui`)       | Per-App Migration (`migrate-app/<app>`) | `packages/ui/src/index.ts` exports + `05-adapter-mapping.md` | packages/ui build                                 |
-| Per-App Migration (`migrate-app/<app>`) | Batch 10 Cleanup              | `migration-log.md` (all Status=DONE)                         | `apps/<APP_NAME>/docs/migration/component/`       |
+| Batch 0 (`migrate-app/<app>`)  | Foundation Setup (`feat/ui`)   | `_per-app-baseline-summary.md`                                | Copy to `packages/ui/docs/normalization/per-app/` |
+| Foundation Setup (`feat/ui`)   | All apps                       | `00-foundation.md` through `06-risk-register.md`             | `packages/ui/docs/normalization/_output/`         |
+| Batch Planning (`feat/ui`)     | Shared Build                   | `10-cross-app-reconciliation.md`, `11-master-component-roadmap.md`, `12-master-backlog.csv`, `13-implementation-batches.md` | `packages/ui/docs/normalization/_output/` |
+| Shared Build (`feat/ui`)       | Per-App Migration (`migrate-app/<app>`) | `packages/ui/src/index.ts` exports + `21-adapter-mapping.md` | `packages/ui` + `packages/ui/docs/normalization/_output/` |
+| Per-App Migration (`migrate-app/<app>`) | Batch 10 Cleanup              | `_migration-log.md` (all Status=DONE)                         | `apps/<APP_NAME>/docs/migration/component/`       |
 
 ---
 
@@ -375,17 +375,17 @@ These are the critical handoff contracts between batch/stage steps on different 
 
 | Priority | App Type           | Apps                                                                                                         |
 | -------- | ------------------ | ------------------------------------------------------------------------------------------------------------ |
-| 🔴 P0    | Admin/Ops portals  | `admin-portal`, `admin-portal-boost`, `claim-portal`, `ticket-portal`                                        |
-| 🔴 P0    | Auth/SSO           | `sso-portal`                                                                                                 |
-| 🟡 P1    | Agent portals      | `agent-admin`, `agent-portal`, `agent-web-portal`                                                            |
-| 🟡 P1    | Affiliate portals  | `affiliate-admin`, `affiliate-portal`                                                                        |
-| 🟡 P1    | Customer/Partner   | `customer-portal`, `partner-portal`                                                                          |
-| 🟠 P2    | E-commerce         | `ecommerce-gelm`, `ecommerce-teman`                                                                          |
-| 🟠 P2    | Partner variants   | `gegm-friendcover`, `gegm-friendcover-admin`                                                                 |
-| 🟠 P2    | Teman affiliates   | `teman-affiliate-admin`, `teman-affiliate-portal`, `teman-affiliate-microsite`                               |
-| 🟢 P3    | Microsites/Landing | `agent-microsite`, `gelm-xproject-microsite`, `getrev-da-microsite`, `grab-landing-page`, `haruuz-microsite` |
-| 🟢 P3    | Websites/AI        | `mykawan-website`, `gen-ai-portal`, `boost-product-fe`                                                       |
+|  P0    | Admin/Ops portals  | `admin-portal`, `admin-portal-boost`, `claim-portal`, `ticket-portal`                                        |
+|  P0    | Auth/SSO           | `sso-portal`                                                                                                 |
+|  P1    | Agent portals      | `agent-admin`, `agent-portal`, `agent-web-portal`                                                            |
+|  P1    | Affiliate portals  | `affiliate-admin`, `affiliate-portal`                                                                        |
+|  P1    | Customer/Partner   | `customer-portal`, `partner-portal`                                                                          |
+|  P2    | E-commerce         | `ecommerce-gelm`, `ecommerce-teman`                                                                          |
+|  P2    | Partner variants   | `gegm-friendcover`, `gegm-friendcover-admin`                                                                 |
+|  P2    | Teman affiliates   | `teman-affiliate-admin`, `teman-affiliate-portal`, `teman-affiliate-microsite`                               |
+|  P3    | Microsites/Landing | `agent-microsite`, `gelm-xproject-microsite`, `getrev-da-microsite`, `grab-landing-page`, `haruuz-microsite` |
+|  P3    | Websites/AI        | `mykawan-website`, `gen-ai-portal`, `boost-product-fe`                                                       |
 
 ---
 
-_Related: [README.md](./README.md) · [01-app-audit.md](./01-app-audit.md) · [legacy-update-integration-guide.md](./legacy-update-integration-guide.md)_
+_Related: [README.md](./README.md) - [01-app-audit.md](./01-app-audit.md) - [legacy-update-integration-guide.md](./legacy-update-integration-guide.md)_
