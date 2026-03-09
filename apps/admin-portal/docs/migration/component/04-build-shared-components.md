@@ -15,6 +15,14 @@ Implement all new and extended components in `packages/ui` following the Spec-Dr
 
 > **Batch scope:** Batch 1 and Batch 2 require no `packages/ui` changes (those are app-side work only). This phase handles Batch 3 (extend existing) and Batch 4 (new components).
 
+## Skill and MCP Policy
+
+- Always use `$design-system`, `$monorepo-workspace`, and `$turborepo` as the default operating set for Batch 4-5 component work.
+- Always use `$web-design-guidelines` and `$vercel-react-best-practices` during spec review, implementation, and final gate review for every component built in `packages/ui`.
+- Always evaluate `$vercel-composition-patterns` for every component. Apply it whenever the component has compound structure, slot APIs, shared context, or boolean-prop/API-sprawl risk.
+- Keep `$systematic-debugging` available on every run. If Storybook, build, accessibility, or verification behavior is unclear or broken, trace the root cause before patching.
+- Use `shadcn MCP` as the baseline source for registry-backed component scaffolding and `context7 MCP` for Radix/library API lookup whenever they reduce ambiguity.
+
 ---
 
 ## SDD Lifecycle (mandatory per component)
@@ -632,9 +640,17 @@ export const ResponsiveLayout: Story = {
 > **`$design-system` skill tip:** Before writing stories, read `SKILL.md` -> `COMPONENTS.md`
 > (Accessibility, JSDoc Standards, and Component Rules sections) for accessibility checklist
 > and focus-visible patterns to validate against your spec's Accessibility section.
+>
+> **`$web-design-guidelines` skill tip:** Review story coverage for semantics, focus order, visible focus states, and interaction clarity before moving from RED to GREEN. This is a baseline review for every Batch 4-5 component.
 
 ## Step 3 - Implement (`<COMPONENT_NAME>.tsx`)
 
+> **`$vercel-composition-patterns` skill tip:** Evaluate every component before implementation. If the API is compound, slot-driven, context-backed, or at risk of boolean-prop sprawl, lock the composition pattern before writing JSX.
+>
+> **`$vercel-react-best-practices` skill tip:** Treat render behavior, bundle shape, and wrapper count as first-class implementation constraints. Do not add indirection, effects, or client-only work that the component does not need.
+>
+> **`$systematic-debugging` skill tip:** If stories fail unexpectedly, accessibility behavior is unclear, or the verification gate breaks, trace the actual root cause before changing the API or implementation plan.
+>
 > **shadcn MCP tip:** Use `shadcn MCP` to search for `<COMPONENT_NAME>` - if it exists in the registry, use its Radix + Tailwind implementation as a starting baseline, then normalize to `packages/ui` conventions:
 > - Replace any raw hex/named colors -> CSS variable tokens (`bg-primary`, `text-destructive`)
 > - Wrap with `React.forwardRef` + set `displayName`

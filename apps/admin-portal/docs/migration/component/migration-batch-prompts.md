@@ -45,7 +45,7 @@ The following skills may be installed in this project (`skills/`). **Only use a 
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `$design-system`               | Writing component specs, token conventions, CVA patterns, accessibility standards, design system architecture                             |
 | `$monorepo-workspace`          | Package boundaries, what to import from where, cn() correct import, turbo task names, --filter commands, legacy dep state in admin-portal |
-| `$vercel-composition-patterns` | Building compound components, avoiding boolean prop proliferation, React 19 API changes                                                   |
+| `$vercel-composition-patterns` | Evaluate on every component; apply when compound-component structure, slot APIs, context sharing, or boolean prop proliferation risk exists |
 | `$next-best-practices`         | RSC boundary placement, async APIs, `'use client'` / `'use server'`, App Router patterns                                                  |
 | `$next-cache-components`       | Components that wrap cached server data (`use cache`, cacheLife, cacheTag, PPR)                                                           |
 | `$turborepo`                   | Verification gate commands, `--filter` usage, pipeline task configuration, `pnpm` monorepo                                                |
@@ -53,9 +53,37 @@ The following skills may be installed in this project (`skills/`). **Only use a 
 | `$forms-validation`            | Form-heavy component migration: `react-hook-form` v7 + `zod` patterns, `@repo/ui` form component integration                              |
 | `$agent-browser`               | Smoke route testing, visual parity validation, automated interaction verification                                                         |
 | `$next-upgrade`                | Upgrading Next.js during migration setup or if version bump is required                                                                   |
-| `$vercel-react-best-practices` | React/Next.js performance patterns - waterfalls, bundle size, re-renders, data fetching                                                   |
-| `$systematic-debugging`        | When any verification gate fails - root cause first, no random fixes                                                                      |
-| `$web-design-guidelines`       | Auditing UI code for web interface guidelines compliance (accessibility, semantics, focus)                                                |
+| `$vercel-react-best-practices` | Baseline for component work in `packages/ui` and apps: render behavior, bundle discipline, composition cost, and React/Next.js performance |
+| `$systematic-debugging`        | Available in every batch; use before attempting fixes whenever a gate fails, behavior regresses, or the root cause is unclear            |
+| `$web-design-guidelines`       | Baseline UI quality review for component implementation and migration: accessibility, semantics, focus, and interface guideline compliance |
+
+---
+
+## Skill Usage Policy
+
+- `$systematic-debugging` is available in **every batch**. If any command fails, parity drifts, behavior regresses, or a root cause is unclear, use it before attempting fixes.
+- For **Batches 4-5** (`packages/ui` build) and **Batches 6-9** (app-side component migration), `$web-design-guidelines` and `$vercel-react-best-practices` are baseline skills, not optional add-ons.
+- `$vercel-composition-patterns` must be **evaluated for every component**. Actively apply it when the selected component has compound sub-components, slot APIs, shared context, or boolean-prop/API-sprawl risk.
+- Use `$design-system`, `$monorepo-workspace`, and `$turborepo` as the core operating set for shared component work on `feat/ui`.
+- Use `shadcn MCP` and `context7 MCP` as the default reference pair for Batch 4-5 component build work when a registry baseline or Radix/library API lookup would reduce ambiguity.
+
+---
+
+## Available MCP Servers
+
+The following MCP servers may be available in this workspace. Use them only if they are actually installed in the current session.
+
+| MCP server | When it applies |
+| ---------- | ---------------- |
+| `next-devtools MCP` | Next.js upgrade/runtime verification, component tree inspection, server log analysis, and RSC/client-boundary checks during app-side work |
+| `shadcn MCP` | Shared component scaffolding/baseline lookup for Batch 4-5 component work before normalization into `packages/ui` conventions |
+| `context7 MCP` | Radix and library API lookup before finalizing component interfaces, props, and accessibility behavior |
+
+## MCP Usage Policy
+
+- Use `next-devtools MCP` during Batch 0.5 and other app-side runtime verification steps when Next.js upgrade, server logs, or RSC/client boundaries need inspection.
+- Use `shadcn MCP` and `context7 MCP` by default for Batch 4-5 component work when they reduce ambiguity or accelerate correct implementation.
+- Do not assume an MCP is available just because it is named in this file; verify availability in the current session first.
 
 ---
 
@@ -1120,7 +1148,7 @@ Use the structure tier from the roadmap (Simple | Standard | Complex).
 - `pnpm --filter @repo/ui build`
 - Storybook renders all new stories without errors
 
-> Skills (if installed): `$monorepo-workspace` (cn() import from @repo/helper, dependency boundaries, which packages can be added); `$turborepo` (correct --filter and pipeline usage); `$vercel-composition-patterns` (if extending a compound component, validate composition API is not breaking consumers)
+> Skills (if installed): `$design-system` (review the extension spec for accessibility, token usage, and variant naming consistency); `$monorepo-workspace` (cn() import from @repo/helper, dependency boundaries, which packages can be added); `$turborepo` (correct --filter and pipeline usage); `$vercel-composition-patterns` (evaluate on every component; actively apply if extending a compound component or tightening API shape); `$vercel-react-best-practices` (required during component work to guard render behavior, bundle cost, and implementation quality); `$web-design-guidelines` (required during extension review to enforce semantics, focus behavior, and accessibility compliance); `$systematic-debugging` (if spec/story/build/gate behavior diverges - trace root cause before fixing)
 
 ## After Gate Passes
 
@@ -1167,7 +1195,7 @@ Document:
 - Do / Don't table
 - Storybook stories list (Default, AllVariants, AllSizes, DisabledState, LoadingState, ErrorState, EdgeCase_LongContent + any compound-specific stories)
 
-> Skills (if installed): `$design-system` (read `SKILL.md` -> `COMPONENTS.md` for accessibility requirements, keyboard patterns, focus states, and ARIA role requirements for `<COMPONENT_NAME>`); `$vercel-composition-patterns` (if this is a compound component - validate API avoids boolean prop proliferation)
+> Skills (if installed): `$design-system` (read `SKILL.md` -> `COMPONENTS.md` for accessibility requirements, keyboard patterns, focus states, and ARIA role requirements for `<COMPONENT_NAME>`); `$vercel-composition-patterns` (evaluate on every component; actively apply if this is compound or has boolean prop/API sprawl risk); `$web-design-guidelines` (review spec and story expectations against web interface guidelines, especially semantics, focus, and accessibility); `$systematic-debugging` (if requirements or behavior are ambiguous during spec/stories setup - trace before changing scope)
 
 ## Step 2 - Write Stories (`<COMPONENT_NAME>.stories.tsx`) - Storybook will error, this is intentional
 
@@ -1175,7 +1203,7 @@ Cover every story from the spec. RED state confirms spec is driving implementati
 
 ## Step 3 - Implement
 
-> Skills (if installed): `$monorepo-workspace` (package boundaries, cn() import from @repo/helper, and confirmation that @repo/ui must not import from apps); `$vercel-composition-patterns` (compound components with sub-components and shared context); `$next-best-practices` (if component renders inside App Router pages - validate RSC vs client boundary placement); `$next-cache-components` (if this component wraps cached server data - apply `use cache` + cacheTag patterns); `$vercel-react-best-practices` (apply bundle, waterfall, and re-render optimizations during implementation); `$forms-validation` (if building a form-related component - Controller wiring, aria-invalid, error display conventions)
+> Skills (if installed): `$monorepo-workspace` (package boundaries, cn() import from @repo/helper, and confirmation that @repo/ui must not import from apps); `$vercel-composition-patterns` (evaluate on every component; actively apply for compound components with sub-components and shared context); `$next-best-practices` (if component renders inside App Router pages - validate RSC vs client boundary placement); `$next-cache-components` (if this component wraps cached server data - apply `use cache` + cacheTag patterns); `$vercel-react-best-practices` (required during implementation - apply bundle, waterfall, and re-render optimizations); `$web-design-guidelines` (required during component build/review - enforce accessibility, semantics, and focus behavior); `$forms-validation` (if building a form-related component - Controller wiring, aria-invalid, error display conventions); `$systematic-debugging` (if Storybook, build, or verification diverges - root cause first, no random fixes)
 
 > MCPs (if available): use `shadcn MCP` to search registry for <COMPONENT_NAME> as baseline - then normalize (CSS variable tokens, forwardRef, CVA, `cn` from `@repo/helper`, `Box` for structural wrappers). Use `context7 MCP` for Radix primitive docs before writing component interface.
 
@@ -1297,7 +1325,7 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 - Smoke routes from `verification-gate.md Section 5` pass - before/after screenshots captured per `verification-gate.md Section 6`
 - No new console errors in browser
 
-> Skills (if installed): `$monorepo-workspace` (check @APP_PACKAGE filter value, verify script names before running commands); `$turborepo` (correct `--filter <APP_PACKAGE>` used in all gate commands); `$react-query` (service hooks from `@/services/` wrap `useQuery`/`useMutation` - if any migrated Container component calls a service hook, validate the service hook's query key and cache invalidation are unchanged); `$agent-browser` (automate smoke route verification - navigate critical routes, capture screenshots, flag visual regressions)
+> Skills (if installed): `$monorepo-workspace` (check @APP_PACKAGE filter value, verify script names before running commands); `$turborepo` (correct `--filter <APP_PACKAGE>` used in all gate commands); `$react-query` (service hooks from `@/services/` wrap `useQuery`/`useMutation` - if any migrated Container component calls a service hook, validate the service hook's query key and cache invalidation are unchanged); `$vercel-react-best-practices` (required during app-side component migration to catch render, bundle, and interaction regressions after the swap); `$web-design-guidelines` (required to audit the migrated usage sites for semantics, focus, and accessibility parity); `$agent-browser` (automate smoke route verification - navigate critical routes, capture screenshots, flag visual regressions); `$systematic-debugging` (if migration or gate behavior diverges - trace the root cause before fixing)
 ```md
 
 ---
@@ -1362,7 +1390,7 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 - All original prop usages still compile via adapter
 - Behavioral parity confirmed
 
-> Skills (if installed): `$turborepo` (correct `--filter` in gate commands); `$forms-validation` (if adapter wraps a form-related component - validate Controller wiring and error display preserved); `$react-query` (if adapter wraps a data-fetching component - confirm query key and service call unchanged); `$vercel-composition-patterns` (validate the adapter does not introduce state or side-effects - adapters must be pure prop-mapping, < 30 lines)
+> Skills (if installed): `$turborepo` (correct `--filter` in gate commands); `$forms-validation` (if adapter wraps a form-related component - validate Controller wiring and error display preserved); `$react-query` (if adapter wraps a data-fetching component - confirm query key and service call unchanged); `$vercel-composition-patterns` (evaluate the adapter for API sprawl and ensure it stays pure prop-mapping, < 30 lines); `$vercel-react-best-practices` (guard against extra render work or wrapper churn introduced by the adapter); `$web-design-guidelines` (verify the adapter does not regress semantics, labeling, or focus behavior); `$systematic-debugging` (if adapter parity breaks - trace before patching)
 
 ```md
 
@@ -1423,7 +1451,7 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 - All smoke routes from `verification-gate.md Section 5` pass - before/after screenshots captured per `verification-gate.md Section 6`
 - Behavioral parity confirmed
 
-> Skills (if installed): `$next-best-practices` (validate RSC/client boundary is not broken after swap); `$next-cache-components` (if the swapped component wraps server-cached data - verify `use cache` / cacheTag usage is still correct); `$vercel-react-best-practices` (check for introduced waterfalls or bundle regressions after swap); `$agent-browser` (smoke route automation + visual parity screenshots); `$turborepo` (`--filter` correctness)
+> Skills (if installed): `$next-best-practices` (validate RSC/client boundary is not broken after swap); `$next-cache-components` (if the swapped component wraps server-cached data - verify `use cache` / cacheTag usage is still correct); `$vercel-react-best-practices` (required during app-side shared-component adoption - check for introduced waterfalls, bundle regressions, or extra render churn after swap); `$web-design-guidelines` (required during parity review - confirm semantics, focus order, and accessibility remain intact); `$agent-browser` (smoke route automation + visual parity screenshots); `$turborepo` (`--filter` correctness); `$systematic-debugging` (if swap parity or gate results fail - trace first, then fix narrowly)
 
 ```md
 
@@ -1501,7 +1529,7 @@ For each route, capture before/after screenshots and record a comparison entry p
 
 Report: batch position, component counts DONE/DEFERRED, any adapters still active and why.
 
-> Skills (if installed): `$agent-browser` (full smoke route run - automate browser navigation of ALL routes from verification-gate.md, capture screenshot evidence for parity checklist sign-off); `$web-design-guidelines` (audit final component usage in each smoke route against web interface guidelines - focus, semantics, ARIA); `$systematic-debugging` (if any parity checklist item is FAIL - trace root cause before attempting a fix); `$turborepo` (verify all `--filter` gate commands run correctly)
+> Skills (if installed): `$agent-browser` (full smoke route run - automate browser navigation of ALL routes from verification-gate.md, capture screenshot evidence for parity checklist sign-off); `$web-design-guidelines` (required final audit of component usage in each smoke route against web interface guidelines - focus, semantics, ARIA); `$vercel-react-best-practices` (required stabilization review for runtime performance, render regressions, and bundle impact); `$systematic-debugging` (if any parity checklist item is FAIL - trace root cause before attempting a fix); `$turborepo` (verify all `--filter` gate commands run correctly)
 
 ```md
 
@@ -1661,7 +1689,7 @@ FORBIDDEN - zero tolerance, violation = rollback this component:
 - [ ] `packages/ui` candidates listed (or "None found")
 - [ ] Zero caller files changed (grep confirmed)
 
-> Skills (if installed): `$vercel-composition-patterns` (validate Shell API avoids boolean prop proliferation and follows compound component conventions); `$next-best-practices` (verify Shell has no RSC/client boundary violations after refactor); `$systematic-debugging` (if typecheck fails after split - trace before fixing, do NOT revert blindly); `$turborepo` (correct --filter and pipeline usage for gate commands)
+> Skills (if installed): `$vercel-composition-patterns` (evaluate every Shell refactor for API clarity; actively apply when compound/slot patterns emerge and avoid boolean prop proliferation); `$next-best-practices` (verify Shell has no RSC/client boundary violations after refactor); `$vercel-react-best-practices` (review the Shell split for render cost, wrapper churn, and bundle hygiene); `$web-design-guidelines` (review the Shell output for semantics, focus handling, and accessibility parity); `$systematic-debugging` (if typecheck fails after split - trace before fixing, do NOT revert blindly); `$turborepo` (correct --filter and pipeline usage for gate commands)
 
 Report: list of components refactored, packages/ui candidates surfaced (if any), components skipped with reason.
 
@@ -2001,7 +2029,7 @@ new components follow the intake process.
 
 Commit to feat/ui. This closes the migration program.
 
-> Skills (if installed): `$design-system` (review SHARED_UI_ARCHITECTURE.md for accessibility standards coverage and token naming conventions); `$vercel-composition-patterns` (SHARED_UI_IMPLEMENTATION_GUIDE.md must document compound component patterns, context interface, and React 19 API conventions); `$web-design-guidelines` (run a compliance audit against the final SHARED_UI_CONTRIBUTING.md and SHARED_UI_OPERATIONAL_STANDARDS.md)
+> Skills (if installed): `$design-system` (review SHARED_UI_ARCHITECTURE.md for accessibility standards coverage and token naming conventions); `$vercel-composition-patterns` (evaluate all documented component families for compound patterns, context interfaces, and React 19 API conventions); `$vercel-react-best-practices` (ensure the operational docs capture the required performance and render-quality baseline for component work in both ui and apps); `$web-design-guidelines` (run a compliance audit against the final SHARED_UI_CONTRIBUTING.md and SHARED_UI_OPERATIONAL_STANDARDS.md); `$systematic-debugging` (if documentation conflicts with implemented behavior or gate reality - trace and reconcile before finalizing)
 
 ```
 
