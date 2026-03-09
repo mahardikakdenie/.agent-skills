@@ -40,7 +40,7 @@ const meta = {
     docs: {
       description: {
         component:
-          '`Box` is the foundational layout primitive and the authored DOM primitive for shared source. It renders semantic targets via the `as` prop, supports `asChild` for renderless composition, and exposes a narrow set of migration-safe layout presets: `padding`, `container`, and `centered`.',
+          '`Box` is the foundational layout primitive and the authored DOM primitive for shared source.',
       },
     },
   },
@@ -77,7 +77,11 @@ export const Padding: Story = {
   render: () => (
     <Box className="space-y-4 rounded-lg border border-dashed border-border p-4">
       {(['sm', 'md', 'lg'] as const).map((preset) => (
-        <Box key={preset} className="space-y-2 rounded-md border border-border py-3" padding={preset}>
+        <Box
+          key={preset}
+          className="space-y-2 rounded-md border border-border py-3"
+          padding={preset}
+        >
           <Box as="p" className="text-sm font-medium">
             <code>padding=&quot;{preset}&quot;</code>
           </Box>
@@ -112,7 +116,8 @@ export const Container: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Compares the approved max-width container presets without introducing app-specific shells.',
+        story:
+          'Compares the approved max-width container presets without introducing app-specific shells.',
       },
     },
   },
@@ -149,7 +154,8 @@ export const SemanticElements: Story = {
         Semantic structure stays explicit
       </Box>
       <Box as="p" className="text-sm text-muted-foreground">
-        `Box` should preserve semantic HTML choices instead of hiding them behind app-specific wrappers.
+        `Box` should preserve semantic HTML choices instead of hiding them behind app-specific
+        wrappers.
       </Box>
       <Box as="ul" className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
         <Box as="li">Use `main` or `section` for landmark structure.</Box>
@@ -173,7 +179,9 @@ export const AsChild: Story = {
       asChild
       className="flex items-center justify-center rounded-md bg-primary px-4 py-2 text-primary-foreground"
     >
-      <Box as="button" type="button">Button via asChild</Box>
+      <Box as="button" type="button">
+        Button via asChild
+      </Box>
     </Box>
   ),
   parameters: {
