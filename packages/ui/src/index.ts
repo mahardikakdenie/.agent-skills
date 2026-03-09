@@ -11,3 +11,7 @@ export * from './Checkbox';
 
 // Layout
 export * from './Card';
+
+// Overlays
+export * from './Drawer';
+

@@ -92,3 +92,18 @@ Keep local:
 - Composite multi-select shells that fetch options, compute summaries, or persist selection state beyond a single checkbox field.
 - Route- or workflow-specific wrappers that combine checkbox rendering with business copy, navigation, auth, or service logic.
 
+
+## Drawer
+
+Direct adoption guidance:
+
+- Legacy `Drewer`, `BottomSheetModal`, and `DrawerModal` shells map to `Drawer` plus the shared compound exports (`DrawerTrigger`, `DrawerContent`, `DrawerHeader`, `DrawerFooter`, `DrawerTitle`, `DrawerDescription`, `DrawerClose`).
+- Existing mobile sheets map to `direction="bottom"`; inspector or side-panel shells map to `direction="left" | "right"`; top-entry trays map to `direction="top"`.
+- Shared copy slots map to `title`, `description`, `actions`, and `footer`; consumer-owned dismiss buttons should compose through `DrawerClose asChild`.
+- Controlled app flows should map external close handling to `onClose` while keeping the business state that decides when to open the drawer local.
+
+Keep local:
+
+- Drawers that still embed auth, payment, data fetching, workflow guards, or domain submission logic beyond shell composition.
+- Centered modal confirmations that should instead migrate to `Dialog`.
+- Branded or campaign-specific sheets whose art direction, animation, or content policy is intentionally app-owned.

@@ -30,7 +30,7 @@
 - This rerun plans the canonical shared program on top of the raw deduplicated backlog captured in `12-master-backlog.csv`.
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
-- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, and `Card`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
+- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, and `Drawer`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -160,7 +160,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, `Button`, and `Card`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, and `Drawer`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
 
 ### packages/ui work required
 
@@ -294,7 +294,7 @@
 | Checkbox | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored field markup, and invalid + indeterminate coverage |
 | ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
 | Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
-| Drawer | 4 | B4 | PLANNED | Depends on `vaul` |
+| Drawer | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound exports, direction variants, and Box-authored shell layout on top of `vaul` |
 | Input | 4 | B4 | PLANNED | Core primitive |
 | Label | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
 | Pagination | 4 | B4 | PLANNED | Shared navigation primitive |
@@ -329,4 +329,5 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 
