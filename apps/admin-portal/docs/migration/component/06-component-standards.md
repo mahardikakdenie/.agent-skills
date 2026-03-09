@@ -1,9 +1,9 @@
-# 06 — Component Standards & Conventions
+# 06 - Component Standards & Conventions
 
-> **Role:** Always-on reference — consulted during every phase.
+> **Role:** Always-on reference - consulted during every phase.
 > **Branch:** Any (reference doc; anchored on `migrate-app/admin-portal`, reproduced on `feat/ui`)
 > **Owned by:** `feat/ui` maintainers (UI foundation decisions made in Phase 02 lock this)
-> **Prev:** Phase 02 locks this · **Used by:** Phases 01, 03, 04, 05
+> **Prev:** Phase 02 locks this - **Used by:** Phases 01, 03, 04, 05
 
 ---
 
@@ -14,7 +14,7 @@ Establish the single source of truth for component naming, prop conventions, var
 ---
 
 > **Section Navigation:**
-> [§1 Taxonomy](#1-component-taxonomy) · [§1.4 Box](#14-box--the-native-element-eliminator) · [§2 Prop Naming](#2-prop-naming-conventions) · [§3 TypeScript](#3-typescript-conventions) · [§4 Variant System](#4-variant-system-cva) · [§5 Theming & Tokens](#5-theming--token-contract) · [§6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) · [§6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) · [§6.3 API Consolidation](#63-component-api-consolidation-rules) · [§6.4 Storybook Taxonomy](#64-storybook-category-taxonomy) · [§6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) · [§6.6 Re-classification After Split](#66-re-classification-after-split) · [§7 Accessibility](#7-accessibility-baseline) · [§8 Parity Contract](#8-parity-contract--migration-guardrails)
+> [Section 1 Taxonomy](#1-component-taxonomy) - [Section 1.4 Box](#14-box--the-native-element-eliminator) - [Section 2 Prop Naming](#2-prop-naming-conventions) - [Section 3 TypeScript](#3-typescript-conventions) - [Section 4 Variant System](#4-variant-system-cva) - [Section 5 Theming & Tokens](#5-theming--token-contract) - [Section 6 Shared-vs-Local Boundary](#6-shared-vs-local-boundary-framework) - [Section 6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) - [Section 6.3 API Consolidation](#63-component-api-consolidation-rules) - [Section 6.4 Storybook Taxonomy](#64-storybook-category-taxonomy) - [Section 6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) - [Section 6.6 Re-classification After Split](#66-re-classification-after-split) - [Section 7 Accessibility](#7-accessibility-baseline) - [Section 8 Parity Contract](#8-parity-contract--migration-guardrails)
 >
 > When referencing a section from another doc, use the anchor format: `06-component-standards.md#6-shared-vs-local-boundary-framework`
 
@@ -24,58 +24,58 @@ Establish the single source of truth for component naming, prop conventions, var
 
 ## 1. Component Taxonomy
 
-### Tier 1 — Primitive Components
+### Tier 1 - Primitive Components
 
 Atomic, single-element components. Wrap a single Radix UI primitive or HTML element.
 
 | Component    | @repo/ui export | Radix Primitive               |
 | ------------ | --------------- | ----------------------------- |
-| `Box`        | ✅ `Box`        | `@radix-ui/react-slot`        |
-| `Button`     | ✅ `Button`     | `@radix-ui/react-slot`        |
-| `Input`      | ✅ `Input`      | `<input>`                     |
-| `Textarea`   | ✅ `Textarea`   | `<textarea>`                  |
-| `Label`      | ✅ `Label`      | `@radix-ui/react-label`       |
-| `Checkbox`   | ✅ `Checkbox`   | `@radix-ui/react-checkbox`    |
-| `Switch`     | ✅ `Switch`     | `@radix-ui/react-switch`      |
-| `RadioGroup` | ✅ `RadioGroup` | `@radix-ui/react-radio-group` |
-| `Select`     | ✅ `Select`     | `@radix-ui/react-select`      |
-| `Skeleton`   | ✅ `Skeleton`   | —                             |
-| `Badge`      | ✅ `Badge`      | —                             |
-| `Avatar`     | ✅ `Avatar`     | `@radix-ui/react-avatar`      |
-| `Spinner`    | ❌ missing      | —                             |
-| `Table`      | ❌ missing      | —                             |
+| `Box`        | yes `Box`        | `@radix-ui/react-slot`        |
+| `Button`     | yes `Button`     | `@radix-ui/react-slot`        |
+| `Input`      | yes `Input`      | `<input>`                     |
+| `Textarea`   | yes `Textarea`   | `<textarea>`                  |
+| `Label`      | yes `Label`      | `@radix-ui/react-label`       |
+| `Checkbox`   | yes `Checkbox`   | `@radix-ui/react-checkbox`    |
+| `Switch`     | yes `Switch`     | `@radix-ui/react-switch`      |
+| `RadioGroup` | yes `RadioGroup` | `@radix-ui/react-radio-group` |
+| `Select`     | yes `Select`     | `@radix-ui/react-select`      |
+| `Skeleton`   | yes `Skeleton`   | -                             |
+| `Badge`      | yes `Badge`      | -                             |
+| `Avatar`     | yes `Avatar`     | `@radix-ui/react-avatar`      |
+| `Spinner`    | missing missing      | -                             |
+| `Table`      | missing missing      | -                             |
 
-> **`Box` is the foundational Tier 0 primitive.** All Tier 1 components that wrap a single native HTML element build on `Box` (or use the same forwarding pattern). See [§1.4 Box — The Native Element Eliminator](#14-box--the-native-element-eliminator) for migration guidance.
+> **`Box` is the foundational Tier 0 primitive.** All Tier 1 components that wrap a single native HTML element build on `Box` (or use the same forwarding pattern). See [Section 1.4 Box - The Native Element Eliminator](#14-box--the-native-element-eliminator) for migration guidance.
 
-### Tier 2 — Composite Components
+### Tier 2 - Composite Components
 
 Combine multiple primitives into a cohesive UI pattern.
 
 | Component               | @repo/ui export | Based On                              |
 | ----------------------- | --------------- | ------------------------------------- |
-| `Alert`                 | ✅ `Alert`      | Tier 1                                |
-| `Card`                  | ✅ `Card`       | Tier 1                                |
-| `Form`                  | ✅ `Form`       | `react-hook-form` + `Label` + `Input` |
-| `Breadcrumb`            | ✅ `Breadcrumb` | Tier 1                                |
-| `Tabs`                  | ✅ `Tabs`       | `@radix-ui/react-tabs`                |
-| `Dialog`                | ✅ `Dialog`     | `@radix-ui/react-dialog`              |
-| `Drawer`                | ✅ `Drawer`     | `vaul`                                |
-| `Popover`               | ✅ `Popover`    | `@radix-ui/react-popover`             |
-| `Tooltip`               | ✅ `Tooltip`    | `@radix-ui/react-tooltip`             |
-| `Pagination`            | ✅ `Pagination` | Tier 1                                |
-| `Calendar`              | ✅ `Calendar`   | `react-day-picker`                    |
-| `DataTable`             | ❌ missing      | `Table` + `Pagination`                |
-| `DatePicker`            | ❌ missing      | `Calendar` + `Popover`                |
-| `DateRangePicker`       | ❌ missing      | `Calendar` + `Popover`                |
-| `Combobox`              | ❌ missing      | `Command` + `Popover`                 |
-| `Command`               | ❌ missing      | `cmdk`                                |
-| `DropdownMenu`          | ❌ missing      | Radix DropdownMenu                    |
-| `NavigationMenu`        | ❌ missing      | Radix NavigationMenu                  |
-| `Menubar`               | ❌ missing      | Radix Menubar                         |
-| `PageHeader`            | ❌ missing      | Tier 1                                |
-| `ContentLoadingWrapper` | ❌ missing      | `Skeleton`                            |
+| `Alert`                 | yes `Alert`      | Tier 1                                |
+| `Card`                  | yes `Card`       | Tier 1                                |
+| `Form`                  | yes `Form`       | `react-hook-form` + `Label` + `Input` |
+| `Breadcrumb`            | yes `Breadcrumb` | Tier 1                                |
+| `Tabs`                  | yes `Tabs`       | `@radix-ui/react-tabs`                |
+| `Dialog`                | yes `Dialog`     | `@radix-ui/react-dialog`              |
+| `Drawer`                | yes `Drawer`     | `vaul`                                |
+| `Popover`               | yes `Popover`    | `@radix-ui/react-popover`             |
+| `Tooltip`               | yes `Tooltip`    | `@radix-ui/react-tooltip`             |
+| `Pagination`            | yes `Pagination` | Tier 1                                |
+| `Calendar`              | yes `Calendar`   | `react-day-picker`                    |
+| `DataTable`             | missing missing      | `Table` + `Pagination`                |
+| `DatePicker`            | missing missing      | `Calendar` + `Popover`                |
+| `DateRangePicker`       | missing missing      | `Calendar` + `Popover`                |
+| `Combobox`              | missing missing      | `Command` + `Popover`                 |
+| `Command`               | missing missing      | `cmdk`                                |
+| `DropdownMenu`          | missing missing      | Radix DropdownMenu                    |
+| `NavigationMenu`        | missing missing      | Radix NavigationMenu                  |
+| `Menubar`               | missing missing      | Radix Menubar                         |
+| `PageHeader`            | missing missing      | Tier 1                                |
+| `ContentLoadingWrapper` | missing missing      | `Skeleton`                            |
 
-### Tier 3 — App-Local Only (never extracted to `packages/ui`)
+### Tier 3 - App-Local Only (never extracted to `packages/ui`)
 
 | Pattern                                       | Reason                 |
 | --------------------------------------------- | ---------------------- |
@@ -89,20 +89,20 @@ Combine multiple primitives into a cohesive UI pattern.
 
 <a id="14-box--the-native-element-eliminator"></a>
 
-### 1.4 Box — The Native Element Eliminator
+### 1.4 Box - The Native Element Eliminator
 
 > [!IMPORTANT]
-> One of the explicit goals of this migration is to **eliminate all bare native HTML elements** (`div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, etc.) from app component code. `Box` is the vehicle for this.
+> One of the explicit goals of this migration is to **eliminate all bare native HTML elements** (`div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, etc.) from app component code and from structural markup inside `packages/ui` components. `Box` is the vehicle for this.
 
 `Box` is a **polymorphic, type-safe layout primitive** exported from `@repo/ui`. It renders any HTML element via the `as` prop and forwards all correct HTML attributes and `ref` types to that element.
 
 ```tsx
-// Before — bare native elements
+// Before - bare native elements
 <div className="flex items-center gap-4">
   <span className="text-sm">Hello</span>
 </div>
 
-// After — all elements flow through the design system
+// After - all elements flow through the design system
 import { Box } from '@repo/ui';
 
 <Box className="flex items-center gap-4">
@@ -121,23 +121,33 @@ import { Box } from '@repo/ui';
 
 #### Type safety guarantee
 
-`Box` is fully generic — when you set `as="a"`, TypeScript only allows valid `<a>` attributes (`href`, `target`, etc.). Invalid attributes produce compile-time errors:
+`Box` is fully generic - when you set `as="a"`, TypeScript only allows valid `<a>` attributes (`href`, `target`, etc.). Invalid attributes produce compile-time errors:
 
 ```tsx
-// ✅ Valid — href is a valid <a> attribute
+// Valid - href is a valid <a> attribute
 <Box as="a" href="/home">Home</Box>
 
-// ❌ TypeScript error — href is not valid on <div>
+// TypeScript error - href is not valid on <div>
 <Box href="/home">Home</Box>
 ```
 
+#### Shared-component authoring rule for Batches 4-5
+
+The same rule applies inside `packages/ui` while building or extending shared components on `feat/ui`: any structural wrapper or layout container must flow through `Box` (`<Box />` or `Box` with the `as` prop).
+
+Native elements are used directly only when:
+
+- the shared component contract is that semantic primitive (`input`, `textarea`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`, etc.)
+- a Radix/browser primitive requires that underlying element for semantics, measurement, or behavior
+
 #### Migration rule for Phase 05
 
-When executing app migration (Batches 6-9), **every component returned from audit that contains bare native HTML elements qualifies for a Box pass** as part of its migration batch — no additional batch needed, this is part of the normal import swap. See [05-app-migration.md](./05-app-migration.md) §Native Element Replacement for the exact guardrails.
+When executing app migration (Batches 6-9), **every component returned from audit that contains bare native HTML elements qualifies for a Box pass** as part of its migration batch - no additional batch needed, this is part of the normal import swap. See [05-app-migration.md](./05-app-migration.md) Section Native Element Replacement for the exact guardrails.
 
 #### Do NOT use Box for
 
 - Components that already map to a semantic `@repo/ui` primitive (`Button`, `Input`, `Label`, etc.)
+- Semantic primitives whose core contract is the underlying native element itself (`input`, `textarea`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`) unless you need Box only as an outer wrapper
 - Interactive elements that need Radix-managed ARIA (use the appropriate Radix-backed component)
 - Wrapping entire page layouts (Box is per-element, not a layout system)
 
@@ -197,17 +207,17 @@ onSelect?: (value: T) => void
 ### Forbidden Prop Patterns
 
 ```typescript
-// FORBIDDEN — app-specific
+// FORBIDDEN - app-specific
 apiUrl?: string
 fetchData?: () => Promise<T>
 serviceMethod?: (...) => void
 
-// FORBIDDEN — domain types
+// FORBIDDEN - domain types
 policy?: Policy
 claim?: Claim
 user?: User
 
-// FORBIDDEN — Next.js specific in packages/ui
+// FORBIDDEN - Next.js specific in packages/ui
 href?: import('next/link').LinkProps['href']  // use: href?: string
 src?: import('next/image').ImageProps['src']   // use: src?: string | StaticImport
 ```
@@ -332,15 +342,15 @@ export type ComponentVariants = VariantProps<typeof componentVariants>;
 ### Forbidden in `packages/ui`
 
 ```typescript
-// FORBIDDEN — hardcoded values
+// FORBIDDEN - hardcoded values
 className="bg-[#016da1]"     // use CSS variables
 className="text-blue-600"    // use semantic tokens
 style={{ color: '#016da1' }} // use CSS variables
 
-// FORBIDDEN — NEXT_PUBLIC env vars
+// FORBIDDEN - NEXT_PUBLIC env vars
 process.env.NEXT_PUBLIC_MODE  // app-specific
 
-// FORBIDDEN — app-specific assets
+// FORBIDDEN - app-specific assets
 import logo from '/public/logo.svg'  // app-specific
 ```
 
@@ -354,21 +364,21 @@ import logo from '/public/logo.svg'  // app-specific
 
 ```
 Is the component purely visual with no business logic?
-  YES → Is it used (or likely used) by 2+ apps?
-    YES → SHARED candidate → packages/ui
-    NO  → KEEP_APP_LOCAL
-  NO  → Has the business logic and UI been separated?
-    YES → Extract UI part → packages/ui; keep logic in app
-    NO  → KEEP_APP_LOCAL (refactor later if needed)
+  YES -> Is it used (or likely used) by 2+ apps?
+    YES -> SHARED candidate -> packages/ui
+    NO  -> KEEP_APP_LOCAL
+  NO  -> Has the business logic and UI been separated?
+    YES -> Extract UI part -> packages/ui; keep logic in app
+    NO  -> KEEP_APP_LOCAL (refactor later if needed)
 
 Does the component call APIs or use service hooks?
-  YES → KEEP_APP_LOCAL (use packages/ui primitives inside it)
+  YES -> KEEP_APP_LOCAL (use packages/ui primitives inside it)
 
 Does the component reference domain entities (Policy, Claim, etc.)?
-  YES → KEEP_APP_LOCAL
+  YES -> KEEP_APP_LOCAL
 
 Does the component use next/link, next/image, or router?
-  YES → Extract the framework dependency (use 'as' prop or render prop)
+  YES -> Extract the framework dependency (use 'as' prop or render prop)
        then evaluate for shared extraction
 ```
 
@@ -398,24 +408,24 @@ Does the component use next/link, next/image, or router?
 ### 6.2 Universal SoC Evaluation (All Components)
 
 > [!IMPORTANT]
-> **This evaluation runs for EVERY component during Batch 1 audit — not only `KEEP_APP_LOCAL`.** Enterprise-level SoC means no monolith component survives migration without evaluation. A component that mixes domain wiring and display JSX must be split first; only then are its parts classified and migrated. HIGH and MEDIUM candidates are refactored in **Batch 1.5**, before Batch 2/3/4 begins.
+> **This evaluation runs for EVERY component during Batch 1 audit - not only `KEEP_APP_LOCAL`.** Enterprise-level SoC means no monolith component survives migration without evaluation. A component that mixes domain wiring and display JSX must be split first; only then are its parts classified and migrated. HIGH and MEDIUM candidates are refactored in **Batch 1.5**, before Batch 2/3/4 begins.
 
-#### Step 1 — Is It a Monolith?
+#### Step 1 - Is It a Monolith?
 
-A component is a **monolith** if it meets ≥ 1 of these signals:
+A component is a **monolith** if it meets  1 of these signals:
 
 | Signal                                                                                                                               | Example                                                                                                              |
 | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | Calls any **service hook** (`use<Domain>()` from `@/services/<domain>/hooks/`) **AND** renders display JSX in the same function body | `PolicyCard` calls `usePolicy(policyId)` (from `@/services/policies/hooks/queries`) and also renders the card layout |
-| _(Anti-pattern flag)_ Calls `useQuery` or `useMutation` **directly** inside a component — service layer bypassed                     | Raw `useQuery({ queryKey, queryFn })` in a component body — fix service encapsulation first, then evaluate SoC       |
+| _(Anti-pattern flag)_ Calls `useQuery` or `useMutation` **directly** inside a component - service layer bypassed                     | Raw `useQuery({ queryKey, queryFn })` in a component body - fix service encapsulation first, then evaluate SoC       |
 | Imports domain types (`Policy`, `Claim`, etc.) directly referenced in JSX                                                            | `<span>{policy.holderName}</span>` inside display markup                                                             |
 | Contains business-logic derivations (status color, label computation, domain conditions) mixed with display code                     | `statusColor = policy.status === 'active' ? 'green' : 'red'` inside render                                           |
 | Imports `next/link` or `next/image` inside a reusable visual component                                                               | Framework import inside what should be a generic card shell                                                          |
 | Constructs URLs or performs routing inline with display                                                                              | `href={/policies/${policy.id}}` directly in rendered JSX                                                             |
 
-If **zero** signals apply → **Not a monolith.** Record `Is monolith: NO`, `SoC potential: NONE` and proceed to classification.
+If **zero** signals apply -> **Not a monolith.** Record `Is monolith: NO`, `SoC potential: NONE` and proceed to classification.
 
-#### Step 2 — Rate SoC Potential
+#### Step 2 - Rate SoC Potential
 
 If the component IS a monolith, rate its SoC potential:
 
@@ -426,59 +436,59 @@ If the component IS a monolith, rate its SoC potential:
 | `LOW`    | Marginally separable; refactoring effort outweighs structural benefit                              | Document, skip Batch 1.5        |
 | `NONE`   | 3+ tightly-coupled concerns; no clear split boundary without full rewrite                          | Document, keep as-is            |
 
-#### Step 3 — Identify SoC Strategy
+#### Step 3 - Identify SoC Strategy
 
 For HIGH and MEDIUM candidates, document the concrete split strategy:
 
 | Monolith signal                           | Strategy                   | Shell receives                           | Container retains               |
 | ----------------------------------------- | -------------------------- | ---------------------------------------- | ------------------------------- |
 | Data hook + display JSX                   | `container-shell`          | Display JSX with plain-typed props       | Hook call + domain data mapping |
-| Domain types in props                     | `prop-injection`           | Generic-shaped props (no domain imports) | Maps domain type → plain props  |
+| Domain types in props                     | `prop-injection`           | Generic-shaped props (no domain imports) | Maps domain type -> plain props  |
 | Business logic + display                  | `container-shell`          | Pure visual rendering                    | Conditional logic, derivations  |
 | `next/link` / `next/image` in shell       | `render-prop` or `as` prop | Generic shell; consumer injects element  | App-level link/image injection  |
 | Data hook + domain types + logic combined | `hook-extraction`          | Shell with fully generic props           | `useXxxData()` hook + container |
 
-#### Step 4 — Impact on Initial Classification
+#### Step 4 - Impact on Initial Classification
 
 ```
 If initially classified as ADOPT_NOW / ADOPT_WITH_ADAPTER / EXTEND_EXISTING / NEW_SHARED_COMPONENT
   AND SoC potential = HIGH or MEDIUM:
-  → Assign MIGRATE_AFTER_SPLIT flag (not a final batch assignment)
-  → Final classification of Shell + Container determined AFTER Batch 1.5
-  → Do NOT assign migration batch until Batch 1.5 complete for this component
+  -> Assign MIGRATE_AFTER_SPLIT flag (not a final batch assignment)
+  -> Final classification of Shell + Container determined AFTER Batch 1.5
+  -> Do NOT assign migration batch until Batch 1.5 complete for this component
 
 If initially classified as KEEP_APP_LOCAL
   AND SoC potential = HIGH or MEDIUM:
-  → Flag as Batch 1.5 candidate
-  → Container: KEEP_APP_LOCAL (final — no change)
-  → Shell: classified separately after Batch 1.5 (may become NEW_SHARED_COMPONENT)
+  -> Flag as Batch 1.5 candidate
+  -> Container: KEEP_APP_LOCAL (final - no change)
+  -> Shell: classified separately after Batch 1.5 (may become NEW_SHARED_COMPONENT)
 
 If SoC potential = LOW or NONE:
-  → Keep initial classification; no Batch 1.5 work needed
+  -> Keep initial classification; no Batch 1.5 work needed
 ```
 
 #### Agent Skills for SoC Evaluation
 
-> Skills (if installed): `$vercel-composition-patterns` (detect boolean prop proliferation + missing compound component patterns indicative of a monolith); `$next-best-practices` (identify invalid RSC + client boundary mixing that creates forced monolith structure); `$systematic-debugging` (if SoC potential is ambiguous — trace data flow from hook to render before rating)
+> Skills (if installed): `$vercel-composition-patterns` (detect boolean prop proliferation + missing compound component patterns indicative of a monolith); `$next-best-practices` (identify invalid RSC + client boundary mixing that creates forced monolith structure); `$systematic-debugging` (if SoC potential is ambiguous - trace data flow from hook to render before rating)
 
 #### Enterprise Guardrails (Non-Negotiable)
 
 ```
-REQUIRED — for every component in _audit-report.md:
+REQUIRED - for every component in _audit-report.md:
   Is monolith: YES | NO
   SoC potential: HIGH | MEDIUM | LOW | NONE
   SoC strategy: <container-shell | prop-injection | render-prop | hook-extraction | none>
   Batch 1.5 candidate: YES | NO
 
 FORBIDDEN:
-  - Omitting SoC evaluation for any component (NONE is a valid answer — silence is not)
+  - Omitting SoC evaluation for any component (NONE is a valid answer - silence is not)
   - Performing the SoC split inline during Batch 1 audit (refactor runs in Batch 1.5 only)
   - Assigning MIGRATE_AFTER_SPLIT without recording the concrete SoC strategy
   - Rating HIGH/MEDIUM without identifying the exact split boundary in the strategy field
   - Skipping Batch 1.5 when HIGH/MEDIUM candidates exist
 ```
 
-_Cross-reference: [01-app-audit.md §SoC Evaluation step](./01-app-audit.md) · [§6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) · [§6.6 Re-classification After Split](#66-re-classification-after-split) · [migration-batch-prompts.md Batch 1.5](./migration-batch-prompts.md)_
+_Cross-reference: [01-app-audit.md Section SoC Evaluation step](./01-app-audit.md) - [Section 6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) - [Section 6.6 Re-classification After Split](#66-re-classification-after-split) - [migration-batch-prompts.md Batch 1.5](./migration-batch-prompts.md)_
 
 ---
 
@@ -487,17 +497,17 @@ _Cross-reference: [01-app-audit.md §SoC Evaluation step](./01-app-audit.md) · 
 ### 6.3 Component API Consolidation Rules
 
 > [!IMPORTANT]
-> Every component added to `packages/ui` must earn its place as a **single, prop-configurable unit**. Sibling components that differ only by 1–2 props or slots are a sign of premature extraction — they proliferate the API surface, inflate the Storybook index, and signal that the audit classification was wrong.
+> Every component added to `packages/ui` must earn its place as a **single, prop-configurable unit**. Sibling components that differ only by 1-2 props or slots are a sign of premature extraction - they proliferate the API surface, inflate the Storybook index, and signal that the audit classification was wrong.
 
 #### The Consolidation Test
 
 Before classifying a component as `NEW_SHARED_COMPONENT`, apply this three-question test:
 
-1. **Same root?** — Does a proposed sibling share the same root element or Radix primitive as an existing (or already-planned) `packages/ui` component?
-2. **Small delta?** — Does the sibling differ from that component by ≤ 2 props or optional slots?
-3. **No domain logic?** — Is the difference purely presentational (a loading spinner, a footer slot, an icon position)?
+1. **Same root?** - Does a proposed sibling share the same root element or Radix primitive as an existing (or already-planned) `packages/ui` component?
+2. **Small delta?** - Does the sibling differ from that component by  2 props or optional slots?
+3. **No domain logic?** - Is the difference purely presentational (a loading spinner, a footer slot, an icon position)?
 
-If **all three** answers are YES → do **not** add a second component. Merge the difference into the existing component as a prop or slot.
+If **all three** answers are YES -> do **not** add a second component. Merge the difference into the existing component as a prop or slot.
 
 #### Common Anti-Patterns (and Their Fixes)
 
@@ -518,17 +528,17 @@ If a variation is **only needed by one app** and the variation is purely present
 - Use `className` for app-level visual overrides (tokens are still used; no hardcoded values)
 - Use `asChild` to merge behavior into app-specific elements
 
-This is the **app-local wrapper pattern** — it keeps `packages/ui` lean while giving apps full flexibility.
+This is the **app-local wrapper pattern** - it keeps `packages/ui` lean while giving apps full flexibility.
 
 #### When to Allow a Distinct Component
 
 A genuinely distinct component is justified only when:
 
-- The **DOM structure or accessibility semantics** are fundamentally different (e.g., a visually icon-only button needs `aria-label` and a square aspect — try `Button` with `iconOnly` prop first, create `IconButton` only if the prop surface becomes unmanageable)
-- The component is **based on a different Radix primitive** (e.g., `Select` vs `Combobox` — same concept, completely different interaction model)
+- The **DOM structure or accessibility semantics** are fundamentally different (e.g., a visually icon-only button needs `aria-label` and a square aspect - try `Button` with `iconOnly` prop first, create `IconButton` only if the prop surface becomes unmanageable)
+- The component is **based on a different Radix primitive** (e.g., `Select` vs `Combobox` - same concept, completely different interaction model)
 - The component has **clearly different information architecture** (e.g., `DataTable` with sorting/filtering vs `Table` as a plain HTML table wrapper)
 
-_Cross-reference: [Batch 1 step 4g](./migration-batch-prompts.md) · [04-build-shared-components.md](./04-build-shared-components.md) App-Agnostic Checklist_
+_Cross-reference: [Batch 1 step 4g](./migration-batch-prompts.md) - [04-build-shared-components.md](./04-build-shared-components.md) App-Agnostic Checklist_
 
 ---
 
@@ -556,13 +566,13 @@ Every component exported from `packages/ui` must be assigned to exactly one Stor
 ```tsx
 // ComponentName.stories.tsx
 const meta: Meta<typeof ComponentName> = {
-  title: 'Buttons/Button', // '<Group>/<ComponentName>' — always this exact format
+  title: 'Buttons/Button', // '<Group>/<ComponentName>' - always this exact format
   component: ComponentName,
   // ...
 };
 ```
 
-The `title` field determines which folder the story lands in inside the Storybook sidebar. Using the canonical group names from the table above is **non-negotiable** — ad-hoc group names (`'UI/Button'`, `'Components/Button'`) are rejected at PR review.
+The `title` field determines which folder the story lands in inside the Storybook sidebar. Using the canonical group names from the table above is **non-negotiable** - ad-hoc group names (`'UI/Button'`, `'Components/Button'`) are rejected at PR review.
 
 #### Classification Tracking
 
@@ -574,7 +584,7 @@ The `story_group` field must be populated in:
 
 This enables cross-app tracking: how many `Overlays` do we still need to build? Are all `Inputs` covered? The answer is always one query on the backlog CSV.
 
-_Cross-reference: [04-build-shared-components.md §Spec Template](./04-build-shared-components.md) · [Batch 1 audit template](./migration-batch-prompts.md)_
+_Cross-reference: [04-build-shared-components.md Section Spec Template](./04-build-shared-components.md) - [Batch 1 audit template](./migration-batch-prompts.md)_
 
 ---
 
@@ -583,11 +593,11 @@ _Cross-reference: [04-build-shared-components.md §Spec Template](./04-build-sha
 ### 6.5 App-Local Refactor Patterns (Phase 05A)
 
 > [!IMPORTANT]
-> This section governs **Phase 05A — App-Local SoC Refactor**. It defines the structural patterns for splitting a monolithic KEEP_APP_LOCAL component into a domain-wiring container and a pure-display sub-component, without changing any external API or runtime behavior.
+> This section governs **Phase 05A - App-Local SoC Refactor**. It defines the structural patterns for splitting a monolithic KEEP_APP_LOCAL component into a domain-wiring container and a pure-display sub-component, without changing any external API or runtime behavior.
 
 #### The Core Principle
 
-**Refactoring replaces internal structure — not external behavior.**
+**Refactoring replaces internal structure - not external behavior.**
 
 Callers of the component see the same import path, the same props, and the same rendered output. The only change is internal decomposition. A daily user of the app cannot tell that Phase 05A happened.
 
@@ -597,16 +607,16 @@ Split a monolithic component into:
 
 | Layer         | Naming                               | Responsibility                                                                       | Location               |
 | ------------- | ------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------- |
-| **Container** | `ComponentName.tsx` (unchanged name) | Domain wiring: props from API/hooks → pure props → renders Shell                     | Same file, same export |
+| **Container** | `ComponentName.tsx` (unchanged name) | Domain wiring: props from API/hooks -> pure props -> renders Shell                     | Same file, same export |
 | **Shell**     | `ComponentNameShell.tsx`             | Pure display: only plain data types, no domain logic, no API calls, no service hooks | Same directory         |
 
-The container's export signature is **frozen** — its props, name, and file path do not change.
+The container's export signature is **frozen** - its props, name, and file path do not change.
 
 ```tsx
-// BEFORE — monolithic, all concerns mixed
+// BEFORE - monolithic, all concerns mixed
 // apps/<APP_NAME>/src/components/policy/PolicyCard.tsx
-// Post-service-migration: usePolicy is already a service hook — but mixing it with display JSX is still a monolith
-// ← service hook (not raw useQuery)
+// Post-service-migration: usePolicy is already a service hook - but mixing it with display JSX is still a monolith
+// <- service hook (not raw useQuery)
 import type { Policy } from '@/services/policies/api/policies.types';
 import { usePolicy } from '@/services/policies/hooks/queries';
 
@@ -635,16 +645,16 @@ export function PolicyCard({ policyId }: PolicyCardProps) {
 ```
 
 ```tsx
-// AFTER — SoC split. External API of PolicyCard is UNCHANGED.
+// AFTER - SoC split. External API of PolicyCard is UNCHANGED.
 // --- apps/<APP_NAME>/src/components/policy/PolicyCardShell.tsx ---
-// Pure display — no domain types, no hooks, no API calls
+// Pure display - no domain types, no hooks, no API calls
 // This is the packages/ui candidate
 import { Box } from '@repo/ui';
 
 // --- apps/<APP_NAME>/src/components/policy/PolicyCard.tsx (UNCHANGED export) ---
-// Domain container — wires domain data → PolicyCardShell props
+// Domain container - wires domain data -> PolicyCardShell props
 
-import { usePolicy } from '@/services/policies/hooks/queries'; // service hook — stays in Container only
+import { usePolicy } from '@/services/policies/hooks/queries'; // service hook - stays in Container only
 
 import { PolicyCardShell } from './PolicyCardShell';
 
@@ -682,7 +692,7 @@ export function PolicyCardShell({
 }
 
 interface PolicyCardProps {
-  policyId: string; // same prop as before — callers unchanged
+  policyId: string; // same prop as before - callers unchanged
 }
 
 export function PolicyCard({ policyId }: PolicyCardProps) {
@@ -702,7 +712,7 @@ export function PolicyCard({ policyId }: PolicyCardProps) {
     />
   );
 }
-// All callers still import { PolicyCard } from './policy/PolicyCard' — zero change.
+// All callers still import { PolicyCard } from './policy/PolicyCard' - zero change.
 ```
 
 #### Naming Conventions
@@ -713,26 +723,26 @@ export function PolicyCard({ policyId }: PolicyCardProps) {
 | `ComponentNameDisplay` | `Display` | Component primarily displays a single data entity (row, cell, badge)   |
 | `ComponentNameLayout`  | `Layout`  | Component defines a structural layout (header + body + footer pattern) |
 
-Use exactly **one** suffix — do not combine (e.g., `CardShellLayout` is wrong).
+Use exactly **one** suffix - do not combine (e.g., `CardShellLayout` is wrong).
 
 #### What Makes a Good Shell (packages/ui Candidate Criteria)
 
 A Shell qualifies for eventual `packages/ui` extraction if it meets **all** of the following:
 
-- [ ] Props use only plain data types (`string`, `number`, `boolean`, `React.ReactNode`) — no domain types (`Policy`, `Claim`, etc.)
-- [ ] No service hooks (`use<Domain>()` from `@/services/`), no raw `useQuery`/`useMutation`, no `useContext` (app-specific contexts) — Shell receives everything via props only
+- [ ] Props use only plain data types (`string`, `number`, `boolean`, `React.ReactNode`) - no domain types (`Policy`, `Claim`, etc.)
+- [ ] No service hooks (`use<Domain>()` from `@/services/`), no raw `useQuery`/`useMutation`, no `useContext` (app-specific contexts) - Shell receives everything via props only
 - [ ] No `import` from `next/link`, `next/image`, `next/router`, or `next/navigation`
 - [ ] No `process.env.NEXT_PUBLIC_*` references
 - [ ] Two or more apps would plausibly use this Shell (cross-app demand)
 - [ ] The Shell's visual structure is not hardcoded to a single domain concept
 
-If a Shell passes all criteria → classify it as `NEW_SHARED_COMPONENT` candidate in `_migration-log.md` and queue it for Phase 04 (Build packages/ui).
+If a Shell passes all criteria -> classify it as `NEW_SHARED_COMPONENT` candidate in `_migration-log.md` and queue it for Phase 04 (Build packages/ui).
 
-If a Shell does **not** pass all criteria (e.g., used only in this app, or domain concept too specific) → it stays app-local, named `*Shell`, in the same `src/components/` directory. This is still a valid outcome: the SoC split improves testability and maintainability even without global extraction.
+If a Shell does **not** pass all criteria (e.g., used only in this app, or domain concept too specific) -> it stays app-local, named `*Shell`, in the same `src/components/` directory. This is still a valid outcome: the SoC split improves testability and maintainability even without global extraction.
 
 #### Additional Refactor Patterns
 
-**Pattern 2 — Hook Extraction**
+**Pattern 2 - Hook Extraction**
 
 When a component mixes data fetching with display, extract the data logic into a custom hook:
 
@@ -757,7 +767,7 @@ export function PolicyCard({ policyId }: PolicyCardProps) {
 }
 ```
 
-**Pattern 3 — Prop Injection (Generic Container)**
+**Pattern 3 - Prop Injection (Generic Container)**
 
 When a component's domain coupling is only in its type annotations, replace with a generic:
 
@@ -767,7 +777,7 @@ interface ClaimRowProps {
   claim: Claim;
 }
 
-// After: generic — Shell accepts any shape that satisfies the display contract
+// After: generic - Shell accepts any shape that satisfies the display contract
 interface EntityRowProps {
   label: string;
   subLabel?: string;
@@ -775,7 +785,7 @@ interface EntityRowProps {
   statusVariant: 'default' | 'success' | 'destructive';
   href?: string;
 }
-// Caller (container) maps Claim → EntityRowProps. Shell knows nothing about Claim.
+// Caller (container) maps Claim -> EntityRowProps. Shell knows nothing about Claim.
 ```
 
 #### Phase 05A Guardrails (Non-Negotiable)
@@ -785,12 +795,12 @@ ALLOWED:
 - Extracting pure-display JSX into a new *Shell / *Display / *Layout file in the same directory
 - Extracting data-fetching logic into a co-located usXxxData hook
 - Replacing domain types in Shell props with plain generic equivalents
-- Applying the Box pass (§1.4) within the Shell during the same changeset
+- Applying the Box pass (Section 1.4) within the Shell during the same changeset
 - Adding the @repo/ui Skeleton/Spinner import to the Shell for loading states
 
-FORBIDDEN — same no-breaking-change contract as all migration work:
+FORBIDDEN - same no-breaking-change contract as all migration work:
 - Changing the original container's exported name, file path, or prop interface
-- Changing any caller (usage sites of PolicyCard, ClaimRow, etc.) — zero caller changes allowed
+- Changing any caller (usage sites of PolicyCard, ClaimRow, etc.) - zero caller changes allowed
 - Changing the rendered output visible to the user (layout, spacing, content, states)
 - Adding new state, effects, or API calls in either the Shell or the Container
 - Splitting more than one component per commit (one component per atomic commit)
@@ -801,7 +811,7 @@ FORBIDDEN — same no-breaking-change contract as all migration work:
 
 Only `KEEP_APP_LOCAL` components rated `HIGH` or `MEDIUM` refactor potential in `_audit-report.md` are in scope. `LOW` and `NONE` components are skipped.
 
-_Cross-reference: [05-app-migration.md §Batch 1.5](./05-app-migration.md) · [05-app-migration.md §Phase 05A](./05-app-migration.md#phase-05a) · [migration-batch-prompts.md Batch 1.5](./migration-batch-prompts.md) · [§6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) · [§6.6 Re-classification After Split](#66-re-classification-after-split)_
+_Cross-reference: [05-app-migration.md Section Batch 1.5](./05-app-migration.md) - [05-app-migration.md Section Phase 05A](./05-app-migration.md#phase-05a) - [migration-batch-prompts.md Batch 1.5](./migration-batch-prompts.md) - [Section 6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) - [Section 6.6 Re-classification After Split](#66-re-classification-after-split)_
 
 ---
 
@@ -818,10 +828,10 @@ After the SoC split, evaluate the Shell for its correct final classification:
 
 | Shell characteristic                                               | Classification                                        |
 | ------------------------------------------------------------------ | ----------------------------------------------------- |
-| Plain props only; no framework imports; likely used by 2+ apps     | `NEW_SHARED_COMPONENT` → queue for Phase 04           |
+| Plain props only; no framework imports; likely used by 2+ apps     | `NEW_SHARED_COMPONENT` -> queue for Phase 04           |
 | Plain props only; no framework imports; single-app use             | `KEEP_APP_LOCAL` (Shell lives in app)                 |
 | Requires `next/link` / `next/image` but abstracted via render-prop | `NEW_SHARED_COMPONENT` (framework-agnostic interface) |
-| Still has domain logic residue after split                         | Requires further refactor — re-rate SoC potential     |
+| Still has domain logic residue after split                         | Requires further refactor - re-rate SoC potential     |
 
 #### Container Classification
 
@@ -850,7 +860,7 @@ In _per-app-baseline-summary.md:
 > [!IMPORTANT]
 > The `_per-app-baseline-summary.md` amendment is critical for cross-app demand analysis. Phase 02 runs on `feat/ui` and reads this file to decide which components enter Phase 04. Without the amendment, Shell candidates from Batch 1.5 / Phase 05A are invisible to Phase 02.
 
-_Cross-reference: [01-app-audit.md](./01-app-audit.md) · [§6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) · [§6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) · [05-app-migration.md §Batch 1.5](./05-app-migration.md)_
+_Cross-reference: [01-app-audit.md](./01-app-audit.md) - [Section 6.2 Universal SoC Evaluation](#62-universal-soc-evaluation) - [Section 6.5 App-Local Refactor Patterns](#65-app-local-refactor-patterns) - [05-app-migration.md Section Batch 1.5](./05-app-migration.md)_
 
 ---
 
@@ -880,7 +890,7 @@ Every `packages/ui` component must meet:
 
 ### 8.1 The Core Principle
 
-**Migration replaces implementation — not behavior.**
+**Migration replaces implementation - not behavior.**
 
 The user must not be able to tell that a migration happened. The app should feel identical before and after. The only acceptable changes are those **explicitly caused by design system token adoption** (minor color/radius/spacing from CSS variables), and even those must be minimal and approved.
 
@@ -920,26 +930,26 @@ These are acceptable **only** because they result directly from design system to
 ### 8.4 What is STRICTLY FORBIDDEN During Migration
 
 ```
-❌ Refactoring component logic "while you're in there"
-❌ Changing prop names at usage sites (use adapter pattern instead)
-❌ Removing features, variants, or states a component had
-❌ Redesigning layouts, spacing, or overall composition
-❌ Changing copy / text content / placeholder text
-❌ Adding new features or states not in the original
-❌ Changing the order of elements inside a component
-❌ Removing or changing ARIA attributes
-❌ Modifying event handler signatures or behavior
-❌ Changing loading state triggers or timing
-❌ Altering form validation rules or error messages
+missing Refactoring component logic "while you're in there"
+missing Changing prop names at usage sites (use adapter pattern instead)
+missing Removing features, variants, or states a component had
+missing Redesigning layouts, spacing, or overall composition
+missing Changing copy / text content / placeholder text
+missing Adding new features or states not in the original
+missing Changing the order of elements inside a component
+missing Removing or changing ARIA attributes
+missing Modifying event handler signatures or behavior
+missing Changing loading state triggers or timing
+missing Altering form validation rules or error messages
 ```
 
 ### 8.5 UX Continuity Rule
 
 > **"The user should not feel like they are using a new app."**
 
-After migration, a user who uses the app daily should notice **nothing different** about the experience — not the layout, not the interactions, not the visual weight. If there is any doubt about whether a change crosses this line, **the answer is to not make the change** and flag it for design system team review.
+After migration, a user who uses the app daily should notice **nothing different** about the experience - not the layout, not the interactions, not the visual weight. If there is any doubt about whether a change crosses this line, **the answer is to not make the change** and flag it for design system team review.
 
-This applies even to "improvements" — migration is not the time to improve UX. That comes after migration, in a separate design iteration cycle.
+This applies even to "improvements" - migration is not the time to improve UX. That comes after migration, in a separate design iteration cycle.
 
 ### 8.6 AI Guardrail Instruction (always include in phase prompts)
 
@@ -951,11 +961,11 @@ Every phase prompt that involves code changes MUST include this block:
 You are performing a MIGRATION, not a refactor or redesign.
 
 ALLOWED:
-- Updating import paths from local → @repo/ui
+- Updating import paths from local -> @repo/ui
 - Adapting props at usage sites to match the @repo/ui API (via adapter pattern)
 - Deleting confirmed-replaced local component files
 
-FORBIDDEN — will result in rollback:
+FORBIDDEN - will result in rollback:
 - Changing any component logic at usage sites
 - Changing prop values passed (unless adapting to @repo/ui API, via adapter)
 - Changing any visual output beyond what the design system token adoption causes
@@ -972,9 +982,9 @@ under "Post-Migration Improvement Candidates" and skip it for now.
 For every ADOPT*\*, EXTEND*\*, or NEW_SHARED component in `parity-checklist.md`:
 
 ````markdown
-## <ComponentName> — Parity Checklist
+## <ComponentName> - Parity Checklist
 
-### Behavioral Checks (ALL must be ✅ before batch closes)
+### Behavioral Checks (ALL must be yes before batch closes)
 
 - [ ] Click/interaction behavior identical
 - [ ] Keyboard navigation identical (Tab, Enter, Esc, Arrow)
@@ -986,23 +996,23 @@ For every ADOPT*\*, EXTEND*\*, or NEW_SHARED component in `parity-checklist.md`:
 - [ ] No new console errors
 - [ ] No new network requests
 
-### Visual Checks (minor delta allowed per Section 8.3 — document any diff)
+### Visual Checks (minor delta allowed per Section 8.3 - document any diff)
 
 - [ ] Layout and composition unchanged
 - [ ] Element order unchanged
 - [ ] Text content and copy unchanged
 - [ ] Visual delta (if any): \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
   - Is it caused by design system token adoption? YES / NO
-  - If YES: acceptable — log it below
-  - If NO: STOP — escalate to design team before proceeding
+  - If YES: acceptable - log it below
+  - If NO: STOP - escalate to design team before proceeding
 
 ### Smoke Route (verify in browser)
 
 - Route: \***\*\*\*\*\*\*\***\_\_\_\***\*\*\*\*\*\*\***
-- Before screenshot: stored under `_artifacts/smoke-routes/before/` (see [`verification-gate.md §6`](../verification-gate.md))
+- Before screenshot: stored under `_artifacts/smoke-routes/before/` (see [`verification-gate.md Section 6`](../verification-gate.md))
 - After screenshot: stored under `_artifacts/smoke-routes/after/`
 - Entry added to `_artifacts/smoke-routes/comparison-log.md`
-- Result: ✅ PASS / ❌ FAIL
+- Result: yes PASS / missing FAIL
 
 ### Sign-off
 
@@ -1037,7 +1047,7 @@ For every ADOPT*\*, EXTEND*\*, or NEW_SHARED component in `parity-checklist.md`:
 > [!IMPORTANT]
 > This section is the definitive low-level guide for writing Tailwind CSS inside `packages/ui` components. Every Batch 3/4 implementation MUST follow these rules.
 
-### 9.1 `cn()` — The Universal Class Merge Utility
+### 9.1 `cn()` - The Universal Class Merge Utility
 
 All `packages/ui` components use `cn()`, which wraps `clsx` + `tailwind-merge`:
 
@@ -1058,12 +1068,12 @@ export function cn(...inputs: ClassValue[]) {
 | Inside `packages/ui` components (Batch 3/4 work) | `import { cn } from '../../utils/cn'` |
 | App code consuming `@repo/ui`                    | `import { cn } from '@repo/helper'`   |
 
-> Never install `tailwind-merge` or `clsx` directly in component files — always import from the
+> Never install `tailwind-merge` or `clsx` directly in component files - always import from the
 > internal `utils/cn` (inside `packages/ui`) or `@repo/helper` (in apps). Never cross these boundaries.
 
 ### 9.2 CVA + `cn()` Composition Pattern
 
-The canonical pattern for all `packages/ui` components is: **CVA for variant logic → `cn()` for merge + extension**.
+The canonical pattern for all `packages/ui` components is: **CVA for variant logic -> `cn()` for merge + extension**.
 
 ```tsx
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -1073,7 +1083,7 @@ import { cn } from '../../utils/cn';
 // internal path inside packages/ui
 
 const buttonVariants = cva(
-  // Base classes — always applied
+  // Base classes - always applied
   'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
@@ -1116,7 +1126,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 ```
 
-**Merge order rule:** `cn(variantClasses, className)` — variant classes come first, consumer `className` comes last. `tailwind-merge` resolves conflicts in favour of the last item (consumer wins).
+**Merge order rule:** `cn(variantClasses, className)` - variant classes come first, consumer `className` comes last. `tailwind-merge` resolves conflicts in favour of the last item (consumer wins).
 
 ### 9.3 Tailwind Class Composition Rules
 
@@ -1153,7 +1163,7 @@ Radix UI primitives expose state via HTML `data-*` attributes. Tailwind targets 
 'data-[side=right]:slide-in-from-left-2';
 ```
 
-These selectors are how Radix-based components express interactive states entirely via Tailwind — no CSS-in-JS, no style props.
+These selectors are how Radix-based components express interactive states entirely via Tailwind - no CSS-in-JS, no style props.
 
 ### 9.5 Animation Utility Pattern
 
@@ -1203,7 +1213,7 @@ Use `tailwindcss-animate` (already in the design system) for enter/exit animatio
 | Slot (asChild utility) | `@radix-ui/react-slot`            |
 
 > **MCP tip (Phase 04 SPEC step):** Use `context7 MCP` to look up the exact API for any Radix primitive:
-> `resolve-library-id "@radix-ui/react-dialog"` → then `get-library-docs` to read props and examples.
+> `resolve-library-id "@radix-ui/react-dialog"` -> then `get-library-docs` to read props and examples.
 
 ### 10.2 `asChild` Pattern
 
@@ -1228,27 +1238,27 @@ return <Comp className={cn(buttonVariants({ variant, size }), className)} ref={r
 **Rules:**
 
 - Only expose `asChild` if consumers legitimately need to change the root element (links, custom elements)
-- Do NOT use `asChild` for layout composition — use children or explicit slot props instead
-- `Slot` merges refs, event handlers, and className correctly — do not re-implement this logic
+- Do NOT use `asChild` for layout composition - use children or explicit slot props instead
+- `Slot` merges refs, event handlers, and className correctly - do not re-implement this logic
 
 ### 10.3 Compound Component Structure
 
 Complex Radix-based components must follow the compound component pattern with a **Root + sub-components** structure. Naming convention:
 
 ```
-ComponentName           ← Root (main export, wraps Radix root)
-ComponentNameTrigger    ← Trigger element
-ComponentNameContent    ← Content panel / popover / overlay
-ComponentNameHeader     ← Header section (if applicable)
-ComponentNameFooter     ← Footer section (if applicable)
-ComponentNameTitle      ← Title text
-ComponentNameDescription← Description text
-ComponentNameClose      ← Close button
-ComponentNameItem       ← Repeating item (menus, lists)
-ComponentNameSeparator  ← Divider
+ComponentName           <- Root (main export, wraps Radix root)
+ComponentNameTrigger    <- Trigger element
+ComponentNameContent    <- Content panel / popover / overlay
+ComponentNameHeader     <- Header section (if applicable)
+ComponentNameFooter     <- Footer section (if applicable)
+ComponentNameTitle      <- Title text
+ComponentNameDescription<- Description text
+ComponentNameClose      <- Close button
+ComponentNameItem       <- Repeating item (menus, lists)
+ComponentNameSeparator  <- Divider
 ```
 
-**Example — Dialog:**
+**Example - Dialog:**
 
 ```tsx
 // packages/ui/src/Dialog/Dialog.tsx
@@ -1332,18 +1342,18 @@ Radix primitives are **uncontrolled by default** (internal state). Expose contro
 
 | Scenario                                     | Pattern                                           |
 | -------------------------------------------- | ------------------------------------------------- |
-| Simple usage (open/close managed internally) | Uncontrolled — use Radix default                  |
-| App needs to open programmatically           | Controlled — expose `open` + `onOpenChange`       |
-| App needs to read state for analytics        | Controlled — expose `onOpenChange` callback       |
-| Form integration (Checkbox, Switch)          | Controlled — expose `checked` + `onCheckedChange` |
+| Simple usage (open/close managed internally) | Uncontrolled - use Radix default                  |
+| App needs to open programmatically           | Controlled - expose `open` + `onOpenChange`       |
+| App needs to read state for analytics        | Controlled - expose `onOpenChange` callback       |
+| Form integration (Checkbox, Switch)          | Controlled - expose `checked` + `onCheckedChange` |
 
 ```tsx
 // Always forward both controlled and uncontrolled props from Radix
 // Radix handles the internal/controlled distinction automatically
 <DialogPrimitive.Root
-  open={open}           // optional — if provided, controlled
-  onOpenChange={onOpenChange} // optional — if provided, controlled
-  defaultOpen={defaultOpen}   // optional — uncontrolled initial state
+  open={open}           // optional - if provided, controlled
+  onOpenChange={onOpenChange} // optional - if provided, controlled
+  defaultOpen={defaultOpen}   // optional - uncontrolled initial state
 >
 ```
 
@@ -1353,8 +1363,8 @@ Every `packages/ui` component that wraps a DOM element or Radix primitive MUST u
 
 ```tsx
 const ComponentName = React.forwardRef<
-  React.ElementRef<typeof RadixPrimitive.Sub>, // ← ref type from Radix
-  React.ComponentPropsWithoutRef<typeof RadixPrimitive.Sub> // ← props spread
+  React.ElementRef<typeof RadixPrimitive.Sub>, // <- ref type from Radix
+  React.ComponentPropsWithoutRef<typeof RadixPrimitive.Sub> // <- props spread
 >(({ className, ...props }, ref) => (
   <RadixPrimitive.Sub ref={ref} className={cn('...base classes...', className)} {...props} />
 ));
@@ -1368,14 +1378,14 @@ ComponentName.displayName = 'ComponentName';
 
 ### 10.6 Portal Strategy
 
-Use Radix's built-in `Portal` sub-component for content that must escape DOM stacking contexts (dropdowns, tooltips, modals). **Do NOT use `ReactDOM.createPortal` directly** — Radix Portal is more robust and handles SSR correctly.
+Use Radix's built-in `Portal` sub-component for content that must escape DOM stacking contexts (dropdowns, tooltips, modals). **Do NOT use `ReactDOM.createPortal` directly** - Radix Portal is more robust and handles SSR correctly.
 
 ```tsx
-// Correct — use the Radix Portal included with each primitive
+// Correct - use the Radix Portal included with each primitive
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 
 const DialogContent = (...) => (
-  <DialogPrimitive.Portal>   {/* ← Radix Portal handles DOM escape */}
+  <DialogPrimitive.Portal>   {/* <- Radix Portal handles DOM escape */}
     <DialogPrimitive.Overlay>...</DialogPrimitive.Overlay>
     <DialogPrimitive.Content>...</DialogPrimitive.Content>
   </DialogPrimitive.Portal>
@@ -1386,7 +1396,7 @@ When to NOT use Portal: tooltips that must scroll with inline content (set `forc
 
 ### 10.7 Peer Dependency Declaration
 
-Radix packages consumed by `packages/ui` must be declared as **direct dependencies** in `packages/ui/package.json` (not peer deps). Apps consume `@repo/ui` — they should not need to install Radix packages themselves.
+Radix packages consumed by `packages/ui` must be declared as **direct dependencies** in `packages/ui/package.json` (not peer deps). Apps consume `@repo/ui` - they should not need to install Radix packages themselves.
 
 ```json
 // packages/ui/package.json
@@ -1413,12 +1423,12 @@ Radix packages consumed by `packages/ui` must be declared as **direct dependenci
 Radix handles most a11y automatically (ARIA roles, keyboard nav, focus trap). Your responsibility:
 
 ```txt
-✅ Always include DialogTitle + DialogDescription (even if visually hidden via sr-only)
-   — Radix warns if Title is missing: accessibility regression
-✅ Never suppress Radix's default keyboard behavior (Esc to close, Arrow nav in menus)
-✅ Always set a visible focus ring — use focus-visible:ring-2 focus-visible:ring-ring
-✅ Test with keyboard-only navigation after every component build
-✅ Run Storybook a11y addon (axe-core) before marking component DONE
+yes Always include DialogTitle + DialogDescription (even if visually hidden via sr-only)
+   - Radix warns if Title is missing: accessibility regression
+yes Never suppress Radix's default keyboard behavior (Esc to close, Arrow nav in menus)
+yes Always set a visible focus ring - use focus-visible:ring-2 focus-visible:ring-ring
+yes Test with keyboard-only navigation after every component build
+yes Run Storybook a11y addon (axe-core) before marking component DONE
 ```
 
 ---
@@ -1427,7 +1437,7 @@ Radix handles most a11y automatically (ARIA roles, keyboard nav, focus trap). Yo
 
 When building a new Batch 4 component, use this sequence of tools:
 
-### Step 1 — Look up the Radix primitive API
+### Step 1 - Look up the Radix primitive API
 
 ```
 context7 MCP:
@@ -1435,37 +1445,37 @@ context7 MCP:
   get-library-docs <id> --topic "props API"
 ```
 
-### Step 2 — Get a11y checklist
+### Step 2 - Get a11y checklist
 
 ```
 $design-system skill:
-  Read SKILL.md → Core Principle §6 (Accessibility — Non-Negotiable)
-  Read COMPONENTS.md → Component Rules + JSDoc Standards sections
-  → Extract keyboard bindings, ARIA attributes, focus-visible ring requirements
+  Read SKILL.md -> Core Principle Section 6 (Accessibility - Non-Negotiable)
+  Read COMPONENTS.md -> Component Rules + JSDoc Standards sections
+  -> Extract keyboard bindings, ARIA attributes, focus-visible ring requirements
      and incorporate them into the spec's Accessibility section
 ```
 
-### Step 3 — Scaffold baseline from shadcn
+### Step 3 - Scaffold baseline from shadcn
 
 ```
 shadcn MCP:
   search for <component-name>
-  → copy implementation as baseline
-  → normalize to packages/ui conventions (Section 9 + 10)
+  -> copy implementation as baseline
+  -> normalize to packages/ui conventions (Section 9 + 10)
 ```
 
-### Step 4 — Write spec, stories, implement
+### Step 4 - Write spec, stories, implement
 
 Follow SDD lifecycle in [04-build-shared-components.md](./04-build-shared-components.md).
 
-### Step 5 — Verify visual parity after app migration
+### Step 5 - Verify visual parity after app migration
 
 ```
 playwright MCP (Batches 6-9):
-  screenshot <smoke-route> before migration → save to _artifacts/smoke-routes/before/<NN-route-name>.png
-  screenshot <smoke-route> after migration  → save to _artifacts/smoke-routes/after/<NN-route-name>.png
-  → add entry to _artifacts/smoke-routes/comparison-log.md (see verification-gate.md §6)
-  → document any visual delta under "Intentional delta" column
+  screenshot <smoke-route> before migration -> save to _artifacts/smoke-routes/before/<NN-route-name>.png
+  screenshot <smoke-route> after migration  -> save to _artifacts/smoke-routes/after/<NN-route-name>.png
+  -> add entry to _artifacts/smoke-routes/comparison-log.md (see verification-gate.md Section 6)
+  -> document any visual delta under "Intentional delta" column
 ```
 
 ---
@@ -1548,4 +1558,4 @@ playwright MCP (Batches 6-9):
 
 ---
 
-_Related: [01-app-audit.md](./01-app-audit.md) · [02-design-system-foundation.md](./02-design-system-foundation.md) · [04-build-shared-components.md](./04-build-shared-components.md) · [05-app-migration.md](./05-app-migration.md)_
+_Related: [01-app-audit.md](./01-app-audit.md) - [02-design-system-foundation.md](./02-design-system-foundation.md) - [04-build-shared-components.md](./04-build-shared-components.md) - [05-app-migration.md](./05-app-migration.md)_

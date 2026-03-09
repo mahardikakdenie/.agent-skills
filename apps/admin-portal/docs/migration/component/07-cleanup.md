@@ -1,10 +1,10 @@
-# 07 — Cleanup & Deprecation
+# 07 â€” Cleanup & Deprecation
 
 > **Batch:** Batch 10 (+10.5) - Cleanup & Deprecation
 > **Branch:** `migrate-app/<app>`
-> **Run count:** Once per app — after Batch 5 stabilization
+> **Run count:** Once per app â€” after Batch 5 stabilization
 > **Prerequisite:** Phase 05 Batch 5 (Stabilization) complete
-> **Prev:** [05-app-migration.md](./05-app-migration.md) · **Next:** [08-operational-standards.md](./08-operational-standards.md)
+> **Prev:** [05-app-migration.md](./05-app-migration.md) Â· **Next:** [08-operational-standards.md](./08-operational-standards.md)
 > **AI execution:** Use **Batch 10** and **Batch 10.5** in [`migration-batch-prompts.md`](./migration-batch-prompts.md) to run this phase with AI assistance
 
 ---
@@ -15,9 +15,9 @@ After the app is fully migrated and stabilized (Batch 5), perform final cleanup 
 
 1. Remove confirmed-replaced local duplicate components
 2. Eliminate dead adapters and stale barrel exports
-3. **Deduplicate `package.json` dependencies** — remove packages from `apps/<APP>` that are now
+3. **Deduplicate `package.json` dependencies** â€” remove packages from `apps/<APP>` that are now
    fully owned as transitive dependencies through `@repo/ui`, eliminating redundancy and version drift
-4. **Verify dependency version alignment** — confirm React, TypeScript, and `eslint-config-next`
+4. **Verify dependency version alignment** â€” confirm React, TypeScript, and `eslint-config-next`
    are at the correct versions per the upgrade matrix in [09-dependency-upgrades.md](./09-dependency-upgrades.md)
 5. Verify a clean build before merging to `migrate-app/base`
 
@@ -39,9 +39,9 @@ After the app is fully migrated and stabilized (Batch 5), perform final cleanup 
 | File                                                                  | Description                                                                             |
 | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `apps/<APP_NAME>/docs/migration/component/_output/_cleanup-report.md` | Per-app cleanup summary (required before merge to `migrate-app/base`)                   |
-| `apps/<APP_NAME>/package.json`                                        | Updated — redundant deps removed after deduplication audit                              |
-| `packages/ui/docs/normalization/_output/30-cleanup-report.md`         | **Cross-app synthesis** — generated once after ALL apps complete Phase 07, on `feat/ui` |
-| `packages/ui/docs/normalization/_output/31-deprecation-map.md`        | **Cross-app synthesis** — what was deprecated across all apps, generated on `feat/ui`   |
+| `apps/<APP_NAME>/package.json`                                        | Updated â€” redundant deps removed after deduplication audit                              |
+| `packages/ui/docs/normalization/_output/30-cleanup-report.md`         | **Cross-app synthesis** â€” generated once after ALL apps complete Phase 07, on `feat/ui` |
+| `packages/ui/docs/normalization/_output/31-deprecation-map.md`        | **Cross-app synthesis** â€” what was deprecated across all apps, generated on `feat/ui`   |
 
 ---
 
@@ -66,7 +66,7 @@ Perform post-migration cleanup across the entire workspace:
 
 ## Cleanup Rules
 
-### ✅ Safe to remove:
+### âœ… Safe to remove:
 
 - Local component files in `apps/*/src/components/ui/*.tsx` where:
   - `_migration-log.md` confirms it was replaced by @repo/ui
@@ -77,7 +77,7 @@ Perform post-migration cleanup across the entire workspace:
 - Dead `index.ts` re-exports pointing to deleted files
 - Stale `// TODO: migrate to @repo/ui` comments
 
-### ⛔ Do NOT remove:
+### â›” Do NOT remove:
 
 - Components classified `KEEP_APP_LOCAL` (domain forms, table configs, etc.)
 - Adapter wrappers still needed due to intentional API difference
@@ -111,35 +111,35 @@ When deleting `apps/<APP_NAME>/src/components/ui/<component>.tsx`:
 
 ---
 
-## Phase 4 — Dependency Audit & Cleanup
+## Phase 4 â€” Dependency Audit & Cleanup
 
 > **The dependency hygiene principle:**
 > Every entry in `package.json` must have at least one **direct `import`** in that package's
-> own source code. A dep belongs at the level that **uses it directly** — not at the level that
-> happens to also depend on it. The question is never "does another package also have this?" —
+> own source code. A dep belongs at the level that **uses it directly** â€” not at the level that
+> happens to also depend on it. The question is never "does another package also have this?" â€”
 > it is always "does **this app's code** import it directly?"
 
 ### What this is NOT
 
 This is **not** a "remove anything that packages/ui also owns" sweep. If an app's
 `KEEP_APP_LOCAL` component, utility, page, or service directly imports `react-hook-form`,
-`clsx`, `lucide-react`, or any other package — the app owns that dep legitimately and it
+`clsx`, `lucide-react`, or any other package â€” the app owns that dep legitimately and it
 **must stay**.
 
 The only situation that warrants removal is: the app lists a dep in `package.json` and
-**no file in `apps/<APP>/src/`** contains a direct import of it anymore — because all
+**no file in `apps/<APP>/src/`** contains a direct import of it anymore â€” because all
 consumers of that dep were local components that have since been replaced by `@repo/ui`.
 
-### Scope — All Workspace Packages
+### Scope â€” All Workspace Packages
 
 This audit covers **all packages in the monorepo workspace**, not just `@repo/ui`:
 
-| Package           | Also produces transitive deps like…                                                                              |
+| Package           | Also produces transitive deps likeâ€¦                                                                              |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `@repo/ui`        | `@radix-ui/*`, `clsx`, `class-variance-authority`, `lucide-react`, `vaul`, `react-day-picker`, `react-hook-form` |
 | `@repo/helper`    | utility libraries the helper wraps internally                                                                    |
-| `@repo/interface` | pure types — no runtime transitive deps to worry about                                                           |
-| `@repo/config`    | Tailwind config — no runtime transitive deps                                                                     |
+| `@repo/interface` | pure types â€” no runtime transitive deps to worry about                                                           |
+| `@repo/config`    | Tailwind config â€” no runtime transitive deps                                                                     |
 
 When `@repo/ui` (or any workspace package) ships a dep as its own `dependency`, consuming
 apps get it **transitively at runtime**. If the app's own code no longer directly imports
@@ -147,16 +147,16 @@ from that package, the app's explicit listing is orphaned.
 
 ### Audit Process
 
-#### Step 1 — Identify candidate orphan deps
+#### Step 1 â€” Identify candidate orphan deps
 
 For each dep in `apps/<APP>/package.json`, ask: **does any file in `apps/<APP>/src/` directly import it?**
 
 ```bash
-# Quick audit — iterate over each dep and count direct imports in src/
+# Quick audit â€” iterate over each dep and count direct imports in src/
 # Example for a single package:
 rg "from ['\"]react-hook-form['\"]" apps/<APP_NAME>/src --type ts --type tsx
-# → No results AND react-hook-form is in packages/ui deps? → Candidate for removal
-# → Any results in KEEP_APP_LOCAL files, services, pages? → KEEP
+# â†’ No results AND react-hook-form is in packages/ui deps? â†’ Candidate for removal
+# â†’ Any results in KEEP_APP_LOCAL files, services, pages? â†’ KEEP
 
 # Broader: generate a dep-usage report
 node -e "
@@ -167,64 +167,64 @@ deps.forEach(d => process.stdout.write(d + '\n'));
   count=$(rg "from ['\"]${dep}" apps/<APP_NAME>/src --type ts --type tsx -l 2>/dev/null | wc -l)
   echo "$count $dep"
 done | sort -n
-# Lines showing 0 = no direct imports found → candidates for further review
+# Lines showing 0 = no direct imports found â†’ candidates for further review
 ```
 
-> Output `0` for a dep means **no direct import found in app source** — not an automatic
+> Output `0` for a dep means **no direct import found in app source** â€” not an automatic
 > removal. It is the starting point for investigation, not the verdict.
 
-#### Step 2 — Confirm each candidate individually
+#### Step 2 â€” Confirm each candidate individually
 
 For each dep showing `0` direct imports:
 
 1. **Is it used in `next.config.ts`, `tailwind.config.ts`, or other config files at app root?**
-   → Those are valid direct usages even though they're not in `src/`. **KEEP**.
+   â†’ Those are valid direct usages even though they're not in `src/`. **KEEP**.
 2. **Is it a peer dep of another direct dep the app uses?** (e.g., `react` is a peer of
    `react-hook-form`)
-   → App must own all React-related peer deps explicitly. **KEEP**.
+   â†’ App must own all React-related peer deps explicitly. **KEEP**.
 3. **Is it in `devDependencies` and used only during build/test?** (e.g., `postcss`,
    `eslint`, `@types/*`)
-   → Audit `@types/*` separately: if the underlying package is being removed, the `@types`
+   â†’ Audit `@types/*` separately: if the underlying package is being removed, the `@types`
    for it is also removed. If the underlying package is kept, so is its `@types`.
-   → Exception: if the package is `webpack-obfuscator`, remove it per
+   â†’ Exception: if the package is `webpack-obfuscator`, remove it per
    [09-dependency-upgrades.md](./09-dependency-upgrades.md) Part A6 to keep Turbopack-compatible defaults.
 4. **Was it only imported inside local component files that have now been deleted?**
-   → This is the only true orphan case. Confirm the files are gone, then **REMOVE**.
+   â†’ This is the only true orphan case. Confirm the files are gone, then **REMOVE**.
 
-#### Step 3 — Decision table
+#### Step 3 â€” Decision table
 
 | Condition                                                                                          | Decision                                                                  |
 | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| App's `src/` code directly imports the package (KEEP_APP_LOCAL, services, pages, utilities)        | ✅ **KEEP** — app directly owns it                                        |
-| Package is used in `next.config.ts`, `tailwind.config.ts`, or other root configs                   | ✅ **KEEP** — valid direct usage                                          |
-| Package is a peer dep of another dep the app uses (e.g., `react`, `react-dom`)                     | ✅ **KEEP** — required by the ecosystem                                   |
-| Package is a `devDependency` used during build or type-checking                                    | ✅ **KEEP** — part of the app's build toolchain                           |
-| Package is a monorepo workspace package (`@repo/*`)                                                | ✅ **KEEP** — always explicit, never rely on transitive `@repo/*` linking |
-| App's `src/` has zero direct imports AND the package was only used by now-deleted local components | ⛔ **REMOVE** — true orphan                                               |
-| App's `src/` has zero direct imports AND unclear why it's there                                    | 🔍 **Investigate first** — do not remove until reason is confirmed        |
+| App's `src/` code directly imports the package (KEEP_APP_LOCAL, services, pages, utilities)        | âœ… **KEEP** â€” app directly owns it                                        |
+| Package is used in `next.config.ts`, `tailwind.config.ts`, or other root configs                   | âœ… **KEEP** â€” valid direct usage                                          |
+| Package is a peer dep of another dep the app uses (e.g., `react`, `react-dom`)                     | âœ… **KEEP** â€” required by the ecosystem                                   |
+| Package is a `devDependency` used during build or type-checking                                    | âœ… **KEEP** â€” part of the app's build toolchain                           |
+| Package is a monorepo workspace package (`@repo/*`)                                                | âœ… **KEEP** â€” always explicit, never rely on transitive `@repo/*` linking |
+| App's `src/` has zero direct imports AND the package was only used by now-deleted local components | â›” **REMOVE** â€” true orphan                                               |
+| App's `src/` has zero direct imports AND unclear why it's there                                    | ðŸ” **Investigate first** â€” do not remove until reason is confirmed        |
 
-#### Step 4 — Examples of deps that look redundant but are legitimately app-owned
+#### Step 4 â€” Examples of deps that look redundant but are legitimately app-owned
 
 ```
-react-hook-form   → used directly in KEEP_APP_LOCAL domain forms (BrokerFeeForm, ClaimForm)
-lucide-react      → used directly in page-level components, not just @repo/ui components
-clsx              → used directly in app utility functions or KEEP_APP_LOCAL components
-date-fns          → used directly in services, formatters, or page components
-recharts          → used directly in dashboard page components with domain data
-zod               → used directly in app-level form validation schemas
-axios             → used directly in API client / service layer
+react-hook-form   â†’ used directly in KEEP_APP_LOCAL domain forms (BrokerFeeForm, ClaimForm)
+lucide-react      â†’ used directly in page-level components, not just @repo/ui components
+clsx              â†’ used directly in app utility functions or KEEP_APP_LOCAL components
+date-fns          â†’ used directly in services, formatters, or page components
+recharts          â†’ used directly in dashboard page components with domain data
+zod               â†’ used directly in app-level form validation schemas
+axios             â†’ used directly in API client / service layer
 ```
 
 If the app code imports any of the above, **keep them even if `@repo/ui` also has them**.
 The app is a first-class consumer, not a pass-through.
 
-#### Step 5 — Remove confirmed orphans
+#### Step 5 â€” Remove confirmed orphans
 
 ```bash
 # Only after Step 2 confirms zero legitimate usage:
 pnpm --filter <APP_PACKAGE> remove <orphan-dep>
 
-# Verify immediately using the exact app typecheck/build commands from `verification-gate.md` §1 and §3.
+# Verify immediately using the exact app typecheck/build commands from `verification-gate.md` Â§1 and Â§3.
 
 # Confirm the dep still resolves transitively if it's in a workspace package:
 pnpm --filter <APP_PACKAGE> list <removed-dep>
@@ -235,25 +235,25 @@ pnpm --filter <APP_PACKAGE> list <removed-dep>
 Regardless of transitive availability, these always stay explicit in `apps/<APP>/package.json`:
 
 ```
-next                     — the app's framework; must be explicit
-react / react-dom        — runtime host; every Next.js app owns these directly
-tailwindcss              — app builds its own CSS; @repo/ui's version is for Storybook only
-tailwindcss-animate      — Tailwind plugin referenced directly in tailwind.config.ts
-postcss                  — CSS build toolchain
-eslint / eslint-config-next — linting toolchain
-typescript               — compiler
-@types/node              — required by Next.js config (ts/mjs)
-@types/react             — required for TSX compilation
-@types/react-dom         — required for TSX compilation
-@repo/ui                 — always explicit; the shared lib
-@repo/helper             — always explicit; workspace utility
-@repo/interface          — always explicit; shared domain types
-@repo/eslint-config      — always explicit; linting config
-@repo/typescript-config  — always explicit; TS config extension
+next                     â€” the app's framework; must be explicit
+react / react-dom        â€” runtime host; every Next.js app owns these directly
+tailwindcss              â€” app builds its own CSS; @repo/ui's version is for Storybook only
+tailwindcss-animate      â€” Tailwind plugin referenced directly in tailwind.config.ts
+postcss                  â€” CSS build toolchain
+eslint / eslint-config-next â€” linting toolchain
+typescript               â€” compiler
+@types/node              â€” required by Next.js config (ts/mjs)
+@types/react             â€” required for TSX compilation
+@types/react-dom         â€” required for TSX compilation
+@repo/ui                 â€” always explicit; the shared lib
+@repo/helper             â€” always explicit; workspace utility
+@repo/interface          â€” always explicit; shared domain types
+@repo/eslint-config      â€” always explicit; linting config
+@repo/typescript-config  â€” always explicit; TS config extension
 ```
 
 > **Rule on `@repo/*` packages:** Never rely on transitive resolution of workspace packages.
-> If an app uses `@repo/helper`, it must list it explicitly in `package.json` — even if
+> If an app uses `@repo/helper`, it must list it explicitly in `package.json` â€” even if
 > `@repo/ui` also depends on it. Transitive workspace linking is fragile and defeats the
 > explicit ownership contract.
 
@@ -268,16 +268,16 @@ A `packages/ui` component with zero usages across ALL currently migrated apps is
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Component was built speculatively and no app has ever used it               | Mark `@deprecated` in the component file and raise it in Phase 08 review. If still unused after 2 consecutive migration cycles (or 6 months), remove with a major version bump. |
 | Component was used during migration but all consumers have since removed it | Keep for now. Document in `31-deprecation-map.md` as a candidate for removal. Review in the next quarterly `packages/ui` audit.                                                 |
-| Component is used by apps not yet migrated (still in queue)                 | **KEEP** — it is actively needed. Do not mark deprecated.                                                                                                                       |
+| Component is used by apps not yet migrated (still in queue)                 | **KEEP** â€” it is actively needed. Do not mark deprecated.                                                                                                                       |
 | Component was built for a `NEW_SHARED_COMPONENT` that only one app needed   | Retain. Reassess shared-vs-local boundary per `06-component-standards.md` Section 6 if still unused at end of full migration program.                                           |
 
-> **Rule:** Never silently delete a `packages/ui` export — it breaks any app that imports it. Always maintain the deprecation paper trail in `31-deprecation-map.md`.
+> **Rule:** Never silently delete a `packages/ui` export â€” it breaks any app that imports it. Always maintain the deprecation paper trail in `31-deprecation-map.md`.
 
 ## Required Output: `_output/30-cleanup-report.md`
 
 ```
 
-## Cleanup Report — <date>
+## Cleanup Report â€” <date>
 
 ### Summary
 
@@ -322,7 +322,7 @@ A `packages/ui` component with zero usages across ALL currently migrated apps is
 
 ```
 
-## Deprecation Map — <date>
+## Deprecation Map â€” <date>
 
 ### Deprecated (removed from apps)
 
@@ -340,13 +340,13 @@ A `packages/ui` component with zero usages across ALL currently migrated apps is
 
 ## Verification Gate (ALL must pass)
 
-- App typecheck: use the exact command from `verification-gate.md` §1
-- App lint: use the exact command from `verification-gate.md` §2
-- App build: use the exact command from `verification-gate.md` §3
+- App typecheck: use the exact command from `verification-gate.md` Â§1
+- App lint: use the exact command from `verification-gate.md` Â§2
+- App build: use the exact command from `verification-gate.md` Â§3
 - Smoke checks on critical flows (parity-checklist)
 - No new console/runtime errors
-- `jq '.dependencies | keys[]' apps/<APP>/package.json` — confirm removed deps are gone
-- `pnpm list --filter=<app-name> <removed-dep-name>` — confirm dep still resolves transitively
+- `jq '.dependencies | keys[]' apps/<APP>/package.json` â€” confirm removed deps are gone
+- `pnpm list --filter=<app-name> <removed-dep-name>` â€” confirm dep still resolves transitively
 - Dependency version alignment check:
   ```bash
   # Confirm React 19 is resolved
@@ -378,5 +378,5 @@ A `packages/ui` component with zero usages across ALL currently migrated apps is
 
 ---
 
-_Related: [05-app-migration.md](./05-app-migration.md) · [08-operational-standards.md](./08-operational-standards.md) · [09-dependency-upgrades.md](./09-dependency-upgrades.md)_
+_Related: [05-app-migration.md](./05-app-migration.md) Â· [08-operational-standards.md](./08-operational-standards.md) Â· [09-dependency-upgrades.md](./09-dependency-upgrades.md)_
 ```

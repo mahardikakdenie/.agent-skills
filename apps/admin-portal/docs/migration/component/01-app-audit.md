@@ -1,10 +1,10 @@
-# 01 — Per-App Component Audit
+# 01 â€” Per-App Component Audit
 
 > **Batch:** Batch 1 - Per-App Component Audit
-> **Branch:** `migrate-app/<APP_NAME>` — run on EACH app's dedicated branch
+> **Branch:** `migrate-app/<APP_NAME>` â€” run on EACH app's dedicated branch
 > **Run count:** Once per app
 > **Produces:** `_per-app-baseline-summary.md` (key handoff to Phase 02)
-> **Prev:** [00-overview.md](./00-overview.md) · **Next (on feat/ui):** [02-design-system-foundation.md](./02-design-system-foundation.md)
+> **Prev:** [00-overview.md](./00-overview.md) Â· **Next (on feat/ui):** [02-design-system-foundation.md](./02-design-system-foundation.md)
 
 ---
 
@@ -23,7 +23,7 @@ Produce a comprehensive, classified inventory of every UI component in `apps/<AP
 - [ ] `packages/*` (config, helper, interface, eslint-config, typescript-config) are accessible
 - [ ] `packages/ui` is NOT currently in the middle of a Batch 3/4 build on `feat/ui`
 
-> **If `packages/ui` is mid-build:** The `packages/ui/src/index.ts` on `feat/ui` may have components that are partially implemented (stories exist but the component may not compile). This is expected and safe — on `migrate-app/<APP_NAME>` you always see the **last merged, stable** state of `packages/ui`. The audit reads from this stable surface. Do NOT switch to `feat/ui` mid-audit. If you need to confirm whether a planned component exists, check `packages/ui/docs/normalization/_output/11-master-component-roadmap.md` (if it exists) rather than checking `packages/ui/src/`.
+> **If `packages/ui` is mid-build:** The `packages/ui/src/index.ts` on `feat/ui` may have components that are partially implemented (stories exist but the component may not compile). This is expected and safe â€” on `migrate-app/<APP_NAME>` you always see the **last merged, stable** state of `packages/ui`. The audit reads from this stable surface. Do NOT switch to `feat/ui` mid-audit. If you need to confirm whether a planned component exists, check `packages/ui/docs/normalization/_output/11-master-component-roadmap.md` (if it exists) rather than checking `packages/ui/src/`.
 
 ---
 
@@ -35,7 +35,7 @@ Produce a comprehensive, classified inventory of every UI component in `apps/<AP
 | `apps/<APP_NAME>/docs/migration/component/_output/_spec-input.md`                   | Spec requirements for each component targeting `packages/ui`       |
 | `apps/<APP_NAME>/docs/migration/component/_output/_component-backlog.csv`           | Machine-readable backlog for master plan aggregation               |
 | `apps/<APP_NAME>/docs/migration/component/_output/_parity-checklist.md`             | Behavior parity requirements to preserve                           |
-| **`apps/<APP_NAME>/docs/migration/component/_output/_per-app-baseline-summary.md`** | **KEY HANDOFF — self-contained one-pager for feat/ui aggregation** |
+| **`apps/<APP_NAME>/docs/migration/component/_output/_per-app-baseline-summary.md`** | **KEY HANDOFF â€” self-contained one-pager for feat/ui aggregation** |
 
 ---
 
@@ -64,29 +64,29 @@ Produce a complete, evidence-based component audit for `apps/<APP_NAME>` that:
 
 ## Required Discovery (full traversal, no shortcuts)
 
-- `packages/ui/src/**` — current @repo/ui components, exports, prop APIs
-- `packages/ui/package.json` — dependencies and capabilities
-- `packages/config/**`, `packages/helper/**`, `packages/interface/**` — shared workspace packages (consumed by all packages and apps)
+- `packages/ui/src/**` â€” current @repo/ui components, exports, prop APIs
+- `packages/ui/package.json` â€” dependencies and capabilities
+- `packages/config/**`, `packages/helper/**`, `packages/interface/**` â€” shared workspace packages (consumed by all packages and apps)
 - `apps/<APP_NAME>/src/components/**`
 - `apps/<APP_NAME>/src/views/**`
 - `apps/<APP_NAME>/src/app/**`
 - `apps/<APP_NAME>/src/hooks/**`
 - All import statements across `apps/<APP_NAME>/src/**` referencing local UI
-- `apps/<APP_NAME>/components.json` (if exists — shadcn config)
-- `apps/<APP_NAME>/package.json` — UI dependencies in use
-- **Bare native HTML elements** — scan for JSX files that return bare `div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, `h1`–`h6`, `strong`, `em` without routing them through a `@repo/ui` component. These are candidates for the Box pass (Batches 6-9).
+- `apps/<APP_NAME>/components.json` (if exists â€” shadcn config)
+- `apps/<APP_NAME>/package.json` â€” UI dependencies in use
+- **Bare native HTML elements** â€” scan for JSX files that return bare `div`, `span`, `section`, `article`, `main`, `aside`, `header`, `footer`, `ul`, `ol`, `li`, `p`, `h1`â€“`h6`, `strong`, `em` without routing them through a `@repo/ui` component. These are candidates for the Box pass (Batches 6-9).
 
 ## Component Classification Model (assign exactly ONE per component need)
 
 | Class                  | Meaning                                                                    |
 | ---------------------- | -------------------------------------------------------------------------- |
-| `ADOPT_NOW`            | Already in @repo/ui, zero changes needed — just swap import                |
-| `ADOPT_WITH_ADAPTER`   | In @repo/ui but API mismatch — needs thin local adapter in app             |
-| `EXTEND_EXISTING`      | In @repo/ui but missing variant/prop/size — extend in packages/ui          |
+| `ADOPT_NOW`            | Already in @repo/ui, zero changes needed â€” just swap import                |
+| `ADOPT_WITH_ADAPTER`   | In @repo/ui but API mismatch â€” needs thin local adapter in app             |
+| `EXTEND_EXISTING`      | In @repo/ui but missing variant/prop/size â€” extend in packages/ui          |
 | `NEW_SHARED_COMPONENT` | Not in @repo/ui, used by this app, likely needed by others                 |
-| `KEEP_APP_LOCAL`       | Business-specific — stays in app (forms, table configs, domain components) |
+| `KEEP_APP_LOCAL`       | Business-specific â€” stays in app (forms, table configs, domain components) |
 
-> **Universal SoC Evaluation (applies to ALL components):** After assigning any classification, always run the SoC Evaluation ([06-component-standards.md §6.2](./06-component-standards.md#62-universal-soc-evaluation)). For every component, record `Is monolith`, `SoC potential`, `SoC strategy`, and `Batch 1.5 candidate`. Do NOT skip this step — `NONE` is a valid and expected answer for non-monolith components. Components rated HIGH or MEDIUM are Batch 1.5 candidates and must NOT be assigned a migration batch yet. Their final classification is determined after Batch 1.5 splits them into Shell + Container.
+> **Universal SoC Evaluation (applies to ALL components):** After assigning any classification, always run the SoC Evaluation ([06-component-standards.md Â§6.2](./06-component-standards.md#62-universal-soc-evaluation)). For every component, record `Is monolith`, `SoC potential`, `SoC strategy`, and `Batch 1.5 candidate`. Do NOT skip this step â€” `NONE` is a valid and expected answer for non-monolith components. Components rated HIGH or MEDIUM are Batch 1.5 candidates and must NOT be assigned a migration batch yet. Their final classification is determined after Batch 1.5 splits them into Shell + Container.
 
 ## Normalization Requirements
 
@@ -111,21 +111,21 @@ For each component, document:
 - **Used in:** [list of pages/views/hooks that use it]
 - **Normalization delta:** [prop naming issues, variant naming, token gaps]
 - **Behavior parity risks:** [what must not change]
-- **Native element count:** [number of bare div/span/etc directly in this component's JSX — "0" if none]
+- **Native element count:** [number of bare div/span/etc directly in this component's JSX â€” "0" if none]
 - **Migration notes:** [what exactly needs to happen]
-- **Is monolith:** YES | NO ← ALL components; required field
-- **SoC potential:** HIGH | MEDIUM | LOW | NONE ← ALL components; required field
-- **SoC strategy:** `<container-shell | prop-injection | render-prop | hook-extraction | none>` — [what becomes the Shell, what stays in Container] ← ALL components; required field
-- **Batch 1.5 candidate:** YES | NO ← ALL components; YES only if SoC potential is HIGH or MEDIUM
-- **Refactor potential:** HIGH | MEDIUM | LOW | NONE ← KEEP_APP_LOCAL only; omit for all other classifications
-- **Refactor strategy:** `<container-shell | hook-extraction | prop-injection | none>` — [brief rationale] ← KEEP_APP_LOCAL only
-- **Story group:** `Buttons` | `Inputs` | `Overlays` | `Feedback` | `Navigation` | `Data Display` | `Layout` | `Misc` ← NEW_SHARED_COMPONENT and EXTEND_EXISTING only
+- **Is monolith:** YES | NO â† ALL components; required field
+- **SoC potential:** HIGH | MEDIUM | LOW | NONE â† ALL components; required field
+- **SoC strategy:** `<container-shell | prop-injection | render-prop | hook-extraction | none>` â€” [what becomes the Shell, what stays in Container] â† ALL components; required field
+- **Batch 1.5 candidate:** YES | NO â† ALL components; YES only if SoC potential is HIGH or MEDIUM
+- **Refactor potential:** HIGH | MEDIUM | LOW | NONE â† KEEP_APP_LOCAL only; omit for all other classifications
+- **Refactor strategy:** `<container-shell | hook-extraction | prop-injection | none>` â€” [brief rationale] â† KEEP_APP_LOCAL only
+- **Story group:** `Buttons` | `Inputs` | `Overlays` | `Feedback` | `Navigation` | `Data Display` | `Layout` | `Misc` â† NEW_SHARED_COMPONENT and EXTEND_EXISTING only
 
 ```
 
-### Example Entries (realistic — do not copy verbatim)
+### Example Entries (realistic â€” do not copy verbatim)
 
-#### Example 1 — `ADOPT_NOW`
+#### Example 1 â€” `ADOPT_NOW`
 
 ```
 
@@ -133,15 +133,15 @@ For each component, document:
 
 - **Classification:** ADOPT_NOW
 - **Source:** `apps/admin-portal/src/components/ui/button.tsx`
-- **@repo/ui equivalent:** `Button` from `@repo/ui` — exact API match (variant, size, loading, leftIcon props all match)
+- **@repo/ui equivalent:** `Button` from `@repo/ui` â€” exact API match (variant, size, loading, leftIcon props all match)
 - **Used in:** 34 files across `src/views/`, `src/app/`, `src/components/forms/`
 - **Normalization delta:** None. Variant names (`default`, `destructive`, `outline`, `ghost`) already match @repo/ui convention
-- **Behavior parity risks:** `loading` prop shows spinner + disables click — must be preserved
-- **Migration notes:** Global find-replace `from '@/components/ui/button'` → `from '@repo/ui'`. Delete `button.tsx` after all imports updated and typecheck passes.
+- **Behavior parity risks:** `loading` prop shows spinner + disables click â€” must be preserved
+- **Migration notes:** Global find-replace `from '@/components/ui/button'` â†’ `from '@repo/ui'`. Delete `button.tsx` after all imports updated and typecheck passes.
 
 ```
 
-#### Example 2 — `NEW_SHARED_COMPONENT`
+#### Example 2 â€” `NEW_SHARED_COMPONENT`
 
 ```
 
@@ -149,10 +149,10 @@ For each component, document:
 
 - **Classification:** NEW_SHARED_COMPONENT
 - **Source:** `apps/admin-portal/src/components/ui/status-badge.tsx`
-- **@repo/ui equivalent:** None — closest is `Badge` from `@repo/ui` but StatusBadge adds policy-status color semantics not in Badge
+- **@repo/ui equivalent:** None â€” closest is `Badge` from `@repo/ui` but StatusBadge adds policy-status color semantics not in Badge
 - **Used in:** 12 files across `src/views/policies/`, `src/app/claims/`
-- **Normalization delta:** Prop `status` uses domain strings (`"active"`, `"lapsed"`, `"pending"`) — needs to be abstracted to `variant` in @repo/ui version
-- **Behavior parity risks:** Color mapping for status values is business-visible (red=lapsed, green=active, yellow=pending) — must be token-driven, not hardcoded
+- **Normalization delta:** Prop `status` uses domain strings (`"active"`, `"lapsed"`, `"pending"`) â€” needs to be abstracted to `variant` in @repo/ui version
+- **Behavior parity risks:** Color mapping for status values is business-visible (red=lapsed, green=active, yellow=pending) â€” must be token-driven, not hardcoded
 - **Migration notes:** Build `StatusBadge` in `packages/ui` (Phase 04 Batch 4). Keep local copy until packages/ui ships it. Domain status-to-variant mapping stays in the app layer as an adapter.
 
 ```
@@ -176,7 +176,7 @@ For each `NEW_SHARED_COMPONENT` or `EXTEND_EXISTING`:
 ### ComponentName
 
 - **API Intent:** [what props/variants/sizes it needs in @repo/ui]
-- **Visual spec:** [key visual requirements — no pixel-perfect needed]
+- **Visual spec:** [key visual requirements â€” no pixel-perfect needed]
 - **Accessibility:** [ARIA, keyboard, focus requirements]
 - **Variants needed:** [list]
 - **States needed:** [default, hover, focus, disabled, loading, error]
@@ -197,16 +197,16 @@ For each component to be migrated:
 
 ## Required Output: `_output/_per-app-baseline-summary.md` (KEY HANDOFF ARTIFACT)
 A fully self-contained one-page summary. Must include:
-1. **App overview** — tech stack, framework, UI library in use
-2. **Component count summary** — total vs classified breakdown per class
-3. **P0 critical needs** — what blocks this app's migration if missing from @repo/ui
-4. **New shared components needed** — components this app needs that aren't in @repo/ui
-5. **Extend existing needed** — components that need extension in @repo/ui
-6. **Normalization deltas** — most critical naming/API inconsistencies found
-7. **High-risk parity items** — the top 5 behaviors that must not regress
-8. **Backlog CSV row count** — for aggregation verification
-9. **SoC Evaluation Summary** — total Batch 1.5 candidates; breakdown by SoC potential (HIGH/MEDIUM/LOW/NONE); monolith count; projected NEW_SHARED_COMPONENT candidates from Batch 1.5 splits
-10. **KEEP_APP_LOCAL refactor candidates** — KEEP_APP_LOCAL components rated HIGH or MEDIUM SoC potential; top 3 with SoC strategy and whether their Shell layer is a `packages/ui` candidate
+1. **App overview** â€” tech stack, framework, UI library in use
+2. **Component count summary** â€” total vs classified breakdown per class
+3. **P0 critical needs** â€” what blocks this app's migration if missing from @repo/ui
+4. **New shared components needed** â€” components this app needs that aren't in @repo/ui
+5. **Extend existing needed** â€” components that need extension in @repo/ui
+6. **Normalization deltas** â€” most critical naming/API inconsistencies found
+7. **High-risk parity items** â€” the top 5 behaviors that must not regress
+8. **Backlog CSV row count** â€” for aggregation verification
+9. **SoC Evaluation Summary** â€” total Batch 1.5 candidates; breakdown by SoC potential (HIGH/MEDIUM/LOW/NONE); monolith count; projected NEW_SHARED_COMPONENT candidates from Batch 1.5 splits
+10. **KEEP_APP_LOCAL refactor candidates** â€” KEEP_APP_LOCAL components rated HIGH or MEDIUM SoC potential; top 3 with SoC strategy and whether their Shell layer is a `packages/ui` candidate
 
 > After Batch 1.5 or Phase 05A completes, append `## Batch 1.5 Amendment` or `## Phase 05A Amendment` section recording: components split, NEW_SHARED_COMPONENT candidates surfaced, and KEEP_APP_LOCAL-only Shells. Phase 02 cross-app reconciliation reads this amendment.
 
@@ -224,11 +224,11 @@ A fully self-contained one-page summary. Must include:
 
 ```
 apps/<APP_NAME>/docs/migration/component/_output/
-├── _audit-report.md              ← Full classified inventory
-├── _spec-input.md                ← Spec requirements for packages/ui
-├── _component-backlog.csv        ← Machine-readable backlog
-├── _parity-checklist.md          ← Parity requirements
-└── _per-app-baseline-summary.md  ← KEY HANDOFF to Phase 02
+â”œâ”€â”€ _audit-report.md              â† Full classified inventory
+â”œâ”€â”€ _spec-input.md                â† Spec requirements for packages/ui
+â”œâ”€â”€ _component-backlog.csv        â† Machine-readable backlog
+â”œâ”€â”€ _parity-checklist.md          â† Parity requirements
+â””â”€â”€ _per-app-baseline-summary.md  â† KEY HANDOFF to Phase 02
 ```
 
 ---
@@ -245,6 +245,6 @@ apps/<APP_NAME>/docs/migration/component/_output/
 
 ---
 
-> **Legacy update arrives during audit?** If a `git subtree pull` is needed mid-audit, see [`legacy-update-integration-guide.md`](./legacy-update-integration-guide.md) — specifically the "Before Batch 1" row in the risk table (lowest risk, simple integration).
+> **Legacy update arrives during audit?** If a `git subtree pull` is needed mid-audit, see [`legacy-update-integration-guide.md`](./legacy-update-integration-guide.md) â€” specifically the "Before Batch 1" row in the risk table (lowest risk, simple integration).
 
-_Related: [00-overview.md](./00-overview.md) · [06-component-standards.md](./06-component-standards.md) · [02-design-system-foundation.md](./02-design-system-foundation.md) · [legacy-update-integration-guide.md](./legacy-update-integration-guide.md)_
+_Related: [00-overview.md](./00-overview.md) Â· [06-component-standards.md](./06-component-standards.md) Â· [02-design-system-foundation.md](./02-design-system-foundation.md) Â· [legacy-update-integration-guide.md](./legacy-update-integration-guide.md)_

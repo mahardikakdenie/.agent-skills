@@ -1,16 +1,16 @@
-# 08 — Operational Standards & Ongoing Maintenance
+# 08 â€” Operational Standards & Ongoing Maintenance
 
 > **Batch:** Batch 11 - Operational Standards
 > **Branch:** `feat/ui`
-> **Run count:** Once — after Phase 07 cleanup complete
+> **Run count:** Once â€” after Phase 07 cleanup complete
 > **Prerequisite:** Phase 07 cleanup report and deprecation map exist
-> **Prev:** [07-cleanup.md](./07-cleanup.md) · **Final phase**
+> **Prev:** [07-cleanup.md](./07-cleanup.md) Â· **Final phase**
 
 ---
 
 ## Purpose
 
-Convert all migration outcomes into permanent operating documentation that standardizes how `packages/ui` grows and how future apps are onboarded. The output of this phase eliminates the need for another migration project — new apps follow the playbook, new components follow the intake process.
+Convert all migration outcomes into permanent operating documentation that standardizes how `packages/ui` grows and how future apps are onboarded. The output of this phase eliminates the need for another migration project â€” new apps follow the playbook, new components follow the intake process.
 
 ---
 
@@ -29,7 +29,7 @@ Convert all migration outcomes into permanent operating documentation that stand
 
 ## Document Structure Templates
 
-The AI executing Batch 11 must produce documents conforming to these structures. These are skeleton headers — expand each section using the migration inputs listed in the Batch Prompt.
+The AI executing Batch 11 must produce documents conforming to these structures. These are skeleton headers â€” expand each section using the migration inputs listed in the Batch Prompt.
 
 ### `SHARED_UI_ARCHITECTURE.md` skeleton
 
@@ -78,17 +78,17 @@ The AI executing Batch 11 must produce documents conforming to these structures.
 
 ## Prerequisites
 
-## Step 1 — Audit Your App's Components
+## Step 1 â€” Audit Your App's Components
 
-## Step 2 — Classify Components
+## Step 2 â€” Classify Components
 
-## Step 3 — Import Swaps (ADOPT_NOW)
+## Step 3 â€” Import Swaps (ADOPT_NOW)
 
-## Step 4 — Adapter Wrappers (ADOPT_WITH_ADAPTER)
+## Step 4 â€” Adapter Wrappers (ADOPT_WITH_ADAPTER)
 
-## Step 5 — Verification Gate
+## Step 5 â€” Verification Gate
 
-## Step 6 — Cleanup
+## Step 6 â€” Cleanup
 
 ## Rollback Procedure
 ```
@@ -140,7 +140,7 @@ The AI executing Batch 11 must produce documents conforming to these structures.
 
 ## [Unreleased]
 
-## [1.0.0] — <migration completion date>
+## [1.0.0] â€” <migration completion date>
 
 ### Added
 
@@ -181,38 +181,38 @@ major migration project.
 
 Document the stable architecture:
 
-1. **Component library overview** — purpose, scope, consumer apps
-2. **Component taxonomy** (Tier 1 / 2 / 3) — final post-migration state
-3. **App-agnostic contract** — what packages/ui guarantees and what it explicitly does not do
-4. **Dependency graph** — which Radix primitives, which internal packages/
-5. **CSS variable contract** — required tokens apps must define
-6. **Composition patterns** — slot pattern, render prop pattern, CVA variant pattern
-7. **Framework constraints** — why no Next.js, how apps handle Next.js specifics (adapter pattern)
+1. **Component library overview** â€” purpose, scope, consumer apps
+2. **Component taxonomy** (Tier 1 / 2 / 3) â€” final post-migration state
+3. **App-agnostic contract** â€” what packages/ui guarantees and what it explicitly does not do
+4. **Dependency graph** â€” which Radix primitives, which internal packages/
+5. **CSS variable contract** â€” required tokens apps must define
+6. **Composition patterns** â€” slot pattern, render prop pattern, CVA variant pattern
+7. **Framework constraints** â€” why no Next.js, how apps handle Next.js specifics (adapter pattern)
 
 ## Required Output: `packages/ui/docs/SHARED_UI_IMPLEMENTATION_GUIDE.md`
 
 Step-by-step guide for adding a new component to packages/ui:
 
-1. **Request intake** — how to propose a new component (spec-first RFC process)
-2. **SDD lifecycle** — SPEC → STORY → REVIEW → BUILD → VALIDATE → EXPORT
-3. **Spec template** — full ComponentName.spec.md template
-4. **Story template** — full ComponentName.stories.tsx template
-5. **Implementation checklist** — app-agnostic checklist (from [06-component-standards.md](./06-component-standards.md))
-6. **PR checklist** — what reviewers check before merging
-7. **Export guide** — how to add to index.ts correctly
+1. **Request intake** â€” how to propose a new component (spec-first RFC process)
+2. **SDD lifecycle** â€” SPEC â†’ STORY â†’ REVIEW â†’ BUILD â†’ VALIDATE â†’ EXPORT
+3. **Spec template** â€” full ComponentName.spec.md template
+4. **Story template** â€” full ComponentName.stories.tsx template
+5. **Implementation checklist** â€” app-agnostic checklist (from [06-component-standards.md](./06-component-standards.md))
+6. **PR checklist** â€” what reviewers check before merging
+7. **Export guide** â€” how to add to index.ts correctly
 
 ## Required Output: `packages/ui/docs/SHARED_UI_MIGRATION_PLAYBOOK.md`
 
 Step-by-step playbook for onboarding a new app to @repo/ui.
 Any team should be able to follow this without agent assistance:
 
-1. **Setup** — add `@repo/ui` to app's package.json, configure globals.css tokens
-2. **Phase 01 audit** — run per-app baseline audit (link to [01-app-audit.md](./01-app-audit.md))
-3. **Contribute baseline** — how to hand off `_per-app-baseline-summary.md` and the app `_output/` folder to `feat/ui`
-4. **Wait for master plan** — what happens on feat/ui (reference Phase 02-03)
-5. **Execute migration** — follow batch plan (link to [05-app-migration.md](./05-app-migration.md))
-6. **Verification** — per-batch verification gate checklist
-7. **Cleanup** — what to clean up locally
+1. **Setup** â€” add `@repo/ui` to app's package.json, configure globals.css tokens
+2. **Phase 01 audit** â€” run per-app baseline audit (link to [01-app-audit.md](./01-app-audit.md))
+3. **Contribute baseline** â€” how to hand off `_per-app-baseline-summary.md` and the app `_output/` folder to `feat/ui`
+4. **Wait for master plan** â€” what happens on feat/ui (reference Phase 02-03)
+5. **Execute migration** â€” follow batch plan (link to [05-app-migration.md](./05-app-migration.md))
+6. **Verification** â€” per-batch verification gate checklist
+7. **Cleanup** â€” what to clean up locally
 
 ## Required Output: `packages/ui/docs/SHARED_UI_OPERATIONAL_STANDARDS.md`
 
@@ -243,7 +243,7 @@ Breaking changes in `@repo/ui` are expensive (28 apps affected). We follow a str
 
 2. **Phase 2: Hard Deprecation (Major Bump)**
    - **Action:** Remove the deprecated code.
-   - **Versioning:** Must bump `packages/ui` major version (e.g., 1.x → 2.0).
+   - **Versioning:** Must bump `packages/ui` major version (e.g., 1.x â†’ 2.0).
    - **Migration Guide:** Pull Request must include a `MIGRATION_GUIDE.md` entry.
    - **Codemod:** (Optional but recommended) `jscodeshift` script to auto-fix consumers.
 
@@ -271,7 +271,7 @@ If a critical bug is found in `@repo/ui` (e.g., a11y regression or crash):
 1. **Branch:** Create `hotfix/ui-patch-description` from `main`.
 2. **Fix:** Apply minimal fix (no features, no refactors).
 3. **Verify:** Run affected app tests via `turbo run test --filter=...@repo/ui`.
-4. **Release:** Bump patch version (1.0.0 → 1.0.1).
+4. **Release:** Bump patch version (1.0.0 â†’ 1.0.1).
 5. **Propagate:** Apps automatically pick up non-breaking patch on next install (due to workspace protocol).
 
 ### Ownership Model
@@ -311,7 +311,7 @@ interface VerificationCheck {
   checks: [
     { type: 'file-existence', paths: ['docs/migration/component/_output/_audit-report.md'] },
     { type: 'content-grep', pattern: 'TODO', forbidden: true },
-    { type: 'type-check', command: '<verification-gate.md §1 typecheck command>' },
+    { type: 'type-check', command: '<verification-gate.md Â§1 typecheck command>' },
     { type: 'visual-diff', command: 'pnpm test:visual' } // Phase 2
   ]
 }
@@ -329,7 +329,7 @@ Seed from `20-foundation-change-log.md`. Format:
 
 ## [Unreleased]
 
-## [1.0.0] — <migration completion date>
+## [1.0.0] â€” <migration completion date>
 ### Added
 - <list all new components from Batch 4>
 
@@ -369,7 +369,7 @@ After Phase 08 is complete, the migration project is closed. Going forward:
 Any change to **what is migrated or how** (not just when) must be an explicit **Foundation Amendment PR** against `packages/ui/docs/normalization/_output/00-foundation.md` on `feat/ui`.
 
 **A Foundation Amendment is required for:**
-- Reclassifying a component (`KEEP_APP_LOCAL` → `NEW_SHARED_COMPONENT`)
+- Reclassifying a component (`KEEP_APP_LOCAL` â†’ `NEW_SHARED_COMPONENT`)
 - Adding a new mandatory dependency to `packages/ui`
 - Changing the batch ordering or shared-vs-local boundary rules
 - Relaxing any verification gate requirement
@@ -395,14 +395,14 @@ Every migration batch must leave a complete audit trail before being marked `DON
 
 | Artifact | Location | Required |
 | :--- | :--- | :--- |
-| Per-app audit report | `_output/_audit-report.md` | ✅ |
-| Migration log (append-only) | `_output/_migration-log.md` | ✅ |
-| Parity checklist (all items ✅) | `_output/_parity-checklist.md` | ✅ |
-| Cleanup report | `_output/_cleanup-report.md` | ✅ Phase 07 |
-| Legacy update logs | `legacy-updates/legacy-update-*.md` | ✅ per update |
-| Foundation change log | `normalization/_output/20-foundation-change-log.md` | ✅ Phase 04 |
+| Per-app audit report | `_output/_audit-report.md` | âœ… |
+| Migration log (append-only) | `_output/_migration-log.md` | âœ… |
+| Parity checklist (all items âœ…) | `_output/_parity-checklist.md` | âœ… |
+| Cleanup report | `_output/_cleanup-report.md` | âœ… Phase 07 |
+| Legacy update logs | `legacy-updates/legacy-update-*.md` | âœ… per update |
+| Foundation change log | `normalization/_output/20-foundation-change-log.md` | âœ… Phase 04 |
 
 ---
 
-*Related: [07-cleanup.md](./07-cleanup.md) · [README.md](./README.md) · [00-overview.md](./00-overview.md)*
+*Related: [07-cleanup.md](./07-cleanup.md) Â· [README.md](./README.md) Â· [00-overview.md](./00-overview.md)*
 ```
