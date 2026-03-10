@@ -2,6 +2,8 @@ import { cva } from 'class-variance-authority';
 
 export const selectFieldVariants = cva('grid w-full gap-1.5');
 
+export const selectControlVariants = cva('relative w-full');
+
 export const selectLabelVariants = cva('text-sm font-medium leading-none', {
   variants: {
     tone: {
@@ -32,10 +34,15 @@ export const selectTriggerVariants = cva(
         true: 'cursor-not-allowed opacity-60',
         false: '',
       },
+      clearable: {
+        true: 'pr-10',
+        false: '',
+      },
     },
     defaultVariants: {
       invalid: false,
       disabled: false,
+      clearable: false,
     },
   },
 );
@@ -78,3 +85,12 @@ export const selectScrollButtonVariants = cva(
 );
 
 export const selectMessageVariants = cva('text-sm leading-5 text-destructive');
+
+export const selectActionButtonVariants = cva(
+  [
+    'absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
+    'transition-colors motion-reduce:transition-none',
+    'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    'focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
+  ].join(' '),
+);

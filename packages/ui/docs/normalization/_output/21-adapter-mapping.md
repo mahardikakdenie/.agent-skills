@@ -153,6 +153,21 @@ Keep local:
 - Async autocomplete, remote validation, option fetching, or search-result panels that should migrate to `Select`, `Combobox`, or an app-local shell.
 - Domain-aware field wrappers that still compute validation copy, submit readiness, or service-side state before rendering.
 
+## Textarea
+
+Direct adoption guidance:
+
+- Legacy `Textarea`, `TextArea`, remarks fields, notes boxes, and plain-text description inputs map to `Textarea`.
+- Existing invalid props such as `errorMessage`, `hasError`, or `error` normalize to the shared `error` contract; helper or hint copy maps to `helperText`.
+- Existing clear buttons or `onClear` handlers collapse into `clearable`, while controlled value flows normalize to `value`, `defaultValue`, `onChange`, and `onValueChange`.
+- Native textarea attributes such as `rows`, `maxLength`, `minLength`, `name`, `placeholder`, and `autoComplete` stay on the shared primitive.
+
+Keep local:
+
+- Auto-grow implementations, custom resize modes, or explicit height variants such as `compact`, `auto-grow`, `height`, or `shadow`.
+- Rich-text, markdown, mention, upload, or editor-style surfaces.
+- Domain-aware wrappers that still compute validation copy, apply business formatting, or trigger workflow side effects while editing.
+
 ## Label
 
 Direct adoption guidance:
@@ -236,6 +251,7 @@ Direct adoption guidance:
 - Existing `value`, `defaultValue`, `onChange`, or `onValueChange` flows normalize to `value`, `defaultValue`, and `onValueChange`.
 - Legacy placeholder props such as `placeholderSelect` collapse into `placeholder`.
 - Shared field copy maps to `label`, while inline validation text maps to `error`.
+- Existing clear affordances or forced-reset flags normalize to `clearable`, and cleared state should flow through `onValueChange(undefined)` so the trigger returns to its placeholder treatment.
 - Existing border, background, chevron, and placeholder-style overrides should collapse into the canonical shared surface plus `className`, not into new shared mode props.
 
 Keep local:

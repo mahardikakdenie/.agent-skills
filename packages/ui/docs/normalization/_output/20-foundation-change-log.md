@@ -354,3 +354,31 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Tabs` alongside the previously shipped Batch 4 primitives.
 - App-local detail tabs, settings tabs, and section switchers can begin converging on one shared compound tabs primitive while route synchronization, query-string coupling, and workflow state remain local.
+
+---
+
+## 2026-03-10 - Textarea Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Textarea` as the final eligible Wave B4 primitive after `Tabs`.
+- Added the canonical Textarea spec, Storybook coverage, typed exports, and Box-authored multiline field markup aligned to `02-api-conventions.md`.
+- Normalized recurring multiline-field deltas into the shared contract: `label`, `helperText`, `error`, `clearable`, and `onValueChange`, while keeping auto-grow logic, rich-text behavior, custom height modes, and workflow-specific formatting local.
+- Applied the current web-interface guidance during the final review by keeping visible labels and described-by error wiring intact, preserving native multiline semantics, and defaulting shared placeholder examples to the current copy style.
+
+Impact:
+- `@repo/ui` export surface now includes `Textarea`, completing Wave B4 alongside the previously shipped shared primitives.
+- App-local notes, remarks, and plain-text description fields can begin converging on one shared Textarea primitive while richer editor behavior, autoresize logic, and domain-specific formatting remain local.
+
+---
+
+## 2026-03-11 - Textarea and Select Input Refinements
+
+Changed:
+- Corrected the shared `Textarea` field-shell implementation so the visible border, focus ring, and browser resize behavior now live on the actual `textarea` element instead of an outer wrapper.
+- Tightened the `Textarea` clear affordance styling so it presents the same clickable hover and cursor treatment as the rest of the shared input family.
+- Expanded the shared `Select` contract with `clearable` reset behavior and updated its `onValueChange` contract to allow `undefined` when a selected value is cleared back to the placeholder state.
+- Updated the Select spec, stories, and normalization outputs to document and verify the new clearable behavior.
+
+Impact:
+- The shared `Textarea` resize handle now stays visually aligned with the rendered field chrome in Storybook and consuming apps.
+- Shared static selects can now absorb recurring app-local clear affordances without widening into searchable or multi-select behavior.

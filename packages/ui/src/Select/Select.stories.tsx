@@ -33,13 +33,9 @@ function normalizeSelectValue(value: unknown): string | undefined {
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
-function SelectStoryHarness({
-  value,
-  defaultValue,
-  onValueChange,
-  ...props
-}: SelectProps) {
-  const isControlled = value !== undefined;
+function SelectStoryHarness(selectProps: SelectProps) {
+  const { value, defaultValue, onValueChange, ...props } = selectProps;
+  const isControlled = Object.prototype.hasOwnProperty.call(selectProps, 'value');
   const [selectedValue, setSelectedValue] = React.useState<string | undefined>(
     normalizeSelectValue(value) ?? normalizeSelectValue(defaultValue),
   );
@@ -53,8 +49,7 @@ function SelectStoryHarness({
   return (
     <Select
       {...props}
-      defaultValue={isControlled ? undefined : defaultValue}
-      value={isControlled ? selectedValue : undefined}
+      {...(isControlled ? { value: selectedValue } : { defaultValue })}
       onValueChange={(nextValue) => {
         if (isControlled) {
           setSelectedValue(nextValue);
@@ -103,6 +98,7 @@ const meta = {
     loading: false,
     required: false,
     error: false,
+    clearable: false,
     onValueChange: fn(),
     onOpen: fn(),
     onClose: fn(),
@@ -127,6 +123,9 @@ const meta = {
       control: 'boolean',
     },
     required: {
+      control: 'boolean',
+    },
+    clearable: {
       control: 'boolean',
     },
     error: {
@@ -238,8 +237,23 @@ export const LoadingState: Story = {
   },
 };
 
+export const Clearable: Story = {
+  args: {
+    defaultValue: 'my',
+    clearable: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows the shared clear action when a selected value should return to the placeholder state.',
+      },
+    },
+  },
+};
+
 export const Interactive: Story = {
   args: {
+    clearable: true,
     onValueChange: fn(),
     onOpen: fn(),
     onClose: fn(),
@@ -258,6 +272,11 @@ export const Interactive: Story = {
     await expect(args.onValueChange).toHaveBeenCalledWith('my');
     await expect(args.onClose).toHaveBeenCalledTimes(1);
     await expect(trigger).toHaveTextContent('Malaysia');
+
+    const clearButton = await canvas.findByRole('button', { name: /clear selection/i });
+    await userEvent.click(clearButton);
+    await expect(args.onValueChange).toHaveBeenCalledWith(undefined);
+    await expect(trigger).toHaveTextContent(/select a country/i);
   },
   parameters: {
     docs: {
@@ -278,6 +297,7 @@ export const ResponsiveLayout: Story = {
         <SelectStoryHarness
           {...args}
           label="Country of residence"
+          clearable
           placeholder="Select your country"
           options={longCountryOptions}
         />

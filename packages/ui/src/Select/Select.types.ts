@@ -14,7 +14,7 @@ export interface SelectProps
   > {
   value?: string;
   defaultValue?: string;
-  onValueChange?: (value: string) => void;
+  onValueChange?: (value: string | undefined) => void;
   options: SelectOption[];
   placeholder?: string;
   disabled?: boolean;
@@ -22,6 +22,7 @@ export interface SelectProps
   required?: boolean;
   error?: string | boolean;
   label?: string;
+  clearable?: boolean;
   className?: string;
   onOpen?: () => void;
   onClose?: () => void;

@@ -52,7 +52,7 @@ This Batch 4 implementation is intentionally narrow. It covers the repeated cros
 | --- | --- | --- | --- | --- |
 | `value` | `string` | `undefined` | No | Controlled selected value. |
 | `defaultValue` | `string` | `undefined` | No | Uncontrolled initial selected value. |
-| `onValueChange` | `(value: string) => void` | `undefined` | No | Called when a new option is selected. |
+| `onValueChange` | `(value: string \| undefined) => void` | `undefined` | No | Called when a new option is selected or when a clearable select is reset to the placeholder state. |
 | `options` | `SelectOption[]` | - | Yes | Flat list of available static options. |
 | `placeholder` | `string` | `undefined` | No | Placeholder content shown when no option is selected. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger and closes interaction. |
@@ -60,6 +60,7 @@ This Batch 4 implementation is intentionally narrow. It covers the repeated cros
 | `required` | `boolean` | `false` | No | Marks the field required for form semantics. |
 | `error` | `string \| boolean` | `false` | No | Marks the field invalid; string values also render inline error text. |
 | `label` | `string` | `undefined` | No | Visible field label associated with the trigger. |
+| `clearable` | `boolean` | `false` | No | Shows a clear action when a selected value should return to the placeholder state. |
 | `open` | `boolean` | `undefined` | No | Controlled open state. |
 | `defaultOpen` | `boolean` | `undefined` | No | Uncontrolled initial open state. |
 | `onOpen` | `() => void` | `undefined` | No | Called when the menu opens. |
@@ -101,6 +102,7 @@ export interface SelectOption {
 | Disabled | Muted trigger, no pointer interaction, menu cannot open | Disabled semantics are forwarded through Radix |
 | Loading | Trigger disables interaction and swaps chevron for spinner | Trigger exposes `aria-busy="true"` |
 | Error | Destructive border and inline validation copy | Trigger exposes `aria-invalid="true"` and links the error via `aria-describedby` |
+| Clearable | Selected value can be reset to the placeholder state through an explicit clear action | Clear button is keyboard reachable and labelled `Clear selection` |
 
 ---
 
@@ -193,6 +195,19 @@ export interface SelectOption {
 />
 ```
 
+### 5. Clearable state
+
+```tsx
+<Select
+  label="Country"
+  clearable
+  value={country}
+  onValueChange={setCountry}
+  placeholder="Select a country"
+  options={countryOptions}
+/>
+```
+
 ---
 
 ## Do / Don't
@@ -202,7 +217,7 @@ export interface SelectOption {
 | Use `Select` for static single-choice option sets. | Use `Select` for searchable or async option discovery. |
 | Keep searchable selection on `Combobox`. | Reintroduce `searchable` or inline filtering props on this component. |
 | Keep multi-select and phone-code-specific flows outside this shared contract. | Collapse multi-select, phone-code, and static single-select into one overloaded API. |
-| Use `error` and `label` for shared field semantics. | Add app-local prop names such as `errorMessage`, `placeholderSelect`, or `withBorder`. |
+| Use `error`, `label`, and `clearable` for shared field semantics. | Add app-local prop names such as `errorMessage`, `placeholderSelect`, or `withBorder`. |
 | Keep authored shared JSX on `Box`, including trigger, items, and messages. | Hand-author native JSX tags in shared source or stories. |
 | Keep option fetching and domain mapping in the consumer. | Put services, routing, or business logic inside `Select`. |
 
@@ -218,6 +233,7 @@ export interface SelectOption {
 - [x] `DisabledState`
 - [x] `ErrorState`
 - [x] `LoadingState`
+- [x] `Clearable`
 - [x] `Interactive`
 - [x] `ResponsiveLayout`
 
@@ -236,3 +252,4 @@ export interface SelectOption {
 | Date | Change |
 | --- | --- |
 | 2026-03-10 | Initial Select spec |
+| 2026-03-11 | Added clearable reset support |

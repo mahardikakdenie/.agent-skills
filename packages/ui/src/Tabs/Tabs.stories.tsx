@@ -304,7 +304,6 @@ export const Default: Story = {
 };
 
 export const DisabledState: Story = {
-  name: 'Disabled State',
   render: (args) => (
     <TabsExample
       className="max-w-3xl"
@@ -324,7 +323,6 @@ export const DisabledState: Story = {
 };
 
 export const VerticalOrientation: Story = {
-  name: 'Vertical Orientation',
   render: (args) => (
     <TabsExample
       className="max-w-4xl"
@@ -396,7 +394,6 @@ export const Interactive: Story = {
 };
 
 export const ControlledMode: Story = {
-  name: 'Controlled Mode',
   render: () => <ControlledTabsExample items={defaultTabs} />,
   parameters: {
     docs: {
@@ -409,7 +406,6 @@ export const ControlledMode: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive Layout',
   args: {
     defaultValue: scrollableTabs[0]!.value,
     value: undefined,
