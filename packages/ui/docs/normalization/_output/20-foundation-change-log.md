@@ -286,3 +286,18 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Dialog` alongside the previously shipped Batch 4 primitives.
 - Centered modal shells, confirmation dialogs, and focused form overlays can now normalize toward one shared modal contract while leaving domain workflows, route coupling, and bottom-sheet behavior local.
+
+---
+
+## 2026-03-10 - Select Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Select` as the next eligible Wave B4 input primitive after `Dialog`.
+- Added the canonical Select spec, Storybook coverage, typed exports, and a Radix-backed static single-select wrapper with Box-authored trigger, menu content, and option rows.
+- Resolved the documented select-family drift by locking this shared contract to static single selection only: placeholder, loading, disabled, label, error, controlled/uncontrolled value, and controlled/uncontrolled open state callbacks.
+- Realigned `02-api-conventions.md` so `Select` no longer advertises searchable, multi-select, or phone-code mode flags that belong to `Combobox` or later follow-up work instead.
+
+Impact:
+- `@repo/ui` export surface now includes `Select` alongside the previously shipped Batch 4 primitives.
+- App-local static dropdowns can begin converging on one shared Select primitive, while searchable selection remains on the future `Combobox` path and multi-select / phone-code flows remain out of this contract.
+

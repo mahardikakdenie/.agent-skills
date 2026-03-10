@@ -300,7 +300,7 @@
 | Label | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, `htmlFor` association, tone states, and Box-authored markup on top of `@radix-ui/react-label` |
 | Pagination | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compact page-range handling, first/prev/next/last controls, and optional page-size selector |
 | RadioGroup | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound item exports, Box-authored Radix radio semantics, and shared size + error support |
-| Select | 4 | B4 | PLANNED | Static select only |
+| Select | 4 | B4 | DONE | Shipped on 2026-03-10 as the static single-select primitive; searchable selection stays on `Combobox` and multi-select stays out of this contract |
 | Skeleton | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored muted loading surfaces, and decorative-by-default accessibility behavior |
 | Spinner | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored CSS ring motion, and inline + overlay loading coverage |
 | Switch | 4 | B4 | PLANNED | Toggle control |
@@ -330,6 +330,7 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 
 
 

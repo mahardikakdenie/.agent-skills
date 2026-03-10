@@ -12,6 +12,8 @@ export * from './Spinner';
 export * from './Checkbox';
 export * from './Input';
 export * from './Label';
+export * from './RadioGroup';
+export * from './Select';
 
 // Layout
 export * from './Card';
@@ -22,6 +24,3 @@ export * from './Pagination';
 // Overlays
 export * from './Dialog';
 export * from './Drawer';
-
-// Inputs
-export * from './RadioGroup';

@@ -310,7 +310,6 @@ export const AsyncClose: Story = {
 };
 
 export const HiddenAccessibleHeader: Story = {
-  name: 'Hidden Accessible Header',
   render: () => (
     <DialogStoryFrame>
       <Dialog open>
@@ -376,3 +375,4 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+

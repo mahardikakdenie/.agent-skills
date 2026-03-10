@@ -230,24 +230,28 @@ export interface SelectOption {
 }
 
 export interface SelectProps {
-  value?: string | string[]
-  onValueChange?: (value: string | string[]) => void
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void
   options: SelectOption[]
   placeholder?: string
   disabled?: boolean
   loading?: boolean
   required?: boolean
   error?: string | boolean
-  multi?: boolean
-  searchable?: boolean
-  phoneCodeMode?: boolean
   label?: string
   className?: string
   open?: boolean
+  defaultOpen?: boolean
   onClose?: () => void
   onOpen?: () => void
 }
 ```
+
+Shared-scope note:
+- `Select` is the static single-select contract only.
+- Search-driven selection belongs to `Combobox`.
+- Multi-select and phone-code-specific flows remain separate migration targets and must not be folded back into this API.
 
 Story group: `Inputs`
 
@@ -1063,4 +1067,5 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+
 

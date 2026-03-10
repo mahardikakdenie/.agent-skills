@@ -227,3 +227,20 @@ Keep local:
 - Route-aware modal flows, auth gates, domain forms with service hooks, and mutation orchestration that extend beyond shell behavior.
 - Mobile bottom sheets, edge-attached panels, and drag-dismiss patterns that should adopt `Drawer` instead of `Dialog`.
 - Media viewers, branded modal artwork, and modal stacks with app-specific animation or sequencing policy.
+
+## Select
+
+Direct adoption guidance:
+
+- Legacy static single-select dropdowns map to `Select`.
+- Existing `value`, `defaultValue`, `onChange`, or `onValueChange` flows normalize to `value`, `defaultValue`, and `onValueChange`.
+- Legacy placeholder props such as `placeholderSelect` collapse into `placeholder`.
+- Shared field copy maps to `label`, while inline validation text maps to `error`.
+- Existing border, background, chevron, and placeholder-style overrides should collapse into the canonical shared surface plus `className`, not into new shared mode props.
+
+Keep local:
+
+- Searchable, filterable, async, or typeahead selection flows; those should migrate to `Combobox`.
+- Multi-select, checkbox-list, staged-confirmation, or summary-label pickers.
+- Phone-code-specific selection and any select wrapper that still embeds query params, routing, service hooks, or domain-specific option shaping.
+
