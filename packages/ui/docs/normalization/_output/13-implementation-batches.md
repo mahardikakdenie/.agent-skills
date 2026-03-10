@@ -30,7 +30,7 @@
 - This rerun plans the canonical shared program on top of the raw deduplicated backlog captured in `12-master-backlog.csv`.
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
-- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, and `Skeleton`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
+- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Skeleton`, and `Spinner`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -292,7 +292,7 @@
 | Button | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, canonical variant/size coverage, loading state, and Box-authored `asChild` composition |
 | Card | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound slot exports, and consumer-owned interactive composition |
 | Checkbox | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored field markup, and invalid + indeterminate coverage |
-| ContentLoadingWrapper | 4 | B4 | PLANNED | Align with `Skeleton` and `Spinner` |
+| ContentLoadingWrapper | 4 | B4 | PLANNED | Unblocked now that `Skeleton` and `Spinner` are DONE |
 | Dialog | 4 | B4 | PLANNED | A11y gate is explicit |
 | Drawer | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound exports, direction variants, and Box-authored shell layout on top of `vaul` |
 | Input | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, normalized input modes, affix slots, clearable behavior, and Box-authored field markup |
@@ -301,7 +301,7 @@
 | RadioGroup | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound item exports, Box-authored Radix radio semantics, and shared size + error support |
 | Select | 4 | B4 | PLANNED | Static select only |
 | Skeleton | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored muted loading surfaces, and decorative-by-default accessibility behavior |
-| Spinner | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
+| Spinner | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored CSS ring motion, and inline + overlay loading coverage |
 | Switch | 4 | B4 | PLANNED | Toggle control |
 | Table | 4 | B4 | PLANNED | Foundation for `DataTable` |
 | Tabs | 4 | B4 | PLANNED | Route sync remains local |
@@ -329,6 +329,8 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
+
 
 
 

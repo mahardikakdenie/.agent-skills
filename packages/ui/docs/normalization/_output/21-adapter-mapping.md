@@ -182,3 +182,18 @@ Keep local:
 - Domain-aware card selectors or plan selectors that still combine radio semantics with pricing logic, routing, or submission orchestration.
 - Option groups that fetch choices, derive labels from business entities, or inject workflow-specific side effects on selection.
 - Composite filter shells where the radio group is only one part of a larger domain-specific control.
+
+## Spinner
+
+Direct adoption guidance:
+
+- Legacy `Spinner` and generic `Loader` components that only render an indeterminate activity indicator map to `Spinner`.
+- Existing compact and standard loader sizes map to `size="sm" | "md" | "lg"`; visible loading copy maps to `label`.
+- In-flow busy states inside buttons, status rows, or small panels map to `inline`.
+- Full-screen and dimmed loading shells that only block interaction and center an indicator map to `overlay`; consumer `className` can still refine positioning for nested surfaces.
+
+Keep local:
+
+- Branded logo loaders, campaign animations, and product-specific loader artwork.
+- Timed wrappers, delayed-loading orchestration, and loading shells that also own title/description/action policy.
+- Domain-aware fallback components that combine loading with retry, empty-state, or error-state logic; those should stay local or migrate later to `ContentLoadingWrapper`.

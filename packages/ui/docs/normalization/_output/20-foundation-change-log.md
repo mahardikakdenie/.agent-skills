@@ -232,3 +232,18 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Skeleton` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, and `RadioGroup`.
 - App-local loading placeholders can begin converging on one shared Skeleton primitive while keeping branded loaders, blocking overlays, retry messaging, and orchestration logic local.
+
+---
+
+## 2026-03-10 - Spinner Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Spinner` as the next eligible Wave B4 primitive after `Skeleton`, while honoring the existing Wave B4 holds on `Dialog` and `Select`.
+- Added the canonical Spinner spec, Storybook coverage, typed exports, and CVA-backed `size` plus derived layout styling aligned to `02-api-conventions.md`.
+- Normalized repeated per-app loader baselines into the shared contract: `size`, optional `label`, `inline`, and `overlay`, while keeping branded loaders, timed wrappers, and richer loading shells out of the primitive.
+- Kept authored shared markup on `Box` and implemented the indicator as an asymmetrical CSS border ring so motion stays obvious without authoring native SVG tags.
+
+Impact:
+- `@repo/ui` export surface now includes `Spinner` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, and `Skeleton`.
+- Wave B4 `ContentLoadingWrapper` is now unblocked from its `Skeleton` + `Spinner` dependency perspective and becomes the next eligible non-gated component in the current wave.
+
