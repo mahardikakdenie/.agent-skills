@@ -1,4 +1,4 @@
-// Primitives
+﻿// Primitives
 export * from './Box';
 
 // Feedback
@@ -14,6 +14,7 @@ export * from './Input';
 export * from './Label';
 export * from './RadioGroup';
 export * from './Select';
+export * from './Switch';
 
 // Layout
 export * from './Card';
@@ -24,3 +25,4 @@ export * from './Pagination';
 // Overlays
 export * from './Dialog';
 export * from './Drawer';
+

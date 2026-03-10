@@ -1,4 +1,4 @@
-# 21 - Adapter Mapping
+﻿# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -243,4 +243,21 @@ Keep local:
 - Searchable, filterable, async, or typeahead selection flows; those should migrate to `Combobox`.
 - Multi-select, checkbox-list, staged-confirmation, or summary-label pickers.
 - Phone-code-specific selection and any select wrapper that still embeds query params, routing, service hooks, or domain-specific option shaping.
+
+
+## Switch
+
+Direct adoption guidance:
+
+- Legacy settings toggles, binary preference controls, and simple enable-or-disable rows map to `Switch`.
+- Existing `checked`, `defaultChecked`, `onChange`, or `onCheckedChange` flows normalize to `checked`, `defaultChecked`, and `onCheckedChange`.
+- Inline label text maps to `label`; dense settings rows map to `size="sm"`, while larger touch targets map to `size="lg"`.
+- Field-level invalid copy maps to `error`; shared invalid treatment and accessible message wiring stay on the primitive.
+- Longer supporting copy remains consumer composition and should link through `aria-describedby` when needed instead of widening the shared primitive contract.
+
+Keep local:
+
+- Toggle-like segmented navigation, filter pills, or tab replacements that are not true binary switches.
+- Switch wrappers that trigger routing, service calls, analytics, or domain workflows directly on toggle.
+- Validation-heavy field shells that need custom descriptions, inline error policy, or async persistence messaging beyond the shared primitive.
 

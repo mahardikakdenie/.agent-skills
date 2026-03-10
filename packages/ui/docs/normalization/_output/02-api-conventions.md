@@ -1,4 +1,4 @@
-# 02 - API Conventions
+﻿# 02 - API Conventions
 
 > **Batch:** Batch 2 - Design System Foundation
 > **Branch:** `feat/ui`
@@ -317,6 +317,7 @@ export interface SwitchProps {
   disabled?: boolean
   required?: boolean
   label?: string
+  error?: string | boolean
   size?: 'sm' | 'md' | 'lg'  // default: 'md'
   className?: string
 }
@@ -1067,5 +1068,6 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+
 
 

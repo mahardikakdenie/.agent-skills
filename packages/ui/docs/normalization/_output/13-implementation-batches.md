@@ -1,4 +1,4 @@
-# 13 - Implementation Batches
+﻿# 13 - Implementation Batches
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -303,7 +303,7 @@
 | Select | 4 | B4 | DONE | Shipped on 2026-03-10 as the static single-select primitive; searchable selection stays on `Combobox` and multi-select stays out of this contract |
 | Skeleton | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored muted loading surfaces, and decorative-by-default accessibility behavior |
 | Spinner | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored CSS ring motion, and inline + overlay loading coverage |
-| Switch | 4 | B4 | PLANNED | Toggle control |
+| Switch | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Radix-backed toggle semantics, shared size density, error-state support, and Box-authored control + label markup |
 | Table | 4 | B4 | PLANNED | Foundation for `DataTable` |
 | Tabs | 4 | B4 | PLANNED | Route sync remains local |
 | Textarea | 4 | B4 | PLANNED | Plain multiline input |
@@ -330,6 +330,8 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
+
 
 
 

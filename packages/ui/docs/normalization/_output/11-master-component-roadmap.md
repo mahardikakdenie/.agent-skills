@@ -1,4 +1,4 @@
-# 11 - Master Component Roadmap
+﻿# 11 - Master Component Roadmap
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -108,5 +108,6 @@
 - Any API marked 2 amendment must be mirrored back into 2-api-conventions.md before implementation starts.
 - Batch 3A token bootstrap is a hard gate for every row after Box.
 - `RichTextEditor` is visible for completeness but remains outside the initial critical path.
+
 
 

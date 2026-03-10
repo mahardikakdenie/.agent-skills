@@ -301,3 +301,29 @@ Impact:
 - `@repo/ui` export surface now includes `Select` alongside the previously shipped Batch 4 primitives.
 - App-local static dropdowns can begin converging on one shared Select primitive, while searchable selection remains on the future `Combobox` path and multi-select / phone-code flows remain out of this contract.
 
+
+---
+
+## 2026-03-10 - Switch Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Switch` as the next eligible Wave B4 primitive after `Select`.
+- Added the canonical Switch spec, Storybook coverage, typed exports, and `@radix-ui/react-switch` composition with Box-authored control, thumb, and label markup.
+- Kept the shared API intentionally narrow after composition review: `checked`, `defaultChecked`, `onCheckedChange`, `disabled`, `required`, `label`, and `size`, while supporting longer descriptive copy through consumer composition instead of a wider field-shell prop surface.
+
+Impact:
+- `@repo/ui` export surface now includes `Switch` alongside the previously shipped Batch 4 primitives.
+- App-local settings toggles and binary preference controls can begin converging on one shared Switch primitive while validation orchestration, supporting copy layouts, and persistence side effects stay local.
+
+---
+
+## 2026-03-10 - Switch Contract Refinement
+
+Changed:
+- Amended the normalized Switch contract in `02-api-conventions.md` and `11-master-component-roadmap.md` to include shared `error` support.
+- Expanded the shipped Switch implementation and Storybook coverage to include an accessible inline error message, destructive invalid styling, and `aria-invalid` plus `aria-describedby` wiring.
+- Corrected the implementation to keep the controlled and uncontrolled Radix paths separate instead of forwarding both `checked` and `defaultChecked` simultaneously.
+
+Impact:
+- Switch now aligns with the shared input family for field-level validation treatment without expanding into a full field-shell abstraction.
+- App-local toggle wrappers can normalize invalid state handling to the shared `error` contract while keeping supporting descriptions and workflow logic local.
