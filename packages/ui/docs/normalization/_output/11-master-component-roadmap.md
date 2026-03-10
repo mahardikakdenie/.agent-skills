@@ -25,6 +25,7 @@
 - Shared authored JSX must render through `Box`, including semantic HTML and SVG output via `Box as="..."`; do not hand-write native JSX tags in shared component source.
 - All non-`Box` shared items remain Batch 4 build scope, regardless of sub-wave sequencing.
 - Consumer demand is represented as normalized counts from `05-coverage-baseline.md`, not raw per-app export lists.
+- `Spinner` and `Skeleton` remain the only canonical shared loading surfaces; loading wrappers, suspense fallbacks, branded full-page loaders, retry/error-aware shells, and domain-aware loading containers stay app-local unless a future narrower wrapper is explicitly approved.
 - `RichTextEditor` remains visible for traceability but stays decision-gated.
 - Cross-check on 2026-03-09 confirms the current `@repo/ui` export surface is still `Box` only; no Batch 4 row may move to `DONE` until that changes.
 
@@ -43,7 +44,6 @@
 | Button | 1 (Primitive) | `@radix-ui/react-slot` | `02` Button | none | Standard | `Button.Default`, `Button.Variants`, `Button.Sizes`, `Button.Loading`, `Button.AsChild` | 23 apps; see `05` | M | First broad shared primitive wave |
 | Card | 2 (Composite) | Tier 1 composition | `02` Card | none | Standard | `Card.Basic`, `Card.HeaderFooter`, `Card.Interactive` | 12 apps; see `05` | S | Structural card only |
 | Checkbox | 1 (Primitive) | `@radix-ui/react-checkbox` | `02` Checkbox | `@radix-ui/react-checkbox` | Standard | `Checkbox.Default`, `Checkbox.Indeterminate`, `Checkbox.Disabled` | 20 apps; see `05` | S | Must cover invalid and indeterminate states |
-| ContentLoadingWrapper | 2 (Composite) | `Skeleton` composition | `02` ContentLoadingWrapper | none | Standard | `ContentLoadingWrapper.Page`, `ContentLoadingWrapper.Inline`, `ContentLoadingWrapper.WithSkeleton` | 18 apps; see `05` | M | Shared loading layout only |
 | Dialog | 2 (Composite) | `@radix-ui/react-dialog` | `02` Dialog | `@radix-ui/react-dialog` | Complex | `Dialog.Basic`, `Dialog.Scrollable`, `Dialog.Destructive`, `Dialog.AsyncClose`, `Dialog.A11y` | 26 apps; see `05` | L | Explicit a11y risk gate |
 | Drawer | 2 (Composite) | `vaul` | `02` Drawer | `vaul` | Complex | `Drawer.Basic`, `Drawer.Sides`, `Drawer.Scrollable`, `Drawer.FormAction` | 10 apps; see `05` | M | Keep distinct from modal semantics |
 | Input | 1 (Primitive) | semantic `input` target via `Box as="input"` | `02` Input | none | Standard | `Input.Default`, `Input.Types`, `Input.WithAffix`, `Input.Error`, `Input.Disabled` | 26 apps; see `05` | M | Core primitive for later waves |

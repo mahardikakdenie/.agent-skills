@@ -46,6 +46,7 @@ Source: `06-component-standards.md 6`
 | Table column configs | `*TableConfig.tsx`, column schema definitions | Domain-specific schema |
 | Page-level layouts | `SidebarShell`, `LayoutViewShell`, `DashboardLayout` | App routing + nav config |
 | Branded full-page loaders | Logo animation, company identity loaders | App identity |
+| Loading wrappers and suspense fallbacks | `LoadingWrapper`, `SuspenseFallback`, retry-aware loading shells | Loading layout, fallback policy, and domain orchestration stay app-owned |
 | Chart wrappers with domain data | `RechartsDashboard`, `CommissionChart` | Data-coupled |
 | Container components | `*Container.tsx` wrapping `use<Domain>()` hooks | Service layer coupling |
 | Auth / SSO flows | `LoginPage`, `OtpPage`, `ReCaptcha`, `MicrosoftLoginButton` | Security + 3rd-party SDK |
@@ -60,7 +61,7 @@ Source: `06-component-standards.md 6`
 | Pure display primitives | `Button`, `Input`, `Checkbox`, `Badge`, `Avatar` |
 | Enhanced input wrappers (label + error) | `FormField`, `InputWithError` (-> absorbed by `Input` API) |
 | Modal/dialog/drawer shells (no business content) | `Dialog`, `Drawer`, `Popover` |
-| Loading indicators | `Spinner`, `Skeleton`, `ContentLoadingWrapper` |
+| Loading indicators | `Spinner`, `Skeleton` |
 | Empty states | Generic empty state with icon + copy slot |
 | Data tables (generic column system; no hardcoded domain columns) | `DataTable` with `ColumnDef<TData>` interface |
 | Navigation primitives (no hardcoded routes) | `Pagination`, `Breadcrumb`, `Tabs` |
@@ -80,7 +81,8 @@ Based on cross-app reconciliation of all 27 baseline summaries:
 | `Select` with API call for options | [ ] LOCAL - container wraps Select primitive | Data fetching not in shared layer |
 | `DataTable` | [x] SHARED - generic (no domain columns) | 6 apps are explicit `DataTable` candidates; broader `Table` primitives are needed by 12 apps |
 | Domain table column configs | [ ] LOCAL | Schema-specific |
-| `ContentLoadingWrapper` (inline/overlay/page) | [x] SHARED | 18 apps need unified loading UI |
+| `Spinner` / `Skeleton` | [x] SHARED - `@repo/ui` | Shared loading primitives only; apps compose them directly |
+| `Loading` / `Loader` / `LoadingWrapper` / `SuspenseFallback` shells | [ ] LOCAL - app-local by default | Loading layout wrappers, suspense fallbacks, branded shells, and retry/error-aware containers stay app-owned |
 | Branded full-page loaders (logo) | [ ] LOCAL | App identity |
 | `Breadcrumb` shell | [x] SHARED | 12 apps; `renderLink` slot for framework injection |
 | Route-linked breadcrumbs | [ ] LOCAL - wraps `Breadcrumb` with route config | `next/link` stays out of packages/ui |

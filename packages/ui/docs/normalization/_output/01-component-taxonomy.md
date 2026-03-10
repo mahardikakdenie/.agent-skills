@@ -12,11 +12,11 @@
 
 | Metric | Count |
 |---|---|
-| Canonical shared set (Tiers 1-2) | 43 (including `Box`) |
+| Canonical shared set (Tiers 1-2) | 42 (including `Box`) |
 | Already in `@repo/ui` | 1 (`Box`) |
 | Tier 1 to build | 13 |
-| Tier 2 to build | 29 |
-| To extend (Box) | 1 |
+| Tier 2 to build | 28 |
+| To build / extend | 41 |
 
 ---
 
@@ -39,8 +39,8 @@
 | Table | `Table` | semantic table targets via `Box as="table"` and related tags | [ ] missing | 12 | Structural only - no data. Sub-components: `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`, `TableFooter` |
 | Badge | `Badge` | - | [ ] missing | 11 | Consolidates: `Badge` across 7+ apps; short status chip |
 | Avatar | `Avatar` | `@radix-ui/react-avatar` | [ ] missing | 6 | Consolidates: `Avatar` across teman-affiliate-admin, gegm-friendcover-admin, claim-portal |
-| Skeleton | `Skeleton` | - | [ ] missing | 10 | Structural skeleton loader. Distinct from `ContentLoadingWrapper` |
-| Spinner | `Spinner` | - | [ ] missing | 8 | Inline spinner. Distinct from `ContentLoadingWrapper` |
+| Skeleton | `Skeleton` | - | [ ] missing | 10 | Structural skeleton loader. Shared primitive; loading wrappers stay app-local |
+| Spinner | `Spinner` | - | [ ] missing | 8 | Inline spinner. Shared primitive; loading wrappers stay app-local |
 
 ---
 
@@ -72,7 +72,7 @@
 | NavigationMenu | `NavigationMenu` | `@radix-ui/react-navigation-menu` | [ ] missing | 8 | Navigation | Compound: `NavigationMenu`, `NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuLink`, `NavigationMenuContent` |
 | Menubar | `Menubar` | `@radix-ui/react-menubar` | [ ] missing | 4 | Navigation | Compound: `Menubar`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarItem` |
 | PageHeader | `PageHeader` | Tier 1 | [ ] missing | 8 | Layout | Top-page header shell (title, actions slot); framework-agnostic |
-| ContentLoadingWrapper | `ContentLoadingWrapper` | `Skeleton` | [ ] missing | 18 | Layout | Consolidates: `Loader`, `Loading`, `LoadingWrapper`, `SuspenseFallback`; overlay/inline/page variants. **Canonical name per `06-component-standards.md 1`** |
+
 | FileUpload | `FileUpload` | Tier 1 | [ ] missing | 12 | Inputs | Consolidates: `FileUpload`, `FileInput`, `DropFile`, `DragDropExcel`, `UploadFile`, `FileDropzone` |
 | Image | `Image` | semantic `img` target via `Box as="img"` with fallback composition | [ ] missing | 13 | Data Display | Consolidates: `ImageOrDefault`, `OptimizeImageShell`, `ViewImage`; fallback + alt semantics |
 | OtpInput | `OtpInput` | Tier 1 | [ ] missing | 6 | Inputs | Consolidates: `OtpInput` from customer-portal, ecommerce-teman, sso-portal, grab-landing-page |
@@ -102,6 +102,7 @@
 | Table column configs | `*TableConfig.tsx` | Domain-specific schema |
 | Chart/visualization wrappers | Recharts configs with domain data | Data-coupled |
 | Branded full-page loaders | Logo animation, company identity loaders | App identity |
+| Loading wrappers and suspense fallbacks | `LoadingWrapper`, `SuspenseFallback`, retry-aware loading shells | Compose `Spinner` and `Skeleton` locally; wrapper policy stays app-owned |
 | Full-page layouts (sidebar + top nav) | `SidebarShell`, `LayoutViewShell` | App routing |
 | Auth shells | SSO callbacks, OTP flows, PKCE handlers | Security + app-specific credentials |
 | `ReCaptcha` | `src/common/components/ReCaptcha.tsx` | 3rd-party SDK coupling - permanently app-local |
@@ -123,5 +124,5 @@
 | `danger` (variant) | -> `destructive` |
 | `type` (where used for visual variant) | -> `variant` |
 | `ButtonCalendar` / `UiButton` / `button.tsx` | -> `Button` (single API) |
-| `ContentLoadingWrapper` vs `LoadingWrapper` | -> `ContentLoadingWrapper` (canonical per `06-component-standards.md 1 Tier 2`) |
+| `Loading` / `Loader` / `LoadingWrapper` / `SuspenseFallback` | -> no canonical shared wrapper; apps compose `Spinner` and `Skeleton` locally |
 | Icon sub-library (teman-affiliate-admin SVGs) | -> Use Lucide React directly; icon package deferred to Phase 3 |

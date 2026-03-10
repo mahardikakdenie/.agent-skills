@@ -52,7 +52,7 @@ Direct adoption guidance:
 
 - Legacy text, avatar, block, and card placeholder surfaces map to `Skeleton`.
 - Existing width and height props or utility-driven shape classes should collapse into `className` on the shared primitive.
-- Repeated line groups, table rows, and card shells should stay consumer-composed with `Box`, `Card`, `Table`, or future loading wrappers instead of adding shared mode props.
+- Repeated line groups, table rows, and card shells should stay consumer-composed with `Box`, `Card`, `Table`, or app-local loading wrappers instead of adding shared mode props.
 - Standalone placeholders that must be announced can map accessible status behavior through native `role` and `aria-*` props.
 
 Keep local:
@@ -190,10 +190,25 @@ Direct adoption guidance:
 - Legacy `Spinner` and generic `Loader` components that only render an indeterminate activity indicator map to `Spinner`.
 - Existing compact and standard loader sizes map to `size="sm" | "md" | "lg"`; visible loading copy maps to `label`.
 - In-flow busy states inside buttons, status rows, or small panels map to `inline`.
-- Full-screen and dimmed loading shells that only block interaction and center an indicator map to `overlay`; consumer `className` can still refine positioning for nested surfaces.
+- Simple dimmed busy states that only need centered indicator treatment can use `overlay`; surrounding page/layout wrapper behavior and fallback composition stay app-local.
 
 Keep local:
 
 - Branded logo loaders, campaign animations, and product-specific loader artwork.
 - Timed wrappers, delayed-loading orchestration, and loading shells that also own title/description/action policy.
-- Domain-aware fallback components that combine loading with retry, empty-state, or error-state logic; those should stay local or migrate later to `ContentLoadingWrapper`.
+- Domain-aware fallback components that combine loading with retry, empty-state, or error-state logic; those should stay local and compose `Spinner` / `Skeleton` directly when needed.
+
+## Loading Wrappers and Suspense Fallbacks
+
+Direct adoption guidance:
+
+- Legacy `Loading`, `Loader`, `LoadingWrapper`, and `SuspenseFallback` shells do not map to a canonical shared wrapper in `@repo/ui`.
+- Use `Spinner` for indeterminate activity, `Skeleton` for structural placeholders, and compose them directly with `Box`, `Card`, `Table`, or app-local layout shells.
+- Keep inline swap behavior, full-page loading swaps, mounted-content blockers, and suspense fallback layout in app code, even when the visual indicator itself comes from shared primitives.
+- Reuse local wrapper components per app when they encode recurring layout only for that app, but do not treat them as migration targets into `@repo/ui`.
+
+Keep local:
+
+- Branded logo loaders, campaign animations, and library-specific art direction.
+- Loading shells that also own retry, empty, or error-state policy, or that depend on domain-specific `title`, `description`, or `actions` decisions.
+- Fetch orchestration, delayed-timer policy, and workflow state that decides when loading begins or ends.

@@ -151,7 +151,7 @@ Impact:
 ## 2026-03-10 - Drawer Batch 4 Delivery
 
 Changed:
-- Implemented `packages/ui/src/Drawer` as the next eligible Wave B4 overlay shell after `Checkbox`, skipping only the documented holds ahead of it (`ContentLoadingWrapper` blocked on `Skeleton` and `Spinner`; `Dialog` kept behind its explicit high-risk gate).
+- Implemented `packages/ui/src/Drawer` as the next eligible Wave B4 overlay shell after `Checkbox`, skipping only the documented holds ahead of it at that time (shared loading-wrapper consolidation was still under consideration, and `Dialog` remained behind its explicit high-risk gate).
 - Added the canonical Drawer spec, Storybook coverage, typed exports, and `vaul`-backed compound primitives for trigger, content, close, header, footer, title, description, overlay, and handle composition.
 - Locked the shared Drawer contract around `open`, `onClose`, `direction`, and shell-only slot props (`title`, `description`, `actions`, `footer`) while keeping all authored wrapper DOM on `Box`.
 
@@ -203,7 +203,7 @@ Impact:
 ## 2026-03-10 - RadioGroup Batch 4 Delivery
 
 Changed:
-- Implemented `packages/ui/src/RadioGroup` as the next eligible Wave B4 input primitive after `Pagination`, while keeping the previously documented holds in place (`ContentLoadingWrapper` still aligned behind `Skeleton` and `Spinner`; `Dialog` and `Select` remain behind their explicit high-risk gates).
+- Implemented `packages/ui/src/RadioGroup` as the next eligible Wave B4 input primitive after `Pagination`, while keeping the previously documented holds in place (shared loading-wrapper consolidation was still unresolved, and `Dialog` and `Select` remained behind their explicit high-risk gates).
 - Added the canonical RadioGroup spec, Storybook coverage, typed exports, and Box-authored compound `RadioGroup` / `RadioGroupItem` wrappers on top of `@radix-ui/react-radio-group`.
 - Locked the shared RadioGroup contract around `value`, `defaultValue`, `onValueChange`, `orientation`, `disabled`, `required`, plus per-item `label` and `description`, instead of expanding the public API with extra layout or card-mode booleans.
 
@@ -224,7 +224,7 @@ Impact:
 ## 2026-03-10 - Skeleton Batch 4 Delivery
 
 Changed:
-- Implemented `packages/ui/src/Skeleton` as the next eligible Wave B4 primitive after `RadioGroup`, keeping the previously documented holds in place (`ContentLoadingWrapper` remains blocked on `Spinner`; `Dialog` and `Select` stay behind their explicit gates).
+- Implemented `packages/ui/src/Skeleton` as the next eligible Wave B4 primitive after `RadioGroup`, keeping the previously documented holds in place (shared loading-wrapper consolidation was still unresolved, and `Dialog` and `Select` stayed behind their explicit gates).
 - Added the canonical Skeleton spec, Storybook coverage, typed exports, and a Box-authored primitive with CVA-backed pulse styling.
 - Kept the public API intentionally flat after composition review: shared text, block, and card placeholder patterns are documented and demonstrated through composition plus `className` rather than extra mode props.
 - Defaulted decorative placeholders to `aria-hidden="true"` while preserving an opt-in accessible status path through native `role` and `aria-*` props.
@@ -245,5 +245,30 @@ Changed:
 
 Impact:
 - `@repo/ui` export surface now includes `Spinner` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, and `Skeleton`.
-- Wave B4 `ContentLoadingWrapper` is now unblocked from its `Skeleton` + `Spinner` dependency perspective and becomes the next eligible non-gated component in the current wave.
+- At that point, `Skeleton` and `Spinner` had closed the primitive side of the loading decision; the remaining question was whether any shared loading wrapper should exist at all.
 
+
+## 2026-03-10 - Historical ContentLoadingWrapper Batch 4 Delivery Attempt
+
+Changed:
+- This entry is retained for chronology only.
+- The earlier attempt to treat `ContentLoadingWrapper` as a canonical shared component was later reversed the same day by program decision.
+- The historical attempt had normalized repeated per-app loading-wrapper deltas into one shared contract and composed shared `Spinner` + `Skeleton` primitives beneath that wrapper.
+
+Impact:
+- This historical attempt does not represent the current canonical shared-package policy.
+- Current authority is the reversal entry below: `Spinner` and `Skeleton` remain shared, while loading wrappers and suspense fallbacks stay app-local.
+
+---
+
+## 2026-03-10 - Loading Wrapper Policy Reversal
+
+Changed:
+- Reversed the earlier normalization assumption that `ContentLoadingWrapper` should remain a canonical shared component in `@repo/ui`.
+- Removed or demoted prior roadmap, taxonomy, reconciliation, tracker, adapter, API, and risk-register language that treated `ContentLoadingWrapper` as the default shared loading target.
+- Locked the shared loading policy to `Spinner` and `Skeleton` primitives only; app teams now compose loading wrappers, suspense fallbacks, branded full-page loaders, retry/error-aware shells, and domain-aware loading containers locally.
+
+Impact:
+- The canonical shared loading surface in `@repo/ui` now stops at primitives.
+- Existing migration docs should map `Loader` / `Loading` / `LoadingWrapper` / `SuspenseFallback` families to app-local composition rather than a shared wrapper export.
+- Any future shared loading wrapper requires a new, narrower program decision instead of inheriting the reversed `ContentLoadingWrapper` plan.

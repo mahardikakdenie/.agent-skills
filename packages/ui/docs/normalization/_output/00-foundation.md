@@ -127,7 +127,7 @@ Cross-app consolidation decisions:
 - `Select` / `MultiSelect` / `MultipleSelect` / `SelectPhoneCode` family -> `Select`
 - `SelectAutocomplete` / `InputAutocomplete` / searchable dropdown family -> `Combobox`
 - `FlashMessage` / `Notification` / `ErrorContent` / `AlertBanner` family -> `Alert`
-- `Loading` / `Loader` / `LoadingWrapper` / `SuspenseFallback` family -> `ContentLoadingWrapper` plus `Skeleton` or `Spinner` where needed
+- `Loading` / `Loader` / `LoadingWrapper` / `SuspenseFallback` family -> no canonical shared wrapper; apps compose `Spinner` and `Skeleton` locally where needed
 - `Datepicker` / `DatePicker` variants -> Date family with explicit split into `DatePicker`, `DateRangePicker`, `DateTimePicker`, and `MonthPicker`
 
 Traceability:

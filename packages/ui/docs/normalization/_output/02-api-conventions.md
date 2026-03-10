@@ -435,20 +435,19 @@ Migration note: `severity="error"` -> `variant="destructive"`. `type` -> `varian
 
 ---
 
-### ContentLoadingWrapper
+### Loading Wrappers and Suspense Fallbacks
 
-```ts
-export interface ContentLoadingWrapperProps {
-  loading: boolean
-  variant?: 'overlay' | 'inline' | 'page'  // default: 'inline'
-  label?: string
-  size?: 'sm' | 'md' | 'lg'  // default: 'md'
-  children?: React.ReactNode
-  className?: string
-}
-```
+No canonical shared `ContentLoadingWrapper` API is defined in `@repo/ui`.
 
-Story group: `Layout` - **canonical name from `06-component-standards.md 1 Tier 2`**
+Apps should compose `Spinner`, `Skeleton`, and structural primitives such as `Box`, `Card`, or `Table` directly in app code for:
+
+- inline busy states
+- suspense fallbacks
+- full-page loading swaps
+- mounted-content blocking overlays
+- retry-aware or error-aware loading shells
+
+Historical note: the earlier `ContentLoadingWrapper` draft API was reversed and must not be used as current shared-package authority.
 
 ---
 

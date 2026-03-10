@@ -14,11 +14,11 @@
 | Shared-track candidates present in deduplicated backlog | 296 plus canonical `Box` carry-forward |
 | Split / migrate-after-split candidates | 491 |
 | Keep-app-local candidates | 1,906 |
-| Canonical shared set | 43 components including `Box` |
+| Canonical shared set | 42 components including `Box` |
 | Existing in `@repo/ui` | 1 (`Box`) |
-| Shared build or extension scope | 42 |
+| Shared build or extension scope | 41 |
 | Batch 3 extension scope | 1 (`Box`) |
-| Batch 4 new shared components | 41 approved + 1 decision-gated (`RichTextEditor`) |
+| Batch 4 new shared components | 40 approved + 1 decision-gated (`RichTextEditor`) |
 | Planning backlog scope in `12-master-backlog.csv` | Full deduplicated union of all per-app backlog exports |
 | Canonical shared implementation scope in this document | Consolidated shared program only |
 
@@ -27,6 +27,7 @@
 - This rerun is program-level and cross-app, using the locked Batch 2 foundation plus the current per-app Batch 1 outputs from the `migrate-app_*` lanes.
 - `12-master-backlog.csv` now represents the full deduplicated union of all per-app backlog exports, not just the canonical shared program.
 - The canonical shared implementation scope is still intentionally consolidated in Section 3 and the roadmap in `11-master-component-roadmap.md`.
+- Shared loading scope is limited to `Spinner` and `Skeleton`; loading wrappers and suspense fallbacks remain app-local unless a future narrower wrapper is explicitly re-approved.
 - App-local, adapter-only, and split-only queues remain visible in `12-master-backlog.csv`, but they do not automatically enter the shared build roadmap.
 
 ## 2. Reconciliation Rules Applied
@@ -39,7 +40,7 @@
 | Static select controls | `Select` | Non-searchable selection belongs to `Select`. |
 | Searchable or async selection | `Combobox` | Search-driven selection belongs to `Combobox`, not `Select`. |
 | Modal and overlay shells | `Dialog`, `Drawer`, `Popover`, `Tooltip`, `DropdownMenu` | Overlay families stay distinct by interaction model. |
-| Loading indicators | `ContentLoadingWrapper`, `Skeleton`, `Spinner` | Wrapper layout, structural placeholder, and inline spinner are separate contracts. |
+| Loading indicators | `Skeleton`, `Spinner` | Shared loading primitives stay canonical; wrapper layout and suspense fallback composition stay app-local. |
 | Data display primitives | `Table`, `DataTable`, `Card`, `Badge`, `Avatar`, `Image`, `Timeline` | Structural display stays shared; domain data logic stays local. |
 | Date input family | `Calendar`, `DatePicker`, `DateRangePicker`, `DateTimePicker`, `MonthPicker` | Date contracts remain split by interaction scope, not overloaded into one component. |
 | Layout primitives | `Box`, `Card`, `PageHeader` | Layout stays structural and app-agnostic only. |
@@ -67,7 +68,6 @@
 | Button | NEW_SHARED_COMPONENT | 23 apps; see `05` | missing | `02` Button | Shared primitive only; domain button wrappers stay local | P0 | MEDIUM | B4 |
 | Card | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` Card | Structural card only; domain cards compose on top | P0 | LOW | B4 |
 | Checkbox | NEW_SHARED_COMPONENT | 20 apps; see `05` | missing | `02` Checkbox | Generic choice control; business meaning stays local | P0 | MEDIUM | B4 |
-| ContentLoadingWrapper | NEW_SHARED_COMPONENT | 18 apps; see `05` | missing | `02` ContentLoadingWrapper | Shared loading layout only; full branded loaders stay local | P0 | MEDIUM | B4 |
 | Dialog | NEW_SHARED_COMPONENT | 26 apps; see `05` | missing | `02` Dialog | Modal shell normalized to one contract; body content stays local | P0 | HIGH | B4 |
 | Drawer | NEW_SHARED_COMPONENT | 10 apps; see `05` | missing | `02` Drawer | Drawer stays separate from modal semantics | P1 | HIGH | B4 |
 | Input | NEW_SHARED_COMPONENT | 26 apps; see `05` | missing | `02` Input | Shared text input only; app containers stay local | P0 | MEDIUM | B4 |
@@ -134,6 +134,7 @@
 | Kanban-board composites | KEEP_APP_LOCAL | `05` deferred scope | Domain workflow coupling | Separate product-specific platform decision |
 | App-specific chart wrappers | KEEP_APP_LOCAL | `04`, `05` deferred scope | Domain data coupling | Separate charting program |
 | Route/page containers and split shells | KEEP_APP_LOCAL or deferred | `04` boundary rules | App routing, framework, and service-layer coupling | Formal reclassification after split and proof of reuse |
+| Loading wrappers and suspense fallbacks | KEEP_APP_LOCAL | `04`, `21` | Layout wrappers, suspense fallbacks, branded loaders, and retry/error-aware shells still diverge by app | Only via a future narrower shared-wrapper decision |
 | Icon sub-library | DEFERRED | `04`, `05` | No need for a new shared abstraction yet | Re-open only if Lucide becomes insufficient |
 
 ## 5. Critical Path Ruling

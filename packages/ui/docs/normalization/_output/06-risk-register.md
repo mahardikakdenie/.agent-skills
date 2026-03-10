@@ -112,15 +112,15 @@ Source: `06-component-standards.md 8`
 
 ---
 
-### ContentLoadingWrapper
+### Loading Wrappers and Suspense Fallbacks
 
 | Risk dimension | Details |
 |---|---|
-| Apps affected | 18 apps |
-| Variant consolidation | `Loader`, `LoadingWrapper`, `SuspenseFallback`, `SpinnerOverlay` -> one component with `variant="overlay" \| "inline" \| "page"` |
-| Parity risk | Overlay z-index stacking; page-level lock; spinner timing |
-| HIGH parity risk apps | mykawan-website (branded spinner), haruuz-microsite (HeroUI Spinner -> pure CSS), customer-portal |
-| Rollback trigger | Loading indicator not shown/hidden at correct lifecycle point |
+| Decision status | No canonical shared `ContentLoadingWrapper`; wrappers remain app-local |
+| Shared migration surface | `Spinner` and `Skeleton` only |
+| Parity risk | Local overlay z-index stacking, page-level lock, suspense timing, and copy/action policy remain app-specific |
+| HIGH parity risk apps | mykawan-website (branded spinner), haruuz-microsite (HeroUI Spinner -> local composition), customer-portal |
+| Rollback trigger | Loading indicator not shown/hidden at the correct lifecycle point after app-local `Spinner` / `Skeleton` composition changes |
 
 ---
 
@@ -135,7 +135,7 @@ Source: `06-component-standards.md 8`
 | gegm-friendcover | FormPersonalInfoPlaint, ViewGreatHome360Declaration, UploadNric | Large LOC monoliths (500-1236 LOC) | 17 Batch 1.5 skipped; defers Phase 05A |
 | gegm-friendcover-admin | CustomFilterDate, CustomMultipleSelect, CustomNestedSelect | Complex interaction models | 41 MEDIUM SoC skipped |
 | teman-affiliate-microsite | Claim portal flows, date pickers, HeroUI coupling | HeroUI -> shared token migration | Token normalization first |
-| haruuz-microsite | HeroUI Spinner -> ContentLoadingWrapper migration | Brand animation dependency | Token normalization first |
+| haruuz-microsite | HeroUI Spinner -> shared `Spinner` plus app-local wrapper composition | Brand animation dependency | Token normalization first |
 | gelm-xproject-microsite | HeroUI theme system integration | HeroUI token system conflicts | Token normalization prerequisite |
 | grab-landing-page | Compare, FooterTransaction, HeaderCompare | MUI + NextUI mixing; hardcoded colors | Token normalization prerequisite |
 | agent-admin | DatePickerV2, CustomSelect, MultiSelect | Non-standard prop names; inline styles | Token + prop migration |

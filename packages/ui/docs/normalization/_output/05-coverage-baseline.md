@@ -11,10 +11,10 @@
 
 | Metric | Count |
 |---|---:|
-| Canonical shared components (Tier 1 + Tier 2) | 43 |
+| Canonical shared components (Tier 1 + Tier 2) | 42 |
 | Existing in @repo/ui | 1 (Box) |
-| To build/extend | 42 |
-| P0 components | 16 |
+| To build/extend | 41 |
+| P0 components | 15 |
 | P1 components | 14 |
 | P2 components | 8 |
 | P3 components | 4 |
@@ -34,7 +34,7 @@
 | Checkbox | 1 | 20 | Inputs | B4 |
 | Dialog | 2 | 26 | Overlays | B4 |
 | Alert | 2 | 22 | Feedback | B4 |
-| ContentLoadingWrapper | 2 | 18 | Layout | B4 |
+
 | Skeleton | 1 | 10 | Feedback | B4 |
 | Spinner | 1 | 8 | Feedback | B4 |
 | Table | 1 | 12 | Data Display | B4 |
