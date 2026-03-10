@@ -129,24 +129,7 @@ export const ResponsiveLayout: Story = {
   },
 }
 
-export const AccessibleStatus: Story = {
-  render: () => (
-    <Box className="max-w-xs">
-      <Skeleton
-        role="status"
-        aria-label="Loading account summary"
-        className="h-24 w-full rounded-xl"
-      />
-    </Box>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Shows the non-decorative escape hatch when the placeholder must be announced.',
-      },
-    },
-  },
-}
+
 
 
 

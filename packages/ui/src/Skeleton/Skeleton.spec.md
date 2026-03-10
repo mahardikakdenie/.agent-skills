@@ -174,7 +174,6 @@ Cross-app baseline demand converges on one shared primitive with consumer-owned 
 - [x] `Block`
 - [x] `Card`
 - [x] `ResponsiveLayout`
-- [x] `AccessibleStatus`
 
 ---
 
@@ -191,3 +190,4 @@ Cross-app baseline demand converges on one shared primitive with consumer-owned 
 | Date       | Change                |
 | ---------- | --------------------- |
 | 2026-03-10 | Initial Skeleton spec |
+
