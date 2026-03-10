@@ -19,6 +19,9 @@ export * from './Switch';
 // Layout
 export * from './Card';
 
+// Data Display
+export * from './Table';
+
 // Navigation
 export * from './Pagination';
 

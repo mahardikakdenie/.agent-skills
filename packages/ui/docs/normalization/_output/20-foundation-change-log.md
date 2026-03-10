@@ -327,3 +327,16 @@ Changed:
 Impact:
 - Switch now aligns with the shared input family for field-level validation treatment without expanding into a full field-shell abstraction.
 - App-local toggle wrappers can normalize invalid state handling to the shared `error` contract while keeping supporting descriptions and workflow logic local.
+
+---
+## 2026-03-10 - Table Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Table` as the next eligible Wave B4 primitive after `Switch`.
+- Added the canonical Table spec, Storybook coverage, typed exports, and Box-authored semantic wrappers for `table`, `thead`, `tbody`, `tfoot`, `tr`, `th`, `td`, and `caption`.
+- Kept the shared contract intentionally structural after composition review: responsive overflow, dense spacing, selection orchestration, search, sorting, and pagination remain consumer-owned or belong to the future `DataTable` layer.
+- Added a selected-row styling hook through `data-state="selected"` so later `DataTable` work can compose on the same primitive without widening the public API early.
+
+Impact:
+- `@repo/ui` export surface now includes `Table` alongside the previously shipped Batch 4 primitives.
+- App-local table shells can begin converging on one shared semantic foundation while higher-order data logic stays outside the primitive boundary until `DataTable` lands.

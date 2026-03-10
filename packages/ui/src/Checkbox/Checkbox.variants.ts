@@ -6,7 +6,7 @@ export const checkboxControlRowVariants = cva('flex items-start gap-3');
 
 export const checkboxRootVariants = cva(
   [
-    'peer/checkbox inline-flex shrink-0 self-start items-center justify-center border bg-background p-0 align-middle text-primary-foreground leading-none shadow-sm outline-none',
+    'peer/checkbox inline-flex cursor-pointer shrink-0 self-start items-center justify-center border bg-background p-0 align-middle text-primary-foreground leading-none shadow-sm outline-none',
     'transition-[background-color,border-color,box-shadow,color] motion-reduce:transition-none',
     'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'disabled:cursor-not-allowed disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',

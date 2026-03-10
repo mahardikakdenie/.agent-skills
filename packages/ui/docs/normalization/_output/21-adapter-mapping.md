@@ -261,3 +261,20 @@ Keep local:
 - Switch wrappers that trigger routing, service calls, analytics, or domain workflows directly on toggle.
 - Validation-heavy field shells that need custom descriptions, inline error policy, or async persistence messaging beyond the shared primitive.
 
+
+
+## Table
+
+Direct adoption guidance:
+
+- Legacy structural table primitives and neutral table shells map to `Table` plus `TableHeader`, `TableBody`, `TableFooter`, `TableRow`, `TableHead`, `TableCell`, and `TableCaption`.
+- Existing admin or report-table density tweaks should stay in `className` on the table parts instead of widening the shared primitive with `dense` or `compact` booleans.
+- Existing selected-row visuals can map to `data-state="selected"` on `TableRow`.
+- Responsive table overflow should stay consumer-owned by wrapping `Table` in a `Box` container with `overflow-x-auto`.
+- Footer totals and summary rows map to `TableFooter`; empty states stay as a full-width `TableCell` inside `TableBody`.
+
+Keep local:
+
+- Sorting, filtering, search slots, pagination controls, expandable rows, row selection orchestration, and loading or retry wrappers; those belong to `DataTable` or app-local shells.
+- Domain-specific table cells that compute status, format business entities, trigger navigation, or call services directly.
+- Non-tabular mobile card transformations that replace semantic table markup entirely.
