@@ -11,15 +11,15 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
-        primary: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
-        secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-        destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
+        default: 'bg-primary text-primary-foreground shadow-sm enabled:hover:bg-primary/90',
+        primary: 'bg-primary text-primary-foreground shadow-sm enabled:hover:bg-primary/90',
+        secondary: 'bg-secondary text-secondary-foreground shadow-sm enabled:hover:bg-secondary/80',
+        destructive: 'bg-destructive text-destructive-foreground shadow-sm enabled:hover:bg-destructive/90',
         outline:
-          'border border-input bg-background text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground',
-        ghost: 'bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground',
-        link: 'bg-transparent text-primary shadow-none underline-offset-4 hover:underline',
-        warning: 'bg-warning text-warning-foreground shadow-sm hover:bg-warning/90',
+          'border border-input bg-background text-foreground shadow-sm enabled:hover:bg-accent enabled:hover:text-accent-foreground',
+        ghost: 'bg-transparent text-foreground enabled:hover:bg-accent enabled:hover:text-accent-foreground',
+        link: 'bg-transparent text-primary shadow-none underline-offset-4 enabled:hover:underline',
+        warning: 'bg-warning text-warning-foreground shadow-sm enabled:hover:bg-warning/90',
       },
       size: {
         xs: 'h-7 px-2.5 text-xs',
@@ -62,3 +62,4 @@ export const buttonVariants = cva(
     },
   },
 );
+

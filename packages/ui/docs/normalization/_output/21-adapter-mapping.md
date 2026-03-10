@@ -45,6 +45,21 @@ Keep local:
 
 - Interactive pills that behave like filters, tabs, or navigation controls.
 - Domain status helpers that still compute text, tone, or visibility from business logic before rendering.
+
+## Pagination
+
+Direct adoption guidance:
+
+- Legacy pagers that already expose current page and total page count map directly to `currentPage`, `totalPages`, and `onPageChange`.
+- APIs using `totalItems`, `totalData`, `limit`, or `itemsPerPage` should compute `totalPages` in the parent surface before rendering `Pagination`.
+- Existing rows-per-page selectors map to `pageSize`, `pageSizeOptions`, and `onPageSizeChange`.
+- First, previous, next, and last buttons plus numeric page jumps map directly to the shared control set; active-page emphasis maps to the built-in `aria-current="page"` state.
+
+Keep local:
+
+- Query-string syncing, router state, and table/data fetching orchestration.
+- Total-count math tied to backend response shapes or domain pagination metadata.
+- Infinite-scroll or cursor-based pagination patterns that are not page-number based.
 - Large notification bodies or rich feedback shells that should instead map to `Alert`.
 
 ## Button
@@ -136,3 +151,5 @@ Keep local:
 - Field wrappers that also render helper text, descriptions, validation copy, or layout composition beyond the caption itself.
 - Domain-aware captions that still compute copy, localization fallbacks, or workflow state before rendering.
 - Route- or form-library-specific wrappers that inject validation orchestration instead of plain label semantics.
+
+

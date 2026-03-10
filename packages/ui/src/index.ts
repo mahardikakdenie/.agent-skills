@@ -14,5 +14,8 @@ export * from './Label';
 // Layout
 export * from './Card';
 
+// Navigation
+export * from './Pagination';
+
 // Overlays
 export * from './Drawer';
