@@ -98,7 +98,7 @@ export const Basic: Story = {
 };
 
 export const HeaderFooter: Story = {
-  name: 'Header and footer',
+  name: 'Header And Footer',
   render: () => (
     <Card className="max-w-lg">
       <CardHeader>
@@ -162,7 +162,6 @@ export const Interactive: Story = {
 };
 
 export const ElevatedComposition: Story = {
-  name: 'Elevated composition',
   render: () => (
     <Card className="max-w-md shadow-md">
       <CardHeader>
@@ -191,7 +190,6 @@ export const ElevatedComposition: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: () => (
     <Box className="max-w-sm">
       <Card>
@@ -223,3 +221,6 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+

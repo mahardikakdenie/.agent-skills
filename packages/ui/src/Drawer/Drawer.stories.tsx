@@ -205,7 +205,6 @@ export const Scrollable: Story = {
 };
 
 export const FormAction: Story = {
-  name: 'Form action',
   args: {
     children: null,
   },
@@ -288,7 +287,7 @@ export const Controlled: Story = {
 };
 
 export const NonDismissible: Story = {
-  name: 'Non-dismissible',
+  name: 'Non-Dismissible',
   args: {
     children: null,
   },
@@ -356,7 +355,6 @@ export const Interactive: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   args: {
     children: null,
   },
@@ -383,3 +381,6 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+

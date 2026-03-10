@@ -106,7 +106,6 @@ export const Tones: Story = {
 };
 
 export const RequiredState: Story = {
-  name: 'Required state',
   render: () => (
     <Box className="grid max-w-sm gap-2">
       <Label htmlFor="label-required-field" required>
@@ -132,7 +131,6 @@ export const RequiredState: Story = {
 };
 
 export const DisabledState: Story = {
-  name: 'Disabled state',
   render: () => (
     <Box className="grid max-w-sm gap-2">
       <Label htmlFor="label-disabled-field" disabled>
@@ -159,7 +157,6 @@ export const DisabledState: Story = {
 };
 
 export const InteractiveAssociation: Story = {
-  name: 'Interactive association',
   render: () => (
     <Box className="grid max-w-sm gap-3">
       <Label htmlFor="label-association-field">Receive release updates</Label>
@@ -184,7 +181,6 @@ export const InteractiveAssociation: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: () => (
     <Box className="grid max-w-xs gap-2">
       <Label htmlFor="label-responsive-field" required>
@@ -210,3 +206,6 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+

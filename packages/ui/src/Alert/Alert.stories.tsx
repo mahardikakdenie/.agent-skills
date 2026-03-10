@@ -97,7 +97,6 @@ export const Variants: Story = {
 };
 
 export const WithIcon: Story = {
-  name: 'With icon',
   args: {
     variant: 'info',
     title: 'Verification pending',
@@ -138,7 +137,6 @@ export const Dismissible: Story = {
 };
 
 export const LongContent: Story = {
-  name: 'Long content',
   render: () => (
     <Alert
       variant="destructive"
@@ -163,7 +161,6 @@ export const LongContent: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: () => (
     <Box className="max-w-sm">
       <Alert
@@ -187,3 +184,6 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+

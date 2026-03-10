@@ -5,6 +5,7 @@ export * from './Box';
 export * from './Alert';
 export * from './Badge';
 export * from './Button';
+export * from './Skeleton';
 
 // Inputs
 export * from './Checkbox';
@@ -22,4 +23,5 @@ export * from './Drawer';
 
 // Inputs
 export * from './RadioGroup';
+
 

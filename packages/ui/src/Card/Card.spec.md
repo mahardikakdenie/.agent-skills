@@ -13,12 +13,12 @@
 
 `Card` is the shared structural surface for grouped content, summary panels, and reusable layout shells. It stays intentionally light: the shared contract is the surface plus named layout subcomponents, while domain copy, statistics, actions, and interactive semantics remain consumer-owned.
 
-When to use:
+**When to use:**
 
 - Group neutral content with consistent border, background, spacing, and heading treatment.
 - Compose header, title, description, content, and footer without app-specific business logic.
 
-When not to use:
+**When NOT to use:**
 
 - Domain-specific statistic, product, transaction, or plan cards.
 - API-heavy or behavior-heavy widgets that should stay app-local and compose `Card` internally.
@@ -122,3 +122,4 @@ Screen reader notes:
 | Date       | Author | Change            |
 | ---------- | ------ | ----------------- |
 | 2026-03-10 | Codex  | Initial Card spec |
+

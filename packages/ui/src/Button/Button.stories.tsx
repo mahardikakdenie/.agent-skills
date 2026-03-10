@@ -126,7 +126,6 @@ export const Loading: Story = {
 };
 
 export const AsChild: Story = {
-  name: 'As child',
   render: () => (
     <Button asChild variant="outline" rightIcon={<ExternalLink aria-hidden="true" className="h-4 w-4" />}>
       <Box as="a" href="https://example.com" target="_blank" rel="noreferrer">
@@ -144,7 +143,6 @@ export const AsChild: Story = {
 };
 
 export const DisabledState: Story = {
-  name: 'Disabled state',
   render: () => (
     <Box className="flex flex-wrap items-center gap-3">
       <Button disabled>Disabled action</Button>
@@ -163,7 +161,6 @@ export const DisabledState: Story = {
 };
 
 export const IconSlots: Story = {
-  name: 'Icon slots',
   render: () => (
     <Box className="flex flex-wrap items-center gap-3">
       <Button leftIcon={<ArrowLeft aria-hidden="true" className="h-4 w-4" />}>Back</Button>
@@ -208,7 +205,6 @@ export const Interactive: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: () => (
     <Box className="flex max-w-sm flex-col gap-3">
       <Button size="xl">Save and continue</Button>
@@ -232,3 +228,5 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+

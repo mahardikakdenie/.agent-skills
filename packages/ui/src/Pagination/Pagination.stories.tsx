@@ -128,7 +128,6 @@ export const Default: Story = {
 };
 
 export const WithPageSizeSelector: Story = {
-  name: 'With page size selector',
   render: (args) => <ControlledPaginationStory {...args} />,
   parameters: {
     docs: {
@@ -162,7 +161,6 @@ export const Compact: Story = {
 };
 
 export const DisabledState: Story = {
-  name: 'Disabled state',
   render: (args) => (
     <Pagination
       {...args}
@@ -214,7 +212,6 @@ export const Interactive: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: (args) => (
     <Box className="max-w-sm">
       <Pagination {...args} currentPage={9} totalPages={42} />
@@ -231,3 +228,6 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+

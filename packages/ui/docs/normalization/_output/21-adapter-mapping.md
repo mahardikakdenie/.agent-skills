@@ -46,6 +46,21 @@ Keep local:
 - Interactive pills that behave like filters, tabs, or navigation controls.
 - Domain status helpers that still compute text, tone, or visibility from business logic before rendering.
 
+## Skeleton
+
+Direct adoption guidance:
+
+- Legacy text, avatar, block, and card placeholder surfaces map to `Skeleton`.
+- Existing width and height props or utility-driven shape classes should collapse into `className` on the shared primitive.
+- Repeated line groups, table rows, and card shells should stay consumer-composed with `Box`, `Card`, `Table`, or future loading wrappers instead of adding shared mode props.
+- Standalone placeholders that must be announced can map accessible status behavior through native `role` and `aria-*` props.
+
+Keep local:
+
+- Branded full-page loaders, logo animations, and campaign-specific shimmer treatments.
+- Blocking overlay loaders and loading shells that also own copy, retry actions, or orchestration logic.
+- Domain-aware loading wrappers that decide when to render skeletons based on service or workflow state beyond plain props.
+
 ## Pagination
 
 Direct adoption guidance:
@@ -107,7 +122,6 @@ Keep local:
 - Composite multi-select shells that fetch options, compute summaries, or persist selection state beyond a single checkbox field.
 - Route- or workflow-specific wrappers that combine checkbox rendering with business copy, navigation, auth, or service logic.
 
-
 ## Drawer
 
 Direct adoption guidance:
@@ -122,6 +136,7 @@ Keep local:
 - Drawers that still embed auth, payment, data fetching, workflow guards, or domain submission logic beyond shell composition.
 - Centered modal confirmations that should instead migrate to `Dialog`.
 - Branded or campaign-specific sheets whose art direction, animation, or content policy is intentionally app-owned.
+
 ## Input
 
 Direct adoption guidance:
@@ -152,4 +167,18 @@ Keep local:
 - Domain-aware captions that still compute copy, localization fallbacks, or workflow state before rendering.
 - Route- or form-library-specific wrappers that inject validation orchestration instead of plain label semantics.
 
+## RadioGroup
 
+Direct adoption guidance:
+
+- Legacy single-select option groups, preference pickers, and mutually exclusive form choices map to `RadioGroup` plus `RadioGroupItem`.
+- Existing `value`, `defaultValue`, `onChange`, or `onValueChange` flows normalize to `value`, `defaultValue`, and `onValueChange` on the shared root.
+- Inline option copy maps to per-item `label` and `description`; group-level validation maps to shared `error` and `required` props.
+- Dense filter or settings usage maps to `size="sm"`; standard form usage maps to `size="md"`; more spacious touch targets map to `size="lg"`.
+- Horizontal and vertical layouts map to the shared `orientation` prop instead of local layout booleans.
+
+Keep local:
+
+- Domain-aware card selectors or plan selectors that still combine radio semantics with pricing logic, routing, or submission orchestration.
+- Option groups that fetch choices, derive labels from business entities, or inject workflow-specific side effects on selection.
+- Composite filter shells where the radio group is only one part of a larger domain-specific control.

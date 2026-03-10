@@ -220,3 +220,15 @@ Changed:
 
 Impact:
 - RadioGroup now aligns more closely with the shared input family and recurring per-app validation patterns without introducing route, domain, or card-layout coupling.
+
+## 2026-03-10 - Skeleton Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Skeleton` as the next eligible Wave B4 primitive after `RadioGroup`, keeping the previously documented holds in place (`ContentLoadingWrapper` remains blocked on `Spinner`; `Dialog` and `Select` stay behind their explicit gates).
+- Added the canonical Skeleton spec, Storybook coverage, typed exports, and a Box-authored primitive with CVA-backed pulse styling.
+- Kept the public API intentionally flat after composition review: shared text, block, and card placeholder patterns are documented and demonstrated through composition plus `className` rather than extra mode props.
+- Defaulted decorative placeholders to `aria-hidden="true"` while preserving an opt-in accessible status path through native `role` and `aria-*` props.
+
+Impact:
+- `@repo/ui` export surface now includes `Skeleton` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, and `RadioGroup`.
+- App-local loading placeholders can begin converging on one shared Skeleton primitive while keeping branded loaders, blocking overlays, retry messaging, and orchestration logic local.

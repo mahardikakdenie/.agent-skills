@@ -1,4 +1,4 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleDollarSign, Mail, Search } from 'lucide-react';
 import { expect, userEvent, within } from 'storybook/test';
@@ -174,7 +174,6 @@ export const Types: Story = {
 };
 
 export const WithAffixes: Story = {
-  name: 'With affixes',
   render: () => (
     <Box className="grid gap-4 md:grid-cols-2">
       <Input
@@ -205,7 +204,6 @@ export const WithAffixes: Story = {
 };
 
 export const ErrorState: Story = {
-  name: 'Error state',
   args: {
     label: 'Amount',
     inputMode: 'currency',
@@ -223,7 +221,6 @@ export const ErrorState: Story = {
 };
 
 export const DisabledState: Story = {
-  name: 'Disabled state',
   render: () => (
     <Box className="grid gap-4 md:grid-cols-2">
       <Input
@@ -245,7 +242,6 @@ export const DisabledState: Story = {
 };
 
 export const LoadingState: Story = {
-  name: 'Loading state',
   args: {
     label: 'Searching',
     placeholder: 'Search documents',
@@ -309,7 +305,6 @@ export const Interactive: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: () => (
     <Box className="grid max-w-sm gap-4">
       <Input
@@ -339,4 +334,7 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+
 

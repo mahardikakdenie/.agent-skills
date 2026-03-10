@@ -30,7 +30,7 @@
 - This rerun plans the canonical shared program on top of the raw deduplicated backlog captured in `12-master-backlog.csv`.
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
-- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, and `RadioGroup`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
+- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, and `Skeleton`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -160,7 +160,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, and `RadioGroup`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, and `Skeleton`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
 
 ### packages/ui work required
 
@@ -300,7 +300,7 @@
 | Pagination | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compact page-range handling, first/prev/next/last controls, and optional page-size selector |
 | RadioGroup | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, compound item exports, Box-authored Radix radio semantics, and shared size + error support |
 | Select | 4 | B4 | PLANNED | Static select only |
-| Skeleton | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
+| Skeleton | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored muted loading surfaces, and decorative-by-default accessibility behavior |
 | Spinner | 4 | B4 | PLANNED | Not implemented in `@repo/ui` yet |
 | Switch | 4 | B4 | PLANNED | Toggle control |
 | Table | 4 | B4 | PLANNED | Foundation for `DataTable` |
@@ -329,6 +329,7 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 
 
 

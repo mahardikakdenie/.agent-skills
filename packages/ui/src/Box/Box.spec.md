@@ -13,12 +13,12 @@
 
 `Box` is the foundational layout primitive in `@repo/ui` and the authored DOM primitive for shared source. It renders semantic HTML or SVG targets via `as` or merges onto a child element via `asChild`, while keeping the prop and ref surface type-safe.
 
-When to use:
+**When to use:**
 
 - Author shared DOM structure through `Box`, including structural elements such as `div`, `section`, `article`, `main`, `aside`, `ul`, or `li`.
 - Apply shared max-width, horizontal padding, or simple centering without introducing a higher-level layout component.
 
-When not to use:
+**When NOT to use:**
 
 - Route shells, branded page frames, sidebar layouts, or any app-specific composition.
 - Interactive widgets that need their own semantic primitive or Radix component.
@@ -142,3 +142,4 @@ When not to use:
 | Date       | Change           |
 | ---------- | ---------------- |
 | 2026-03-10 | Initial Box spec |
+
