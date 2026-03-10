@@ -340,3 +340,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Table` alongside the previously shipped Batch 4 primitives.
 - App-local table shells can begin converging on one shared semantic foundation while higher-order data logic stays outside the primitive boundary until `DataTable` lands.
+
+---
+
+## 2026-03-10 - Tabs Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Tabs` as the next eligible Wave B4 navigation primitive after `Table`.
+- Added the canonical Tabs spec, Storybook coverage, typed exports, and `@radix-ui/react-tabs` compound primitives for `Tabs`, `TabsList`, `TabsTrigger`, and `TabsContent`.
+- Kept the root API intentionally narrow after composition review: `value`, `defaultValue`, `onValueChange`, and `orientation` remain the only normalized root props while scrollable trigger overflow and active-state styling stay internal to the shared shell.
+- Kept authored shared markup on `Box`, including the root wrapper, list shell, button-backed triggers, and tabpanel wrapper through Radix `asChild` composition.
+
+Impact:
+- `@repo/ui` export surface now includes `Tabs` alongside the previously shipped Batch 4 primitives.
+- App-local detail tabs, settings tabs, and section switchers can begin converging on one shared compound tabs primitive while route synchronization, query-string coupling, and workflow state remain local.

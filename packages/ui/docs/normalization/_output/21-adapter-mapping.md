@@ -278,3 +278,18 @@ Keep local:
 - Sorting, filtering, search slots, pagination controls, expandable rows, row selection orchestration, and loading or retry wrappers; those belong to `DataTable` or app-local shells.
 - Domain-specific table cells that compute status, format business entities, trigger navigation, or call services directly.
 - Non-tabular mobile card transformations that replace semantic table markup entirely.
+
+## Tabs
+
+Direct adoption guidance:
+
+- Legacy tabsets that already separate a trigger row from panel content map to `Tabs`, `TabsList`, `TabsTrigger`, and `TabsContent`.
+- Existing controlled `value` plus `onChange` or `onValueChange` flows normalize to `value` and `onValueChange`; simple local-state tabsets can normalize to `defaultValue`.
+- Vertical settings rails map to `orientation="vertical"`; wider horizontal trigger sets can rely on the shared overflow behavior instead of adding app-local scroll wrappers directly on the tablist.
+- Existing panel bodies should stay consumer-owned and move inside `TabsContent` rather than being flattened into new shared props.
+
+Keep local:
+
+- Route-synchronized tabs, query-param tabs, and any tab wrapper that owns navigation state or deep-link logic.
+- Segmented filters, stepped workflows, or binary selection surfaces that are not semantically tab navigation.
+- Domain-specific tab containers that still fetch data, compute badge counts, or trigger side effects during tab changes.

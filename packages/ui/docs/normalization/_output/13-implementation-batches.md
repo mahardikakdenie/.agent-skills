@@ -31,7 +31,7 @@
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
 - Shared loading scope stops at the `Spinner` and `Skeleton` primitives; loading wrappers, suspense fallbacks, branded loaders, and retry/error-aware loading shells stay in app lanes unless a future narrower wrapper is explicitly approved.
-- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, and `Table`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
+- Cross-check on 2026-03-10 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, and `Tabs`; remaining Batch 4 tracker rows stay `PLANNED` or `BLOCKED` until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, and `Table`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution has started with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, and `Tabs`, while the remaining shared rows stay `PLANNED` or `BLOCKED` until their code lands.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -305,7 +305,7 @@
 | Spinner | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored CSS ring motion, and inline + overlay loading coverage |
 | Switch | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Radix-backed toggle semantics, shared size density, error-state support, and Box-authored control + label markup |
 | Table | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored semantic table wrappers, and selected-row-ready structure for future `DataTable` work |
-| Tabs | 4 | B4 | PLANNED | Route sync remains local |
+| Tabs | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Radix compound exports, scrollable list support, and Box-authored tab triggers and panels |
 | Textarea | 4 | B4 | PLANNED | Plain multiline input |
 | Breadcrumb | 4 | B5.1 | PLANNED | Build after B5.0 stability |
 | Calendar | 4 | B5.1 | PLANNED | Requires `react-day-picker` + `date-fns` |

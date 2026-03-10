@@ -24,6 +24,7 @@ export * from './Table';
 
 // Navigation
 export * from './Pagination';
+export * from './Tabs';
 
 // Overlays
 export * from './Dialog';
