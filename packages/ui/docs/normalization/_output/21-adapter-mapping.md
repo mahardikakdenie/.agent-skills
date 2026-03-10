@@ -212,3 +212,18 @@ Keep local:
 - Branded logo loaders, campaign animations, and library-specific art direction.
 - Loading shells that also own retry, empty, or error-state policy, or that depend on domain-specific `title`, `description`, or `actions` decisions.
 - Fetch orchestration, delayed-timer policy, and workflow state that decides when loading begins or ends.
+
+## Dialog
+
+Direct adoption guidance:
+
+- Legacy centered modal shells, confirmation dialogs, and focused form overlays that only standardize backdrop, focus trap, and close behavior map to `Dialog`.
+- Legacy `isOpen` + `onClose` modal props map to `open` + `onClose`; legacy width or backdrop override props map to `size` + `className`.
+- Existing header/body/footer structures map either to `DialogContent` convenience props (`title`, `description`, `actions`, `footer`) or to the compound exports `DialogHeader`, `DialogFooter`, `DialogTitle`, `DialogDescription`, and `DialogClose asChild`.
+- Destructive confirmations stay a Dialog composition concern with `Button variant="destructive"`, not a dialog-level variant.
+
+Keep local:
+
+- Route-aware modal flows, auth gates, domain forms with service hooks, and mutation orchestration that extend beyond shell behavior.
+- Mobile bottom sheets, edge-attached panels, and drag-dismiss patterns that should adopt `Drawer` instead of `Dialog`.
+- Media viewers, branded modal artwork, and modal stacks with app-specific animation or sequencing policy.

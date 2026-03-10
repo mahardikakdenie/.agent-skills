@@ -1,4 +1,4 @@
-﻿// Primitives
+// Primitives
 export * from './Box';
 
 // Feedback
@@ -20,6 +20,7 @@ export * from './Card';
 export * from './Pagination';
 
 // Overlays
+export * from './Dialog';
 export * from './Drawer';
 
 // Inputs

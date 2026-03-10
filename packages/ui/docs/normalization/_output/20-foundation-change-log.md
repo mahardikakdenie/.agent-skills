@@ -272,3 +272,17 @@ Impact:
 - The canonical shared loading surface in `@repo/ui` now stops at primitives.
 - Existing migration docs should map `Loader` / `Loading` / `LoadingWrapper` / `SuspenseFallback` families to app-local composition rather than a shared wrapper export.
 - Any future shared loading wrapper requires a new, narrower program decision instead of inheriting the reversed `ContentLoadingWrapper` plan.
+
+---
+
+## 2026-03-10 - Dialog Batch 4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Dialog` as the next eligible Wave B4 overlay shell after re-opening the previously documented accessibility gate.
+- Added the canonical Dialog spec, Storybook coverage, typed exports, and `@radix-ui/react-dialog` compound primitives for trigger, overlay, content, close, header, footer, title, and description composition.
+- Locked the shared Dialog contract around `open`, `defaultOpen`, `onClose`, `size`, and shell-only slot props (`title`, `description`, `actions`, `footer`) while keeping destructive and async behaviors in composed content.
+- Kept authored shared markup on `Box`, including the overlay, content shell, header/footer wrappers, and the `Title`/`Description` elements through Radix `asChild` composition.
+
+Impact:
+- `@repo/ui` export surface now includes `Dialog` alongside the previously shipped Batch 4 primitives.
+- Centered modal shells, confirmation dialogs, and focused form overlays can now normalize toward one shared modal contract while leaving domain workflows, route coupling, and bottom-sheet behavior local.
