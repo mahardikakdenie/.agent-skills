@@ -2,10 +2,12 @@
 
 ## Metadata
 
-| Field           | Value      |
-| --------------- | ---------- |
-| Storybook Group | `Overlays` |
-| Based on        | `vaul`     |
+| Field           | Value                |
+| --------------- | -------------------- |
+| Storybook Group | `Overlays`           |
+| Component Tier  | `Tier 2 (Composite)` |
+| Structure Tier  | `Complex`            |
+| Based on        | `vaul`               |
 
 ---
 

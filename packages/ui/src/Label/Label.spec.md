@@ -5,6 +5,8 @@
 | Field           | Value                           |
 | --------------- | ------------------------------- |
 | Storybook Group | `Inputs`                        |
+| Component Tier  | `Tier 1 (Primitive)`            |
+| Structure Tier  | `Simple`                        |
 | Based on        | `Box` + `@radix-ui/react-label` |
 
 ---

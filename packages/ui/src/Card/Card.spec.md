@@ -5,6 +5,8 @@
 | Field           | Value                      |
 | --------------- | -------------------------- |
 | Storybook Group | `Layout`                   |
+| Component Tier  | `Tier 2 (Composite)`       |
+| Structure Tier  | `Standard`                 |
 | Based on        | `Box` + custom composition |
 
 ## Overview

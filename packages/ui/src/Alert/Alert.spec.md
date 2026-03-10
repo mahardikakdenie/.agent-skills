@@ -2,10 +2,12 @@
 
 ## Metadata
 
-| Field           | Value              |
-| --------------- | ------------------ |
-| Storybook Group | `Feedback`         |
-| Based on        | custom composition |
+| Field           | Value                |
+| --------------- | -------------------- |
+| Storybook Group | `Feedback`           |
+| Component Tier  | `Tier 2 (Composite)` |
+| Structure Tier  | `Standard`           |
+| Based on        | custom composition   |
 
 ---
 

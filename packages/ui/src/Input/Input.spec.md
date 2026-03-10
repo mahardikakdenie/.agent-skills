@@ -1,10 +1,12 @@
-﻿# Input Spec
+# Input Spec
 
 ## Metadata
 
 | Field           | Value                   |
 | --------------- | ----------------------- |
 | Storybook Group | `Inputs`                |
+| Component Tier  | `Tier 1 (Primitive)`    |
+| Structure Tier  | `Standard`              |
 | Based on        | `Box` with `as="input"` |
 
 ---

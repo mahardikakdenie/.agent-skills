@@ -5,6 +5,8 @@
 | Field           | Value                          |
 | --------------- | ------------------------------ |
 | Storybook Group | `Buttons`                      |
+| Component Tier  | `Tier 1 (Primitive)`           |
+| Structure Tier  | `Standard`                     |
 | Based on        | `Box` + `@radix-ui/react-slot` |
 
 ---

@@ -5,6 +5,8 @@
 | Field           | Value                           |
 | --------------- | ------------------------------- |
 | Storybook Group | `Feedback`                      |
+| Component Tier  | `Tier 1 (Primitive)`            |
+| Structure Tier  | `Simple`                        |
 | Based on        | `Box`-backed custom composition |
 
 ---

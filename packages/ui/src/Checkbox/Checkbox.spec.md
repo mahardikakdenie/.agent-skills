@@ -5,6 +5,8 @@
 | Field           | Value                              |
 | --------------- | ---------------------------------- |
 | Storybook Group | `Inputs`                           |
+| Component Tier  | `Tier 1 (Primitive)`               |
+| Structure Tier  | `Standard`                         |
 | Based on        | `Box` + `@radix-ui/react-checkbox` |
 
 ---
@@ -18,7 +20,7 @@ The component is intentionally not compound. The checkbox control, label, descri
 **When to use:**
 
 - Use `Checkbox` for single boolean choices, consent acknowledgements, and row-selection controls.
-- Use the indeterminate state for partial selection patterns such as “select all” with some children already checked.
+- Use the indeterminate state for partial selection patterns such as "select all" with some children already checked.
 
 **When NOT to use:**
 

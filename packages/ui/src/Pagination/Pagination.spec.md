@@ -2,10 +2,12 @@
 
 ## Metadata
 
-| Field           | Value              |
-| ---------------- | ------------------ |
-| Storybook Group | `Navigation`       |
-| Based on        | Tier 1 composition |
+| Field           | Value                      |
+| --------------- | -------------------------- |
+| Storybook Group | `Navigation`               |
+| Component Tier  | `Tier 2 (Composite)`       |
+| Structure Tier  | `Standard`                 |
+| Based on        | `Box` + custom composition |
 
 ---
 
@@ -31,7 +33,7 @@ This component does not fetch data, derive page counts from totals, sync routes,
 
 | Decision | Choice | Rationale |
 | -------- | ------ | --------- |
-| Primitive | Tier 1 composition with `Box` | No Radix primitive is required; the component is a semantic `nav` plus buttons, list items, and an optional `select`. |
+| Primitive | `Box` + custom composition | No Radix primitive is required; the component is a semantic `nav` plus buttons, list items, and an optional `select`. |
 | CVA strategy | Slot-based internal variants | The public API stays flat, while the control states still use shared CVA-backed styling. |
 | Controlled vs uncontrolled | controlled-only | Pagination should reflect parent-owned paging state rather than duplicating it internally. |
 | Composition pattern | flat API | `vercel-composition-patterns` review does not justify public compound exports; a single shell avoids boolean and slot sprawl. |
