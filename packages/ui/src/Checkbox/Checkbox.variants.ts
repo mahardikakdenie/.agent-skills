@@ -6,7 +6,7 @@ export const checkboxControlRowVariants = cva('flex items-start gap-3');
 
 export const checkboxRootVariants = cva(
   [
-    'peer/checkbox shrink-0 self-start border bg-background text-primary-foreground shadow-sm outline-none',
+    'peer/checkbox inline-flex shrink-0 self-start items-center justify-center border bg-background p-0 align-middle text-primary-foreground leading-none shadow-sm outline-none',
     'transition-[background-color,border-color,box-shadow,color] motion-reduce:transition-none',
     'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'disabled:cursor-not-allowed disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
@@ -39,7 +39,7 @@ export const checkboxRootVariants = cva(
 );
 
 export const checkboxIndicatorVariants = cva(
-  'flex items-center justify-center text-current transition-opacity motion-reduce:transition-none',
+  'pointer-events-none flex items-center justify-center text-current leading-none transition-opacity motion-reduce:transition-none',
   {
     variants: {
       size: {
@@ -94,4 +94,5 @@ export const checkboxDescriptionVariants = cva('text-sm leading-5', {
 });
 
 export const checkboxMessageVariants = cva('text-sm font-medium leading-5 text-destructive');
+
 

@@ -19,3 +19,7 @@ export * from './Pagination';
 
 // Overlays
 export * from './Drawer';
+
+// Inputs
+export * from './RadioGroup';
+

@@ -285,6 +285,8 @@ export interface RadioGroupProps {
   disabled?: boolean
   required?: boolean
   orientation?: 'horizontal' | 'vertical'
+  size?: 'sm' | 'md' | 'lg'  // default: 'md'
+  error?: string | boolean
   children: React.ReactNode
   className?: string
 }
@@ -1062,3 +1064,4 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+
