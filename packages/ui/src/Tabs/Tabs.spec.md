@@ -223,6 +223,7 @@ The shared contract is intentionally narrow. The root component only standardize
 - [x] `VerticalOrientation`
 - [x] `Scrollable`
 - [x] `Interactive`
+- [x] `ControlledMode`
 - [x] `ResponsiveLayout`
 
 ---

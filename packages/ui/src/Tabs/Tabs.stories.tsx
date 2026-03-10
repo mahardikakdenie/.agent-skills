@@ -217,6 +217,32 @@ function TabsExample({
   );
 }
 
+function ControlledTabsExample({
+  items,
+  orientation = 'horizontal',
+}: {
+  items: StoryTab[];
+  orientation?: TabsOrientation;
+}) {
+  const [activeValue, setActiveValue] = React.useState(items[0]?.value);
+
+  return (
+    <Box className="grid gap-3">
+      <Box
+        as="p"
+        className="text-sm text-muted-foreground"
+      >{`Active tab: ${activeValue ?? 'none'}`}</Box>
+      <TabsExample
+        className="max-w-3xl"
+        items={items}
+        orientation={orientation}
+        value={activeValue}
+        onValueChange={setActiveValue}
+      />
+    </Box>
+  );
+}
+
 const meta = {
   title: 'Navigation/Tabs',
   component: Tabs,
@@ -278,7 +304,7 @@ export const Default: Story = {
 };
 
 export const DisabledState: Story = {
-  name: 'Disabled state',
+  name: 'Disabled State',
   render: (args) => (
     <TabsExample
       className="max-w-3xl"
@@ -298,7 +324,7 @@ export const DisabledState: Story = {
 };
 
 export const VerticalOrientation: Story = {
-  name: 'Vertical orientation',
+  name: 'Vertical Orientation',
   render: (args) => (
     <TabsExample
       className="max-w-4xl"
@@ -369,8 +395,21 @@ export const Interactive: Story = {
   },
 };
 
+export const ControlledMode: Story = {
+  name: 'Controlled Mode',
+  render: () => <ControlledTabsExample items={defaultTabs} />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the controlled `value` plus `onValueChange` path and mirrors the active tab outside the component.',
+      },
+    },
+  },
+};
+
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
+  name: 'Responsive Layout',
   args: {
     defaultValue: scrollableTabs[0]!.value,
     value: undefined,
