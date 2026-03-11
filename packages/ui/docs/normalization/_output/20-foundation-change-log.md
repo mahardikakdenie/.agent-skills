@@ -396,3 +396,17 @@ Impact:
 - `@repo/ui` export surface now includes `Breadcrumb` alongside the previously shipped navigation primitives.
 - App-local breadcrumb shells can begin converging on one shared semantic trail component while preserving app-owned routing and link composition policy.
 
+
+---
+
+## 2026-03-11 - Calendar Batch 5.1 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Calendar` as the next eligible Wave B5.1 component after `Breadcrumb`.
+- Added the canonical Calendar spec, Storybook coverage, typed `single` / `multiple` / `range` selection contracts, and tokenized class-map styling on top of `react-day-picker`.
+- Added `date-fns` as a direct `@repo/ui` dependency and used it for shared caption and weekday formatting so the wrapper satisfies the roadmap's required date stack.
+- Kept the Box-only DOM rule explicit at the authored boundary: the shared wrapper and stories use `Box`, while `react-day-picker` remains the documented third-party DOM constraint inside the rendered calendar grid.
+
+Impact:
+- `@repo/ui` export surface now includes `Calendar` alongside the previously shipped primitives and composite shells.
+- Downstream apps can begin converging inline day-grid selection and disabled-date calendar views on one shared component before `DatePicker`, `DateRangePicker`, and related wrappers land.

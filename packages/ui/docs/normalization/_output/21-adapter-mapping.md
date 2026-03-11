@@ -324,3 +324,18 @@ Keep local:
 - Breadcrumb containers that still compute labels from domain entities, route params, or permission state before rendering.
 - Overflow menus, collapsed breadcrumb disclosure, or route-tree behavior that exceeds the flat shared trail contract.
 
+
+## Calendar
+
+Direct adoption guidance:
+
+- Legacy inline day-grid calendars map to `Calendar`.
+- Existing single-date, multi-date, and date-range selection flows normalize to `mode="single" | "multiple" | "range"` plus shared `selected` and `onSelect` handling.
+- Disabled-date rules such as weekends, closed dates, and min/max bounds map to DayPicker `disabled` matchers and month/year navigation bounds (`fromMonth`, `toMonth`, `fromYear`, `toYear`).
+- Existing month and year browsing controls should collapse into the shared DayPicker navigation contract (`captionLayout`, `month`, `defaultMonth`, `onMonthChange`) instead of app-local button APIs.
+
+Keep local:
+
+- Triggered field shells with labels, placeholders, validation copy, and clear actions that belong to `DatePicker`, `DateRangePicker`, or app-local form composition.
+- Business-specific date presets, route/query synchronization, and submission logic.
+- Date-time, month-only, and rich preset pickers that exceed the inline calendar-grid contract.

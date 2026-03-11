@@ -1,4 +1,4 @@
-# 13 - Implementation Batches
+﻿# 13 - Implementation Batches
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -31,7 +31,7 @@
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
 - Shared loading scope stops at the `Spinner` and `Skeleton` primitives; loading wrappers, suspense fallbacks, branded loaders, and retry/error-aware loading shells stay in app lanes unless a future narrower wrapper is explicitly approved.
-- Cross-check on 2026-03-11 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Breadcrumb`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; remaining Batch 5+ tracker rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands in `packages/ui/src`.
+- Cross-check on 2026-03-11 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; remaining Batch 5+ tracker rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`, and Wave B5.1 is now in progress with `Breadcrumb` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`, and Wave B5.1 is now in progress with `Breadcrumb` and `Calendar` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -308,7 +308,7 @@
 | Tabs | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Radix compound exports, scrollable list support, and Box-authored tab triggers and panels |
 | Textarea | 4 | B4 | DONE | Shipped on 2026-03-10 with spec, Storybook, Box-authored multiline field markup, helper/error messaging, and clearable controlled/uncontrolled support |
 | Breadcrumb | 4 | B5.1 | DONE | Shipped on 2026-03-11 with spec, Storybook, Box-authored semantic nav/list markup, optional `currentLabel`, and custom separator support |
-| Calendar | 4 | B5.1 | PLANNED | Requires `react-day-picker` + `date-fns` |
+| Calendar | 4 | B5.1 | DONE | Shipped on 2026-03-11 with spec, Storybook, typed single/multiple/range selection, disabled-date matchers, and Box-authored wrapper composition on top of `react-day-picker` + `date-fns` |
 | DatePicker | 4 | B5.1 | PLANNED | Depends on `Calendar` and `Popover` |
 | DropdownMenu | 4 | B5.1 | PLANNED | Compound menu surface |
 | Form | 4 | B5.1 | PLANNED | Needs `Label` and `Input` first |
@@ -330,6 +330,7 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 
 
 
