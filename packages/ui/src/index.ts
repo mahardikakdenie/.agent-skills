@@ -10,6 +10,7 @@ export * from './Spinner';
 
 // Inputs
 export * from './Checkbox';
+export * from './Form';
 export * from './Input';
 export * from './Label';
 export * from './RadioGroup';
@@ -33,3 +34,4 @@ export * from './Tabs';
 export * from './Dialog';
 export * from './Drawer';
 export * from './DropdownMenu';
+

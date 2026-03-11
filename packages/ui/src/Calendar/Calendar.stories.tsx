@@ -150,7 +150,6 @@ export const Default: Story = {
 };
 
 export const MultipleSelection: Story = {
-  name: 'Multiple Selection',
   render: () => <MultipleSelectionStory />,
   parameters: {
     docs: {
@@ -162,7 +161,6 @@ export const MultipleSelection: Story = {
 };
 
 export const DisabledDates: Story = {
-  name: 'Disabled Dates',
   args: {
     mode: 'single',
     month: new Date(2026, 0, 1),
@@ -179,7 +177,6 @@ export const DisabledDates: Story = {
 };
 
 export const RangePreview: Story = {
-  name: 'Range Preview',
   render: () => <RangePreviewStory />,
   parameters: {
     docs: {

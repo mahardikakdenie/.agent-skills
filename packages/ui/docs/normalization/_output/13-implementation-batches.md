@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`, and Wave B5.1 is now in progress with `Breadcrumb`, `Calendar`, and `DropdownMenu` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`, and Wave B5.1 is now in progress with `Breadcrumb`, `Calendar`, `DropdownMenu`, and `Form` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -311,7 +311,7 @@
 | Calendar | 4 | B5.1 | DONE | Shipped on 2026-03-11 with spec, Storybook, typed single/multiple/range selection, disabled-date matchers, and Box-authored wrapper composition on top of `react-day-picker` + `date-fns` |
 | DatePicker | 4 | B5.1 | PLANNED | Depends on `Calendar` and `Popover` |
 | DropdownMenu | 4 | B5.1 | DONE | Shipped on 2026-03-11 with spec, Storybook, compound Radix menu exports, checkbox and submenu support, and Box-authored menu shells |
-| Form | 4 | B5.1 | PLANNED | Needs `Label` and `Input` first |
+| Form | 4 | B5.1 | DONE | Shipped on 2026-03-11 with spec, Storybook, RHF-aligned field composition, Box-authored form wrappers, and shared description/message wiring |
 | Popover | 4 | B5.1 | PLANNED | Overlay foundation dependency |
 | Tooltip | 4 | B5.1 | PLANNED | Small but a11y-sensitive |
 | Avatar | 4 | B5.2 | PLANNED | Low-risk visual primitive |
@@ -330,19 +330,3 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

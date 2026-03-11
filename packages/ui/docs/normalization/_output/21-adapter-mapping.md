@@ -1,4 +1,4 @@
-﻿# 21 - Adapter Mapping
+# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -352,3 +352,18 @@ Keep local:
 - Menus that still build routes, read permission state, call services directly, or derive item visibility from domain logic.
 - Searchable, async, or large command surfaces that belong to `Combobox`, `Command`, or app-local composition.
 - Full navigation trees and information architecture concerns that belong to `NavigationMenu`, `Menubar`, or app-local route shells.
+
+## Form
+
+Direct adoption guidance:
+
+- Legacy `form.tsx` field shells, RHF controller wrappers, and shared field-copy helpers map to `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription`, and `FormMessage`.
+- Existing `Controller` render blocks that only standardize label, description, and error wiring should collapse into `FormField` plus the shared compound slots.
+- Existing helper text and validation message elements should map to `FormDescription` and `FormMessage` instead of ad-hoc `p` tags or duplicated per-app wrappers.
+- Existing repeated field patterns should keep `useFieldArray` in app code and render repeated `FormField` items rather than introducing a second shared array abstraction.
+
+Keep local:
+
+- Zod schemas, mutation handlers, domain validation rules, submit orchestration, and multi-step workflow state.
+- Form shells that still embed business copy, navigation side effects, API calls, or auth and permission logic.
+- Field wrappers that intentionally diverge for product-specific layout, marketing copy, or workflow choreography beyond shared accessibility wiring.

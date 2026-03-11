@@ -158,6 +158,7 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Drawer` alongside `Box`, `Alert`, `Badge`, `Button`, `Card`, and `Checkbox`.
 - Bottom sheets, side panels, and reusable secondary-detail overlays can now normalize toward one shared drawer shell while keeping domain workflows and modal-specific semantics local.
+
 ---
 
 ## 2026-03-10 - Input Batch 4 Delivery
@@ -424,3 +425,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `DropdownMenu` alongside the previously shipped overlay and navigation primitives.
 - App-local row-action menus, compact toolbar menus, and lightweight preference menus can begin converging on one shared compound action-menu contract while routing, permission logic, and domain-specific item shaping stay local.
+
+---
+
+## 2026-03-11 - Form Batch 5.1 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Form` as the next eligible Wave B5.1 component after `DropdownMenu`, since `DatePicker` still depends on `Popover` and `Form` was the first remaining `PLANNED` row in order with its documented prerequisites already satisfied.
+- Added the canonical Form spec, Storybook coverage, typed exports, and a React Hook Form aligned compound API for `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription`, and `FormMessage`.
+- Used `FormProvider` plus `useController` to normalize field state, accessible description and error wiring, and custom-control composition while keeping schemas, submission logic, and domain validation in app code.
+- Kept authored shared markup on `Box`, including the semantic `form` root, item wrappers, helper copy, and validation messages.
+
+Impact:
+- `@repo/ui` export surface now includes `Form` alongside the previously shipped input primitives and overlay shells.
+- App-local field wrappers can begin converging on one shared RHF composition layer while domain schemas, mutations, and step orchestration remain local.
