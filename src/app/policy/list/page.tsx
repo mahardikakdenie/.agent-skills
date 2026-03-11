@@ -27,6 +27,7 @@ import { createPolicyTableColumns } from "@/components/tableConfig/policyTableCo
 import { toastNotification } from "@/helpers/app.helper";
 import { helperService } from "@/services/api.service";
 import { useScreen } from "@/context/screen.context";
+import Spinner from "@/components/ui/spinner";
 
 export default function PolicyPage() {
   const path = usePathname();
@@ -53,9 +54,11 @@ export default function PolicyPage() {
     isLoadingChannels,
     isLoadingCategories,
     isFetching,
+    exporting,
 
     setPage,
     setDate,
+    setExporting,
     handleSearch,
     handleRowsPerPageChange,
     selectTab,
@@ -96,7 +99,7 @@ export default function PolicyPage() {
 
   const handleExport = async () => {
     try {
-      setLoading(true);
+      setExporting(true);
 
       const response = await helperService.get("/v1/export-data", {
         params: {
@@ -129,7 +132,7 @@ export default function PolicyPage() {
     } catch (error) {
       toastNotification("Gagal mengunduh file export", "error");
     } finally {
-      setLoading(false);
+      setExporting(false);
     }
   };
 
@@ -249,8 +252,11 @@ export default function PolicyPage() {
         <Button
           onClick={handleExport}
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+          disabled={exporting}
         >
-          <Download className="w-5 h-5 mr-1 " /> Export
+          {exporting ? <Spinner className="h-6 w-6 mr-2" /> : <Download className="w-5 h-5 mr-1 " /> }
+          
+          {exporting ? "Exporting..." : "Export"}
         </Button>
       </div>
       <div className="block bg-white rounded-md mb-3">
