@@ -8,6 +8,7 @@ import {
   policyService,
   channelService,
   productService,
+  helperService,
 } from "@/services/api.service";
 
 interface UsePoliciesProps {
@@ -25,6 +26,7 @@ interface UsePoliciesProps {
   searchChannel: string;
   searchCategory: string;
   date: DateRange | undefined;
+  exporting: boolean;
 
   setPage: (page: number) => void;
   setRowsPerPage: (rows: number) => void;
@@ -33,6 +35,7 @@ interface UsePoliciesProps {
   setSearchChannel: (channel: string) => void;
   setSearchCategory: (category: string) => void;
   setDate: (date: DateRange | undefined) => void;
+  setExporting: (exporting: boolean) => void;
 
   isLoading: boolean;
   isLoadingChannels: boolean;
@@ -67,6 +70,8 @@ export default function usePolicies(
   const [policies, setPolicies] = useState<any[]>([]);
   const [channels, setChannels] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+
+  const [exporting, setExporting] = useState<boolean>(false);
 
   const policyQueryKey = [
     "policies",
@@ -217,6 +222,18 @@ export default function usePolicies(
     };
   }, [handleSearch]);
 
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const last30DaysDate = new Date(currentDate);
+    last30DaysDate.setDate(currentDate.getDate() - 30);
+
+    setDate({
+      from: last30DaysDate,
+      to: currentDate,
+    });
+  }, [])
+
   return {
     policies,
     channels,
@@ -240,6 +257,7 @@ export default function usePolicies(
     setSearchChannel,
     setSearchCategory,
     setDate,
+    setExporting,
 
     isLoading,
     isLoadingChannels,
@@ -247,6 +265,7 @@ export default function usePolicies(
     isError,
     error,
     isFetching,
+    exporting,
 
     refetch,
     handleSearch,

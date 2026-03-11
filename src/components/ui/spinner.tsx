@@ -1,10 +1,14 @@
 import React from "react";
 
-export const Spinner = () => {
+interface SpinnerProps {
+  className?: string;
+}
+
+export const Spinner = ({ className = "" }: SpinnerProps) => {
   return (
     <div className="flex items-center justify-center">
       <svg
-        className="animate-spin h-10 w-10 text-blue-500"
+        className={`animate-spin h-10 w-10 text-blue-500 ${className}`}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
