@@ -1,4 +1,4 @@
-# 21 - Adapter Mapping
+﻿# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -260,7 +260,6 @@ Keep local:
 - Multi-select, checkbox-list, staged-confirmation, or summary-label pickers.
 - Phone-code-specific selection and any select wrapper that still embeds query params, routing, service hooks, or domain-specific option shaping.
 
-
 ## Switch
 
 Direct adoption guidance:
@@ -276,8 +275,6 @@ Keep local:
 - Toggle-like segmented navigation, filter pills, or tab replacements that are not true binary switches.
 - Switch wrappers that trigger routing, service calls, analytics, or domain workflows directly on toggle.
 - Validation-heavy field shells that need custom descriptions, inline error policy, or async persistence messaging beyond the shared primitive.
-
-
 
 ## Table
 
@@ -309,6 +306,7 @@ Keep local:
 - Route-synchronized tabs, query-param tabs, and any tab wrapper that owns navigation state or deep-link logic.
 - Segmented filters, stepped workflows, or binary selection surfaces that are not semantically tab navigation.
 - Domain-specific tab containers that still fetch data, compute badge counts, or trigger side effects during tab changes.
+
 ## Breadcrumb
 
 Direct adoption guidance:
@@ -324,7 +322,6 @@ Keep local:
 - Breadcrumb containers that still compute labels from domain entities, route params, or permission state before rendering.
 - Overflow menus, collapsed breadcrumb disclosure, or route-tree behavior that exceeds the flat shared trail contract.
 
-
 ## Calendar
 
 Direct adoption guidance:
@@ -339,3 +336,19 @@ Keep local:
 - Triggered field shells with labels, placeholders, validation copy, and clear actions that belong to `DatePicker`, `DateRangePicker`, or app-local form composition.
 - Business-specific date presets, route/query synchronization, and submission logic.
 - Date-time, month-only, and rich preset pickers that exceed the inline calendar-grid contract.
+
+## DropdownMenu
+
+Direct adoption guidance:
+
+- Legacy action menus, kebab menus, row menus, and compact toolbar menus map to `DropdownMenu` plus its compound exports.
+- Existing click handlers that dispatch a string action can normalize to root-level `onAction` plus per-item `value`.
+- Existing grouped sections, non-interactive headings, and divider rows map to `DropdownMenuGroup`, `DropdownMenuLabel`, and `DropdownMenuSeparator`.
+- Existing toggle and view-mode menu rows map to `DropdownMenuCheckboxItem`, `DropdownMenuRadioGroup`, and `DropdownMenuRadioItem` instead of custom icon + ARIA wiring.
+- Existing nested export or more-actions groups map to `DropdownMenuSub`, `DropdownMenuSubTrigger`, and `DropdownMenuSubContent`.
+
+Keep local:
+
+- Menus that still build routes, read permission state, call services directly, or derive item visibility from domain logic.
+- Searchable, async, or large command surfaces that belong to `Combobox`, `Command`, or app-local composition.
+- Full navigation trees and information architecture concerns that belong to `NavigationMenu`, `Menubar`, or app-local route shells.

@@ -410,3 +410,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Calendar` alongside the previously shipped primitives and composite shells.
 - Downstream apps can begin converging inline day-grid selection and disabled-date calendar views on one shared component before `DatePicker`, `DateRangePicker`, and related wrappers land.
+
+---
+
+## 2026-03-11 - DropdownMenu Batch 5.1 Delivery
+
+Changed:
+- Implemented `packages/ui/src/DropdownMenu` as the next eligible Wave B5.1 component after `Calendar`, since `DatePicker` remained blocked by `Popover` and `DropdownMenu` was the next `PLANNED` row with no unmet prerequisite.
+- Added the canonical DropdownMenu spec, Storybook coverage, typed exports, and a Radix-backed compound menu surface for trigger, content, items, checkbox items, radio items, labels, separators, and submenu composition.
+- Added `@radix-ui/react-dropdown-menu` as a direct `@repo/ui` dependency and aligned `02-api-conventions.md` to the shipped compound contract instead of the older flat `items[]` sketch.
+- Kept authored shared wrappers on `Box` through Radix `asChild` composition while leaving Radix Portal internals as the documented third-party DOM constraint.
+
+Impact:
+- `@repo/ui` export surface now includes `DropdownMenu` alongside the previously shipped overlay and navigation primitives.
+- App-local row-action menus, compact toolbar menus, and lightweight preference menus can begin converging on one shared compound action-menu contract while routing, permission logic, and domain-specific item shaping stay local.

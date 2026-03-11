@@ -1,4 +1,4 @@
-﻿# 02 - API Conventions
+# 02 - API Conventions
 
 > **Batch:** Batch 2 - Design System Foundation
 > **Branch:** `feat/ui`
@@ -759,21 +759,41 @@ Story group: `Navigation`
 ### DropdownMenu
 
 ```ts
-export interface DropdownMenuItem {
-  label: string
-  value: string
-  disabled?: boolean
-  destructive?: boolean
-}
-
 export interface DropdownMenuProps {
-  items: DropdownMenuItem[]
-  align?: 'start' | 'center' | 'end'
-  side?: 'top' | 'right' | 'bottom' | 'left'
+  open?: boolean
+  defaultOpen?: boolean
+  onOpen?: () => void
+  onClose?: () => void
   onAction?: (value: string) => void
   disabled?: boolean
-  className?: string
+  modal?: boolean
+  children: React.ReactNode
 }
+
+export interface DropdownMenuContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  align?: 'start' | 'center' | 'end'
+  side?: 'top' | 'right' | 'bottom' | 'left'
+  sideOffset?: number
+  className?: string
+  children: React.ReactNode
+}
+
+export interface DropdownMenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  value?: string
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  inset?: boolean
+  destructive?: boolean
+  disabled?: boolean
+  className?: string
+  children?: React.ReactNode
+}
+
+// Compound exports: DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
+// DropdownMenuGroup, DropdownMenuLabel, DropdownMenuItem,
+// DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem,
+// DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger,
+// DropdownMenuSubContent
 ```
 
 Story group: `Overlays`
