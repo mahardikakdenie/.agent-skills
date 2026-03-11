@@ -24,6 +24,9 @@ import { Button } from "@/components/ui/button";
 import usePolicies from "@/hooks/usePolicies.hooks";
 import { DataTable } from "@/components/ui/DataTable";
 import { createPolicyTableColumns } from "@/components/tableConfig/policyTableConfig";
+import { toastNotification } from "@/helpers/app.helper";
+import { helperService } from "@/services/api.service";
+import { useScreen } from "@/context/screen.context";
 
 export default function PolicyPage() {
   const path = usePathname();
@@ -61,6 +64,8 @@ export default function PolicyPage() {
     handleClear,
   } = usePolicies();
 
+  const {setLoading} = useScreen();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Declaration":
@@ -89,20 +94,43 @@ export default function PolicyPage() {
     router.push(`${path}/import`);
   };
 
-  const handleExport = () => {
-    const exportData = {
-      page,
-      limit: rowsPerPage,
-      status: tab === "All" ? "" : tab,
-      search: searchData,
-      channel: searchChannel,
-      date_from: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-      date_to: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
-      category: searchCategory === "All" ? null : searchCategory,
-    };
+  const handleExport = async () => {
+    try {
+      setLoading(true);
 
-    localStorage.setItem("exportPolicyData", JSON.stringify(exportData));
-    router.push(`${path}/export`);
+      const response = await helperService.get("/v1/export-data", {
+        params: {
+          startDate: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
+          endDate: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+          type: "Export.PolicyList.XSLX",
+          channel: searchChannel,
+          category: searchCategory !== "All" ? searchCategory : undefined,
+        },
+        responseType: "blob",
+      });
+
+      const contentDisposition = response.headers["content-disposition"] as string | undefined;
+      const filenameMatch = contentDisposition?.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+      const filename = filenameMatch?.[1] ? decodeURIComponent(filenameMatch[1]) : `policy-list-${Date.now()}.xlsx`;
+      const contentType =
+        (response.headers["content-type"] as string | undefined) ||
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+      const blob =
+        response.data instanceof Blob ? response.data : new Blob([response.data], { type: contentType });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      toastNotification("Gagal mengunduh file export", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const policyTableColumns = createPolicyTableColumns({
@@ -157,7 +185,7 @@ export default function PolicyPage() {
             onClick={handleClear}
             disabled={!date}
             className={cn(
-              "font-semibold bg-transparent hover:bg-transparent p-0 text-red-700 text-sm cursor-pointer absolute right-2",
+              "hidden font-semibold bg-transparent hover:bg-transparent p-0 text-red-700 text-sm cursor-pointer absolute right-2",
               !date && "text-gray-500 cursor-not-allowed"
             )}
             title="Clear"

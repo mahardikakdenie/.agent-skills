@@ -8,6 +8,7 @@ import {
   policyService,
   channelService,
   productService,
+  helperService,
 } from "@/services/api.service";
 
 interface UsePoliciesProps {
@@ -216,6 +217,18 @@ export default function usePolicies(
       handleSearch.cancel?.();
     };
   }, [handleSearch]);
+
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const last30DaysDate = new Date(currentDate);
+    last30DaysDate.setDate(currentDate.getDate() - 30);
+
+    setDate({
+      from: last30DaysDate,
+      to: currentDate,
+    });
+  }, [])
 
   return {
     policies,
