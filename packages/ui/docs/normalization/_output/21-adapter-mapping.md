@@ -1,4 +1,4 @@
-﻿# 21 - Adapter Mapping
+# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -309,3 +309,18 @@ Keep local:
 - Route-synchronized tabs, query-param tabs, and any tab wrapper that owns navigation state or deep-link logic.
 - Segmented filters, stepped workflows, or binary selection surfaces that are not semantically tab navigation.
 - Domain-specific tab containers that still fetch data, compute badge counts, or trigger side effects during tab changes.
+## Breadcrumb
+
+Direct adoption guidance:
+
+- Legacy ancestor trails and page-header breadcrumb shells map to `Breadcrumb`.
+- Existing ordered breadcrumb arrays normalize to `items`, where each item supplies `label`, optional `href`, and optional `current`.
+- Cases where the current page label is rendered separately from ancestor links map to `currentLabel` instead of forcing a duplicate item shape.
+- Decorative chevrons, slashes, or similar separators map to the shared `separator` prop.
+
+Keep local:
+
+- Framework-specific link wrappers such as `next/link`, router adapters, and query-string-aware navigation helpers.
+- Breadcrumb containers that still compute labels from domain entities, route params, or permission state before rendering.
+- Overflow menus, collapsed breadcrumb disclosure, or route-tree behavior that exceeds the flat shared trail contract.
+

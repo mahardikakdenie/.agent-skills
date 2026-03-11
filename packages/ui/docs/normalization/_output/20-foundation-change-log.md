@@ -382,3 +382,17 @@ Changed:
 Impact:
 - The shared `Textarea` resize handle now stays visually aligned with the rendered field chrome in Storybook and consuming apps.
 - Shared static selects can now absorb recurring app-local clear affordances without widening into searchable or multi-select behavior.
+---
+
+## 2026-03-11 - Breadcrumb Batch 5.1 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Breadcrumb` as the first eligible Wave B5.1 navigation component after Wave B4 stabilization.
+- Added the canonical Breadcrumb spec, Storybook coverage, typed exports, and Box-authored semantic `nav` / `ol` / `li` markup aligned to `02-api-conventions.md`.
+- Locked the shared contract around `items`, optional `separator`, and optional `currentLabel`, while keeping router adapters, framework links, and route-building logic local to consuming apps.
+- Kept the API intentionally flat after composition review instead of introducing compound breadcrumb subcomponents or render-prop wrappers.
+
+Impact:
+- `@repo/ui` export surface now includes `Breadcrumb` alongside the previously shipped navigation primitives.
+- App-local breadcrumb shells can begin converging on one shared semantic trail component while preserving app-owned routing and link composition policy.
+
