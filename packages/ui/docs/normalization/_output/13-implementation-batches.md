@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; and Wave B5.2 is now complete with `Avatar`, `Combobox`, `FileUpload`, `Image`, and `OtpInput` delivered while the remaining shared rows stay explicitly blocked until their documented gates are cleared.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; Wave B5.2 is complete with `Avatar`, `Combobox`, `FileUpload`, `Image`, and `OtpInput`; and Wave B5.3 has started with `Accordion` delivered while `Command` remains the next unblocked row and `DateTimePicker` stays behind its documented prerequisite.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -202,7 +202,7 @@
 | B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | DONE |
 | B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | DONE |
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | DONE |
-| B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | PLANNED |
+| B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | IN PROGRESS |
 | B5.4 | `Menubar`, `MonthPicker`, `Timeline` | No open P0/P1 blocker remains | Long-tail items marked `DONE` or explicitly deferred | PLANNED |
 | Decision gate | `RichTextEditor` | Editor engine, security, SSR, and bundle policy approved | Status changes from `DECISION-GATED` to `PLANNED` | DECISION-GATED |
 
@@ -322,7 +322,7 @@
 | Image | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Box-authored fallback composition, ratio + fit controls, and no `next/image` coupling |
 | NavigationMenu | 4 | B5.2 | BLOCKED | Route-tree API must remain app-agnostic |
 | OtpInput | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Box-authored segmented input slots, numeric sanitization, whole-code paste handling, and accessible error wiring |
-| Accordion | 4 | B5.3 | PLANNED | Lower-demand compound component |
+| Accordion | 4 | B5.3 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, single + multiple disclosure modes, and Box-authored item, header, trigger, and content wrappers |
 | Command | 4 | B5.3 | PLANNED | Shared command surface |
 | DateTimePicker | 4 | B5.3 | BLOCKED | Needs settled date/time policy |
 | Menubar | 4 | B5.4 | PLANNED | Long-tail navigation primitive |

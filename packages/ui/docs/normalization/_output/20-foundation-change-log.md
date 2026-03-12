@@ -604,3 +604,17 @@ Changed:
 Impact:
 - Downstream migration planning must treat page-header and title shells as app-owned composition, built from lower-level shared primitives such as `Box`, `Card`, `Breadcrumb`, `Badge`, and `Button`.
 - Any existing `packages/ui/src/PageHeader` experiment is non-canonical for normalization purposes until a future rerun proves a truly app-agnostic shared contract.
+
+---
+
+## 2026-03-12 - Accordion Batch 5.3 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Accordion` as the first eligible Wave B5.3 component after Wave B5.2 completion.
+- Added the canonical Accordion spec, Storybook coverage, typed exports, and a Radix-backed compound surface for `Accordion`, `AccordionItem`, `AccordionHeader`, `AccordionTrigger`, and `AccordionContent`.
+- Applied the `$vercel-composition-patterns` decision to keep the shared API compound instead of promoting the claim-portal `items[]` baseline into a fixed shared record shape; apps now map local arrays into shared children composition.
+- Kept authored shared markup on `Box`, including the root wrapper, item shell, semantic heading, trigger button, and animated content wrappers.
+
+Impact:
+- `@repo/ui` export surface now includes `Accordion`, and Wave B5.3 is in progress.
+- Downstream apps can begin converging inline FAQ, policy-detail, and stacked settings disclosures on one shared accordion contract while routing, domain formatting, and workflow logic remain local.

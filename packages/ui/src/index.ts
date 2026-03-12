@@ -20,6 +20,7 @@ export * from './Switch';
 export * from './Textarea';
 
 // Layout
+export * from './Accordion';
 export * from './Box';
 export * from './Card';
 

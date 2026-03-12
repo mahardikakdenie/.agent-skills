@@ -106,6 +106,21 @@ Keep local:
 - Cards that encapsulate routing, service orchestration, permission checks, or API-driven side effects beyond plain composition.
 - Branded marketing or campaign cards whose identity depends on app-specific illustration systems, copy policy, or campaign logic.
 
+## Accordion
+
+Direct adoption guidance:
+
+- Legacy inline disclosure groups, FAQ rows, coverage-detail expanders, and stacked settings detail sections map to `Accordion`.
+- Existing `type`, `defaultValue`, `value`, `onValueChange`, and `collapsible` props map directly to the shared root contract.
+- Local `items[]` baselines should be adapted by mapping each item into `AccordionItem`, `AccordionHeader`, `AccordionTrigger`, and `AccordionContent` rather than widening the shared API with a fixed content schema.
+- Existing collapsed and expanded visuals should first normalize to the shared bordered disclosure shell, then use `className` for narrow spacing or density parity.
+
+Keep local:
+
+- Accordion-like wrappers that still compute business labels, build routes, or fetch data inline before rendering.
+- Disclosure groups whose content is tightly coupled to app-specific workflow state, service orchestration, or domain-only formatting.
+- Navigation trees, stepper flows, and menu structures that are semantically different from an inline accordion disclosure pattern.
+
 ## Checkbox
 
 Direct adoption guidance:
