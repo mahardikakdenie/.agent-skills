@@ -384,6 +384,7 @@ Story group: `Overlays`
 ```ts
 export interface PopoverProps {
   open?: boolean
+  onOpen?: () => void
   onClose?: () => void
   defaultOpen?: boolean
   children: React.ReactNode
@@ -1089,6 +1090,7 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+
 
 
 

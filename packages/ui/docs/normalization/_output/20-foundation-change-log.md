@@ -439,3 +439,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Form` alongside the previously shipped input primitives and overlay shells.
 - App-local field wrappers can begin converging on one shared RHF composition layer while domain schemas, mutations, and step orchestration remain local.
+---
+
+## 2026-03-12 - Popover Batch 5.1 Delivery
+
+Changed:
+- Implemented packages/ui/src/Popover as the next eligible Wave B5.1 component after Form, since DatePicker was still blocked and Popover was the first remaining PLANNED row in order with no unmet prerequisite.
+- Added the canonical Popover spec, Storybook coverage, typed exports, and a Radix-backed compound surface for trigger, anchor, content, close, and portal composition.
+- Aligned  2-api-conventions.md to the shipped root contract by documenting onOpen together with onClose for explicit controlled lifecycle hooks.
+- Kept authored shared wrappers on Box, including the tokenized content shell and all authored story markup, while leaving Radix portal and positioning internals as the documented third-party DOM boundary.
+
+Impact:
+- @repo/ui export surface now includes Popover alongside the previously shipped overlay and input primitives.
+- Downstream shared work such as DatePicker, DateRangePicker, Combobox, and compact anchored app-local forms can now compose on one canonical floating surface while domain state, routing, and service logic stay local.
+

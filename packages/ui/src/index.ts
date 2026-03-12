@@ -34,4 +34,6 @@ export * from './Tabs';
 export * from './Dialog';
 export * from './Drawer';
 export * from './DropdownMenu';
+export * from './Popover';
+
 

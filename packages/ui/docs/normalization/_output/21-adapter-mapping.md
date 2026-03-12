@@ -367,3 +367,20 @@ Keep local:
 - Zod schemas, mutation handlers, domain validation rules, submit orchestration, and multi-step workflow state.
 - Form shells that still embed business copy, navigation side effects, API calls, or auth and permission logic.
 - Field wrappers that intentionally diverge for product-specific layout, marketing copy, or workflow choreography beyond shared accessibility wiring.
+## Popover
+
+Direct adoption guidance:
+
+- Legacy floating detail panels, compact filter cards, anchored inline forms, and lightweight contextual overlays map to Popover plus PopoverTrigger, PopoverContent, PopoverClose, and PopoverAnchor when a non-modal floating surface is the real interaction pattern.
+- Existing open / onOpenChange, isOpen / onClose, or uncontrolled toggle flows normalize to open, defaultOpen, onOpen, and onClose on the shared root.
+- Existing placement props such as side, alignment, offset, or preferred edge map to side, lign, and sideOffset on PopoverContent.
+- Existing layouts that anchor the overlay to a chip, status pill, or inline marker instead of the trigger map to PopoverAnchor rather than new positioning booleans.
+- Existing inner forms or compact detail layouts should compose shared primitives such as Box, Button, Input, and Form inside PopoverContent instead of widening the popover contract.
+
+Keep local:
+
+- Action-list menus, row menus, and selectable command lists; those should stay on DropdownMenu, Command, or app-local menu composition.
+- Hover-only or brief hint content that fits the Tooltip interaction model.
+- Modal confirmations, blocking workflows, and flows that require dialog semantics or stronger labeling and focus isolation.
+- Domain-specific overlay state tied to routing, auth, service hooks, or business entity shaping.
+
