@@ -477,4 +477,21 @@ Keep local:
 - Zoom viewers, lightboxes, route-aware click behavior, and media flows that still encode app navigation or business logic.
 - Branded marketing art direction, lazy-loading orchestration beyond native image props, and media components that still depend on app-specific service state or asset pipelines.
 
+## OtpInput
+
+Direct adoption guidance:
+
+- Legacy `otp-input.tsx` style segmented verification-code fields map to `OtpInput`.
+- Existing `onChange` handlers that currently receive the joined OTP string should normalize to `onValueChange`.
+- Existing fixed six-digit flows can rely on the shared default `length={6}`; shorter or longer verification codes should map to the explicit `length` prop.
+- Existing visual shell toggles or local dense/minimal OTP chrome should normalize to `variant="default" | "outline" | "ghost"` before adding more app-local styling branches.
+- Local invalid or blocked-entry visuals should normalize to `error`, while disabled resend or verification states should map to `disabled`.
+- Existing dense or spacious OTP slot treatments should collapse into the shared `size="sm" | "md" | "lg"` scale instead of app-local spacing classes.
+
+Keep local:
+
+- Resend timers, cooldown banners, delivery-channel copy, blocked-attempt dialogs, and route or auth orchestration.
+- Submission buttons, verification API calls, and any business rules that decide when a code is valid or when the user may retry.
+- App-local wrappers that still combine OTP entry with marketing copy, captcha, or domain-specific success/error workflow handling.
+
 

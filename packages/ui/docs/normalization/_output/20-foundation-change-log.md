@@ -577,3 +577,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Image` alongside the previously shipped `Data Display` primitives.
 - Downstream apps can begin converging generic preview, thumbnail, and fallback-image wrappers on one shared primitive while keeping optimization, transport, viewer, and brand-specific media behavior local.
+
+---
+
+## 2026-03-12 - OtpInput Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/OtpInput` as the next eligible Wave B5.2 component after `Avatar`, `FileUpload`, `Combobox`, and `Image`, since the rows ahead of it remained explicitly blocked and `OtpInput` was the first remaining `PLANNED` row with no unmet prerequisite.
+- Added the canonical OtpInput spec, Storybook coverage, typed exports, and a Box-authored segmented input shell with shared `length`, Input-aligned `variant`, `size`, `disabled`, `error`, `autoFocus`, `value`, and `onValueChange` support.
+- Normalized recurring per-app OTP-entry behavior into the shared contract: numeric-only sanitization, slot-by-slot focus advance, backspace navigation, and whole-code paste handling while keeping resend timers, delivery-channel copy, and verification workflow logic local.
+- Applied the final accessibility review by giving each slot positional labels, linking inline errors through `aria-describedby`, and adding a polite live status message for entered-digit progress.
+
+Impact:
+- `@repo/ui` export surface now includes `OtpInput` alongside the previously shipped input primitives and verification-ready field shells.
+- Downstream apps can begin converging low-level OTP and verification-code entry surfaces on one shared segmented input while keeping the same `variant` vocabulary used by `Input` and `DatePicker`; timers, blocking rules, auth flow orchestration, and submit behavior remain app-local.

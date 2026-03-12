@@ -13,6 +13,7 @@ export * from './Form';
 export * from './FileUpload';
 export * from './Input';
 export * from './Label';
+export * from './OtpInput';
 export * from './RadioGroup';
 export * from './Select';
 export * from './Switch';

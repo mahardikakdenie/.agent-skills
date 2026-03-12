@@ -655,6 +655,7 @@ export interface OtpInputProps {
   value?: string
   onValueChange?: (value: string) => void
   length?: number  // default: 6
+  variant?: 'default' | 'outline' | 'ghost'
   disabled?: boolean
   error?: string | boolean
   autoFocus?: boolean
