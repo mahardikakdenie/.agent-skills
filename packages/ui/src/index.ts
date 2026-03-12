@@ -23,6 +23,7 @@ export * from './Textarea';
 export * from './Card';
 
 // Data Display
+export * from './Avatar';
 export * from './Calendar';
 export * from './Table';
 
@@ -36,7 +37,4 @@ export * from './Dialog';
 export * from './Drawer';
 export * from './DropdownMenu';
 export * from './Popover';
-
-
-
 export * from './Tooltip';

@@ -416,3 +416,18 @@ Keep local:
 - Date-range, date-time, month-only, preset, or workflow-confirmed picker flows.
 - Save/apply buttons, explicit submit callbacks, and business-specific side effects attached to date selection.
 - Localization adapters, year-only jumpers, or route/query synchronization that extend beyond the shared single-date field contract.
+## Avatar
+
+Direct adoption guidance:
+
+- Legacy profile-photo chips, reviewer identity markers, and compact assignee avatars map to `Avatar`.
+- Existing `src`, image URL, or photo fields normalize to `src`; identity text used for accessible image labels should map to `alt`.
+- Existing text-tile or initials fallbacks map to `fallback`, or can be omitted when the shared primitive can derive initials from `alt`.
+- Existing width and height presets should collapse into the shared `size` scale first, with only minor local polish left to `className`.
+- Clickable identity surfaces can keep consumer-owned `onClick`, `role`, and `tabIndex` on the shared root instead of expanding the shared API with navigation props.
+
+Keep local:
+
+- Presence badges, online/offline indicators, and workflow-specific status dots.
+- Large responsive media, optimized image pipelines, and framework-coupled image behavior that belong to app-local image wrappers or the later shared `Image` contract.
+- Menu triggers, auth-profile dropdowns, and identity widgets that still embed routing, permissions, or service-driven user state.

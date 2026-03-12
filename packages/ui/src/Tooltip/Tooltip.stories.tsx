@@ -64,7 +64,7 @@ function SideVariantsStory() {
   return (
     <StoryFrame>
       <TooltipProvider delayDuration={0}>
-        <Box className='grid gap-12 sm:grid-cols-2'>
+        <Box className='grid gap-12 pt-10 sm:grid-cols-2'>
           {tooltipSideValues.map((currentSide) => (
             <Tooltip key={currentSide} delayDuration={0}>
               <TooltipTrigger asChild>
@@ -76,7 +76,6 @@ function SideVariantsStory() {
               <TooltipContent side={currentSide} sideOffset={8}>
                 {currentSide[0]?.toUpperCase()}
                 {currentSide.slice(1)} aligned helper copy
-                <TooltipArrow />
               </TooltipContent>
             </Tooltip>
           ))}
@@ -341,3 +340,5 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+

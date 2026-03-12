@@ -506,3 +506,17 @@ Changed:
 Impact:
 - Storybook and downstream consumers can render a single shared tooltip without hitting the Radix provider-context runtime error.
 - Shared skip-delay behavior across nearby tooltip groups still works through explicit `TooltipProvider` usage.
+
+---
+
+## 2026-03-12 - Avatar Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Avatar` as the first eligible Wave B5.2 component after Wave B5.1 completion.
+- Added the canonical Avatar spec, Storybook coverage, typed exports, and a Radix-backed identity-image primitive with shared `size` support.
+- Normalized recurring per-app identity-surface deltas into the shared contract: `src`, `alt`, `fallback`, and `size`, while leaving presence badges, grouped stacks, and optimized image pipelines outside the primitive.
+- Kept authored shared markup on `Box` by composing `Avatar.Root`, `Avatar.Image`, and `Avatar.Fallback` with `asChild` so the root, image, and fallback nodes all stay inside the Box-only DOM rule.
+
+Impact:
+- `@repo/ui` export surface now includes `Avatar`, and Wave B5.2 has officially started.
+- Downstream apps can begin converging user-photo chips and fallback-initial surfaces on one shared Avatar primitive while keeping richer image workflows and identity-status decoration local.

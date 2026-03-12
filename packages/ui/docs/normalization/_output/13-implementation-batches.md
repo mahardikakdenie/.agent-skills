@@ -31,7 +31,7 @@
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
 - Shared loading scope stops at the `Spinner` and `Skeleton` primitives; loading wrappers, suspense fallbacks, branded loaders, and retry/error-aware loading shells stay in app lanes unless a future narrower wrapper is explicitly approved.
-- Cross-check on 2026-03-12 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `DatePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `Input`, `Label`, `Pagination`, `Popover`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea`, and `Tooltip`; remaining Batch 5+ tracker rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands in `packages/ui/src`.
+- Cross-check on 2026-03-12 confirms the current `@repo/ui` export surface now includes `Box`, `Alert`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `DatePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `Input`, `Label`, `Pagination`, `Popover`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea`, and `Tooltip`; remaining Batch 5+ tracker rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands in `packages/ui/src`.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`, and Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; and Wave B5.2 is now in progress with `Avatar` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -201,7 +201,7 @@
 | --- | --- | --- | --- | --- |
 | B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | DONE |
 | B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | DONE |
-| B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput`, `PageHeader` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | PLANNED |
+| B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput`, `PageHeader` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | IN PROGRESS |
 | B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | PLANNED |
 | B5.4 | `Menubar`, `MonthPicker`, `Timeline` | No open P0/P1 blocker remains | Long-tail items marked `DONE` or explicitly deferred | PLANNED |
 | Decision gate | `RichTextEditor` | Editor engine, security, SSR, and bundle policy approved | Status changes from `DECISION-GATED` to `PLANNED` | DECISION-GATED |
@@ -314,7 +314,7 @@
 | Form | 4 | B5.1 | DONE | Shipped on 2026-03-11 with spec, Storybook, RHF-aligned field composition, Box-authored form wrappers, and shared description/message wiring |
 | Popover | 4 | B5.1 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, controlled/uncontrolled open callbacks, and Box-authored content wrappers |
 | Tooltip | 4 | B5.1 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, shared provider timing, and Box-authored content wrappers |
-| Avatar | 4 | B5.2 | PLANNED | Low-risk visual primitive |
+| Avatar | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed image/fallback handling, shared size scale, and Box-authored root/image/fallback composition |
 | Combobox | 4 | B5.2 | PLANNED | Searchable selection contract |
 | DataTable | 4 | B5.2 | BLOCKED | Wait for `Table` maturity and TanStack readiness |
 | DateRangePicker | 4 | B5.2 | BLOCKED | Start after `DatePicker` stabilizes |
@@ -330,6 +330,7 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 
 
 
