@@ -24,6 +24,9 @@ export * from './Accordion';
 export * from './Box';
 export * from './Card';
 
+// Misc
+export * from './Command';
+
 // Data Display
 export * from './Avatar';
 export * from './Calendar';

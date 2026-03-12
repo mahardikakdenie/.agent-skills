@@ -31,7 +31,7 @@
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
 - Shared loading scope stops at the `Spinner` and `Skeleton` primitives; loading wrappers, suspense fallbacks, branded loaders, and retry/error-aware loading shells stay in app lanes unless a future narrower wrapper is explicitly approved.
-- Cross-check on 2026-03-12 confirms the current canonical `@repo/ui` export surface for normalized shared adoption includes `Box`, `Alert`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `DatePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUpload`, `Image`, `Input`, `Label`, `OtpInput`, `Pagination`, `Popover`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea`, and `Tooltip`; `PageHeader` is intentionally excluded from the normalized shared rollout after the 2026-03-12 boundary reversal and remains app-local for downstream migration planning.
+- Cross-check on 2026-03-12 confirms the current canonical `@repo/ui` export surface for normalized shared adoption includes `Accordion`, `Box`, `Alert`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `Command`, `DatePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUpload`, `Image`, `Input`, `Label`, `OtpInput`, `Pagination`, `Popover`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea`, and `Tooltip`; `PageHeader` is intentionally excluded from the normalized shared rollout after the 2026-03-12 boundary reversal and remains app-local for downstream migration planning.
 
 ## 2. Batch 1 - ADOPT_NOW
 
@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; Wave B5.2 is complete with `Avatar`, `Combobox`, `FileUpload`, `Image`, and `OtpInput`; and Wave B5.3 has started with `Accordion` delivered while `Command` remains the next unblocked row and `DateTimePicker` stays behind its documented prerequisite.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; Wave B5.2 is complete with `Avatar`, `Combobox`, `FileUpload`, `Image`, and `OtpInput`; and Wave B5.3 remains in progress with `Accordion` and `Command` delivered while `DateTimePicker` stays behind its documented prerequisite and no further current-wave row is eligible yet.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -323,7 +323,7 @@
 | NavigationMenu | 4 | B5.2 | BLOCKED | Route-tree API must remain app-agnostic |
 | OtpInput | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Box-authored segmented input slots, numeric sanitization, whole-code paste handling, and accessible error wiring |
 | Accordion | 4 | B5.3 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, single + multiple disclosure modes, and Box-authored item, header, trigger, and content wrappers |
-| Command | 4 | B5.3 | PLANNED | Shared command surface |
+| Command | 4 | B5.3 | DONE | Shipped on 2026-03-12 with spec, Storybook, cmdk-backed compound exports, shortcut/group coverage, and Box-authored helper wrappers with dialog composition delegated to shared `Dialog` |
 | DateTimePicker | 4 | B5.3 | BLOCKED | Needs settled date/time policy |
 | Menubar | 4 | B5.4 | PLANNED | Long-tail navigation primitive |
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |

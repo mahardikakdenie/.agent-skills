@@ -618,3 +618,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Accordion`, and Wave B5.3 is in progress.
 - Downstream apps can begin converging inline FAQ, policy-detail, and stacked settings disclosures on one shared accordion contract while routing, domain formatting, and workflow logic remain local.
+
+---
+
+## 2026-03-12 - Command Batch 5.3 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Command` as the next eligible Wave B5.3 component after `Accordion`, since `DateTimePicker` remains explicitly blocked by its documented prerequisite.
+- Added the canonical Command spec, Storybook coverage, typed exports, and a cmdk-backed compound surface for `Command`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandSeparator`, and `CommandShortcut`.
+- Applied the composition review by replacing the older flat `items[]` sketch with a compound contract that preserves grouped results, shortcut metadata, and consumer-owned item content without widening the shared API with dialog-specific booleans.
+- Kept authored shared markup on `Box` for the input row, icon wrapper, and shortcut node while documenting cmdk primitives as the explicit third-party DOM boundary; dialog-style palette usage composes through the already-shared `Dialog` component instead of introducing `CommandDialog`.
+
+Impact:
+- `@repo/ui` export surface now includes `Command` alongside the previously shipped Batch 5 primitives.
+- Downstream apps can begin converging shadcn-style command surfaces and lightweight command-palette content on one shared cmdk contract while routing, service orchestration, and global shortcut registration remain local.

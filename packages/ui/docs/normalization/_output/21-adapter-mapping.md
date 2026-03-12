@@ -462,6 +462,21 @@ Keep local:
 - Remote fetching, debounced query orchestration, mutation-backed option creation, and `allowCreate` style behaviors.
 - Multi-select, checkbox-list, tag-entry, phone-code, or command-palette variants that exceed the shared single-select contract.
 - Domain-specific result rendering, grouped sections, analytics side effects, route syncing, and service-hook wrappers around selection.
+
+## Command
+
+Direct adoption guidance:
+
+- Legacy shadcn-style `command.tsx` primitives map to the shared compound `Command` surface: `Command`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandSeparator`, and `CommandShortcut`.
+- Existing grouped result sets should stay consumer-composed through `CommandGroup` instead of being flattened into a shared `items[]` data adapter.
+- Existing keyword aliases map to `keywords` on `CommandItem`; keyboard hint text maps to `CommandShortcut`.
+- Existing `CommandDialog` wrappers should compose shared `Dialog` + `Command` instead of expecting a dedicated command-palette overlay export from `@repo/ui`.
+
+Keep local:
+
+- Global keyboard shortcut registration, route navigation, analytics, and side effects triggered by command selection.
+- Async fetching, debounced search orchestration, and domain-specific result shaping before rows are rendered.
+- Command surfaces that embed auth, permissions, or business data loading directly into the shared list composition.
 ## FileUpload
 
 Direct adoption guidance:

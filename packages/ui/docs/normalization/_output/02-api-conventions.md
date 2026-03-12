@@ -938,25 +938,53 @@ Story group: `Layout`
 ### Command
 
 ```ts
-export interface CommandItem {
-  label: string
-  value: string
-  keywords?: string[]
-  disabled?: boolean
-  group?: string
-}
-
-export interface CommandProps {
-  items: CommandItem[]
-  value?: string
-  onValueChange?: (value: string) => void
-  emptyState?: React.ReactNode
-  loading?: boolean
+export interface CommandProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive> {
+  label?: string
   className?: string
 }
+
+export interface CommandInputProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> {
+  className?: string
+}
+
+export interface CommandListProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.List> {
+  className?: string
+}
+
+export interface CommandEmptyProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty> {
+  className?: string
+}
+
+export interface CommandGroupProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group> {
+  className?: string
+}
+
+export interface CommandItemProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item> {
+  className?: string
+}
+
+export interface CommandSeparatorProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator> {
+  className?: string
+}
+
+export interface CommandShortcutProps extends React.HTMLAttributes<HTMLSpanElement> {
+  className?: string
+}
+
+// Compound exports: Command, CommandInput, CommandList, CommandEmpty,
+// CommandGroup, CommandItem, CommandSeparator, CommandShortcut
 ```
 
 Story group: `Misc`
+
+Migration note: legacy `CommandDialog` wrappers should compose shared `Dialog` + `Command`
+instead of expecting a dedicated second overlay export from `@repo/ui`.
 
 ---
 
