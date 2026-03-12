@@ -25,6 +25,7 @@ export * from './Card';
 // Data Display
 export * from './Avatar';
 export * from './Calendar';
+export * from './Image';
 export * from './Table';
 
 // Navigation

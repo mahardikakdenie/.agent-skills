@@ -562,3 +562,18 @@ Changed:
 Impact:
 - Downstream apps can migrate richer option rows into shared `Select` and `Combobox` without losing stable trigger labels or reintroducing app-specific select wrappers.
 - Shared docs now match the real component behavior for clearable combobox resets, richer option rows, and non-forced Storybook interaction flows.
+
+---
+
+## 2026-03-12 - Image Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Image` as the next eligible Wave B5.2 component after `Avatar`, `FileUpload`, and `Combobox`, while higher-risk rows ahead of later work remained blocked by their documented prerequisites.
+- Added the canonical Image spec, Storybook coverage, typed exports, and a Box-authored media wrapper with shared fallback, ratio, and fit support.
+- Normalized recurring per-app `ImageOrDefault` and `OptimizeImageShell` style baselines into one shared contract: plain `src`, optional `fallback`, `ratio`, `fit`, click-through wrapper behavior, and native image attributes.
+- Kept the shared contract framework-agnostic by explicitly avoiding `next/image`, `priority`, fill-layout wrappers, and blur-placeholder policy; those remain local adapters when an app still needs them.
+- Aligned `02-api-conventions.md` to the shipped behavior by allowing missing sources and decorative alt handling so fallback-only usage no longer requires a fake source string.
+
+Impact:
+- `@repo/ui` export surface now includes `Image` alongside the previously shipped `Data Display` primitives.
+- Downstream apps can begin converging generic preview, thumbnail, and fallback-image wrappers on one shared primitive while keeping optimization, transport, viewer, and brand-specific media behavior local.

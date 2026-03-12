@@ -870,8 +870,8 @@ Story group: `Inputs`
 
 ```ts
 export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  src: string
-  alt: string
+  src?: string | null
+  alt?: string
   fallback?: React.ReactNode
   ratio?: 'square' | 'video' | 'portrait' | 'auto'
   fit?: 'cover' | 'contain' | 'fill'

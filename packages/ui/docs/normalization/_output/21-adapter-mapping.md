@@ -462,4 +462,19 @@ Keep local:
 - Image previews, cropping, OCR, camera capture flows, and document-type-specific rules such as NRIC or identity verification handling.
 - Multi-step upload workflows or domain-specific wrappers that still encode business validation, auth checks, or routing side effects.
 
+## Image
+
+Direct adoption guidance:
+
+- Legacy `Image`, `ImageOrDefault`, and `OptimizeImageShell` style wrappers that only normalize media display, fallback content, or object-fit behavior map to `Image`.
+- Existing `src`, `alt`, `width`, `height`, `className`, and click handlers map directly to the shared primitive plus native image attributes.
+- Missing-image text tiles such as `"No image available"` map to `fallback`; local `image-or-default` wrappers should collapse into one shared primitive instead of remaining a parallel component family.
+- Existing fixed media shells should map to `ratio="square" | "video" | "portrait"` plus `fit="cover" | "contain" | "fill"` instead of app-local wrapper divs and object-fit utility drift.
+
+Keep local:
+
+- `next/image` optimization, blur placeholders, priority loading, fill-layout behavior, and CDN-transform policy.
+- Zoom viewers, lightboxes, route-aware click behavior, and media flows that still encode app navigation or business logic.
+- Branded marketing art direction, lazy-loading orchestration beyond native image props, and media components that still depend on app-specific service state or asset pipelines.
+
 
