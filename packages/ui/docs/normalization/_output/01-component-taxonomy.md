@@ -12,11 +12,11 @@
 
 | Metric | Count |
 |---|---|
-| Canonical shared set (Tiers 1-2) | 42 (including `Box`) |
+| Canonical shared set (Tiers 1-2) | 41 (including `Box`) |
 | Already in `@repo/ui` | 1 (`Box`) |
 | Tier 1 to build | 13 |
-| Tier 2 to build | 28 |
-| To build / extend | 41 |
+| Tier 2 to build | 27 |
+| To build / extend | 40 |
 
 ---
 
@@ -71,8 +71,6 @@
 | DropdownMenu | `DropdownMenu` | `@radix-ui/react-dropdown-menu` | [ ] missing | 12 | Overlays | Compound: `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuContent`, `DropdownMenuItem`, `DropdownMenuLabel`, `DropdownMenuSeparator` |
 | NavigationMenu | `NavigationMenu` | `@radix-ui/react-navigation-menu` | [ ] missing | 8 | Navigation | Compound: `NavigationMenu`, `NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuLink`, `NavigationMenuContent` |
 | Menubar | `Menubar` | `@radix-ui/react-menubar` | [ ] missing | 4 | Navigation | Compound: `Menubar`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarItem` |
-| PageHeader | `PageHeader` | Tier 1 | [ ] missing | 8 | Layout | Top-page header shell (title, actions slot); framework-agnostic |
-
 | FileUpload | `FileUpload` | Tier 1 | [ ] missing | 12 | Inputs | Consolidates: `FileUpload`, `FileInput`, `DropFile`, `DragDropExcel`, `UploadFile`, `FileDropzone` |
 | Image | `Image` | semantic `img` target via `Box as="img"` with fallback composition | [ ] missing | 13 | Data Display | Consolidates: `ImageOrDefault`, `OptimizeImageShell`, `ViewImage`; fallback + alt semantics |
 | OtpInput | `OtpInput` | Tier 1 | [ ] missing | 6 | Inputs | Consolidates: `OtpInput` from customer-portal, ecommerce-teman, sso-portal, grab-landing-page |
@@ -103,6 +101,7 @@
 | Chart/visualization wrappers | Recharts configs with domain data | Data-coupled |
 | Branded full-page loaders | Logo animation, company identity loaders | App identity |
 | Loading wrappers and suspense fallbacks | `LoadingWrapper`, `SuspenseFallback`, retry-aware loading shells | Compose `Spinner` and `Skeleton` locally; wrapper policy stays app-owned |
+| Page header and title shells | `PageHeader`, `PageTitle`, `PageHeaderShell` | Page-level navigation, breadcrumb, sticky, and action policy diverge per app |
 | Full-page layouts (sidebar + top nav) | `SidebarShell`, `LayoutViewShell` | App routing |
 | Auth shells | SSO callbacks, OTP flows, PKCE handlers | Security + app-specific credentials |
 | `ReCaptcha` | `src/common/components/ReCaptcha.tsx` | 3rd-party SDK coupling - permanently app-local |

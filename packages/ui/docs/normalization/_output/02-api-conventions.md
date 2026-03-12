@@ -910,17 +910,11 @@ Story group: `Navigation`
 
 ### PageHeader
 
-```ts
-export interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
-  title: React.ReactNode
-  description?: React.ReactNode
-  actions?: React.ReactNode
-  meta?: React.ReactNode
-  className?: string
-}
-```
-
-Story group: `Layout`
+No shared `PageHeader` contract is approved in this rerun.
+Page-level header and title shells remain app-local because breadcrumb, back-navigation,
+sticky behavior, action policy, and layout density still diverge across apps.
+Apps should compose shared primitives such as `Box`, `Card`, `Breadcrumb`, `Badge`,
+and `Button` locally instead of importing a canonical `PageHeader` from `@repo/ui`.
 
 ---
 

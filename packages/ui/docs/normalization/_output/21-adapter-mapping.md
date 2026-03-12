@@ -494,4 +494,16 @@ Keep local:
 - Submission buttons, verification API calls, and any business rules that decide when a code is valid or when the user may retry.
 - App-local wrappers that still combine OTP entry with marketing copy, captcha, or domain-specific success/error workflow handling.
 
+## PageHeader
+
+No shared adapter path is approved for `PageHeader` in this rerun.
+
+Keep local:
+
+- Legacy `PageTitle`, `PageHeader`, and title-row shells remain app-owned composition.
+- Back buttons, sticky top bars, language controls, mobile navigation bars, and any shell that owns navigation behavior stay local.
+- Framework-specific links, route-aware breadcrumb generation, query-string or history integration, and permission-based action policy stay local.
+- Branded hero headers, marketing mastheads, and domain-specific workflow headers stay local.
+- Compose lower-level shared primitives such as `Box`, `Card`, `Breadcrumb`, `Badge`, and `Button` inside each app instead of normalizing onto one shared `PageHeader` export.
+
 

@@ -47,6 +47,7 @@ Source: `06-component-standards.md 6`
 | Page-level layouts | `SidebarShell`, `LayoutViewShell`, `DashboardLayout` | App routing + nav config |
 | Branded full-page loaders | Logo animation, company identity loaders | App identity |
 | Loading wrappers and suspense fallbacks | `LoadingWrapper`, `SuspenseFallback`, retry-aware loading shells | Loading layout, fallback policy, and domain orchestration stay app-owned |
+| Page header and title shells | `PageHeader`, `PageTitle`, `PageHeaderShell` | Breadcrumb, back-navigation, sticky behavior, and page action policy stay app-owned |
 | Chart wrappers with domain data | `RechartsDashboard`, `CommissionChart` | Data-coupled |
 | Container components | `*Container.tsx` wrapping `use<Domain>()` hooks | Service layer coupling |
 | Auth / SSO flows | `LoginPage`, `OtpPage`, `ReCaptcha`, `MicrosoftLoginButton` | Security + 3rd-party SDK |
@@ -65,7 +66,7 @@ Source: `06-component-standards.md 6`
 | Empty states | Generic empty state with icon + copy slot |
 | Data tables (generic column system; no hardcoded domain columns) | `DataTable` with `ColumnDef<TData>` interface |
 | Navigation primitives (no hardcoded routes) | `Pagination`, `Breadcrumb`, `Tabs` |
-| Layout primitives | `Box`, `Card`, `PageHeader` |
+| Layout primitives | `Box`, `Card` |
 
 ---
 
@@ -90,7 +91,7 @@ Based on cross-app reconciliation of all 27 baseline summaries:
 | `Tabs` | [x] SHARED | 13 apps |
 | `Alert` / `FlashMessage` / `Notification` | [x] SHARED - `Alert` family | 22 apps; severity variant collapses types |
 | `NavigationBar` (top-bar with route config) | [ ] LOCAL (mostly) | Router/config coupling |
-| `PageHeader` (structural shell) | [x] SHARED - structural title + actions slot | No hardcoded routes; slot-based |
+| `PageHeader` / `PageTitle` shells | [ ] LOCAL - keep in app | Page-entry layout, breadcrumb/back-nav wiring, sticky behavior, and action policy still diverge by app |
 | `Combobox` / `InputSelectAutocomplete` | [x] SHARED | 8 apps; `Command` + `Popover` base |
 | Custom Nested/Hierarchical Select (with domain-specific hierarchy) | [ ] LOCAL | Domain hierarchy baked in |
 | `FileUpload` | [x] SHARED | 12 apps; pure upload UX |

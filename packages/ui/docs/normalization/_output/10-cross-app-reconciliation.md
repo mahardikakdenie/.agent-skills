@@ -11,14 +11,14 @@
 | --- | --- |
 | Raw per-app backlog rows read | 3,412 |
 | Unique deduplicated backlog entries in `12-master-backlog.csv` | 2,524 |
-| Shared-track candidates present in deduplicated backlog | 296 plus canonical `Box` carry-forward |
-| Split / migrate-after-split candidates | 491 |
-| Keep-app-local candidates | 1,906 |
-| Canonical shared set | 42 components including `Box` |
+| Shared-track candidates present in deduplicated backlog | 295 plus canonical `Box` carry-forward |
+| Split / migrate-after-split candidates | 490 |
+| Keep-app-local candidates | 1,908 |
+| Canonical shared set | 41 components including `Box` |
 | Existing in `@repo/ui` | 1 (`Box`) |
-| Shared build or extension scope | 41 |
+| Shared build or extension scope | 40 |
 | Batch 3 extension scope | 1 (`Box`) |
-| Batch 4 new shared components | 40 approved + 1 decision-gated (`RichTextEditor`) |
+| Batch 4 new shared components | 39 approved + 1 decision-gated (`RichTextEditor`) |
 | Planning backlog scope in `12-master-backlog.csv` | Full deduplicated union of all per-app backlog exports |
 | Canonical shared implementation scope in this document | Consolidated shared program only |
 
@@ -43,7 +43,7 @@
 | Loading indicators | `Skeleton`, `Spinner` | Shared loading primitives stay canonical; wrapper layout and suspense fallback composition stay app-local. |
 | Data display primitives | `Table`, `DataTable`, `Card`, `Badge`, `Avatar`, `Image`, `Timeline` | Structural display stays shared; domain data logic stays local. |
 | Date input family | `Calendar`, `DatePicker`, `DateRangePicker`, `DateTimePicker`, `MonthPicker` | Date contracts remain split by interaction scope, not overloaded into one component. |
-| Layout primitives | `Box`, `Card`, `PageHeader` | Layout stays structural and app-agnostic only. |
+| Layout primitives | `Box`, `Card` | Layout stays structural and app-agnostic only. |
 
 ### Traceability rule for `12-master-backlog.csv`
 
@@ -106,7 +106,6 @@
 | Image | NEW_SHARED_COMPONENT | 13 apps; see `05` | missing | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | Shared image rendering only; framework and viewer concerns stay local | P1 | MEDIUM | B5.2 |
 | NavigationMenu | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` amendment: `items`, `orientation`, `collapsed`, `onNavigate` | Route trees and auth gating stay local | P2 | HIGH | B5.2 |
 | OtpInput | NEW_SHARED_COMPONENT | 6 apps; see `05` | missing | `02` OtpInput | Segmented code entry only | P2 | MEDIUM | B5.2 |
-| PageHeader | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` amendment: `title`, `description`, `actions`, `meta` | Structural page header only | P2 | LOW | B5.2 |
 
 ### Wave B5.3 - Remaining Medium-Demand Components
 
@@ -134,6 +133,7 @@
 | Kanban-board composites | KEEP_APP_LOCAL | `05` deferred scope | Domain workflow coupling | Separate product-specific platform decision |
 | App-specific chart wrappers | KEEP_APP_LOCAL | `04`, `05` deferred scope | Domain data coupling | Separate charting program |
 | Route/page containers and split shells | KEEP_APP_LOCAL or deferred | `04` boundary rules | App routing, framework, and service-layer coupling | Formal reclassification after split and proof of reuse |
+| Page header and title shells | KEEP_APP_LOCAL | `04`, `12`, `21` | Breadcrumb, back-navigation, sticky behavior, language controls, and action policy diverge by app | Re-open only with proof of a truly shared structural contract that survives without app wrappers |
 | Loading wrappers and suspense fallbacks | KEEP_APP_LOCAL | `04`, `21` | Layout wrappers, suspense fallbacks, branded loaders, and retry/error-aware shells still diverge by app | Only via a future narrower shared-wrapper decision |
 | Icon sub-library | DEFERRED | `04`, `05` | No need for a new shared abstraction yet | Re-open only if Lucide becomes insufficient |
 

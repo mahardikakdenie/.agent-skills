@@ -591,3 +591,16 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `OtpInput` alongside the previously shipped input primitives and verification-ready field shells.
 - Downstream apps can begin converging low-level OTP and verification-code entry surfaces on one shared segmented input while keeping the same `variant` vocabulary used by `Input` and `DatePicker`; timers, blocking rules, auth flow orchestration, and submit behavior remain app-local.
+
+---
+
+## 2026-03-12 - PageHeader Reclassified to KEEP_APP_LOCAL
+
+Changed:
+- Reversed the prior normalization ruling that had promoted `PageHeader` into the shared Batch 4 lane.
+- Updated the normalized `_output` artifacts so `PageHeader` and sibling `PageTitle` shells stay app-local instead of participating in the canonical `@repo/ui` rollout.
+- Removed `PageHeader` from the canonical shared taxonomy, coverage baseline, roadmap, implementation batches, and adapter mapping.
+
+Impact:
+- Downstream migration planning must treat page-header and title shells as app-owned composition, built from lower-level shared primitives such as `Box`, `Card`, `Breadcrumb`, `Badge`, and `Button`.
+- Any existing `packages/ui/src/PageHeader` experiment is non-canonical for normalization purposes until a future rerun proves a truly app-agnostic shared contract.

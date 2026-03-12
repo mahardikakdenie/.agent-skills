@@ -11,12 +11,12 @@
 
 | Metric | Count |
 |---|---:|
-| Canonical shared components (Tier 1 + Tier 2) | 42 |
+| Canonical shared components (Tier 1 + Tier 2) | 41 |
 | Existing in @repo/ui | 1 (Box) |
-| To build/extend | 41 |
+| To build/extend | 40 |
 | P0 components | 15 |
 | P1 components | 14 |
-| P2 components | 8 |
+| P2 components | 7 |
 | P3 components | 4 |
 
 ---
@@ -68,7 +68,6 @@
 | Component | Tier | Apps needing | Story group | Target batch |
 |---|---:|---:|---|---|
 | NavigationMenu | 2 | 8 | Navigation | B5.2 |
-| PageHeader | 2 | 8 | Layout | B5.2 |
 | Avatar | 1 | 6 | Data Display | B5.2 |
 | DateRangePicker | 2 | 7 | Inputs | B5.2 |
 | DateTimePicker | 2 | 5 | Inputs | B5.3 |
@@ -93,6 +92,7 @@
 |---|---|
 | ReCaptcha | Auth SDK coupling; keep app-local |
 | MicrosoftLoginButton | Auth SDK coupling; keep app-local |
+| Page header and title shells | Page-level navigation, breadcrumb, sticky, and action policy stay app-local |
 | Kanban board composites | ticket-portal domain-coupled |
 | App-specific chart wrappers | data and domain coupling |
 | Icon sub-library | deferred; use Lucide directly for now |

@@ -82,8 +82,6 @@
 | Image | 2 (Composite) | semantic `img` target via `Box as="img"` + fallback composition | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | optional `@radix-ui/react-avatar` fallback pattern | Standard | `Image.Basic`, `Image.Fallback`, `Image.AspectRatio` | 13 apps; see `05` | M | No `next/image` coupling |
 | NavigationMenu | 2 (Composite) | `@radix-ui/react-navigation-menu` | `02` amendment: `items`, `orientation`, `collapsed`, `onNavigate` | `@radix-ui/react-navigation-menu` | Complex | `NavigationMenu.Basic`, `NavigationMenu.Nested`, `NavigationMenu.MobileFallback` | 8 apps; see `05` | M | Route trees stay local |
 | OtpInput | 2 (Composite) | Tier 1 composition | `02` OtpInput | none | Standard | `OtpInput.Basic`, `OtpInput.Error`, `OtpInput.Disabled` | 6 apps; see `05` | S | Segmented input contract |
-| PageHeader | 2 (Composite) | Tier 1 composition | `02` amendment: `title`, `description`, `actions`, `meta` | none | Standard | `PageHeader.Basic`, `PageHeader.WithActions`, `PageHeader.WithMetadata` | 8 apps; see `05` | S | Structural page header only |
-
 ## 6. Wave B5.3 - Remaining Medium-Demand Components
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
