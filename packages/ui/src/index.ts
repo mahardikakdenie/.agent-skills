@@ -6,6 +6,7 @@ export * from './Skeleton';
 export * from './Spinner';
 
 // Inputs
+export * from './Combobox';
 export * from './Checkbox';
 export * from './DatePicker';
 export * from './Form';
@@ -37,3 +38,4 @@ export * from './Drawer';
 export * from './DropdownMenu';
 export * from './Popover';
 export * from './Tooltip';
+

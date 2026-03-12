@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; and Wave B5.2 is now in progress with `Avatar` and `FileUpload` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; and Wave B5.2 is now in progress with `Avatar`, `Combobox`, and `FileUpload` delivered while the remaining shared rows stay `PLANNED`, `BLOCKED`, or `DECISION-GATED` until their code lands.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -315,7 +315,7 @@
 | Popover | 4 | B5.1 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, controlled/uncontrolled open callbacks, and Box-authored content wrappers |
 | Tooltip | 4 | B5.1 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, shared provider timing, and Box-authored content wrappers |
 | Avatar | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed image/fallback handling, shared size scale, and Box-authored root/image/fallback composition |
-| Combobox | 4 | B5.2 | PLANNED | Searchable selection contract |
+| Combobox | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, cmdk + Popover-backed searchable single-select behavior, loading/error support, and Box-authored wrappers around the documented cmdk DOM boundary |
 | DataTable | 4 | B5.2 | BLOCKED | Wait for `Table` maturity and TanStack readiness |
 | DateRangePicker | 4 | B5.2 | BLOCKED | Start after `DatePicker` stabilizes |
 | FileUpload | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, native file-selection shell, generic max-size validation, and Box-authored file list rendering while transport stays local |
@@ -330,8 +330,4 @@
 | MonthPicker | 4 | B5.4 | PLANNED | Month-only contract |
 | Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
-
-
-
-
 

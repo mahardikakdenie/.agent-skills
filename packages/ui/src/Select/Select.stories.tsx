@@ -1,19 +1,19 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Select } from './Select';
-import type { SelectProps } from './Select.types';
+import type { SelectOption, SelectProps } from './Select.types';
 
-const countryOptions = [
+const countryOptions: SelectOption[] = [
   { label: 'Malaysia', value: 'my' },
   { label: 'Singapore', value: 'sg' },
   { label: 'Indonesia', value: 'id' },
-  { label: 'Thailand', value: 'th' },
+  { label: 'Thailand', value: 'th', disabled: true },
 ];
 
-const longCountryOptions = [
+const longCountryOptions: SelectOption[] = [
   { label: 'Argentina', value: 'ar' },
   { label: 'Australia', value: 'au' },
   { label: 'Canada', value: 'ca' },
@@ -31,6 +31,44 @@ const longCountryOptions = [
 
 function normalizeSelectValue(value: unknown): string | undefined {
   return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+function renderCountryOption(
+  option: SelectOption,
+  state: { selected: boolean; disabled: boolean },
+) {
+  const badgeClassName = state.disabled
+    ? 'border-border bg-muted/40 text-muted-foreground'
+    : state.selected
+      ? 'border-primary/20 bg-primary/10 text-primary'
+      : 'border-border bg-muted/60 text-muted-foreground';
+
+  return (
+    <Box className="flex min-w-0 flex-1 items-center gap-2.5">
+      <Box
+        as="span"
+        className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border text-[10px] font-semibold uppercase tracking-[0.12em] ${badgeClassName}`}
+      >
+        {option.value}
+      </Box>
+      <Box className="min-w-0 flex-1">
+        <Box as="span" className="block truncate text-sm font-medium leading-none text-foreground">
+          {option.label}
+        </Box>
+        <Box as="span" className="mt-0.5 block truncate text-[11px] leading-none text-muted-foreground">
+          Country Code {option.value.toUpperCase()}
+        </Box>
+      </Box>
+      {state.disabled ? (
+        <Box
+          as="span"
+          className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+        >
+          Disabled
+        </Box>
+      ) : null}
+    </Box>
+  );
 }
 
 function SelectStoryHarness(selectProps: SelectProps) {
@@ -91,7 +129,7 @@ const meta = {
   tags: ['autodocs'],
   args: {
     label: 'Country',
-    placeholder: 'Select a country',
+    placeholder: 'Select A Country',
     options: countryOptions,
     defaultValue: undefined,
     disabled: false,
@@ -130,6 +168,9 @@ const meta = {
     },
     error: {
       control: 'text',
+    },
+    renderOption: {
+      table: { disable: true },
     },
     onValueChange: {
       action: 'value changed',
@@ -182,8 +223,8 @@ export const Placeholder: Story = {
 export const LongList: Story = {
   args: {
     options: longCountryOptions,
-    placeholder: 'Select a destination',
-    label: 'Destination country',
+    placeholder: 'Select A Destination',
+    label: 'Destination Country',
   },
   parameters: {
     docs: {
@@ -209,6 +250,19 @@ export const DisabledState: Story = {
   },
 };
 
+export const DisabledOption: Story = {
+  args: {
+    defaultValue: 'sg',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Keeps disabled options visible but non-interactive inside the Radix option list.',
+      },
+    },
+  },
+};
+
 export const ErrorState: Story = {
   args: {
     error: 'Please choose a country before continuing.',
@@ -226,7 +280,7 @@ export const ErrorState: Story = {
 export const LoadingState: Story = {
   args: {
     loading: true,
-    placeholder: 'Loading countries',
+    placeholder: 'Loading Countries',
   },
   parameters: {
     docs: {
@@ -246,6 +300,22 @@ export const Clearable: Story = {
     docs: {
       description: {
         story: 'Shows the shared clear action when a selected value should return to the placeholder state.',
+      },
+    },
+  },
+};
+
+export const CustomOptionContent: Story = {
+  args: {
+    options: longCountryOptions,
+    label: 'Country',
+    placeholder: 'Select A Country',
+    renderOption: renderCountryOption,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Uses a custom ReactNode option layout while keeping the selected trigger value text-driven.',
       },
     },
   },
@@ -291,14 +361,14 @@ export const ResponsiveLayout: Story = {
   render: (args) => (
     <Box className="max-w-sm">
       <StorySection
-        title="Mobile field width"
+        title="Mobile Field Width"
         description="Confirms trigger truncation and menu sizing remain usable in a narrow layout."
       >
         <SelectStoryHarness
           {...args}
-          label="Country of residence"
+          label="Country Of Residence"
           clearable
-          placeholder="Select your country"
+          placeholder="Select Your Country"
           options={longCountryOptions}
         />
       </StorySection>
@@ -315,3 +385,5 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+

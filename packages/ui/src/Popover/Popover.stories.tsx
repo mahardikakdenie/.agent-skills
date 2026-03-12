@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+﻿import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CalendarDays, Info, SlidersHorizontal } from 'lucide-react';
 import * as React from 'react';
 import { expect, fn, userEvent, within } from 'storybook/test';
@@ -340,7 +340,6 @@ export const Controlled: Story = {
 };
 
 export const DisabledTrigger: Story = {
-  name: 'Disabled trigger',
   args: {
     triggerDisabled: true,
   },
@@ -398,7 +397,6 @@ export const Interactive: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: (args) => (
     <Box className="w-[18rem]">
       <BasicPopover
@@ -423,3 +421,6 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+

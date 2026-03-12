@@ -253,6 +253,7 @@ Direct adoption guidance:
 - Shared field copy maps to `label`, while inline validation text maps to `error`.
 - Existing clear affordances or forced-reset flags normalize to `clearable`, and cleared state should flow through `onValueChange(undefined)` so the trigger returns to its placeholder treatment.
 - Existing border, background, chevron, and placeholder-style overrides should collapse into the canonical shared surface plus `className`, not into new shared mode props.
+- Existing richer option rows with helper text, codes, or lightweight metadata can map to `renderOption`, but trigger text should continue to come from `label`.
 
 Keep local:
 
@@ -431,6 +432,21 @@ Keep local:
 - Presence badges, online/offline indicators, and workflow-specific status dots.
 - Large responsive media, optimized image pipelines, and framework-coupled image behavior that belong to app-local image wrappers or the later shared `Image` contract.
 - Menu triggers, auth-profile dropdowns, and identity widgets that still embed routing, permissions, or service-driven user state.
+## Combobox
+
+Direct adoption guidance:
+
+- Legacy searchable single-select fields, assignee pickers, bank pickers, country selectors, and lightweight autocomplete dropdowns map to `Combobox`.
+- Existing `selected`, `selectedValue`, `onSelect`, `onChange`, `isLoading`, and `errorMessage` style props normalize to `value`, `onValueChange`, `loading`, and `error`.
+- Existing reset affordances map to `clearable`, and richer result rows with secondary metadata can map to `renderOption` while the canonical option text still comes from `label`.
+- Existing search input hints map to `searchPlaceholder`; trigger placeholder copy maps to `placeholder`; visible field captions map to `label`.
+- Existing local option records should be shaped in the parent as `{ label, value, disabled?, keywords? }` before they cross into the shared component.
+
+Keep local:
+
+- Remote fetching, debounced query orchestration, mutation-backed option creation, and `allowCreate` style behaviors.
+- Multi-select, checkbox-list, tag-entry, phone-code, or command-palette variants that exceed the shared single-select contract.
+- Domain-specific result rendering, grouped sections, analytics side effects, route syncing, and service-hook wrappers around selection.
 ## FileUpload
 
 Direct adoption guidance:
@@ -445,3 +461,5 @@ Keep local:
 - Upload transport, presigned URL fetches, mutation state, retries, and progress indicators.
 - Image previews, cropping, OCR, camera capture flows, and document-type-specific rules such as NRIC or identity verification handling.
 - Multi-step upload workflows or domain-specific wrappers that still encode business validation, auth checks, or routing side effects.
+
+

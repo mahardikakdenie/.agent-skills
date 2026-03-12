@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+﻿import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
@@ -57,7 +57,6 @@ export const Default: Story = {
 };
 
 export const CurrentItem: Story = {
-  name: 'Current item',
   args: {
     items: [
       { label: 'Dashboard', href: '/dashboard' },
@@ -76,7 +75,6 @@ export const CurrentItem: Story = {
 };
 
 export const CustomSeparator: Story = {
-  name: 'Custom separator',
   args: {
     separator: '/',
   },
@@ -90,7 +88,6 @@ export const CustomSeparator: Story = {
 };
 
 export const LongLabels: Story = {
-  name: 'Long labels',
   render: (args) => (
     <Box className="max-w-sm">
       <Breadcrumb
@@ -136,7 +133,6 @@ export const Interactive: Story = {
 };
 
 export const ResponsiveLayout: Story = {
-  name: 'Responsive layout',
   render: (args) => (
     <Box className="max-w-xs">
       <Breadcrumb
@@ -160,4 +156,7 @@ export const ResponsiveLayout: Story = {
     },
   },
 };
+
+
+
 

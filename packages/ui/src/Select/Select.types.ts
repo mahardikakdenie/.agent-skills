@@ -1,10 +1,15 @@
-import type * as SelectPrimitive from '@radix-ui/react-select';
+﻿import type * as SelectPrimitive from '@radix-ui/react-select';
 import type * as React from 'react';
 
 export interface SelectOption {
   label: string;
   value: string;
   disabled?: boolean;
+}
+
+export interface SelectOptionRenderState {
+  selected: boolean;
+  disabled: boolean;
 }
 
 export interface SelectProps
@@ -23,6 +28,10 @@ export interface SelectProps
   error?: string | boolean;
   label?: string;
   clearable?: boolean;
+  renderOption?: (
+    option: SelectOption,
+    state: SelectOptionRenderState,
+  ) => React.ReactNode;
   className?: string;
   onOpen?: () => void;
   onClose?: () => void;

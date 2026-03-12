@@ -1,4 +1,4 @@
-import * as SelectPrimitive from '@radix-ui/react-select';
+﻿import * as SelectPrimitive from '@radix-ui/react-select';
 import * as React from 'react';
 import { Check, ChevronDown, ChevronUp, LoaderCircle, X } from 'lucide-react';
 
@@ -50,6 +50,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
     error = false,
     label,
     clearable = false,
+    renderOption,
     className,
     open,
     onOpen,
@@ -77,6 +78,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
   const invalid = Boolean(error);
   const labelTone = invalid && !interactiveDisabled ? 'destructive' : interactiveDisabled ? 'muted' : 'default';
   const currentValue = isControlled ? normalizeSelectValue(value) : selectedValue;
+  const selectedOption = options.find((option) => option.value === currentValue);
   const showClearButton = clearable && !interactiveDisabled && currentValue !== undefined;
 
   React.useImperativeHandle(ref, () => triggerRef.current as HTMLButtonElement);
@@ -156,8 +158,12 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
                 clearable: showClearButton,
               })}
             >
-              <Box as="span" data-slot="select-value" className={selectValueVariants()}>
-                <SelectPrimitive.Value placeholder={placeholder} />
+              <Box
+                as="span"
+                data-slot="select-value"
+                className={cn(selectValueVariants(), renderOption && !selectedOption ? 'text-muted-foreground' : undefined)}
+              >
+                {renderOption ? selectedOption?.label ?? placeholder : <SelectPrimitive.Value placeholder={placeholder} />}
               </Box>
 
               {loading ? (
@@ -218,34 +224,49 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
 
               <SelectPrimitive.Viewport asChild>
                 <Box data-slot="select-viewport" className={selectViewportVariants()}>
-                  {options.map((option) => (
-                    <SelectPrimitive.Item
-                      key={option.value}
-                      value={option.value}
-                      disabled={option.disabled}
-                      asChild
-                    >
-                      <Box data-slot="select-item" className={selectItemVariants()}>
-                        <Box
-                          as="span"
-                          data-slot="select-item-text"
-                          className={selectItemTextVariants()}
-                        >
-                          <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
-                        </Box>
+                  {options.map((option) => {
+                    const selected = option.value === currentValue;
 
-                        <SelectPrimitive.ItemIndicator asChild>
-                          <Box
-                            as="span"
-                            data-slot="select-item-indicator"
-                            className={selectItemIndicatorVariants()}
-                          >
-                            <Check aria-hidden="true" className="h-4 w-4" />
-                          </Box>
-                        </SelectPrimitive.ItemIndicator>
-                      </Box>
-                    </SelectPrimitive.Item>
-                  ))}
+                    return (
+                      <SelectPrimitive.Item
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                        asChild
+                      >
+                        <Box data-slot="select-item" className={selectItemVariants()}>
+                          <SelectPrimitive.ItemText asChild>
+                            <Box
+                              as="span"
+                              data-slot="select-item-text"
+                              className={cn(selectItemTextVariants(), renderOption ? 'sr-only' : undefined)}
+                            >
+                              {option.label}
+                            </Box>
+                          </SelectPrimitive.ItemText>
+
+                          {renderOption ? (
+                            <Box as="span" className={cn(selectItemTextVariants(), 'min-w-0 flex-1')}>
+                              {renderOption(option, {
+                                selected,
+                                disabled: Boolean(option.disabled),
+                              })}
+                            </Box>
+                          ) : null}
+
+                          <SelectPrimitive.ItemIndicator asChild>
+                            <Box
+                              as="span"
+                              data-slot="select-item-indicator"
+                              className={selectItemIndicatorVariants()}
+                            >
+                              <Check aria-hidden="true" className="h-4 w-4" />
+                            </Box>
+                          </SelectPrimitive.ItemIndicator>
+                        </Box>
+                      </SelectPrimitive.Item>
+                    );
+                  })}
                 </Box>
               </SelectPrimitive.Viewport>
 
@@ -269,4 +290,3 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
 });
 
 Select.displayName = 'Select';
-

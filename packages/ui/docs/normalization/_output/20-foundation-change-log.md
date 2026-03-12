@@ -533,3 +533,32 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `FileUpload` alongside the previously shipped input primitives and overlay shells.
 - Downstream apps can begin converging low-level attachment pickers and generic document selectors on one shared shell while upload workflows, progress handling, cropping, and business-specific file logic remain local.
+
+---
+
+## 2026-03-12 - Combobox Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Combobox` as the next eligible Wave B5.2 component after `Avatar` and `FileUpload`, while higher-risk rows ahead of later work remained blocked by their documented prerequisites.
+- Added the canonical Combobox spec, Storybook coverage, typed exports, and a shared searchable single-select shell composed from `Popover` + `cmdk`.
+- Normalized recurring per-app searchable field deltas into the shared contract: `value`, `onValueChange`, `options`, `placeholder`, `searchPlaceholder`, `loading`, `label`, `required`, `error`, and optional controlled `open`, while keeping remote fetching, option creation, and multi-select behavior local.
+- Kept authored shared markup on `Box` for the field shell, trigger, loading state, and validation copy, while documenting `cmdk` primitives as the explicit third-party DOM boundary for this component.
+- Applied the final web-guideline review by removing unconditional mobile auto-focus, adding polite loading semantics, and aligning search placeholder behavior with the current shared copy rules.
+
+Impact:
+- `@repo/ui` export surface now includes `Combobox`, and searchable single-select flows in downstream apps have a shared migration target that sits between static `Select` and app-local async or multi-select shells.
+- App baselines can begin converging assignee, country, bank, and similar autocomplete-style pickers on one shared contract while keeping transport, creation, and domain-specific result rendering local.
+
+---
+
+## 2026-03-12 - Select And Combobox Contract Refinements
+
+Changed:
+- Expanded the shared `Select` contract with optional `renderOption` support so static selects can render richer option rows while preserving plain selected trigger text from `option.label`.
+- Expanded the shared `Combobox` contract with `clearable`, `renderOption`, and optional `keywords` support on option records, while keeping search and selected trigger text anchored to the canonical option label.
+- Removed the temporary `Combobox` Storybook `Async` story so the documented story surface now reflects click-to-open user flows instead of fixed-open demo states.
+- Synced the component specs and `_output` normalization set so API conventions, roadmap SDD expectations, and adapter guidance all match the shipped implementation.
+
+Impact:
+- Downstream apps can migrate richer option rows into shared `Select` and `Combobox` without losing stable trigger labels or reintroducing app-specific select wrappers.
+- Shared docs now match the real component behavior for clearable combobox resets, richer option rows, and non-forced Storybook interaction flows.

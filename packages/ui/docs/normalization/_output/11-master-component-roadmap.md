@@ -50,7 +50,7 @@
 | Label | 1 (Primitive) | `@radix-ui/react-label` | `02` amendment: `htmlFor`, `required`, `disabled`, `tone` | `@radix-ui/react-label` | Simple | `Label.Default`, `Label.Required`, `Label.Disabled` | 10 apps; see `05` | XS | Needed before `Form` |
 | Pagination | 2 (Composite) | Tier 1 composition | `02` Pagination | none | Standard | `Pagination.Basic`, `Pagination.Compact`, `Pagination.Disabled` | 16 apps; see `05` | S | UI navigation only |
 | RadioGroup | 1 (Primitive) | `@radix-ui/react-radio-group` | `02` RadioGroup | `@radix-ui/react-radio-group` | Standard | `RadioGroup.Default`, `RadioGroup.Sizes`, `RadioGroup.Disabled`, `RadioGroup.Description`, `RadioGroup.Error` | 11 apps; see `05` | S | Align with `Form` naming and shared validation messaging |
-| Select | 1 (Primitive) | `@radix-ui/react-select` | `02` Select | `@radix-ui/react-select` | Standard | `Select.Default`, `Select.Placeholder`, `Select.LongList`, `Select.Error`, `Select.Disabled` | 25 apps; see `05` | L | Static select only |
+| Select | 1 (Primitive) | `@radix-ui/react-select` | `02` Select | `@radix-ui/react-select` | Standard | `Select.Default`, `Select.Placeholder`, `Select.LongList`, `Select.Disabled`, `Select.DisabledOption`, `Select.Error`, `Select.Clearable`, `Select.CustomOptionContent` | 25 apps; see `05` | L | Static select only |
 | Skeleton | 1 (Primitive) | none | `02` Skeleton | none | Simple | `Skeleton.Block`, `Skeleton.Text`, `Skeleton.Card` | 10 apps; see `05` | XS | Small composable primitive |
 | Spinner | 1 (Primitive) | none | `02` amendment: `size`, `label`, `inline`, `overlay` | none | Simple | `Spinner.Inline`, `Spinner.Overlay`, `Spinner.Sizes` | 8 apps; see `05` | XS | Separate from wrapper loading |
 | Switch | 1 (Primitive) | `@radix-ui/react-switch` | `02` Switch | `@radix-ui/react-switch` | Standard | `Switch.Default`, `Switch.Disabled`, `Switch.Description` | 9 apps; see `05` | XS | Toggle primitive only |
@@ -75,7 +75,7 @@
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Avatar | 1 (Primitive) | `@radix-ui/react-avatar` | `02` amendment: `src`, `alt`, `fallback`, `size` | `@radix-ui/react-avatar` | Simple | `Avatar.Image`, `Avatar.Fallback`, `Avatar.Sizes` | 6 apps; see `05` | XS | Visual identity primitive only |
-| Combobox | 2 (Composite) | `Command` + `Popover` | `02` Combobox | `cmdk`, `@radix-ui/react-popover` | Complex | `Combobox.Basic`, `Combobox.Search`, `Combobox.Empty`, `Combobox.Async` | 8 apps; see `05` | L | Searchable selection contract |
+| Combobox | 2 (Composite) | `Command` + `Popover` | `02` Combobox | `cmdk`, `@radix-ui/react-popover` | Complex | `Combobox.Basic`, `Combobox.Search`, `Combobox.Empty`, `Combobox.DisabledOption`, `Combobox.Clearable`, `Combobox.CustomOptionContent` | 8 apps; see `05` | L | Searchable selection contract with optional clear reset and custom row rendering |
 | DataTable | 2 (Composite) | `Table` + `@tanstack/react-table` v8 | `02` DataTable | `@tanstack/react-table` | Complex | `DataTable.Basic`, `DataTable.Sorting`, `DataTable.Filtering`, `DataTable.Empty`, `DataTable.Pagination` | 6 apps; see `05` | XL | Highest-risk data-display item |
 | DateRangePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `presets`, `minDate`, `maxDate` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateRangePicker.Basic`, `DateRangePicker.Presets`, `DateRangePicker.Invalid` | 7 apps; see `05` | L | Start after `DatePicker` stabilizes |
 | FileUpload | 2 (Composite) | Tier 1 composition | `02` FileUpload | none | Standard | `FileUpload.Basic`, `FileUpload.Multiple`, `FileUpload.Error`, `FileUpload.Disabled` | 12 apps; see `05` | M | Upload transport stays local |
@@ -108,6 +108,7 @@
 - Any API marked 2 amendment must be mirrored back into 2-api-conventions.md before implementation starts.
 - Batch 3A token bootstrap is a hard gate for every row after Box.
 - `RichTextEditor` is visible for completeness but remains outside the initial critical path.
+
 
 
 
