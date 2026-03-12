@@ -2,7 +2,7 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-10
+> Last reconciled: 2026-03-12
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
 
 ---
@@ -632,3 +632,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Command` alongside the previously shipped Batch 5 primitives.
 - Downstream apps can begin converging shadcn-style command surfaces and lightweight command-palette content on one shared cmdk contract while routing, service orchestration, and global shortcut registration remain local.
+---
+
+## 2026-03-12 - Menubar Batch 5.4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Menubar` as the first eligible Wave B5.4 component after Wave B5.3 was exhausted by the still-blocked `DateTimePicker` row.
+- Added the canonical Menubar spec, Storybook coverage, typed exports, and a Radix-backed compound surface for `Menubar`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioGroup`, `MenubarRadioItem`, `MenubarLabel`, `MenubarSeparator`, `MenubarSub`, `MenubarSubTrigger`, `MenubarSubContent`, and `MenubarShortcut`.
+- Applied the composition review by replacing the older flat `items[]` draft with a compound command-bar contract that keeps submenu structure, shortcut copy, checkbox preferences, and radio-mode sections app-owned in JSX rather than locked into a shared record schema.
+- Kept authored shared markup on `Box` for the root shell, triggers, content panels, items, labels, separators, shortcut copy, and submenu wrappers while leaving Radix portal internals as the documented third-party DOM boundary.
+
+Impact:
+- `@repo/ui` export surface now includes `Menubar`, and Wave B5.4 is in progress.
+- Downstream admin-style apps can begin converging persistent command bars and grouped desktop actions on one shared surface while route trees, global shortcut registration, permission gating, and service orchestration remain local.
+

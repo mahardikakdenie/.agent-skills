@@ -369,6 +369,21 @@ Keep local:
 - Searchable, async, or large command surfaces that belong to `Combobox`, `Command`, or app-local composition.
 - Full navigation trees and information architecture concerns that belong to `NavigationMenu`, `Menubar`, or app-local route shells.
 
+## Menubar
+
+Direct adoption guidance:
+
+- Legacy persistent desktop command bars and top-level action menus map to `Menubar` plus its compound exports.
+- Existing local menu arrays should stay app-shaped in the parent and be mapped into `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, and `MenubarItem` instead of widening the shared API back into a flat `items[]` contract.
+- Existing shortcut labels map to `MenubarShortcut`; grouped headings and separators map to `MenubarLabel` and `MenubarSeparator`.
+- Existing toggleable view preferences map to `MenubarCheckboxItem`, `MenubarRadioGroup`, and `MenubarRadioItem`, while nested export or share branches map to `MenubarSub`, `MenubarSubTrigger`, and `MenubarSubContent`.
+- Existing click handlers that dispatch a simple action string can normalize to root-level `onAction` plus per-item `value`.
+
+Keep local:
+
+- Route-aware app chrome, top nav bars, breadcrumb shells, and information architecture that depend on routing or page layout policy.
+- Permission-based command visibility, global keyboard shortcut registration, service calls, and business-specific command derivation.
+- Contextual icon-button menus that should stay on `DropdownMenu`, and large searchable command surfaces that should stay on `Command` or app-local composition.
 ## Form
 
 Direct adoption guidance:
@@ -535,5 +550,6 @@ Keep local:
 - Framework-specific links, route-aware breadcrumb generation, query-string or history integration, and permission-based action policy stay local.
 - Branded hero headers, marketing mastheads, and domain-specific workflow headers stay local.
 - Compose lower-level shared primitives such as `Box`, `Card`, `Breadcrumb`, `Badge`, and `Button` inside each app instead of normalizing onto one shared `PageHeader` export.
+
 
 

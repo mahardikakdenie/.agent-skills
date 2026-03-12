@@ -94,7 +94,7 @@
 
 | Component | Tier | Based on | API | New dependencies needed | Structure tier | SDD requirements | Consumer apps | Effort | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Menubar | 2 (Composite) | `@radix-ui/react-menubar` | `02` amendment: `items`, `onAction`, `disabled` | `@radix-ui/react-menubar` | Complex | `Menubar.Basic`, `Menubar.Shortcuts`, `Menubar.Disabled` | 4 apps; see `05` | M | Long-tail admin demand |
+| Menubar | 2 (Composite) | `@radix-ui/react-menubar` | `02` amendment: compound menubar exports (`Menubar`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioGroup`, `MenubarRadioItem`, `MenubarLabel`, `MenubarSeparator`, `MenubarSub`, `MenubarSubTrigger`, `MenubarSubContent`, `MenubarShortcut`), optional root `onAction`, root `disabled` | `@radix-ui/react-menubar` | Complex | `Menubar.Basic`, `Menubar.CheckboxItems`, `Menubar.Submenu`, `Menubar.Disabled` | 4 apps; see `05` | M | Long-tail admin demand |
 | MonthPicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `minMonth`, `maxMonth` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `MonthPicker.Basic`, `MonthPicker.MinMax` | 3 apps; see `05` | M | Distinct month-only contract |
 | Timeline | 2 (Composite) | Tier 1 composition | `02` amendment: `items`, `orientation`, `statusTone` | none | Standard | `Timeline.Basic`, `Timeline.Dense`, `Timeline.Status` | 3 apps; see `05` | S | Presentation-only timeline |
 | RichTextEditor | 2 (Composite) | external editor engine (TBD) | Decision-gated API: `value`, `onChange`, `toolbar`, `readonly`, `sanitize` | editor engine TBD, sanitization tooling TBD | Complex | `RichTextEditor.Basic`, `RichTextEditor.Toolbar`, `RichTextEditor.Sanitization`, `RichTextEditor.Readonly` | 1 app; see `05` | XL | Do not start until engine and security review are approved |
@@ -106,6 +106,7 @@
 - Any API marked 2 amendment must be mirrored back into 2-api-conventions.md before implementation starts.
 - Batch 3A token bootstrap is a hard gate for every row after Box.
 - `RichTextEditor` is visible for completeness but remains outside the initial critical path.
+
 
 
 

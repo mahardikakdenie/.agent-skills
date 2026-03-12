@@ -1,4 +1,4 @@
-﻿// Feedback
+// Feedback
 export * from './Alert';
 export * from './Badge';
 export * from './Button';
@@ -35,6 +35,7 @@ export * from './Table';
 
 // Navigation
 export * from './Breadcrumb';
+export * from './Menubar';
 export * from './Pagination';
 export * from './Tabs';
 
@@ -44,3 +45,5 @@ export * from './Drawer';
 export * from './DropdownMenu';
 export * from './Popover';
 export * from './Tooltip';
+
+

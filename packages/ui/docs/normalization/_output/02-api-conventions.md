@@ -1011,21 +1011,63 @@ Story group: `Inputs`
 ### Menubar
 
 ```ts
-export interface MenubarItem {
-  label: string
-  value: string
+export interface MenubarProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root>, 'children' | 'className'> {
   disabled?: boolean
+  onAction?: (value: string) => void
+  className?: string
+  children: React.ReactNode
 }
 
-export interface MenubarProps {
-  items: MenubarItem[]
-  onAction?: (value: string) => void
-  disabled?: boolean
+export interface MenubarContentProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Content>, 'asChild' | 'children' | 'className'> {
+  className?: string
+  children: React.ReactNode
+}
+
+export interface MenubarItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Item>, 'asChild' | 'children'> {
+  value?: string
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  inset?: boolean
+  destructive?: boolean
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface MenubarCheckboxItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.CheckboxItem>, 'asChild' | 'children'> {
+  value?: string
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  destructive?: boolean
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface MenubarRadioItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.RadioItem>, 'asChild' | 'children'> {
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  destructive?: boolean
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface MenubarShortcutProps extends React.HTMLAttributes<HTMLSpanElement> {
   className?: string
 }
+
+// Compound exports: Menubar, MenubarMenu, MenubarTrigger, MenubarContent,
+// MenubarGroup, MenubarLabel, MenubarItem, MenubarCheckboxItem,
+// MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarSub,
+// MenubarSubTrigger, MenubarSubContent, MenubarShortcut
 ```
 
 Story group: `Navigation`
+
+Migration note: the earlier flat `items[]` draft is replaced by a compound command-bar surface so apps can keep local menu shaping, nested export groups, checkbox preferences, radio choices, and shortcut copy in JSX instead of forcing that variation into one shared record schema.
 
 ---
 
@@ -1137,6 +1179,7 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+
 
 
 
