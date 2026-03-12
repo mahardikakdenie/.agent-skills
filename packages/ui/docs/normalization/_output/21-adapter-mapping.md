@@ -384,3 +384,19 @@ Keep local:
 - Modal confirmations, blocking workflows, and flows that require dialog semantics or stronger labeling and focus isolation.
 - Domain-specific overlay state tied to routing, auth, service hooks, or business entity shaping.
 
+
+## DatePicker
+
+Direct adoption guidance:
+
+- Legacy single-date popover fields and date-trigger buttons map to `DatePicker`.
+- Existing `initialValue`, `minimumDate`, `maximumDate`, `isDisabled`, `isForceClear`, `errorMessage`, and `isLongDate` or similar display-format toggles normalize to `value`, `minDate`, `maxDate`, `disabled`, `clearable`, `error`, and `formatDate`.
+- Standalone field labels map to `label`; shared form composition should prefer `FormLabel` plus `FormControl` instead of duplicating field wrapper markup.
+- Existing visual booleans such as `isWithShadow` and one-off shell-density knobs should prefer the shared `variant`, `size`, or `className` paths instead of new DatePicker-specific styling props.
+- Existing clear callbacks should collapse into `onChange(null)` plus `clearable`; month-bound or eligibility windows should map to `minDate` and `maxDate`.
+
+Keep local:
+
+- Date-range, date-time, month-only, preset, or workflow-confirmed picker flows.
+- Save/apply buttons, explicit submit callbacks, and business-specific side effects attached to date selection.
+- Localization adapters, year-only jumpers, or route/query synchronization that extend beyond the shared single-date field contract.

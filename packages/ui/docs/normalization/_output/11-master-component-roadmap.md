@@ -1,4 +1,4 @@
-﻿# 11 - Master Component Roadmap
+# 11 - Master Component Roadmap
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -64,7 +64,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Breadcrumb | 2 (Composite) | Tier 1 composition | `02` amendment: `items[]`, `separator`, `currentLabel` | none | Standard | `Breadcrumb.Basic`, `Breadcrumb.Truncated`, `Breadcrumb.WithCurrent` | 12 apps; see `05` | S | Shared shell only |
 | Calendar | 2 (Composite) | `react-day-picker` | `02` Calendar | `react-day-picker`, `date-fns` | Standard | `Calendar.Single`, `Calendar.DisabledDates`, `Calendar.RangePreview` | 9 apps; see `05` | M | Build before picker wrappers |
-| DatePicker | 2 (Composite) | `Calendar` + `Popover` | `02` DatePicker | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DatePicker.Basic`, `DatePicker.WithMinMax`, `DatePicker.Invalid`, `DatePicker.FormField` | 22 apps; see `05` | L | High-demand date control |
+| DatePicker | 2 (Composite) | `Calendar` + `Popover` | `02` DatePicker | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DatePicker.Default`, `DatePicker.WithMinMax`, `DatePicker.ErrorState`, `DatePicker.FormField`, `DatePicker.CustomFormat` | 22 apps; see `05` | L | High-demand date control with Input-aligned shell and optional display formatting |
 | DropdownMenu | 2 (Composite) | `@radix-ui/react-dropdown-menu` | `02` amendment: `items`, `align`, `side`, `onAction` | `@radix-ui/react-dropdown-menu` | Complex | `DropdownMenu.Basic`, `DropdownMenu.CheckboxItem`, `DropdownMenu.Submenu` | 12 apps; see `05` | M | Shared action menu only |
 | Form | 2 (Composite) | `react-hook-form` + `Label` + `Input` | `02` Form | none | Complex | `Form.Field`, `Form.Error`, `Form.Description`, `Form.ArrayField` | 9 apps; see `05` | M | Shared field scaffolding only |
 | Popover | 2 (Composite) | `@radix-ui/react-popover` | `02` Popover | `@radix-ui/react-popover` | Standard | `Popover.Basic`, `Popover.Form`, `Popover.Controlled` | 9 apps; see `05` | S | Overlay foundation dependency |

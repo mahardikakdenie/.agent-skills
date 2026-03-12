@@ -91,7 +91,7 @@ Source: `06-component-standards.md 8`
 | Apps affected | 22 apps |
 | Variants | Single date, range, datetime, month-only -> separate canonical components (DatePicker, DateRangePicker, DateTimePicker, MonthPicker) |
 | Library mandate | `react-day-picker` + `date-fns`. Apps using `moment.js` must migrate date formatting before adopting |
-| Prop migration | `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled` |
+| Prop migration | `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`; `isLongDate` and similar display-format toggles -> `formatDate` |
 | UX parity | Calendar month navigation, disabled dates rendering, selection highlight, clear/save/cancel flows |
 | HIGH parity risk apps | affiliate-portal (DatePicker validation + save/clear flow), customer-portal (`isLongDate` formatting), agent-admin (DatePickerV2 popover/year picker), teman-affiliate-microsite |
 | Rollback trigger | Any regression in date selection, navigation, disabled dates, or clear behavior |
@@ -129,7 +129,7 @@ Source: `06-component-standards.md 8`
 | App | High-Risk Flow | Risk Factor | Notes |
 |---|---|---|---|
 | admin-portal | Claim history, claim detail modal, claim submission | Complex multi-step stateful flows | Token migration prerequisite; adapter needed |
-| customer-portal | Purchase flow, policy view, claim card | Domain + display tightly coupled in some views | isLongDate prop migration; adapter |
+| customer-portal | Purchase flow, policy view, claim card | Domain + display tightly coupled in some views | isLongDate -> formatDate adapter migration |
 | claim-portal | AlterationView, NomineeView, CreateNomineeModal, CancellationView, CreditView | Multi-step workflow + validation + modal coupling | All split in Batch 1.5; shells KEEP_APP_LOCAL |
 | ticket-portal | KanbanPage, IdPage (ticket detail) | Complex Kanban state machine | Batch 1.5 only split 24 of 45 candidates; 21 skipped |
 | gegm-friendcover | FormPersonalInfoPlaint, ViewGreatHome360Declaration, UploadNric | Large LOC monoliths (500-1236 LOC) | 17 Batch 1.5 skipped; defers Phase 05A |

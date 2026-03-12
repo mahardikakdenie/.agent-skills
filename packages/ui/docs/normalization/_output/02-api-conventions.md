@@ -54,7 +54,7 @@ Cross-app conflicts identified across all 27 baselines:
 | `onPress` (NextUI/HeroUI) | `onClick` | teman-affiliate-microsite, haruuz-microsite, agent-microsite |
 | `allOptions` / `options` divergence | `options: SelectOption[]` | partner-portal, affiliate-admin |
 | `placeholderSelectClassName`, `bgSelect`, `chevronColor` | `className` + `variant` | partner-portal (style overrides -> collapse) |
-| `isLongDate` | `dateFormat` (string token) | customer-portal |
+| `isLongDate` | `formatDate` | customer-portal |
 | `titleModal` | `label` | partner-portal MultipleSelect |
 
 ---
@@ -549,6 +549,9 @@ Story group: `Data Display`
 
 ```ts
 export interface DatePickerProps {
+  variant?: 'default' | 'outline' | 'ghost'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+  formatDate?: (date: Date) => string
   value?: Date | null
   onChange?: (date: Date | null) => void
   mode?: 'single'  // use DateRangePicker for 'range', DateTimePicker for 'datetime'
@@ -568,7 +571,7 @@ export interface DatePickerProps {
 
 Story group: `Inputs`
 
-Migration note: `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`.
+Migration note: `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`; `isLongDate` and similar display-format toggles -> `formatDate`.
 
 ---
 

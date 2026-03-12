@@ -446,10 +446,37 @@ Impact:
 Changed:
 - Implemented packages/ui/src/Popover as the next eligible Wave B5.1 component after Form, since DatePicker was still blocked and Popover was the first remaining PLANNED row in order with no unmet prerequisite.
 - Added the canonical Popover spec, Storybook coverage, typed exports, and a Radix-backed compound surface for trigger, anchor, content, close, and portal composition.
-- Aligned  2-api-conventions.md to the shipped root contract by documenting onOpen together with onClose for explicit controlled lifecycle hooks.
+- Aligned 2-api-conventions.md to the shipped root contract by documenting onOpen together with onClose for explicit controlled lifecycle hooks.
 - Kept authored shared wrappers on Box, including the tokenized content shell and all authored story markup, while leaving Radix portal and positioning internals as the documented third-party DOM boundary.
 
 Impact:
 - @repo/ui export surface now includes Popover alongside the previously shipped overlay and input primitives.
 - Downstream shared work such as DatePicker, DateRangePicker, Combobox, and compact anchored app-local forms can now compose on one canonical floating surface while domain state, routing, and service logic stay local.
+
+---
+
+## 2026-03-12 - DatePicker Batch 5.1 Delivery
+
+Changed:
+- Implemented `packages/ui/src/DatePicker` as the next eligible Wave B5.1 component after `Popover`, once its `Calendar` and `Popover` dependencies were both available in the shared package.
+- Added the canonical DatePicker spec, Storybook coverage, typed exports, and a shared single-date field shell composed from `Calendar` + `Popover`.
+- Normalized recurring per-app date input deltas into the shared contract: `value`, `onChange`, `minDate`, `maxDate`, `disabled`, `clearable`, `required`, `label`, `placeholder`, `error`, `open`, and `onClose`.
+- Kept authored shared markup on `Box`, using an input-style trigger shell and clear affordance while leaving `react-day-picker` and Radix portal internals as the documented third-party DOM boundaries.
+
+Impact:
+- `@repo/ui` export surface now includes `DatePicker` alongside the previously shipped input and overlay primitives.
+- Downstream apps can begin converging single-date form fields and filter triggers on one shared contract while range pickers, date-time flows, presets, and business-specific save/apply workflows remain outside this component.
+
+---
+
+## 2026-03-12 - DatePicker Contract Refinement
+
+Changed:
+- Expanded the shared DatePicker contract with optional ormatDate?: (date: Date) => string support for display-only formatting overrides while keeping the selected value typed as Date.
+- Synced the visual contract in the canonical docs so DatePicker now explicitly aligns with the shared Input ariant and size scales.
+- Updated DatePicker Storybook coverage and adapter guidance to document custom display formatting, Input-aligned shell variants, and migration from app-local isLongDate style toggles.
+
+Impact:
+- Downstream apps can adopt long-date or alternate display strings without forking the shared date field or leaking formatter-token APIs into the component contract.
+- DatePicker adoption guidance now explicitly covers both display-format migration and visual normalization toward the shared input family.
 
