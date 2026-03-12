@@ -1,7 +1,4 @@
-// Primitives
-export * from './Box';
-
-// Feedback
+﻿// Feedback
 export * from './Alert';
 export * from './Badge';
 export * from './Button';
@@ -12,6 +9,7 @@ export * from './Spinner';
 export * from './Checkbox';
 export * from './DatePicker';
 export * from './Form';
+export * from './FileUpload';
 export * from './Input';
 export * from './Label';
 export * from './RadioGroup';
@@ -20,6 +18,7 @@ export * from './Switch';
 export * from './Textarea';
 
 // Layout
+export * from './Box';
 export * from './Card';
 
 // Data Display

@@ -431,3 +431,17 @@ Keep local:
 - Presence badges, online/offline indicators, and workflow-specific status dots.
 - Large responsive media, optimized image pipelines, and framework-coupled image behavior that belong to app-local image wrappers or the later shared `Image` contract.
 - Menu triggers, auth-profile dropdowns, and identity widgets that still embed routing, permissions, or service-driven user state.
+## FileUpload
+
+Direct adoption guidance:
+
+- Legacy `UploadFile`, lightweight attachment pickers, and native file-input shells map to `FileUpload`.
+- Existing selected-file callbacks should normalize to `onChange` with `File | File[] | null`; browser-level file filters should move to `accept`, `multiple`, and `maxSize`.
+- Existing inline validation copy should normalize to `error`, while form-library composition should wrap `FileUpload` with shared `FormControl`, `FormDescription`, and `FormMessage` rather than duplicating field-shell markup.
+- Existing reset or remove-all affordances map to `clearable` plus optional `onClear`.
+
+Keep local:
+
+- Upload transport, presigned URL fetches, mutation state, retries, and progress indicators.
+- Image previews, cropping, OCR, camera capture flows, and document-type-specific rules such as NRIC or identity verification handling.
+- Multi-step upload workflows or domain-specific wrappers that still encode business validation, auth checks, or routing side effects.

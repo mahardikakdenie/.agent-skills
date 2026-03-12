@@ -520,3 +520,16 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Avatar`, and Wave B5.2 has officially started.
 - Downstream apps can begin converging user-photo chips and fallback-initial surfaces on one shared Avatar primitive while keeping richer image workflows and identity-status decoration local.
+---
+
+## 2026-03-12 - FileUpload Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/FileUpload` as the next eligible Wave B5.2 component after `Avatar`, once the higher-order rows ahead of it were still held by missing or explicit prerequisites.
+- Added the canonical FileUpload spec, Storybook coverage, typed exports, and a Box-authored native file-selection shell with selected-file list rendering.
+- Locked the shared FileUpload contract around `value`, `onChange`, `accept`, `multiple`, `disabled`, `maxSize`, `error`, `clearable`, `onClear`, and `label`, while keeping transport, previews, cropping, and domain-specific document rules outside the shared API.
+- Applied the shared field-level accessibility contract by linking the visible label, summary text, and inline validation messaging to the hidden file input and exposing a clear action only when a selection exists.
+
+Impact:
+- `@repo/ui` export surface now includes `FileUpload` alongside the previously shipped input primitives and overlay shells.
+- Downstream apps can begin converging low-level attachment pickers and generic document selectors on one shared shell while upload workflows, progress handling, cropping, and business-specific file logic remain local.
