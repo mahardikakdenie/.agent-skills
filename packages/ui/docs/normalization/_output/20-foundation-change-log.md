@@ -480,3 +480,29 @@ Impact:
 - Downstream apps can adopt long-date or alternate display strings without forking the shared date field or leaking formatter-token APIs into the component contract.
 - DatePicker adoption guidance now explicitly covers both display-format migration and visual normalization toward the shared input family.
 
+
+---
+## 2026-03-12 - Tooltip Batch 5.1 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Tooltip` as the final eligible Wave B5.1 component after `DatePicker`.
+- Added the canonical Tooltip spec, Storybook coverage, typed exports, and a Radix-backed compound surface for `TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipContent`, and `TooltipArrow`.
+- Realigned `02-api-conventions.md` to the shipped compound contract by normalizing legacy `content`, `position`, and `delay` props into `TooltipContent`, `side`, and `delayDuration`.
+- Kept authored shared markup on `Box` for the tooltip content shell and all story layout markup while leaving Radix portal and positioning internals as the documented third-party DOM boundary.
+
+Impact:
+- `@repo/ui` export surface now includes `Tooltip` and Wave B5.1 is fully complete.
+- Downstream apps can begin converging brief hover and focus help onto one shared assistive tooltip contract while richer contextual panels remain on `Popover` and app-local shells.
+
+
+---
+## 2026-03-12 - Tooltip Standalone Provider Fix
+
+Changed:
+- Patched `packages/ui/src/Tooltip` so standalone `Tooltip` usage installs a local Radix provider automatically when no surrounding `TooltipProvider` is present.
+- Kept `TooltipProvider` as the opt-in shared timing boundary instead of forcing every consumer and Storybook story to wrap single tooltips manually.
+- Updated the Tooltip spec and API conventions to document the provider fallback explicitly.
+
+Impact:
+- Storybook and downstream consumers can render a single shared tooltip without hitting the Radix provider-context runtime error.
+- Shared skip-delay behavior across nearby tooltip groups still works through explicit `TooltipProvider` usage.

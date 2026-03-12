@@ -406,19 +406,40 @@ Story group: `Overlays`
 ### Tooltip
 
 ```ts
-export interface TooltipProps {
-  content: React.ReactNode
+export interface TooltipProviderProps {
+  delayDuration?: number
+  skipDelayDuration?: number
+  disableHoverableContent?: boolean
   children: React.ReactNode
+}
+
+export interface TooltipProps {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpen?: () => void
+  onClose?: () => void
+  delayDuration?: number
+  disableHoverableContent?: boolean
+  disabled?: boolean
+  children: React.ReactNode
+}
+
+export interface TooltipContentProps extends React.HTMLAttributes<HTMLDivElement> {
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
-  delay?: number
-  disabled?: boolean
+  sideOffset?: number
   className?: string
+  children: React.ReactNode
 }
+
+// Compound exports: TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, TooltipArrow
 ```
+
+Standalone `Tooltip` usage auto-installs a local Radix provider. Use `TooltipProvider` only when related tooltips should share delay timing.
 
 Story group: `Overlays`
 
+Migration note: flat `content` wrapper props normalize to `TooltipContent` children; `position` -> `side`; `delay` -> `delayDuration`; app-specific color props collapse into the shared tokenized surface plus `className`; `isShow={false}` maps to `disabled`.
 ---
 
 ### Alert

@@ -385,6 +385,22 @@ Keep local:
 - Domain-specific overlay state tied to routing, auth, service hooks, or business entity shaping.
 
 
+## Tooltip
+
+Direct adoption guidance:
+
+- Legacy hover-help wrappers and assistive hint components map to `TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipContent`, and optional `TooltipArrow`.
+- Existing flat props such as `content`, `position`, and `delay` normalize to `TooltipContent` children, `side`, and `delayDuration`.
+- Existing grouped timing behavior across dense icon rows should move to `TooltipProvider` instead of repeating custom timers in each tooltip instance.
+- Existing `isShow={false}` or equivalent flags that intentionally suppress tooltip rendering map to `disabled`.
+- App-specific `backgroundColor`, `textColor`, and `arrowColor` props should collapse into the shared tokenized surface plus `className` instead of widening the shared API.
+
+Keep local:
+
+- Rich contextual panels, compact forms, and larger explanatory overlays that should adopt `Popover`.
+- Action lists, nested commands, and menu-like surfaces that belong to `DropdownMenu`.
+- Business-specific tooltip content that depends on routing, service state, or domain formatting before the helper text is produced.
+
 ## DatePicker
 
 Direct adoption guidance:
