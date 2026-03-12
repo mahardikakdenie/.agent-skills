@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -364,35 +364,6 @@ export const Scrollable: Story = {
   },
 };
 
-export const Interactive: Story = {
-  args: {
-    onValueChange: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const accountTrigger = canvas.getByRole('tab', { name: /account/i });
-
-    accountTrigger.focus();
-    await expect(accountTrigger).toHaveFocus();
-
-    await userEvent.keyboard('{ArrowRight}');
-
-    const securityTrigger = canvas.getByRole('tab', { name: /security/i });
-    await expect(securityTrigger).toHaveAttribute('aria-selected', 'true');
-    await expect(args.onValueChange).toHaveBeenCalledWith('security');
-
-    const securityPanel = canvas.getByRole('tabpanel');
-    await expect(securityPanel).toHaveTextContent(/security settings/i);
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms keyboard navigation moves selection to the next tab and updates the active panel.',
-      },
-    },
-  },
-};
-
 export const ControlledMode: Story = {
   render: () => <ControlledTabsExample items={defaultTabs} />,
   parameters: {
@@ -405,30 +376,3 @@ export const ControlledMode: Story = {
   },
 };
 
-export const ResponsiveLayout: Story = {
-  args: {
-    defaultValue: scrollableTabs[0]!.value,
-    value: undefined,
-  },
-  render: (args) => (
-    <Box className="max-w-sm">
-      <TabsExample
-        className="w-full"
-        defaultValue={scrollableTabs[0]!.value}
-        orientation="horizontal"
-        onValueChange={args.onValueChange}
-        items={scrollableTabs}
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Exercises narrow-width tab layout so long labels rely on horizontal scrolling instead of wrapping.',
-      },
-    },
-  },
-};

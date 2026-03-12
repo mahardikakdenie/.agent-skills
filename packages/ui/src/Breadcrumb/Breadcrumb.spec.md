@@ -195,8 +195,6 @@ export interface BreadcrumbItem {
 - [x] `CurrentItem`
 - [x] `CustomSeparator`
 - [x] `LongLabels`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

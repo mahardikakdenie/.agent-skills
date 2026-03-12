@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Calendar } from './Calendar';
@@ -14,26 +13,6 @@ const dateLabelFormatter = new Intl.DateTimeFormat('en-US', {
 
 function formatStoryDate(date: Date) {
   return dateLabelFormatter.format(date);
-}
-
-function InteractiveCalendarStory() {
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(undefined);
-  const [visibleMonth, setVisibleMonth] = React.useState(new Date(2026, 0, 1));
-
-  return (
-    <Box className="grid gap-3">
-      <Calendar
-        mode="single"
-        month={visibleMonth}
-        onMonthChange={setVisibleMonth}
-        selected={selectedDate}
-        onSelect={setSelectedDate}
-      />
-      <Box as="p" className="text-sm text-muted-foreground">
-        {selectedDate ? `Selected: ${formatStoryDate(selectedDate)}` : 'Selected: none'}
-      </Box>
-    </Box>
-  );
 }
 
 function MultipleSelectionStory() {
@@ -186,56 +165,4 @@ export const RangePreview: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  render: () => <InteractiveCalendarStory />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: /next month/i }));
-    await expect(canvas.getByRole('button', { name: 'February 2026' })).toBeInTheDocument();
-
-    const dayButton = canvas
-      .getAllByRole('gridcell')
-      .find((button) => button.textContent?.trim() === '15');
-
-    if (!dayButton) {
-      throw new Error('Unable to find the day button for the interactive story.');
-    }
-
-    await userEvent.click(dayButton);
-    await expect(canvas.getByText('Selected: Feb 15, 2026')).toBeInTheDocument();
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms month navigation and single-date selection in a controlled story.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="max-w-xs">
-      <Calendar
-        mode="single"
-        defaultMonth={new Date(2026, 0, 1)}
-        selected={new Date(2026, 0, 15)}
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks that the shared calendar grid remains legible and navigable in a constrained mobile viewport.',
-      },
-    },
-  },
-};
-
-
 

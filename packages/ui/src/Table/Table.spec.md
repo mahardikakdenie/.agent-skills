@@ -229,7 +229,6 @@ The shared contract is intentionally narrow. It owns the semantic table skeleton
 - [x] `Empty`
 - [x] `HorizontalScrollable`
 - [x] `VerticalScrollable`
-- [x] `Responsive`
 
 ---
 

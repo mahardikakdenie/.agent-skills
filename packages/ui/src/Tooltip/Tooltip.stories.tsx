@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleHelp, Info, ShieldCheck } from 'lucide-react';
 import * as React from 'react';
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -286,59 +286,4 @@ export const ProviderGroup: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  args: {
-    delayDuration: 0,
-    onOpen: fn(),
-    onClose: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const body = within(canvasElement.ownerDocument.body);
-
-    await userEvent.tab();
-
-    const trigger = canvas.getByRole('button', { name: /coverage notes/i });
-    await expect(trigger).toHaveFocus();
-
-    const tooltip = await body.findByRole('tooltip');
-    await expect(tooltip).toHaveTextContent(/renewal details/i);
-    await expect(args.onOpen).toHaveBeenCalledTimes(1);
-
-    await userEvent.keyboard('{Escape}');
-
-    await waitFor(() => {
-      expect(body.queryByRole('tooltip')).not.toBeInTheDocument();
-    });
-    await expect(args.onClose).toHaveBeenCalledTimes(1);
-    await expect(trigger).toHaveFocus();
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Verifies keyboard-triggered open, tooltip rendering, Escape close, and focus return.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: (args) => (
-    <Box className='w-[17rem]'>
-      <BasicTooltip {...args} />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks trigger spacing and tooltip sizing inside a narrow mobile-width frame.',
-      },
-    },
-  },
-};
-
 

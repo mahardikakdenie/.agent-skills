@@ -254,8 +254,6 @@ const [open, setOpen] = React.useState(false);
 - [x] `Long Content`
 - [x] `Disabled State`
 - [x] `Provider Group`
-- [x] `Interactive`
-- [x] `Responsive Layout`
 
 ---
 

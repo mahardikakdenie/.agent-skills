@@ -251,8 +251,6 @@ The shared API is intentionally compound. `Drawer` owns open state wiring and di
 - [x] `FormAction`
 - [x] `Controlled`
 - [x] `NonDismissible`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

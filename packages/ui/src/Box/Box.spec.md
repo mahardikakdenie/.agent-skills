@@ -134,7 +134,6 @@
 - [x] `Centered`
 - [x] `SemanticElements`
 - [x] `AsChild`
-- [x] `ResponsiveLayout`
 - [x] `RefForwarding`
 
 ## Changelog

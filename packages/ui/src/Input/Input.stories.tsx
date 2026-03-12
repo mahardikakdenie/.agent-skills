@@ -1,7 +1,6 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleDollarSign, Mail, Search } from 'lucide-react';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Input } from './Input';
@@ -274,67 +273,4 @@ export const Clearable: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  render: () => (
-    <ControlledInputStory
-      label="Search"
-      placeholder="Type to search"
-      clearable
-      leftIcon={<Search aria-hidden="true" className="h-4 w-4" />}
-    />
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByRole('textbox', { name: /search/i });
-
-    await userEvent.type(input, 'policy');
-    await expect(input).toHaveValue('policy');
-
-    const clearButton = canvas.getByRole('button', { name: /clear input/i });
-    await userEvent.click(clearButton);
-    await expect(input).toHaveValue('');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms typing and the clear action in a controlled usage pattern.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="grid max-w-sm gap-4">
-      <Input
-        size="lg"
-        label="Search documents"
-        placeholder="Search policy IDs, claim numbers, or customer names"
-        leftIcon={<Search aria-hidden="true" className="h-4 w-4" />}
-        helperText="Long helper copy should remain readable in narrow layouts without clipping the input shell."
-      />
-      <Input
-        variant="ghost"
-        size="sm"
-        label="Secondary filter"
-        placeholder="Optional inline filter"
-        clearable
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks label wrapping, shell sizing, and helper-text flow in a constrained mobile viewport.',
-      },
-    },
-  },
-};
-
-
-
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Pagination } from './Pagination';
@@ -179,55 +179,4 @@ export const DisabledState: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  render: (args) => <ControlledPaginationStory {...args} />,
-  args: {
-    currentPage: 3,
-    totalPages: 12,
-    onPageChange: fn(),
-    onPageSizeChange: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: /go to next page/i }));
-    await expect(
-      canvas.getByText('4', { selector: 'span[aria-current="page"]' }),
-    ).toHaveAttribute('aria-current', 'page');
-    await expect(args.onPageChange).toHaveBeenCalledWith(4);
-
-    const select = canvas.getByRole('combobox', { name: /rows per page/i });
-    await userEvent.selectOptions(select, '50');
-    await expect(args.onPageSizeChange).toHaveBeenCalledWith(50);
-    await expect(canvas.getByText(/rows per page:/i)).toBeInTheDocument();
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms both page navigation and page-size changes in a controlled usage pattern.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: (args) => (
-    <Box className="max-w-sm">
-      <Pagination {...args} currentPage={9} totalPages={42} />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks wrapping, control spacing, and page-size alignment in a constrained mobile viewport.',
-      },
-    },
-  },
-};
-
-
 

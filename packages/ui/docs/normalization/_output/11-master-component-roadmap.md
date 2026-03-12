@@ -42,7 +42,7 @@
 | Alert | 2 (Composite) | Tier 1 composition | `02` Alert | none | Standard | `Alert.Default`, `Alert.Variants`, `Alert.WithIcon`, `Alert.Dismissible` | 22 apps; see `05` | S | Presentational feedback only |
 | Badge | 1 (Primitive) | none | `02` Badge | none | Simple | `Badge.Default`, `Badge.Variants`, `Badge.Dot` | 11 apps; see `05` | XS | Small visual primitive only |
 | Button | 1 (Primitive) | `@radix-ui/react-slot` | `02` Button | none | Standard | `Button.Default`, `Button.Variants`, `Button.Sizes`, `Button.Loading`, `Button.AsChild` | 23 apps; see `05` | M | First broad shared primitive wave |
-| Card | 2 (Composite) | Tier 1 composition | `02` Card | none | Standard | `Card.Basic`, `Card.HeaderFooter`, `Card.Interactive` | 12 apps; see `05` | S | Structural card only |
+| Card | 2 (Composite) | Tier 1 composition | `02` Card | none | Standard | `Card.Basic`, `Card.HeaderFooter` | 12 apps; see `05` | S | Structural card only |
 | Checkbox | 1 (Primitive) | `@radix-ui/react-checkbox` | `02` Checkbox | `@radix-ui/react-checkbox` | Standard | `Checkbox.Default`, `Checkbox.Indeterminate`, `Checkbox.Disabled` | 20 apps; see `05` | S | Must cover invalid and indeterminate states |
 | Dialog | 2 (Composite) | `@radix-ui/react-dialog` | `02` Dialog | `@radix-ui/react-dialog` | Complex | `Dialog.Basic`, `Dialog.Scrollable`, `Dialog.Destructive`, `Dialog.AsyncClose`, `Dialog.A11y` | 26 apps; see `05` | L | Explicit a11y risk gate |
 | Drawer | 2 (Composite) | `vaul` | `02` Drawer | `vaul` | Complex | `Drawer.Basic`, `Drawer.Sides`, `Drawer.Scrollable`, `Drawer.FormAction` | 10 apps; see `05` | M | Keep distinct from modal semantics |
@@ -54,7 +54,7 @@
 | Skeleton | 1 (Primitive) | none | `02` Skeleton | none | Simple | `Skeleton.Block`, `Skeleton.Text`, `Skeleton.Card` | 10 apps; see `05` | XS | Small composable primitive |
 | Spinner | 1 (Primitive) | none | `02` amendment: `size`, `label`, `inline`, `overlay` | none | Simple | `Spinner.Inline`, `Spinner.Overlay`, `Spinner.Sizes` | 8 apps; see `05` | XS | Separate from wrapper loading |
 | Switch | 1 (Primitive) | `@radix-ui/react-switch` | `02` Switch | `@radix-ui/react-switch` | Standard | `Switch.Default`, `Switch.Disabled`, `Switch.Description` | 9 apps; see `05` | XS | Toggle primitive only |
-| Table | 1 (Primitive) | semantic table targets via `Box as="table"` and related tags | `02` Table | none | Standard | `Table.Basic`, `Table.Dense`, `Table.Empty`, `Table.Responsive` | 12 apps; see `05` | S | Foundation for `DataTable` |
+| Table | 1 (Primitive) | semantic table targets via `Box as="table"` and related tags | `02` Table | none | Standard | `Table.Basic`, `Table.Dense`, `Table.Empty` | 12 apps; see `05` | S | Foundation for `DataTable` |
 | Tabs | 2 (Composite) | `@radix-ui/react-tabs` | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation` | `@radix-ui/react-tabs` | Standard | `Tabs.Basic`, `Tabs.Disabled`, `Tabs.Scrollable` | 13 apps; see `05` | S | Route sync stays local |
 | Textarea | 1 (Primitive) | semantic `textarea` target via `Box as="textarea"` | `02` Textarea | none | Standard | `Textarea.Default`, `Textarea.Resize`, `Textarea.Error`, `Textarea.Disabled` | 18 apps; see `05` | S | Plain-text multiline input only |
 

@@ -173,7 +173,6 @@ Cross-app baseline demand converges on one shared primitive with consumer-owned 
 - [x] `Text`
 - [x] `Block`
 - [x] `Card`
-- [x] `ResponsiveLayout`
 
 ---
 

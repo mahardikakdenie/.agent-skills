@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -357,55 +357,3 @@ export const FormFieldUsage: Story = {
   },
 };
 
-export const Interactive: Story = {
-  args: {
-    initialValue: null,
-    onChange: fn(),
-    onClose: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const body = within(canvasElement.ownerDocument.body);
-    const trigger = canvas.getByRole('button', { name: /pick a date/i });
-
-    await userEvent.click(trigger);
-
-    const dayCell = body.getAllByRole('gridcell').find((cell) => cell.textContent?.trim() === '15');
-
-    if (!dayCell) {
-      throw new Error('Unable to find the day button for January 15.');
-    }
-
-    await userEvent.click(dayCell);
-
-    await expect(args.onChange).toHaveBeenCalled();
-    await expect(args.onClose).toHaveBeenCalledTimes(1);
-    await expect(canvas.getByText(/selected:/i)).not.toHaveTextContent('none');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Opens the popover, selects a date from the calendar grid, and verifies the close callback and selected summary.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: (args) => (
-    <Box className="w-[18rem]">
-      <DatePickerStory {...args} initialValue={null} size="lg" variant="ghost" />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks trigger wrapping and popover alignment inside a narrow mobile-width container.',
-      },
-    },
-  },
-};

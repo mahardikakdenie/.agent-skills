@@ -170,8 +170,6 @@ export interface ComboboxOptionRenderState {
 - [x] `ControlledMode`
 - [x] `Clearable`
 - [x] `CustomOptionContent`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 Roadmap alignment:
 

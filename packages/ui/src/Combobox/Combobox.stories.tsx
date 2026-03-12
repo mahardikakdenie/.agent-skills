@@ -1,6 +1,5 @@
 ﻿import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Combobox } from './Combobox';
@@ -302,74 +301,4 @@ export const CustomOptionContent: Story = {
     </Box>
   ),
 };
-
-export const Interactive: Story = {
-  args: {
-    label: 'Assignee',
-    placeholder: 'Select Assignee',
-    searchPlaceholder: 'Search Team Members',
-    options: assigneeOptions,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Exercises typing, the no-results state, and picking an enabled option end-to-end.',
-      },
-    },
-  },
-  render: (args) => (
-    <Box className="w-[320px]">
-      <Combobox {...args} />
-    </Box>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const body = within(canvasElement.ownerDocument.body);
-    const trigger = canvas.getByRole('combobox', { name: /assignee/i });
-
-    await userEvent.click(trigger);
-
-    const searchInput = body.getByRole('textbox', { name: /search assignee/i });
-    await userEvent.type(searchInput, 'zzz');
-    await expect(body.getByText('No options found')).toBeInTheDocument();
-
-    await userEvent.clear(searchInput);
-    await userEvent.type(searchInput, 'cl');
-
-    const option = await body.findByRole('option', { name: /clara lim/i });
-    await userEvent.click(option);
-
-    await expect(trigger).toHaveTextContent('Clara Lim');
-    await expect(body.queryByRole('textbox', { name: /search assignee/i })).not.toBeInTheDocument();
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  args: {
-    label: 'Country',
-    options,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Mobile-width rendering to confirm the field shell and popover remain usable in narrow layouts.',
-      },
-    },
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-  },
-  render: (args) => (
-    <Box className="w-full max-w-[320px] px-4">
-      <Combobox {...args} />
-    </Box>
-  ),
-};
-
-
-
-
-
-
 

@@ -343,36 +343,3 @@ export const HiddenAccessibleHeader: Story = {
   },
 };
 
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <DialogStoryFrame>
-      <Dialog open>
-        <DialogContent
-          title="Responsive dialog"
-          description="The shared modal shell should stay readable inside a narrow viewport."
-          footer={
-            <>
-              <DialogClose asChild>
-                <Button variant="outline">Close</Button>
-              </DialogClose>
-              <Button>Continue Setup</Button>
-            </>
-          }
-        >
-          <DialogBodyCopy />
-        </DialogContent>
-      </Dialog>
-    </DialogStoryFrame>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks spacing and footer stacking in a mobile-width viewport.',
-      },
-    },
-  },
-};
-

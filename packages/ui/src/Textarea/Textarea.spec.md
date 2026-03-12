@@ -161,8 +161,6 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 - [x] `ErrorState`
 - [x] `DisabledState`
 - [x] `Clearable`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

@@ -187,8 +187,6 @@ Cross-app baselines converge on a flat API: variant, size, loading, disabled, an
 - [x] `AsChild`
 - [x] `DisabledState`
 - [x] `IconSlots`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

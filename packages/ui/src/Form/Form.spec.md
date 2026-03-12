@@ -253,8 +253,6 @@ const contacts = useFieldArray({ control: form.control, name: 'contacts' });
 - [x] `CustomControl`
 - [x] `DisabledField`
 - [x] `ArrayField`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

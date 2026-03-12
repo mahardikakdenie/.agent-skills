@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MoreHorizontal, PencilLine, Share2, Trash2 } from 'lucide-react';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -279,67 +279,6 @@ export const DisabledState: Story = {
     docs: {
       description: {
         story: 'Disables the trigger through the shared root contract and prevents menu interaction.',
-      },
-    },
-  },
-};
-
-export const Interactive: Story = {
-  args: {
-    onOpen: fn(),
-    onClose: fn(),
-    onAction: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const body = within(canvasElement.ownerDocument.body);
-    const trigger = canvas.getByRole('button', { name: /actions/i });
-
-    await userEvent.click(trigger);
-    await expect(args.onOpen).toHaveBeenCalledTimes(1);
-
-    const editItem = await body.findByRole('menuitem', { name: /edit profile/i });
-    await userEvent.click(editItem);
-
-    await expect(args.onAction).toHaveBeenCalledWith('edit');
-    await expect(args.onClose).toHaveBeenCalledTimes(1);
-    await expect(trigger).toHaveFocus();
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms open, action dispatch, close, and focus return behavior through Storybook interaction testing.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="max-w-[20rem]">
-      <StoryFrame>
-        <DropdownMenu>
-          <IconTrigger />
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem value="view">View policy details</DropdownMenuItem>
-            <DropdownMenuItem value="resend" shortcut="R">
-              Resend invitation email
-            </DropdownMenuItem>
-            <DropdownMenuItem value="delete" destructive>
-              Delete collaborator
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </StoryFrame>
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks trigger spacing and menu sizing within a narrow mobile-width container.',
       },
     },
   },

@@ -179,8 +179,6 @@ This component does not fetch data, derive page counts from totals, sync routes,
 - [x] `WithPageSizeSelector`
 - [x] `Compact`
 - [x] `DisabledState`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

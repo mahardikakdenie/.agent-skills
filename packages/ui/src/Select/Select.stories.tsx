@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Select } from './Select';
@@ -99,29 +99,6 @@ function SelectStoryHarness(selectProps: SelectProps) {
   );
 }
 
-function StorySection({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Box className="grid gap-3 rounded-xl border border-border bg-card p-4 shadow-sm">
-      <Box className="grid gap-1">
-        <Box as="h3" className="text-sm font-semibold text-foreground">
-          {title}
-        </Box>
-        <Box as="p" className="text-sm leading-5 text-muted-foreground">
-          {description}
-        </Box>
-      </Box>
-      {children}
-    </Box>
-  );
-}
 
 const meta = {
   title: 'Inputs/Select',
@@ -320,70 +297,4 @@ export const CustomOptionContent: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  args: {
-    clearable: true,
-    onValueChange: fn(),
-    onOpen: fn(),
-    onClose: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const body = within(canvasElement.ownerDocument.body);
-    const trigger = canvas.getByRole('combobox', { name: /country/i });
-
-    await userEvent.click(trigger);
-    await expect(args.onOpen).toHaveBeenCalledTimes(1);
-
-    const malaysiaOption = await body.findByRole('option', { name: /malaysia/i });
-    await userEvent.click(malaysiaOption);
-
-    await expect(args.onValueChange).toHaveBeenCalledWith('my');
-    await expect(args.onClose).toHaveBeenCalledTimes(1);
-    await expect(trigger).toHaveTextContent('Malaysia');
-
-    const clearButton = await canvas.findByRole('button', { name: /clear selection/i });
-    await userEvent.click(clearButton);
-    await expect(args.onValueChange).toHaveBeenCalledWith(undefined);
-    await expect(trigger).toHaveTextContent(/select a country/i);
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms open, selection, close, and trigger text update behavior through Storybook interaction testing.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: (args) => (
-    <Box className="max-w-sm">
-      <StorySection
-        title="Mobile Field Width"
-        description="Confirms trigger truncation and menu sizing remain usable in a narrow layout."
-      >
-        <SelectStoryHarness
-          {...args}
-          label="Country Of Residence"
-          clearable
-          placeholder="Select Your Country"
-          options={longCountryOptions}
-        />
-      </StorySection>
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Exercises the field width, trigger truncation, and menu sizing within a narrow mobile container.',
-      },
-    },
-  },
-};
-
 

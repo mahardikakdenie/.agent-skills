@@ -278,8 +278,6 @@ const [open, setOpen] = React.useState(false);
 - [x] `Controlled`
 - [x] `DisabledTrigger`
 - [x] `Anchored`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ## Changelog
 

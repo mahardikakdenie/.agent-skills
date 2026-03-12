@@ -192,8 +192,6 @@ This contract stays intentionally narrow, but it now aligns with the rest of the
 - [x] `DisabledState`
 - [x] `ErrorState`
 - [x] `WithDescription`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

@@ -180,7 +180,6 @@ import { TriangleAlert } from 'lucide-react';
 - [x] `WithIcon`
 - [x] `Dismissible`
 - [x] `LongContent`
-- [x] `ResponsiveLayout`
 
 ---
 

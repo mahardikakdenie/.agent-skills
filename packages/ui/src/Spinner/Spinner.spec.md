@@ -186,7 +186,6 @@ The normalized contract stays intentionally small: `size`, `label`, `inline`, an
 - [x] `Inline`
 - [x] `Overlay`
 - [x] `Labeled`
-- [x] `ResponsiveLayout`
 
 ---
 

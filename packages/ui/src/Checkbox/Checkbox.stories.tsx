@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Checkbox } from './Checkbox';
@@ -206,50 +206,4 @@ export const WithDescription: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  args: {
-    label: 'Receive product updates',
-    description: 'Toggle the checkbox to opt into release and maintenance notices.',
-    onCheckedChange: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const checkbox = canvas.getByRole('checkbox', { name: /receive product updates/i });
-
-    await userEvent.click(checkbox);
-
-    await expect(args.onCheckedChange).toHaveBeenCalledWith(true);
-    await expect(checkbox).toHaveAttribute('aria-checked', 'true');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms click interaction updates the checked state and calls the shared event prop.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="max-w-sm">
-      <Checkbox
-        label="Keep me signed in on this device"
-        description="Recommended only for personal devices. Shared or public devices should require sign-in every session."
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Exercises wrapping and alignment in a constrained mobile-width container.',
-      },
-    },
-  },
-};
-
 

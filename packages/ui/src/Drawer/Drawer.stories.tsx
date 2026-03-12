@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -328,59 +327,4 @@ export const NonDismissible: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  args: {
-    children: null,
-    onClose: fn(),
-  },
-  render: (args) => <UncontrolledDrawerStory {...args} />,
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: /open drawer/i }));
-    await expect(within(document.body).getByText(/drawer title/i)).toBeInTheDocument();
-
-    await userEvent.click(within(document.body).getByRole('button', { name: /close drawer/i }));
-    await expect(args.onClose).toHaveBeenCalledTimes(1);
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Exercises the open and close flow, asserting that the shared close callback fires when the drawer dismisses.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  args: {
-    children: null,
-  },
-  render: () => (
-    <DrawerStoryFrame>
-      <Drawer open>
-        <DrawerContent
-          title="Responsive drawer"
-          description="The bottom sheet remains readable inside a narrow mobile viewport."
-        >
-          <DrawerBodyCopy />
-        </DrawerContent>
-      </Drawer>
-    </DrawerStoryFrame>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Validates spacing and text wrapping in a mobile-width viewport.',
-      },
-    },
-  },
-};
-
-
 

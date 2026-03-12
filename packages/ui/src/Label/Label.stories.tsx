@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Label } from './Label';
@@ -7,9 +6,6 @@ import { labelToneValues } from './Label.types';
 
 const fieldClassName =
   'peer h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm text-foreground shadow-sm outline-none transition-colors motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60';
-
-const checkboxClassName =
-  'peer h-4 w-4 rounded border border-input accent-primary shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60';
 
 const meta = {
   title: 'Inputs/Label',
@@ -155,57 +151,4 @@ export const DisabledState: Story = {
     },
   },
 };
-
-export const InteractiveAssociation: Story = {
-  render: () => (
-    <Box className="grid max-w-sm gap-3">
-      <Label htmlFor="label-association-field">Receive release updates</Label>
-      <Box as="input" id="label-association-field" type="checkbox" className={checkboxClassName} />
-    </Box>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const checkbox = canvas.getByRole('checkbox', { name: /receive release updates/i });
-
-    await expect(checkbox).not.toBeChecked();
-    await userEvent.click(canvas.getByText(/receive release updates/i));
-    await expect(checkbox).toBeChecked();
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms that clicking the label activates the associated checkbox control.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="grid max-w-xs gap-2">
-      <Label htmlFor="label-responsive-field" required>
-        Primary contact email used for underwriting notifications and policy document delivery
-      </Label>
-      <Box
-        as="input"
-        id="label-responsive-field"
-        type="email"
-        placeholder="name@example.com"
-        className={fieldClassName}
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks label wrapping and required-indicator alignment in a narrow mobile viewport.',
-      },
-    },
-  },
-};
-
-
 

@@ -160,30 +160,3 @@ export const LongContent: Story = {
   },
 };
 
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="max-w-sm">
-      <Alert
-        variant="success"
-        title="Application submitted"
-        description="A confirmation email and downloadable receipt are ready in your inbox."
-        icon={<CircleCheckBig aria-hidden="true" className="h-5 w-5" />}
-        dismissible
-        onClose={fn()}
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks wrapping and spacing in a narrow mobile viewport.',
-      },
-    },
-  },
-};
-
-
-

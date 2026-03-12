@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Box } from '../Box'
-import { Card, CardContent, CardHeader, CardTitle } from '../Card'
 import { Spinner } from './Spinner'
 
 const meta = {
@@ -123,36 +122,6 @@ export const Labeled: Story = {
     docs: {
       description: {
         story: 'Adds visible loading copy while preserving the spinner as a polite status region.',
-      },
-    },
-  },
-}
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="grid gap-4 sm:grid-cols-2">
-      <Card>
-        <CardHeader className="gap-2">
-          <CardTitle>Compact inline status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Spinner inline size="sm" label="Syncing filters" />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="gap-2">
-          <CardTitle>Panel loading</CardTitle>
-        </CardHeader>
-        <CardContent className="min-h-32">
-          <Spinner label="Loading benefit summary" />
-        </CardContent>
-      </Card>
-    </Box>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Demonstrates the shared spinner inside compact and spacious responsive card layouts.',
       },
     },
   },

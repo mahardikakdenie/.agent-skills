@@ -277,8 +277,6 @@ This component intentionally ships as a flat compound export family instead of a
 - [x] `CheckboxItems`
 - [x] `Submenu`
 - [x] `DisabledState`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 - [x] `ControlledOpen`
 
 ---

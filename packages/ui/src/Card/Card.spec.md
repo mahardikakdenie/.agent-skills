@@ -113,9 +113,7 @@ Screen reader notes:
 
 - [x] `Basic`
 - [x] `HeaderFooter`
-- [x] `Interactive`
 - [x] `ElevatedComposition`
-- [x] `ResponsiveLayout`
 
 ## Changelog
 

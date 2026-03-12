@@ -181,8 +181,6 @@ The component is intentionally not compound. The checkbox control, label, descri
 - [x] `DisabledState`
 - [x] `ErrorState`
 - [x] `WithDescription`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

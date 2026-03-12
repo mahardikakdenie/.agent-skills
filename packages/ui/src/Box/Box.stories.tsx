@@ -206,26 +206,6 @@ function RefForwardingDemo() {
   );
 }
 
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box container="md" padding="md" className="rounded-lg border border-border bg-muted/20 py-6">
-      <Box className="rounded-md border border-border bg-background px-4 py-6 text-sm text-muted-foreground">
-        This wrapper keeps its responsive horizontal padding while remaining app-agnostic.
-      </Box>
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks the approved `container` and `padding` presets in a mobile viewport.',
-      },
-    },
-  },
-};
-
 export const RefForwarding: Story = {
   render: () => <RefForwardingDemo />,
   parameters: {

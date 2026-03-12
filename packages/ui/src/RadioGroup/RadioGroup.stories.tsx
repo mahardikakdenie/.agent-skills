@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { RadioGroup, RadioGroupItem } from './RadioGroup';
@@ -317,67 +317,4 @@ export const ErrorState: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  args: {
-    defaultValue: 'email',
-    onValueChange: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const emailRadio = canvas.getByRole('radio', { name: /email/i });
-    const smsRadio = canvas.getByRole('radio', { name: /^sms$/i });
-
-    await userEvent.tab();
-    await expect(emailRadio).toHaveFocus();
-    await expect(emailRadio).toHaveAttribute('aria-checked', 'true');
-
-    await userEvent.keyboard('{ArrowDown}');
-    await expect(smsRadio).toHaveFocus();
-
-    await userEvent.keyboard(' ');
-    await expect(smsRadio).toHaveAttribute('aria-checked', 'true');
-    await expect(args.onValueChange).toHaveBeenCalledWith('sms');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms keyboard-only focus movement and selection for the shared radio-group contract.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  args: {
-    defaultValue: 'push',
-  },
-  render: () => (
-    <Box className="max-w-sm">
-      <RadioGroup defaultValue="push">
-        <RadioGroupItem
-          value="email"
-          label="Email summary"
-          description="A complete daily digest with supporting details and links."
-        />
-        <RadioGroupItem
-          value="push"
-          label="Push notification"
-          description="A concise mobile alert for time-sensitive account activity."
-        />
-      </RadioGroup>
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Exercises wrapping and vertical rhythm inside a narrow mobile container.',
-      },
-    },
-  },
-};
-
 

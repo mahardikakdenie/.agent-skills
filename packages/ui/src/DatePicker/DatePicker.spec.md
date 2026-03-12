@@ -228,8 +228,6 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 - [x] `Error State`
 - [x] `Disabled State`
 - [x] `Form Field`
-- [x] `Interactive`
-- [x] `Responsive Layout`
 
 Roadmap alignment:
 - `DatePicker.Basic` -> `Default`

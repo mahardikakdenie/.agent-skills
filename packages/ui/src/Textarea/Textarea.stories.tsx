@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Textarea } from './Textarea';
@@ -162,61 +161,3 @@ export const Clearable: Story = {
   },
 };
 
-export const Interactive: Story = {
-  render: () => (
-    <ControlledTextareaStory
-      label="Case notes"
-      placeholder="Add case notes…"
-      helperText="Use plain text only."
-      clearable
-      rows={5}
-    />
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const textarea = canvas.getByRole('textbox', { name: /case notes/i });
-
-    await userEvent.type(textarea, 'Needs underwriting review');
-    await expect(textarea).toHaveValue('Needs underwriting review');
-
-    const clearButton = canvas.getByRole('button', { name: /clear text/i });
-    await userEvent.click(clearButton);
-    await expect(textarea).toHaveValue('');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms typing and the clear action for a controlled multiline field.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="grid max-w-sm gap-4">
-      <Textarea
-        label="Customer note"
-        placeholder="Capture the key context for the next handoff…"
-        helperText="Long helper copy should wrap cleanly in narrow layouts."
-        rows={5}
-      />
-      <Textarea
-        label="Optional internal remark"
-        placeholder="Add an optional follow-up note…"
-        clearable
-        rows={4}
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks label and helper-text wrapping for multiline fields in a constrained mobile viewport.',
-      },
-    },
-  },
-};

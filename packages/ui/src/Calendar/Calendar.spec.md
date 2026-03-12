@@ -265,8 +265,6 @@ DayPicker keyboard behavior is part of the shared contract and must remain intac
 - [x] `MultipleSelection`
 - [x] `DisabledDates`
 - [x] `RangePreview`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

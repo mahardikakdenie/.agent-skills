@@ -214,8 +214,6 @@ This component intentionally stops at the field-shell boundary. It does not impl
 - [x] `DisabledState`
 - [x] `LoadingState`
 - [x] `Clearable`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

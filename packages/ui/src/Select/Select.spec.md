@@ -170,8 +170,6 @@ export interface SelectOptionRenderState {
 - [x] `LoadingState`
 - [x] `Clearable`
 - [x] `CustomOptionContent`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

@@ -221,8 +221,6 @@ The shared contract now covers the baseline form needs that showed up repeatedly
 - [x] `DisabledState`
 - [x] `WithDescription`
 - [x] `ErrorState`
-- [x] `Interactive`
-- [x] `ResponsiveLayout`
 
 ---
 

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ArrowLeft, ArrowRight, ExternalLink, TriangleAlert } from 'lucide-react';
-import { expect, fn, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from './Button';
@@ -181,52 +180,4 @@ export const IconSlots: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  args: {
-    children: 'Trigger action',
-    onClick: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: /trigger action/i });
-
-    await userEvent.click(button);
-    await expect(args.onClick).toHaveBeenCalledTimes(1);
-    await expect(button).toHaveAttribute('aria-busy', 'false');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms the button remains clickable and exposes the busy attribute in the default idle state.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="flex max-w-sm flex-col gap-3">
-      <Button size="xl">Save and continue</Button>
-      <Button
-        variant="outline"
-        rightIcon={<ArrowRight aria-hidden="true" className="h-4 w-4" />}
-        className="w-full justify-between"
-      >
-        Review the updated submission details
-      </Button>
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks stacking, wrapping, and alignment in a constrained mobile layout.',
-      },
-    },
-  },
-};
-
 

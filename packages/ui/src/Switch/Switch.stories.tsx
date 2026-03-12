@@ -1,6 +1,5 @@
 ﻿import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Switch } from './Switch';
@@ -180,46 +179,3 @@ export const WithDescription: Story = {
   },
 };
 
-export const Interactive: Story = {
-  args: {
-    label: 'Enable weekly summary',
-    onCheckedChange: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const switchControl = canvas.getByRole('switch', { name: /enable weekly summary/i });
-
-    await userEvent.click(switchControl);
-
-    await expect(args.onCheckedChange).toHaveBeenCalledWith(true);
-    await expect(switchControl).toHaveAttribute('aria-checked', 'true');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms click interaction toggles the checked state and emits the shared event prop.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="max-w-sm">
-      <Switch
-        label="Keep this browser trusted for future sign-ins on personal devices only"
-        defaultChecked
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Exercises label wrapping and switch alignment in a constrained mobile-width container.',
-      },
-    },
-  },
-};

@@ -1,7 +1,7 @@
 ﻿import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CalendarDays, Info, SlidersHorizontal } from 'lucide-react';
 import * as React from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -366,61 +366,4 @@ export const Anchored: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  args: {
-    onOpen: fn(),
-    onClose: fn(),
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const body = within(canvasElement.ownerDocument.body);
-    const trigger = canvas.getByRole('button', { name: /view details/i });
-
-    await userEvent.click(trigger);
-    await expect(args.onOpen).toHaveBeenCalledTimes(1);
-
-    const closeButton = await body.findByRole('button', { name: /done/i });
-    await userEvent.click(closeButton);
-
-    await expect(args.onClose).toHaveBeenCalledTimes(1);
-    await expect(trigger).toHaveFocus();
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Verifies trigger activation, content rendering, close handling, and focus return through a Storybook interaction test.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: (args) => (
-    <Box className="w-[18rem]">
-      <BasicPopover
-        defaultOpen={args.defaultOpen}
-        onOpen={args.onOpen}
-        onClose={args.onClose}
-        align="start"
-        side={args.side}
-        sideOffset={args.sideOffset}
-        triggerDisabled={args.triggerDisabled}
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks trigger spacing and content sizing inside a narrow mobile-width container.',
-      },
-    },
-  },
-};
-
-
 

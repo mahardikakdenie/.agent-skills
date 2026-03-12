@@ -100,36 +100,3 @@ export const CardPlaceholder: Story = {
   },
 }
 
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="grid gap-4 sm:grid-cols-2">
-      {['one', 'two', 'three', 'four'].map((item) => (
-        <Box
-          key={item}
-          className="rounded-lg border border-border bg-card p-4 shadow-sm"
-        >
-          <Box className="flex items-start gap-3">
-            <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
-            <Box className="flex min-w-0 flex-1 flex-col gap-2">
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-[82%]" />
-            </Box>
-          </Box>
-        </Box>
-      ))}
-    </Box>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Demonstrates responsive list-card placeholders using only `Box`-authored DOM.',
-      },
-    },
-  },
-}
-
-
-
-
-

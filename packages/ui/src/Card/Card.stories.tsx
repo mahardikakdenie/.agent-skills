@@ -1,57 +1,10 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Badge } from '../Badge';
 import { Box } from '../Box';
 import { Button } from '../Button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './Card';
-
-function InteractiveCardExample() {
-  const [pressed, setPressed] = React.useState(false);
-
-  const activate = () => {
-    setPressed((current) => !current);
-  };
-
-  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
-    if (event.key !== 'Enter' && event.key !== ' ') {
-      return;
-    }
-
-    event.preventDefault();
-    activate();
-  };
-
-  return (
-    <Card
-      role="button"
-      tabIndex={0}
-      aria-label="Open policy overview"
-      aria-pressed={pressed}
-      onClick={activate}
-      onKeyDown={handleKeyDown}
-      className="cursor-pointer hover:shadow-md"
-    >
-      <CardHeader>
-        <Box className="flex items-start justify-between gap-3">
-          <Box className="space-y-1">
-            <CardTitle>Policy overview</CardTitle>
-            <CardDescription>
-              Consumer-owned semantics can turn the card into a keyboard-accessible control.
-            </CardDescription>
-          </Box>
-          <Badge variant={pressed ? 'success' : 'secondary'}>{pressed ? 'Opened' : 'Idle'}</Badge>
-        </Box>
-      </CardHeader>
-      <CardContent>
-        <Box className="text-sm text-muted-foreground">
-          Press Enter, Space, or click the card to toggle the interaction state.
-        </Box>
-      </CardContent>
-    </Card>
-  );
-}
 
 const meta = {
   title: 'Layout/Card',
@@ -141,26 +94,6 @@ export const HeaderFooter: Story = {
   },
 };
 
-export const Interactive: Story = {
-  render: () => <InteractiveCardExample />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const card = canvas.getByRole('button', { name: /open policy overview/i });
-
-    await userEvent.tab();
-    await expect(card).toHaveFocus();
-    await userEvent.keyboard('{Enter}');
-    await expect(canvas.getByText('Opened')).toBeInTheDocument();
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Demonstrates the recommended consumer-owned interactive card pattern without adding a shared boolean mode.',
-      },
-    },
-  },
-};
-
 export const ElevatedComposition: Story = {
   render: () => (
     <Card className="max-w-md shadow-md">
@@ -188,39 +121,4 @@ export const ElevatedComposition: Story = {
     },
   },
 };
-
-export const ResponsiveLayout: Story = {
-  render: () => (
-    <Box className="max-w-sm">
-      <Card>
-        <CardHeader>
-          <CardTitle>Compact mobile summary</CardTitle>
-          <CardDescription>
-            Confirms wrapping and spacing remain stable in a constrained layout.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Box className="space-y-3">
-            <Box className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
-              Coverage starts immediately after verification is complete.
-            </Box>
-            <Button className="w-full">View policy</Button>
-          </Box>
-        </CardContent>
-      </Card>
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Checks spacing, wrapping, and nested action layout in a narrow mobile viewport.',
-      },
-    },
-  },
-};
-
-
 

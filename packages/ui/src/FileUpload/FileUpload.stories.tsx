@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
 import { fn } from 'storybook/test';
 
-import { Box } from '../Box';
 import { FileUpload } from './FileUpload';
 import type { FileUploadProps, FileUploadValue } from './FileUpload.types';
 
@@ -183,24 +182,3 @@ export const MaxSizeValidation: Story = {
   },
 };
 
-export const ResponsiveLayout: Story = {
-  args: {
-    accept: '.pdf,.png',
-  },
-  render: (args) => (
-    <Box className="max-w-xs">
-      <ControlledStoryView {...args} />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story:
-          'Confirms the additive selection shell and item-level file actions remain readable in a narrow mobile container.',
-      },
-    },
-  },
-};

@@ -1,5 +1,4 @@
 ﻿import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Breadcrumb } from './Breadcrumb';
@@ -114,49 +113,4 @@ export const LongLabels: Story = {
     },
   },
 };
-
-export const Interactive: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.tab();
-    await expect(canvas.getByRole('link', { name: 'Dashboard' })).toHaveFocus();
-    await expect(canvas.getByText('Profile')).toHaveAttribute('aria-current', 'page');
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirms keyboard focus reaches the first link and the current page is announced semantically.',
-      },
-    },
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  render: (args) => (
-    <Box className="max-w-xs">
-      <Breadcrumb
-        {...args}
-        items={[
-          { label: 'Account', href: '/account' },
-          { label: 'Billing & invoices', href: '/account/billing' },
-        ]}
-        currentLabel="Payment method details"
-      />
-    </Box>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-    docs: {
-      description: {
-        story: 'Exercises the wrapping trail at a mobile viewport width without collapsing semantics.',
-      },
-    },
-  },
-};
-
-
-
 

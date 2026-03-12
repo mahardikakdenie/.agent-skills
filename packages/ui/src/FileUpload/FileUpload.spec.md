@@ -203,7 +203,6 @@ This component intentionally stops at the selection boundary. It does not upload
 - [x] `DisabledState`
 - [x] `ClearableSelection`
 - [x] `MaxSizeValidation`
-- [x] `ResponsiveLayout`
 
 ---
 

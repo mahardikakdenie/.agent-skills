@@ -165,8 +165,6 @@ This component stops at the label layer. It does not render descriptions, helper
 - [x] `Tones`
 - [x] `RequiredState`
 - [x] `DisabledState`
-- [x] `InteractiveAssociation`
-- [x] `ResponsiveLayout`
 
 ---
 

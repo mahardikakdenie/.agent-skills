@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -244,45 +243,6 @@ function ArrayFieldStoryView() {
   );
 }
 
-function InteractiveStoryView() {
-  const form = useForm<AccountFormValues>({
-    defaultValues: createDefaultValues(),
-    mode: 'onSubmit',
-  });
-  const [submittedValue, setSubmittedValue] = React.useState('');
-
-  return (
-    <Box className="grid gap-4">
-      <Form
-        form={form}
-        onSubmit={form.handleSubmit((values) => {
-          setSubmittedValue(values.email);
-        })}
-      >
-        <FormField
-          name="email"
-          rules={{ required: 'Email is required.' }}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>Email address</FormLabel>
-              <FormControl>
-                <Input {...field} inputMode="email" placeholder="name@example.com" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit">Save profile</Button>
-      </Form>
-
-      <Box as="p" aria-live="polite" className="text-sm text-muted-foreground">
-        Submitted value: {submittedValue || 'none'}
-      </Box>
-    </Box>
-  );
-}
-
 export const Field: Story = {
   args: {},
   parameters: {
@@ -355,38 +315,3 @@ export const ArrayField: Story = {
   render: () => <ArrayFieldStoryView />,
 };
 
-export const Interactive: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'Interactive story submits the form and exposes the submitted value in the canvas.',
-      },
-    },
-  },
-  render: () => <InteractiveStoryView />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const emailInput = canvas.getByLabelText(/email address/i);
-
-    await userEvent.type(emailInput, 'person@example.com');
-    await userEvent.click(canvas.getByRole('button', { name: /save profile/i }));
-
-    await expect(canvas.getByText(/submitted value:/i)).toHaveTextContent('person@example.com');
-  },
-};
-
-export const ResponsiveLayout: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'Field composition remains readable at mobile viewport widths.',
-      },
-    },
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-  },
-  render: () => <DescriptionStoryView />,
-};

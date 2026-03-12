@@ -274,7 +274,6 @@ function ExampleDialog() {
 - [x] `Destructive`
 - [x] `AsyncClose`
 - [x] `A11y`
-- [x] `ResponsiveLayout`
 
 ---
 
