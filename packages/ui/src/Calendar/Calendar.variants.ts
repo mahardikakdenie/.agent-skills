@@ -40,7 +40,7 @@ export const calendarNavButtonVariants = cva(
     'bg-transparent text-muted-foreground shadow-none transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-40',
+    'focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground',
   ].join(' '),
 );
 

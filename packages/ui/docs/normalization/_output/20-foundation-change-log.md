@@ -1,4 +1,4 @@
-# 20 - Foundation Change Log
+﻿# 20 - Foundation Change Log
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -645,4 +645,18 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Menubar`, and Wave B5.4 is in progress.
 - Downstream admin-style apps can begin converging persistent command bars and grouped desktop actions on one shared surface while route trees, global shortcut registration, permission gating, and service orchestration remain local.
+
+---
+
+## 2026-03-13 - MonthPicker Batch 5.4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/MonthPicker` as the next eligible Wave B5.4 component after `Menubar`, following the tracker order with `Timeline` still pending.
+- Added the canonical MonthPicker spec, Storybook coverage, typed exports, and a shared month-only field shell composed from `Popover` plus calendar-aligned year navigation and month-grid affordances.
+- Locked the shared contract around `value`, `onChange`, `minMonth`, `maxMonth`, `disabled`, `clearable`, `error`, and first-of-month value normalization instead of widening the API with date-format, quarter, or workflow props.
+- Kept authored shared markup on `Box`, including the trigger button, clear action, year navigation controls, month buttons, and inline error message.
+
+Impact:
+- `@repo/ui` export surface now includes `MonthPicker`, and Wave B5.4 remains in progress with only `Timeline` still planned.
+- Downstream apps can begin converging month-only reporting, billing-cycle, and period filters on one shared contract while quarter logic, presets, save/apply workflows, and domain validation remain local.
 

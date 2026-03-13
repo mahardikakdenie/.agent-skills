@@ -1,4 +1,4 @@
-# 21 - Adapter Mapping
+﻿# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -522,6 +522,21 @@ Keep local:
 - Zoom viewers, lightboxes, route-aware click behavior, and media flows that still encode app navigation or business logic.
 - Branded marketing art direction, lazy-loading orchestration beyond native image props, and media components that still depend on app-specific service state or asset pipelines.
 
+## MonthPicker
+
+Direct adoption guidance:
+
+- Legacy month-only billing, reporting, or coverage selectors map to `MonthPicker`.
+- Existing selected-month callbacks normalize to `value` and `onChange`, with the shared contract treating every selected month as the first day of that month.
+- Existing minimum and maximum reporting windows map to `minMonth` and `maxMonth`.
+- Existing reset affordances map to `clearable`, and inline validation copy normalizes to `error`.
+- Shared form composition should provide visible labels through `FormLabel` and `FormControl` rather than widening the shared picker API with another label prop.
+
+Keep local:
+
+- Quarter pickers, year-only selectors, preset shortcuts, and save/apply workflows that exceed simple month selection.
+- Domain rules that derive allowed months from service state, permissions, or business eligibility logic before rendering.
+- Route syncing, query-string state, analytics side effects, and workflow orchestration attached to month changes.
 ## OtpInput
 
 Direct adoption guidance:
@@ -550,6 +565,7 @@ Keep local:
 - Framework-specific links, route-aware breadcrumb generation, query-string or history integration, and permission-based action policy stay local.
 - Branded hero headers, marketing mastheads, and domain-specific workflow headers stay local.
 - Compose lower-level shared primitives such as `Box`, `Card`, `Breadcrumb`, `Badge`, and `Button` inside each app instead of normalizing onto one shared `PageHeader` export.
+
 
 
 
