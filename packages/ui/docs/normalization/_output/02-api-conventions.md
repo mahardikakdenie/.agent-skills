@@ -1049,6 +1049,15 @@ export interface DateTimePickerProps {
 
 Story group: `Inputs`
 
+Date/time policy:
+- `value` and `onChange` use a plain `Date | null` contract. The shared component does not introduce a custom zoned value type.
+- `timezone` is a display and selection-context hint only. It may influence rendered labels or option presentation, but it must not silently transform the emitted `Date` value into a different absolute instant.
+- `minDateTime` and `maxDateTime` are enforced in the picker UI across both the date and time portions of the selection flow.
+- Shared scope is minute-precision only. Seconds, recurrence, server-time synchronization, and workflow-specific confirmation logic remain app-local.
+- The shared component commits selection directly through `onChange`; app-specific save/apply wrappers, validation workflows, and side effects remain local composition.
+
+Migration note: legacy `initialValue` -> `value`; `minimumDate` / `maximumDate` -> `minDateTime` / `maxDateTime`; `isDisabled` -> `disabled`; app-local timezone conversion logic stays outside the shared primitive and should adapt around the emitted `Date`.
+
 ---
 
 ### Menubar

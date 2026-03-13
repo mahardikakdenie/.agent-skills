@@ -88,7 +88,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Accordion | 2 (Composite) | `@radix-ui/react-accordion` | `02` amendment: `type`, `collapsible`, `value`, `onValueChange` | `@radix-ui/react-accordion` | Complex | `Accordion.Basic`, `Accordion.Multiple`, `Accordion.Disabled` | 4 apps; see `05` | M | Lower-demand compound component |
 | Command | 2 (Composite) | `cmdk` | `02` amendment: compound `cmdk` surface (`Command`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandSeparator`, `CommandShortcut`) | `cmdk` | Complex | `Command.Basic`, `Command.Empty`, `Command.Groups`, `Command.Shortcuts` | 5 apps; see `05` | M | Shared command surface; dialog composition stays on shared `Dialog` |
-| DateTimePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `minDateTime`, `maxDateTime`, `timezone` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateTimePicker.Basic`, `DateTimePicker.Timezone`, `DateTimePicker.Invalid` | 5 apps; see `05` | L | Depends on settled date semantics |
+| DateTimePicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `minDateTime`, `maxDateTime`, `timezone` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `DateTimePicker.Basic`, `DateTimePicker.Timezone`, `DateTimePicker.Invalid` | 5 apps; see `05` | L | Date/time policy settled: shared contract emits `Date | null`, treats `timezone` as display-context only, enforces minute-precision bounds in UI, and keeps conversion/workflow logic local |
 
 ## 7. Wave B5.4 - Long Tail and Decision-Gated Work
 

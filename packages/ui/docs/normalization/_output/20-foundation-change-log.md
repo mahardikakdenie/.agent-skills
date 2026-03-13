@@ -717,3 +717,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `NavigationMenu`, giving downstream apps a canonical migration target for top-level navigation shells while route trees, framework links, permissions, and layout policy stay local.
 - Wave B5.2 is now fully complete with every component in that wave marked `DONE`.
+
+---
+
+## 2026-03-13 - DateTimePicker Policy Settlement
+
+Changed:
+- Settled the shared `DateTimePicker` policy in `02-api-conventions.md` instead of leaving the component behind an unspecified date/time prerequisite.
+- Locked the shared contract to `Date | null` values, minute-precision selection, UI-enforced `minDateTime` / `maxDateTime` bounds, and a `timezone` prop that acts as display and selection context only.
+- Explicitly kept timezone conversion, recurrence, server-time synchronization, and save/apply workflow orchestration out of shared scope and in app-local composition.
+- Updated the roadmap and implementation tracker so `DateTimePicker` is now `PLANNED` in Wave B5.3 rather than `BLOCKED`.
+
+Impact:
+- `DateTimePicker` is now the next eligible shared Batch 4 component for execution on `feat/ui`.
+- The Batch 4 tracker no longer requires a separate policy decision before SDD work can begin for the shared date-time picker.
