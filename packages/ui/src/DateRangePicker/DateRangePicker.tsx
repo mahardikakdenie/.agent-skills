@@ -243,6 +243,12 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       setHoveredDate(day);
     };
 
+    const clearPreview = () => {
+      if (previewEnabled) {
+        setHoveredDate(undefined);
+      }
+    };
+
     return (
       <Box
         data-slot="date-range-picker-field"
@@ -320,6 +326,12 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
                 <Box
                   data-slot="date-range-picker-calendar-frame"
                   className={dateRangePickerCalendarFrameVariants()}
+                  onMouseLeave={clearPreview}
+                  onBlurCapture={(event: React.FocusEvent<HTMLDivElement>) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                      clearPreview();
+                    }
+                  }}
                 >
                   <Calendar
                     mode="range"
@@ -334,16 +346,6 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
                     onDayFocus={handlePreviewDay}
                     onDayMouseEnter={handlePreviewDay}
                     onDayPointerEnter={handlePreviewDay}
-                    onDayBlur={() => {
-                      if (previewEnabled) {
-                        setHoveredDate(undefined);
-                      }
-                    }}
-                    onDayMouseLeave={() => {
-                      if (previewEnabled) {
-                        setHoveredDate(undefined);
-                      }
-                    }}
                     disabled={disabledMatchers}
                     fromMonth={fromMonth}
                     toMonth={toMonth}
