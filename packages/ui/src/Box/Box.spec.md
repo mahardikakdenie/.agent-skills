@@ -4,7 +4,7 @@
 
 | Field           | Value                  |
 | --------------- | ---------------------- |
-| Storybook Group | `Layout`               |
+| Storybook Group | `Misc`                 |
 | Component Tier  | `Tier 1 (Primitive)`   |
 | Structure Tier  | `Standard`             |
 | Based on        | `@radix-ui/react-slot` |

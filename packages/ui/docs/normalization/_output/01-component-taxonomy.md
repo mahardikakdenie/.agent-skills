@@ -52,7 +52,7 @@
 | Component | Canonical Export | Based On / Radix Primitive | `@repo/ui` Status | Apps Needing | Story Group | Notes |
 |---|---|---|---|---|---|---|
 | Alert | `Alert` | Tier 1 | [ ] missing | 22 | Feedback | Consolidates: `Alert`, `FlashMessage`, `ErrorContent`, `Notification`, `NotificationBar`, `DrawerError`, `AlertBanner`; severity variants |
-| Card | `Card` | Tier 1 | [ ] missing | 12 | Layout | Compound: `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` |
+| Card | `Card` | Tier 1 | [ ] missing | 12 | Data Display | Compound: `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` |
 | Form | `Form` | react-hook-form + Label + Input | [ ] missing | 9 | Misc | Compound: `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription`, `FormMessage` |
 | Breadcrumb | `Breadcrumb` | Tier 1 | [ ] missing | 12 | Navigation | Compound: `Breadcrumb`, `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, `BreadcrumbSeparator`; consolidates `BreadcrumbsShell` candidates |
 | Tabs | `Tabs` | `@radix-ui/react-tabs` | [ ] missing | 13 | Navigation | Compound: `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent` |
@@ -73,7 +73,7 @@
 | FileUpload | `FileUpload` | Tier 1 | [ ] missing | 12 | Inputs | Consolidates: `FileUpload`, `FileInput`, `DropFile`, `DragDropExcel`, `UploadFile`, `FileDropzone` |
 | Image | `Image` | semantic `img` target via `Box as="img"` with fallback composition | [ ] missing | 13 | Data Display | Consolidates: `ImageOrDefault`, `OptimizeImageShell`, `ViewImage`; fallback + alt semantics |
 | OtpInput | `OtpInput` | Tier 1 | [ ] missing | 6 | Inputs | Consolidates: `OtpInput` from customer-portal, ecommerce-teman, sso-portal, grab-landing-page |
-| Accordion | `Accordion` | `@radix-ui/react-accordion` | [ ] missing | 4 | Layout | Compound: `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent` |
+| Accordion | `Accordion` | `@radix-ui/react-accordion` | [ ] missing | 4 | Data Display | Compound: `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent` |
 | Timeline | `Timeline` | Tier 1 | [ ] missing | 3 | Data Display | Compound: `Timeline`, `TimelineItem`; from teman-affiliate-admin |
 | MonthPicker | `MonthPicker` | `Calendar` + `Popover` | [ ] missing | 3 | Inputs | Month-only picker; from partner-portal, teman-affiliate-portal |
 | RichTextEditor | `RichTextEditor` | external editor (TBD) | [ ] missing | 1 | Inputs | From ticket-portal legacy intake; queued for Phase 3 scope decision |

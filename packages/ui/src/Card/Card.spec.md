@@ -4,7 +4,7 @@
 
 | Field           | Value                      |
 | --------------- | -------------------------- |
-| Storybook Group | `Layout`                   |
+| Storybook Group | `Data Display`             |
 | Component Tier  | `Tier 2 (Composite)`       |
 | Structure Tier  | `Standard`                 |
 | Based on        | `Box` + custom composition |
@@ -109,7 +109,7 @@ Screen reader notes:
 
 ## Storybook Stories Required
 
-**Story file title:** `'Layout/Card'`
+**Story file title:** `'Data Display/Card'`
 
 - [x] `Basic`
 - [x] `HeaderFooter`

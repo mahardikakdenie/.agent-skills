@@ -166,7 +166,7 @@ function ControlledAccordionExample({ items }: { items: StoryAccordionItem[] }) 
 }
 
 const meta = {
-  title: 'Layout/Accordion',
+  title: 'Data Display/Accordion',
   component: Accordion,
   tags: ['autodocs'],
   args: {

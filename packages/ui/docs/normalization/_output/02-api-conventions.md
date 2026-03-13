@@ -140,7 +140,7 @@ Rules:
 - `centered` is layout-only (`flex items-center justify-center`) and must stay generic.
 - `Box` is the authored DOM primitive for shared source. Semantic HTML and SVG output must be expressed through `Box` with the `as` prop instead of direct native JSX tags.
 
-Story group: `Layout`
+Story group: `Misc`
 
 ### Authored DOM Policy
 
@@ -711,7 +711,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 ```
 
-Story group: `Layout`
+Story group: `Data Display`
 
 ---
 
@@ -1003,7 +1003,7 @@ export interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 ```
 
-Story group: `Layout`
+Story group: `Data Display`
 
 ---
 

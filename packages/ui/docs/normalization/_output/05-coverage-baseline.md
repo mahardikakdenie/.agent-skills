@@ -40,7 +40,7 @@
 | Table | 1 | 12 | Data Display | B4 |
 | Pagination | 2 | 16 | Navigation | B4 |
 | Badge | 1 | 11 | Feedback | B4 |
-| Card | 2 | 12 | Layout | B4 |
+| Card | 2 | 12 | Data Display | B4 |
 | DatePicker | 2 | 22 | Inputs | B5.1 |
 | Form | 2 | 9 | Misc | B5.1 |
 
@@ -72,7 +72,7 @@
 | DateRangePicker | 2 | 7 | Inputs | B5.2 |
 | OtpInput | 2 | 6 | Inputs | B5.2 |
 | Command | 2 | 5 | Misc | B5.3 |
-| Accordion | 2 | 4 | Layout | B5.3 |
+| Accordion | 2 | 4 | Data Display | B5.3 |
 
 ### P3 - Low Demand
 

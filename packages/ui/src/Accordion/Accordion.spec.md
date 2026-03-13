@@ -4,7 +4,7 @@
 
 | Field | Value |
 | --- | --- |
-| Storybook Group | `Layout` |
+| Storybook Group | `Data Display` |
 | Component Tier | `Tier 2 (Composite)` |
 | Structure Tier | `Complex` |
 | Based on | `@radix-ui/react-accordion` |
@@ -226,7 +226,7 @@ const [value, setValue] = React.useState('eligibility');
 
 ## Storybook Stories Required
 
-**Story file title:** `Layout/Accordion`
+**Story file title:** `Data Display/Accordion`
 
 - [x] `Default`
 - [x] `Multiple Mode`

@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { Box } from './Box';
 
 const meta = {
-  title: 'Layout/Box',
+  title: 'Misc/Box',
   component: Box,
   tags: ['autodocs'],
   args: {

@@ -49,7 +49,7 @@ Impact:
 Changed:
 - Re-executed `Box` against the Batch 4 extend-existing procedure instead of relying on the earlier Batch 3 pass alone.
 - Made the `Box` type surface explicitly match `02-api-conventions.md` by declaring `className` on `BoxOwnProps`.
-- Realigned Storybook metadata and stories to the canonical `Layout/Box` taxonomy and documented the approved semantic/layout usage cases.
+- Realigned Storybook metadata and stories to the canonical `Misc/Box` taxonomy and documented the approved semantic/layout usage cases.
 
 Impact:
 - `Box` remains the only valid `EXTEND_EXISTING` component in the current shared-program state, but its spec, stories, and exported prop surface are now consistent with the authoritative procedural contract.
