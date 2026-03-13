@@ -4,7 +4,7 @@ import type { ClassNames } from 'react-day-picker';
 import type { CalendarMode } from './Calendar.types';
 
 export const calendarRootVariants = cva(
-  'relative inline-block overflow-hidden rounded-lg border border-border bg-background p-2.5 shadow-sm [&_.rdp-button[disabled]]:cursor-not-allowed [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:opacity-0 [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:opacity-0',
+  'relative inline-block overflow-hidden rounded-lg border border-border bg-background p-2.5 shadow-sm [&_.rdp-button[disabled]]:cursor-not-allowed [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:invisible [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:invisible',
 );
 
 export const calendarMonthsVariants = cva('flex flex-col gap-3 sm:flex-row');
@@ -26,9 +26,13 @@ export const calendarDropdownVariants = cva(
   ].join(' '),
 );
 
-export const calendarDropdownMonthVariants = cva('group relative inline-flex min-w-[8rem] items-center');
+export const calendarDropdownMonthVariants = cva(
+  'group relative inline-flex min-w-[8rem] items-center',
+);
 
-export const calendarDropdownYearVariants = cva('group relative inline-flex min-w-[6.5rem] items-center');
+export const calendarDropdownYearVariants = cva(
+  'group relative inline-flex min-w-[6.5rem] items-center',
+);
 
 export const calendarDropdownIconVariants = cva('h-4 w-4 shrink-0 text-muted-foreground');
 
@@ -60,20 +64,21 @@ export const calendarInteractiveCaptionTriggerVariants = cva(
 
 export const calendarPickerPanelVariants = cva(
   [
-    'absolute inset-x-0 top-[calc(100%+0.25rem)] z-20 overflow-hidden rounded-md border border-border bg-background px-1 py-3 shadow-md',
-    'supports-[backdrop-filter]:bg-background/95',
+    'absolute inset-x-0.5 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-lg border border-border bg-background px-1.5 py-2.5 shadow-lg',
   ].join(' '),
 );
 
-export const calendarPickerGridVariants = cva('grid h-full content-start grid-cols-3 gap-x-2 gap-y-2 px-0.5 pb-0.5');
+export const calendarPickerGridVariants = cva(
+  'grid min-h-0 content-start grid-cols-3 gap-x-1.5 gap-y-1.5 px-0.5 pb-0.5 pt-0.5',
+);
 
 export const calendarPickerYearsVariants = cva(
-  'grid h-full content-start grid-cols-3 gap-x-2 gap-y-2 overflow-y-auto px-0.5 pb-0.5 pr-1.5',
+  'grid min-h-0 content-start grid-cols-3 gap-x-1.5 gap-y-1.5 px-0.5 pb-0.5 pt-0.5 pr-1',
 );
 
 export const calendarPickerOptionVariants = cva(
   [
-    'inline-flex h-9 items-center justify-center rounded-md px-2 text-sm font-medium',
+    'inline-flex h-8.5 items-center justify-center rounded-md px-2 text-sm font-medium',
     'transition-colors motion-reduce:transition-none',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     'focus-visible:ring-offset-background',
@@ -81,7 +86,7 @@ export const calendarPickerOptionVariants = cva(
   {
     variants: {
       selected: {
-        true: 'bg-accent text-accent-foreground',
+        true: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary hover:text-primary-foreground',
         false: 'text-foreground',
       },
       disabled: {
@@ -96,7 +101,9 @@ export const calendarPickerOptionVariants = cva(
   },
 );
 
-export const calendarTableVariants = cva('w-full border-collapse transition-opacity motion-reduce:transition-none');
+export const calendarTableVariants = cva(
+  'w-full border-collapse transition-opacity motion-reduce:transition-none',
+);
 
 export const calendarHeadRowVariants = cva('flex gap-0.5');
 
@@ -175,12 +182,8 @@ export function createCalendarClassNames(mode: CalendarMode): ClassNames {
     day_disabled: calendarDayDisabledVariants(),
     day_range_start:
       mode === 'range' ? calendarDayRangeStartVariants() : calendarDaySelectedVariants(),
-    day_range_end:
-      mode === 'range' ? calendarDayRangeEndVariants() : calendarDaySelectedVariants(),
+    day_range_end: mode === 'range' ? calendarDayRangeEndVariants() : calendarDaySelectedVariants(),
     day_range_middle: mode === 'range' ? calendarDayRangeMiddleVariants() : undefined,
     weeknumber: calendarWeekNumberVariants(),
   };
 }
-
-
-

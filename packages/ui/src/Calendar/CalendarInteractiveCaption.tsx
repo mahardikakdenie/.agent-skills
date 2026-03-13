@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { format, isAfter, isBefore, setYear, startOfMonth } from 'date-fns';
+import * as React from 'react';
 import { type CaptionProps, useDayPicker, useNavigation } from 'react-day-picker';
 
 import { cn } from '@repo/helper';
@@ -209,12 +209,23 @@ export function CalendarInteractiveCaption(props: CaptionProps) {
       {view !== 'days' ? (
         <Box
           id={panelId}
+          data-slot="calendar-picker-panel"
+          data-picker-view={view}
           role="group"
           aria-label={view === 'years' ? 'Choose year' : 'Choose month'}
-          className={cn(calendarPickerPanelVariants(), view === 'years' ? 'h-[13.5rem]' : 'h-[12.25rem]')}
+          className={cn(
+            calendarPickerPanelVariants(),
+            view === 'years' ? 'h-[12rem]' : 'h-[10.75rem]',
+          )}
         >
           {view === 'years' ? (
-            <Box className={calendarPickerYearsVariants()}>
+            <Box
+              data-slot="calendar-picker-years"
+              className={cn(
+                calendarPickerYearsVariants(),
+                'h-full overflow-y-auto overscroll-contain',
+              )}
+            >
               {years.map((year) => (
                 <Box
                   key={year}
@@ -222,6 +233,7 @@ export function CalendarInteractiveCaption(props: CaptionProps) {
                   type="button"
                   data-active={year === activeYear}
                   aria-pressed={year === activeYear}
+                  data-slot="calendar-picker-option"
                   className={calendarPickerOptionVariants({
                     selected: year === activeYear,
                     disabled: false,
@@ -233,7 +245,7 @@ export function CalendarInteractiveCaption(props: CaptionProps) {
               ))}
             </Box>
           ) : (
-            <Box className={calendarPickerGridVariants()}>
+            <Box data-slot="calendar-picker-grid" className={calendarPickerGridVariants()}>
               {monthOptions.map((monthOption) => (
                 <Box
                   key={monthOption.value}
@@ -242,6 +254,7 @@ export function CalendarInteractiveCaption(props: CaptionProps) {
                   disabled={monthOption.disabled}
                   data-active={monthOption.value === activeMonth}
                   aria-pressed={monthOption.value === activeMonth}
+                  data-slot="calendar-picker-option"
                   className={calendarPickerOptionVariants({
                     selected: monthOption.value === activeMonth,
                     disabled: monthOption.disabled,
@@ -258,6 +271,3 @@ export function CalendarInteractiveCaption(props: CaptionProps) {
     </Box>
   );
 }
-
-
-

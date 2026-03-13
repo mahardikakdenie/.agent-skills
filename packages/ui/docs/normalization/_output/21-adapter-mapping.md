@@ -497,6 +497,22 @@ Keep local:
 - Domain-specific or server-driven preset logic, route/query synchronization, and analytics orchestration.
 - Date-time, month-only, quarter, or localized workflow pickers that exceed the shared start/end range contract.
 
+## DateTimePicker
+
+Direct adoption guidance:
+
+- Legacy single-value date-time popover fields, appointment selectors, and deadline inputs map to `DateTimePicker`.
+- Existing `selectedDate`, `selectedTime`, split `onDateChange` / `onTimeChange`, or `defaultDateTime` style contracts should normalize to one `value?: Date | null` plus `onChange`.
+- Existing `minimumDate`, `maximumDate`, booking-window, or cutoff bounds map directly to `minDateTime` and `maxDateTime`.
+- Existing reset affordances should collapse into `clearable` plus `onChange(null)`.
+- Existing timezone hints that only affect how users interpret the control map to the shared `timezone` display-context prop; visible field captions should come from `FormLabel` and `FormControl` rather than a new component-local label prop.
+
+Keep local:
+
+- Timezone conversion, server-time synchronization, DST policy, and any workflow that needs the component to emit something other than a plain `Date`.
+- Save/apply buttons, submit orchestration, booking validation, and domain-specific side effects attached to date-time selection.
+- Multi-step schedulers, recurrence builders, duration pickers, and any flow that needs presets, resource availability, or richer scheduling logic beyond one shared date-time field.
+
 ## Avatar
 
 Direct adoption guidance:

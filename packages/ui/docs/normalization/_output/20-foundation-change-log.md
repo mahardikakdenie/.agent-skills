@@ -731,3 +731,17 @@ Changed:
 Impact:
 - `DateTimePicker` is now the next eligible shared Batch 4 component for execution on `feat/ui`.
 - The Batch 4 tracker no longer requires a separate policy decision before SDD work can begin for the shared date-time picker.
+
+---
+
+## 2026-03-13 - DateTimePicker Delivery
+
+Changed:
+- Implemented `packages/ui/src/DateTimePicker` as the next eligible Wave B5.3 component after the date/time policy settlement moved it from `BLOCKED` to `PLANNED`.
+- Added the component spec, Storybook coverage, root exports, and the shared `DateTimePicker` contract built on top of `Calendar` and `Popover`.
+- Locked the shipped interaction to minute-precision time entry, UI-enforced `minDateTime` / `maxDateTime` bounds, and display-context `timezone` copy while keeping conversion and workflow orchestration app-local.
+- Verified the component with `pnpm --filter @repo/ui check-types`, `pnpm --filter @repo/ui lint`, `pnpm --filter @repo/ui build`, and `pnpm --filter @repo/ui build-storybook`.
+
+Impact:
+- Wave B5.3 is now complete with `Accordion`, `Command`, and `DateTimePicker` all marked `DONE`.
+- Ready apps may now adopt the shared `DateTimePicker` contract where their existing flows fit the settled shared scope.
