@@ -1,4 +1,4 @@
-﻿# 21 - Adapter Mapping
+# 21 - Adapter Mapping
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
@@ -537,6 +537,23 @@ Keep local:
 - Quarter pickers, year-only selectors, preset shortcuts, and save/apply workflows that exceed simple month selection.
 - Domain rules that derive allowed months from service state, permissions, or business eligibility logic before rendering.
 - Route syncing, query-string state, analytics side effects, and workflow orchestration attached to month changes.
+
+## Timeline
+
+Direct adoption guidance:
+
+- Legacy status-history lists, claim-progress summaries, and lightweight milestone trails map to `Timeline`.
+- Existing local record arrays should normalize to the shared `items` shape with `id`, `title`, optional `description`, and optional per-item `statusTone`.
+- Date, time, actor, and secondary metadata that only needs one supporting line should collapse into `description` instead of reopening dedicated shared date or meta props.
+- Shared marker emphasis can use root-level `statusTone`, while mixed event meaning can override tone per item.
+- Dense admin sidebars or summary cards should tune spacing through `className` instead of adding a dedicated `dense` boolean to the shared API.
+
+Keep local:
+
+- Ticket-board, gantt, scheduler, and calendar-style timelines that depend on date math, scrolling grids, or drag interactions.
+- Timelines that trigger routing, mutations, permissions, or other business actions per item.
+- Workflow steppers, progress bars, or approval controls that are interactive rather than presentation-only history.
+
 ## OtpInput
 
 Direct adoption guidance:
@@ -565,6 +582,8 @@ Keep local:
 - Framework-specific links, route-aware breadcrumb generation, query-string or history integration, and permission-based action policy stay local.
 - Branded hero headers, marketing mastheads, and domain-specific workflow headers stay local.
 - Compose lower-level shared primitives such as `Box`, `Card`, `Breadcrumb`, `Badge`, and `Button` inside each app instead of normalizing onto one shared `PageHeader` export.
+
+
 
 
 

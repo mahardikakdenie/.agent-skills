@@ -1,4 +1,4 @@
-﻿# 20 - Foundation Change Log
+# 20 - Foundation Change Log
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -659,4 +659,18 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `MonthPicker`, and Wave B5.4 remains in progress with only `Timeline` still planned.
 - Downstream apps can begin converging month-only reporting, billing-cycle, and period filters on one shared contract while quarter logic, presets, save/apply workflows, and domain validation remain local.
+
+---
+
+## 2026-03-13 - Timeline Batch 5.4 Delivery
+
+Changed:
+- Implemented `packages/ui/src/Timeline` as the final eligible Wave B5.4 component after `MonthPicker`, closing the active long-tail shared build wave.
+- Added the canonical Timeline spec, Storybook coverage, typed exports, and a Box-authored presentation-only status-history component with vertical and horizontal layout support.
+- Locked the shared contract around `items`, optional shared `statusTone`, per-item marker overrides, and `orientation`, while keeping workflow logic, date math, gantt behavior, and interactive steppers out of scope.
+- Applied the composition review by keeping the public API flat and data-driven instead of widening it into exported item subcomponents or density booleans.
+
+Impact:
+- `@repo/ui` export surface now includes `Timeline`, and Wave B5.4 is complete.
+- Downstream apps can begin converging simple status-history and milestone-summary surfaces on one shared contract while interactive workflow views and calendar-like timelines remain app-local.
 

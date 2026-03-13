@@ -1,4 +1,4 @@
-﻿# 13 - Implementation Batches
+# 13 - Implementation Batches
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; Wave B5.2 is complete with `Avatar`, `Combobox`, `FileUpload`, `Image`, and `OtpInput`; Wave B5.3 is exhausted for now with `Accordion` and `Command` delivered while `DateTimePicker` stays behind its documented prerequisite; and Wave B5.4 is now in progress with `Menubar` and `MonthPicker` delivered while `Timeline` remains planned.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; Wave B5.2 is complete with `Avatar`, `Combobox`, `FileUpload`, `Image`, and `OtpInput`; Wave B5.3 is exhausted for now with `Accordion` and `Command` delivered while `DateTimePicker` stays behind its documented prerequisite; and Wave B5.4 is now complete with `Menubar`, `MonthPicker`, and `Timeline` delivered.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -203,7 +203,7 @@
 | B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | DONE |
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | DONE |
 | B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | IN PROGRESS |
-| B5.4 | `Menubar`, `MonthPicker`, `Timeline` | No open P0/P1 blocker remains | Long-tail items marked `DONE` or explicitly deferred | IN PROGRESS |
+| B5.4 | `Menubar`, `MonthPicker`, `Timeline` | No open P0/P1 blocker remains | Long-tail items marked `DONE` or explicitly deferred | DONE |
 | Decision gate | `RichTextEditor` | Editor engine, security, SSR, and bundle policy approved | Status changes from `DECISION-GATED` to `PLANNED` | DECISION-GATED |
 
 ### App cohort matrix
@@ -327,8 +327,9 @@
 | DateTimePicker | 4 | B5.3 | BLOCKED | Needs settled date/time policy |
 | Menubar | 4 | B5.4 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, shared shortcut and submenu support, and Box-authored root, trigger, content, and item wrappers |
 | MonthPicker | 4 | B5.4 | DONE | Shipped on 2026-03-13 with spec, Storybook, first-of-month normalization, bounded year navigation, and Box-authored trigger, popover shell, and month-grid controls |
-| Timeline | 4 | B5.4 | PLANNED | Presentation-only data display |
+| Timeline | 4 | B5.4 | DONE | Shipped on 2026-03-13 with spec, Storybook, shared orientation support, semantic marker tones, and Box-authored list + connector composition |
 | RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+
 
 
 
