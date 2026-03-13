@@ -1,4 +1,4 @@
-// Feedback
+﻿// Feedback
 export * from './Alert';
 export * from './Badge';
 export * from './Button';
@@ -21,17 +21,15 @@ export * from './Select';
 export * from './Switch';
 export * from './Textarea';
 
-// Layout
-export * from './Accordion';
-export * from './Box';
-export * from './Card';
-
 // Misc
+export * from './Box';
 export * from './Command';
 
 // Data Display
+export * from './Accordion';
 export * from './Avatar';
 export * from './Calendar';
+export * from './Card';
 export * from './DataTable';
 export * from './Image';
 export * from './Table';

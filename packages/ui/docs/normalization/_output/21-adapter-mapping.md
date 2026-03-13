@@ -498,3 +498,128 @@ Keep local:
 - Save/apply buttons, explicit submit flows, and business-specific side effects attached to range selection.
 - Domain-specific or server-driven preset logic, route/query synchronization, and analytics orchestration.
 - Month-only, quarter, or localized workflow pickers that exceed the shared start/end range contract.
+
+## Avatar
+
+Direct adoption guidance:
+
+- Legacy profile-photo shells, initials badges, assignee thumbnails, and compact identity chips map to `Avatar`.
+- Existing `imageUrl`, `profilePicture`, `avatarSrc`, or similar props normalize to `src`; existing `name`, `fullName`, or `altText` copy normalizes to `alt`.
+- Local initials, placeholder text, or icon tiles should collapse into `fallback` instead of keeping a second avatar-with-default wrapper.
+- Existing size booleans or numeric avatar presets should normalize to `size="sm" | "md" | "lg" | "xl"`.
+- Consumer-owned click behavior should remain local through standard HTML props or wrapper composition rather than adding shared navigation props.
+
+Keep local:
+
+- Presence dots, stacked avatar groups, role badges, and online-state decoration.
+- Route-aware profile links, analytics hooks, or business-specific identity formatting.
+- Large responsive media, hero portraits, or optimized image delivery that should adopt `Image` or app-local framework image wrappers.
+
+## Combobox
+
+Direct adoption guidance:
+
+- Legacy searchable single-select fields, searchable dropdown buttons, and filter pickers map to `Combobox`.
+- Existing selected id or code values normalize to `value`; existing `onChange`, `setValue`, or `onSelect` callbacks normalize to `onValueChange`.
+- Existing option arrays should map to `options` with `{ label, value, disabled?, keywords? }` instead of widening the shared API with app-shaped records.
+- Existing field labels, required markers, validation text, loading states, and reset affordances map to `label`, `required`, `error`, `loading`, and `clearable`.
+- Rich option rows should move into `renderOption` while trigger text still resolves from `option.label`.
+
+Keep local:
+
+- Remote fetching, debounced search orchestration, async transport, and server-driven filtering.
+- Multi-select, tag creation, "add new item" flows, and phone-code-specific picker behavior.
+- Domain-specific option shaping, analytics, routing side effects, or permission logic beyond plain props.
+
+## Command
+
+Direct adoption guidance:
+
+- Legacy searchable command palettes, quick-action lists, and inline command menus map to `Command` plus `CommandInput`, `CommandList`, `CommandGroup`, `CommandItem`, `CommandEmpty`, `CommandSeparator`, and `CommandShortcut`.
+- Existing flat action arrays should stay app-shaped in the parent and be rendered into compound command items rather than widening the shared API back into `items[]`.
+- Palette-style overlays should compose `Command` inside the shared `Dialog` primitives instead of introducing a separate `CommandDialog` wrapper.
+- Existing search-value control, custom ranking, and keyboard loop behavior should normalize to the underlying cmdk root props already exposed by `Command`.
+
+Keep local:
+
+- Route execution, analytics tracking, permission checks, and business-specific action handlers.
+- Remote fetching, debounced transport, and domain-aware result formatting.
+- Form-field selection flows that should instead adopt `Combobox`, and non-searchable action menus that should stay on `DropdownMenu`.
+
+## FileUpload
+
+Direct adoption guidance:
+
+- Legacy attachment pickers, supporting-document inputs, and lightweight upload entry fields map to `FileUpload`.
+- Existing `file`, `files`, `selectedFiles`, or similar local state should normalize to `value`; selection callbacks normalize to `onChange`.
+- Existing accepted-format, multiple-selection, max-size, label, invalid-state, and clear/reset behavior map to `accept`, `multiple`, `maxSize`, `label`, `error`, `clearable`, and `onClear`.
+- Sequential multi-file picks should append through the shared component rather than replacing the entire selection list in parent code.
+
+Keep local:
+
+- Upload transport, presigned URL flows, progress indicators, retry logic, and auth-aware file handling.
+- Image cropping, camera capture, OCR, preview galleries, and identity-document workflows.
+- Domain-specific validation rules or submission orchestration beyond generic file selection and size checks.
+
+## Image
+
+Direct adoption guidance:
+
+- Legacy generic thumbnails, preview cards, logos, and image-with-fallback shells map to `Image`.
+- Existing `src`, `imageUrl`, `thumbnail`, or nullable image props normalize to `src`; local placeholder content should collapse into `fallback`.
+- Existing aspect-ratio wrapper classes should normalize to `ratio="auto" | "square" | "video" | "portrait"` where the layout pattern is shared.
+- Existing object-fit classes or booleans should normalize to `fit="cover" | "contain" | "fill"`.
+- Consumer-owned click handlers or wrapper semantics should remain local rather than introducing image-specific navigation props.
+
+Keep local:
+
+- `next/image` optimization, blur placeholders, priority loading, and CDN transform logic.
+- Lightboxes, zoom viewers, gallery orchestration, and media-fetch lifecycles.
+- Business-specific media formatting, routing, or analytics behavior beyond the shared display shell.
+
+## MonthPicker
+
+Direct adoption guidance:
+
+- Legacy month-year-only picker fields, billing-month selectors, and reporting-period month dropdowns map to `MonthPicker`.
+- Existing month state and callbacks should normalize to `value` and `onChange`; emitted values should stay month-only instead of preserving hidden day-level state.
+- Existing min/max month bounds normalize to `minMonth` and `maxMonth`; clear/reset affordances normalize to `clearable`.
+- Input-like style toggles should prefer the shared `variant`, `size`, or `className` paths instead of introducing new month-picker-specific booleans.
+- Shared form composition should provide visible labels through `FormLabel` and `FormControl` rather than widening the picker API with a second label contract.
+
+Keep local:
+
+- Quarter pickers, year-only selectors, preset-heavy period flows, and workflow-confirmed month submission patterns.
+- Save/apply buttons, route/query synchronization, and business-specific side effects tied to month selection.
+- Localization adapters or domain validation rules that exceed the shared month-only field contract.
+
+## OtpInput
+
+Direct adoption guidance:
+
+- Legacy segmented verification-code, PIN, and one-time-password fields map to `OtpInput`.
+- Existing `code`, `otp`, `pin`, or similar string state should normalize to `value`; change handlers normalize to `onValueChange`.
+- Existing slot-count props should normalize to `length`; shared visual styling should normalize to `variant` and `size`; invalid-state copy should map to `error`.
+- Existing first-slot focus behavior should map to `autoFocus`, while built-in digit sanitization, paste distribution, and focus advance replace app-local key handling.
+
+Keep local:
+
+- Resend timers, attempt limits, cooldown state, and verification API orchestration.
+- Success states, delivery-channel messaging, submit-button behavior, and modal or page shell logic.
+- Domain-specific security rules or workflow branching beyond basic segmented code entry.
+
+## Timeline
+
+Direct adoption guidance:
+
+- Legacy status histories, milestone trackers, and ordered progress summaries map to `Timeline`.
+- Existing local event arrays should normalize to `items` with `id`, `title`, `description`, and optional `statusTone`.
+- Existing vertical or horizontal milestone layouts should normalize to `orientation="vertical" | "horizontal"`.
+- Shared semantic marker emphasis should prefer the top-level `statusTone`, while per-item event meaning should stay on each item record.
+- Dense or quiet timeline layouts should tune spacing through `className` instead of reintroducing boolean size props.
+
+Keep local:
+
+- Interactive steppers, gantt views, schedulers, and drag-and-drop workflow boards.
+- Sorting, filtering, fetching, or route-aware actions attached to each event row.
+- Domain-specific date formatting, actor metadata, and business logic beyond presentation-only ordered history.
