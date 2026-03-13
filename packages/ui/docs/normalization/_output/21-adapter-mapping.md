@@ -300,7 +300,8 @@ Direct adoption guidance:
 - Existing admin or report-table density tweaks should stay in `className` on the table parts instead of widening the shared primitive with `dense` or `compact` booleans.
 - Existing selected-row visuals can map to `data-state="selected"` on `TableRow`.
 - Responsive table overflow should stay consumer-owned by wrapping `Table` in a `Box` container with `overflow-x-auto`.
-- Footer totals and summary rows map to `TableFooter`; empty states stay as a full-width `TableCell` inside `TableBody`.
+- Footer totals and summary rows map to `TableFooter`; empty states stay as a full-width `TableCell` inside `TableBody`, preferably using a compact icon, a short title, and one supporting line when the empty treatment needs more than plain text.
+- Visible captions are optional. Use `TableCaption` only when it adds meaningful context for assistive tech or dense reporting surfaces, not as default table chrome.
 
 Keep local:
 

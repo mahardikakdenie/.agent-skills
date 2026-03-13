@@ -344,6 +344,18 @@ Impact:
 
 ---
 
+## 2026-03-13 - Table Docs Alignment
+
+Changed:
+- Updated the `Table` spec and Storybook guidance so the documented empty-state composition now matches the shared `DataTable` default treatment: restrained icon, short title, and one supporting line inside a full-width body cell.
+- Removed visible caption treatments from the default `Table` Storybook surface while keeping `TableCaption` available in the shared API for cases where it adds meaningful context.
+- Dropped the `RowHeader` Storybook example from the current normalized docs surface and kept footer-summary coverage as the documented semantic summary pattern.
+
+Impact:
+- Normalization guidance for app adoption now reflects the current shared docs surface more accurately, especially around optional captions and richer but still semantic empty-state composition.
+
+---
+
 ## 2026-03-10 - Tabs Batch 4 Delivery
 
 Changed:

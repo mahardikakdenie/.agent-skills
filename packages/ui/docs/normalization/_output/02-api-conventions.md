@@ -503,6 +503,11 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
 
 Story group: `Data Display`
 
+Normalization notes:
+
+- Keep `Table` structural. `TableCaption` and `TableFooter` remain available composition primitives, but visible captions are optional and should be used only when they add real table context.
+- Recommended empty-state composition is a single full-width `TableCell` inside `TableBody`, using a restrained icon, a concise title, and one supporting line rather than a plain sentence block.
+
 ---
 
 ### DataTable

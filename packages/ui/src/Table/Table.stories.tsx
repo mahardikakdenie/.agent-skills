@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Inbox } from 'lucide-react';
 import * as React from 'react';
 
 import { Box } from '../Box';
@@ -6,7 +7,6 @@ import { Checkbox } from '../Checkbox';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -99,24 +99,40 @@ const queueRows: QueueRow[] = [
 
 const activityRows = Array.from({ length: 12 }, (_, index) => ({
   id: `AC-${String(index + 1).padStart(3, '0')}`,
-  holder: [
-    'Alicia Tan',
-    'Marcus Lim',
-    'Nurul Rahman',
-    'Daniel Khoo',
-    'Sara Ong',
-    'Hafiz Ibrahim',
-  ][index % 6],
-  activity: [
-    'Renewal reviewed',
-    'Policy updated',
-    'Premium adjusted',
-    'Claim note added',
-  ][index % 4],
+  holder: ['Alicia Tan', 'Marcus Lim', 'Nurul Rahman', 'Daniel Khoo', 'Sara Ong', 'Hafiz Ibrahim'][
+    index % 6
+  ],
+  activity: ['Renewal reviewed', 'Policy updated', 'Premium adjusted', 'Claim note added'][
+    index % 4
+  ],
   channel: ['Portal', 'Agent', 'Admin'][index % 3],
   date: `${String((index % 28) + 1).padStart(2, '0')} Mar 2026`,
   amount: `RM ${(120 + index * 17).toFixed(2)}`,
 }));
+
+function TableEmptyState({
+  title,
+  description,
+  icon: Icon = Inbox,
+}: {
+  title: string;
+  description: string;
+  icon?: typeof Inbox;
+}) {
+  return (
+    <Box className="mx-auto flex max-w-md flex-col items-center gap-2 py-0.5 text-center">
+      <Box className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-muted/45 text-muted-foreground">
+        <Icon aria-hidden="true" className="h-4.5 w-4.5" />
+      </Box>
+      <Box as="span" className="text-sm font-semibold tracking-tight text-foreground">
+        {title}
+      </Box>
+      <Box as="span" className="max-w-[26rem] text-sm leading-6 text-muted-foreground text-pretty">
+        {description}
+      </Box>
+    </Box>
+  );
+}
 
 function SelectableQueueTable() {
   const [rows, setRows] = React.useState(queueRows);
@@ -202,7 +218,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Structural table primitive with Box-authored semantic wrappers for table, sections, rows, headers, cells, footer, and caption. Sorting, pagination, search, and empty-state orchestration stay outside this shared contract.',
+          'Structural table primitive with Box-authored semantic wrappers for table, sections, rows, headers, cells, footer, and caption.',
       },
     },
   },
@@ -215,7 +231,6 @@ export const Basic: Story = {
   render: () => (
     <Box className="overflow-hidden rounded-lg border border-border">
       <Table>
-        <TableCaption>A list of recently processed invoices.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead scope="col" className="w-[140px]">
@@ -238,12 +253,6 @@ export const Basic: Story = {
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="text-right">RM 1,200.00</TableCell>
-          </TableRow>
-        </TableFooter>
       </Table>
     </Box>
   ),
@@ -251,7 +260,7 @@ export const Basic: Story = {
     docs: {
       description: {
         story:
-          'Baseline structural table with caption, header, body, and footer composition for the later DataTable layer to build upon.',
+          'Baseline structural table composition focused on the core header and body layout that later shared data-table patterns build upon.',
       },
     },
   },
@@ -301,43 +310,6 @@ export const FooterSummary: Story = {
   },
 };
 
-export const RowHeader: Story = {
-  render: () => (
-    <Box className="overflow-hidden rounded-lg border border-border">
-      <Table aria-label="Policy holder premium summary">
-        <TableHeader>
-          <TableRow>
-            <TableHead scope="col">Policy holder</TableHead>
-            <TableHead scope="col">Plan</TableHead>
-            <TableHead scope="col" className="text-right">
-              Premium
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {policyRows.map((policy) => (
-            <TableRow key={policy.policyNumber}>
-              <TableHead scope="row" className="font-medium text-foreground">
-                {policy.holder}
-              </TableHead>
-              <TableCell>{policy.plan}</TableCell>
-              <TableCell className="text-right">{policy.premium}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Demonstrates the row-header semantic path with TableHead scope="row" inside the body for accessible summary tables.',
-      },
-    },
-  },
-};
-
 export const WithCheckboxCells: Story = {
   render: () => <SelectableQueueTable />,
   parameters: {
@@ -354,7 +326,6 @@ export const SelectedRow: Story = {
   render: () => (
     <Box className="overflow-hidden rounded-lg border border-border">
       <Table aria-label="Selected renewal queue rows">
-        <TableCaption>The middle row is highlighted through data-state only.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead scope="col">Queue ID</TableHead>
@@ -403,10 +374,7 @@ export const Dense: Story = {
             <TableHead scope="col" className="h-9 px-3 text-xs uppercase tracking-wide">
               Plan
             </TableHead>
-            <TableHead
-              scope="col"
-              className="h-9 px-3 text-right text-xs uppercase tracking-wide"
-            >
+            <TableHead scope="col" className="h-9 px-3 text-right text-xs uppercase tracking-wide">
               Premium
             </TableHead>
           </TableRow>
@@ -447,8 +415,11 @@ export const Empty: Story = {
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell colSpan={3} className="py-10 text-center text-muted-foreground">
-              No matching records were found for the current filters.
+            <TableCell colSpan={3} className="px-6 py-8 text-center text-muted-foreground">
+              <TableEmptyState
+                title="No records yet"
+                description="Records will appear here when available."
+              />
             </TableCell>
           </TableRow>
         </TableBody>
@@ -459,7 +430,7 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          'Demonstrates the recommended empty-state composition with one full-width body row rather than a shared empty prop.',
+          'Demonstrates the recommended empty-state composition with one full-width body row, a restrained icon, and two short text lines rather than a shared empty prop.',
       },
     },
   },
@@ -469,9 +440,6 @@ export const HorizontalScrollable: Story = {
   render: () => (
     <Box className="max-w-xl overflow-x-auto rounded-lg border border-border">
       <Table className="min-w-[60rem]" aria-label="Horizontally scrollable renewal queue">
-        <TableCaption>
-          Wide datasets stay in a semantic table while the consumer owns the horizontal overflow shell.
-        </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead scope="col" className="w-[140px]">
@@ -506,8 +474,7 @@ export const HorizontalScrollable: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Covers the explicit horizontal-scroll composition path for wide column sets.',
+        story: 'Covers the explicit horizontal-scroll composition path for wide column sets.',
       },
     },
   },
@@ -517,9 +484,6 @@ export const VerticalScrollable: Story = {
   render: () => (
     <Box className="max-h-72 overflow-y-auto rounded-lg border border-border">
       <Table aria-label="Vertically scrollable activity history">
-        <TableCaption>
-          Long histories can scroll vertically in a consumer-owned viewport while keeping semantic rows and cells.
-        </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead scope="col" className="sticky top-0 bg-background">
@@ -566,4 +530,3 @@ export const VerticalScrollable: Story = {
     },
   },
 };
-

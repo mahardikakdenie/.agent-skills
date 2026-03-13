@@ -91,7 +91,7 @@ The shared contract is intentionally narrow. It owns the semantic table skeleton
 | --- | --- | --- |
 | Default | Tokenized borders, header text treatment, body row hover, and caption styling | Preserves native table semantics with no extra ARIA required by default |
 | Dense composition | Smaller cell spacing and text size through `className` overrides | Semantic structure is unchanged |
-| Empty composition | A single full-width body cell with centered muted copy | Uses a normal table row and `colSpan` rather than custom empty wrappers |
+| Empty composition | A single full-width body cell with a restrained icon, concise title, and supporting line | Uses a normal table row and `colSpan` rather than custom empty wrappers |
 | Selected row | `data-state="selected"` keeps the active row highlighted without new props | Visual-only hook; selection semantics remain consumer-owned |
 | Responsive composition | Horizontal overflow is handled by a parent wrapper, not by the table itself | Maintains a real `<table>` for assistive technologies |
 
@@ -177,8 +177,18 @@ The shared contract is intentionally narrow. It owns the semantic table skeleton
   <TableHeader>{/* column headers */}</TableHeader>
   <TableBody>
     <TableRow>
-      <TableCell colSpan={3} className="py-10 text-center text-muted-foreground">
-        No matching records were found.
+        <TableCell colSpan={3} className="px-6 py-8 text-center text-muted-foreground">
+          <Box className="mx-auto flex max-w-md flex-col items-center gap-2 py-0.5 text-center">
+            <Box className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-muted/45 text-muted-foreground">
+            <Inbox aria-hidden="true" className="h-4.5 w-4.5" />
+          </Box>
+          <Box as="span" className="text-sm font-semibold tracking-tight text-foreground">
+            No records yet
+          </Box>
+          <Box as="span" className="max-w-[26rem] text-sm leading-6 text-muted-foreground text-pretty">
+            Records will appear here when available.
+          </Box>
+        </Box>
       </TableCell>
     </TableRow>
   </TableBody>
@@ -222,7 +232,6 @@ The shared contract is intentionally narrow. It owns the semantic table skeleton
 
 - [x] `Basic`
 - [x] `FooterSummary`
-- [x] `RowHeader`
 - [x] `WithCheckboxCells`
 - [x] `SelectedRow`
 - [x] `Dense`
@@ -238,3 +247,5 @@ The shared contract is intentionally narrow. It owns the semantic table skeleton
 | --- | --- |
 | 2026-03-10 | Initial Table spec |
 | 2026-03-10 | Expanded Storybook coverage for footer, row-header, checkbox-cell, and selected-row cases |
+| 2026-03-13 | Refined the documented empty-state composition to use a compact icon plus two-line copy, aligned with the shared DataTable treatment |
+| 2026-03-13 | Simplified Storybook table examples by removing visible caption treatments from the docs surface and dropping the row-header story |

@@ -1,6 +1,6 @@
-import type * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ChevronDown } from 'lucide-react';
+import type * as React from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
@@ -41,7 +41,11 @@ const columns: ColumnDef<InvoiceRow>[] = [
   {
     accessorKey: 'id',
     header: 'Invoice',
-    cell: ({ row }) => <Box as="span" className="font-medium">{row.original.id}</Box>,
+    cell: ({ row }) => (
+      <Box as="span" className="font-medium">
+        {row.original.id}
+      </Box>
+    ),
   },
   {
     accessorKey: 'customer',
@@ -92,7 +96,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Headless data table composed from TanStack Table v8 plus the shared Table and Pagination primitives.',
+          'Headless data table composed from TanStack Table plus the shared Table and Pagination primitives.',
       },
     },
   },
@@ -106,7 +110,8 @@ export const Basic: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Baseline shared data-table shell with client-side pagination and no persistent caption copy.',
+        story:
+          'Baseline shared data-table shell with client-side pagination and no persistent caption copy.',
       },
     },
   },
@@ -206,7 +211,8 @@ export const Empty: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Default empty state uses a restrained icon, short heading, and supporting line so the table feels clean without looking empty or ornamental.',
+        story:
+          'Default empty state uses a restrained icon, short heading, and supporting line so the table feels clean without looking empty or ornamental.',
       },
     },
   },
@@ -245,13 +251,10 @@ export const LoadingState: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Busy table state keeps the table structure visible with shared skeleton rows instead of collapsing to a spinner-only row.',
+        story:
+          'Busy table state keeps the table structure visible with shared skeleton rows instead of collapsing to a spinner-only row.',
       },
     },
   },
   render: (args) => <DataTable<InvoiceRow, unknown> {...args} />,
 };
-
-
-
-
