@@ -517,27 +517,47 @@ export interface DataTablePaginationConfig {
   pageIndex?: number
   pageSize?: number
   pageCount?: number
+  rowCount?: number
   onPageChange?: (pageIndex: number) => void
   onPageSizeChange?: (pageSize: number) => void
 }
 
-export interface DataTableProps<TData, TValue> {
-  data: TData[]
-  columns: ColumnDef<TData, TValue>[]
+export interface DataTableShellProps<TData extends RowData> {
   loading?: boolean
   renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode
-  emptyState?: React.ReactNode
-  loadingState?: React.ReactNode
-  pagination?: DataTablePaginationConfig
+  renderPagination?: (table: DataTableInstance<TData>) => React.ReactNode
+  renderStatus?: (context: DataTableStatusContext<TData>) => React.ReactNode | null
+  renderFooter?: (table: DataTableInstance<TData>) => React.ReactNode
+  emptyState?: DataTableRenderable<TData>
+  loadingState?: DataTableRenderable<TData>
+  renderExpandedContent?: (row: Row<TData>, table: DataTableInstance<TData>) => React.ReactNode
   pageSizeOptions?: number[]
   caption?: React.ReactNode
-  className?: string
+  layout?: DataTableLayoutOptions
+}
+
+export type DataTableProps<TData extends RowData, TValue = unknown> =
+  | DataTableControlledProps<TData>
+  | DataTableManagedProps<TData, TValue>
+
+export interface DataTableVirtualizedProps<TData extends RowData>
+  extends Omit<DataTableShellProps<TData>, 'renderExpandedContent'> {
+  table: DataTableInstance<TData>
+  height: number
+  estimateRowHeight?: number
+  overscan?: number
 }
 ```
 
 Story group: `Data Display`
 
-**Dependency:** `@tanstack/react-table` v8. Apps using react-table v7 must upgrade before adopting `DataTable`.
+Normalization notes:
+
+- Public exports are `DataTable`, `DataTableVirtualized`, `DataTablePagination`, `useDataTable`, `dataTableFacetedFilterFn`, and `dataTableFuzzyFilterFn`.
+- Toolbar/search/filter/view/selection helper controls currently remain Storybook-only utilities, not package exports.
+- Stories prefer explanatory copy above the table instead of relying on captions, but the semantic `caption` prop remains supported.
+- Dependency: `@tanstack/react-table` v8. `DataTableVirtualized` additionally depends on TanStack Virtual through the shared package.
+- Internal helper consolidation is now centered in `DataTable.utils.ts`; layout and sticky style helpers are not split into a separate `DataTable.layout.ts` layer anymore.
 
 ---
 

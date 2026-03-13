@@ -1,5 +1,6 @@
 import * as React from 'react';
-import type { RowData } from '@tanstack/react-table';
+import { type RowData } from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { cn } from '@repo/helper';
 
@@ -26,7 +27,6 @@ import {
   renderDataTableHeader,
   renderDataTableStatusRow,
 } from './DataTable.renderers';
-import { useDataTable } from './useDataTable';
 import {
   dataTablePaginationShellVariants,
   dataTableResizeHandleVariants,
@@ -34,43 +34,40 @@ import {
   dataTableStatusCellVariants,
   dataTableViewportVariants,
 } from './DataTable.variants';
-import type {
-  DataTableControlledProps,
-  DataTableInstance,
-  DataTableManagedProps,
-  DataTableProps,
-  DataTableShellProps,
-} from './DataTable.types';
+import type { DataTableVirtualizedProps } from './DataTable.types';
 import {
   getHeaderCellStyles,
   getTableStyle,
   getViewportStyle,
   resolvePageSizeOptions,
   resolveRenderable,
+  toCssDimension,
 } from './DataTable.utils';
 
-type DataTableRenderShellProps<TData extends RowData> = DataTableShellProps<TData> & {
+type DataTableVirtualizedRenderShellProps<TData extends RowData> = DataTableVirtualizedProps<TData> & {
   rootRef?: React.ForwardedRef<HTMLDivElement>;
-  table: DataTableInstance<TData>;
 };
 
-function DataTableRenderShell<TData extends RowData>({
+function DataTableVirtualizedRenderShell<TData extends RowData>({
   rootRef,
   table,
+  height,
+  estimateRowHeight = 52,
+  overscan = 8,
   loading = false,
   renderToolbar,
   renderPagination,
   renderStatus,
   emptyState,
   loadingState,
-  renderExpandedContent,
   pageSizeOptions,
   caption,
   className,
   layout,
   renderFooter,
   ...props
-}: DataTableRenderShellProps<TData>) {
+}: DataTableVirtualizedRenderShellProps<TData>) {
+  const viewportRef = React.useRef<HTMLDivElement | null>(null);
   const toolbarContent = renderToolbar?.(table);
   const customPagination = renderPagination?.(table);
   const resolvedPageSizeOptions = resolvePageSizeOptions(pageSizeOptions);
@@ -96,11 +93,22 @@ function DataTableRenderShell<TData extends RowData>({
     renderFooter,
   });
   const shouldShowPagination = !loading && table.getRowCount() > 0;
+  const rowVirtualizer = useVirtualizer({
+    count: centerRows.length,
+    getScrollElement: () => viewportRef.current,
+    estimateSize: () => estimateRowHeight,
+    overscan,
+  });
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const topPaddingHeight = virtualRows[0]?.start ?? 0;
+  const bottomPaddingHeight = virtualRows.length
+    ? rowVirtualizer.getTotalSize() - (virtualRows[virtualRows.length - 1]?.end ?? 0)
+    : 0;
 
   return (
     <Box
       ref={rootRef}
-      data-slot='data-table'
+      data-slot='data-table-virtualized'
       aria-busy={loading || undefined}
       className={cn(dataTableRootVariants(), className)}
       {...props}
@@ -108,9 +116,13 @@ function DataTableRenderShell<TData extends RowData>({
       {toolbarContent}
 
       <Box
+        ref={viewportRef}
         data-slot='data-table-viewport'
         className={dataTableViewportVariants()}
-        style={getViewportStyle(layout)}
+        style={{
+          ...getViewportStyle(layout),
+          height: toCssDimension(height),
+        }}
       >
         <Table style={getTableStyle(table)}>
           {caption ? <TableCaption>{caption}</TableCaption> : null}
@@ -180,25 +192,48 @@ function DataTableRenderShell<TData extends RowData>({
                     row={row}
                     table={table}
                     visibleColumnCount={visibleColumnCount}
-                    renderExpandedContent={renderExpandedContent}
                   />
                 ))}
-                {centerRows.map((row) => (
-                  <DataTableBodyRow
-                    key={row.id}
-                    row={row}
-                    table={table}
-                    visibleColumnCount={visibleColumnCount}
-                    renderExpandedContent={renderExpandedContent}
-                  />
-                ))}
+                {topPaddingHeight > 0 ? (
+                  <TableRow aria-hidden='true'>
+                    <TableCell
+                      colSpan={visibleColumnCount}
+                      className='h-0 border-0 p-0'
+                      style={{ height: `${topPaddingHeight}px` }}
+                    />
+                  </TableRow>
+                ) : null}
+                {virtualRows.map((virtualRow) => {
+                  const row = centerRows[virtualRow.index];
+
+                  if (!row) {
+                    return null;
+                  }
+
+                  return (
+                    <DataTableBodyRow
+                      key={row.id}
+                      row={row}
+                      table={table}
+                      visibleColumnCount={visibleColumnCount}
+                    />
+                  );
+                })}
+                {bottomPaddingHeight > 0 ? (
+                  <TableRow aria-hidden='true'>
+                    <TableCell
+                      colSpan={visibleColumnCount}
+                      className='h-0 border-0 p-0'
+                      style={{ height: `${bottomPaddingHeight}px` }}
+                    />
+                  </TableRow>
+                ) : null}
                 {bottomRows.map((row) => (
                   <DataTableBodyRow
                     key={row.id}
                     row={row}
                     table={table}
                     visibleColumnCount={visibleColumnCount}
-                    renderExpandedContent={renderExpandedContent}
                   />
                 ))}
               </>
@@ -228,58 +263,15 @@ function DataTableRenderShell<TData extends RowData>({
   );
 }
 
-const ManagedDataTable = React.forwardRef<HTMLDivElement, DataTableManagedProps<RowData, unknown>>(
-  (
-    {
-      data,
-      columns,
-      state,
-      defaultState,
-      onStateChange,
-      pagination,
-      tableOptions,
-      ...props
-    },
-    ref,
-  ) => {
-    const table = useDataTable({
-      data,
-      columns,
-      state,
-      defaultState,
-      onStateChange,
-      pagination,
-      tableOptions,
-    });
-
-    return <DataTableRenderShell rootRef={ref} table={table} {...props} />;
-  },
-);
-
-ManagedDataTable.displayName = 'ManagedDataTable';
-
-function isControlledDataTable<TData extends RowData, TValue = unknown>(
-  props: DataTableProps<TData, TValue>,
-): props is DataTableControlledProps<TData> {
-  return 'table' in props;
-}
-
-type DataTableComponent = <TData extends RowData, TValue = unknown>(
-  props: DataTableProps<TData, TValue> & React.RefAttributes<HTMLDivElement>,
+type DataTableVirtualizedComponent = <TData extends RowData>(
+  props: DataTableVirtualizedProps<TData> & React.RefAttributes<HTMLDivElement>,
 ) => React.ReactElement | null;
 
-const DataTableImpl = React.forwardRef<HTMLDivElement, DataTableProps<RowData, unknown>>(
-  (props, ref) => {
-    if (isControlledDataTable(props)) {
-      const { table, ...shellProps } = props;
+const DataTableVirtualizedImpl = React.forwardRef<
+  HTMLDivElement,
+  DataTableVirtualizedProps<RowData>
+>((props, ref) => <DataTableVirtualizedRenderShell {...props} rootRef={ref} />);
 
-      return <DataTableRenderShell rootRef={ref} table={table} {...shellProps} />;
-    }
+DataTableVirtualizedImpl.displayName = 'DataTableVirtualized';
 
-    return <ManagedDataTable ref={ref} {...props} />;
-  },
-);
-
-DataTableImpl.displayName = 'DataTable';
-
-export const DataTable = DataTableImpl as DataTableComponent;
+export const DataTableVirtualized = DataTableVirtualizedImpl as DataTableVirtualizedComponent;

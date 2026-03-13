@@ -372,7 +372,6 @@ export const WithBounds: Story = {
 };
 
 export const WithTime: Story = {
-  name: 'With Time',
   args: {
     initialValue: {
       from: new Date(2026, 0, 15, 9, 0),
@@ -392,7 +391,6 @@ export const WithTime: Story = {
 };
 
 export const WithTimeBounds: Story = {
-  name: 'With Time Bounds',
   args: {
     initialValue: {
       from: new Date(2026, 0, 15, 10, 30),
@@ -465,3 +463,4 @@ export const FormFieldUsage: Story = {
     },
   },
 };
+

@@ -316,7 +316,7 @@
 | Tooltip | 4 | B5.1 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, shared provider timing, and Box-authored content wrappers |
 | Avatar | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed image/fallback handling, shared size scale, and Box-authored root/image/fallback composition |
 | Combobox | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, cmdk + Popover-backed searchable single-select behavior, loading/error support, and Box-authored wrappers around the documented cmdk DOM boundary |
-| DataTable | 4 | B5.2 | DONE | Shipped on 2026-03-13 with spec, Storybook, TanStack Table v8 composition, shared toolbar + pagination helpers, and Box-authored table semantics |
+| DataTable | 4 | B5.2 | DONE | Shipped on 2026-03-13 and since realigned to the current contract: TanStack Table v8 composition, `DataTable` + `DataTableVirtualized` shells, exported `DataTablePagination`, Storybook-only control helpers, and Box-authored semantic table markup |
 | DateRangePicker | 4 | B5.2 | DONE | Shipped on 2026-03-13 with spec, Storybook, shared preset shortcuts, bounded two-month calendar composition, and Box-authored trigger + preset markup |
 | FileUpload | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, native file-selection shell, generic max-size validation, and Box-authored file list rendering while transport stays local |
 | Image | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Box-authored fallback composition, ratio + fit controls, and no `next/image` coupling |

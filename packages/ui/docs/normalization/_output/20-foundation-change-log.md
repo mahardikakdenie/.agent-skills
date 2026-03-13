@@ -660,6 +660,21 @@ Impact:
 
 ---
 
+## 2026-03-14 - DataTable Contract Realignment
+
+Changed:
+- Realigned the DataTable documentation and normalization references to the current implementation after the render-shell split matured.
+- Clarified that the public surface is `DataTable`, `DataTableVirtualized`, `DataTablePagination`, `useDataTable`, and the shared filter functions, while toolbar/filter/view helper controls remain Storybook-only utilities.
+- Documented the grouped and cell overflow tooltip behavior and the current StickyFooter story behavior, which now isolates vertical sticky-footer behavior without a horizontal scrollbar gutter.
+- Kept the semantic `caption` prop in the runtime API while moving Storybook guidance toward short explanatory copy above demos instead of visible captions.
+- Consolidated the internal DataTable helper boundary so sticky and layout style utilities now live in `DataTable.utils.ts` instead of a separate `DataTable.layout.ts` file.
+
+Impact:
+- Downstream normalization guidance now matches the shipped contract instead of the earlier helper-heavy draft.
+- Migration planning for app tables can target the real public API and the dedicated virtualization companion without assuming unpublished helper controls exist.
+
+---
+
 ## 2026-03-13 - DataTable Batch 5.2 Delivery
 
 Changed:

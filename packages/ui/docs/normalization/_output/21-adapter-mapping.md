@@ -313,16 +313,16 @@ Keep local:
 
 Direct adoption guidance:
 
-- Legacy admin tables, policy lists, invoice tables, and claims tables that already combine a semantic table shell with client-side sorting, one-column search, or page-number pagination map to `DataTable`.
-- Existing headless column definitions should normalize to TanStack `ColumnDef<TData>` records passed through the shared `columns` prop; business formatting should stay inside cell renderers while the shared component owns the table shell and row-model plumbing.
-- Existing toolbar search inputs should collapse into `renderToolbar={(table) => ...}` and the shared `DataTableToolbar` helper instead of widening the root API with table-specific booleans for every filter control.
-- Existing empty, loading, and no-results placeholders map to `emptyState` and `loadingState`; paged admin lists with external pagination state can normalize to the shared `pagination` config while purely client-side lists can keep pagination internal.
-- Existing column-visibility menus, export buttons, or batch actions should remain composed through `renderToolbar` and shared primitives such as `DropdownMenu`, `Button`, and `Pagination` rather than reopening a flat shared `actions[]` contract.
+- Legacy admin tables, policy lists, invoice tables, and claims tables that already combine a semantic table shell with client-side sorting, filtering, grouping, or page-number pagination map to `DataTable`.
+- Existing headless column definitions should normalize to TanStack `ColumnDef<TData>` records passed through the shared `columns` prop; business formatting should stay inside cell renderers while the shared component owns the shell and row-model plumbing.
+- Existing toolbar search inputs should collapse into consumer-owned `renderToolbar={(table) => ...}` composition. Do not assume the Storybook-only `DataTableToolbar` helper is part of the package public API.
+- Existing empty, loading, no-results, and summary rows map to `emptyState`, `loadingState`, `renderStatus`, and `renderFooter`.
+- Existing virtualized long lists that still fit a generic tabular contract can normalize to `DataTableVirtualized`; only app-specific virtualization shells that exceed the shared contract should stay local.
 
 Keep local:
 
 - Data fetching, query orchestration, backend pagination cursors, optimistic updates, row-level mutations, and service-hook wiring.
-- Domain-specific row selection state, expandable detail panels, draggable columns, virtualization, or mobile card fallbacks that exceed the shipped shared contract.
+- Domain-specific row selection workflows, mobile card fallbacks, or draggable interactions that exceed the shipped shared contract.
 - Route-aware row clicks, permission-driven action visibility, bulk workflows, and business-specific filter semantics before data reaches the shared table.
 
 ## Tabs

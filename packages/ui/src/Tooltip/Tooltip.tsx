@@ -80,6 +80,14 @@ export function Tooltip({
   children,
 }: TooltipProps) {
   const tooltipProviderBoundary = useTooltipProviderBoundary();
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
+  const resolvedOpen = disabled ? false : open ?? uncontrolledOpen;
+
+  React.useEffect(() => {
+    if (disabled) {
+      setUncontrolledOpen(false);
+    }
+  }, [disabled]);
 
   const handleOpenChange = React.useCallback(
     (nextOpen: boolean) => {
@@ -91,20 +99,23 @@ export function Tooltip({
         return;
       }
 
+      if (open === undefined) {
+        setUncontrolledOpen(nextOpen);
+      }
+
       if (nextOpen) {
         onOpen?.();
       } else {
         onClose?.();
       }
     },
-    [disabled, onClose, onOpen],
+    [disabled, onClose, onOpen, open],
   );
 
   const tooltipRoot = (
     <TooltipContext.Provider value={{ disabled }}>
       <TooltipPrimitive.Root
-        open={disabled ? false : open}
-        defaultOpen={disabled ? false : defaultOpen}
+        open={resolvedOpen}
         delayDuration={delayDuration}
         disableHoverableContent={disableHoverableContent}
         onOpenChange={handleOpenChange}

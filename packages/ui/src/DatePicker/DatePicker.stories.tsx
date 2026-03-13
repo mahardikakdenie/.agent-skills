@@ -333,7 +333,6 @@ export const WithMinMax: Story = {
 };
 
 export const WithTime: Story = {
-  name: 'With Time',
   args: {
     initialValue: new Date(2026, 0, 15, 10, 30),
     label: 'Appointment',
@@ -352,7 +351,6 @@ export const WithTime: Story = {
 };
 
 export const WithTimeBounds: Story = {
-  name: 'With Time Bounds',
   args: {
     initialValue: new Date(2026, 0, 15, 10, 30),
     label: 'Deadline',
@@ -427,3 +425,4 @@ export const FormFieldUsage: Story = {
     },
   },
 };
+

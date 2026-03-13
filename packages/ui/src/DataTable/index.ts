@@ -1,13 +1,40 @@
-﻿export { DataTable, DataTablePagination, DataTableToolbar } from './DataTable';
+export { DataTable } from './DataTable';
+export { DataTableVirtualized } from './DataTableVirtualized';
+export { DataTablePagination } from './DataTable.renderers';
+export { useDataTable } from './useDataTable';
+export { dataTableFacetedFilterFn, dataTableFuzzyFilterFn } from './DataTable.utils';
 export type {
   ColumnDef,
   ColumnFiltersState,
+  ColumnOrderState,
+  ColumnPinningState,
+  ColumnSizingState,
+  DataTableControlledProps,
+  DataTableFilterFn,
+  DataTableFilterFnOption,
   DataTableInstance,
+  DataTableLayoutOptions,
+  DataTableManagedProps,
+  DataTableOptions,
   DataTablePaginationConfig,
   DataTablePaginationProps,
   DataTableProps,
-  DataTableToolbarProps,
+  DataTableRenderContext,
+  DataTableRenderable,
+  DataTableShellProps,
+  DataTableState,
+  DataTableStateChangeHandlers,
+  DataTableStatusContext,
+  DataTableVirtualizedProps,
+  ExpandedState,
+  GroupingState,
+  OnChangeFn,
   PaginationState,
+  Row,
+  RowData,
+  RowPinningState,
+  RowSelectionState,
   SortingState,
+  UseDataTableProps,
   VisibilityState,
 } from './DataTable.types';
