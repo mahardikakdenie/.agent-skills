@@ -662,6 +662,22 @@ Impact:
 
 ---
 
+## 2026-03-13 - DateRangePicker Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/DateRangePicker` as the next eligible Wave B5.2 component after `DataTable`, following the tracker order once the shared `DatePicker`, `Calendar`, and `Popover` dependencies were all stable.
+- Added the canonical DateRangePicker spec, Storybook coverage, typed exports, and a shared range field shell composed from `Calendar` range mode plus the shared `Popover`.
+- Locked the shared contract around `value`, `onChange`, optional `presets`, `minDate`, `maxDate`, `disabled`, `clearable`, and `error`, while keeping save/apply workflows, route syncing, and domain-specific preset logic local.
+- Kept authored shared markup on `Box`, including the trigger button, preset buttons, panel wrappers, clear action, and inline error message, while leaving `react-day-picker` and Radix portal internals as the documented third-party DOM boundaries.
+- Refined the delivered trigger shell so the clear affordance keeps explicit breathing room from the field edge, preset shortcuts keep an explicit click affordance, the calendar previews the pending end-date range on hover/focus after a start date is chosen, and replacing an existing range now keeps the panel open until the new end date is committed.
+- Realigned `13-implementation-batches.md` and `21-adapter-mapping.md` to the shipped DateRangePicker contract and closed the last non-blocked Wave B5.2 row.
+
+Impact:
+- `@repo/ui` export surface now includes `DateRangePicker`, giving downstream apps a canonical migration target for generic date-range filters and bounded reporting windows while keeping workflow-specific apply behavior, business presets, and routing state in app code.
+- Wave B5.2 is now complete: every item is either `DONE` or explicitly blocked, with `NavigationMenu` remaining the only blocked row in that wave.
+
+---
+
 ## 2026-03-13 - MonthPicker Batch 5.4 Delivery
 
 Changed:
