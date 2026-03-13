@@ -893,24 +893,61 @@ Story group: `Data Display`
 ### NavigationMenu
 
 ```ts
-export interface NavigationMenuItem {
-  label: string
-  value: string
-  href?: string
-  disabled?: boolean
-  children?: NavigationMenuItem[]
+export interface NavigationMenuProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>, 'children' | 'className'> {
+  className?: string
+  children: React.ReactNode
 }
 
-export interface NavigationMenuProps {
-  items: NavigationMenuItem[]
-  orientation?: 'horizontal' | 'vertical'
-  collapsed?: boolean
-  onNavigate?: (value: string) => void
+export interface NavigationMenuListProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List>, 'asChild'> {
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface NavigationMenuItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Item>, 'asChild'> {
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface NavigationMenuTriggerProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>, 'asChild'> {
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface NavigationMenuContentProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content>, 'asChild' | 'children'> {
+  className?: string
+  children: React.ReactNode
+}
+
+export interface NavigationMenuLinkProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link>, 'asChild' | 'className'> {
+  asChild?: boolean
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface NavigationMenuIndicatorProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Indicator>, 'asChild' | 'children'> {
   className?: string
 }
+
+export interface NavigationMenuViewportProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport>, 'asChild' | 'children'> {
+  className?: string
+}
+
+// Compound exports: NavigationMenu, NavigationMenuList, NavigationMenuItem,
+// NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink,
+// NavigationMenuIndicator, NavigationMenuViewport
 ```
 
 Story group: `Navigation`
+
+Migration note: the earlier flat `items[]` / `collapsed` / `onNavigate` draft was dropped because route trees, auth gating, and information architecture must remain app-local. Apps should map their local route data into the compound shared parts instead.
 
 ---
 

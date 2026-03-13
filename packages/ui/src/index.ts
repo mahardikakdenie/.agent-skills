@@ -40,6 +40,7 @@ export * from './Timeline';
 // Navigation
 export * from './Breadcrumb';
 export * from './Menubar';
+export * from './NavigationMenu';
 export * from './Pagination';
 export * from './Tabs';
 

@@ -161,7 +161,7 @@
 
 - Batch 4 is the main shared build program.
 - Every item follows the SDD lifecycle defined in `04-build-shared-components.md`.
-- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; Wave B5.2 is now complete with `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, and `OtpInput` delivered while `NavigationMenu` remains explicitly blocked by its route-agnostic contract gate; Wave B5.3 is exhausted for now with `Accordion` and `Command` delivered while `DateTimePicker` stays behind its documented prerequisite; and Wave B5.4 is now complete with `Menubar`, `MonthPicker`, and `Timeline` delivered.
+- Batch 4 is no longer blocked by token-foundation readiness; Wave B4 execution is complete with `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, and `Textarea`; Wave B5.1 is complete with `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, and `Tooltip`; Wave B5.2 is complete with `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, and `OtpInput` delivered; Wave B5.3 is exhausted for now with `Accordion` and `Command` delivered while `DateTimePicker` stays behind its documented prerequisite; and Wave B5.4 is now complete with `Menubar`, `MonthPicker`, and `Timeline` delivered.
 - Loading wrappers and suspense fallbacks are not Batch 4 shared-component targets; app teams compose `Spinner` and `Skeleton` directly in app code when those shells are needed.
 
 ### packages/ui work required
@@ -202,7 +202,7 @@
 | B4 | `Alert`, `Badge`, `Button`, `Card`, `Checkbox`, `Dialog`, `Drawer`, `Input`, `Label`, `Pagination`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea` | Batch 3 `Box` complete and Batch 3A token bootstrap complete | All B4 items marked `DONE` | DONE |
 | B5.1 | `Breadcrumb`, `Calendar`, `DatePicker`, `DropdownMenu`, `Form`, `Popover`, `Tooltip` | B4 stable, especially `Input`, `Label`, and overlay primitives | All B5.1 items marked `DONE` | DONE |
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | DONE |
-| B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` | IN PROGRESS |
+| B5.3 | `Accordion`, `Command`, `DateTimePicker` | B5.2 prerequisites complete | All B5.3 items marked `DONE` or explicitly blocked with reason | DONE |
 | B5.4 | `Menubar`, `MonthPicker`, `Timeline` | No open P0/P1 blocker remains | Long-tail items marked `DONE` or explicitly deferred | DONE |
 | Decision gate | `RichTextEditor` | Editor engine, security, SSR, and bundle policy approved | Status changes from `DECISION-GATED` to `PLANNED` | DECISION-GATED |
 
@@ -320,7 +320,7 @@
 | DateRangePicker | 4 | B5.2 | DONE | Shipped on 2026-03-13 with spec, Storybook, shared preset shortcuts, bounded two-month calendar composition, and Box-authored trigger + preset markup |
 | FileUpload | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, native file-selection shell, generic max-size validation, and Box-authored file list rendering while transport stays local |
 | Image | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Box-authored fallback composition, ratio + fit controls, and no `next/image` coupling |
-| NavigationMenu | 4 | B5.2 | BLOCKED | Route-tree API must remain app-agnostic |
+| NavigationMenu | 4 | B5.2 | DONE | Shipped on 2026-03-13 with spec, Storybook, Radix-backed compound exports, shared indicator + viewport support, and Box-authored wrappers while route trees stay local |
 | OtpInput | 4 | B5.2 | DONE | Shipped on 2026-03-12 with spec, Storybook, Box-authored segmented input slots, numeric sanitization, whole-code paste handling, and accessible error wiring |
 | Accordion | 4 | B5.3 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, single + multiple disclosure modes, and Box-authored item, header, trigger, and content wrappers |
 | Command | 4 | B5.3 | DONE | Shipped on 2026-03-12 with spec, Storybook, cmdk-backed compound exports, shortcut/group coverage, and Box-authored helper wrappers with dialog composition delegated to shared `Dialog` |

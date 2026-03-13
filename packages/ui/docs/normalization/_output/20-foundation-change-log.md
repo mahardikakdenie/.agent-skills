@@ -703,3 +703,17 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Timeline`, and Wave B5.4 is complete.
 - Downstream apps can begin converging simple status-history and milestone-summary surfaces on one shared contract while interactive workflow views and calendar-like timelines remain app-local.
+
+---
+
+## 2026-03-13 - NavigationMenu Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/NavigationMenu` after resolving the old route-tree blocker by replacing the flat `items[]` / `collapsed` / `onNavigate` draft with a route-agnostic compound Radix surface.
+- Added the canonical NavigationMenu spec, Storybook coverage, typed exports, and a shared compound API for `NavigationMenu`, `NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuTrigger`, `NavigationMenuContent`, `NavigationMenuLink`, `NavigationMenuIndicator`, and `NavigationMenuViewport`.
+- Kept authored shared JSX on `Box`, including the root wrapper, list, item shell, trigger button, direct-link shell, content panel, indicator, and viewport wrapper, while leaving Radix primitives as the documented third-party DOM boundary.
+- Realigned `02-api-conventions.md`, `11-master-component-roadmap.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` to the shipped compound contract and closed the remaining non-decision-gated B5.2 blocker.
+
+Impact:
+- `@repo/ui` export surface now includes `NavigationMenu`, giving downstream apps a canonical migration target for top-level navigation shells while route trees, framework links, permissions, and layout policy stay local.
+- Wave B5.2 is now fully complete with every component in that wave marked `DONE`.

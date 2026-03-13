@@ -400,6 +400,22 @@ Keep local:
 - Route-aware app chrome, top nav bars, breadcrumb shells, and information architecture that depend on routing or page layout policy.
 - Permission-based command visibility, global keyboard shortcut registration, service calls, and business-specific command derivation.
 - Contextual icon-button menus that should stay on `DropdownMenu`, and large searchable command surfaces that should stay on `Command` or app-local composition.
+
+## NavigationMenu
+
+Direct adoption guidance:
+
+- Legacy top-nav and marketing-site navigation menus map to `NavigationMenu` plus its compound exports.
+- Existing local route arrays should stay app-shaped in the parent and be mapped into `NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuTrigger`, `NavigationMenuContent`, and `NavigationMenuLink` instead of widening the shared API back into a flat `items[]` contract.
+- Existing current-route styling should normalize to `NavigationMenuLink active`, while framework-specific routing still composes locally through `asChild`.
+- Existing richer mega-menu panels should map to `NavigationMenuContent` plus `NavigationMenuViewport`, with all inner destinations still rendered through `NavigationMenuLink`.
+- Existing active-trigger affordances map to `NavigationMenuIndicator` instead of app-local underline or arrow wrappers.
+
+Keep local:
+
+- Route-tree generation, auth gating, locale-aware href shaping, and permission-based visibility.
+- Mobile drawer navigation, sidebar collapse behavior, and page-shell layout orchestration.
+- Analytics, routing side effects, and framework adapters such as `next/link` wrappers beyond the shared `asChild` path.
 ## Form
 
 Direct adoption guidance:
