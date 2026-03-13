@@ -648,6 +648,20 @@ Impact:
 
 ---
 
+## 2026-03-13 - DataTable Batch 5.2 Delivery
+
+Changed:
+- Implemented `packages/ui/src/DataTable` as the next eligible Wave B5.2 component once `Table` was mature in the shared package and `@tanstack/react-table` v8 was added as the required dependency.
+- Added the canonical DataTable spec, Storybook coverage, typed exports, and a shared composite API for client-side sorting, one-column filtering, empty/loading states, and optional controlled pagination.
+- Kept authored shared JSX on `Box`, including sortable header buttons, semantic table rows/cells, inline loading content, and toolbar/pagination helpers composed on top of the existing shared `Table`, `Input`, `Button`, `DropdownMenu`, `Pagination`, and `Spinner` primitives.
+- Realigned `02-api-conventions.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` to the shipped DataTable contract, and reopened `DateRangePicker` as the next eligible Wave B5.2 row now that its `DatePicker` stabilization note is satisfied.
+
+Impact:
+- `@repo/ui` export surface now includes `DataTable`, giving downstream apps a canonical migration target for sortable and filterable tabular admin views while keeping data fetching, row actions, and domain-specific cell logic in app code.
+- Wave B5.2 is now in progress rather than fully blocked/exhausted: `DateRangePicker` is the next eligible row and `NavigationMenu` remains the only explicitly blocked item in that wave.
+
+---
+
 ## 2026-03-13 - MonthPicker Batch 5.4 Delivery
 
 Changed:
@@ -673,4 +687,3 @@ Changed:
 Impact:
 - `@repo/ui` export surface now includes `Timeline`, and Wave B5.4 is complete.
 - Downstream apps can begin converging simple status-history and milestone-summary surfaces on one shared contract while interactive workflow views and calendar-like timelines remain app-local.
-

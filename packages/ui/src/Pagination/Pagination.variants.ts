@@ -62,15 +62,14 @@ export const paginationEllipsisVariants = cva(
 );
 
 export const paginationPageSizeLabelVariants = cva(
-  'flex items-center gap-2 text-sm text-muted-foreground',
+  'inline-flex shrink-0 items-center gap-2 whitespace-nowrap text-sm text-muted-foreground',
 );
 
 export const paginationPageSizeSelectVariants = cva(
   [
-    'h-9 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm',
-    'transition-colors motion-reduce:transition-none',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50',
+    'w-[4.75rem] shrink-0 gap-0',
+    '[&_[data-slot=select-trigger]]:h-9 [&_[data-slot=select-trigger]]:min-h-9 [&_[data-slot=select-trigger]]:w-[4.75rem] [&_[data-slot=select-trigger]]:py-0',
+    '[&_[data-slot=select-value]]:text-center [&_[data-slot=select-value]]:tabular-nums',
   ].join(' '),
 );
 

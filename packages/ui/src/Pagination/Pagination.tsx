@@ -10,6 +10,7 @@ import {
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
+import { Select } from '../Select';
 import type { PaginationProps } from './Pagination.types';
 import {
   paginationButtonVariants,
@@ -99,7 +100,11 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
       pageSize !== undefined &&
       typeof onPageSizeChange === 'function' &&
       resolvedPageSizeOptions.length > 1;
-    const pageSizeSelectId = React.useId();
+    const pageSizeLabelId = React.useId();
+    const pageSizeSelectOptions = resolvedPageSizeOptions.map((option) => ({
+      label: String(option),
+      value: String(option),
+    }));
     const isCompactRange = resolvedTotalPages > 7;
     const pageRange = buildPaginationRange(resolvedCurrentPage, resolvedTotalPages);
     const buttonSize = isCompactRange ? 'compact' : 'default';
@@ -127,29 +132,23 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
       >
         <Box data-slot="pagination-meta" className={paginationMetaVariants()}>
           {showPageSizeSelector ? (
-            <Box
-              as="label"
-              htmlFor={pageSizeSelectId}
-              data-slot="pagination-page-size"
-              className={paginationPageSizeLabelVariants()}
-            >
-              <Box as="span">Rows per page</Box>
-              <Box
-                as="select"
-                id={pageSizeSelectId}
-                aria-label="Rows per page"
-                value={pageSize}
-                className={paginationPageSizeSelectVariants()}
-                onChange={(event) => {
-                  onPageSizeChange?.(Number(event.currentTarget.value));
-                }}
-              >
-                {resolvedPageSizeOptions.map((option) => (
-                  <Box as="option" key={option} value={option}>
-                    {option}
-                  </Box>
-                ))}
+            <Box data-slot="pagination-page-size" className={paginationPageSizeLabelVariants()}>
+              <Box as="span" id={pageSizeLabelId} className="shrink-0 whitespace-nowrap">
+                Rows per page
               </Box>
+              <Select
+                aria-labelledby={pageSizeLabelId}
+                className={paginationPageSizeSelectVariants()}
+                options={pageSizeSelectOptions}
+                value={pageSize !== undefined ? String(pageSize) : undefined}
+                onValueChange={(nextValue) => {
+                  if (!nextValue) {
+                    return;
+                  }
+
+                  onPageSizeChange?.(Number(nextValue));
+                }}
+              />
             </Box>
           ) : null}
 

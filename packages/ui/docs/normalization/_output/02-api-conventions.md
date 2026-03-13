@@ -508,18 +508,24 @@ Story group: `Data Display`
 ### DataTable
 
 ```ts
+export interface DataTablePaginationConfig {
+  pageIndex?: number
+  pageSize?: number
+  pageCount?: number
+  onPageChange?: (pageIndex: number) => void
+  onPageSizeChange?: (pageSize: number) => void
+}
+
 export interface DataTableProps<TData, TValue> {
   data: TData[]
   columns: ColumnDef<TData, TValue>[]
   loading?: boolean
-  pagination?: {
-    pageIndex: number
-    pageSize: number
-    pageCount: number
-    onPageChange: (page: number) => void
-    onPageSizeChange?: (size: number) => void
-  }
-  toolbar?: React.ReactNode
+  renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode
+  emptyState?: React.ReactNode
+  loadingState?: React.ReactNode
+  pagination?: DataTablePaginationConfig
+  pageSizeOptions?: number[]
+  caption?: React.ReactNode
   className?: string
 }
 ```
@@ -1179,9 +1185,3 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
-
-
-
-
-
-

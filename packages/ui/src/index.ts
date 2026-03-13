@@ -31,6 +31,7 @@ export * from './Command';
 // Data Display
 export * from './Avatar';
 export * from './Calendar';
+export * from './DataTable';
 export * from './Image';
 export * from './Table';
 export * from './Timeline';
@@ -47,7 +48,3 @@ export * from './Drawer';
 export * from './DropdownMenu';
 export * from './Popover';
 export * from './Tooltip';
-
-
-
-

@@ -61,6 +61,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@repo/config": "workspace:*",
     "@repo/helper": "workspace:*",
+    "@tanstack/react-table": "8.21.3",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "date-fns": "3.6.0",

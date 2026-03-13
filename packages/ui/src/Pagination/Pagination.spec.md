@@ -33,12 +33,12 @@ This component does not fetch data, derive page counts from totals, sync routes,
 
 | Decision | Choice | Rationale |
 | -------- | ------ | --------- |
-| Primitive | `Box` + custom composition | No Radix primitive is required; the component is a semantic `nav` plus buttons, list items, and an optional `select`. |
+| Primitive | `Box` + custom composition + shared `Select` | The shell stays semantic `nav` plus buttons and list items, while the optional rows-per-page control reuses the shipped shared Select surface for a cleaner consistent field treatment. |
 | CVA strategy | Slot-based internal variants | The public API stays flat, while the control states still use shared CVA-backed styling. |
 | Controlled vs uncontrolled | controlled-only | Pagination should reflect parent-owned paging state rather than duplicating it internally. |
 | Composition pattern | flat API | `vercel-composition-patterns` review does not justify public compound exports; a single shell avoids boolean and slot sprawl. |
-| Page-size selector | optional native select via `Box as="select"` | `Select` is not in the shipped B4 surface yet, so Pagination keeps a small built-in selector without creating a dependency loop. |
-| Box-only DOM rule | explicit | The root `nav`, list, buttons, status text, label, `select`, and `option` elements all render through `Box`. |
+| Page-size selector | optional shared `Select` | Reuses the canonical shared dropdown control instead of maintaining a second inline selector pattern inside table and list footers. |
+| Box-only DOM rule | explicit | The root `nav`, list, buttons, status text, and visible rows-per-page label all render through `Box`; the Select internals stay inside the already-approved shared Select component boundary. |
 
 ---
 
@@ -77,7 +77,7 @@ This component does not fetch data, derive page counts from totals, sync routes,
 | Active page | Current page renders as a highlighted non-button token | Uses `aria-current="page"` so screen readers announce the active page. |
 | Edge disabled | First/previous or next/last controls disable at list boundaries | Disabled controls use native `disabled` semantics and cannot be activated. |
 | Compact | Large page counts insert an ellipsis between boundary pages and the local page window | Ellipsis stays decorative with `aria-hidden`. |
-| Page-size selector | Optional labeled `select` sits alongside the page status | The selector is explicitly labeled as "Rows per page". |
+| Page-size selector | Optional labeled shared `Select` sits alongside the page status | The rows-per-page trigger is explicitly labeled through the visible "Rows per page" text. |
 | Single page | Boundary controls are disabled and only page `1` remains active | The component still announces `Page 1 of 1`. |
 
 ---
@@ -100,7 +100,7 @@ This component does not fetch data, derive page counts from totals, sync routes,
 | --- | -------- |
 | `Tab` | Moves focus across the enabled pagination controls and optional selector |
 | `Enter` / `Space` | Activates the focused navigation button |
-| Arrow keys | Browser-default select navigation inside the optional page-size control |
+| Arrow keys | Navigate the opened rows-per-page Select options using the shared Select keyboard behavior |
 
 ### Focus Management
 
