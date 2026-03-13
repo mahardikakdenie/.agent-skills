@@ -624,7 +624,7 @@ Impact:
 ## 2026-03-12 - Command Batch 5.3 Delivery
 
 Changed:
-- Implemented `packages/ui/src/Command` as the next eligible Wave B5.3 component after `Accordion`, since `DateTimePicker` remains explicitly blocked by its documented prerequisite.
+- Implemented `packages/ui/src/Command` as the next eligible Wave B5.3 component after `Accordion`, while the time-enabled picker surface was still being normalized.
 - Added the canonical Command spec, Storybook coverage, typed exports, and a cmdk-backed compound surface for `Command`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandSeparator`, and `CommandShortcut`.
 - Applied the composition review by replacing the older flat `items[]` sketch with a compound contract that preserves grouped results, shortcut metadata, and consumer-owned item content without widening the shared API with dialog-specific booleans.
 - Kept authored shared markup on `Box` for the input row, icon wrapper, and shortcut node while documenting cmdk primitives as the explicit third-party DOM boundary; dialog-style palette usage composes through the already-shared `Dialog` component instead of introducing `CommandDialog`.
@@ -637,7 +637,7 @@ Impact:
 ## 2026-03-12 - Menubar Batch 5.4 Delivery
 
 Changed:
-- Implemented `packages/ui/src/Menubar` as the first eligible Wave B5.4 component after Wave B5.3 was exhausted by the still-blocked `DateTimePicker` row.
+- Implemented `packages/ui/src/Menubar` as the first eligible Wave B5.4 component after Wave B5.3 delivery was otherwise exhausted pending the time-picker normalization decision.
 - Added the canonical Menubar spec, Storybook coverage, typed exports, and a Radix-backed compound surface for `Menubar`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioGroup`, `MenubarRadioItem`, `MenubarLabel`, `MenubarSeparator`, `MenubarSub`, `MenubarSubTrigger`, `MenubarSubContent`, and `MenubarShortcut`.
 - Applied the composition review by replacing the older flat `items[]` draft with a compound command-bar contract that keeps submenu structure, shortcut copy, checkbox preferences, and radio-mode sections app-owned in JSX rather than locked into a shared record schema.
 - Kept authored shared markup on `Box` for the root shell, triggers, content panels, items, labels, separators, shortcut copy, and submenu wrappers while leaving Radix portal internals as the documented third-party DOM boundary.
@@ -720,28 +720,15 @@ Impact:
 
 ---
 
-## 2026-03-13 - DateTimePicker Policy Settlement
+## 2026-03-13 - Date Picker Time Surface Consolidation
 
 Changed:
-- Settled the shared `DateTimePicker` policy in `02-api-conventions.md` instead of leaving the component behind an unspecified date/time prerequisite.
-- Locked the shared contract to `Date | null` values, minute-precision selection, UI-enforced `minDateTime` / `maxDateTime` bounds, and a `timezone` prop that acts as display and selection context only.
-- Explicitly kept timezone conversion, recurrence, server-time synchronization, and save/apply workflow orchestration out of shared scope and in app-local composition.
-- Updated the roadmap and implementation tracker so `DateTimePicker` is now `PLANNED` in Wave B5.3 rather than `BLOCKED`.
+- Removed the standalone shared date-time picker plan and folded its minute-precision time-entry policy into `DatePicker` and `DateRangePicker` through optional `withTime` support.
+- Realigned the canonical API docs, roadmap, implementation tracker, and adapter mapping so date-time flows now converge on the existing single-date or range picker contracts instead of a fourth date-family component.
+- Kept `timezone` as display-context copy only and retained UI-enforced `minDateTime` / `maxDateTime` bounds inside the updated picker family while leaving conversion and workflow orchestration app-local.
+- Removed the standalone date-time picker source/export surface from `@repo/ui` and refreshed Storybook coverage on the remaining date pickers.
+- Realigned the shared date-family visual contract so `Calendar`, `MonthPicker`, `DatePicker`, and `DateRangePicker` all use the same compact calendar sizing and symmetric interactive header spacing, while date-only picker popovers stay bare and framed chrome only appears when time entry or preset shell content is present.
 
 Impact:
-- `DateTimePicker` is now the next eligible shared Batch 4 component for execution on `feat/ui`.
-- The Batch 4 tracker no longer requires a separate policy decision before SDD work can begin for the shared date-time picker.
-
----
-
-## 2026-03-13 - DateTimePicker Delivery
-
-Changed:
-- Implemented `packages/ui/src/DateTimePicker` as the next eligible Wave B5.3 component after the date/time policy settlement moved it from `BLOCKED` to `PLANNED`.
-- Added the component spec, Storybook coverage, root exports, and the shared `DateTimePicker` contract built on top of `Calendar` and `Popover`.
-- Locked the shipped interaction to minute-precision time entry, UI-enforced `minDateTime` / `maxDateTime` bounds, and display-context `timezone` copy while keeping conversion and workflow orchestration app-local.
-- Verified the component with `pnpm --filter @repo/ui check-types`, `pnpm --filter @repo/ui lint`, `pnpm --filter @repo/ui build`, and `pnpm --filter @repo/ui build-storybook`.
-
-Impact:
-- Wave B5.3 is now complete with `Accordion`, `Command`, and `DateTimePicker` all marked `DONE`.
-- Ready apps may now adopt the shared `DateTimePicker` contract where their existing flows fit the settled shared scope.
+- The canonical shared date family now consists of `Calendar`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
+- Ready apps should map single-value date-time inputs to `DatePicker` with `withTime` and bounded start/end date-time windows to `DateRangePicker` with `withTime`.

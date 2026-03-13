@@ -4,15 +4,15 @@ import type { ClassNames } from 'react-day-picker';
 import type { CalendarMode } from './Calendar.types';
 
 export const calendarRootVariants = cva(
-  'relative inline-block overflow-hidden rounded-lg border border-border bg-background p-2.5 shadow-sm [&_.rdp-button[disabled]]:cursor-not-allowed [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:invisible [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:invisible',
+  'relative inline-block overflow-hidden rounded-lg border border-border bg-background p-2 shadow-sm [&_.rdp-button[disabled]]:cursor-not-allowed [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:invisible [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:invisible',
 );
 
 export const calendarMonthsVariants = cva('flex flex-col gap-3 sm:flex-row');
 
-export const calendarMonthVariants = cva('space-y-3');
+export const calendarMonthVariants = cva('space-y-2');
 
 export const calendarCaptionVariants = cva(
-  'relative flex min-h-8 items-center justify-center border-b border-border pb-2 pt-0.5',
+  'relative flex h-9 items-center justify-center after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:border-b after:border-border',
 );
 
 export const calendarCaptionLabelVariants = cva('text-sm font-medium text-foreground');
@@ -40,7 +40,7 @@ export const calendarNavVariants = cva('flex items-center gap-1');
 
 export const calendarNavButtonVariants = cva(
   [
-    'inline-flex h-7 w-7 cursor-pointer touch-manipulation items-center justify-center rounded-md',
+    'inline-flex h-6 w-6 cursor-pointer touch-manipulation items-center justify-center rounded-md',
     'bg-transparent text-muted-foreground shadow-none transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -48,13 +48,13 @@ export const calendarNavButtonVariants = cva(
   ].join(' '),
 );
 
-export const calendarNavButtonPreviousVariants = cva('absolute left-0');
+export const calendarNavButtonPreviousVariants = cva('absolute left-0 top-1/2 -translate-y-1/2');
 
-export const calendarNavButtonNextVariants = cva('absolute right-0');
+export const calendarNavButtonNextVariants = cva('absolute right-0 top-1/2 -translate-y-1/2');
 
 export const calendarInteractiveCaptionTriggerVariants = cva(
   [
-    'inline-flex h-7 max-w-[calc(100%-4.5rem)] items-center justify-center rounded-md px-2.5',
+    'inline-flex h-6 max-w-[calc(100%-4.5rem)] items-center justify-center rounded-md px-2.5',
     'cursor-pointer text-sm font-semibold text-foreground transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -64,21 +64,21 @@ export const calendarInteractiveCaptionTriggerVariants = cva(
 
 export const calendarPickerPanelVariants = cva(
   [
-    'absolute inset-x-0.5 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-lg border border-border bg-background px-1.5 py-2.5 shadow-lg',
+    'absolute inset-x-1 top-[calc(100%+0.25rem)] z-20 overflow-hidden rounded-lg border border-border bg-background px-1.5 py-2.5 shadow-lg',
   ].join(' '),
 );
 
 export const calendarPickerGridVariants = cva(
-  'grid min-h-0 content-start grid-cols-3 gap-x-1.5 gap-y-1.5 px-0.5 pb-0.5 pt-0.5',
+  'grid min-h-0 content-start grid-cols-3 gap-x-1 gap-y-1 px-0.5 pb-0.5 pt-0.5',
 );
 
 export const calendarPickerYearsVariants = cva(
-  'grid min-h-0 content-start grid-cols-3 gap-x-1.5 gap-y-1.5 px-0.5 pb-0.5 pt-0.5 pr-1',
+  'grid min-h-0 content-start grid-cols-3 gap-x-1 gap-y-1 px-0.5 pb-2.5 pt-0.5 pr-0.5',
 );
 
 export const calendarPickerOptionVariants = cva(
   [
-    'inline-flex h-8.5 items-center justify-center rounded-md px-2 text-sm font-medium',
+    'inline-flex h-7 items-center justify-center rounded-md px-2 text-xs font-medium',
     'transition-colors motion-reduce:transition-none',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     'focus-visible:ring-offset-background',
@@ -105,19 +105,19 @@ export const calendarTableVariants = cva(
   'w-full border-collapse transition-opacity motion-reduce:transition-none',
 );
 
-export const calendarHeadRowVariants = cva('flex gap-0.5');
+export const calendarHeadRowVariants = cva('flex gap-0');
 
 export const calendarHeadCellVariants = cva(
-  'w-8 rounded-md text-[0.75rem] font-medium text-muted-foreground',
+  'w-7 rounded-md text-[11px] font-medium text-muted-foreground',
 );
 
-export const calendarRowVariants = cva('mt-0.5 flex w-full gap-0.5');
+export const calendarRowVariants = cva('mt-0.5 flex w-full gap-0');
 
-export const calendarCellVariants = cva('relative h-8 w-8 p-0 text-center text-sm');
+export const calendarCellVariants = cva('relative h-7 w-7 p-0 text-center text-xs');
 
 export const calendarDayVariants = cva(
   [
-    'h-8 w-8 cursor-pointer touch-manipulation rounded-md p-0 text-sm font-normal text-foreground',
+    'h-7 w-7 cursor-pointer touch-manipulation rounded-md p-0 text-xs font-normal text-foreground',
     'transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',

@@ -15,10 +15,12 @@ import {
   FormMessage,
 } from '../Form';
 import { DateRangePicker } from './DateRangePicker';
-import type {
-  DateRangePickerPreset,
-  DateRangePickerProps,
-  DateRangeValue,
+import {
+  dateRangePickerSizeValues,
+  dateRangePickerVariantValues,
+  type DateRangePickerPreset,
+  type DateRangePickerProps,
+  type DateRangeValue,
 } from './DateRangePicker.types';
 
 interface DateRangePickerStoryArgs extends DateRangePickerProps {
@@ -54,16 +56,20 @@ function StoryFrame({ children }: { children: React.ReactNode }) {
   return <Box className="mx-auto flex w-full max-w-sm flex-col gap-4 p-4">{children}</Box>;
 }
 
-function getRangeLabel(value: DateRangeValue | null | undefined) {
+function getRangeLabel(value: DateRangeValue | null | undefined, withTime: boolean) {
   if (!value?.from) {
     return 'Selected: none';
   }
 
   if (!value.to) {
-    return `Selected: ${value.from.toDateString()} - ...`;
+    return withTime
+      ? `Selected: ${value.from.toLocaleString()} - ...`
+      : `Selected: ${value.from.toDateString()} - ...`;
   }
 
-  return `Selected: ${value.from.toDateString()} - ${value.to.toDateString()}`;
+  return withTime
+    ? `Selected: ${value.from.toLocaleString()} - ${value.to.toLocaleString()}`
+    : `Selected: ${value.from.toDateString()} - ${value.to.toDateString()}`;
 }
 
 function DateRangePickerStory({
@@ -71,6 +77,10 @@ function DateRangePickerStory({
   presets,
   minDate,
   maxDate,
+  withTime = false,
+  minDateTime,
+  maxDateTime,
+  timezone,
   disabled,
   clearable,
   error,
@@ -86,6 +96,10 @@ function DateRangePickerStory({
         presets={presets}
         minDate={minDate}
         maxDate={maxDate}
+        withTime={withTime}
+        minDateTime={minDateTime}
+        maxDateTime={maxDateTime}
+        timezone={timezone}
         disabled={disabled}
         clearable={clearable}
         error={error}
@@ -96,7 +110,7 @@ function DateRangePickerStory({
         {...args}
       />
       <Box as="p" aria-live="polite" className="text-sm text-muted-foreground">
-        {getRangeLabel(value)}
+        {getRangeLabel(value, withTime)}
       </Box>
     </StoryFrame>
   );
@@ -129,6 +143,7 @@ function FormFieldStory() {
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                   clearable
+                  withTime
                   presets={storyPresets}
                 />
               </FormControl>
@@ -147,8 +162,8 @@ function FormFieldStory() {
             variant="outline"
             onClick={() => {
               form.setValue('travelWindow', {
-                from: new Date(2026, 1, 10),
-                to: new Date(2026, 1, 18),
+                from: new Date(2026, 1, 10, 9, 0),
+                to: new Date(2026, 1, 18, 17, 0),
               });
               form.clearErrors('travelWindow');
             }}
@@ -159,7 +174,7 @@ function FormFieldStory() {
       </Form>
 
       <Box as="p" className="text-sm text-muted-foreground">
-        {getRangeLabel(selectedValue)}
+        {getRangeLabel(selectedValue, true)}
       </Box>
     </StoryFrame>
   );
@@ -170,6 +185,8 @@ const meta = {
   component: DateRangePicker,
   tags: ['autodocs'],
   args: {
+    variant: 'default',
+    size: 'md',
     initialValue: {
       from: new Date(2026, 0, 15),
       to: new Date(2026, 0, 21),
@@ -177,6 +194,10 @@ const meta = {
     presets: undefined,
     minDate: undefined,
     maxDate: undefined,
+    withTime: false,
+    minDateTime: undefined,
+    maxDateTime: undefined,
+    timezone: undefined,
     disabled: false,
     clearable: true,
     error: false,
@@ -189,6 +210,14 @@ const meta = {
     value: {
       control: false,
     },
+    variant: {
+      control: 'select',
+      options: dateRangePickerVariantValues,
+    },
+    size: {
+      control: 'select',
+      options: dateRangePickerSizeValues,
+    },
     presets: {
       control: false,
     },
@@ -197,6 +226,18 @@ const meta = {
     },
     maxDate: {
       control: 'date',
+    },
+    withTime: {
+      control: 'boolean',
+    },
+    minDateTime: {
+      control: 'date',
+    },
+    maxDateTime: {
+      control: 'date',
+    },
+    timezone: {
+      control: 'text',
     },
     disabled: {
       control: 'boolean',
@@ -216,7 +257,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Shared date-range picker composed from the Calendar and Popover primitives, with optional generic presets, min/max bounds, clear support, and Box-only authored JSX.',
+          'Shared date-range picker composed from the Calendar and Popover primitives, with optional generic presets, optional time entry, min/max bounds, clear support, and Box-only authored JSX.',
       },
     },
   },
@@ -233,6 +274,66 @@ export const Default: Story = {
       description: {
         story:
           'Baseline range picker with a selected start and end date, shared trigger shell, and clear action.',
+      },
+    },
+  },
+};
+
+export const Variants: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-3">
+      {dateRangePickerVariantValues.map((variant) => (
+        <Box key={variant} className="flex flex-col gap-2">
+          <Box as="p" className="text-sm font-medium text-foreground">
+            {variant.charAt(0).toUpperCase() + variant.slice(1)}
+          </Box>
+          <DateRangePicker
+            variant={variant}
+            value={{
+              from: new Date(2026, 0, 15),
+              to: new Date(2026, 0, 21),
+            }}
+            aria-label={`Date range picker variant ${variant}`}
+            clearable
+          />
+        </Box>
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compares the Input-aligned DateRangePicker trigger variants.',
+      },
+    },
+  },
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-2">
+      {dateRangePickerSizeValues.map((size) => (
+        <Box key={size} className="flex flex-col gap-2">
+          <Box as="p" className="text-sm font-medium text-foreground">
+            {`Size ${size.toUpperCase()}`}
+          </Box>
+          <DateRangePicker
+            size={size}
+            value={{
+              from: new Date(2026, 0, 15),
+              to: new Date(2026, 0, 21),
+            }}
+            aria-label={`Date range picker size ${size}`}
+            clearable
+          />
+        </Box>
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows the full shared size scale, matching the Input component density contract.',
       },
     },
   },
@@ -265,6 +366,47 @@ export const WithBounds: Story = {
       description: {
         story:
           'Constrains calendar selection and disables preset ranges that fall outside the allowed window.',
+      },
+    },
+  },
+};
+
+export const WithTime: Story = {
+  name: 'With Time',
+  args: {
+    initialValue: {
+      from: new Date(2026, 0, 15, 9, 0),
+      to: new Date(2026, 0, 18, 17, 0),
+    },
+    withTime: true,
+    timezone: 'UTC',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Expands the shared range picker with start and end time inputs while keeping the value contract as a plain Date range.',
+      },
+    },
+  },
+};
+
+export const WithTimeBounds: Story = {
+  name: 'With Time Bounds',
+  args: {
+    initialValue: {
+      from: new Date(2026, 0, 15, 10, 30),
+      to: new Date(2026, 0, 16, 16, 15),
+    },
+    withTime: true,
+    minDateTime: new Date(2026, 0, 15, 9, 15),
+    maxDateTime: new Date(2026, 0, 16, 17, 45),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Constrains both date selection and each time field when the range touches the minimum or maximum datetime boundary.',
       },
     },
   },
@@ -318,7 +460,7 @@ export const FormFieldUsage: Story = {
     docs: {
       description: {
         story:
-          'Demonstrates shared form composition with React Hook Form control, validation, preset shortcuts, and external value updates.',
+          'Demonstrates shared form composition with React Hook Form control, validation, preset shortcuts, external value updates, and optional time entry.',
       },
     },
   },

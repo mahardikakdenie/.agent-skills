@@ -841,7 +841,6 @@
 "DatePickerShell","KEEP_APP_LOCAL","N/A","P2","LOW","S","haruuz-microsite","missing","no","low"
 "DatePickerV2","NEW_SHARED_COMPONENT","4","P1","HIGH","S","agent-admin","missing","yes","high"
 "DateRangePicker","NEW_SHARED_COMPONENT","4","P0","HIGH","S","admin-portal|partner-portal","missing","yes","high"
-"DateTimePicker","NEW_SHARED_COMPONENT","4","P1","MEDIUM","S","claim-portal|customer-portal|teman-affiliate-admin","partial","yes","medium"
 "DaTransactionsUploadContainer","KEEP_APP_LOCAL","N/A","P2","LOW","XS","agent-admin","missing","no","low"
 "DaTransactionsUploadShell","KEEP_APP_LOCAL","N/A","P2","LOW","XS","agent-admin","missing","no","low"
 "DaView","SPLIT","1.5","P1","LOW","XS","agent-admin","missing","no","high"

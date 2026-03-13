@@ -3,6 +3,8 @@ import {
   isAfter,
   isBefore,
   isSameDay,
+  setHours,
+  setMinutes,
   startOfDay,
   startOfMonth,
 } from 'date-fns';
@@ -10,19 +12,60 @@ import type { Matcher } from 'react-day-picker';
 
 import type { DateRangePickerPreset, DateRangeValue } from './DateRangePicker.types';
 
+interface NormalizeDateRangeOptions {
+  preserveTime?: boolean;
+}
+
 const defaultDisplayDateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
 });
+const defaultDisplayDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
 
-export function normalizeDateRangeValue(value?: DateRangeValue | null) {
+export const defaultDateRangePickerStartTimeValue = '09:00';
+export const defaultDateRangePickerEndTimeValue = '17:00';
+
+function toTimeParts(value: string) {
+  const [hoursText, minutesText] = value.split(':');
+  const hours = Number.parseInt(hoursText ?? '', 10);
+  const minutes = Number.parseInt(minutesText ?? '', 10);
+
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return null;
+  }
+
+  return { hours, minutes };
+}
+
+function normalizeBoundary(
+  value: Date | undefined,
+  preserveTime: boolean,
+) {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = new Date(value);
+  normalized.setSeconds(0, 0);
+
+  return preserveTime ? normalized : startOfDay(normalized);
+}
+
+export function normalizeDateRangeValue(
+  value?: DateRangeValue | null,
+  options?: NormalizeDateRangeOptions,
+) {
   if (!value?.from && !value?.to) {
     return null;
   }
 
-  const from = value?.from ? startOfDay(value.from) : undefined;
-  const to = value?.to ? startOfDay(value.to) : undefined;
+  const preserveTime = options?.preserveTime ?? false;
+  const from = normalizeBoundary(value?.from, preserveTime);
+  const to = normalizeBoundary(value?.to, preserveTime);
 
-  if (from && to && isAfter(from, to)) {
+  if (from && to && from > to) {
     return {
       from: to,
       to: from,
@@ -35,18 +78,24 @@ export function normalizeDateRangeValue(value?: DateRangeValue | null) {
   };
 }
 
-export function formatDateRangeValue(value?: DateRangeValue | null) {
+export function formatDateRangeValue(
+  value?: DateRangeValue | null,
+  options?: {
+    withTime?: boolean;
+  },
+) {
   if (!value?.from) {
     return null;
   }
 
-  const fromLabel = defaultDisplayDateFormatter.format(value.from);
+  const formatter = options?.withTime ? defaultDisplayDateTimeFormatter : defaultDisplayDateFormatter;
+  const fromLabel = formatter.format(value.from);
 
   if (!value.to) {
     return `${fromLabel} - ...`;
   }
 
-  return `${fromLabel} - ${defaultDisplayDateFormatter.format(value.to)}`;
+  return `${fromLabel} - ${formatter.format(value.to)}`;
 }
 
 export function getDateRangePickerDisabledMatchers(
@@ -97,9 +146,10 @@ export function isDateRangeComplete(value?: DateRangeValue | null) {
 export function areDateRangesEqual(
   left?: DateRangeValue | null,
   right?: DateRangeValue | null,
+  options?: NormalizeDateRangeOptions,
 ) {
-  const normalizedLeft = normalizeDateRangeValue(left);
-  const normalizedRight = normalizeDateRangeValue(right);
+  const normalizedLeft = normalizeDateRangeValue(left, options);
+  const normalizedRight = normalizeDateRangeValue(right, options);
 
   if (!normalizedLeft && !normalizedRight) {
     return true;
@@ -109,16 +159,26 @@ export function areDateRangesEqual(
     return false;
   }
 
-  const sameFrom =
-    (!normalizedLeft.from && !normalizedRight.from) ||
-    (normalizedLeft.from &&
-      normalizedRight.from &&
-      isSameDay(normalizedLeft.from, normalizedRight.from));
-  const sameTo =
-    (!normalizedLeft.to && !normalizedRight.to) ||
-    (normalizedLeft.to && normalizedRight.to && isSameDay(normalizedLeft.to, normalizedRight.to));
+  const sameBoundary = (leftBoundary?: Date, rightBoundary?: Date) => {
+    if (!leftBoundary && !rightBoundary) {
+      return true;
+    }
 
-  return sameFrom && sameTo;
+    if (!leftBoundary || !rightBoundary) {
+      return false;
+    }
+
+    if (options?.preserveTime) {
+      return leftBoundary.getTime() === rightBoundary.getTime();
+    }
+
+    return isSameDay(leftBoundary, rightBoundary);
+  };
+
+  return (
+    sameBoundary(normalizedLeft.from, normalizedRight.from) &&
+    sameBoundary(normalizedLeft.to, normalizedRight.to)
+  );
 }
 
 export function hasDateRangeValue(value?: DateRangeValue | null) {
@@ -129,15 +189,17 @@ export function isDateRangeOutsideBounds(
   value: DateRangeValue,
   minDate?: Date,
   maxDate?: Date,
+  options?: NormalizeDateRangeOptions,
 ) {
-  const normalizedValue = normalizeDateRangeValue(value);
+  const normalizedValue = normalizeDateRangeValue(value, options);
 
   if (!normalizedValue) {
     return false;
   }
 
-  const min = minDate ? startOfDay(minDate) : undefined;
-  const max = maxDate ? startOfDay(maxDate) : undefined;
+  const preserveTime = options?.preserveTime ?? false;
+  const min = normalizeBoundary(minDate, preserveTime);
+  const max = normalizeBoundary(maxDate, preserveTime);
 
   if (normalizedValue.from && min && isBefore(normalizedValue.from, min)) {
     return true;
@@ -162,35 +224,41 @@ export function getEnabledDateRangePresets(
   presets: DateRangePickerPreset[] | undefined,
   minDate?: Date,
   maxDate?: Date,
+  options?: NormalizeDateRangeOptions,
 ) {
-  return (presets ?? []).map((preset) => ({
-    ...preset,
-    disabled: isDateRangeOutsideBounds(preset.value, minDate, maxDate),
-  }));
+  return (presets ?? []).map((preset) => {
+    const normalizedValue = normalizeDateRangeValue(preset.value, options) ?? {};
+
+    return {
+      ...preset,
+      value: normalizedValue,
+      disabled: isDateRangeOutsideBounds(normalizedValue, minDate, maxDate, options),
+    };
+  });
 }
 
 export function getDateRangePreviewModifiers(
   value: DateRangeValue | null | undefined,
   hoveredDate: Date | undefined,
 ) {
-  const normalizedValue = normalizeDateRangeValue(value);
-
-  if (!normalizedValue?.from || normalizedValue.to || !hoveredDate) {
+  if (!value?.from || value.to || !hoveredDate) {
     return null;
   }
 
-  if (isSameDay(normalizedValue.from, hoveredDate)) {
+  const anchorDate = startOfDay(value.from);
+
+  if (isSameDay(anchorDate, hoveredDate)) {
     return null;
   }
 
-  const previewStart = isBefore(hoveredDate, normalizedValue.from) ? hoveredDate : normalizedValue.from;
-  const previewEnd = isAfter(hoveredDate, normalizedValue.from) ? hoveredDate : normalizedValue.from;
+  const previewStart = isBefore(hoveredDate, anchorDate) ? hoveredDate : anchorDate;
+  const previewEnd = isAfter(hoveredDate, anchorDate) ? hoveredDate : anchorDate;
   const previewDays = eachDayOfInterval({
     start: previewStart,
     end: previewEnd,
   });
   const middleDays = previewDays.slice(1, -1);
-  const isBackward = isBefore(hoveredDate, normalizedValue.from);
+  const isBackward = isBefore(hoveredDate, anchorDate);
 
   return {
     isBackward,
@@ -198,5 +266,73 @@ export function getDateRangePreviewModifiers(
       preview: middleDays,
       previewEnd: [hoveredDate],
     },
+  };
+}
+
+export function formatDateRangePickerTimeValue(
+  value: Date | null | undefined,
+  fallback = defaultDateRangePickerStartTimeValue,
+) {
+  if (!value) {
+    return fallback;
+  }
+
+  const hours = String(value.getHours()).padStart(2, '0');
+  const minutes = String(value.getMinutes()).padStart(2, '0');
+
+  return `${hours}:${minutes}`;
+}
+
+export function applyTimeValueToDate(date: Date, timeValue: string) {
+  const parts = toTimeParts(timeValue);
+
+  if (!parts) {
+    return normalizeBoundary(date, true) as Date;
+  }
+
+  return normalizeBoundary(
+    setHours(setMinutes(date, parts.minutes), parts.hours),
+    true,
+  ) as Date;
+}
+
+export function clampDateRangeBoundary(
+  value: Date,
+  minDateTime?: Date,
+  maxDateTime?: Date,
+) {
+  const normalizedValue = normalizeBoundary(value, true) as Date;
+  const normalizedMin = normalizeBoundary(minDateTime, true);
+  const normalizedMax = normalizeBoundary(maxDateTime, true);
+
+  if (normalizedMin && normalizedValue < normalizedMin) {
+    return normalizedMin;
+  }
+
+  if (normalizedMax && normalizedValue > normalizedMax) {
+    return normalizedMax;
+  }
+
+  return normalizedValue;
+}
+
+export function getDateRangePickerTimeBounds(
+  selectedDate: Date | null | undefined,
+  minDateTime?: Date,
+  maxDateTime?: Date,
+) {
+  if (!selectedDate) {
+    return { min: undefined, max: undefined };
+  }
+
+  return {
+    min:
+      minDateTime && isSameDay(selectedDate, minDateTime)
+        ? formatDateRangePickerTimeValue(minDateTime)
+        : undefined,
+    max:
+      maxDateTime && isSameDay(selectedDate, maxDateTime)
+        ? formatDateRangePickerTimeValue(maxDateTime)
+        : undefined,
   };
 }

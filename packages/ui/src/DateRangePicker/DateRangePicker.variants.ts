@@ -4,15 +4,26 @@ export const dateRangePickerFieldVariants = cva('grid w-full gap-1.5');
 
 export const dateRangePickerControlVariants = cva(
   [
-    'flex w-full items-center gap-2 rounded-md border pr-2 ring-offset-background',
+    'flex w-full items-center gap-2 rounded-md border ring-offset-background',
     'transition-colors motion-reduce:transition-none',
     'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
   ].join(' '),
   {
     variants: {
+      variant: {
+        default: 'border-input bg-background shadow-sm',
+        outline: 'border-border bg-background',
+        ghost: 'border-transparent bg-muted/40 shadow-none',
+      },
+      size: {
+        xs: 'min-h-8 px-2.5',
+        sm: 'min-h-9 px-3',
+        md: 'min-h-10 px-3',
+        lg: 'min-h-11 px-4',
+      },
       invalid: {
         true: 'border-destructive focus-within:ring-destructive/30',
-        false: 'border-input bg-background shadow-sm',
+        false: '',
       },
       disabled: {
         true: 'cursor-not-allowed opacity-60',
@@ -20,6 +31,8 @@ export const dateRangePickerControlVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'default',
+      size: 'md',
       invalid: false,
       disabled: false,
     },
@@ -28,12 +41,18 @@ export const dateRangePickerControlVariants = cva(
 
 export const dateRangePickerTriggerVariants = cva(
   [
-    'flex min-h-10 min-w-0 flex-1 items-center gap-2 bg-transparent px-3 py-2 text-left text-sm',
+    'flex min-w-0 flex-1 items-center gap-2 bg-transparent p-0 text-left',
     'outline-none',
     'focus-visible:ring-0',
   ].join(' '),
   {
     variants: {
+      size: {
+        xs: 'text-xs',
+        sm: 'text-sm',
+        md: 'text-sm',
+        lg: 'text-base',
+      },
       hasValue: {
         true: 'text-foreground',
         false: 'text-muted-foreground',
@@ -44,6 +63,7 @@ export const dateRangePickerTriggerVariants = cva(
       },
     },
     defaultVariants: {
+      size: 'md',
       hasValue: false,
       disabled: false,
     },
@@ -52,19 +72,54 @@ export const dateRangePickerTriggerVariants = cva(
 
 export const dateRangePickerTriggerTextVariants = cva('min-w-0 truncate');
 
-export const dateRangePickerIconVariants = cva('h-4 w-4 shrink-0 text-muted-foreground');
+export const dateRangePickerIconVariants = cva('shrink-0 text-muted-foreground', {
+  variants: {
+    size: {
+      xs: 'h-3.5 w-3.5',
+      sm: 'h-4 w-4',
+      md: 'h-4 w-4',
+      lg: 'h-[18px] w-[18px]',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
 export const dateRangePickerActionButtonVariants = cva(
   [
-    'inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
+    'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
     'transition-colors motion-reduce:transition-none',
     'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
     'focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'disabled:pointer-events-none disabled:opacity-50',
   ].join(' '),
+  {
+    variants: {
+      size: {
+        xs: 'h-5 w-5',
+        sm: 'h-6 w-6',
+        md: 'h-6 w-6',
+        lg: 'h-7 w-7',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  },
 );
 
-export const dateRangePickerContentVariants = cva('w-auto p-0');
+export const dateRangePickerContentVariants = cva('w-auto p-0', {
+  variants: {
+    chrome: {
+      bare: 'border-0 bg-transparent shadow-none',
+      framed: '',
+    },
+  },
+  defaultVariants: {
+    chrome: 'framed',
+  },
+});
 
 export const dateRangePickerPanelVariants = cva('flex w-full flex-col');
 
@@ -93,6 +148,42 @@ export const dateRangePickerPresetButtonVariants = cva(
   },
 );
 
-export const dateRangePickerCalendarFrameVariants = cva('p-3');
+export const dateRangePickerCalendarFrameVariants = cva('p-2');
+
+export const dateRangePickerTimeSectionVariants = cva(
+  'grid gap-2 border-t border-border p-3',
+);
+
+export const dateRangePickerTimeGridVariants = cva(
+  'grid gap-2 sm:grid-cols-2',
+);
+
+export const dateRangePickerTimeFieldVariants = cva('grid gap-1');
+
+export const dateRangePickerTimeLabelVariants = cva(
+  'inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground',
+);
+
+export const dateRangePickerTimeInputVariants = cva(
+  [
+    'h-8 w-full min-w-0 rounded-md border border-input bg-background px-2.5 text-sm tabular-nums text-foreground shadow-sm',
+    'outline-none transition-colors motion-reduce:transition-none',
+    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'disabled:cursor-not-allowed disabled:opacity-60',
+  ].join(' '),
+  {
+    variants: {
+      invalid: {
+        true: 'border-destructive focus-visible:ring-destructive/30',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      invalid: false,
+    },
+  },
+);
+
+export const dateRangePickerHintVariants = cva('text-[11px] leading-4 text-muted-foreground');
 
 export const dateRangePickerMessageVariants = cva('text-sm text-destructive');

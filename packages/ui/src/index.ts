@@ -9,7 +9,6 @@ export * from './Spinner';
 export * from './Combobox';
 export * from './Checkbox';
 export * from './DatePicker';
-export * from './DateTimePicker';
 export * from './DateRangePicker';
 export * from './Form';
 export * from './FileUpload';

@@ -12,7 +12,7 @@ import {
   calendarPickerGridVariants,
   calendarPickerOptionVariants,
 } from '../Calendar/Calendar.variants';
-import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '../Popover';
 import type { MonthPickerProps } from './MonthPicker.types';
 import {
   canNavigateToNextYear,
@@ -55,6 +55,8 @@ export const MonthPicker = React.forwardRef<HTMLButtonElement, MonthPickerProps>
     {
       value,
       onChange,
+      variant = 'default',
+      size = 'md',
       minMonth,
       maxMonth,
       disabled = false,
@@ -193,166 +195,168 @@ export const MonthPicker = React.forwardRef<HTMLButtonElement, MonthPickerProps>
 
     return (
       <Box data-slot="month-picker-field" className={cn(monthPickerFieldVariants(), className)}>
-        <Box
-          data-slot="month-picker-control"
-          className={monthPickerControlVariants({ invalid: hasError, disabled })}
-        >
-          <Popover open={open} onOpen={handleOpen} onClose={handleClose}>
-            <PopoverTrigger asChild>
-              <Box
-                as="button"
-                ref={triggerRef}
-                id={triggerId}
-                type={type ?? 'button'}
-                name={name}
-                disabled={disabled}
-                tabIndex={tabIndex}
-                aria-label={ariaLabel}
-                aria-labelledby={ariaLabelledBy}
-                aria-describedby={describedBy}
-                aria-invalid={hasError || undefined}
-                aria-expanded={open}
-                aria-haspopup="dialog"
-                data-slot="month-picker-trigger"
-                className={monthPickerTriggerVariants({ hasValue, disabled })}
-                onBlur={onBlur}
-                onFocus={onFocus}
-                {...props}
-              >
-                <CalendarDays aria-hidden="true" className={monthPickerIconVariants()} />
-                <Box as="span" className={monthPickerTriggerTextVariants()}>
-                  {formatMonthPickerValue(selectedMonth) ?? 'Select month...'}
-                </Box>
-              </Box>
-            </PopoverTrigger>
-
-            <PopoverContent
-              align="start"
-              side="bottom"
-              sideOffset={6}
-              className={monthPickerContentVariants()}
-            >
-              <Box data-slot="month-picker-panel" className={monthPickerPanelVariants()}>
-                <Box data-slot="month-picker-header" className={monthPickerHeaderVariants()}>
-                  <Box
-                    as="button"
-                    type="button"
-                    aria-label="Previous year"
-                    disabled={!canGoToPreviousYear}
-                    className={cn(calendarNavButtonVariants(), calendarNavButtonPreviousVariants())}
-                    onClick={handlePreviousYear}
-                  >
-                    <ChevronLeft aria-hidden="true" className={monthPickerIconVariants()} />
-                  </Box>
-
-                  <Box
-                    as="button"
-                    type="button"
-                    aria-controls={pickerPanelId}
-                    aria-expanded={view === 'years'}
-                    aria-label={`Choose year, current year ${visibleMonth.getFullYear()}`}
-                    className={monthPickerYearTriggerVariants()}
-                    onClick={handleYearViewToggle}
-                  >
-                    {visibleMonth.getFullYear()}
-                  </Box>
-
-                  <Box
-                    as="button"
-                    type="button"
-                    aria-label="Next year"
-                    disabled={!canGoToNextYear}
-                    className={cn(calendarNavButtonVariants(), calendarNavButtonNextVariants())}
-                    onClick={handleNextYear}
-                  >
-                    <ChevronRight aria-hidden="true" className={monthPickerIconVariants()} />
-                  </Box>
-                </Box>
-
-                {view === 'years' ? (
-                  <Box
-                    id={pickerPanelId}
-                    data-slot="month-picker-year-list"
-                    role="group"
-                    aria-label="Choose year"
-                    className={monthPickerPickerPanelVariants()}
-                  >
-                    <Box ref={yearListRef} className={monthPickerYearsVariants()}>
-                      {yearOptions.map((yearOption) => (
-                        <Box
-                          key={yearOption.year}
-                          as="button"
-                          type="button"
-                          aria-pressed={yearOption.active}
-                          data-active={yearOption.active ? 'true' : undefined}
-                          className={cn(
-                            calendarPickerOptionVariants({
-                              selected: yearOption.active,
-                              disabled: false,
-                            }),
-                            monthPickerYearOptionVariants(),
-                          )}
-                          onClick={() => {
-                            handleYearSelect(yearOption.year);
-                          }}
-                        >
-                          {yearOption.year}
-                        </Box>
-                      ))}
-                    </Box>
-                  </Box>
-                ) : (
-                  <Box data-slot="month-picker-grid" className={calendarPickerGridVariants()}>
-                    {monthOptions.map((monthOption) => {
-                      const selected = Boolean(
-                        selectedMonth && isSameMonth(selectedMonth, monthOption.date),
-                      );
-
-                      return (
-                        <Box
-                          key={monthOption.date.toISOString()}
-                          as="button"
-                          type="button"
-                          disabled={monthOption.disabled}
-                          aria-pressed={selected}
-                          data-selected={selected ? '' : undefined}
-                          className={cn(
-                            calendarPickerOptionVariants({
-                              selected,
-                              disabled: monthOption.disabled,
-                            }),
-                            monthPickerOptionFrameVariants(),
-                          )}
-                          onClick={() => {
-                            handleMonthSelect(monthOption.date);
-                          }}
-                        >
-                          {monthOption.label}
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                )}
-              </Box>
-            </PopoverContent>
-          </Popover>
-
-          {clearable && selectedMonth && !disabled ? (
+        <Popover open={open} onOpen={handleOpen} onClose={handleClose}>
+          <PopoverAnchor asChild>
             <Box
-              as="button"
-              type="button"
-              aria-label="Clear month"
-              data-slot="month-picker-clear"
-              className={monthPickerActionButtonVariants()}
-              onMouseDown={(event) => {
-                event.preventDefault();
-              }}
-              onClick={handleClear}
+              data-slot="month-picker-control"
+              className={monthPickerControlVariants({ variant, size, invalid: hasError, disabled })}
             >
-              <X aria-hidden="true" className={monthPickerIconVariants()} />
+              <PopoverTrigger asChild>
+                <Box
+                  as="button"
+                  ref={triggerRef}
+                  id={triggerId}
+                  type={type ?? 'button'}
+                  name={name}
+                  disabled={disabled}
+                  tabIndex={tabIndex}
+                  aria-label={ariaLabel}
+                  aria-labelledby={ariaLabelledBy}
+                  aria-describedby={describedBy}
+                  aria-invalid={hasError || undefined}
+                  aria-expanded={open}
+                  aria-haspopup="dialog"
+                  data-slot="month-picker-trigger"
+                  className={monthPickerTriggerVariants({ size, hasValue, disabled })}
+                  onBlur={onBlur}
+                  onFocus={onFocus}
+                  {...props}
+                >
+                  <CalendarDays aria-hidden="true" className={monthPickerIconVariants({ size })} />
+                  <Box as="span" className={monthPickerTriggerTextVariants()}>
+                    {formatMonthPickerValue(selectedMonth) ?? 'Select month...'}
+                  </Box>
+                </Box>
+              </PopoverTrigger>
+
+              {clearable && selectedMonth && !disabled ? (
+                <Box
+                  as="button"
+                  type="button"
+                  aria-label="Clear month"
+                  data-slot="month-picker-clear"
+                  className={monthPickerActionButtonVariants({ size })}
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                  }}
+                  onClick={handleClear}
+                >
+                  <X aria-hidden="true" className={monthPickerIconVariants({ size })} />
+                </Box>
+              ) : null}
             </Box>
-          ) : null}
-        </Box>
+          </PopoverAnchor>
+
+          <PopoverContent
+            align="start"
+            side="bottom"
+            sideOffset={6}
+            className={monthPickerContentVariants()}
+          >
+            <Box data-slot="month-picker-panel" className={monthPickerPanelVariants()}>
+              <Box data-slot="month-picker-header" className={monthPickerHeaderVariants()}>
+                <Box
+                  as="button"
+                  type="button"
+                  aria-label="Previous year"
+                  disabled={!canGoToPreviousYear}
+                  className={cn(calendarNavButtonVariants(), calendarNavButtonPreviousVariants())}
+                  onClick={handlePreviousYear}
+                >
+                  <ChevronLeft aria-hidden="true" className={monthPickerIconVariants({ size })} />
+                </Box>
+
+                <Box
+                  as="button"
+                  type="button"
+                  aria-controls={pickerPanelId}
+                  aria-expanded={view === 'years'}
+                  aria-label={`Choose year, current year ${visibleMonth.getFullYear()}`}
+                  className={monthPickerYearTriggerVariants()}
+                  onClick={handleYearViewToggle}
+                >
+                  {visibleMonth.getFullYear()}
+                </Box>
+
+                <Box
+                  as="button"
+                  type="button"
+                  aria-label="Next year"
+                  disabled={!canGoToNextYear}
+                  className={cn(calendarNavButtonVariants(), calendarNavButtonNextVariants())}
+                  onClick={handleNextYear}
+                >
+                  <ChevronRight aria-hidden="true" className={monthPickerIconVariants({ size })} />
+                </Box>
+              </Box>
+
+              {view === 'years' ? (
+                <Box
+                  id={pickerPanelId}
+                  data-slot="month-picker-year-list"
+                  role="group"
+                  aria-label="Choose year"
+                  className={monthPickerPickerPanelVariants()}
+                >
+                  <Box ref={yearListRef} className={monthPickerYearsVariants()}>
+                    {yearOptions.map((yearOption) => (
+                      <Box
+                        key={yearOption.year}
+                        as="button"
+                        type="button"
+                        aria-pressed={yearOption.active}
+                        data-active={yearOption.active ? 'true' : undefined}
+                        className={cn(
+                          calendarPickerOptionVariants({
+                            selected: yearOption.active,
+                            disabled: false,
+                          }),
+                          monthPickerYearOptionVariants(),
+                        )}
+                        onClick={() => {
+                          handleYearSelect(yearOption.year);
+                        }}
+                      >
+                        {yearOption.year}
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              ) : (
+                <Box data-slot="month-picker-grid" className={calendarPickerGridVariants()}>
+                  {monthOptions.map((monthOption) => {
+                    const selected = Boolean(
+                      selectedMonth && isSameMonth(selectedMonth, monthOption.date),
+                    );
+
+                    return (
+                      <Box
+                        key={monthOption.date.toISOString()}
+                        as="button"
+                        type="button"
+                        disabled={monthOption.disabled}
+                        aria-pressed={selected}
+                        data-selected={selected ? '' : undefined}
+                        className={cn(
+                          calendarPickerOptionVariants({
+                            selected,
+                            disabled: monthOption.disabled,
+                          }),
+                          monthPickerOptionFrameVariants(),
+                        )}
+                        onClick={() => {
+                          handleMonthSelect(monthOption.date);
+                        }}
+                      >
+                        {monthOption.label}
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
+            </Box>
+          </PopoverContent>
+        </Popover>
 
         {typeof error === 'string' ? (
           <Box as="p" id={errorId} role="alert" className={monthPickerMessageVariants()}>

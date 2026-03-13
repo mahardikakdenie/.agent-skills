@@ -63,9 +63,8 @@
 | Pagination | `Pagination` | Tier 1 | [ ] missing | 16 | Navigation | Consolidates `Pagination` from 15+ apps; page + pageSize controls |
 | Calendar | `Calendar` | `react-day-picker` | [ ] missing | 9 | Data Display | Base date picker UI; single/range/multiple modes |
 | DataTable | `DataTable` | `Table` + `@tanstack/react-table` v8 | [ ] missing | 6 | Data Display | Headless logic + `Table` visual; `DataTableToolbar`, `DataTablePagination` sub-components |
-| DatePicker | `DatePicker` | `Calendar` + `Popover` | [ ] missing | 22 | Inputs | Consolidates all `Datepicker`/`DatePickerModal`/`DatePickerV2` variants; single mode |
-| DateRangePicker | `DateRangePicker` | `Calendar` + `Popover` | [ ] missing | 7 | Inputs | Extends `DatePicker` with `from/to` pair state |
-| DateTimePicker | `DateTimePicker` | `Calendar` + `Popover` | [ ] missing | 5 | Inputs | Extends `DatePicker` with time input |
+| DatePicker | `DatePicker` | `Calendar` + `Popover` | [ ] missing | 22 | Inputs | Consolidates all `Datepicker`/`DatePickerModal`/`DatePickerV2` variants; single-date mode with optional time input |
+| DateRangePicker | `DateRangePicker` | `Calendar` + `Popover` | [ ] missing | 7 | Inputs | Extends `DatePicker` with `from/to` pair state and optional time input |
 | Command | `Command` | `cmdk` | [ ] missing | 5 | Misc | Compound: `Command`, `CommandDialog`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandShortcut`, `CommandSeparator` |
 | Combobox | `Combobox` | `Command` + `Popover` | [ ] missing | 8 | Inputs | Consolidates: `Combobox`, `Autocomplete`, `InputAutocomplete`, `InputSelectAutocomplete`, `CustomSearchableDropdown` |
 | DropdownMenu | `DropdownMenu` | `@radix-ui/react-dropdown-menu` | [ ] missing | 12 | Overlays | Compound: `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuContent`, `DropdownMenuItem`, `DropdownMenuLabel`, `DropdownMenuSeparator` |

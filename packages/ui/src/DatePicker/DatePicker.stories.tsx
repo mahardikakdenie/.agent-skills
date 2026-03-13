@@ -30,6 +30,14 @@ function StoryFrame({ children }: { children: React.ReactNode }) {
   return <Box className="mx-auto flex w-full max-w-sm flex-col gap-4 p-4">{children}</Box>;
 }
 
+function getValueLabel(value: Date | null, withTime: boolean) {
+  if (!value) {
+    return 'Selected: none';
+  }
+
+  return withTime ? `Selected: ${value.toLocaleString()}` : `Selected: ${value.toDateString()}`;
+}
+
 function DatePickerStory({
   variant,
   size,
@@ -37,6 +45,10 @@ function DatePickerStory({
   initialValue = null,
   minDate,
   maxDate,
+  withTime = false,
+  minDateTime,
+  maxDateTime,
+  timezone,
   placeholder,
   disabled,
   clearable,
@@ -62,6 +74,10 @@ function DatePickerStory({
         }}
         minDate={minDate}
         maxDate={maxDate}
+        withTime={withTime}
+        minDateTime={minDateTime}
+        maxDateTime={maxDateTime}
+        timezone={timezone}
         placeholder={placeholder}
         disabled={disabled}
         clearable={clearable}
@@ -70,36 +86,37 @@ function DatePickerStory({
         onClose={onClose}
       />
       <Box as="p" aria-live="polite" className="text-sm text-muted-foreground">
-        {value ? `Selected: ${value.toDateString()}` : 'Selected: none'}
+        {getValueLabel(value, withTime)}
       </Box>
     </StoryFrame>
   );
 }
 
 function FormFieldStory() {
-  const form = useForm<{ travelDate: Date | null }>({
+  const form = useForm<{ appointment: Date | null }>({
     defaultValues: {
-      travelDate: null,
+      appointment: null,
     },
     mode: 'onSubmit',
   });
-  const selectedValue = form.watch('travelDate');
+  const selectedValue = form.watch('appointment');
 
   return (
     <StoryFrame>
       <Form form={form} onSubmit={form.handleSubmit(() => undefined)}>
         <FormField
-          name="travelDate"
-          rules={{ required: 'Select a travel date.' }}
+          name="appointment"
+          rules={{ required: 'Select an appointment date.' }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>Travel Date</FormLabel>
+              <FormLabel required>Appointment</FormLabel>
               <FormControl>
                 <DatePicker
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
-                  placeholder="Choose a travel date"
+                  placeholder="Choose an appointment"
+                  withTime
                   clearable
                 />
               </FormControl>
@@ -117,8 +134,8 @@ function FormFieldStory() {
             size="sm"
             variant="outline"
             onClick={() => {
-              form.setValue('travelDate', new Date(2026, 1, 20));
-              form.clearErrors('travelDate');
+              form.setValue('appointment', new Date(2026, 1, 20, 14, 30));
+              form.clearErrors('appointment');
             }}
           >
             Prefill
@@ -127,7 +144,7 @@ function FormFieldStory() {
       </Form>
 
       <Box as="p" className="text-sm text-muted-foreground">
-        {selectedValue ? `Current value: ${selectedValue.toDateString()}` : 'Current value: none'}
+        {getValueLabel(selectedValue, true)}
       </Box>
     </StoryFrame>
   );
@@ -148,9 +165,13 @@ const meta = {
     required: false,
     error: false,
     mode: 'single',
+    withTime: false,
     initialValue: new Date(2026, 0, 15),
     minDate: undefined,
     maxDate: undefined,
+    minDateTime: undefined,
+    maxDateTime: undefined,
+    timezone: undefined,
     onChange: fn(),
     onClose: fn(),
   },
@@ -188,6 +209,12 @@ const meta = {
       control: 'select',
       options: datePickerModeValues,
     },
+    withTime: {
+      control: 'boolean',
+    },
+    timezone: {
+      control: 'text',
+    },
     initialValue: {
       control: false,
     },
@@ -203,6 +230,12 @@ const meta = {
     maxDate: {
       control: 'date',
     },
+    minDateTime: {
+      control: 'date',
+    },
+    maxDateTime: {
+      control: 'date',
+    },
     onChange: {
       action: 'changed',
     },
@@ -215,7 +248,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Shared single-date picker composed from the Calendar and Popover primitives, with Input-aligned trigger variants, size scale, optional display formatting callback, min/max bounds, clear support, and Box-only authored JSX.',
+          'Shared single-date picker composed from the Calendar and Popover primitives, with Input-aligned trigger variants, size scale, optional time entry, min/max bounds, clear support, and Box-only authored JSX.',
       },
     },
   },
@@ -299,6 +332,44 @@ export const WithMinMax: Story = {
   },
 };
 
+export const WithTime: Story = {
+  name: 'With Time',
+  args: {
+    initialValue: new Date(2026, 0, 15, 10, 30),
+    label: 'Appointment',
+    placeholder: 'Pick a date and time',
+    withTime: true,
+    timezone: 'UTC',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Expands the shared picker with an inline time field while keeping the emitted value a plain Date.',
+      },
+    },
+  },
+};
+
+export const WithTimeBounds: Story = {
+  name: 'With Time Bounds',
+  args: {
+    initialValue: new Date(2026, 0, 15, 10, 30),
+    label: 'Deadline',
+    withTime: true,
+    minDateTime: new Date(2026, 0, 15, 9, 15),
+    maxDateTime: new Date(2026, 0, 16, 17, 45),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Constrains both calendar selection and time entry when the selected day hits the minimum or maximum boundary.',
+      },
+    },
+  },
+};
+
 export const CustomFormat: Story = {
   render: (args) => (
     <DatePickerStory
@@ -351,9 +422,8 @@ export const FormFieldUsage: Story = {
     docs: {
       description: {
         story:
-          'Demonstrates shared form composition with React Hook Form control, validation, and external value updates.',
+          'Demonstrates shared form composition with React Hook Form control, validation, external value updates, and optional time entry.',
       },
     },
   },
 };
-

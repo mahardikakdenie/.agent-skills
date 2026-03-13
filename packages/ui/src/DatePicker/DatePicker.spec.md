@@ -13,9 +13,9 @@
 
 ## Overview
 
-`DatePicker` is the shared single-date field shell for app flows that need a compact trigger, a floating calendar, and normalized min/max date constraints without pulling routing, formatting workflows, or domain validation into `@repo/ui`.
+`DatePicker` is the shared single-date field shell for app flows that need a compact trigger, a floating calendar, and normalized min/max date or date-time constraints without pulling routing, formatting workflows, or domain validation into `@repo/ui`.
 
-It composes the shipped `Calendar` and `Popover` primitives, keeps the authored trigger and message markup on `Box`, and normalizes recurring local props such as `initialValue`, `minimumDate`, `maximumDate`, `isDisabled`, `isForceClear`, `isLongDate`, and `errorMessage` into the canonical shared contract. The visual shell follows the same `variant` and `size` vocabulary as `Input`, while `formatDate` gives consumers a narrow override for display-only string formatting without changing the selected value contract.
+It composes the shipped `Calendar` and `Popover` primitives, keeps the authored trigger and message markup on `Box`, and normalizes recurring local props such as `initialValue`, `minimumDate`, `maximumDate`, `isDisabled`, `isForceClear`, `isLongDate`, and `errorMessage` into the canonical shared contract. The visual shell follows the same `variant` and `size` vocabulary as `Input`, while `formatDate` gives consumers a narrow override for display-only string formatting without changing the selected value contract. In date-only mode, the popover chrome stays bare so the shared `Calendar` surface aligns directly beneath the trigger without a second decorative frame. When `withTime` is enabled, the same field upgrades to a framed two-column panel, adds minute-precision time entry, optional display-context `timezone` copy, and UI-enforced `minDateTime` / `maxDateTime` bounds without becoming a separate component.
 
 **When to use:**
 
@@ -23,11 +23,12 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 - Use it when the parent owns the selected date and only needs a shared trigger shell plus calendar interaction.
 - Use `variant` and `size` to keep the trigger visually aligned with nearby `Input` fields.
 - Use `formatDate` when a screen needs a different display label, such as a long-date summary, while still storing a `Date` value.
+- Use `withTime` when one selected value needs both a day and a minute-precision time inside the same trigger + popover contract.
 
 **When NOT to use:**
 
 - Use `Calendar` directly for inline calendar grids that do not need an anchored trigger.
-- Keep complex preset flows, date-range selection, date-time entry, workflow save/apply buttons, and business-specific validation local or on later shared targets such as `DateRangePicker` or `DateTimePicker`.
+- Keep complex preset flows, workflow save/apply buttons, and business-specific validation local; use `DateRangePicker` for ranges and enable `withTime` on `DatePicker` when a single value also needs time entry.
 - Do not widen this component with parser-specific format tokens, app-specific styling booleans, or business validation rules.
 
 ---
@@ -56,9 +57,13 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 | `formatDate` | `(date: Date) => string` | localized medium date | No | Optional display-only formatter for the selected value shown inside the trigger. |
 | `value` | `Date \| null` | internal state | No | Controlled selected date. |
 | `onChange` | `(date: Date \| null) => void` | `undefined` | No | Called after a date is selected or cleared. |
-| `mode` | `'single'` | `'single'` | No | Locked single-date contract; range and date-time stay on separate components. |
+| `mode` | `'single'` | `'single'` | No | Locked single-date contract; range stays on `DateRangePicker`, while time entry is enabled through `withTime`. |
 | `minDate` | `Date` | `undefined` | No | Disables dates before this boundary and limits month navigation. |
 | `maxDate` | `Date` | `undefined` | No | Disables dates after this boundary and limits month navigation. |
+| `withTime` | `boolean` | `false` | No | Enables the inline time field while keeping the selected value contract as `Date \| null`. |
+| `minDateTime` | `Date` | `undefined` | No | Optional lower datetime boundary enforced across both date and time when `withTime` is enabled. |
+| `maxDateTime` | `Date` | `undefined` | No | Optional upper datetime boundary enforced across both date and time when `withTime` is enabled. |
+| `timezone` | `string` | `undefined` | No | Optional display-context timezone hint shown alongside the time field; it does not transform the emitted value. |
 | `disabled` | `boolean` | `false` | No | Disables trigger interaction and clear affordance. |
 | `clearable` | `boolean` | `false` | No | Renders a clear action when a value is present. |
 | `required` | `boolean` | `false` | No | Marks the label as required and prevents deselection by selecting the active day again. |
@@ -96,14 +101,15 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 
 | State | Visual Behavior | Accessibility |
 | ---------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Default | Trigger shows selected value or placeholder in the shared field shell | Trigger is a real button with `aria-expanded` |
+| Default | Trigger shows selected value or placeholder in the shared field shell, while date-only popovers open as a bare calendar surface | Trigger is a real button with `aria-expanded` |
 | Hover | Clear action and trigger keep pointer affordance when interactive | No hover-only information |
-| Open | Popover surface opens below the trigger with the shared calendar grid | Trigger exposes `aria-haspopup="dialog"` and `aria-expanded="true"` |
+| Open | Popover surface opens below the trigger with the shared calendar grid; date-only mode stays bare while `withTime` uses a framed composite panel | Trigger exposes `aria-haspopup="dialog"` and `aria-expanded="true"` |
 | Focus | Shared field chrome uses visible focus-within ring treatment | Keyboard users keep a visible focus indicator on trigger and calendar controls |
 | Disabled | Trigger and clear action dim and stop responding to input | Trigger uses native `disabled` state |
 | Cleared | Value resets to `null` and placeholder returns | Clear button has its own accessible name |
 | Error | Border and message switch to destructive styling | Trigger receives `aria-invalid`; error text uses `role="alert"` |
 | Min/max bounded | Out-of-range dates are disabled and month navigation is clamped | Disabled dates remain non-interactive in the calendar grid |
+| Time-enabled | Popover switches to a framed two-column layout with the compact calendar on the left and a minute-precision time rail plus optional timezone hint on the right | Time input stays keyboard reachable and inherits the same invalid state treatment |
 
 ---
 
@@ -189,7 +195,21 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 />
 ```
 
-### 5. Display format override
+### 5. With time entry
+
+```tsx
+<DatePicker
+  label="Appointment"
+  value={appointment}
+  onChange={setAppointment}
+  withTime
+  minDateTime={new Date(2026, 0, 15, 9, 15)}
+  maxDateTime={new Date(2026, 0, 16, 17, 45)}
+  timezone="UTC"
+/>
+```
+
+### 6. Display format override
 
 ```tsx
 <DatePicker
@@ -211,7 +231,7 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 | Use `formatDate` for display-only overrides such as long-date labels. | Add parser-specific `format` token strings that hardcode one formatting library into the public API. |
 | Use `clearable` when the parent allows removing a selection. | Add workflow-specific `onSave` or `onSubmit` callbacks to the picker. |
 | Compose with shared `Form` primitives for validation messaging. | Rebuild a second date field wrapper just to connect RHF. |
-| Keep range and date-time workflows on dedicated future components. | Add `range`, `time`, or preset booleans to this single-date contract. |
+| Keep range workflows on `DateRangePicker` and use `withTime` only for true single-value date-time selection. | Add `range` mode, preset logic, or workflow-specific booleans to this single-date contract. |
 | Keep authored shared JSX and stories on `Box`, including `button`, `span`, and `p`. | Hand-write native DOM tags in shared authored JSX. |
 
 ---
@@ -225,6 +245,8 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 - [x] `Sizes`
 - [x] `With Min/Max`
 - [x] `Custom Format`
+- [x] `With Time`
+- [x] `With Time Bounds`
 - [x] `Error State`
 - [x] `Disabled State`
 - [x] `Form Field`
@@ -235,6 +257,8 @@ Roadmap alignment:
 - `DatePicker.ErrorState` -> `Error State`
 - `DatePicker.FormField` -> `Form Field`
 - `DatePicker.CustomFormat` -> `Custom Format`
+- `DatePicker.WithTime` -> `With Time`
+- `DatePicker.WithTimeBounds` -> `With Time Bounds`
 
 ---
 
@@ -251,3 +275,4 @@ Roadmap alignment:
 | Date | Change |
 | ---------- | ------------------ |
 | 2026-03-12 | Added `formatDate` display override and synced the canonical docs and stories |
+| 2026-03-13 | Folded standalone date-time usage into optional `withTime` support on `DatePicker` |

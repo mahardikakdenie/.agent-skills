@@ -70,7 +70,6 @@
 | NavigationMenu | 2 | 8 | Navigation | B5.2 |
 | Avatar | 1 | 6 | Data Display | B5.2 |
 | DateRangePicker | 2 | 7 | Inputs | B5.2 |
-| DateTimePicker | 2 | 5 | Inputs | B5.3 |
 | OtpInput | 2 | 6 | Inputs | B5.2 |
 | Command | 2 | 5 | Misc | B5.3 |
 | Accordion | 2 | 4 | Layout | B5.3 |

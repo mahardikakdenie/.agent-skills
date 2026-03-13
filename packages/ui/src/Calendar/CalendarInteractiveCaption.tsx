@@ -215,7 +215,7 @@ export function CalendarInteractiveCaption(props: CaptionProps) {
           aria-label={view === 'years' ? 'Choose year' : 'Choose month'}
           className={cn(
             calendarPickerPanelVariants(),
-            view === 'years' ? 'h-[12rem]' : 'h-[10.75rem]',
+            view === 'years' ? 'h-[10.75rem]' : 'h-[9.5rem]',
           )}
         >
           {view === 'years' ? (

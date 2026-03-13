@@ -4,12 +4,23 @@ export const monthPickerFieldVariants = cva('grid w-full gap-1.5');
 
 export const monthPickerControlVariants = cva(
   [
-    'flex w-full items-center gap-2 rounded-md border border-input bg-background shadow-sm ring-offset-background',
+    'flex w-full items-center gap-2 rounded-md border ring-offset-background',
     'transition-colors motion-reduce:transition-none',
     'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
   ].join(' '),
   {
     variants: {
+      variant: {
+        default: 'border-input bg-background shadow-sm',
+        outline: 'border-border bg-background',
+        ghost: 'border-transparent bg-muted/40 shadow-none',
+      },
+      size: {
+        xs: 'min-h-8 px-2.5',
+        sm: 'min-h-9 px-3',
+        md: 'min-h-10 px-3',
+        lg: 'min-h-11 px-4',
+      },
       invalid: {
         true: 'border-destructive focus-within:ring-destructive/30',
         false: '',
@@ -20,6 +31,8 @@ export const monthPickerControlVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'default',
+      size: 'md',
       invalid: false,
       disabled: false,
     },
@@ -28,11 +41,17 @@ export const monthPickerControlVariants = cva(
 
 export const monthPickerTriggerVariants = cva(
   [
-    'flex min-h-10 min-w-0 flex-1 touch-manipulation items-center gap-2 bg-transparent px-3 py-2 text-left',
+    'flex min-w-0 flex-1 touch-manipulation items-center gap-2 bg-transparent p-0 text-left',
     'outline-none focus-visible:ring-0',
   ].join(' '),
   {
     variants: {
+      size: {
+        xs: 'text-xs',
+        sm: 'text-sm',
+        md: 'text-sm',
+        lg: 'text-base',
+      },
       hasValue: {
         true: 'text-foreground',
         false: 'text-muted-foreground hover:text-foreground',
@@ -43,37 +62,63 @@ export const monthPickerTriggerVariants = cva(
       },
     },
     defaultVariants: {
+      size: 'md',
       hasValue: false,
       disabled: false,
     },
   },
 );
 
-export const monthPickerTriggerTextVariants = cva('min-w-0 truncate text-sm');
+export const monthPickerTriggerTextVariants = cva('min-w-0 truncate');
 
-export const monthPickerIconVariants = cva('h-4 w-4 shrink-0 text-muted-foreground');
+export const monthPickerIconVariants = cva('shrink-0 text-muted-foreground', {
+  variants: {
+    size: {
+      xs: 'h-3.5 w-3.5',
+      sm: 'h-4 w-4',
+      md: 'h-4 w-4',
+      lg: 'h-[18px] w-[18px]',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
 export const monthPickerActionButtonVariants = cva(
   [
-    'mr-2 inline-flex h-6 w-6 shrink-0 cursor-pointer touch-manipulation items-center justify-center rounded-sm text-muted-foreground',
+    'inline-flex shrink-0 cursor-pointer touch-manipulation items-center justify-center rounded-sm text-muted-foreground',
     'transition-colors motion-reduce:transition-none',
     'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
     'focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'disabled:pointer-events-none disabled:opacity-50',
   ].join(' '),
+  {
+    variants: {
+      size: {
+        xs: 'h-5 w-5',
+        sm: 'h-6 w-6',
+        md: 'h-6 w-6',
+        lg: 'h-7 w-7',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  },
 );
 
-export const monthPickerContentVariants = cva('w-[16.5rem] p-0');
+export const monthPickerContentVariants = cva('w-fit p-0');
 
-export const monthPickerPanelVariants = cva('grid gap-3 p-2.5');
+export const monthPickerPanelVariants = cva('grid gap-1.5 p-2');
 
 export const monthPickerHeaderVariants = cva(
-  'relative flex min-h-8 items-center justify-center border-b border-border pb-2 pt-0.5',
+  'relative flex h-9 items-center justify-center after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:border-b after:border-border',
 );
 
 export const monthPickerYearTriggerVariants = cva(
   [
-    'inline-flex h-7 max-w-[calc(100%-4.5rem)] items-center justify-center rounded-md px-2.5',
+    'inline-flex h-6 max-w-[calc(100%-4.5rem)] items-center justify-center rounded-md px-2.5',
     'cursor-pointer text-sm font-semibold text-foreground tabular-nums transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -87,13 +132,13 @@ export const monthPickerOptionFrameVariants = cva('w-full');
 
 export const monthPickerPickerPanelVariants = cva(
   [
-    'overflow-hidden rounded-md border border-border bg-background px-1 py-3 shadow-sm',
+    'overflow-hidden rounded-md border border-border bg-background px-1 py-2 shadow-sm',
     'supports-[backdrop-filter]:bg-background/95',
   ].join(' '),
 );
 
 export const monthPickerYearsVariants = cva(
-  'grid h-[13.5rem] content-start grid-cols-3 gap-x-2 gap-y-2 overflow-y-auto px-0.5 pb-0.5 pr-1.5',
+  'grid h-[11.5rem] content-start grid-cols-3 gap-x-1 gap-y-1 overflow-y-auto px-0.5 pb-2.5 pr-0.5',
 );
 
 export const monthPickerMessageVariants = cva('text-sm text-destructive');

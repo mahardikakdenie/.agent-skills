@@ -581,9 +581,13 @@ export interface DatePickerProps {
   formatDate?: (date: Date) => string
   value?: Date | null
   onChange?: (date: Date | null) => void
-  mode?: 'single'  // use DateRangePicker for 'range', DateTimePicker for 'datetime'
+  mode?: 'single'  // use DateRangePicker for 'range'
   minDate?: Date
   maxDate?: Date
+  withTime?: boolean
+  minDateTime?: Date
+  maxDateTime?: Date
+  timezone?: string
   disabled?: boolean
   clearable?: boolean
   required?: boolean
@@ -598,7 +602,16 @@ export interface DatePickerProps {
 
 Story group: `Inputs`
 
-Migration note: `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`; `isLongDate` and similar display-format toggles -> `formatDate`.
+Time policy:
+- `withTime` enables minute-precision time entry while keeping the emitted value contract as plain `Date | null`.
+- `timezone` is a display-context hint only. It must not silently transform the emitted `Date` into a different absolute instant.
+- `minDateTime` and `maxDateTime` are enforced in the picker UI across both the date and time portions when `withTime` is enabled.
+
+Surface policy:
+- Date-only `DatePicker` usage keeps the popover chrome bare so the shared `Calendar` stays visually aligned to the trigger without an extra decorative frame.
+- `DatePicker` with `withTime` upgrades to a framed two-column panel with the compact calendar on the left and the time rail on the right.
+
+Migration note: `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; datetime-specific bounds map to `minDateTime`/`maxDateTime`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`; `isLongDate` and similar display-format toggles -> `formatDate`.
 
 ---
 
@@ -859,9 +872,15 @@ export interface DateRangeValue {
 export interface DateRangePickerProps {
   value?: DateRangeValue | null
   onChange?: (value: DateRangeValue | null) => void
+  variant?: 'default' | 'outline' | 'ghost'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   presets?: Array<{ label: string; value: DateRangeValue }>
   minDate?: Date
   maxDate?: Date
+  withTime?: boolean
+  minDateTime?: Date
+  maxDateTime?: Date
+  timezone?: string
   disabled?: boolean
   clearable?: boolean
   error?: string | boolean
@@ -870,6 +889,16 @@ export interface DateRangePickerProps {
 ```
 
 Story group: `Inputs`
+
+Time policy:
+- `withTime` enables minute-precision start and end time entry while keeping the public range contract as plain `Date` values.
+- `timezone` is a display-context hint only. Any timezone conversion or server-time synchronization remains app-local.
+- `minDateTime` and `maxDateTime` are enforced in the picker UI across both the date and time portions when `withTime` is enabled.
+
+Surface policy:
+- Trigger styling follows the shared Input family through public `variant` and `size` props.
+- Plain date-only `DateRangePicker` usage keeps the shared two-month calendar as the primary bare surface when no preset row or time rail is present.
+- `DateRangePicker` with `withTime`, or generic preset chrome, uses the framed composite popover shell.
 
 ---
 
@@ -1031,35 +1060,6 @@ instead of expecting a dedicated second overlay export from `@repo/ui`.
 
 ---
 
-### DateTimePicker
-
-```ts
-export interface DateTimePickerProps {
-  value?: Date | null
-  onChange?: (value: Date | null) => void
-  minDateTime?: Date
-  maxDateTime?: Date
-  timezone?: string
-  disabled?: boolean
-  clearable?: boolean
-  error?: string | boolean
-  className?: string
-}
-```
-
-Story group: `Inputs`
-
-Date/time policy:
-- `value` and `onChange` use a plain `Date | null` contract. The shared component does not introduce a custom zoned value type.
-- `timezone` is a display and selection-context hint only. It may influence rendered labels or option presentation, but it must not silently transform the emitted `Date` value into a different absolute instant.
-- `minDateTime` and `maxDateTime` are enforced in the picker UI across both the date and time portions of the selection flow.
-- Shared scope is minute-precision only. Seconds, recurrence, server-time synchronization, and workflow-specific confirmation logic remain app-local.
-- The shared component commits selection directly through `onChange`; app-specific save/apply wrappers, validation workflows, and side effects remain local composition.
-
-Migration note: legacy `initialValue` -> `value`; `minimumDate` / `maximumDate` -> `minDateTime` / `maxDateTime`; `isDisabled` -> `disabled`; app-local timezone conversion logic stays outside the shared primitive and should adapt around the emitted `Date`.
-
----
-
 ### Menubar
 
 ```ts
@@ -1129,6 +1129,8 @@ Migration note: the earlier flat `items[]` draft is replaced by a compound comma
 export interface MonthPickerProps {
   value?: Date | null
   onChange?: (value: Date | null) => void
+  variant?: 'default' | 'outline' | 'ghost'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   minMonth?: Date
   maxMonth?: Date
   disabled?: boolean
@@ -1139,6 +1141,10 @@ export interface MonthPickerProps {
 ```
 
 Story group: `Inputs`
+
+Interaction note:
+- Trigger styling follows the shared Input family through public `variant` and `size` props.
+- `MonthPicker` reuses the shared compact date-family header and year-list spacing baseline so the clickable year jump remains visually aligned with `Calendar`, `DatePicker`, and `DateRangePicker`.
 
 ---
 

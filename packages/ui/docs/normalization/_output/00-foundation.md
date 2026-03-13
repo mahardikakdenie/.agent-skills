@@ -128,7 +128,7 @@ Cross-app consolidation decisions:
 - `SelectAutocomplete` / `InputAutocomplete` / searchable dropdown family -> `Combobox`
 - `FlashMessage` / `Notification` / `ErrorContent` / `AlertBanner` family -> `Alert`
 - `Loading` / `Loader` / `LoadingWrapper` / `SuspenseFallback` family -> no canonical shared wrapper; apps compose `Spinner` and `Skeleton` locally where needed
-- `Datepicker` / `DatePicker` variants -> Date family with explicit split into `DatePicker`, `DateRangePicker`, `DateTimePicker`, and `MonthPicker`
+- `Datepicker` / `DatePicker` variants -> Date family with canonical `DatePicker`, `DateRangePicker`, and `MonthPicker`; time-enabled flows normalize through optional `withTime` support on `DatePicker` or `DateRangePicker`
 
 Traceability:
 - Detailed merge and split reasoning is deferred to the subsequent planning batch.

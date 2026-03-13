@@ -17,7 +17,7 @@
 
 The public value stays `Date | null`, but the component normalizes every emitted month to the first day of that month. That keeps the API simple while preventing hidden day-level state drift across apps.
 
-The header year is clickable and opens a scrollable year list inside the same popover. That removes the need to repeatedly hit previous or next for distant years while keeping the public API unchanged.
+The header year is clickable and opens a scrollable year list inside the same popover. That removes the need to repeatedly hit previous or next for distant years while keeping the public API unchanged. The popover also follows the same compact header and year-list spacing baseline as the rest of the shared date family.
 
 **When to use:**
 
@@ -55,6 +55,8 @@ The header year is clickable and opens a scrollable year list inside the same po
 | --- | --- | --- | --- | --- |
 | `value` | `Date \| null` | internal state | No | Controlled selected month. Any provided date is normalized to the first day of its month for display and selection behavior. |
 | `onChange` | `(value: Date \| null) => void` | `undefined` | No | Called after month selection or clear. Selected values are normalized to the first day of the month. |
+| `variant` | `'default' \| 'outline' \| 'ghost'` | `'default'` | No | Applies the shared Input-aligned trigger shell variant. |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | No | Applies the shared Input-aligned trigger height and spacing scale. |
 | `minMonth` | `Date` | `undefined` | No | Disables months before this bound and limits previous-year navigation. |
 | `maxMonth` | `Date` | `undefined` | No | Disables months after this bound and limits next-year navigation. |
 | `disabled` | `boolean` | `false` | No | Disables trigger interaction and clear affordance. |
@@ -68,12 +70,12 @@ The header year is clickable and opens a scrollable year list inside the same po
 
 ## Visual Contract
 
-`MonthPicker` does not expose public visual `variant` or `size` props in this pass. The shared contract is one input-aligned shell with shared invalid, disabled, clear, and fast-year-jump behavior.
+`MonthPicker` exposes the same public `variant` and `size` trigger contract as the shared Input family while keeping one compact month-grid popover pattern with shared invalid, disabled, clear, and fast-year-jump behavior.
 
 | Surface | Description | Notes |
 | --- | --- | --- |
 | Trigger shell | Input-aligned bordered field button | Shows selected month or the default placeholder copy `Select month...` |
-| Popover panel | Shared elevated month-selection panel | Uses year navigation, clickable year jump, and a 12-month grid |
+| Popover panel | Shared elevated month-selection panel with the compact date-family header baseline | Uses year navigation, clickable year jump, and a 12-month grid without adding a second decorative wrapper around the in-panel year list |
 | Year list | Scrollable in-panel year chooser | Opens when the header year is activated and returns to month view after selection |
 | Month option | One button per month | Selected month uses accent emphasis; unavailable months are disabled |
 
@@ -206,6 +208,8 @@ The header year is clickable and opens a scrollable year list inside the same po
 **Story file title:** `'Inputs/MonthPicker'`
 
 - [x] `Basic`
+- [x] `Variants`
+- [x] `Sizes`
 - [x] `Min/Max`
 - [x] `Clearable`
 - [x] `Disabled State`
@@ -214,6 +218,8 @@ The header year is clickable and opens a scrollable year list inside the same po
 
 Roadmap alignment:
 - `MonthPicker.Basic` -> `Basic`
+- `MonthPicker.Variants` -> `Variants`
+- `MonthPicker.Sizes` -> `Sizes`
 - `MonthPicker.MinMax` -> `Min/Max`
 
 ---
@@ -244,3 +250,4 @@ Key recurring needs captured:
 | --- | --- |
 | 2026-03-13 | Initial MonthPicker spec |
 | 2026-03-13 | Added clickable year jump list inside the popover header |
+| 2026-03-13 | Aligned public `variant` / `size` props and required Storybook `Variants` / `Sizes` coverage with the shared Input contract |

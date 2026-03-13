@@ -89,7 +89,7 @@ Source: `06-component-standards.md 8`
 | Risk dimension | Details |
 |---|---|
 | Apps affected | 22 apps |
-| Variants | Single date, range, datetime, month-only -> separate canonical components (DatePicker, DateRangePicker, DateTimePicker, MonthPicker) |
+| Variants | Single date, range, and month-only stay canonical as `DatePicker`, `DateRangePicker`, and `MonthPicker`; optional time entry now lives on `DatePicker` and `DateRangePicker` via `withTime` |
 | Library mandate | `react-day-picker` + `date-fns`. Apps using `moment.js` must migrate date formatting before adopting |
 | Prop migration | `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`; `isLongDate` and similar display-format toggles -> `formatDate` |
 | UX parity | Calendar month navigation, disabled dates rendering, selection highlight, clear/save/cancel flows |

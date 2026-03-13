@@ -42,7 +42,7 @@
 | Modal and overlay shells | `Dialog`, `Drawer`, `Popover`, `Tooltip`, `DropdownMenu` | Overlay families stay distinct by interaction model. |
 | Loading indicators | `Skeleton`, `Spinner` | Shared loading primitives stay canonical; wrapper layout and suspense fallback composition stay app-local. |
 | Data display primitives | `Table`, `DataTable`, `Card`, `Badge`, `Avatar`, `Image`, `Timeline` | Structural display stays shared; domain data logic stays local. |
-| Date input family | `Calendar`, `DatePicker`, `DateRangePicker`, `DateTimePicker`, `MonthPicker` | Date contracts remain split by interaction scope, not overloaded into one component. |
+| Date input family | `Calendar`, `DatePicker`, `DateRangePicker`, `MonthPicker` | Date contracts stay split by interaction scope, with optional time entry exposed on `DatePicker` and `DateRangePicker` instead of a standalone date-time picker. |
 | Layout primitives | `Box`, `Card` | Layout stays structural and app-agnostic only. |
 
 ### Traceability rule for `12-master-backlog.csv`
@@ -88,7 +88,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Breadcrumb | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` amendment: `items[]`, `separator`, `currentLabel` | Shared shell only; route generation stays local | P1 | LOW | B5.1 |
 | Calendar | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` Calendar | Standalone calendar stays separate from picker wrappers | P1 | MEDIUM | B5.1 |
-| DatePicker | NEW_SHARED_COMPONENT | 22 apps; see `05` | missing | `02` DatePicker | Single-date picking remains distinct from range/time/month selection | P0 | HIGH | B5.1 |
+| DatePicker | NEW_SHARED_COMPONENT | 22 apps; see `05` | missing | `02` DatePicker | Single-date picking remains distinct from range/month selection, with optional time entry folded into the same contract | P0 | HIGH | B5.1 |
 | DropdownMenu | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` amendment: `items`, `align`, `side`, `onAction` | Generic action menu only | P1 | MEDIUM | B5.1 |
 | Form | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` Form | Field scaffolding only; schemas and submit logic stay local | P0 | HIGH | B5.1 |
 | Popover | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` Popover | Generic floating surface only | P1 | LOW | B5.1 |
@@ -101,7 +101,7 @@
 | Avatar | NEW_SHARED_COMPONENT | 6 apps; see `05` | missing | `02` amendment: `src`, `alt`, `fallback`, `size` | Avatar stays visual-only | P2 | LOW | B5.2 |
 | Combobox | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` Combobox | Searchable selection kept distinct from static select | P1 | HIGH | B5.2 |
 | DataTable | NEW_SHARED_COMPONENT | 6 apps; see `05` | missing | `02` DataTable | Generic headless table only; domain columns and workflows stay local | P1 | HIGH | B5.2 |
-| DateRangePicker | NEW_SHARED_COMPONENT | 7 apps; see `05` | missing | `02` amendment: `value`, `onChange`, `presets`, `minDate`, `maxDate` | Range selection stays separate from single-date picking | P2 | HIGH | B5.2 |
+| DateRangePicker | NEW_SHARED_COMPONENT | 7 apps; see `05` | missing | `02` amendment: `value`, `onChange`, `presets`, `minDate`, `maxDate`, optional time bounds | Range selection stays separate from single-date picking while supporting optional start/end times | P2 | HIGH | B5.2 |
 | FileUpload | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` FileUpload | Shared upload UX only; transport and storage stay local | P1 | MEDIUM | B5.2 |
 | Image | NEW_SHARED_COMPONENT | 13 apps; see `05` | missing | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | Shared image rendering only; framework and viewer concerns stay local | P1 | MEDIUM | B5.2 |
 | NavigationMenu | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` amendment: `items`, `orientation`, `collapsed`, `onNavigate` | Route trees and auth gating stay local | P2 | HIGH | B5.2 |
@@ -113,7 +113,6 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Accordion | NEW_SHARED_COMPONENT | 4 apps; see `05` | missing | `02` amendment: `type`, `collapsible`, `value`, `onValueChange` | Disclosure primitive only | P2 | MEDIUM | B5.3 |
 | Command | NEW_SHARED_COMPONENT | 5 apps; see `05` | missing | `02` amendment: `items`, `value`, `onValueChange`, `emptyState` | Shared command surface only | P2 | HIGH | B5.3 |
-| DateTimePicker | NEW_SHARED_COMPONENT | 5 apps; see `05` | missing | `02` amendment: `value`, `onChange`, `minDateTime`, `maxDateTime`, `timezone` | Time-enabled picking remains separate from base date input | P2 | HIGH | B5.3 |
 
 ### Wave B5.4 - Long Tail and Decision-Gated Work
 
@@ -142,7 +141,7 @@
 1. Close shared readiness gaps recorded in `00`, `03`, and `06` before implementation starts.
 2. Extend `Box` first because it is the only approved Batch 3 shared change.
 3. Build Wave B4 in strict SDD order before any long-tail work starts.
-4. Hold high-risk items behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, `DateRangePicker`, `DateTimePicker`, `RichTextEditor`.
+4. Hold high-risk items behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, `DateRangePicker`, `RichTextEditor`.
 5. Complete Batch 3A token foundation bootstrap before any Batch 4 shared build begins.
 6. Use 5 app readiness as the authoritative downstream sequencing input for Batch 5 and Batch 6.
 

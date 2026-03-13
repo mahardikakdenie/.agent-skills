@@ -15,7 +15,7 @@
 
 `Calendar` is the shared date-grid primitive for day-based selection and browsing in `@repo/ui`. It wraps `react-day-picker` with the normalized shared contract from `02-api-conventions.md`, token-driven styling, and the current Box-only authored JSX rule at the edges that we own. The component stays intentionally focused on calendar rendering, selection state, disabled-date handling, and month navigation. Field shells, popovers, inputs, validation wrappers, and submit behavior stay on `DatePicker`, `DateRangePicker`, `Form`, or app-local composition.
 
-Cross-app baseline evidence converges on three recurring needs: single-date selection, disabled-date constraints, and month or year navigation. Range support is also required by the canonical API even though `DateRangePicker` remains the higher-level field wrapper. This shared component therefore exposes DayPicker's built-in `single`, `multiple`, and `range` modes, keeps `disabled` matchers first-class, and passes through the relevant navigation props without widening into form or popover concerns.
+Cross-app baseline evidence converges on three recurring needs: single-date selection, disabled-date constraints, and month or year navigation. Range support is also required by the canonical API even though `DateRangePicker` remains the higher-level field wrapper. This shared component therefore exposes DayPicker's built-in `single`, `multiple`, and `range` modes, keeps `disabled` matchers first-class, and passes through the relevant navigation props without widening into form or popover concerns. The compact calendar sizing, header spacing, and interactive year/month picker treatment here are also the visual baseline reused by `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 
 **When to use:**
 
@@ -144,7 +144,7 @@ interface CalendarRangeProps extends CalendarBaseProps {
 | Outside day | Muted adjacent-month day treatment | Outside days remain visible when `showOutsideDays` is true |
 | Today | Subtle ring/border emphasis on the current day | Keeps current-day orientation without overriding selection semantics |
 | Range middle | Accent-toned span between start and end | Preserves continuous range readability |
-| Month navigation | Shared button or header-driven month/year navigation chrome | Prev/next buttons stay available, and `dropdown` / `dropdown-buttons` use a caption trigger that opens year selection first and month selection second |
+| Month navigation | Shared compact header with symmetric hover/focus spacing plus button-driven or header-driven month/year navigation chrome | Prev/next buttons stay available, and `dropdown` / `dropdown-buttons` use a caption trigger that opens year selection first and month selection second |
 
 `Calendar` does not introduce shared loading, error, or form-validation UI in this pass.
 
@@ -280,6 +280,7 @@ Key recurring needs captured:
 
 - Shared `selected`, `mode`, and `onSelect` behavior for inline date grids
 - Disabled-date constraints and focused/selected-day visual parity
+- Compact date-family sizing plus symmetric interactive header hover/focus spacing
 - Month and year navigation control without folding in date-input or popover concerns
 
 ---

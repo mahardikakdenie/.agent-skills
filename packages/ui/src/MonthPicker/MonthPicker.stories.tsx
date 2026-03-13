@@ -14,7 +14,11 @@ import {
   FormMessage,
 } from '../Form';
 import { MonthPicker } from './MonthPicker';
-import type { MonthPickerProps } from './MonthPicker.types';
+import {
+  monthPickerSizeValues,
+  type MonthPickerProps,
+  monthPickerVariantValues,
+} from './MonthPicker.types';
 
 interface MonthPickerStoryArgs extends MonthPickerProps {
   initialValue?: Date | null;
@@ -137,6 +141,8 @@ const meta = {
   component: MonthPicker,
   tags: ['autodocs'],
   args: {
+    variant: 'default',
+    size: 'md',
     initialValue: new Date(2026, 6, 1),
     minMonth: undefined,
     maxMonth: undefined,
@@ -151,6 +157,14 @@ const meta = {
     },
     value: {
       control: false,
+    },
+    variant: {
+      control: 'select',
+      options: monthPickerVariantValues,
+    },
+    size: {
+      control: 'select',
+      options: monthPickerSizeValues,
     },
     minMonth: {
       control: 'date',
@@ -193,6 +207,60 @@ export const Default: Story = {
       description: {
         story:
           'Baseline month picker with a selected value, internal year navigation, clickable year jump, and a clear action.',
+      },
+    },
+  },
+};
+
+export const Variants: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-3">
+      {monthPickerVariantValues.map((variant) => (
+        <Box key={variant} className="flex flex-col gap-2">
+          <Box as="p" className="text-sm font-medium text-foreground">
+            {variant.charAt(0).toUpperCase() + variant.slice(1)}
+          </Box>
+          <MonthPicker
+            variant={variant}
+            value={new Date(2026, 6, 1)}
+            aria-label={`Month picker variant ${variant}`}
+            clearable
+          />
+        </Box>
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compares the Input-aligned MonthPicker trigger variants.',
+      },
+    },
+  },
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-2">
+      {monthPickerSizeValues.map((size) => (
+        <Box key={size} className="flex flex-col gap-2">
+          <Box as="p" className="text-sm font-medium text-foreground">
+            {`Size ${size.toUpperCase()}`}
+          </Box>
+          <MonthPicker
+            size={size}
+            value={new Date(2026, 6, 1)}
+            aria-label={`Month picker size ${size}`}
+            clearable
+          />
+        </Box>
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows the full shared size scale, matching the Input component density contract.',
       },
     },
   },

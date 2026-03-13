@@ -109,6 +109,48 @@ export const datePickerActionButtonVariants = cva(
   },
 );
 
-export const datePickerContentVariants = cva('w-auto p-0');
+export const datePickerContentVariants = cva('min-w-0 w-fit p-0', {
+  variants: {
+    chrome: {
+      bare: 'border-0 bg-transparent shadow-none',
+      framed: '',
+    },
+  },
+  defaultVariants: {
+    chrome: 'framed',
+  },
+});
+
+export const datePickerPanelVariants = cva('grid items-start gap-1.5 p-2');
+
+export const datePickerTimeSectionVariants = cva(
+  'grid content-start justify-items-start self-stretch gap-1 rounded-md border border-border/70 bg-muted/15 px-2 py-1.5',
+);
+
+export const datePickerTimeLabelVariants = cva(
+  'inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground',
+);
+
+export const datePickerTimeInputVariants = cva(
+  [
+    'h-8 w-[5.75rem] min-w-0 rounded-md border border-input bg-background px-2.5 text-sm tabular-nums text-foreground shadow-sm',
+    'outline-none transition-colors motion-reduce:transition-none',
+    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'disabled:cursor-not-allowed disabled:opacity-60',
+  ].join(' '),
+  {
+    variants: {
+      invalid: {
+        true: 'border-destructive focus-visible:ring-destructive/30',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      invalid: false,
+    },
+  },
+);
+
+export const datePickerHintVariants = cva('text-[11px] leading-4 text-muted-foreground');
 
 export const datePickerMessageVariants = cva('text-sm text-destructive');

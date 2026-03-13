@@ -25,6 +25,10 @@ export interface DatePickerProps
   mode?: DatePickerMode;
   minDate?: Date;
   maxDate?: Date;
+  withTime?: boolean;
+  minDateTime?: Date;
+  maxDateTime?: Date;
+  timezone?: string;
   disabled?: boolean;
   clearable?: boolean;
   required?: boolean;
