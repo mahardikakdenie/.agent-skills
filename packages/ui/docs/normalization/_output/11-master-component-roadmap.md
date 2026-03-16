@@ -26,7 +26,7 @@
 - All non-`Box` shared items remain Batch 4 build scope, regardless of sub-wave sequencing.
 - Consumer demand is represented as normalized counts from `05-coverage-baseline.md`, not raw per-app export lists.
 - `Spinner` and `Skeleton` remain the only canonical shared loading surfaces; loading wrappers, suspense fallbacks, branded full-page loaders, retry/error-aware shells, and domain-aware loading containers stay app-local unless a future narrower wrapper is explicitly approved.
-- `RichTextEditor` remains visible for traceability but stays decision-gated.
+- `RichTextEditor` now uses a bounded shared Tiptap contract for app-agnostic formatted text entry; uploads, mentions, media, and workflow-specific viewer behavior remain app-local.
 - Cross-check on 2026-03-09 confirms the current `@repo/ui` export surface is still `Box` only; no Batch 4 row may move to `DONE` until that changes.
 
 ## 2. Batch 3 - Extend Existing
@@ -96,7 +96,7 @@
 | Menubar | 2 (Composite) | `@radix-ui/react-menubar` | `02` amendment: compound menubar exports (`Menubar`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioGroup`, `MenubarRadioItem`, `MenubarLabel`, `MenubarSeparator`, `MenubarSub`, `MenubarSubTrigger`, `MenubarSubContent`, `MenubarShortcut`), optional root `onAction`, root `disabled` | `@radix-ui/react-menubar` | Complex | `Menubar.Basic`, `Menubar.CheckboxItems`, `Menubar.Submenu`, `Menubar.Disabled` | 4 apps; see `05` | M | Long-tail admin demand |
 | MonthPicker | 2 (Composite) | `Calendar` + `Popover` | `02` amendment: `value`, `onChange`, `minMonth`, `maxMonth` | `react-day-picker`, `date-fns`, `@radix-ui/react-popover` | Complex | `MonthPicker.Basic`, `MonthPicker.MinMax` | 3 apps; see `05` | M | Distinct month-only contract |
 | Timeline | 2 (Composite) | Tier 1 composition | `02` amendment: `items`, `orientation`, `statusTone` | none | Standard | `Timeline.Basic`, `Timeline.Dense`, `Timeline.Status` | 3 apps; see `05` | S | Presentation-only timeline |
-| RichTextEditor | 2 (Composite) | external editor engine (TBD) | Decision-gated API: `value`, `onChange`, `toolbar`, `readonly`, `sanitize` | editor engine TBD, sanitization tooling TBD | Complex | `RichTextEditor.Basic`, `RichTextEditor.Toolbar`, `RichTextEditor.Sanitization`, `RichTextEditor.Readonly` | 1 app; see `05` | XL | Do not start until engine and security review are approved |
+| RichTextEditor | 2 (Composite) | `@tiptap/react` + `@tiptap/starter-kit` + `@tiptap/extension-link` | `value`, `onChange`, `toolbar`, `readonly`, `sanitize`, `label`, `helperText`, `error` | `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-link`, `dompurify` | Complex | `RichTextEditor.Basic`, `RichTextEditor.Toolbar`, `RichTextEditor.Sanitization`, `RichTextEditor.Readonly` | 1 app; see `05` | XL | Decision gate opened on 2026-03-16 for a bounded shared contract only; uploads, mentions, slash commands, media, and viewer-specific rendering remain app-local. Shared structure coverage currently runs through `Heading 3`, and shared toolbar shortcut coverage should stay limited to the implemented editor surface, with `Mod+K` for link editing and `Mod+Y` as the canonical redo path |
 
 ## 8. Roadmap Operating Notes
 
@@ -104,7 +104,7 @@
 - `consumer apps` in this rerun means normalized demand counts from `05`, not explicit app-name lists.
 - Any API marked 2 amendment must be mirrored back into 2-api-conventions.md before implementation starts.
 - Batch 3A token bootstrap is a hard gate for every row after Box.
-- `RichTextEditor` is visible for completeness but remains outside the initial critical path.
+- `RichTextEditor` is no longer engine-blocked, but it remains intentionally narrow and outside the migration path for app-specific editorial workflows.
 
 
 

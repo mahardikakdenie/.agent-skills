@@ -12,7 +12,7 @@
 1. Finish Batch 3 `Box` extension first.
 2. Complete Batch 3A token foundation bootstrap before any shared build beyond `Box`.
 3. Execute Wave B4 in strict SDD order before any long-tail work starts.
-4. Hold high-risk components behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, `DateRangePicker`, `RichTextEditor`.
+4. Hold high-risk components behind their explicit gates: `Dialog`, `Select`, `DatePicker`, `Combobox`, `DataTable`, `NavigationMenu`, and `DateRangePicker`.
 5. Use `05` app readiness as the downstream stabilization and cleanup sequencing contract.
 
 ### Status vocabulary
@@ -204,7 +204,7 @@
 | B5.2 | `Avatar`, `Combobox`, `DataTable`, `DateRangePicker`, `FileUpload`, `Image`, `NavigationMenu`, `OtpInput` | B5.1 stable and required dependencies installed | All B5.2 items marked `DONE` or explicitly blocked with reason | DONE |
 | B5.3 | `Accordion`, `Command` | B5.2 prerequisites complete | All B5.3 items marked `DONE` or explicitly blocked with reason | DONE |
 | B5.4 | `Menubar`, `MonthPicker`, `Timeline` | No open P0/P1 blocker remains | Long-tail items marked `DONE` or explicitly deferred | DONE |
-| Decision gate | `RichTextEditor` | Editor engine, security, SSR, and bundle policy approved | Status changes from `DECISION-GATED` to `PLANNED` | DECISION-GATED |
+| Decision gate | `RichTextEditor` | Editor engine, security, SSR, and bundle policy approved | Bounded shared `RichTextEditor` lands with verification evidence and app-local scope guardrails documented | DONE |
 
 ### App cohort matrix
 
@@ -327,4 +327,4 @@
 | Menubar | 4 | B5.4 | DONE | Shipped on 2026-03-12 with spec, Storybook, Radix-backed compound exports, shared shortcut and submenu support, and Box-authored root, trigger, content, and item wrappers |
 | MonthPicker | 4 | B5.4 | DONE | Shipped on 2026-03-13 with spec, Storybook, first-of-month normalization, bounded year navigation, and Box-authored trigger, popover shell, and month-grid controls |
 | Timeline | 4 | B5.4 | DONE | Shipped on 2026-03-13 with spec, Storybook, shared orientation support, semantic marker tones, and Box-authored list + connector composition |
-| RichTextEditor | 4 | Decision gate | DECISION-GATED | Wait for editor engine and security approval |
+| RichTextEditor | 4 | Decision gate | DONE | Shipped on 2026-03-16 with a bounded Tiptap contract, default sanitization, compact toolbar/link-editor hardening, shared tooltip shortcut coverage for supported actions, and explicit app-local exclusions for uploads, mentions, slash commands, media, viewer-specific rendering, and global shortcut policy |

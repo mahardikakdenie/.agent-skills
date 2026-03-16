@@ -7,6 +7,35 @@
 
 ---
 
+## 2026-03-16 - RichTextEditor Decision Gate Opened and Delivered
+
+Changed:
+- Approved headless Tiptap as the shared RichTextEditor engine using `@tiptap/react`, `@tiptap/starter-kit`, and `@tiptap/extension-link`.
+- Implemented `packages/ui/src/RichTextEditor` with a bounded shared contract: HTML value output, toolbar presets, readonly mode, and default sanitization through `dompurify`.
+- Locked the shared editor scope to app-agnostic formatted text entry only; uploads, mentions, slash commands, media embeds, and viewer-specific rendering remain app-local.
+- Updated the normalization sources so `02-api-conventions.md`, `11-master-component-roadmap.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` all reflect the opened decision gate and shipped contract.
+
+Impact:
+- `@repo/ui` now includes one approved rich-text editing surface for shared comment, note, and description workflows.
+- The former RichTextEditor gate is no longer an engine-selection blocker, but apps must keep advanced editorial workflows and domain-specific rendering outside the shared package boundary.
+
+---
+
+## 2026-03-16 - RichTextEditor Toolbar and Shortcut Hardening
+
+Changed:
+- Refined the delivered `RichTextEditor` toolbar chrome so grouped actions and the inline link editor consume less space without shrinking the authored click targets.
+- Removed toolbar tooltip arrows, expanded tooltip copy, and aligned disabled hover treatment so non-interactive actions no longer pick up ambiguous hover styling.
+- Normalized the shared shortcut surface to editor behaviors that are both implemented and user-facing: `Mod+Alt+0`, `Mod+Alt+1`, `Mod+Alt+2`, `Mod+B`, `Mod+I`, `Mod+Shift+S`, `Mod+E`, `Mod+Shift+8`, `Mod+Shift+7`, `Mod+Shift+B`, `Mod+Alt+C`, `Mod+K`, `Mod+\\`, `Mod+Z`, and `Mod+Y`.
+- Extended the shared heading ladder to include `Heading 3` so deeper content structure can stay inside the same bounded editor surface without introducing app-local heading variants.
+- Locked `Mod+K` as the shared link-editor entry point and `Mod+Y` as the canonical shared redo shortcut; alternate redo copy such as `Shift+Mod+Z` remains intentionally unsurfaced in the shared contract.
+
+Impact:
+- Downstream apps can rely on one bounded, documented keyboard shortcut model for shared formatted-text entry instead of inventing local toolbar shortcut copy for the same baseline actions.
+- Global shortcut registration, route-level command policy, and any shortcut behavior beyond the delivered rich-text field surface remain app-local.
+
+---
+
 ## 2026-03-08 - Box Foundation Amendment Applied
 
 Changed:

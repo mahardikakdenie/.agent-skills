@@ -183,6 +183,24 @@ Keep local:
 - Rich-text, markdown, mention, upload, or editor-style surfaces.
 - Domain-aware wrappers that still compute validation copy, apply business formatting, or trigger workflow side effects while editing.
 
+## RichTextEditor
+
+Direct adoption guidance:
+
+- Legacy rich-text comment, note, or description fields that already emit HTML map to `RichTextEditor`.
+- Existing editor callbacks normalize to `value`, `defaultValue`, and `onChange`; compact reply or comment flows map to `toolbar="minimal"`.
+- Existing readonly viewers that only need the same formatted shell map to `readonly` plus `toolbar="none"` when the edit chrome should be removed.
+- Existing sanitization steps should collapse into the shared default sanitizer unless an app-owned sanitizer function is explicitly required.
+- Existing inline editor shortcut hints should collapse into the shared tooltip model for supported actions instead of re-documenting different copy for the same baseline toolbar.
+- Existing link-edit keyboard affordances should normalize to the shared `Mod+K` entry point rather than adding app-local toolbar hints for the same interaction.
+
+Keep local:
+
+- Upload, attachment, mention, slash-command, emoji, media embed, or AI-assist editor behavior.
+- Viewer shells that still inject domain-specific rendering, entity linking, permission checks, or unsafe HTML exceptions.
+- Persistence, autosave, service orchestration, collaboration state, and business validation beyond plain field-level error copy.
+- Global keyboard shortcut registration, cross-page command policy, and any editor shortcut overrides that should apply outside the shared field surface.
+
 ## Label
 
 Direct adoption guidance:

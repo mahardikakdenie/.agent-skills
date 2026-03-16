@@ -17,6 +17,7 @@ export * from './Label';
 export * from './MonthPicker';
 export * from './OtpInput';
 export * from './RadioGroup';
+export * from './RichTextEditor';
 export * from './Select';
 export * from './Switch';
 export * from './Textarea';

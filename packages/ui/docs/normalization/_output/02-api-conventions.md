@@ -220,6 +220,40 @@ Story group: `Inputs`
 
 ---
 
+### RichTextEditor
+
+```ts
+export interface RichTextEditorProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'onBlur' | 'onChange' | 'onFocus'> {
+  value?: string
+  defaultValue?: string
+  onChange?: (value: string) => void
+  onBlur?: () => void
+  onFocus?: () => void
+  toolbar?: 'default' | 'minimal' | 'none'
+  readonly?: boolean
+  sanitize?: boolean | ((html: string) => string)
+  label?: string
+  helperText?: string
+  error?: string | boolean
+  required?: boolean
+  id?: string
+}
+```
+
+Shared-scope note:
+- `RichTextEditor` is the bounded shared rich-text contract for formatted comments, notes, and description fields only.
+- The approved engine is headless Tiptap via `@tiptap/react`, `@tiptap/starter-kit`, and `@tiptap/extension-link`, with sanitization enforced at the shared component boundary.
+- The delivered shared structure coverage now includes paragraph plus heading levels 1 through 3; deeper heading ladders and document-schema changes still require an explicit amendment.
+- Shared toolbar actions may expose keyboard shortcut metadata when the shortcut is actively supported by the delivered editor surface; the current shared contract covers common formatting, structure, list, history, link, body-text reset, and clear-formatting shortcuts only.
+- `Mod+K` is part of the shared `RichTextEditor` contract for opening the inline link editor; `Mod+Y` is the canonical shared redo shortcut, and `Shift+Mod+Z` should not be surfaced as shared shortcut copy.
+- Uploads, mentions, slash commands, media embeds, viewer-specific rendering, and persistence workflows remain app-local and must not be folded into this API.
+- Because the editor depends on browser editing APIs, consuming apps should render it from client components.
+
+Story group: `Inputs`
+
+---
+
 ### Select
 
 ```ts
