@@ -80,7 +80,7 @@ Combine multiple primitives into a cohesive UI pattern.
 | `NavigationMenu`        | missing      | Radix NavigationMenu                  |
 | `Menubar`               | missing      | Radix Menubar                         |
 | `PageHeader`            | missing      | Tier 1                                |
-| `ContentLoadingWrapper` | missing      | `Skeleton`                            |
+| `Loading wrappers / suspense fallbacks` | app-local    | Compose `Spinner` + `Skeleton` locally |
 
 ### Tier 3 - App-Local Only (never extracted to `packages/ui`)
 
@@ -555,7 +555,7 @@ Every component exported from `packages/ui` must be assigned to exactly one Stor
 | `Feedback`     | `Alert`, `Toast`, `Badge`, `Spinner`, `Skeleton`, `Progress`                                                   |
 | `Navigation`   | `Breadcrumb`, `Tabs`, `Pagination`, `NavigationMenu`, `Menubar`, `Sidebar`                                     |
 | `Data Display` | `Table`, `DataTable`, `DataList`, `Avatar`, `Calendar`                                                         |
-| `Layout`       | `Box`, `Card`, `Separator`, `PageHeader`, `ContentLoadingWrapper`                                              |
+| `Layout`       | `Box`, `Card`, `Separator`, `PageHeader`                                                                       |
 | `Misc`         | `Command`, `Label`, `Form` (field-level primitives)                                                            |
 
 #### Story `title` Convention (mandatory)
