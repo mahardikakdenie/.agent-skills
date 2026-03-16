@@ -208,6 +208,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Gate result: types âœ… | lint âœ… | build âœ… | smoke ✅ (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
 - Caller grep: âœ… zero caller files changed
 - packages/ui candidate: NO
+- Shared UI guidance: retain any PageHeader wrapper locally; do not migrate toward an `@repo/ui` PageHeader. Compose equivalent header UX from existing app-agnostic `@repo/ui` primitives inside the app to preserve behavior parity.
 
 ### BillingDetailActions - 2026-02-23
 - Strategy: container-shell

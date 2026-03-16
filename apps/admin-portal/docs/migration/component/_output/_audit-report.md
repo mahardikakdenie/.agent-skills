@@ -3757,10 +3757,10 @@
 - **Classification:** SPLIT
 - **Batch:** 1.5
 - **@repo/ui status:** n/a (split marker)
-- **API delta:** Split marker - split into PageHeaderContainer + PageHeaderShell
+- **API delta:** Split marker - split into PageHeaderContainer + PageHeaderShell; no shared `@repo/ui` PageHeader target
 - **Parity risk:** LOW
-- **Risk notes:** Batch 1.5 split completed; container and shell entries added.
-- **Reason kept app-local:** N/A
+- **Risk notes:** Batch 1.5 split completed; container and shell entries added. Preserve existing page header behavior via app-local composition rather than a shared header abstraction.
+- **Reason kept app-local:** Page header UX remains app-owned; if needed, compose it locally from app-agnostic `@repo/ui` primitives instead of introducing a shared `PageHeader`.
 - **Is monolith:** YES
 - **SoC potential:** HIGH
 - **SoC strategy:** render-prop
@@ -3777,7 +3777,7 @@
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
 - **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
-- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration and any needed page header wrapper stays local to the app.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none
@@ -3794,7 +3794,7 @@
 - **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
 - **Risk notes:** Contains app-specific domain, routing, or API concerns that should remain local.
-- **Reason kept app-local:** Container/shell split applied; container keeps app-owned orchestration.
+- **Reason kept app-local:** Container/shell split applied; shell supports an app-local page header pattern rather than a shared `@repo/ui` header abstraction.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none
