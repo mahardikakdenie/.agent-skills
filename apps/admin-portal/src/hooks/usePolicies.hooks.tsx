@@ -21,6 +21,7 @@ interface UsePoliciesProps {
   searchChannel: string;
   searchCategory: string;
   date: DateRange | undefined;
+  exporting: boolean;
 
   setPage: (page: number) => void;
   setRowsPerPage: (rows: number) => void;
@@ -29,6 +30,7 @@ interface UsePoliciesProps {
   setSearchChannel: (channel: string) => void;
   setSearchCategory: (category: string) => void;
   setDate: (date: DateRange | undefined) => void;
+  setExporting: (exporting: boolean) => void;
 
   isLoading: boolean;
   isLoadingChannels: boolean;
@@ -63,6 +65,7 @@ export default function usePolicies(
   const [policies, setPolicies] = useState<any[]>([]);
   const [channels, setChannels] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [exporting, setExporting] = useState(false);
 
   const policyParams: Record<string, any> = {
     page,
@@ -97,7 +100,7 @@ export default function usePolicies(
     {
       staleTime: 300000,
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   const { data: resCategories, isFetching: isLoadingCategories } =
@@ -188,6 +191,17 @@ export default function usePolicies(
     };
   }, [handleSearch]);
 
+  useEffect(() => {
+    const currentDate = new Date();
+    const last30DaysDate = new Date(currentDate);
+    last30DaysDate.setDate(currentDate.getDate() - 30);
+
+    setDate({
+      from: last30DaysDate,
+      to: currentDate,
+    });
+  }, []);
+
   return {
     policies,
     channels,
@@ -203,6 +217,7 @@ export default function usePolicies(
     searchChannel,
     searchCategory,
     date,
+    exporting,
 
     setPage,
     setRowsPerPage,
@@ -211,6 +226,7 @@ export default function usePolicies(
     setSearchChannel,
     setSearchCategory,
     setDate,
+    setExporting,
 
     isLoading,
     isLoadingChannels,

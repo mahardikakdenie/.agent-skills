@@ -148,12 +148,12 @@ export const createPendingRenewalsTableColumns = ({
     header: "Stage",
     render: (policy) => {
       const stageColor =
-        getStageColor?.(policy?.notification_log?.stage || "") ||
+        getStageColor?.(policy?.notification_log[0]?.stage || "") ||
         "text-gray-600";
       return (
         <div className="font-semibold whitespace-nowrap">
           <span className={stageColor}>
-            {policy?.notification_log?.stage || "-"}
+            {policy?.notification_log[0]?.stage || "-"}
           </span>
         </div>
       );
@@ -166,12 +166,21 @@ export const createPendingRenewalsTableColumns = ({
       return (
         <div className="font-semibold whitespace-nowrap">
           <span
-            className={getStatusColor(policy?.notification_log?.status || "")}
+            className={getStatusColor(
+              policy?.notification_log[0]?.status || "",
+            )}
           >
-            {policy?.notification_log?.status || "-"}
+            {policy?.notification_log[0]?.status || "-"}
           </span>
         </div>
       );
+    },
+  },
+  {
+    key: "email_sent",
+    header: "Email Sent",
+    render: (policy) => {
+      return <div>{policy?.notification_log?.length || "-"}</div>;
     },
   },
   {
