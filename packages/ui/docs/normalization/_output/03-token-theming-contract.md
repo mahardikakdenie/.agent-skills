@@ -183,6 +183,33 @@ Forbidden:
 
 ---
 
+## 6A. Focus Treatment Contract
+
+The focus normalization amendment does not open a new token family.
+Shared focus treatment must continue using the existing semantic token set only.
+
+Foundation ruling:
+
+- `--ring` remains the canonical focus hue source for calm focus treatment.
+- `--destructive` remains the canonical invalid-focus tint source.
+- `--border` and `--input` remain the structural edge tokens for field-entry components.
+- The normalized field-entry recipe should prefer border emphasis plus a low-alpha near-shell halo rather than a detached offset halo.
+
+Implementation guardrails:
+
+- No new CSS variables such as `--focus-ring-strong`, `--focus-glow`, or family-specific focus tokens are approved in this amendment.
+- Focus utilities in `packages/ui/src/utils/*` may compose semantic Tailwind classes only.
+- Default field-entry focus should target `ring-ring/20` to `/30`.
+- Invalid field-entry focus should target `ring-destructive/15` to `/25`.
+- Open, active, selected, and highlighted states must not introduce a second heavy ring system on top of focus by default.
+
+Operational meaning:
+
+- The focus amendment is a usage normalization pass on top of the existing token contract, not a token expansion effort.
+- Any future request for a dedicated focus token ladder still requires a separate foundation amendment.
+
+---
+
 ## 7. Apps Requiring Token Normalization (Critical)
 
 The following apps have identified token normalization as a prerequisite to shared component adoption:

@@ -7,6 +7,24 @@
 
 ---
 
+## 2026-03-17 - Focus Normalization Amendment Opened For Field-Entry Families
+
+Changed:
+
+- Opened a docs-first foundation amendment for focus-style normalization in `packages/ui`.
+- Grouped the current shared focus behavior into five canonical families: `field-shell-composite`, `field-shell-direct`, `segmented-slot`, `compact-control`, and `dense-surface`.
+- Marked detached `ring-offset-2` field halos, `OtpInput` active-plus-focus stacking, and `Combobox` open-plus-focus stacking as the current high-noise patterns that the amendment must correct.
+- Approved Wave 1 implementation for the field-entry family only: shared internal focus utility, `Input`, `Textarea`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `Select`, `Combobox`, and `OtpInput`.
+- Deferred compact-control and dense-surface follow-up work so the first implementation wave can stop cleanly without reopening the whole package.
+- Updated the audit, handoff, prompt pack, and canonical `_output` docs so both single-agent and multi-agent execution read the same docs-first gate.
+
+Impact:
+
+- Implementation workers can proceed on a bounded Wave 1 without inferring scope from ad hoc visual similarity.
+- The shared package now has one explicit focus-normalization contract for field entry, while smaller controls and dense navigation surfaces remain intentionally deferred instead of drifting through piecemeal edits.
+
+---
+
 ## 2026-03-17 - Sizing Normalization Amendment Opened For Select And Combobox
 
 Changed:

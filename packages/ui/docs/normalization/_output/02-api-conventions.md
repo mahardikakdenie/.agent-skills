@@ -200,6 +200,11 @@ Sizing-family note:
 - `OtpInput` remains a separate segmented-input size family with `sm | md | lg`, default `md`.
 - `Textarea`, `Pagination`, `Dialog`, and `Calendar` remain frozen sizing exceptions in this amendment.
 
+Focus-family note:
+- `Input` is part of the `field-shell-composite` focus family.
+- The visible focus treatment belongs on the outer shell via `focus-within`.
+- The approved recipe is border emphasis plus a subtle near-shell halo. Detached `ring-offset-2` halos are no longer the canonical target for this family.
+
 Story group: `Inputs`
 
 ---
@@ -225,7 +230,38 @@ Sizing note:
 - `Textarea` has no public `size` prop in the shared contract.
 - Height remains row-driven through native textarea behavior and consumer-provided `rows`.
 
+Focus note:
+- `Textarea` is the direct-element exception inside the field-entry family.
+- The visible border and focus treatment stay on the actual `textarea` element, but the visual recipe should still match the calmer field-shell language used by the rest of the family.
+
 Story group: `Inputs`
+
+---
+
+### Focus-family normalization amendment
+
+This amendment opens five canonical focus families for `packages/ui`:
+
+| Family | Components | Canonical rule |
+| --- | --- | --- |
+| `field-shell-composite` | `Input`, `DatePicker`, `DateRangePicker`, `MonthPicker` | Outer shell owns focus via `focus-within`; use border emphasis plus a near-shell halo with no detached offset halo |
+| `field-shell-direct` | `Textarea`, `Select`, `Combobox`, date/time inputs inside date pickers | Direct interactive root owns the same calmer field-shell language via `focus-visible` |
+| `segmented-slot` | `OtpInput` | Separate active and focused-slot emphasis so one slot never carries multiple heavy focus cues |
+| `compact-control` | `Button`, `Checkbox`, `RadioGroup`, `Switch`, embedded field action buttons | Keep direct focus obvious but tighter than field-shell focus |
+| `dense-surface` | `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, `Command` | Keep focus precise and attached to dense targets without detached halos or state stacking |
+
+Global focus rules:
+
+- `focus-visible` remains the default for direct interactive roots.
+- `focus-within` remains the default for composite shells that wrap an internal focus target.
+- Detached `ring-offset-2` halos are no longer the default enterprise recipe for shared field-entry components.
+- Invalid focus may tint toward `destructive`, but it must not introduce a second louder emphasis system by default.
+- Open, active, selected, and highlighted states must not stack a second heavy focus ring on the same element.
+
+Wave status:
+
+- Approved for implementation now: `field-shell-composite`, `field-shell-direct`, and `segmented-slot`
+- Deferred by default: `compact-control` and `dense-surface`
 
 ---
 
@@ -307,6 +343,10 @@ Shared-scope note:
 Sizing note:
 - `Select` now participates in the shared field-shell size family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - `Select` uses `xs | sm | md | lg` with default `md`.
+
+Focus note:
+- `Select` belongs to the `field-shell-direct` focus family.
+- Open state may reinforce border emphasis, but it must not layer a second heavy focus ring on top of the trigger's keyboard focus treatment.
 
 Story group: `Inputs`
 
@@ -745,6 +785,10 @@ Sizing note:
 - `Combobox` now participates in the shared field-shell size family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - `Combobox` uses `xs | sm | md | lg` with default `md`.
 
+Focus note:
+- `Combobox` belongs to the `field-shell-direct` focus family.
+- Open state may not stack a second heavy ring on top of the trigger's keyboard focus treatment.
+
 Story group: `Inputs`
 
 ---
@@ -789,6 +833,10 @@ export interface OtpInputProps {
 
 Sizing note:
 - `OtpInput` ships a public segmented-input size contract of `sm | md | lg` with default `md`.
+
+Focus note:
+- `OtpInput` belongs to the `segmented-slot` focus family.
+- Focused-slot and active-slot emphasis must stay visually separated; one slot must not accumulate a heavy focus ring plus a second active shadow by default.
 
 Story group: `Inputs`
 
