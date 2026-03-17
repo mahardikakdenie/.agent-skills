@@ -93,7 +93,7 @@ The public API stays compound through `Accordion`, `AccordionItem`, `AccordionHe
 | Single mode | Opening one item closes the previously open item | Keyboard focus stays on the active trigger |
 | Multiple mode | Several items may remain open together | Each trigger manages its own expanded state |
 | Disabled | Trigger dims and does not respond to input | Disabled item is removed from interaction |
-| Focus | Trigger shows visible focus ring | Keyboard users can track focus clearly |
+| Focus | Trigger shows the shared dense-surface focus treatment without a detached offset halo | Keyboard users can track focus clearly |
 
 ---
 
@@ -246,3 +246,4 @@ Roadmap alignment:
 | Date | Change |
 | --- | --- |
 | 2026-03-12 | Initial Accordion spec |
+| 2026-03-17 | Normalized trigger focus to the shared dense-surface recipe and removed the detached offset halo |

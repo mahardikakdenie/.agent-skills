@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getDenseSurfaceFocusRecipe } from '../utils/focus-normalization';
+
+const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
+
 export const tabsRootVariants = cva('flex w-full flex-col gap-4', {
   variants: {
     orientation: {
@@ -24,7 +28,7 @@ export const tabsTriggerVariants = cva(
   [
     'inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground',
     'touch-manipulation whitespace-nowrap transition-colors outline-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
     'data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
     'enabled:data-[state=inactive]:hover:bg-accent/70 enabled:data-[state=inactive]:hover:text-accent-foreground',
     'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-muted-foreground disabled:hover:shadow-none',
@@ -38,7 +42,7 @@ export const tabsTriggerVariants = cva(
 export const tabsContentVariants = cva(
   [
     'min-w-0 rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm outline-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
     'data-[state=inactive]:hidden',
   ].join(' '),
 );

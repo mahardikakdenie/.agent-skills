@@ -7,6 +7,22 @@
 
 ---
 
+## 2026-03-17 - Focus Normalization Dense-Surface Wave Opened And Landed
+
+Changed:
+
+- Reopened the focus-normalization amendment for the `dense-surface` family after Wave 2 compact-control landed cleanly.
+- Moved `Tabs`, `Accordion`, `Pagination`, and the `MonthPicker` year trigger onto the shared dense-surface recipe while confirming `Calendar`, `NavigationMenu`, `Menubar`, and `Command` remain aligned to the same family.
+- Updated the audit, handoff, API conventions, and implementation-batch docs so all five focus families are now implementation-approved inside the current amendment.
+- Closed the detached `ring-offset-2` halo survivor set across the approved focus families in `packages/ui`.
+
+Impact:
+
+- Dense interactive targets now share one helper-backed focus language with no detached halo and no second heavy focus system stacked onto open or selected states.
+- Later work should treat the current helper-based rollout as the package focus source of truth instead of reopening family-level recipe decisions.
+
+---
+
 ## 2026-03-17 - Focus Normalization Compact-Control Wave Opened And Landed
 
 Changed:

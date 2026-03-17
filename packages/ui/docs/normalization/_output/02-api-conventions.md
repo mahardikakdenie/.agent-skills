@@ -261,9 +261,9 @@ Global focus rules:
 
 Wave status:
 
-- Approved for implementation now: `field-shell-composite`, `field-shell-direct`, `segmented-slot`, and `compact-control`
-- Deferred by default: `dense-surface`
-- Existing dense-surface utility adopters are precedent only; this amendment does not reopen a new dense-surface rollout wave
+- Approved for implementation now: `field-shell-composite`, `field-shell-direct`, `segmented-slot`, `compact-control`, and `dense-surface`
+- Deferred by default: none inside the current focus-family contract
+- Dense-surface implementations should keep using the existing internal helper surface instead of reintroducing one-off ring strings
 
 ---
 

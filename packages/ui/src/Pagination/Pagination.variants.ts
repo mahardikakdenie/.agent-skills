@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getDenseSurfaceFocusRecipe } from '../utils/focus-normalization';
+
+const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
+
 export const paginationRootVariants = cva(
   'flex flex-col gap-3 md:flex-row md:items-center md:justify-between',
 );
@@ -18,8 +22,8 @@ export const paginationButtonVariants = cva(
   [
     'inline-flex min-w-9 cursor-pointer touch-manipulation items-center justify-center gap-1 rounded-md border border-input',
     'bg-background px-3 py-0 text-sm font-medium shadow-sm transition-colors motion-reduce:transition-none',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50',
+    directDenseSurfaceFocus.base,
+    'disabled:cursor-not-allowed disabled:opacity-50',
   ].join(' '),
   {
     variants: {
@@ -72,5 +76,3 @@ export const paginationPageSizeSelectVariants = cva(
     '[&_[data-slot=select-value]]:text-center [&_[data-slot=select-value]]:tabular-nums',
   ].join(' '),
 );
-
-

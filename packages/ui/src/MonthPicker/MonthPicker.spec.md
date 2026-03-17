@@ -90,7 +90,7 @@ The header year is clickable and opens a scrollable year list inside the same po
 | Open | Popover displays year controls and the 12-month grid | Trigger exposes `aria-expanded="true"` and `aria-haspopup="dialog"` |
 | Year list open | Header switches to a scrollable year-picker view inside the same popover | Year trigger exposes `aria-controls` and `aria-expanded` for the list panel |
 | Hover | Trigger, year controls, year trigger, clear action, and month buttons show stronger contrast | No hover-only information |
-| Focus | Trigger shell and clear action use the calmer near-shell field recipe, while in-panel year and month controls keep their existing `focus-visible` rings in this wave | Keyboard users keep a visible focus path through the control while the entry shell stays quieter than before |
+| Focus | Trigger shell and clear action use the calmer field-entry recipe, while the year trigger, year options, nav controls, and month buttons use the shared dense-surface recipe | Keyboard users keep a visible focus path through the control while entry and dense in-panel surfaces stay visually separated |
 | Disabled | Trigger and clear action dim and stop responding to input | Trigger uses native `disabled` state |
 | Error | Border, calmer invalid halo, and message switch to destructive styling | Trigger receives `aria-invalid`; message uses `role="alert"` |
 | Bounded | Out-of-range months are disabled and blocked year navigation buttons dim | Disabled month buttons stay non-interactive |
@@ -252,3 +252,4 @@ Key recurring needs captured:
 | 2026-03-13 | Added clickable year jump list inside the popover header |
 | 2026-03-13 | Aligned public `variant` / `size` props and required Storybook `Variants` / `Sizes` coverage with the shared Input contract |
 | 2026-03-17 | Updated trigger-shell focus guidance to the calmer Wave 1 recipe while leaving in-panel controls deferred |
+| 2026-03-17 | Moved in-panel year trigger and dense picker controls onto the shared dense-surface focus recipe as part of Wave 3 |

@@ -2,10 +2,12 @@ import { cva } from 'class-variance-authority';
 
 import {
   getCompactControlFocusRecipe,
+  getDenseSurfaceFocusRecipe,
   getFieldShellFocusRecipe,
 } from '../utils/focus-normalization';
 
 const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
+const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
 export const monthPickerFieldVariants = cva('grid w-full gap-1.5');
@@ -129,8 +131,7 @@ export const monthPickerYearTriggerVariants = cva(
     'inline-flex h-6 max-w-[calc(100%-4.5rem)] items-center justify-center rounded-md px-2.5',
     'cursor-pointer text-sm font-semibold text-foreground tabular-nums transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
   ].join(' '),
 );
 

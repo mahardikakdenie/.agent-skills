@@ -78,6 +78,7 @@ This component does not fetch data, derive page counts from totals, sync routes,
 | Edge disabled | First/previous or next/last controls disable at list boundaries | Disabled controls use native `disabled` semantics and cannot be activated. |
 | Compact | Large page counts insert an ellipsis between boundary pages and the local page window | Ellipsis stays decorative with `aria-hidden`. |
 | Page-size selector | Optional labeled shared `Select` sits alongside the page status | The rows-per-page trigger is explicitly labeled through the visible "Rows per page" text. |
+| Focus | Navigation buttons use the shared dense-surface focus treatment without a detached offset halo | Keyboard users can track page navigation controls clearly while the page-size selector keeps its existing field-shell focus treatment. |
 | Single page | Boundary controls are disabled and only page `1` remains active | The component still announces `Page 1 of 1`. |
 
 ---
@@ -187,3 +188,4 @@ This component does not fetch data, derive page counts from totals, sync routes,
 | Date | Change |
 | ---- | ------ |
 | 2026-03-10 | Initial Pagination spec |
+| 2026-03-17 | Normalized navigation-button focus to the shared dense-surface recipe and removed the detached offset halo |

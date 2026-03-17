@@ -89,7 +89,7 @@ The shared contract is intentionally narrow. The root component only standardize
 | --- | --- | --- |
 | Inactive | Muted foreground with hover emphasis | Exposes `role="tab"` and `aria-selected="false"` through Radix |
 | Active | Foreground emphasis with selected surface treatment | Exposes `aria-selected="true"` and links to the active panel |
-| Focus | Visible focus ring on the trigger | Keyboard focus remains visible on every trigger |
+| Focus | Triggers and any focusable panel shell use the shared dense-surface focus treatment without a detached offset halo | Keyboard focus remains visible on every trigger and focusable panel shell |
 | Disabled | Muted opacity and blocked pointer interaction | Exposes disabled semantics through Radix |
 | Vertical | List stacks and triggers stretch to full width | Arrow keys switch to vertical navigation behavior |
 | Scrollable | Horizontal list overflows instead of wrapping | Maintains one tablist with normal keyboard behavior |
@@ -231,3 +231,4 @@ The shared contract is intentionally narrow. The root component only standardize
 | Date | Change |
 | --- | --- |
 | 2026-03-10 | Initial Tabs spec |
+| 2026-03-17 | Normalized trigger and panel focus to the shared dense-surface recipe and removed detached offset halos |

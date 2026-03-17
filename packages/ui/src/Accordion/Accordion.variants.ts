@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getDenseSurfaceFocusRecipe } from '../utils/focus-normalization';
+
+const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
+
 export const accordionRootVariants = cva('grid gap-3');
 
 export const accordionItemVariants = cva(
@@ -17,7 +21,7 @@ export const accordionTriggerVariants = cva(
   [
     'flex min-h-11 w-full cursor-pointer items-start justify-between gap-3 px-4 py-4 text-left text-sm font-medium text-foreground outline-none',
     'touch-manipulation transition-colors motion-reduce:transition-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
     'enabled:hover:bg-accent/50 enabled:hover:text-accent-foreground',
     'disabled:cursor-not-allowed disabled:opacity-50',
     'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',

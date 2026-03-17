@@ -36,8 +36,8 @@
 - Focus normalization is now amendment-open as a bounded follow-up inside `packages/ui`.
 - Approved focus Wave 1 is docs-first and limited to the field-entry family: verify or extend the existing internal focus utility only if needed, then limit implementation to `Input`, `Textarea`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `Select`, `Combobox`, and `OtpInput`.
 - Wave 2 reopens the `compact-control` family for `Button`, `Checkbox`, `RadioGroup`, `Switch`, and `DateRangePicker` preset buttons using the existing internal focus utility.
-- Deferred by default in the focus amendment: `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, `Command`, and dense date-surface follow-up such as the `MonthPicker` year trigger.
-- The focus-wave stop line is explicit: do not widen beyond approved Wave 2 into `Calendar` day cells, date-family month/year panels, or `MonthPicker` year controls.
+- Wave 3 reopens the `dense-surface` family for `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, `Command`, and dense date-surface follow-up such as the `MonthPicker` year trigger.
+- The focus-wave stop line is explicit: do not widen beyond approved Wave 3 into unrelated hover, open-state, selected-state, or popup-layout redesign.
 - Cross-check on 2026-03-12 confirms the current canonical `@repo/ui` export surface for normalized shared adoption includes `Accordion`, `Box`, `Alert`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `Command`, `DatePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUpload`, `Image`, `Input`, `Label`, `OtpInput`, `Pagination`, `Popover`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea`, and `Tooltip`; `PageHeader` is intentionally excluded from the normalized shared rollout after the 2026-03-12 boundary reversal and remains app-local for downstream migration planning.
 
 ## 2. Batch 1 - ADOPT_NOW
