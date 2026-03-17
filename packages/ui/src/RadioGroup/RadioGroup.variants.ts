@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getCompactControlFocusRecipe } from '../utils/focus-normalization';
+
+const standardCompactControlFocus = getCompactControlFocusRecipe('standard');
+
 export const radioGroupFieldVariants = cva('grid gap-2');
 
 export const radioGroupRootVariants = cva('', {
@@ -20,7 +24,7 @@ export const radioGroupItemControlVariants = cva(
   [
     'peer/radio inline-flex shrink-0 items-center justify-center rounded-full border bg-background p-0 align-middle leading-none shadow-sm outline-none',
     'transition-[border-color,box-shadow,background-color] motion-reduce:transition-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    standardCompactControlFocus.base,
     'disabled:cursor-not-allowed disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
   ].join(' '),
   {
@@ -32,7 +36,10 @@ export const radioGroupItemControlVariants = cva(
       },
       invalid: {
         false: 'border-input data-[state=checked]:border-primary data-[state=checked]:bg-primary/10 hover:border-primary/70 hover:bg-accent/30',
-        true: 'border-destructive data-[state=checked]:border-destructive data-[state=checked]:bg-destructive/10 hover:border-destructive/80 hover:bg-destructive/5',
+        true: [
+          'border-destructive data-[state=checked]:border-destructive data-[state=checked]:bg-destructive/10 hover:border-destructive/80 hover:bg-destructive/5',
+          standardCompactControlFocus.invalid,
+        ].join(' '),
       },
       disabled: {
         false: '',
@@ -148,5 +155,3 @@ export const radioGroupDescriptionVariants = cva('leading-5', {
 });
 
 export const radioGroupMessageVariants = cva('text-sm font-medium leading-5 text-destructive');
-
-

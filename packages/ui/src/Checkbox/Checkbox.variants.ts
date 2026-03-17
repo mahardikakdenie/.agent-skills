@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getCompactControlFocusRecipe } from '../utils/focus-normalization';
+
+const standardCompactControlFocus = getCompactControlFocusRecipe('standard');
+
 export const checkboxFieldVariants = cva('grid gap-2');
 
 export const checkboxControlRowVariants = cva('flex items-start gap-3');
@@ -8,7 +12,7 @@ export const checkboxRootVariants = cva(
   [
     'peer/checkbox inline-flex cursor-pointer shrink-0 self-start items-center justify-center border bg-background p-0 align-middle text-primary-foreground leading-none shadow-sm outline-none',
     'transition-[background-color,border-color,box-shadow,color] motion-reduce:transition-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    standardCompactControlFocus.base,
     'disabled:cursor-not-allowed disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
   ].join(' '),
   {
@@ -25,7 +29,8 @@ export const checkboxRootVariants = cva(
           'data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:hover:bg-primary/90',
         ].join(' '),
         true: [
-          'border-destructive hover:border-destructive/80 hover:bg-destructive/5 focus-visible:ring-destructive/30',
+          'border-destructive hover:border-destructive/80 hover:bg-destructive/5',
+          standardCompactControlFocus.invalid,
           'data-[state=checked]:border-destructive data-[state=checked]:bg-destructive data-[state=checked]:hover:bg-destructive/90',
           'data-[state=indeterminate]:border-destructive data-[state=indeterminate]:bg-destructive data-[state=indeterminate]:hover:bg-destructive/90',
         ].join(' '),
@@ -94,5 +99,3 @@ export const checkboxDescriptionVariants = cva('text-sm leading-5', {
 });
 
 export const checkboxMessageVariants = cva('text-sm font-medium leading-5 text-destructive');
-
-

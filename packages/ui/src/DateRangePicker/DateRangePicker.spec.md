@@ -112,7 +112,7 @@ export interface DateRangePickerPreset {
 | Reselection    | Clicking a new day after a complete range starts a fresh partial range and keeps the calendar open                                                                | Prevents accidental close while the user resets the range                        |
 | Open           | Popover shows optional presets and the two-month range calendar; the shell stays bare for plain date-only usage and framed when presets or time entry are present | Trigger exposes `aria-expanded="true"` and `aria-haspopup="dialog"`              |
 | Hover          | Trigger, presets, and clear action increase contrast; the calendar previews an in-progress range after a start date exists                                        | Preview is visual only until the user commits an end date                        |
-| Focus          | Trigger shell and inline time inputs use the calmer field-shell recipe, while preset buttons keep their existing compact-control focus treatment in this wave | Keyboard users keep a visible focus path through the whole control without adding a detached offset halo to the field shell |
+| Focus          | Trigger shell and inline time inputs use the calmer field-shell recipe, while preset buttons now use the shared compact-control focus recipe | Keyboard users keep a visible focus path through the whole control without adding a detached offset halo to the field shell |
 | Disabled       | Trigger and clear action dim and stop responding to input                                                                                                         | Trigger uses native `disabled` state                                             |
 | Error          | Border, calmer invalid halo, and inline message switch to destructive styling                                                                                     | Trigger receives `aria-invalid`; message uses `role="alert"`                     |
 | Bounded        | Out-of-range dates and preset buttons are disabled                                                                                                                | Disabled options stay non-interactive                                            |
@@ -293,4 +293,4 @@ Roadmap alignment:
 | 2026-03-13 | Folded standalone date-time range usage into optional `withTime` support on `DateRangePicker`                                    |
 | 2026-03-13 | Aligned public `variant` / `size` props and required Storybook `Variants` / `Sizes` coverage with the shared Input contract |
 | 2026-03-17 | Updated trigger-shell and inline time-input focus guidance to the calmer Wave 1 recipe while keeping preset buttons deferred |
-
+| 2026-03-17 | Moved preset buttons onto the shared compact-control focus recipe as part of Wave 2 |

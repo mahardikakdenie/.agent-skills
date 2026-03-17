@@ -1,4 +1,4 @@
-﻿# Switch Spec
+# Switch Spec
 
 ## Metadata
 
@@ -81,7 +81,7 @@ This contract stays intentionally narrow, but it now aligns with the rest of the
 | --- | --- | --- |
 | Unchecked | Neutral token surface with the thumb aligned to the start | Exposes `role="switch"` and `aria-checked="false"` through Radix |
 | Checked | Primary track with the thumb aligned to the end | Exposes `aria-checked="true"` |
-| Focus | Visible focus ring around the track | Keyboard focus remains visible on every size |
+| Focus | Visible compact-control focus ring around the track without a detached offset halo | Keyboard focus remains visible on every size |
 | Disabled | Muted opacity and blocked pointer interaction for control and label | Exposes disabled semantics through Radix |
 | Required | Label shows a destructive asterisk | Required semantics stay on the underlying switch control |
 | Error | Destructive border and label treatment plus inline validation copy when provided | Sets `aria-invalid="true"` and links the message through `aria-describedby` |
@@ -209,3 +209,4 @@ This contract stays intentionally narrow, but it now aligns with the rest of the
 | --- | --- |
 | 2026-03-10 | Initial Switch spec |
 | 2026-03-10 | Added shared error-state contract and accessible inline error treatment |
+| 2026-03-17 | Normalized Switch focus to the shared compact-control recipe and removed the detached offset halo |

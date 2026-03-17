@@ -1,11 +1,15 @@
 import { cva } from 'class-variance-authority';
 
+import { getCompactControlFocusRecipe } from '../utils/focus-normalization';
+
+const standardCompactControlFocus = getCompactControlFocusRecipe('standard');
+
 export const buttonVariants = cva(
   [
     'inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium',
     'transition-colors motion-reduce:transition-none',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50',
+    standardCompactControlFocus.base,
+    'disabled:cursor-not-allowed disabled:opacity-50',
     'data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50',
   ].join(' '),
   {
@@ -62,4 +66,3 @@ export const buttonVariants = cva(
     },
   },
 );
-

@@ -1,4 +1,8 @@
-﻿import { cva } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
+
+import { getCompactControlFocusRecipe } from '../utils/focus-normalization';
+
+const standardCompactControlFocus = getCompactControlFocusRecipe('standard');
 
 export const switchFieldVariants = cva('grid gap-2');
 
@@ -8,7 +12,7 @@ export const switchRootVariants = cva(
   [
     'peer/switch inline-flex shrink-0 cursor-pointer items-center rounded-full border p-0.5 shadow-sm outline-none',
     'transition-[background-color,border-color,box-shadow] motion-reduce:transition-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    standardCompactControlFocus.base,
     'disabled:cursor-not-allowed disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
   ].join(' '),
   {
@@ -25,7 +29,8 @@ export const switchRootVariants = cva(
           'data-[state=unchecked]:bg-muted data-[state=unchecked]:hover:bg-accent/70',
         ].join(' '),
         true: [
-          'border-destructive/60 focus-visible:ring-destructive/30',
+          'border-destructive/60',
+          standardCompactControlFocus.invalid,
           'data-[state=checked]:bg-destructive data-[state=checked]:hover:bg-destructive/90',
           'data-[state=unchecked]:bg-destructive/10 data-[state=unchecked]:hover:bg-destructive/15',
         ].join(' '),

@@ -35,9 +35,9 @@
 - The amendment gate is docs-first in both execution modes: a single agent may amend then implement sequentially, or `W-DOCS` lands the docs before `W-SELECT` and `W-COMBOBOX` begin, with verification last.
 - Focus normalization is now amendment-open as a bounded follow-up inside `packages/ui`.
 - Approved focus Wave 1 is docs-first and limited to the field-entry family: verify or extend the existing internal focus utility only if needed, then limit implementation to `Input`, `Textarea`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `Select`, `Combobox`, and `OtpInput`.
-- The later `compact-control` and `dense-surface` families are ruled in docs but remain deferred by default in this amendment.
-- Deferred by default in the focus amendment: `Button`, `Checkbox`, `RadioGroup`, `Switch`, `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, `Command`, and compact-control-only follow-up such as `DateRangePicker` preset buttons.
-- The focus-wave stop line is explicit: do not widen Wave 1 into `Calendar` day cells, date-family month/year panels, `MonthPicker` year controls, or `DateRangePicker` preset buttons.
+- Wave 2 reopens the `compact-control` family for `Button`, `Checkbox`, `RadioGroup`, `Switch`, and `DateRangePicker` preset buttons using the existing internal focus utility.
+- Deferred by default in the focus amendment: `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, `Command`, and dense date-surface follow-up such as the `MonthPicker` year trigger.
+- The focus-wave stop line is explicit: do not widen beyond approved Wave 2 into `Calendar` day cells, date-family month/year panels, or `MonthPicker` year controls.
 - Cross-check on 2026-03-12 confirms the current canonical `@repo/ui` export surface for normalized shared adoption includes `Accordion`, `Box`, `Alert`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `Command`, `DatePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUpload`, `Image`, `Input`, `Label`, `OtpInput`, `Pagination`, `Popover`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea`, and `Tooltip`; `PageHeader` is intentionally excluded from the normalized shared rollout after the 2026-03-12 boundary reversal and remains app-local for downstream migration planning.
 
 ## 2. Batch 1 - ADOPT_NOW
@@ -335,4 +335,3 @@
 | MonthPicker     | 4             | B5.4          | DONE   | Shipped on 2026-03-13 with spec, Storybook, first-of-month normalization, bounded year navigation, and Box-authored trigger, popover shell, and month-grid controls                                                                                                                                              |
 | Timeline        | 4             | B5.4          | DONE   | Shipped on 2026-03-13 with spec, Storybook, shared orientation support, semantic marker tones, and Box-authored list + connector composition                                                                                                                                                                     |
 | RichTextEditor  | 4             | Decision gate | DONE   | Shipped on 2026-03-16 with a bounded Tiptap contract, default sanitization, compact toolbar/link-editor hardening, shared tooltip shortcut coverage for supported actions, and explicit app-local exclusions for uploads, mentions, slash commands, media, viewer-specific rendering, and global shortcut policy |
-

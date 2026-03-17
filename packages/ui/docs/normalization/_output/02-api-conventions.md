@@ -247,7 +247,7 @@ This amendment opens five canonical focus families for `packages/ui`:
 | `field-shell-composite` | `Input`, `DatePicker`, `DateRangePicker`, `MonthPicker` | Outer shell owns focus via `focus-within`; use border emphasis plus a near-shell halo with no detached offset halo |
 | `field-shell-direct` | `Textarea`, `Select`, `Combobox`, date/time inputs inside date pickers | Direct interactive root owns the same calmer field-shell language via `focus-visible` |
 | `segmented-slot` | `OtpInput` | Separate active and focused-slot emphasis so one slot never carries multiple heavy focus cues |
-| `compact-control` | `Button`, `Checkbox`, `RadioGroup`, `Switch`, embedded field action buttons | Keep direct focus obvious but tighter than field-shell focus |
+| `compact-control` | `Button`, `Checkbox`, `RadioGroup`, `Switch`, embedded field action buttons, `DateRangePicker` preset buttons | Keep direct focus obvious but tighter than field-shell focus |
 | `dense-surface` | `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, `Command` | Keep focus precise and attached to dense targets without detached halos or state stacking |
 
 Global focus rules:
@@ -261,8 +261,8 @@ Global focus rules:
 
 Wave status:
 
-- Approved for implementation now: `field-shell-composite`, `field-shell-direct`, and `segmented-slot`
-- Deferred by default: `compact-control` and `dense-surface`
+- Approved for implementation now: `field-shell-composite`, `field-shell-direct`, `segmented-slot`, and `compact-control`
+- Deferred by default: `dense-surface`
 - Existing dense-surface utility adopters are precedent only; this amendment does not reopen a new dense-surface rollout wave
 
 ---
@@ -1395,4 +1395,3 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
-

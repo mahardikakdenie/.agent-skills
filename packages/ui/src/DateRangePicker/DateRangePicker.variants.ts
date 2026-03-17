@@ -8,6 +8,7 @@ import {
 const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
+const standardCompactControlFocus = getCompactControlFocusRecipe('standard');
 
 export const dateRangePickerFieldVariants = cva('grid w-full gap-1.5');
 
@@ -140,8 +141,7 @@ export const dateRangePickerPresetButtonVariants = cva(
   [
     'inline-flex cursor-pointer items-center justify-center rounded-md border border-input px-2.5 py-1.5 text-xs font-medium',
     'transition-colors motion-reduce:transition-none',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background',
+    standardCompactControlFocus.base,
     'disabled:pointer-events-none disabled:opacity-50',
   ].join(' '),
   {

@@ -77,7 +77,7 @@ The component is intentionally not compound. The checkbox control, label, descri
 | Unchecked     | Neutral border and background, no icon                                   | Exposes `role="checkbox"` and `aria-checked="false"` through Radix          |
 | Checked       | Primary-filled control with check icon                                   | Exposes `aria-checked="true"`                                               |
 | Indeterminate | Primary-filled control with minus icon                                   | Exposes the mixed state through Radix and keeps the same keyboard contract  |
-| Focus         | Visible focus ring around the control                                    | Keyboard focus remains visible across all sizes                             |
+| Focus         | Visible compact-control focus ring around the control without a detached offset halo | Keyboard focus remains visible across all sizes                             |
 | Disabled      | Reduced opacity and blocked interaction for control and label            | Radix marks the control disabled; label styling becomes muted               |
 | Error         | Destructive border and fill treatment plus an inline message when needed | Sets `aria-invalid="true"` and links the message through `aria-describedby` |
 | Required      | Label shows a destructive asterisk                                       | Required semantic remains on the root control                               |
@@ -189,3 +189,4 @@ The component is intentionally not compound. The checkbox control, label, descri
 | Date       | Change                |
 | ---------- | --------------------- |
 | 2026-03-10 | Initial Checkbox spec |
+| 2026-03-17 | Normalized Checkbox focus to the shared compact-control recipe and removed the detached offset halo |

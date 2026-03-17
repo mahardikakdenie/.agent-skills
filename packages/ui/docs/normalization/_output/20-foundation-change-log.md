@@ -7,6 +7,22 @@
 
 ---
 
+## 2026-03-17 - Focus Normalization Compact-Control Wave Opened And Landed
+
+Changed:
+
+- Reopened the focus-normalization amendment for the `compact-control` family only after Wave 1 field-entry closed cleanly.
+- Moved `Button`, `Checkbox`, `RadioGroup`, `Switch`, and `DateRangePicker` preset buttons onto `getCompactControlFocusRecipe('standard')`.
+- Updated the audit, handoff, API conventions, and implementation-batch docs so compact-control is now implementation-approved while dense-surface remains deferred.
+- Kept `MonthPicker` year controls plus `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, and `Command` in the deferred dense-surface lane.
+
+Impact:
+
+- Compact controls now share one tighter direct-focus recipe with no detached `ring-offset-2` halo.
+- Later dense-surface work still requires an explicit follow-up amendment before implementation starts.
+
+---
+
 ## 2026-03-17 - Focus Normalization Docs Gate Reconciled To The Wave 1 Stop Line
 
 Changed:
@@ -991,4 +1007,3 @@ Impact:
 
 - The canonical shared date family now consists of `Calendar`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - Ready apps should map single-value date-time inputs to `DatePicker` with `withTime` and bounded start/end date-time windows to `DateRangePicker` with `withTime`.
-

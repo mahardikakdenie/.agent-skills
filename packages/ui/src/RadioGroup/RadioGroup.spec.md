@@ -97,7 +97,8 @@ The shared contract now covers the baseline form needs that showed up repeatedly
 | State | Visual Behavior | Accessibility |
 | --- | --- | --- |
 | Default | Unchecked circular control with label and optional description | Root exposes native radio-group semantics through Radix. |
-| Checked | Filled indicator dot and active border/ring treatment | Selected item exposes `aria-checked="true"` and remains tabbable. |
+| Checked | Filled indicator dot and active border/background treatment | Selected item exposes `aria-checked="true"` and remains tabbable. |
+| Focus | Visible compact-control focus ring stays attached to the radio control without a detached offset halo | Keyboard users keep a clear focus target while moving through the set. |
 | Disabled | Muted label/description and non-interactive control | Disabled items expose disabled semantics and leave arrow navigation intact for enabled siblings. |
 | Group disabled | Entire set renders muted and non-interactive | Root and items expose disabled state via Radix data attributes and disabled behavior. |
 | Description | Secondary copy sits below the label without changing selection semantics | Description is linked with `aria-describedby` on the radio item. |
@@ -131,7 +132,7 @@ The shared contract now covers the baseline form needs that showed up repeatedly
 
 - `RadioGroup` does not trap or move focus outside the standard radio-group pattern.
 - Focus remains on the currently active radio item after selection changes.
-- Visible focus treatment stays on the radio control itself.
+- Visible focus treatment stays on the radio control itself through the shared compact-control recipe.
 
 ### Screen Reader Notes
 
@@ -230,4 +231,4 @@ The shared contract now covers the baseline form needs that showed up repeatedly
 | --- | --- |
 | 2026-03-10 | Initial RadioGroup spec |
 | 2026-03-10 | Added shared `size` and `error` support plus matching Storybook coverage |
-
+| 2026-03-17 | Normalized RadioGroup item focus to the shared compact-control recipe and removed the detached offset halo |

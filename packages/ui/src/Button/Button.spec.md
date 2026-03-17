@@ -90,7 +90,7 @@ Cross-app baselines converge on a flat API: variant, size, loading, disabled, an
 | ---------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | Default          | Variant-driven surface with inline label and optional icons                   | Root uses native button semantics unless `asChild` is applied.              |
 | Hover            | Token-driven hover feedback for filled, outline, ghost, and link variants     | No hover-only information.                                                  |
-| Focus            | Visible `focus-visible` ring on the interactive root                          | Keyboard focus must remain obvious on every variant.                        |
+| Focus            | Visible compact-control `focus-visible` ring on the interactive root without a detached offset halo | Keyboard focus must remain obvious on every variant.                        |
 | Disabled         | Reduced opacity and blocked interaction                                       | Uses native `disabled` on button roots; `aria-disabled` on `asChild` roots. |
 | Loading          | Spinner replaces decorative icons and interaction is blocked                  | Sets `aria-busy="true"` while label remains available.                      |
 | AsChild disabled | Styled like disabled and removed from normal activation                       | Uses `aria-disabled`, blocked click handling, and `tabIndex={-1}`.          |
@@ -195,3 +195,4 @@ Cross-app baselines converge on a flat API: variant, size, loading, disabled, an
 | Date       | Change              |
 | ---------- | ------------------- |
 | 2026-03-10 | Initial Button spec |
+| 2026-03-17 | Normalized Button focus to the shared compact-control recipe and removed the detached offset halo |
