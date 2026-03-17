@@ -1,4 +1,4 @@
-﻿# Admin Portal Per-App Baseline Summary (Batch 1)
+# Admin Portal Per-App Baseline Summary (Batch 1)
 
 ## App Overview
 - App: admin-portal (Next.js App Router + React + TypeScript + Tailwind + shadcn-style local primitives)
@@ -96,3 +96,21 @@
   - pnpm --filter admin-portal check-types -> PASS
   - pnpm --filter admin-portal lint -> PASS (warnings only)
   - pnpm --filter admin-portal build -> PASS
+
+## Legacy Update - 2026-03-17 10:39 (+07)
+- Source: subtree pull from `admin-portal/stage` into `integrate-app/admin-portal`, then merge to `migrate-app/admin-portal`.
+- Net changed files from this legacy sync: 5.
+- Existing file updates only; no new component files were introduced.
+- App-local impact summary:
+  - `src/app/policy/list/page.tsx`: export flow now downloads the file directly and surfaces loading state.
+  - `src/components/tableConfig/policyTableConfig.tsx`: pending-renewals table now reads notification-log array entries and shows `Email Sent`.
+  - `src/components/ui/spinner.tsx`: app-local spinner now accepts an optional `className` override for inline loading states.
+  - `src/hooks/usePolicies.hooks.tsx`: merge preserved the migrated query-hook structure while adding export state and default 30-day date range.
+- packages/ui intake queue impact:
+  - NEW_SHARED_COMPONENT: none
+  - EXTEND_EXISTING: none
+- Verification after merge-resolution:
+  - pnpm --filter admin-portal check-types -> PASS
+  - pnpm --filter admin-portal build -> PASS
+  - pnpm --filter admin-portal lint -> PASS (warnings only)
+

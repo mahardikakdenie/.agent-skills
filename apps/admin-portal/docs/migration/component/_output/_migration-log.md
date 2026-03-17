@@ -1,4 +1,4 @@
-﻿## Dependency Upgrade - 2026-02-22
+## Dependency Upgrade - 2026-02-22
 
 ### Platform Packages Upgraded
 | Package | From | To |
@@ -111,7 +111,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### BenefitList - 2026-02-23
@@ -122,7 +122,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ChannelList - 2026-02-23
@@ -133,7 +133,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### DetailList - 2026-02-23
@@ -144,7 +144,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ExtendedSidemenu - 2026-02-23
@@ -153,8 +153,8 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Shell: src/components/ExtendedSidemenuShell.tsx - classification: KEEP_APP_LOCAL
 - Domain logic removed from Shell: router push + collapse state retained in container; shell receives callbacks and state
 - Box pass: 0 elements replaced
-- Gate result: types âœ… | lint âœ… | build âœ… | smoke ✅ (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
-- Caller grep: âœ… zero caller files changed
+- Gate result: types ✅ | lint ✅ | build ✅ | smoke ? (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Image - 2026-02-23
@@ -163,8 +163,8 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Shell: src/components/OptimizeImageShell.tsx - classification: NEW_SHARED_COMPONENT
 - Domain logic removed from Shell: next/image rendering moved to renderImage prop in shell
 - Box pass: 0 elements replaced
-- Gate result: types âœ… | lint âœ… | build âœ… | smoke ✅ (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
-- Caller grep: âœ… zero caller files changed
+- Gate result: types ✅ | lint ✅ | build ✅ | smoke ? (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: YES (OptimizeImageShell, queued for Phase 04)
 
 ### Image - 2026-02-23
@@ -173,8 +173,8 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Shell: src/components/ui/OptimizeImageShell.tsx - classification: NEW_SHARED_COMPONENT
 - Domain logic removed from Shell: next/image rendering moved to renderImage prop in shell
 - Box pass: 0 elements replaced
-- Gate result: types âœ… | lint âœ… | build âœ… | smoke ✅ (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
-- Caller grep: âœ… zero caller files changed
+- Gate result: types ✅ | lint ✅ | build ✅ | smoke ? (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: YES (OptimizeImageShell, queued for Phase 04)
 
 ### InsuranceSelectionModal - 2026-02-23
@@ -185,7 +185,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### PackageList - 2026-02-23
@@ -196,7 +196,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### PageHeader - 2026-02-23
@@ -205,8 +205,8 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Shell: src/components/ui/PageHeader/PageHeaderShell.tsx - classification: KEEP_APP_LOCAL
 - Domain logic removed from Shell: next/navigation router logic retained in container via onBackClick injection
 - Box pass: 0 elements replaced
-- Gate result: types âœ… | lint âœ… | build âœ… | smoke ✅ (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
-- Caller grep: âœ… zero caller files changed
+- Gate result: types ✅ | lint ✅ | build ✅ | smoke ? (10 smoke routes executed; no runtime crash; known /api/cookie/token 404)
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 - Shared UI guidance: retain any PageHeader wrapper locally; do not migrate toward an `@repo/ui` PageHeader. Compose equivalent header UX from existing app-agnostic `@repo/ui` primitives inside the app to preserve behavior parity.
 
@@ -218,7 +218,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### BillingDetailInfo - 2026-02-23
@@ -229,7 +229,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Button - 2026-02-23
@@ -240,7 +240,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ButtonCalendar - 2026-02-23
@@ -251,7 +251,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Calendar - 2026-02-23
@@ -262,7 +262,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ChannelAddModal - 2026-02-23
@@ -273,7 +273,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ChannelSelectionModal - 2026-02-23
@@ -284,7 +284,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Chart - 2026-02-23
@@ -295,7 +295,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Datepicker - 2026-02-23
@@ -306,7 +306,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### DateRangePicker - 2026-02-23
@@ -317,7 +317,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### DragDropExcel - 2026-02-23
@@ -328,7 +328,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ImageOrDefault - 2026-02-23
@@ -339,7 +339,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Input - 2026-02-23
@@ -350,7 +350,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Loader - 2026-02-23
@@ -361,7 +361,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Modal - 2026-02-23
@@ -372,7 +372,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### MultipleSelect - 2026-02-23
@@ -383,7 +383,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### NoRecentData - 2026-02-23
@@ -394,7 +394,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### NotFoundPage - 2026-02-23
@@ -405,7 +405,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### NotFoundPage - 2026-02-23
@@ -416,7 +416,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Pagination - 2026-02-23
@@ -427,7 +427,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### PlanSelectionModal - 2026-02-23
@@ -438,7 +438,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Popover - 2026-02-23
@@ -449,7 +449,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ProductDetailTab - 2026-02-23
@@ -460,7 +460,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### ProductSelectionModal - 2026-02-23
@@ -471,7 +471,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### RootLayout - 2026-02-23
@@ -482,7 +482,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Select - 2026-02-23
@@ -493,7 +493,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Textarea - 2026-02-23
@@ -504,7 +504,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 ### Tooltip - 2026-02-23
@@ -515,7 +515,7 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Domain logic removed from Shell: n/a
 - Box pass: 0 elements replaced
 - Gate result: n/a (no code change for this candidate)
-- Caller grep: âœ… zero caller files changed
+- Caller grep: ✅ zero caller files changed
 - packages/ui candidate: NO
 
 
@@ -526,8 +526,8 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Processed (split completed): 4
 - Explicitly skipped with reason: 34
 - Remaining `Batch 1.5 candidate: YES`: 0
-- Verification gate (app-level): check-types ✅ | lint ✅ (warnings only) | build ✅
-- Caller file integrity: ✅ only container files + new shell files changed in `src/`
+- Verification gate (app-level): check-types ? | lint ? (warnings only) | build ?
+- Caller file integrity: ? only container files + new shell files changed in `src/`
 
 ### Batch 1.5 Smoke Route Verification - 2026-02-23
 - Smoke routes executed (10): /dashboard/transaction, /dashboard/policy, /dashboard/claim, /transaction/list, /policy/list, /policy/endorsement/list, /claim/list, /membership/list, /finance/billing, /masterdata/user
@@ -576,6 +576,27 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 
 - Current batch: Batch 2
 - Component in progress: none - between batch boundaries
-- Last completed step: previous legacy update integrated on 2026-03-04; resume point recorded as ready to continue Batch 2
-- Status: [PAUSE] Paused for legacy update
-- Timestamp: 2026-03-17 10:29:04 +07:00
+- Last completed step: legacy update intake completed through L6
+- Status: [RESUME] Resumed after legacy update
+- Legacy update integrated: 2026-03-17 10:39:21 +07:00
+- Affected components: src/app/policy/list/page.tsx, src/components/tableConfig/policyTableConfig.tsx, src/components/ui/spinner.tsx, src/hooks/usePolicies.hooks.tsx
+- New packages/ui intake items: none
+
+### Legacy Update Snapshot - 2026-03-17 10:39 (+07)
+- Source branch: integrate-app/admin-portal (legacy remote admin-portal, branch stage)
+- Legacy commits pulled: f314f66e6, 1cb475264, 8fb3d87c9
+- Integrate update SHA: a4038ad96
+- Migrate merge/conflict-resolution commit: 54edf83ab
+- L1 result: subtree pull succeeded on integrate worktree and merge to migrate worktree completed with one conflict.
+- L2 conflicts resolved:
+  - src/hooks/usePolicies.hooks.tsx - in-progress batch item -> manual merge; kept migrated query-hook structure and applied legacy export state/date-range additions narrowly
+- L3 classification summary:
+  - Existing non-migrated updates: src/app/policy/list/page.tsx, src/components/tableConfig/policyTableConfig.tsx, src/components/ui/spinner.tsx
+  - Other app-level operational changes: src/hooks/usePolicies.hooks.tsx, src/types/policy.d.ts
+  - New component files: none
+  - Shared candidate (NEW_SHARED_COMPONENT/EXTEND_EXISTING): none
+- Path taken: L4
+- L6 gate: check-types PASS, lint PASS (warnings only), build PASS
+- Migrated component integrity: N/A - no component-track DONE entries yet
+- Batch 1.5 split integrity: PASS - existing Container/Shell files remain intact
+- Resume point: ready to continue Batch 2 on migrate-app/admin-portal.
