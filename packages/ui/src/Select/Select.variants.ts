@@ -1,5 +1,13 @@
 import { cva } from 'class-variance-authority';
 
+import {
+  getCompactControlFocusRecipe,
+  getFieldShellFocusRecipe,
+} from '../utils/focus-normalization';
+
+const directFieldShellFocus = getFieldShellFocusRecipe('direct');
+const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
+
 export const selectFieldVariants = cva('grid w-full gap-1.5');
 
 export const selectControlVariants = cva('relative w-full');
@@ -20,8 +28,8 @@ export const selectLabelVariants = cva('text-sm font-medium leading-none', {
 export const selectTriggerVariants = cva(
   [
     'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background py-1.5 text-left leading-none shadow-sm',
-    'ring-offset-background transition-colors motion-reduce:transition-none',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+    'transition-colors motion-reduce:transition-none',
+    directFieldShellFocus.base,
     'data-[placeholder]:text-muted-foreground data-[state=open]:border-ring',
   ].join(' '),
   {
@@ -33,7 +41,7 @@ export const selectTriggerVariants = cva(
         lg: 'min-h-11 px-4 text-base',
       },
       invalid: {
-        true: 'border-destructive focus-visible:ring-destructive/30',
+        true: [directFieldShellFocus.invalid, 'data-[state=open]:border-destructive'].join(' '),
         false: 'border-input',
       },
       disabled: {
@@ -157,8 +165,8 @@ export const selectActionButtonVariants = cva(
   [
     'absolute top-1/2 inline-flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
     'transition-colors motion-reduce:transition-none',
-    'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    'focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
+    'hover:text-foreground disabled:pointer-events-none disabled:opacity-50',
+    embeddedActionFocus.base,
   ].join(' '),
   {
     variants: {

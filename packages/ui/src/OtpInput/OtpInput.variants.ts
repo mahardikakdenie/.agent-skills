@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getSegmentedInputFocusRecipe } from '../utils/focus-normalization';
+
+const segmentedInputFocus = getSegmentedInputFocusRecipe();
+
 export const otpInputFieldVariants = cva('grid gap-2');
 
 export const otpInputGroupVariants = cva('flex flex-wrap items-center gap-2');
@@ -8,7 +12,7 @@ export const otpInputSlotVariants = cva(
   [
     'rounded-lg border text-center font-semibold text-foreground',
     'transition-colors motion-reduce:transition-none',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    segmentedInputFocus.base,
     'placeholder:text-muted-foreground/60',
   ].join(' '),
   {
@@ -25,7 +29,7 @@ export const otpInputSlotVariants = cva(
       },
       invalid: {
         false: '',
-        true: 'border-destructive text-destructive focus-visible:ring-destructive/70',
+        true: segmentedInputFocus.invalid,
       },
       filled: {
         false: '',
@@ -33,7 +37,7 @@ export const otpInputSlotVariants = cva(
       },
       active: {
         false: '',
-        true: 'border-ring shadow-[0_0_0_1px_hsl(var(--ring))]',
+        true: segmentedInputFocus.active,
       },
       disabled: {
         false: '',
@@ -49,7 +53,7 @@ export const otpInputSlotVariants = cva(
       {
         active: true,
         invalid: true,
-        className: 'shadow-[0_0_0_1px_hsl(var(--destructive))]',
+        className: segmentedInputFocus.invalidActive,
       },
     ],
     defaultVariants: {

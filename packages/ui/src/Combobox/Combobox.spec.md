@@ -96,7 +96,7 @@ export interface ComboboxOptionRenderState {
 | State | Visual Behavior | Accessibility |
 | --- | --- | --- |
 | Default | Trigger shows placeholder or selected option label | Trigger exposes combobox-style expand/collapse state |
-| Open | Popover opens after user interaction with search input and filtered results | Trigger exposes `aria-expanded="true"` and popup relationship |
+| Open | Trigger keeps border-led shell emphasis while the popover opens instead of layering a second heavy focus treatment | Trigger exposes `aria-expanded="true"` and popup relationship |
 | Search | Typing filters the option list inside the command surface | `cmdk` manages active item movement and announcement |
 | Empty | Searchable list shows `No options found` when no match remains | Empty state remains visible text, not icon-only |
 | Loading | Trigger disables interaction and list shows a loading row | Trigger exposes `aria-busy="true"`; loading row uses polite status semantics |
@@ -193,3 +193,4 @@ Roadmap alignment:
 | 2026-03-12 | Initial Combobox spec |
 | 2026-03-12 | Added `clearable`, `renderOption`, and non-forced open Storybook coverage |
 | 2026-03-17 | Added the approved shared `xs \| sm \| md \| lg` sizing contract with Input-aligned trigger and search-row density |
+| 2026-03-17 | Documented the calmer direct field-shell focus treatment and non-stacking open-state emphasis |

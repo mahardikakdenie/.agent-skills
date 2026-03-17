@@ -1,5 +1,13 @@
 import { cva } from 'class-variance-authority';
 
+import {
+  getCompactControlFocusRecipe,
+  getFieldShellFocusRecipe,
+} from '../utils/focus-normalization';
+
+const directFieldShellFocus = getFieldShellFocusRecipe('direct');
+const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
+
 export const comboboxFieldVariants = cva('flex flex-col gap-1.5');
 
 export const comboboxLabelVariants = cva('text-sm font-medium', {
@@ -20,8 +28,8 @@ export const comboboxControlVariants = cva('relative w-full');
 export const comboboxTriggerVariants = cva(
   [
     'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background text-left shadow-sm',
-    'ring-offset-background transition-colors touch-manipulation',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+    'transition-colors touch-manipulation',
+    directFieldShellFocus.base,
     'motion-reduce:transition-none',
   ].join(' '),
   {
@@ -33,7 +41,7 @@ export const comboboxTriggerVariants = cva(
         lg: 'min-h-11 px-4 text-base',
       },
       invalid: {
-        true: 'border-destructive focus-visible:ring-destructive/30',
+        true: directFieldShellFocus.invalid,
         false: 'border-input',
       },
       disabled: {
@@ -41,7 +49,7 @@ export const comboboxTriggerVariants = cva(
         false: 'hover:bg-accent/40',
       },
       open: {
-        true: 'border-ring ring-2 ring-ring/20',
+        true: 'border-ring',
         false: '',
       },
       clearable: {
@@ -50,6 +58,11 @@ export const comboboxTriggerVariants = cva(
       },
     },
     compoundVariants: [
+      {
+        invalid: true,
+        open: true,
+        className: 'border-destructive',
+      },
       {
         clearable: true,
         size: 'xs',
@@ -194,8 +207,8 @@ export const comboboxActionButtonVariants = cva(
   [
     'absolute top-1/2 inline-flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
     'transition-colors motion-reduce:transition-none',
-    'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    'focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
+    'hover:text-foreground disabled:pointer-events-none disabled:opacity-50',
+    embeddedActionFocus.base,
   ].join(' '),
   {
     variants: {

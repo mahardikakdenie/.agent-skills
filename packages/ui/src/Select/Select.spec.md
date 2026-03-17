@@ -97,7 +97,7 @@ export interface SelectOptionRenderState {
 | State | Visual Behavior | Accessibility |
 | --- | --- | --- |
 | Default | Trigger shows current value or placeholder with shared token surface | Trigger exposes Radix combobox semantics |
-| Open | Trigger and menu content use open-state styling and portal rendering | Arrow keys, Enter, and Escape follow Radix Select behavior |
+| Open | Trigger keeps border-led shell emphasis without adding a second detached halo while the portal content opens | Arrow keys, Enter, and Escape follow Radix Select behavior |
 | Selected | Checked item renders selection indicator | Current option is reflected in the trigger and listbox state |
 | Disabled Option | Disabled rows remain visible but cannot be chosen | Disabled semantics are forwarded through Radix item state |
 | Disabled | Muted trigger, no pointer interaction, menu cannot open | Disabled semantics are forwarded through Radix |
@@ -187,3 +187,4 @@ export interface SelectOptionRenderState {
 | 2026-03-11 | Added clearable reset support |
 | 2026-03-12 | Added `renderOption` support while preserving trigger label text |
 | 2026-03-17 | Added the normalized `xs | sm | md | lg` size contract aligned to the shared Input field-shell scale |
+| 2026-03-17 | Documented the calmer direct field-shell focus treatment and non-stacking open-state emphasis |
