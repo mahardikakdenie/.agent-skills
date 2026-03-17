@@ -571,3 +571,11 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Path taken: L4
 - L6 gate: check-types PASS, lint PASS (warnings only), build PASS
 - Resume point: ready to continue Batch 2 on migrate-app/admin-portal.
+
+## Pause Record
+
+- Current batch: Batch 2
+- Component in progress: none - between batch boundaries
+- Last completed step: previous legacy update integrated on 2026-03-04; resume point recorded as ready to continue Batch 2
+- Status: [PAUSE] Paused for legacy update
+- Timestamp: 2026-03-17 10:29:04 +07:00
