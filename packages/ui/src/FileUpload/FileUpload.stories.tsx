@@ -88,7 +88,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Shared file-selection field shell with optional selected-file list, item-level remove actions, additive multiple selection, and generic max-size validation.',
+          'Shared file-selection field shell with visible drag-and-drop affordance, additive multiple selection, selected-file list rendering, and generic max-size validation while upload transport stays local.',
       },
     },
   },
@@ -104,7 +104,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'Baseline single-file picker with visible label, accepted-format hint, and tokenized dropzone shell.',
+          'Baseline single-file picker with a visible drag target, accepted-format badges, and an enterprise-style dropzone hierarchy.',
       },
     },
   },
@@ -121,7 +121,7 @@ export const MultipleFiles: Story = {
     docs: {
       description: {
         story:
-          'Shows the additive multi-file list treatment, where later picks add more files instead of replacing the existing list.',
+          'Shows additive multi-file behavior, where later picker selections and drag-drop intake append to the existing list instead of replacing it.',
       },
     },
   },
@@ -134,7 +134,8 @@ export const ErrorState: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Applies destructive field styling and accessible inline validation messaging.',
+        story:
+          'Applies destructive field styling while keeping the upload target and validation feedback explicit during correction.',
       },
     },
   },
@@ -147,7 +148,8 @@ export const DisabledState: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Disables selection while preserving the visible field label and static summary copy.',
+        story:
+          'Disables selection while preserving the visible field label, current guidance, and static dropzone layout.',
       },
     },
   },
@@ -161,7 +163,8 @@ export const ClearableSelection: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Shows the item-level remove action when a single file has already been selected.',
+        story:
+          'Shows the item-level remove action and the richer selected-file card treatment for an already chosen file.',
       },
     },
   },
@@ -176,9 +179,9 @@ export const MaxSizeValidation: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Documents the shared generic max-size validation path for lightweight upload forms.',
+        story:
+          'Documents the shared generic max-size validation path for lightweight upload forms with the same drag-drop affordance.',
       },
     },
   },
 };
-

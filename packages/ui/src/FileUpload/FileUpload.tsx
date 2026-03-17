@@ -1,10 +1,11 @@
-import * as React from 'react';
 import { FileText, Upload, X } from 'lucide-react';
+import * as React from 'react';
 
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
 import { Label } from '../Label';
+import type { FileUploadProps, FileUploadValue } from './FileUpload.types';
 import {
   fileUploadActionButtonVariants,
   fileUploadBodyVariants,
@@ -24,7 +25,6 @@ import {
   fileUploadSummaryVariants,
   fileUploadTitleVariants,
 } from './FileUpload.variants';
-import type { FileUploadProps, FileUploadValue } from './FileUpload.types';
 
 function normalizeFileUploadValue(value: FileUploadValue | undefined): File[] {
   if (!value) {
@@ -39,7 +39,7 @@ function resolveFileUploadChangeValue(files: File[], multiple: boolean): FileUpl
     return null;
   }
 
-  return multiple ? files : files[0] ?? null;
+  return multiple ? files : (files[0] ?? null);
 }
 
 function formatBytes(bytes: number): string {
@@ -85,9 +85,33 @@ function mergeSequentialFiles(existingFiles: File[], incomingFiles: File[]): Fil
   return mergedFiles;
 }
 
-function getSelectionTitle(files: File[], multiple: boolean): string {
+function containsDraggedFiles(dataTransfer: DataTransfer | null | undefined): boolean {
+  if (!dataTransfer) {
+    return false;
+  }
+
+  return Array.from(dataTransfer.types ?? []).includes('Files');
+}
+
+function getSelectionTitle({
+  dragActive,
+  files,
+  multiple,
+}: {
+  dragActive: boolean;
+  files: File[];
+  multiple: boolean;
+}): string {
+  if (dragActive) {
+    if (multiple) {
+      return files.length > 0 ? 'Drop files to add' : 'Drop files to upload';
+    }
+
+    return files.length > 0 ? 'Drop file to replace' : 'Drop file to upload';
+  }
+
   if (files.length === 0) {
-    return multiple ? 'Choose files' : 'Choose file';
+    return multiple ? 'Drag and drop files here' : 'Drag and drop a file here';
   }
 
   return multiple ? 'Add more files' : 'Replace file';
@@ -95,22 +119,38 @@ function getSelectionTitle(files: File[], multiple: boolean): string {
 
 function getSelectionSummary({
   accept,
+  dragActive,
   files,
   maxSize,
   multiple,
 }: {
   accept?: string;
+  dragActive: boolean;
   files: File[];
   maxSize?: number;
   multiple: boolean;
 }): string {
+  if (dragActive) {
+    if (multiple) {
+      return files.length > 0
+        ? 'Release to append these files to the current selection.'
+        : 'Release to select these files.';
+    }
+
+    return files.length > 0
+      ? 'Release to replace the current file.'
+      : 'Release to select this file.';
+  }
+
   if (files.length > 0) {
-    return multiple ? 'Selected files appear below.' : 'Selected file appears below.';
+    return multiple
+      ? `${files.length} files selected. Review the list below or keep adding more.`
+      : '1 file selected. Review the item below or replace it anytime.';
   }
 
   const hints = [
-    accept ? `Accepted: ${formatAcceptLabel(accept)}` : undefined,
-    maxSize ? `Max ${formatBytes(maxSize)}` : undefined,
+    accept ? `${formatAcceptLabel(accept)} accepted` : undefined,
+    maxSize ? `Max ${formatBytes(maxSize)} each` : undefined,
   ]
     .filter(Boolean)
     .join(' - ');
@@ -119,11 +159,23 @@ function getSelectionSummary({
     return hints;
   }
 
-  return multiple ? 'Choose one or more files.' : 'Choose a file.';
+  return multiple
+    ? 'Drop files here or browse from your device.'
+    : 'Drop a file here or browse from your device.';
 }
 
 function getFileKey(file: File, index: number): string {
   return `${file.name}-${file.lastModified}-${file.size}-${index}`;
+}
+
+function getFileMetaLabel(file: File): string {
+  const fileNameSegments = file.name.split('.');
+  const extension =
+    fileNameSegments.length > 1 ? fileNameSegments[fileNameSegments.length - 1] : undefined;
+
+  return extension
+    ? `${extension.toUpperCase()} - ${formatBytes(file.size)}`
+    : formatBytes(file.size);
 }
 
 /**
@@ -158,24 +210,50 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
     const isControlled = Object.prototype.hasOwnProperty.call(fileUploadProps, 'value');
     const [uncontrolledFiles, setUncontrolledFiles] = React.useState<File[]>([]);
     const [localError, setLocalError] = React.useState<string | null>(null);
+    const [isDragActive, setIsDragActive] = React.useState(false);
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const dragDepthRef = React.useRef(0);
     const generatedId = React.useId();
     const inputId = id ?? `file-upload-${generatedId}`;
     const labelId = label ? `${inputId}-label` : undefined;
     const summaryId = `${inputId}-summary`;
-    const messageId =
-      typeof error === 'string' || localError ? `${inputId}-message` : undefined;
+    const messageId = typeof error === 'string' || localError ? `${inputId}-message` : undefined;
     const files = isControlled ? normalizeFileUploadValue(value) : uncontrolledFiles;
+    const hasFiles = files.length > 0;
     const invalid = Boolean(error) || Boolean(localError);
     const message = typeof error === 'string' ? error : localError;
     const describedBy =
       [ariaDescribedBy, summaryId, messageId].filter(Boolean).join(' ') || undefined;
     const labelledBy = [ariaLabelledBy, labelId].filter(Boolean).join(' ') || undefined;
-    const showRemoveButtons = clearable && !disabled && files.length > 0;
-    const summaryTone = invalid ? 'destructive' : files.length > 0 ? 'default' : 'muted';
-    const actionLabel = getSelectionTitle(files, multiple);
+    const showRemoveButtons = clearable && !disabled && hasFiles;
+    const summaryTone = invalid
+      ? 'destructive'
+      : isDragActive
+        ? 'accent'
+        : hasFiles
+          ? 'default'
+          : 'muted';
+    const actionLabel = getSelectionTitle({ dragActive: isDragActive, files, multiple });
+    const selectionSummary = getSelectionSummary({
+      accept,
+      dragActive: isDragActive,
+      files,
+      maxSize,
+      multiple,
+    });
 
     React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
+
+    const resetDragState = React.useCallback(() => {
+      dragDepthRef.current = 0;
+      setIsDragActive(false);
+    }, []);
+
+    React.useEffect(() => {
+      if (disabled) {
+        resetDragState();
+      }
+    }, [disabled, resetDragState]);
 
     const commitFiles = React.useCallback(
       (nextFiles: File[], nextLocalError: string | null) => {
@@ -195,10 +273,7 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
         const selectedFiles = multiple ? incomingFiles : incomingFiles.slice(0, 1);
 
         if (!maxSize) {
-          const nextFiles = multiple
-            ? mergeSequentialFiles(files, selectedFiles)
-            : selectedFiles;
-
+          const nextFiles = multiple ? mergeSequentialFiles(files, selectedFiles) : selectedFiles;
           commitFiles(nextFiles, null);
           return;
         }
@@ -235,7 +310,65 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
         return;
       }
 
+      resetDragState();
       processFiles(incomingFiles);
+
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
+    };
+
+    const handleDragEnter: React.DragEventHandler<HTMLDivElement> = (event) => {
+      if (disabled || !containsDraggedFiles(event.dataTransfer)) {
+        return;
+      }
+
+      event.preventDefault();
+      dragDepthRef.current += 1;
+      setIsDragActive(true);
+    };
+
+    const handleDragOver: React.DragEventHandler<HTMLDivElement> = (event) => {
+      if (disabled || !containsDraggedFiles(event.dataTransfer)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+
+      if (!isDragActive) {
+        setIsDragActive(true);
+      }
+    };
+
+    const handleDragLeave: React.DragEventHandler<HTMLDivElement> = (event) => {
+      if (disabled || !containsDraggedFiles(event.dataTransfer)) {
+        return;
+      }
+
+      event.preventDefault();
+      dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+
+      if (dragDepthRef.current === 0) {
+        setIsDragActive(false);
+      }
+    };
+
+    const handleDrop: React.DragEventHandler<HTMLDivElement> = (event) => {
+      if (disabled || !containsDraggedFiles(event.dataTransfer)) {
+        return;
+      }
+
+      event.preventDefault();
+      resetDragState();
+
+      const droppedFiles = Array.from(event.dataTransfer.files ?? []);
+
+      if (droppedFiles.length === 0) {
+        return;
+      }
+
+      processFiles(droppedFiles);
 
       if (inputRef.current) {
         inputRef.current.value = '';
@@ -269,7 +402,16 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
         <Box data-slot="file-upload-control" className={fileUploadControlVariants()}>
           <Box
             data-slot="file-upload-dropzone"
-            className={fileUploadDropzoneVariants({ invalid, disabled })}
+            className={fileUploadDropzoneVariants({
+              invalid,
+              disabled,
+              dragActive: isDragActive,
+              hasFiles,
+            })}
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
           >
             <Box
               as="input"
@@ -291,11 +433,24 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
               {...props}
             />
 
-            <Box data-slot="file-upload-presentation" className={fileUploadPresentationVariants()}>
+            <Box
+              data-slot="file-upload-presentation"
+              className={fileUploadPresentationVariants({
+                invalid,
+                dragActive: isDragActive,
+                hasFiles,
+                disabled,
+              })}
+            >
               <Box
                 as="span"
                 aria-hidden="true"
-                className={fileUploadIconVariants({ invalid, disabled })}
+                className={fileUploadIconVariants({
+                  invalid,
+                  disabled,
+                  dragActive: isDragActive,
+                  hasFiles,
+                })}
               >
                 <Upload className="h-5 w-5" />
               </Box>
@@ -305,6 +460,7 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
                   as="span"
                   className={fileUploadTitleVariants({
                     disabled,
+                    dragActive: isDragActive,
                   })}
                 >
                   {actionLabel}
@@ -315,26 +471,17 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
                   aria-live="polite"
                   className={fileUploadSummaryVariants({ tone: summaryTone })}
                 >
-                  {getSelectionSummary({
-                    accept,
-                    files,
-                    maxSize,
-                    multiple,
-                  })}
+                  {selectionSummary}
                 </Box>
               </Box>
             </Box>
           </Box>
         </Box>
 
-        {files.length > 0 ? (
+        {hasFiles ? (
           <Box as="ul" data-slot="file-upload-list" className={fileUploadListVariants()}>
             {files.map((file, index) => (
-              <Box
-                as="li"
-                key={getFileKey(file, index)}
-                className={fileUploadListItemVariants()}
-              >
+              <Box as="li" key={getFileKey(file, index)} className={fileUploadListItemVariants()}>
                 <Box as="span" aria-hidden="true" className={fileUploadFileIconVariants()}>
                   <FileText />
                 </Box>
@@ -343,7 +490,7 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
                     {file.name}
                   </Box>
                   <Box as="span" className={fileUploadFileMetaVariants()}>
-                    {formatBytes(file.size)}
+                    {getFileMetaLabel(file)}
                   </Box>
                 </Box>
                 {showRemoveButtons ? (

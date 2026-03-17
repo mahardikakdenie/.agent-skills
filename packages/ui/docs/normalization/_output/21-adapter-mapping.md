@@ -435,6 +435,7 @@ Keep local:
 - Route-tree generation, auth gating, locale-aware href shaping, and permission-based visibility.
 - Mobile drawer navigation, sidebar collapse behavior, and page-shell layout orchestration.
 - Analytics, routing side effects, and framework adapters such as `next/link` wrappers beyond the shared `asChild` path.
+
 ## Form
 
 Direct adoption guidance:
@@ -449,6 +450,7 @@ Keep local:
 - Zod schemas, mutation handlers, domain validation rules, submit orchestration, and multi-step workflow state.
 - Form shells that still embed business copy, navigation side effects, API calls, or auth and permission logic.
 - Field wrappers that intentionally diverge for product-specific layout, marketing copy, or workflow choreography beyond shared accessibility wiring.
+
 ## Popover
 
 Direct adoption guidance:
@@ -465,7 +467,6 @@ Keep local:
 - Hover-only or brief hint content that fits the Tooltip interaction model.
 - Modal confirmations, blocking workflows, and flows that require dialog semantics or stronger labeling and focus isolation.
 - Domain-specific overlay state tied to routing, auth, service hooks, or business entity shaping.
-
 
 ## Tooltip
 
@@ -573,6 +574,7 @@ Direct adoption guidance:
 - Existing `file`, `files`, `selectedFiles`, or similar local state should normalize to `value`; selection callbacks normalize to `onChange`.
 - Existing accepted-format, multiple-selection, max-size, label, invalid-state, and clear/reset behavior map to `accept`, `multiple`, `maxSize`, `label`, `error`, `clearable`, and `onClear`.
 - Sequential multi-file picks should append through the shared component rather than replacing the entire selection list in parent code.
+- The shared dropzone already provides direct drag-and-drop feedback and release-state copy, so local wrappers should not recreate competing hover-only drop targets around the same field.
 
 Keep local:
 
