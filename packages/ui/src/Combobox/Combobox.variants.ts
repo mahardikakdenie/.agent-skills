@@ -19,7 +19,7 @@ export const comboboxControlVariants = cva('relative w-full');
 
 export const comboboxTriggerVariants = cva(
   [
-    'flex w-full items-center justify-between gap-2 rounded-md border bg-background text-left shadow-sm',
+    'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background text-left shadow-sm',
     'ring-offset-background transition-colors touch-manipulation',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     'motion-reduce:transition-none',

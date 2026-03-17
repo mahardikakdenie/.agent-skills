@@ -3,7 +3,11 @@ import * as React from 'react';
 
 import { Box } from '../Box';
 import { Combobox } from './Combobox';
-import { comboboxSizeValues, type ComboboxOption } from './Combobox.types';
+import {
+  comboboxSizeValues,
+  type ComboboxOption,
+  type ComboboxProps,
+} from './Combobox.types';
 
 const options: ComboboxOption[] = [
   { label: 'Malaysia', value: 'my' },
@@ -56,6 +60,25 @@ function renderCountryOption(
         </Box>
       ) : null}
     </Box>
+  );
+}
+
+function ComboboxStoryHarness({
+  initialValue,
+  onValueChange,
+  ...props
+}: ComboboxProps & { initialValue?: string }) {
+  const [value, setValue] = React.useState<string | undefined>(initialValue);
+
+  return (
+    <Combobox
+      {...props}
+      value={value}
+      onValueChange={(nextValue) => {
+        setValue(nextValue);
+        onValueChange?.(nextValue);
+      }}
+    />
   );
 }
 
@@ -150,23 +173,24 @@ export const Sizes: Story = {
   render: () => (
     <Box className="grid gap-4 md:grid-cols-2">
       {comboboxSizeValues.map((size) => (
-        <Box key={size} className="w-[320px]">
-          <Combobox
-            label={`Country ${size.toUpperCase()}`}
-            size={size}
-            placeholder={`Select a ${size} option`}
-            searchPlaceholder={`Search ${size} options`}
-            options={options}
-          />
-        </Box>
+        <ComboboxStoryHarness
+          key={size}
+          label={`Size ${size.toUpperCase()}`}
+          size={size}
+          placeholder={`Select a ${size} field`}
+          searchPlaceholder={`Search ${size} options`}
+          initialValue="my"
+          options={options}
+        />
       ))}
     </Box>
   ),
   parameters: {
+    layout: 'padded',
     docs: {
       description: {
         story:
-          'Shows the approved `xs | sm | md | lg` field-shell size family on both the trigger shell and searchable row.',
+          'Shows the full shared field-shell size scale aligned with `Select` from `xs` through `lg`.',
       },
     },
   },
