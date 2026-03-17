@@ -102,3 +102,10 @@ export interface ListPolicyStatisticDataRequest {
     insuranceId?: string;
     sort?: string;
 }
+
+export interface ExportDataRequest {
+    type: string;
+    startDate?: string;
+    endDate?: string;
+    channel: string;
+}
