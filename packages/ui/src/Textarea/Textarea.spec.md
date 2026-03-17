@@ -66,9 +66,9 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 | State | Visual Behavior | Accessibility |
 | --- | --- | --- |
 | Default | Tokenized border, background, placeholder, and multiline padding treatment | Native textarea semantics via `Box as="textarea"` |
-| Focus | Visible `focus-within` ring on the field shell | Keyboard focus remains obvious without extra scripting |
+| Focus | Visible `focus-visible` border emphasis with a subtle near-shell halo on the textarea element | Keyboard focus remains obvious without moving the focus styling onto an outer wrapper |
 | Disabled | Muted opacity and blocked interaction | Uses native `disabled` on the textarea element |
-| Error | Destructive border and inline error message | Uses `aria-invalid="true"` and links helper and error copy with `aria-describedby` |
+| Error | Destructive border, calmer invalid halo, and inline error message | Uses `aria-invalid="true"` and links helper and error copy with `aria-describedby` |
 | Clearable | Clear action appears when the field has content and interaction is allowed | Clear button stays keyboard reachable and is labelled `Clear text` |
 | Resize | Native vertical resize handle remains available | Resizing stays browser-native and requires no custom keyboard model |
 | Read-only | Shared shell remains visible but suppresses clear affordances | Preserves native `readOnly` semantics |
@@ -113,7 +113,7 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 ### 1. Basic usage
 
 ```tsx
-<Textarea label="Notes" placeholder="Add internal notes…" rows={4} />
+<Textarea label="Notes" placeholder="Add internal notes..." rows={4} />
 ```
 
 ### 2. Error state
@@ -121,7 +121,7 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 ```tsx
 <Textarea
   label="Description"
-  placeholder="Add a plain-text description…"
+  placeholder="Add a plain-text description..."
   error="Description is required."
   helperText="Use plain text only."
   rows={5}
@@ -135,7 +135,7 @@ This component intentionally stays at the plain-text field-shell boundary. It do
   value={notes}
   onValueChange={setNotes}
   clearable
-  placeholder="Add remarks…"
+  placeholder="Add remarks..."
 />
 ```
 
@@ -177,3 +177,5 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 | Date | Change |
 | --- | --- |
 | 2026-03-10 | Initial Textarea spec |
+| 2026-03-17 | Updated the direct-element focus guidance to the calmer Wave 1 field-shell recipe |
+

@@ -101,10 +101,10 @@ This component intentionally stops at the field-shell boundary. It does not impl
 | ---------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | Default    | Tokenized border, background, and placeholder treatment                    | Native input semantics via `Box as="input"`                                    |
 | Hover      | Subtle shell transition through token colors                               | No hover-only information                                                      |
-| Focus      | Visible `focus-within` ring on the field shell                             | Keyboard focus remains obvious across variants                                 |
+| Focus      | Visible `focus-within` border emphasis with a subtle near-shell halo on the field shell | Keyboard focus remains obvious across variants without a detached offset halo |
 | Disabled   | Muted opacity and blocked interaction                                      | Uses native `disabled` on the input element                                    |
 | Loading    | Trailing spinner replaces the right adornment                              | Field shell exposes `aria-busy="true"`                                         |
-| Error      | Destructive border and inline error message                                | Uses `aria-invalid="true"` and links error and helper text through `aria-describedby` |
+| Error      | Destructive border, calmer invalid halo, and inline error message        | Uses `aria-invalid="true"` and links error and helper text through `aria-describedby` |
 | Clearable  | Clear action appears when the field has content and interaction is allowed | Clear button is focusable and labelled `Clear input`                           |
 | Read-only  | Inherits field chrome without interactive affordances such as clear        | Preserves native `readOnly` semantics                                          |
 
@@ -230,4 +230,6 @@ This component intentionally stops at the field-shell boundary. It does not impl
 | Date       | Change             |
 | ---------- | ------------------ |
 | 2026-03-10 | Initial Input spec |
+| 2026-03-17 | Aligned field-shell focus guidance to the Wave 1 calmer near-halo recipe |
+
 

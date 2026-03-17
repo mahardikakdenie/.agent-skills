@@ -1,12 +1,21 @@
 import { cva } from 'class-variance-authority';
 
+import {
+  getCompactControlFocusRecipe,
+  getFieldShellFocusRecipe,
+} from '../utils/focus-normalization';
+
+const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
+const directFieldShellFocus = getFieldShellFocusRecipe('direct');
+const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
+
 export const dateRangePickerFieldVariants = cva('grid w-full gap-1.5');
 
 export const dateRangePickerControlVariants = cva(
   [
-    'flex w-full items-center gap-2 rounded-md border ring-offset-background',
+    'flex w-full items-center gap-2 rounded-md border',
     'transition-colors motion-reduce:transition-none',
-    'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
+    compositeFieldShellFocus.base,
   ].join(' '),
   {
     variants: {
@@ -22,7 +31,7 @@ export const dateRangePickerControlVariants = cva(
         lg: 'min-h-11 px-4',
       },
       invalid: {
-        true: 'border-destructive focus-within:ring-destructive/30',
+        true: compositeFieldShellFocus.invalid,
         false: '',
       },
       disabled: {
@@ -90,8 +99,8 @@ export const dateRangePickerActionButtonVariants = cva(
   [
     'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
     'transition-colors motion-reduce:transition-none',
-    'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    'focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'hover:text-foreground',
+    embeddedActionFocus.base,
     'disabled:pointer-events-none disabled:opacity-50',
   ].join(' '),
   {
@@ -167,14 +176,14 @@ export const dateRangePickerTimeLabelVariants = cva(
 export const dateRangePickerTimeInputVariants = cva(
   [
     'h-8 w-full min-w-0 rounded-md border border-input bg-background px-2.5 text-sm tabular-nums text-foreground shadow-sm',
-    'outline-none transition-colors motion-reduce:transition-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'transition-colors motion-reduce:transition-none',
+    directFieldShellFocus.base,
     'disabled:cursor-not-allowed disabled:opacity-60',
   ].join(' '),
   {
     variants: {
       invalid: {
-        true: 'border-destructive focus-visible:ring-destructive/30',
+        true: directFieldShellFocus.invalid,
         false: '',
       },
     },

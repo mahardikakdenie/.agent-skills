@@ -104,10 +104,10 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 | Default | Trigger shows selected value or placeholder in the shared field shell, while date-only popovers open as a bare calendar surface | Trigger is a real button with `aria-expanded` |
 | Hover | Clear action and trigger keep pointer affordance when interactive | No hover-only information |
 | Open | Popover surface opens below the trigger with the shared calendar grid; date-only mode stays bare while `withTime` uses a framed composite panel | Trigger exposes `aria-haspopup="dialog"` and `aria-expanded="true"` |
-| Focus | Shared field chrome uses visible focus-within ring treatment | Keyboard users keep a visible focus indicator on trigger and calendar controls |
+| Focus | Trigger shell uses `focus-within` border emphasis with a subtle near-shell halo, and the inline time input uses the same calmer recipe on the input element | Keyboard users keep a visible focus indicator on the trigger, time input, and calendar controls without a detached offset halo on the field shell |
 | Disabled | Trigger and clear action dim and stop responding to input | Trigger uses native `disabled` state |
 | Cleared | Value resets to `null` and placeholder returns | Clear button has its own accessible name |
-| Error | Border and message switch to destructive styling | Trigger receives `aria-invalid`; error text uses `role="alert"` |
+| Error | Border, calmer invalid halo, and message switch to destructive styling | Trigger receives `aria-invalid`; error text uses `role="alert"` |
 | Min/max bounded | Out-of-range dates are disabled and month navigation is clamped | Disabled dates remain non-interactive in the calendar grid |
 | Time-enabled | Popover switches to a framed two-column layout with the compact calendar on the left and a minute-precision time rail plus optional timezone hint on the right | Time input stays keyboard reachable and inherits the same invalid state treatment |
 
@@ -276,3 +276,5 @@ Roadmap alignment:
 | ---------- | ------------------ |
 | 2026-03-12 | Added `formatDate` display override and synced the canonical docs and stories |
 | 2026-03-13 | Folded standalone date-time usage into optional `withTime` support on `DatePicker` |
+| 2026-03-17 | Updated trigger-shell and inline time-input focus guidance to the calmer Wave 1 recipe |
+

@@ -1,4 +1,12 @@
-﻿import { cva } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
+
+import {
+  getCompactControlFocusRecipe,
+  getFieldShellFocusRecipe,
+} from '../utils/focus-normalization';
+
+const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
+const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
 export const inputFieldVariants = cva('grid w-full gap-1.5');
 
@@ -17,9 +25,9 @@ export const inputLabelVariants = cva('text-sm font-medium leading-none', {
 
 export const inputControlVariants = cva(
   [
-    'flex w-full items-center gap-2 rounded-md border ring-offset-background',
+    'flex w-full items-center gap-2 rounded-md border',
     'transition-colors motion-reduce:transition-none',
-    'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
+    compositeFieldShellFocus.base,
   ].join(' '),
   {
     variants: {
@@ -35,7 +43,7 @@ export const inputControlVariants = cva(
         lg: 'min-h-11 px-4',
       },
       invalid: {
-        true: 'border-destructive focus-within:ring-destructive/30',
+        true: compositeFieldShellFocus.invalid,
         false: '',
       },
       disabled: {
@@ -91,8 +99,8 @@ export const inputActionButtonVariants = cva(
   [
     'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
     'transition-colors motion-reduce:transition-none',
-    'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    'focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
+    'hover:text-foreground disabled:pointer-events-none disabled:opacity-50',
+    embeddedActionFocus.base,
   ].join(' '),
   {
     variants: {
@@ -112,4 +120,3 @@ export const inputActionButtonVariants = cva(
 export const inputHelperTextVariants = cva('text-sm leading-5 text-muted-foreground');
 
 export const inputMessageVariants = cva('text-sm leading-5 text-destructive');
-
