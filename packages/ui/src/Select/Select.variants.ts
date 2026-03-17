@@ -19,13 +19,19 @@ export const selectLabelVariants = cva('text-sm font-medium leading-none', {
 
 export const selectTriggerVariants = cva(
   [
-    'flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background px-3 py-2 text-left text-sm shadow-sm',
+    'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background py-1.5 text-left leading-none shadow-sm',
     'ring-offset-background transition-colors motion-reduce:transition-none',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     'data-[placeholder]:text-muted-foreground data-[state=open]:border-ring',
   ].join(' '),
   {
     variants: {
+      size: {
+        xs: 'min-h-8 px-2.5 text-xs',
+        sm: 'min-h-9 px-3 text-sm',
+        md: 'min-h-10 px-3 text-sm',
+        lg: 'min-h-11 px-4 text-base',
+      },
       invalid: {
         true: 'border-destructive focus-visible:ring-destructive/30',
         false: 'border-input',
@@ -35,11 +41,34 @@ export const selectTriggerVariants = cva(
         false: '',
       },
       clearable: {
-        true: 'pr-10',
+        true: '',
         false: '',
       },
     },
+    compoundVariants: [
+      {
+        size: 'xs',
+        clearable: true,
+        className: 'pr-8',
+      },
+      {
+        size: 'sm',
+        clearable: true,
+        className: 'pr-10',
+      },
+      {
+        size: 'md',
+        clearable: true,
+        className: 'pr-10',
+      },
+      {
+        size: 'lg',
+        clearable: true,
+        className: 'pr-12',
+      },
+    ],
     defaultVariants: {
+      size: 'md',
       invalid: false,
       disabled: false,
       clearable: false,
@@ -47,9 +76,21 @@ export const selectTriggerVariants = cva(
   },
 );
 
-export const selectValueVariants = cva('line-clamp-1 flex-1 text-foreground');
+export const selectValueVariants = cva('line-clamp-1 min-w-0 flex-1 text-foreground');
 
-export const selectIconVariants = cva('ml-auto shrink-0 text-muted-foreground [&_svg]:h-4 [&_svg]:w-4');
+export const selectIconVariants = cva('ml-auto shrink-0 text-muted-foreground', {
+  variants: {
+    size: {
+      xs: '[&_svg]:h-3.5 [&_svg]:w-3.5',
+      sm: '[&_svg]:h-4 [&_svg]:w-4',
+      md: '[&_svg]:h-4 [&_svg]:w-4',
+      lg: '[&_svg]:h-[18px] [&_svg]:w-[18px]',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
 export const selectContentVariants = cva(
   [
@@ -67,17 +108,43 @@ export const selectViewportVariants = cva('max-h-[inherit] p-1');
 
 export const selectItemVariants = cva(
   [
-    'relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-3 pr-8 text-sm outline-none',
+    'relative flex w-full cursor-pointer select-none items-center rounded-sm outline-none',
     'transition-colors motion-reduce:transition-none',
     'data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
     'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
   ].join(' '),
+  {
+    variants: {
+      size: {
+        xs: 'min-h-8 py-1.5 pl-2.5 pr-7 text-xs',
+        sm: 'min-h-9 py-2 pl-3 pr-8 text-sm',
+        md: 'min-h-10 py-2 pl-3 pr-8 text-sm',
+        lg: 'min-h-11 py-2.5 pl-4 pr-10 text-base',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  },
 );
 
 export const selectItemTextVariants = cva('line-clamp-1');
 
 export const selectItemIndicatorVariants = cva(
-  'absolute right-2 inline-flex h-4 w-4 items-center justify-center text-foreground',
+  'absolute inline-flex items-center justify-center text-foreground',
+  {
+    variants: {
+      size: {
+        xs: 'right-2 h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5',
+        sm: 'right-2.5 h-4 w-4 [&_svg]:h-4 [&_svg]:w-4',
+        md: 'right-2.5 h-4 w-4 [&_svg]:h-4 [&_svg]:w-4',
+        lg: 'right-3 h-[18px] w-[18px] [&_svg]:h-[18px] [&_svg]:w-[18px]',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  },
 );
 
 export const selectScrollButtonVariants = cva(
@@ -88,9 +155,22 @@ export const selectMessageVariants = cva('text-sm leading-5 text-destructive');
 
 export const selectActionButtonVariants = cva(
   [
-    'absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
+    'absolute top-1/2 inline-flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm text-muted-foreground',
     'transition-colors motion-reduce:transition-none',
     'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
     'focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
   ].join(' '),
+  {
+    variants: {
+      size: {
+        xs: 'right-2 h-5 w-5 [&_svg]:h-3.5 [&_svg]:w-3.5',
+        sm: 'right-2.5 h-6 w-6 [&_svg]:h-4 [&_svg]:w-4',
+        md: 'right-2.5 h-6 w-6 [&_svg]:h-4 [&_svg]:w-4',
+        lg: 'right-3 h-7 w-7 [&_svg]:h-[18px] [&_svg]:w-[18px]',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  },
 );

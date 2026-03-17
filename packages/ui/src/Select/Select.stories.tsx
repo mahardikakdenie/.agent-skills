@@ -1,10 +1,14 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Select } from './Select';
-import type { SelectOption, SelectProps } from './Select.types';
+import {
+  selectSizeValues,
+  type SelectOption,
+  type SelectProps,
+} from './Select.types';
 
 const countryOptions: SelectOption[] = [
   { label: 'Malaysia', value: 'my' },
@@ -99,15 +103,15 @@ function SelectStoryHarness(selectProps: SelectProps) {
   );
 }
 
-
 const meta = {
   title: 'Inputs/Select',
   component: Select,
   tags: ['autodocs'],
   args: {
     label: 'Country',
-    placeholder: 'Select A Country',
+    placeholder: 'Select a country',
     options: countryOptions,
+    size: 'md',
     defaultValue: undefined,
     disabled: false,
     loading: false,
@@ -124,6 +128,10 @@ const meta = {
     },
     placeholder: {
       control: 'text',
+    },
+    size: {
+      control: 'select',
+      options: selectSizeValues,
     },
     defaultValue: {
       control: 'text',
@@ -164,7 +172,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Shared static single-select primitive built on Radix Select with Box-authored trigger, list items, portal content, loading state, and validation messaging.',
+          'Shared static single-select primitive built on Radix Select with Box-authored trigger, Input-aligned field-shell sizing, list items, portal content, loading state, and validation messaging.',
       },
     },
   },
@@ -187,6 +195,30 @@ export const Default: Story = {
   },
 };
 
+export const Sizes: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-2">
+      {selectSizeValues.map((size) => (
+        <SelectStoryHarness
+          key={size}
+          size={size}
+          label={`Size ${size.toUpperCase()}`}
+          placeholder={`Select a ${size} field`}
+          defaultValue="my"
+          options={countryOptions}
+        />
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows the full shared field-shell size scale aligned with `Input` from `xs` through `lg`.',
+      },
+    },
+  },
+};
+
 export const Placeholder: Story = {
   parameters: {
     docs: {
@@ -200,7 +232,7 @@ export const Placeholder: Story = {
 export const LongList: Story = {
   args: {
     options: longCountryOptions,
-    placeholder: 'Select A Destination',
+    placeholder: 'Select a destination',
     label: 'Destination Country',
   },
   parameters: {
@@ -257,7 +289,7 @@ export const ErrorState: Story = {
 export const LoadingState: Story = {
   args: {
     loading: true,
-    placeholder: 'Loading Countries',
+    placeholder: 'Loading countries',
   },
   parameters: {
     docs: {
@@ -286,7 +318,7 @@ export const CustomOptionContent: Story = {
   args: {
     options: longCountryOptions,
     label: 'Country',
-    placeholder: 'Select A Country',
+    placeholder: 'Select a country',
     renderOption: renderCountryOption,
   },
   parameters: {
@@ -297,4 +329,3 @@ export const CustomOptionContent: Story = {
     },
   },
 };
-

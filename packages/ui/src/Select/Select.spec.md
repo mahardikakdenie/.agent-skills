@@ -17,6 +17,8 @@
 
 This shared contract stays intentionally focused on non-searchable single selection. Search-driven selection belongs to `Combobox`, while multi-select and phone-code-specific flows stay out of this contract. The current surface also supports trigger-level reset and custom option layout rendering without changing the selected trigger label contract.
 
+The trigger follows the shared field-shell size family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`: `xs | sm | md | lg`, default `md`.
+
 **When to use:**
 
 - Use `Select` for static single-value choices in forms, filters, and settings flows.
@@ -40,6 +42,7 @@ This shared contract stays intentionally focused on non-searchable single select
 | Public API shape | Flat prop-driven component with `options` | The shared contract is a static single-select wrapper, not a public compound primitive family. |
 | Controlled vs uncontrolled | both | Cross-app baselines mix controlled and uncontrolled usage, and Radix supports both cleanly. |
 | Open-state API | `open`, `defaultOpen`, `onOpen`, `onClose` | Keeps the shared surface aligned with normalized open/close naming without leaking raw `onOpenChange`. |
+| Size scale | `xs | sm | md | lg`, default `md` | Keeps static selection on the same field-shell density ladder as `Input` and the other normalized field triggers. |
 | Clear behavior | `clearable` + `onValueChange(undefined)` | Resets selected state without inventing a second callback contract. |
 | Rich option layout | `renderOption` | Supports denser option rows while keeping trigger value text stable and app-agnostic. |
 | Search / multi scope | excluded | Overloading static, searchable, and multi-select into one API would recreate drift. |
@@ -57,6 +60,7 @@ This shared contract stays intentionally focused on non-searchable single select
 | `onValueChange` | `(value: string \| undefined) => void` | `undefined` | No | Called when a new option is selected or when a clearable select is reset to the placeholder state. |
 | `options` | `SelectOption[]` | - | Yes | Flat list of available static options. |
 | `placeholder` | `string` | `undefined` | No | Placeholder content shown when no option is selected. |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | No | Shared field-shell size aligned to `Input` trigger density. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger and closes interaction. |
 | `loading` | `boolean` | `false` | No | Shows a loading spinner and disables the trigger. |
 | `required` | `boolean` | `false` | No | Marks the field required for form semantics. |
@@ -132,6 +136,7 @@ export interface SelectOptionRenderState {
 ```tsx
 <Select
   label="Country"
+  size="sm"
   clearable
   value={country}
   onValueChange={setCountry}
@@ -162,6 +167,7 @@ export interface SelectOptionRenderState {
 **Story file title:** `'Inputs/Select'`
 
 - [x] `Default`
+- [x] `Sizes`
 - [x] `Placeholder`
 - [x] `LongList`
 - [x] `DisabledState`
@@ -180,3 +186,4 @@ export interface SelectOptionRenderState {
 | 2026-03-10 | Initial Select spec |
 | 2026-03-11 | Added clearable reset support |
 | 2026-03-12 | Added `renderOption` support while preserving trigger label text |
+| 2026-03-17 | Added the normalized `xs | sm | md | lg` size contract aligned to the shared Input field-shell scale |

@@ -1,4 +1,4 @@
-﻿import * as SelectPrimitive from '@radix-ui/react-select';
+import * as SelectPrimitive from '@radix-ui/react-select';
 import * as React from 'react';
 import { Check, ChevronDown, ChevronUp, LoaderCircle, X } from 'lucide-react';
 
@@ -44,6 +44,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
     onValueChange,
     options,
     placeholder,
+    size = 'md',
     disabled = false,
     loading = false,
     required = false,
@@ -153,6 +154,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
               type="button"
               data-slot="select-trigger"
               className={selectTriggerVariants({
+                size,
                 invalid,
                 disabled: interactiveDisabled,
                 clearable: showClearButton,
@@ -161,7 +163,10 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
               <Box
                 as="span"
                 data-slot="select-value"
-                className={cn(selectValueVariants(), renderOption && !selectedOption ? 'text-muted-foreground' : undefined)}
+                className={cn(
+                  selectValueVariants(),
+                  renderOption && !selectedOption ? 'text-muted-foreground' : undefined,
+                )}
               >
                 {renderOption ? selectedOption?.label ?? placeholder : <SelectPrimitive.Value placeholder={placeholder} />}
               </Box>
@@ -171,7 +176,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
                   as="span"
                   data-slot="select-spinner"
                   aria-hidden="true"
-                  className={selectIconVariants()}
+                  className={selectIconVariants({ size })}
                 >
                   <LoaderCircle className="animate-spin" />
                 </Box>
@@ -181,7 +186,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
                     as="span"
                     data-slot="select-icon"
                     aria-hidden="true"
-                    className={selectIconVariants()}
+                    className={selectIconVariants({ size })}
                   >
                     <ChevronDown />
                   </Box>
@@ -195,13 +200,13 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
               as="button"
               type="button"
               aria-label="Clear selection"
-              className={cn(selectActionButtonVariants(), 'touch-manipulation')}
+              className={cn(selectActionButtonVariants({ size }), 'touch-manipulation')}
               onMouseDown={(event) => {
                 event.preventDefault();
               }}
               onClick={handleClear}
             >
-              <X aria-hidden="true" className="h-4 w-4" />
+              <X aria-hidden="true" />
             </Box>
           ) : null}
         </Box>
@@ -234,12 +239,15 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
                         disabled={option.disabled}
                         asChild
                       >
-                        <Box data-slot="select-item" className={selectItemVariants()}>
+                        <Box data-slot="select-item" className={selectItemVariants({ size })}>
                           <SelectPrimitive.ItemText asChild>
                             <Box
                               as="span"
                               data-slot="select-item-text"
-                              className={cn(selectItemTextVariants(), renderOption ? 'sr-only' : undefined)}
+                              className={cn(
+                                selectItemTextVariants(),
+                                renderOption ? 'sr-only' : undefined,
+                              )}
                             >
                               {option.label}
                             </Box>
@@ -258,9 +266,9 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
                             <Box
                               as="span"
                               data-slot="select-item-indicator"
-                              className={selectItemIndicatorVariants()}
+                              className={selectItemIndicatorVariants({ size })}
                             >
-                              <Check aria-hidden="true" className="h-4 w-4" />
+                              <Check aria-hidden="true" />
                             </Box>
                           </SelectPrimitive.ItemIndicator>
                         </Box>
