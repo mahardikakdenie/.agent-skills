@@ -7,6 +7,38 @@
 
 ---
 
+## 2026-03-17 - Sizing Normalization Amendment Opened For Select And Combobox
+
+Changed:
+
+- Superseded the earlier verification-only sizing read by opening a foundation amendment for `Select` and `Combobox`.
+- Promoted `Select` and `Combobox` into the shared field-shell size family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
+- Preserved `OtpInput` as the already-shipped segmented-input size family with `sm | md | lg`, default `md`, instead of reopening it as a field-shell amendment target.
+- Realigned the normalization docs so `Select` and `Combobox` now target `size?: 'xs' | 'sm' | 'md' | 'lg'` with default `md`, while `Pagination`, `Textarea`, `Dialog`, and `Calendar` remain frozen exceptions.
+- Updated the sizing audit, handoff, prompt pack, and implementation-batch guidance so both single-agent and multi-agent execution read the same docs-first gate before implementation starts.
+
+Impact:
+
+- Follow-up implementation work for `packages/ui/src/Select/*` and `packages/ui/src/Combobox/*` is now explicitly approved by the normalization docs instead of being blocked as scope expansion.
+- The 27-app migration lane now has one clearer field-shell density contract for static and searchable selection, while the segmented-input contract and the remaining exception set stay bounded.
+
+---
+
+## 2026-03-17 - Sizing Normalization Docs Gate Reconciled
+
+Changed:
+
+- Reconciled the shipped `OtpInput` API in `02-api-conventions.md` so the prop block now matches code, spec, stories, and the original delivery log by documenting `size?: 'sm' | 'md' | 'lg'` with default `md`.
+- Restated the frozen sizing-exception rulings in the canonical docs for `Select`, `Combobox`, `Pagination`, `Textarea`, `Dialog`, and `Calendar` without widening public API scope.
+- Updated `13-implementation-batches.md` and the sizing handoff so downstream verification reads one consistent docs-first gate in both single-agent and multi-agent execution: shipped `OtpInput` sizing stays public, and the existing exception set stays frozen.
+
+Impact:
+
+- Follow-up workers can proceed without inferring new size APIs from visual similarity or internal implementation details.
+- No component code changed, no foundation amendment widened scope, and the sizing pass remains limited to already-shipped behavior plus already-approved exception rulings.
+
+---
+
 ## 2026-03-17 - FileUpload Drag-State UX Refinement
 
 Changed:

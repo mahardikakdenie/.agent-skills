@@ -195,6 +195,11 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 }
 ```
 
+Sizing-family note:
+- The shared field-shell size family now covers `Input`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, and `MonthPicker` with `xs | sm | md | lg`, default `md`.
+- `OtpInput` remains a separate segmented-input size family with `sm | md | lg`, default `md`.
+- `Textarea`, `Pagination`, `Dialog`, and `Calendar` remain frozen sizing exceptions in this amendment.
+
 Story group: `Inputs`
 
 ---
@@ -215,6 +220,10 @@ export interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTex
   className?: string
 }
 ```
+
+Sizing note:
+- `Textarea` has no public `size` prop in the shared contract.
+- Height remains row-driven through native textarea behavior and consumer-provided `rows`.
 
 Story group: `Inputs`
 
@@ -263,18 +272,25 @@ export interface SelectOption {
   disabled?: boolean
 }
 
+export interface SelectOptionRenderState {
+  selected: boolean
+  disabled: boolean
+}
+
 export interface SelectProps {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string | undefined) => void
   options: SelectOption[]
   placeholder?: string
+  size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
   loading?: boolean
   required?: boolean
   error?: string | boolean
   label?: string
   clearable?: boolean
+  renderOption?: (option: SelectOption, state: SelectOptionRenderState) => React.ReactNode
   className?: string
   open?: boolean
   defaultOpen?: boolean
@@ -287,6 +303,10 @@ Shared-scope note:
 - `Select` is the static single-select contract only.
 - Search-driven selection belongs to `Combobox`.
 - Multi-select and phone-code-specific flows remain separate migration targets and must not be folded back into this API.
+
+Sizing note:
+- `Select` now participates in the shared field-shell size family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
+- `Select` uses `xs | sm | md | lg` with default `md`.
 
 Story group: `Inputs`
 
@@ -382,6 +402,10 @@ export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement>
   children: React.ReactNode
 }
 ```
+
+Sizing note:
+- `Dialog` sizing is an overlay-width contract, not a control-density family.
+- `Dialog` must not be merged into field, action, or display size normalization.
 
 Story group: `Overlays`
 
@@ -609,6 +633,10 @@ export interface PaginationProps {
 }
 ```
 
+Sizing note:
+- `Pagination` has no public `size` prop in the shared contract.
+- Any internal `default` or `compact` density handling stays private and must not be promoted into public API in this pass.
+
 Story group: `Navigation`
 
 ---
@@ -624,6 +652,10 @@ export interface CalendarProps {
   className?: string
 }
 ```
+
+Sizing note:
+- `Calendar` remains the shared internal date-family surface.
+- It does not establish a standalone public size family in this pass.
 
 Story group: `Data Display`
 
@@ -681,24 +713,37 @@ export interface ComboboxOption {
   label: string
   value: string
   disabled?: boolean
+  keywords?: string[]
+}
+
+export interface ComboboxOptionRenderState {
+  selected: boolean
+  disabled: boolean
 }
 
 export interface ComboboxProps {
   value?: string
-  onValueChange?: (value: string) => void
+  onValueChange?: (value: string | undefined) => void
   options: ComboboxOption[]
   placeholder?: string
   searchPlaceholder?: string
+  size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
   loading?: boolean
   required?: boolean
   error?: string | boolean
   label?: string
+  clearable?: boolean
+  renderOption?: (option: ComboboxOption, state: ComboboxOptionRenderState) => React.ReactNode
   className?: string
   open?: boolean
   onClose?: () => void
 }
 ```
+
+Sizing note:
+- `Combobox` now participates in the shared field-shell size family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
+- `Combobox` uses `xs | sm | md | lg` with default `md`.
 
 Story group: `Inputs`
 
@@ -734,12 +779,16 @@ export interface OtpInputProps {
   onValueChange?: (value: string) => void
   length?: number  // default: 6
   variant?: 'default' | 'outline' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
   error?: string | boolean
   autoFocus?: boolean
   className?: string
 }
 ```
+
+Sizing note:
+- `OtpInput` ships a public segmented-input size contract of `sm | md | lg` with default `md`.
 
 Story group: `Inputs`
 

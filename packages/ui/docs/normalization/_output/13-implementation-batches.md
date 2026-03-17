@@ -31,6 +31,8 @@
 - Batch 1 and Batch 2 remain structurally present but empty in the shared-program lane because no authoritative `ADOPT_*` workload was promoted into `feat/ui`.
 - Split and app-local rows still exist in `12-master-backlog.csv`; they remain downstream app-lane concerns unless explicitly promoted into the shared roadmap.
 - Shared loading scope stops at the `Spinner` and `Skeleton` primitives; loading wrappers, suspense fallbacks, branded loaders, and retry/error-aware loading shells stay in app lanes unless a future narrower wrapper is explicitly approved.
+- Sizing normalization is now amendment-open: `Select` and `Combobox` are approved follow-up implementation targets for the field-shell size family with `xs | sm | md | lg`, default `md`; `OtpInput` keeps its shipped public `sm | md | lg` contract; `Pagination`, `Textarea`, `Dialog`, and `Calendar` remain frozen exceptions in this pass.
+- The amendment gate is docs-first in both execution modes: a single agent may amend then implement sequentially, or `W-DOCS` lands the docs before `W-SELECT` and `W-COMBOBOX` begin, with verification last.
 - Cross-check on 2026-03-12 confirms the current canonical `@repo/ui` export surface for normalized shared adoption includes `Accordion`, `Box`, `Alert`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Checkbox`, `Command`, `DatePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUpload`, `Image`, `Input`, `Label`, `OtpInput`, `Pagination`, `Popover`, `RadioGroup`, `Select`, `Skeleton`, `Spinner`, `Switch`, `Table`, `Tabs`, `Textarea`, and `Tooltip`; `PageHeader` is intentionally excluded from the normalized shared rollout after the 2026-03-12 boundary reversal and remains app-local for downstream migration planning.
 
 ## 2. Batch 1 - ADOPT_NOW
