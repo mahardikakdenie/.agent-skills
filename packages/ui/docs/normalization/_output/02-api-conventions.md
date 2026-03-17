@@ -257,11 +257,13 @@ Global focus rules:
 - Detached `ring-offset-2` halos are no longer the default enterprise recipe for shared field-entry components.
 - Invalid focus may tint toward `destructive`, but it must not introduce a second louder emphasis system by default.
 - Open, active, selected, and highlighted states must not stack a second heavy focus ring on the same element.
+- The existing internal authority for shared focus recipes is `packages/ui/src/utils/focus-normalization.ts`.
 
 Wave status:
 
 - Approved for implementation now: `field-shell-composite`, `field-shell-direct`, and `segmented-slot`
 - Deferred by default: `compact-control` and `dense-surface`
+- Existing dense-surface utility adopters are precedent only; this amendment does not reopen a new dense-surface rollout wave
 
 ---
 
@@ -1393,3 +1395,4 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+

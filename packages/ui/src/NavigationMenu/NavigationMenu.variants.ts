@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getDenseSurfaceFocusRecipe } from '../utils/focus-normalization';
+
+const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
+
 export const navigationMenuRootVariants = cva('relative text-foreground', {
   variants: {
     orientation: {
@@ -35,12 +39,12 @@ export const navigationMenuTriggerVariants = cva(
     'group inline-flex h-10 min-w-[4.5rem] select-none items-center justify-center gap-1 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium text-foreground/80 outline-none',
     'transition-all motion-reduce:transition-none',
     'hover:bg-muted/80 hover:text-foreground',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
     'data-[active]:bg-accent/60 data-[active]:text-accent-foreground',
-    'data-[state=open]:bg-background data-[state=open]:text-foreground data-[state=open]:shadow-sm data-[state=open]:ring-1 data-[state=open]:ring-border/60',
+    'data-[state=open]:bg-background data-[state=open]:text-foreground data-[state=open]:shadow-sm',
     'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
     '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-foreground/80 [&[data-disabled]:hover]:shadow-none',
-    '[&[data-disabled][data-state=open]]:bg-transparent [&[data-disabled][data-state=open]]:ring-0',
+    '[&[data-disabled][data-state=open]]:bg-transparent',
   ].join(' '),
   {
     variants: {
@@ -60,7 +64,7 @@ export const navigationMenuLinkVariants = cva(
     'inline-flex h-10 min-w-[4.5rem] select-none items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium text-foreground/80 outline-none',
     'transition-all motion-reduce:transition-none',
     'hover:bg-muted/80 hover:text-foreground',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
     'data-[active]:bg-accent/60 data-[active]:text-accent-foreground data-[active]:shadow-sm',
   ].join(' '),
   {

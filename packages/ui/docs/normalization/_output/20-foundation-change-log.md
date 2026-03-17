@@ -7,6 +7,22 @@
 
 ---
 
+## 2026-03-17 - Focus Normalization Docs Gate Reconciled To The Wave 1 Stop Line
+
+Changed:
+
+- Reconciled the focus-normalization amendment so all five focus families remain documented, but only the field-entry families are implementation-approved in Wave 1.
+- Recorded that `packages/ui/src/utils/focus-normalization.ts` already exists and remains the required internal focus utility for this amendment.
+- Treated existing dense-surface utility usage as precedent, not as authorization to reopen a package-wide dense-surface rollout.
+- Kept `compact-control` and `dense-surface` implementation deferred, including `Button`, `Checkbox`, `RadioGroup`, `Switch`, `Calendar`, `Tabs`, `Accordion`, `Pagination`, `NavigationMenu`, `Menubar`, `Command`, `DateRangePicker` preset buttons, and `MonthPicker` year controls.
+
+Impact:
+
+- Wave 1 workers can proceed on a bounded field-entry scope without widening into later families.
+- Later compact-control and dense-surface work still requires an explicit follow-up amendment before implementation starts.
+
+---
+
 ## 2026-03-17 - Focus Normalization Amendment Opened For Field-Entry Families
 
 Changed:
@@ -14,7 +30,7 @@ Changed:
 - Opened a docs-first foundation amendment for focus-style normalization in `packages/ui`.
 - Grouped the current shared focus behavior into five canonical families: `field-shell-composite`, `field-shell-direct`, `segmented-slot`, `compact-control`, and `dense-surface`.
 - Marked detached `ring-offset-2` field halos, `OtpInput` active-plus-focus stacking, and `Combobox` open-plus-focus stacking as the current high-noise patterns that the amendment must correct.
-- Approved Wave 1 implementation for the field-entry family only: shared internal focus utility, `Input`, `Textarea`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `Select`, `Combobox`, and `OtpInput`.
+- Approved Wave 1 implementation for the field-entry family only: verify or extend the existing internal focus utility as needed, then limit work to `Input`, `Textarea`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `Select`, `Combobox`, and `OtpInput`.
 - Deferred compact-control and dense-surface follow-up work so the first implementation wave can stop cleanly without reopening the whole package.
 - Updated the audit, handoff, prompt pack, and canonical `_output` docs so both single-agent and multi-agent execution read the same docs-first gate.
 
@@ -975,3 +991,4 @@ Impact:
 
 - The canonical shared date family now consists of `Calendar`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - Ready apps should map single-value date-time inputs to `DatePicker` with `withTime` and bounded start/end date-time windows to `DateRangePicker` with `withTime`.
+

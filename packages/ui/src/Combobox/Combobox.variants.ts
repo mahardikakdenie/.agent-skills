@@ -2,10 +2,12 @@ import { cva } from 'class-variance-authority';
 
 import {
   getCompactControlFocusRecipe,
+  getDenseSurfaceFocusRecipe,
   getFieldShellFocusRecipe,
 } from '../utils/focus-normalization';
 
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
+const compositeDenseSurfaceFocus = getDenseSurfaceFocusRecipe('composite');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
 export const comboboxFieldVariants = cva('flex flex-col gap-1.5');
@@ -129,7 +131,10 @@ export const comboboxCommandVariants = cva(
 );
 
 export const comboboxSearchRowVariants = cva(
-  'flex items-center gap-2 border-b border-border',
+  [
+    'flex items-center gap-2 border-b border-border',
+    compositeDenseSurfaceFocus.base,
+  ].join(' '),
   {
     variants: {
       size: {
@@ -224,3 +229,4 @@ export const comboboxActionButtonVariants = cva(
     },
   },
 );
+

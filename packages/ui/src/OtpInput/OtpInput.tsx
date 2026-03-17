@@ -92,6 +92,14 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
     const slotRefs = React.useRef<Array<HTMLInputElement | null>>([]);
     const currentValue = isControlled ? normalizedControlledValue : internalValue;
     const characters = getOtpCharacters(currentValue, resolvedLength);
+    const activeIndex = React.useMemo(() => {
+      if (focusedIndex !== null) {
+        return null;
+      }
+
+      const firstEmptyIndex = characters.findIndex((character) => character === '');
+      return firstEmptyIndex === -1 ? resolvedLength - 1 : firstEmptyIndex;
+    }, [characters, focusedIndex, resolvedLength]);
     const enteredCount = characters.filter(Boolean).length;
     const statusMessage =
       enteredCount === resolvedLength
@@ -276,7 +284,7 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
                 size,
                 invalid: hasError,
                 filled: Boolean(character),
-                active: focusedIndex === index,
+                active: activeIndex === index,
                 disabled,
               })}
               onChange={(event) => {
@@ -326,3 +334,4 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
 );
 
 OtpInput.displayName = 'OtpInput';
+

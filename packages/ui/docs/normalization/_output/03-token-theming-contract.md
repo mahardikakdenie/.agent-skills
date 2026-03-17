@@ -198,9 +198,10 @@ Foundation ruling:
 Implementation guardrails:
 
 - No new CSS variables such as `--focus-ring-strong`, `--focus-glow`, or family-specific focus tokens are approved in this amendment.
-- Focus utilities in `packages/ui/src/utils/*` may compose semantic Tailwind classes only.
+- The existing internal helper `packages/ui/src/utils/focus-normalization.ts` remains the focus-utility source of truth, and any utility edits must keep composing semantic Tailwind classes only.
 - Default field-entry focus should target `ring-ring/20` to `/30`.
 - Invalid field-entry focus should target `ring-destructive/15` to `/25`.
+- Later compact-control and dense-surface rollout work must stay on the same semantic focus hues and low-alpha ring treatment; this amendment does not authorize a separate focus token ladder.
 - Open, active, selected, and highlighted states must not introduce a second heavy ring system on top of focus by default.
 
 Operational meaning:
@@ -322,3 +323,4 @@ import logo from '/public/logo.svg'
 import { twMerge } from 'tailwind-merge'
 import { clsx } from 'clsx'
 ```
+

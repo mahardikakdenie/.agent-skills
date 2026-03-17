@@ -1,7 +1,10 @@
 import { cva } from 'class-variance-authority';
 import type { ClassNames } from 'react-day-picker';
 
+import { getDenseSurfaceFocusRecipe } from '../utils/focus-normalization';
 import type { CalendarMode } from './Calendar.types';
+
+const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
 
 export const calendarRootVariants = cva(
   'relative inline-block overflow-hidden rounded-lg border border-border bg-background p-2 shadow-sm [&_.rdp-button[disabled]]:cursor-not-allowed [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=years])_.rdp-table]:invisible [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:pointer-events-none [&:has([data-slot=calendar-interactive-caption][data-view=months])_.rdp-table]:invisible',
@@ -43,8 +46,8 @@ export const calendarNavButtonVariants = cva(
     'inline-flex h-6 w-6 cursor-pointer touch-manipulation items-center justify-center rounded-md',
     'bg-transparent text-muted-foreground shadow-none transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground',
+    directDenseSurfaceFocus.base,
+    'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground',
   ].join(' '),
 );
 
@@ -57,8 +60,7 @@ export const calendarInteractiveCaptionTriggerVariants = cva(
     'inline-flex h-6 max-w-[calc(100%-4.5rem)] items-center justify-center rounded-md px-2.5',
     'cursor-pointer text-sm font-semibold text-foreground transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
   ].join(' '),
 );
 
@@ -80,8 +82,7 @@ export const calendarPickerOptionVariants = cva(
   [
     'inline-flex h-7 items-center justify-center rounded-md px-2 text-xs font-medium',
     'transition-colors motion-reduce:transition-none',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
   ].join(' '),
   {
     variants: {
@@ -120,8 +121,7 @@ export const calendarDayVariants = cva(
     'h-7 w-7 cursor-pointer touch-manipulation rounded-md p-0 text-xs font-normal text-foreground',
     'transition-colors motion-reduce:transition-none',
     'hover:bg-accent hover:text-accent-foreground',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-background',
+    directDenseSurfaceFocus.base,
   ].join(' '),
 );
 

@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getDenseSurfaceFocusRecipe } from '../utils/focus-normalization';
+
+const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
+
 export const menubarRootVariants = cva(
   [
     'inline-flex w-max items-center gap-1 rounded-2xl border border-border/70 bg-background/90 p-1.5 text-foreground shadow-sm ring-1 ring-border/30',
@@ -12,13 +16,13 @@ export const menubarTriggerVariants = cva(
     'inline-flex h-9 min-w-[4.25rem] select-none items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[0.8125rem] font-medium text-foreground/80 outline-none',
     'transition-all motion-reduce:transition-none',
     'hover:bg-muted/80 hover:text-foreground',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-    'data-[state=open]:bg-background data-[state=open]:text-foreground data-[state=open]:shadow-sm data-[state=open]:ring-1 data-[state=open]:ring-border/60',
+    directDenseSurfaceFocus.base,
+    'data-[state=open]:bg-background data-[state=open]:text-foreground data-[state=open]:shadow-sm',
     'data-[highlighted]:bg-background data-[highlighted]:text-foreground data-[highlighted]:shadow-sm',
     'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
     '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-foreground/80 [&[data-disabled]:hover]:shadow-none',
     '[&[data-disabled][data-highlighted]]:bg-transparent [&[data-disabled][data-highlighted]]:text-foreground/80 [&[data-disabled][data-highlighted]]:shadow-none',
-    '[&[data-disabled][data-state=open]]:bg-transparent [&[data-disabled][data-state=open]]:text-foreground/80 [&[data-disabled][data-state=open]]:ring-0',
+    '[&[data-disabled][data-state=open]]:bg-transparent [&[data-disabled][data-state=open]]:text-foreground/80',
   ].join(' '),
 );
 

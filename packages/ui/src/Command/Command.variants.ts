@@ -1,5 +1,9 @@
 import { cva } from 'class-variance-authority';
 
+import { getDenseSurfaceFocusRecipe } from '../utils/focus-normalization';
+
+const compositeDenseSurfaceFocus = getDenseSurfaceFocusRecipe('composite');
+
 export const commandRootVariants = cva(
   [
     'flex h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-md',
@@ -10,7 +14,7 @@ export const commandRootVariants = cva(
 export const commandInputRowVariants = cva(
   [
     'flex items-center gap-2 border-b border-border px-3',
-    'focus-within:ring-2 focus-within:ring-ring/20',
+    compositeDenseSurfaceFocus.base,
     'motion-reduce:transition-none',
   ].join(' '),
 );

@@ -97,7 +97,7 @@ export interface ComboboxOptionRenderState {
 | --- | --- | --- |
 | Default | Trigger shows placeholder or selected option label | Trigger exposes combobox-style expand/collapse state |
 | Open | Trigger keeps border-led shell emphasis while the popover opens instead of layering a second heavy focus treatment | Trigger exposes `aria-expanded="true"` and popup relationship |
-| Search | Typing filters the option list inside the command surface | `cmdk` manages active item movement and announcement |
+| Search | Typing filters the option list inside the command surface, and the search row keeps a visible keyboard-focus treatment when the popup input owns focus | `cmdk` manages active item movement and announcement |
 | Empty | Searchable list shows `No options found` when no match remains | Empty state remains visible text, not icon-only |
 | Loading | Trigger disables interaction and list shows a loading row | Trigger exposes `aria-busy="true"`; loading row uses polite status semantics |
 | Disabled Option | Disabled rows remain visible but cannot be chosen | `cmdk` item disabling is preserved |
@@ -109,7 +109,7 @@ export interface ComboboxOptionRenderState {
 ## Accessibility
 
 - The visible `label` becomes the trigger's accessible name when present.
-- Search input uses an explicit `aria-label` so it is announced independently from the trigger.
+- Search input uses an explicit `aria-label` so it is announced independently from the trigger, and its surrounding row keeps visible focus treatment when the popup is keyboard active.
 - `renderOption` does not replace the option's accessible text; selection and trigger copy still resolve from `option.label`.
 - Empty and loading rows remain visible text so status changes are understandable without color cues alone.
 
@@ -193,4 +193,5 @@ Roadmap alignment:
 | 2026-03-12 | Initial Combobox spec |
 | 2026-03-12 | Added `clearable`, `renderOption`, and non-forced open Storybook coverage |
 | 2026-03-17 | Added the approved shared `xs \| sm \| md \| lg` sizing contract with Input-aligned trigger and search-row density |
-| 2026-03-17 | Documented the calmer direct field-shell focus treatment and non-stacking open-state emphasis |
+| 2026-03-17 | Documented the calmer direct field-shell focus treatment, non-stacking open-state emphasis, and visible search-row focus inside the opened popup |
+

@@ -85,7 +85,7 @@ The shared component stays intentionally flat. It does not own transport, cooldo
 | State | Visual Behavior | Accessibility |
 | --- | --- | --- |
 | Empty | Neutral tokenized slots with numeric keyboard hinting | Each slot is labeled by digit position |
-| Focused slot | Compact near-slot focus ring with lighter active border/fill support | Focus remains keyboard visible on the currently active slot |
+| Focused slot | Compact near-slot focus ring owns keyboard focus, while the progress-slot active cue steps back until the group blurs again | Focus remains keyboard visible on the currently focused slot |
 | Filled | Entered digits tint the slot to show progress | Live status text announces progress politely |
 | Disabled | Muted surface and no keyboard or pointer entry | Each slot uses native `disabled` |
 | Error | Destructive border and inline error copy | Uses `aria-invalid="true"` and links message through `aria-describedby` |
@@ -223,4 +223,5 @@ The shared component stays intentionally flat. It does not own transport, cooldo
 | Date | Change |
 | --- | --- |
 | 2026-03-12 | Initial OtpInput spec |
-| 2026-03-17 | Documented the lighter segmented-slot focus recipe and reduced active-plus-focus stacking |
+| 2026-03-17 | Documented the lighter segmented-slot focus recipe and separated the blurred progress-slot cue from the focused-slot emphasis |
+
