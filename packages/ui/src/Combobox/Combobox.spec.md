@@ -17,6 +17,8 @@
 
 This shared contract intentionally stays narrower than some local baseline variants. It covers label and error wiring, trigger placeholder, client-side search, disabled and loading treatment, clearable reset behavior, and custom option-row rendering. It does not absorb multi-select, option creation, phone-code specialization, remote transport, or domain-specific result formatting. Those remain app-local.
 
+`Combobox` now participates in the shared field-shell sizing family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`. The public size ladder is `xs | sm | md | lg`, with `md` as the default.
+
 **When to use:**
 
 - Use `Combobox` for searchable single selection where the full option list can be supplied as plain props.
@@ -58,6 +60,7 @@ This shared contract intentionally stays narrower than some local baseline varia
 | `options` | `ComboboxOption[]` | - | Yes | Flat searchable option list. |
 | `placeholder` | `string` | `'Select an option'` | No | Trigger copy shown when no option is selected. |
 | `searchPlaceholder` | `string` | `'Search options'` | No | Placeholder inside the searchable command input. |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | No | Shared field-shell density applied to the trigger and searchable input row. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger and option interaction. |
 | `loading` | `boolean` | `false` | No | Shows loading treatment and blocks selection while options are refreshing. |
 | `required` | `boolean` | `false` | No | Marks the field required for label and form semantics. |
@@ -119,6 +122,7 @@ export interface ComboboxOptionRenderState {
 ```tsx
 <Combobox
   label="Country"
+  size="sm"
   options={[
     { label: 'Malaysia', value: 'my' },
     { label: 'Singapore', value: 'sg' },
@@ -163,6 +167,7 @@ export interface ComboboxOptionRenderState {
 
 - [x] `Default`
 - [x] `Search`
+- [x] `Sizes`
 - [x] `Empty`
 - [x] `DisabledState`
 - [x] `DisabledOption`
@@ -187,3 +192,4 @@ Roadmap alignment:
 | --- | --- |
 | 2026-03-12 | Initial Combobox spec |
 | 2026-03-12 | Added `clearable`, `renderOption`, and non-forced open Storybook coverage |
+| 2026-03-17 | Added the approved shared `xs \| sm \| md \| lg` sizing contract with Input-aligned trigger and search-row density |

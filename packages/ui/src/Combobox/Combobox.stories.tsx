@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { Box } from '../Box';
 import { Combobox } from './Combobox';
-import type { ComboboxOption } from './Combobox.types';
+import { comboboxSizeValues, type ComboboxOption } from './Combobox.types';
 
 const options: ComboboxOption[] = [
   { label: 'Malaysia', value: 'my' },
@@ -67,6 +67,7 @@ const meta = {
     label: 'Country',
     placeholder: 'Select an option',
     searchPlaceholder: 'Search Countries',
+    size: 'md',
     options,
     disabled: false,
     loading: false,
@@ -78,6 +79,10 @@ const meta = {
     label: { control: 'text' },
     placeholder: { control: 'text' },
     searchPlaceholder: { control: 'text' },
+    size: {
+      control: 'select',
+      options: comboboxSizeValues,
+    },
     options: { control: 'object' },
     disabled: { control: 'boolean' },
     loading: { control: 'boolean' },
@@ -139,6 +144,32 @@ export const Search: Story = {
       <Combobox {...args} />
     </Box>
   ),
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-2">
+      {comboboxSizeValues.map((size) => (
+        <Box key={size} className="w-[320px]">
+          <Combobox
+            label={`Country ${size.toUpperCase()}`}
+            size={size}
+            placeholder={`Select a ${size} option`}
+            searchPlaceholder={`Search ${size} options`}
+            options={options}
+          />
+        </Box>
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the approved `xs | sm | md | lg` field-shell size family on both the trigger shell and searchable row.',
+      },
+    },
+  },
 };
 
 export const Empty: Story = {
@@ -301,4 +332,3 @@ export const CustomOptionContent: Story = {
     </Box>
   ),
 };
-

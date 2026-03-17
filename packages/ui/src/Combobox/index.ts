@@ -1,2 +1,3 @@
 export { Combobox } from './Combobox';
-export type { ComboboxOption, ComboboxProps } from './Combobox.types';
+export { comboboxSizeValues } from './Combobox.types';
+export type { ComboboxOption, ComboboxProps, ComboboxSize } from './Combobox.types';

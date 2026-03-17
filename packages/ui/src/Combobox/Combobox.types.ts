@@ -1,4 +1,7 @@
-﻿import type * as React from 'react';
+import type * as React from 'react';
+
+export const comboboxSizeValues = ['xs', 'sm', 'md', 'lg'] as const;
+export type ComboboxSize = (typeof comboboxSizeValues)[number];
 
 export interface ComboboxOption {
   label: string;
@@ -22,6 +25,7 @@ export interface ComboboxProps
   options: ComboboxOption[];
   placeholder?: string;
   searchPlaceholder?: string;
+  size?: ComboboxSize;
   disabled?: boolean;
   loading?: boolean;
   required?: boolean;

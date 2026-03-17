@@ -47,6 +47,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       options,
       placeholder = 'Select an option',
       searchPlaceholder = 'Search options',
+      size = 'md',
       disabled = false,
       loading = false,
       required = false,
@@ -218,6 +219,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 aria-haspopup="listbox"
                 aria-controls={listId}
                 className={comboboxTriggerVariants({
+                  size,
                   disabled: interactiveDisabled,
                   invalid,
                   open: resolvedOpen,
@@ -235,11 +237,13 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                   {selectedOption?.label ?? placeholder}
                 </Box>
                 {!showClearButton ? (
-                  <Box as="span" aria-hidden="true" className={comboboxTriggerIconVariants()}>
+                  <Box as="span" aria-hidden="true" className="shrink-0">
                     {loading ? (
-                      <LoaderCircle className="h-4 w-4 animate-spin" />
+                      <LoaderCircle
+                        className={cn(comboboxTriggerIconVariants({ size }), 'animate-spin')}
+                      />
                     ) : (
-                      <ChevronsUpDown className="h-4 w-4" />
+                      <ChevronsUpDown className={comboboxTriggerIconVariants({ size })} />
                     )}
                   </Box>
                 ) : null}
@@ -251,13 +255,13 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 as="button"
                 type="button"
                 aria-label="Clear selection"
-                className={cn(comboboxActionButtonVariants(), 'touch-manipulation')}
+                className={cn(comboboxActionButtonVariants({ size }), 'touch-manipulation')}
                 onMouseDown={(event) => {
                   event.preventDefault();
                 }}
                 onClick={handleClear}
               >
-                <X aria-hidden="true" className="h-4 w-4" />
+                <X aria-hidden="true" className={comboboxTriggerIconVariants({ size })} />
               </Box>
             ) : null}
           </Box>
@@ -284,9 +288,9 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 return haystack.includes(normalizedSearch) ? 1 : 0;
               }}
             >
-              <Box data-slot="combobox-search-row" className={comboboxSearchRowVariants()}>
-                <Box as="span" aria-hidden="true" className={comboboxSearchIconVariants()}>
-                  <Search className="h-4 w-4" />
+              <Box data-slot="combobox-search-row" className={comboboxSearchRowVariants({ size })}>
+                <Box as="span" aria-hidden="true" className="shrink-0">
+                  <Search className={comboboxSearchIconVariants({ size })} />
                 </Box>
                 <CommandPrimitive.Input
                   ref={searchInputRef}
@@ -296,7 +300,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                   autoComplete="off"
                   placeholder={searchPlaceholder}
                   spellCheck={false}
-                  className={comboboxSearchInputVariants()}
+                  className={comboboxSearchInputVariants({ size })}
                 />
               </Box>
 
