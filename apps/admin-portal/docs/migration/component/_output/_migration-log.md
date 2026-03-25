@@ -600,3 +600,17 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Migrated component integrity: N/A - no component-track DONE entries yet
 - Batch 1.5 split integrity: PASS - existing Container/Shell files remain intact
 - Resume point: ready to continue Batch 2 on migrate-app/admin-portal.
+
+
+## Batch 6 / Batch 1 - NO-OP - 2026-03-25
+
+- Audit source reviewed: `apps/admin-portal/docs/migration/component/_output/_audit-report.md`
+- ADOPT_NOW count: `0`
+- `@repo/ui` export check: reviewed `packages/ui/src/index.ts`; shared exports exist on this branch, but `_audit-report.md` assigns no admin-portal component to `ADOPT_NOW` or Batch 1.
+- Import swaps performed: none
+- Local component files deleted: none
+- Batch 6 disposition: closed as `NO-OP / COMPLETE` because the audit report is the source of truth for Batch 6 and it contains zero verified `ADOPT_NOW` components for `apps/admin-portal`.
+- Audit vs parity note: `_parity-checklist.md` still lists generic shared-component headings (for example `Button`, `Calendar`, `Input`, `Pagination`, `Popover`, `Select`, `Spinner`, `Tooltip`), but that checklist does not override `_audit-report.md`. No source-code migration was forced from checklist-only evidence.
+- `_migration-plan.md` status update: not applied; file does not exist at `apps/admin-portal/docs/migration/component/_output/_migration-plan.md`.
+- Next likely actionable stage: Batch 8/9 work only after Phase 04 shared-component delivery creates real `NEW_SHARED_COMPONENT` migration targets on this branch; there is no verified Batch 6 `ADOPT_NOW` work to execute in `admin-portal`.
+- Post-Migration Improvement Candidates: None
