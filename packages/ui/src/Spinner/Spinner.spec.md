@@ -7,7 +7,7 @@
 | Storybook Group | `Feedback` |
 | Component Tier | `Tier 1 (Primitive)` |
 | Structure Tier | `Simple` |
-| Based on | `Box` composition + CSS border-ring motion treatment |
+| Based on | `Box` composition + SVG track-and-arc motion treatment |
 
 ---
 
@@ -36,7 +36,7 @@ The normalized contract stays intentionally small: `size`, `label`, `inline`, an
 | Decision | Choice | Rationale |
 | --- | --- | --- |
 | Root primitive | `Box` with semantic `div`/`span` targets | Keeps authored shared DOM inside the Box-only policy while preserving a simple HTML contract. |
-| Motion treatment | Asymmetrical CSS border ring | Keeps authored DOM inside `Box`, avoids hand-authored SVG, and makes motion visually obvious in small sizes. |
+| Motion treatment | SVG track with rotating accent arc | Keeps motion obvious at small sizes while presenting a cleaner enterprise loading cue than a filled wedge. |
 | Variant strategy | CVA-backed `size` + derived `layout` | Keeps styling normalized while avoiding public API sprawl. |
 | Public API shape | Keep canonical `inline` and `overlay` booleans | `02-api-conventions.md` already locks these props; internal layout is derived from them to keep implementation readable. |
 | Overlay behavior | fixed blocking surface by default | Matches the audited loader baseline where simple loaders often center over a dimmed page/surface. |
@@ -173,7 +173,7 @@ The normalized contract stays intentionally small: `size`, `label`, `inline`, an
 | Use `inline` for dense in-flow busy states. | Wrap every spinner in app-local centering divs when the shared layout already fits. |
 | Use `overlay` for simple blocking loading surfaces. | Reuse `Spinner` for retry/error/empty-state messaging shells. |
 | Pass `label` when the loading state needs visible copy. | Depend on unlabeled decorative icons to communicate critical async state. |
-| Keep authored shared JSX on `Box` in implementation and stories. | Hand-write native `div`, `span`, or inline `svg` tags in the shared source. |
+| Keep authored shared JSX on `Box` in implementation and stories. | Introduce branded or app-specific loader artwork into the shared primitive. |
 
 ---
 
@@ -193,7 +193,7 @@ The normalized contract stays intentionally small: `size`, `label`, `inline`, an
 
 - Authored shared JSX for this component and its stories must use `Box` for every DOM node.
 - The spinner root, label wrapper, and every story composition container are authored through `Box`.
-- The loading indicator is authored with `Box` only, using a CSS border ring instead of native SVG tags.
+- The loading indicator is authored with `Box` only, rendering SVG elements through `Box` for a clearer motion cue.
 
 ---
 
@@ -202,4 +202,6 @@ The normalized contract stays intentionally small: `size`, `label`, `inline`, an
 | Date | Change |
 | --- | --- |
 | 2026-03-10 | Initial Spinner spec |
+
+
 

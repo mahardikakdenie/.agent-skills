@@ -444,7 +444,7 @@ Changed:
 - Implemented `packages/ui/src/Spinner` as the next eligible Wave B4 primitive after `Skeleton`, while honoring the existing Wave B4 holds on `Dialog` and `Select`.
 - Added the canonical Spinner spec, Storybook coverage, typed exports, and CVA-backed `size` plus derived layout styling aligned to `02-api-conventions.md`.
 - Normalized repeated per-app loader baselines into the shared contract: `size`, optional `label`, `inline`, and `overlay`, while keeping branded loaders, timed wrappers, and richer loading shells out of the primitive.
-- Kept authored shared markup on `Box` and implemented the indicator as an asymmetrical CSS border ring so motion stays obvious without authoring native SVG tags.
+- Kept authored shared markup on `Box` and implemented the indicator as an SVG track plus rotating accent arc so motion stays obvious with a cleaner enterprise loading cue.
 
 Impact:
 
@@ -1038,4 +1038,5 @@ Impact:
 
 - The canonical shared date family now consists of `Calendar`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - Ready apps should map single-value date-time inputs to `DatePicker` with `withTime` and bounded start/end date-time windows to `DateRangePicker` with `withTime`.
+
 

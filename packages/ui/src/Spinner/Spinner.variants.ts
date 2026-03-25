@@ -32,21 +32,22 @@ export const spinnerIconVariants = cva('inline-flex shrink-0 items-center justif
   },
 })
 
-export const spinnerIconRingVariants = cva(
-  'block size-full rounded-full border-2 border-current border-b-transparent animate-spin motion-reduce:animate-none',
-  {
-    variants: {
-      size: {
-        sm: '',
-        md: '',
-        lg: '',
-      },
-    },
-    defaultVariants: {
-      size: 'md',
+export const spinnerIconSvgVariants = cva('block size-full animate-spin', {
+  variants: {
+    size: {
+      sm: '',
+      md: '',
+      lg: '',
     },
   },
-)
+  defaultVariants: {
+    size: 'md',
+  },
+})
+
+export const spinnerIconTrackVariants = cva('stroke-current opacity-20')
+
+export const spinnerIconArcVariants = cva('stroke-current')
 
 export const spinnerLabelVariants = cva('text-center text-muted-foreground', {
   variants: {
