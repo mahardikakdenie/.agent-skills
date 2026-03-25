@@ -2,8 +2,23 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-17
+> Last reconciled: 2026-03-25
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-03-25 - Adapter Mapping Reconciled To Current Export Surface
+
+Changed:
+
+- Re-checked `21-adapter-mapping.md` against the current `packages/ui/src/index.ts` export surface and the shipped component type contracts.
+- Confirmed the adapter map still covers the full current shared component set, plus the intentional keep-local ruling for loading wrappers and suspense fallbacks.
+- Corrected a malformed `PopoverContent align` line and tightened the `DataTable` guidance around managed vs controlled usage and the public `DataTablePagination` path.
+
+Impact:
+
+- Downstream migration work can treat `21-adapter-mapping.md` as current against the shipped `@repo/ui` surface instead of reading the older March 10 header in isolation.
+- No package code changed; this was a documentation-only reconciliation across the normalization output set.
 
 ---
 
@@ -1023,3 +1038,4 @@ Impact:
 
 - The canonical shared date family now consists of `Calendar`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - Ready apps should map single-value date-time inputs to `DatePicker` with `withTime` and bounded start/end date-time windows to `DateRangePicker` with `withTime`.
+

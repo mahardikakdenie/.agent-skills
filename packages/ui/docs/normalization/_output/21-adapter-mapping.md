@@ -3,6 +3,7 @@
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
 > Run date: 2026-03-10
+> Last reconciled: 2026-03-25
 
 ## Box
 
@@ -333,8 +334,10 @@ Direct adoption guidance:
 
 - Legacy admin tables, policy lists, invoice tables, and claims tables that already combine a semantic table shell with client-side sorting, filtering, grouping, or page-number pagination map to `DataTable`.
 - Existing headless column definitions should normalize to TanStack `ColumnDef<TData>` records passed through the shared `columns` prop; business formatting should stay inside cell renderers while the shared component owns the shell and row-model plumbing.
+- Existing TanStack-based table hooks can normalize to controlled `table` mode by feeding `useDataTable(...)` output into `DataTable` or `DataTableVirtualized`; simpler adapters can stay on the managed `data` + `columns` path.
 - Existing toolbar search inputs should collapse into consumer-owned `renderToolbar={(table) => ...}` composition. Do not assume the Storybook-only `DataTableToolbar` helper is part of the package public API.
 - Existing empty, loading, no-results, and summary rows map to `emptyState`, `loadingState`, `renderStatus`, and `renderFooter`.
+- Existing shared pager layouts can keep the shipped table pagination control through `renderPagination={(table) => ...}` plus `DataTablePagination` instead of rebuilding page-number controls from scratch.
 - Existing virtualized long lists that still fit a generic tabular contract can normalize to `DataTableVirtualized`; only app-specific virtualization shells that exceed the shared contract should stay local.
 
 Keep local:
@@ -457,7 +460,7 @@ Direct adoption guidance:
 
 - Legacy floating detail panels, compact filter cards, anchored inline forms, and lightweight contextual overlays map to Popover plus PopoverTrigger, PopoverContent, PopoverClose, and PopoverAnchor when a non-modal floating surface is the real interaction pattern.
 - Existing open / onOpenChange, isOpen / onClose, or uncontrolled toggle flows normalize to open, defaultOpen, onOpen, and onClose on the shared root.
-- Existing placement props such as side, alignment, offset, or preferred edge map to side, lign, and sideOffset on PopoverContent.
+- Existing placement props such as side, alignment, offset, or preferred edge map to `side`, `align`, and `sideOffset` on `PopoverContent`.
 - Existing layouts that anchor the overlay to a chip, status pill, or inline marker instead of the trigger map to PopoverAnchor rather than new positioning booleans.
 - Existing inner forms or compact detail layouts should compose shared primitives such as Box, Button, Input, and Form inside PopoverContent instead of widening the popover contract.
 
@@ -644,3 +647,4 @@ Keep local:
 - Interactive steppers, gantt views, schedulers, and drag-and-drop workflow boards.
 - Sorting, filtering, fetching, or route-aware actions attached to each event row.
 - Domain-specific date formatting, actor metadata, and business logic beyond presentation-only ordered history.
+
