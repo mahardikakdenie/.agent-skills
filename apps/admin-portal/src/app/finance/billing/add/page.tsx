@@ -20,12 +20,12 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import AppURL from "@/constants/app-url.const";
 import { DataTable } from "@/components/ui/DataTable";
 import { createBillingTransactionTableColumns } from "@/components/tableConfig/billingTransactionTableConfig";
 import { financeService } from "@/services/finance/api/finance.service";
 import { generateYears, generateMonths } from "@/lib/utils";
+import { Alert } from "@repo/ui";
 
 const CreateBillingPage = () => {
   const router = useRouter();
@@ -487,29 +487,25 @@ const CreateBillingPage = () => {
 
           {isLoadingFees && (
             <Alert>
-              <AlertDescription>
-                Loading fee information for {processedTransactions.length}{" "}
-                transactions...
-              </AlertDescription>
+              Loading fee information for {processedTransactions.length}{" "}
+              transactions...
             </Alert>
           )}
 
           {!billingNotExist && (
             <Alert variant="destructive">
-              <AlertDescription>
-                Billing already exists.{" "}
-                <Button
-                  variant="link"
-                  className="p-0 h-auto text-white underline"
-                  onClick={() =>
-                    router.push(
-                      `${AppURL.financeBillingDetail}/${existingBillingId}?channel=${company}&type=${type}`
-                    )
-                  }
-                >
-                  Click here to view detail
-                </Button>
-              </AlertDescription>
+              Billing already exists.{" "}
+              <Button
+                variant="link"
+                className="p-0 h-auto text-white underline"
+                onClick={() =>
+                  router.push(
+                    `${AppURL.financeBillingDetail}/${existingBillingId}?channel=${company}&type=${type}`
+                  )
+                }
+              >
+                Click here to view detail
+              </Button>
             </Alert>
           )}
         </div>

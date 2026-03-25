@@ -705,3 +705,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Next likely actionable stage: Batch 8/9 work only after Phase 04 shared-component delivery creates real per-app migration targets for admin-portal; there is no verified Batch 7 `ADOPT_WITH_ADAPTER` work to execute on this branch.
 - Post-Migration Improvement Candidates: None
 
+## Batch 8 / Batch 4 - Alert - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Alert`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/finance/billing/add/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/alert.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: [`apps/admin-portal/src/app/finance/billing/add/page.tsx` - replace the clickable Back `<div>` with button/link semantics in a later pass]
+
