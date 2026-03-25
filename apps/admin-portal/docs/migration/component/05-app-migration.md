@@ -1,6 +1,6 @@
 ﻿# 05 - Per-App Migration
 
-> **Batch:** Batches 6-9 (+9.5) - Per-App Migration
+> **Batch:** Batches 5.5-9 (+9.5) - Per-App Migration
 > **Branch:** `migrate-app/<APP_NAME>` - run on EACH app's dedicated branch
 > **Run count:** Once per app per batch
 > **Prerequisite:** Phase 04 batch available (components merged into `@repo/ui` on `feat/ui` and accessible from this branch)
@@ -12,12 +12,14 @@
 
 Migrate `apps/<APP_NAME>` from local component copies to shared `@repo/ui` components, batch by batch. Zero behavior regressions are allowed. Each batch must pass its verification gate before the next batch begins.
 
+Before any import swap batch begins, run the app consumer bootstrap once so the app shell already consumes the shared token preset from `@repo/config`.
+
 > **Process per batch:** Batch 1 (easy swaps) can be done as one batch. Batch 4 (new components) should be done component by component to limit risk surface.
 
 ## Skill and MCP Policy
 
 - Always use `$monorepo-workspace` and `$turborepo` for app-side component migration work so filter selection, package boundaries, and verification commands stay correct.
-- Always use `$web-design-guidelines` and `$vercel-react-best-practices` during Batches 6-9 to protect semantics, focus behavior, accessibility parity, render behavior, and bundle/runtime quality after each swap.
+- Always use `$web-design-guidelines` and `$vercel-react-best-practices` during Batches 5.5-9 to protect bootstrap parity, semantics, focus behavior, accessibility parity, render behavior, and bundle/runtime quality after each step.
 - Always evaluate `$vercel-composition-patterns` for every migrated component. Apply it when adapters, shells, or swapped components show API sprawl, slot composition, or compound-structure concerns.
 - Keep `$systematic-debugging` available in every app-side batch. If parity, build, route behavior, or usage-site behavior is unclear, trace the root cause before fixing.
 - Use `$agent-browser` or browser automation for smoke-route parity, `next-devtools MCP` when Next.js runtime boundaries need inspection, and only pull in conditional skills such as `$react-query`, `$forms-validation`, `$next-best-practices`, or `$next-cache-components` when the migrated component genuinely touches those concerns.
@@ -30,6 +32,7 @@ Migrate `apps/<APP_NAME>` from local component copies to shared `@repo/ui` compo
 - [ ] Phase 01 audit is complete for this app
 - [ ] SoC Evaluation completed for all components in `_audit-report.md` (fields: Is monolith / SoC potential / SoC strategy / Batch 1.5 candidate)
 - [ ] If any Batch 1.5 candidates (HIGH or MEDIUM) exist -> Batch 1.5 must run before Batch 2/3/4
+- [ ] Batch 0 consumer bootstrap (global Batch 5.5) is complete for this app: shared preset imported, app-local Tailwind wiring verified, dark-mode contract aligned or bridged
 - [ ] The target Batch's components are available in `@repo/ui` (check `packages/ui/src/index.ts`)
 - [ ] `packages/ui/docs/normalization/_output/21-adapter-mapping.md` is accessible
 
@@ -130,6 +133,42 @@ FORBIDDEN - zero tolerance:
 ### Shell -> packages/ui Pathway
 
 Shells that pass the [Section 6.6 Shell Classification Matrix](./06-component-standards.md#66-re-classification-after-split) (`NEW_SHARED_COMPONENT`) are queued for Phase 04 on `feat/ui`. This makes Batch 1.5 a **primary source of packages/ui candidates from app-local monoliths**.
+
+---
+
+## Batch 0 - App Consumer Bootstrap (Global Batch 5.5)
+
+> **Run:** Once per app after Batch 3A is available on the app branch and before Batch 1/2/3/4 begins.
+> **Scope:** App shell and styling entry points only. No component import swaps in this batch.
+> **Prompt:** [migration-batch-prompts.md Batch 5.5](./migration-batch-prompts.md)
+
+### Objective
+
+Make `apps/<APP_NAME>` a correct consumer of the shared semantic token preset before any `@repo/ui` adoption work starts.
+
+### Required Work
+
+- Import the shared preset from `@repo/config` in the app global stylesheet, then keep app-brand overrides local.
+- Preserve app-local wiring for `tailwind.config.ts`, `postcss.config.*`, `@config`, and `components.json`.
+- Align dark-mode activation with the shared contract (`[data-theme="dark"]`) or add a temporary compatibility bridge.
+- Keep app-local utilities and layout CSS that are unrelated to semantic token definitions.
+
+### Verification Gate
+
+```bash
+pnpm --filter <APP_PACKAGE> check-types
+pnpm --filter <APP_PACKAGE> lint
+pnpm --filter <APP_PACKAGE> build
+# Then smoke-check the critical routes and confirm tokens/styles load correctly
+```txt
+
+### Non-Negotiables
+
+```
+- Do not swap component imports or refactor feature code in this batch
+- Do not remove app-local overrides that still represent intentional app branding
+- Do not move app-owned Tailwind config into `packages/ui`
+```
 
 ---
 
