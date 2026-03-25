@@ -27,7 +27,7 @@ import { createPolicyTableColumns } from "@/components/tableConfig/policyTableCo
 import { toastNotification } from "@/helpers/app.helper";
 import { helperService } from "@/services/api.service";
 import { useScreen } from "@/context/screen.context";
-import Spinner from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui";
 
 export default function PolicyPage() {
   const path = usePathname();
@@ -254,7 +254,14 @@ export default function PolicyPage() {
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
           disabled={exporting}
         >
-          {exporting ? <Spinner className="h-6 w-6 mr-2" /> : <Download className="w-5 h-5 mr-1 " /> }
+          {exporting ? (
+            <Spinner
+              inline
+              className="mr-2 [&_[data-slot=spinner-icon]]:size-6 [&_[data-slot=spinner-icon]]:text-blue-500"
+            />
+          ) : (
+            <Download className="w-5 h-5 mr-1 " />
+          )}
           
           {exporting ? "Exporting..." : "Export"}
         </Button>

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Spinner from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui";
 import { X, Check } from "react-feather";
 
 export const ChannelModal = (props: {
@@ -57,7 +57,10 @@ export const ChannelModal = (props: {
           <div className="grid gap-4">
             {channelsLoading ? (
               <div className="flex justify-center items-center py-4">
-                <Spinner />
+                <Spinner
+                  inline
+                  className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
+                />
                 Loading...
               </div>
             ) : (

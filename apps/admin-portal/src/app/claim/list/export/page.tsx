@@ -14,7 +14,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
 import { Button } from "@/components/ui/button";
-import Spinner from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui";
 import useExportClaim from "@/hooks/useExportClaim.hooks";
 
 export default function ExportPage() {
@@ -83,7 +83,10 @@ export default function ExportPage() {
       <div className="w-full bg-white rounded-lg">
         {isLoading ? (
           <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
-            <Spinner /> Loading...
+            <Spinner
+              inline
+              className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
+            /> Loading...
           </div>
         ) : (
           <table style={styles.table} ref={reportTemplateRef} border={1}>

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter, DialogContent, Dialog, DialogClose, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Spinner from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui";
 import { X, Check } from "react-feather";
 
 export const InsurerModal = (props: {
@@ -43,7 +43,10 @@ export const InsurerModal = (props: {
           <div className="grid gap-4">
             {insurersLoading ? (
               <div className="flex justify-center items-center py-4">
-                <Spinner />
+                <Spinner
+                  inline
+                  className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
+                />
                 Loading...
               </div>
             ) : (

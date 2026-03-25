@@ -769,3 +769,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `none`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Spinner - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Spinner`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/components/forms/UserForm/components/add-insurer-modal.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/add-channel-modal.tsx`, `apps/admin-portal/src/app/transaction/list/export/page.tsx`, `apps/admin-portal/src/app/membership/list/export/page.tsx`, `apps/admin-portal/src/app/claim/list/export/page.tsx`, `apps/admin-portal/src/app/policy/list/page.tsx`, `apps/admin-portal/src/app/policy/list/export/page.tsx`, `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/spinner.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: `None`
+

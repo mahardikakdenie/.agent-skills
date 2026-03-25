@@ -1,7 +1,7 @@
 ﻿"use client";
 import * as XLSX from "xlsx";
 import Image from "next/image";
-import Spinner from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui";
 import noData from "@public/images/no-data.webp";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -114,7 +114,10 @@ export default function ExportPage() {
       <div className="w-full bg-white rounded-lg overflow-auto">
         {isLoading ? (
           <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
-            <Spinner /> Loading...
+            <Spinner
+              inline
+              className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
+            /> Loading...
           </div>
         ) : (
           <table style={styles.table} ref={reportTemplateRef} border={1}>

@@ -2,6 +2,12 @@
 
 const nextConfig = {
   output: "standalone",
+  transpilePackages: ["@repo/ui"],
+  turbopack: {
+    resolveAlias: {
+      "@repo/ui": "../../packages/ui/src/index.ts",
+    },
+  },
   images: {
     remotePatterns: [
       {
