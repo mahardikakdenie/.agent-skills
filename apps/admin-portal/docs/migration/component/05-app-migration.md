@@ -141,6 +141,7 @@ Shells that pass the [Section 6.6 Shell Classification Matrix](./06-component-st
 > **Run:** Once per app after Batch 3A is available on the app branch and before Batch 1/2/3/4 begins.
 > **Scope:** App shell and styling entry points only. No component import swaps in this batch.
 > **Prompt:** [migration-batch-prompts.md Batch 5.5](./migration-batch-prompts.md)
+> **Source of truth:** `packages/ui/docs/normalization/_output/03-token-theming-contract.md`
 
 ### Objective
 
@@ -148,7 +149,8 @@ Make `apps/<APP_NAME>` a correct consumer of the shared semantic token preset be
 
 ### Required Work
 
-- Import the shared preset from `@repo/config` in the app global stylesheet, then keep app-brand overrides local.
+- Import the shared preset from `@repo/config` in the app global stylesheet; if legacy shared utility classes are still required during rollout, the app may temporarily keep `@import '@repo/config/tailwind.css'`.
+- Satisfy the full app `globals.css` contract from `03-token-theming-contract.md`: required semantic tokens stay available in `:root {}` and `--radius` is explicitly set for the app.
 - Preserve app-local wiring for `tailwind.config.ts`, `postcss.config.*`, `@config`, and `components.json`.
 - Align dark-mode activation with the shared contract (`[data-theme="dark"]`) or add a temporary compatibility bridge.
 - Keep app-local utilities and layout CSS that are unrelated to semantic token definitions.
@@ -159,7 +161,7 @@ Make `apps/<APP_NAME>` a correct consumer of the shared semantic token preset be
 pnpm --filter <APP_PACKAGE> check-types
 pnpm --filter <APP_PACKAGE> lint
 pnpm --filter <APP_PACKAGE> build
-# Then smoke-check the critical routes and confirm tokens/styles load correctly
+# Then smoke-check the critical routes and confirm required semantic tokens and styles load correctly
 ```txt
 
 ### Non-Negotiables
