@@ -25,7 +25,7 @@ import validator from "validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui";
 import { ContentLoadingWrapper } from "../../ui/Loading/index";
 import { toastNotification } from "@/lib/toast";
 

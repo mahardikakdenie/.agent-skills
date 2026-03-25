@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui";
 import PackageList from "./package-list";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BenefitList from "./benefit-list";
 import DetailList from "./detail-list";
 import ChannelList from "./channel-list";
