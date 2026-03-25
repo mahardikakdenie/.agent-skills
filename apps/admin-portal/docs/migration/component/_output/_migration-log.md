@@ -704,3 +704,4 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - `_migration-plan.md` status update: not applied; file does not exist at `apps/admin-portal/docs/migration/component/_output/_migration-plan.md`.
 - Next likely actionable stage: Batch 8/9 work only after Phase 04 shared-component delivery creates real per-app migration targets for admin-portal; there is no verified Batch 7 `ADOPT_WITH_ADAPTER` work to execute on this branch.
 - Post-Migration Improvement Candidates: None
+
