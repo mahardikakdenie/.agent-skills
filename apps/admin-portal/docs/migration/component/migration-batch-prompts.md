@@ -1285,6 +1285,7 @@ You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 Read before starting:
 - `<APP_PATH>/docs/migration/component/05-app-migration.md` (app consumer bootstrap section)
 - `<APP_PATH>/docs/migration/component/06-component-standards.md` (token, Box pass, and dark-mode expectations that affect app shells)
+- `packages/ui/docs/normalization/_output/03-token-theming-contract.md` (consumer contract source of truth for app token bootstrap)
 - `packages/config/semantic-tokens.css`
 - `<APP_PATH>/src/app/globals.css` (or the app's active global stylesheet)
 - `<APP_PATH>/tailwind.config.ts`
@@ -1299,12 +1300,13 @@ This is an app-shell bootstrap batch, not a usage-site migration batch.
 
 ## Required Changes
 
-1. Import the shared preset from `@repo/config` in the app global stylesheet, then keep only app-brand overrides locally.
-2. Preserve the app-local Tailwind entry points: `tailwind.config.ts`, `postcss.config.*`, `@config`, and `components.json` must continue to point at the app's own files.
-3. Align dark-mode activation with the shared contract (`[data-theme="dark"]`) or add a temporary compatibility bridge if the app still toggles `.dark`.
-4. Keep app-local utilities, layout helpers, and route-level CSS that are unrelated to semantic token definitions.
-5. Remove duplicated token definitions from the app only when the value is now sourced from the shared preset. Keep explicit local overrides that represent app branding.
-6. Document any temporary compatibility bridge in `_migration-log.md` so it can be removed after full rollout.
+1. Import the shared preset from `@repo/config` in the app global stylesheet; if the app still relies on legacy shared utility classes during rollout, it may temporarily keep `@import '@repo/config/tailwind.css'` as the transition path.
+2. Satisfy the full app `globals.css` contract from `03-token-theming-contract.md`: required semantic tokens must remain available in `:root {}` and `--radius` must be set to the app's intended shape value.
+3. Preserve the app-local Tailwind entry points: `tailwind.config.ts`, `postcss.config.*`, `@config`, and `components.json` must continue to point at the app's own files.
+4. Align dark-mode activation with the shared contract (`[data-theme="dark"]`) or add a temporary compatibility bridge if the app still toggles `.dark`.
+5. Keep app-local utilities, layout helpers, and route-level CSS that are unrelated to semantic token definitions.
+6. Remove duplicated token definitions from the app only when the value is now sourced from the shared preset. Keep explicit local overrides that represent app branding.
+7. Document any temporary compatibility bridge and any retained legacy `@repo/config/tailwind.css` import in `_migration-log.md` so it can be removed after full rollout.
 
 ## Guardrails (non-negotiable)
 
@@ -1325,7 +1327,7 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 - Typecheck passes
 - Lint passes
 - Build passes
-- Smoke routes render with shared tokens loaded and no missing-style regressions
+- Smoke routes render with shared tokens loaded, required semantic tokens resolving correctly, and no missing-style regressions
 - No new console errors in browser
 - `_migration-log.md` records whether the app now uses the shared dark-mode selector directly or through a temporary compatibility bridge
 
