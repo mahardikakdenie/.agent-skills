@@ -1286,6 +1286,8 @@ Read before starting:
 - `<APP_PATH>/docs/migration/component/05-app-migration.md` (app consumer bootstrap section)
 - `<APP_PATH>/docs/migration/component/06-component-standards.md` (token, Box pass, and dark-mode expectations that affect app shells)
 - `packages/ui/docs/normalization/_output/03-token-theming-contract.md` (consumer contract source of truth for app token bootstrap)
+- `packages/ui/package.json` (consumer entrypoints for `@repo/ui`)
+- `packages/ui/src/index.ts` (source-of-truth public export surface)
 - `packages/config/semantic-tokens.css`
 - `<APP_PATH>/src/app/globals.css` (or the app's active global stylesheet)
 - `<APP_PATH>/tailwind.config.ts`
@@ -1296,6 +1298,7 @@ Read before starting:
 ## Objective
 
 Prepare `<APP_NAME>` as a correct consumer of the shared semantic token contract before any component import swap begins.
+This batch also establishes the app-side `@repo/ui` consumer strategy so runtime/build resolution matches the shared implementation used as migration source of truth.
 This is an app-shell bootstrap batch, not a usage-site migration batch.
 
 ## Required Changes
@@ -1307,12 +1310,16 @@ This is an app-shell bootstrap batch, not a usage-site migration batch.
 5. Keep app-local utilities, layout helpers, and route-level CSS that are unrelated to semantic token definitions.
 6. Remove duplicated token definitions from the app only when the value is now sourced from the shared preset. Keep explicit local overrides that represent app branding.
 7. Document any temporary compatibility bridge and any retained legacy `@repo/config/tailwind.css` import in `_migration-log.md` so it can be removed after full rollout.
+8. Verify how bare `@repo/ui` imports resolve in this app's runtime/build. If the app would consume a stale or source-divergent `packages/ui/dist` artifact, add an app-local consumer fix before Batch 6-8 begin.
+9. Allowed consumer fixes in this batch are app-owned resolver/config changes only, for example a Next.js/Turbopack alias or equivalent app-local bundler setting. Do not modify `packages/ui` source just to compensate for an app-side resolution problem.
+10. Record the chosen consumer strategy in `_migration-log.md`: `direct export parity confirmed`, `app-local source alias added`, or another approved app-local resolution strategy.
 
 ## Guardrails (non-negotiable)
 
 ALLOWED:
 - Editing global styling entry points, theme-provider wiring, and other app-shell files required to consume the shared preset
 - Adding a compatibility alias or bridge for dark-mode selectors during rollout
+- Adding an app-local module-resolution fix so `@repo/ui` resolves to the intended shared implementation
 - Keeping app-local CSS utilities and layout rules that are not token definitions
 
 FORBIDDEN:
@@ -1320,6 +1327,7 @@ FORBIDDEN:
 - Refactoring feature components or usage sites
 - Changing route behavior, copy, or interaction logic
 - Moving app-owned Tailwind config into shared packages
+- Editing `packages/ui` to work around an app consumer-resolution issue discovered in this batch
 
 ## Verification Gate (ALL must pass before calling Batch 5.5 complete)
 
@@ -1330,6 +1338,8 @@ Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
 - Smoke routes render with shared tokens loaded, required semantic tokens resolving correctly, and no missing-style regressions
 - No new console errors in browser
 - `_migration-log.md` records whether the app now uses the shared dark-mode selector directly or through a temporary compatibility bridge
+- A known reference export from `@repo/ui` is proven to resolve to the same implementation this migration treats as source of truth, or the app-local consumer strategy is documented and verified
+- If `next.config.*` or equivalent bundler resolution changed, restart the app dev server before browser verification and confirm the new resolution path is active
 
 > Skills (if installed): `$monorepo-workspace` (confirm config ownership stays app-local while shared tokens come from `@repo/config`); `$turborepo` (verify the correct `--filter <APP_PACKAGE>` gate commands); `$next-best-practices` (if theme/provider wiring crosses RSC or client boundaries); `$web-design-guidelines` (review visual and accessibility parity after token bootstrap); `$agent-browser` (smoke critical routes and capture before/after evidence); `$systematic-debugging` (if CSS, theme, or route behavior diverges - trace the root cause before fixing)
 ```md
@@ -1483,6 +1493,7 @@ Read before starting:
 
 - `<APP_PATH>/docs/migration/component/05-app-migration.md` (Batch 3/4 section)
 - `<APP_PATH>/docs/migration/component/_output/_audit-report.md` (<COMPONENT_NAME> entry)
+- `packages/ui/package.json` (confirm how `@repo/ui` resolves for consumers)
 - `packages/ui/src/<COMPONENT_NAME>/<COMPONENT_NAME>.spec.md`
 - `packages/ui/docs/normalization/_output/21-adapter-mapping.md` (<COMPONENT_NAME> entry)
 
@@ -1491,6 +1502,7 @@ Read before starting:
 1. Confirm `<COMPONENT_NAME>` is exported from `packages/ui/src/index.ts`
 2. Read the spec: `packages/ui/src/<COMPONENT_NAME>/<COMPONENT_NAME>.spec.md`
 3. Review adapter notes: `packages/ui/docs/normalization/_output/21-adapter-mapping.md`
+4. Confirm the app still consumes the intended `@repo/ui` implementation. If runtime/build is resolving a stale or source-divergent `packages/ui/dist` artifact, STOP and fix the app consumer bootstrap in Batch 5.5 before migrating this component.
 
 ## Guardrails (same as Batch 6/7 - non-negotiable)
 
@@ -1506,6 +1518,7 @@ FORBIDDEN:
 - Removing any features, states, or variants the component had
 - Changing text content, copy, error messages, ARIA labels, placeholder text
 - Refactoring or cleaning up unrelated code in files you touch
+- Editing `packages/ui` to compensate for an app-side `@repo/ui` resolution problem
 
 ## Parity Verification (all usage sites - all must be PASS)
 

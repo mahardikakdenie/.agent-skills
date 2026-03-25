@@ -146,6 +146,7 @@ Shells that pass the [Section 6.6 Shell Classification Matrix](./06-component-st
 ### Objective
 
 Make `apps/<APP_NAME>` a correct consumer of the shared semantic token preset before any `@repo/ui` adoption work starts.
+This bootstrap also locks in the app-side `@repo/ui` consumer strategy so runtime/build resolution matches the shared implementation used as migration source of truth.
 
 ### Required Work
 
@@ -154,6 +155,8 @@ Make `apps/<APP_NAME>` a correct consumer of the shared semantic token preset be
 - Preserve app-local wiring for `tailwind.config.ts`, `postcss.config.*`, `@config`, and `components.json`.
 - Align dark-mode activation with the shared contract (`[data-theme="dark"]`) or add a temporary compatibility bridge.
 - Keep app-local utilities and layout CSS that are unrelated to semantic token definitions.
+- Verify how bare `@repo/ui` imports resolve for this app. If runtime/build would consume a stale or source-divergent `packages/ui/dist` artifact, fix it with app-owned consumer configuration before any import-swap batch begins.
+- Document the chosen consumer strategy in `_migration-log.md`: direct package export parity confirmed, app-local source alias/consumer bridge added, or another approved app-local resolution strategy.
 
 ### Verification Gate
 
@@ -162,6 +165,7 @@ pnpm --filter <APP_PACKAGE> check-types
 pnpm --filter <APP_PACKAGE> lint
 pnpm --filter <APP_PACKAGE> build
 # Then smoke-check the critical routes and confirm required semantic tokens and styles load correctly
+# Also confirm a known `@repo/ui` reference export resolves to the intended shared implementation
 ```txt
 
 ### Non-Negotiables
@@ -170,6 +174,7 @@ pnpm --filter <APP_PACKAGE> build
 - Do not swap component imports or refactor feature code in this batch
 - Do not remove app-local overrides that still represent intentional app branding
 - Do not move app-owned Tailwind config into `packages/ui`
+- Do not edit `packages/ui` to compensate for an app consumer-resolution problem discovered here
 ```
 
 ---
@@ -219,6 +224,7 @@ If you find something that should be improved, add it to _migration-log.md under
    c. Update import from local path -> `@repo/ui`
    d. Verify props still compile (no prop API mismatches)
    e. Delete local component file ONLY after all imports updated and typecheck passes
+   f. If app runtime/build diverges from Storybook or `packages/ui/src`, verify consumer resolution first; compare the app-consumed `@repo/ui` artifact against source before touching `packages/ui` or usage-site behavior
 2. Do NOT change any component logic, props passed at usage sites, or visual output
 3. Record every changed file in _migration-log.md
 
