@@ -27,7 +27,7 @@
 | 02  | [Design System Foundation](./02-design-system-foundation.md)                             | Batch 2                 | `feat/ui`           | once                    |
 | 03  | [Migration Plan & Batches](./03-migration-plan.md)                                       | Batch 3                 | `feat/ui`           | once                    |
 | 04  | [Build Shared Components](./04-build-shared-components.md)                               | Batches 4-5             | `feat/ui`           | per batch               |
-| 05  | [Per-App Migration](./05-app-migration.md)                                               | Batches 6-9             | `migrate-app/<app>` | per app/batch           |
+| 05  | [Per-App Migration](./05-app-migration.md)                                               | Batches 5.5-9           | `migrate-app/<app>` | per app/batch           |
 | 05A | [App-Local SoC Refactor](./05-app-migration.md#phase-05a)                                | Batch 9.5               | `migrate-app/<app>` | per app (after Batch 9) |
 | 1.5 | [SoC Pre-Migration Refactor](./05-app-migration.md#batch-15--soc-pre-migration-refactor) | Batch 1.5               | `migrate-app/<app>` | per app (after Batch 1) |
 | 06  | [Component Standards & Conventions](./06-component-standards.md)                         | Always-on reference     | All (reference)     | always-on               |

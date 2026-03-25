@@ -27,7 +27,7 @@ Replace these in every prompt before running:
 - `<APP_PATH>/docs/migration/component/02-design-system-foundation.md` - Batch 2 spec
 - `<APP_PATH>/docs/migration/component/03-migration-plan.md` - Batch 3 spec
 - `<APP_PATH>/docs/migration/component/04-build-shared-components.md` - Batches 4-5 spec
-- `<APP_PATH>/docs/migration/component/05-app-migration.md` - Batches 6-9 spec
+- `<APP_PATH>/docs/migration/component/05-app-migration.md` - Batches 5.5-9 spec
 - `<APP_PATH>/docs/migration/component/06-component-standards.md` - Component standards (always-on)
 - `<APP_PATH>/docs/migration/component/07-cleanup.md` - Batch 10 spec
 - `<APP_PATH>/docs/migration/component/08-operational-standards.md` - Batch 11 spec
@@ -62,7 +62,7 @@ The following skills may be installed in this project (`skills/`). **Only use a 
 ## Skill Usage Policy
 
 - `$systematic-debugging` is available in **every batch**. If any command fails, parity drifts, behavior regresses, or a root cause is unclear, use it before attempting fixes.
-- For **Batches 4-5** (`packages/ui` build) and **Batches 6-9** (app-side component migration), `$web-design-guidelines` and `$vercel-react-best-practices` are baseline skills, not optional add-ons.
+- For **Batches 4-5** (`packages/ui` build) and **Batches 5.5-9** (app-side bootstrap + component migration), `$web-design-guidelines` and `$vercel-react-best-practices` are baseline skills, not optional add-ons.
 - `$vercel-composition-patterns` must be **evaluated for every component**. Actively apply it when the selected component has compound sub-components, slot APIs, shared context, or boolean-prop/API-sprawl risk.
 - Use `$design-system`, `$monorepo-workspace`, and `$turborepo` as the core operating set for shared component work on `feat/ui`.
 - Use `shadcn MCP` and `context7 MCP` as the default reference pair for Batch 4-5 component build work when a registry baseline or Radix/library API lookup would reduce ambiguity.
@@ -1272,11 +1272,73 @@ Update `13-implementation-batches.md` tracker.
 
 ---
 
+## Batch 5.5 - App Consumer Bootstrap
+
+> **Branch:** `migrate-app/<APP_NAME>`
+> **Run:** Once per app - after Batch 3A is available on this branch and before Batch 6, Batch 7, or Batch 8 starts
+> **Prerequisite:** Batch 0.5 is complete and the semantic token preset from `@repo/config` is available to the app branch
+> **Blocks:** Batches 6-8 for this app
+
+```
+You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
+
+Read before starting:
+- `<APP_PATH>/docs/migration/component/05-app-migration.md` (app consumer bootstrap section)
+- `<APP_PATH>/docs/migration/component/06-component-standards.md` (token, Box pass, and dark-mode expectations that affect app shells)
+- `packages/config/semantic-tokens.css`
+- `<APP_PATH>/src/app/globals.css` (or the app's active global stylesheet)
+- `<APP_PATH>/tailwind.config.ts`
+- `<APP_PATH>/postcss.config.*`
+- `<APP_PATH>/components.json` (if present)
+- `<APP_PATH>/docs/migration/verification-gate.md`
+
+## Objective
+
+Prepare `<APP_NAME>` as a correct consumer of the shared semantic token contract before any component import swap begins.
+This is an app-shell bootstrap batch, not a usage-site migration batch.
+
+## Required Changes
+
+1. Import the shared preset from `@repo/config` in the app global stylesheet, then keep only app-brand overrides locally.
+2. Preserve the app-local Tailwind entry points: `tailwind.config.ts`, `postcss.config.*`, `@config`, and `components.json` must continue to point at the app's own files.
+3. Align dark-mode activation with the shared contract (`[data-theme="dark"]`) or add a temporary compatibility bridge if the app still toggles `.dark`.
+4. Keep app-local utilities, layout helpers, and route-level CSS that are unrelated to semantic token definitions.
+5. Remove duplicated token definitions from the app only when the value is now sourced from the shared preset. Keep explicit local overrides that represent app branding.
+6. Document any temporary compatibility bridge in `_migration-log.md` so it can be removed after full rollout.
+
+## Guardrails (non-negotiable)
+
+ALLOWED:
+- Editing global styling entry points, theme-provider wiring, and other app-shell files required to consume the shared preset
+- Adding a compatibility alias or bridge for dark-mode selectors during rollout
+- Keeping app-local CSS utilities and layout rules that are not token definitions
+
+FORBIDDEN:
+- Swapping component imports to `@repo/ui`
+- Refactoring feature components or usage sites
+- Changing route behavior, copy, or interaction logic
+- Moving app-owned Tailwind config into shared packages
+
+## Verification Gate (ALL must pass before calling Batch 5.5 complete)
+
+Read `<APP_PATH>/docs/migration/verification-gate.md` for exact commands.
+- Typecheck passes
+- Lint passes
+- Build passes
+- Smoke routes render with shared tokens loaded and no missing-style regressions
+- No new console errors in browser
+- `_migration-log.md` records whether the app now uses the shared dark-mode selector directly or through a temporary compatibility bridge
+
+> Skills (if installed): `$monorepo-workspace` (confirm config ownership stays app-local while shared tokens come from `@repo/config`); `$turborepo` (verify the correct `--filter <APP_PACKAGE>` gate commands); `$next-best-practices` (if theme/provider wiring crosses RSC or client boundaries); `$web-design-guidelines` (review visual and accessibility parity after token bootstrap); `$agent-browser` (smoke critical routes and capture before/after evidence); `$systematic-debugging` (if CSS, theme, or route behavior diverges - trace the root cause before fixing)
+```md
+
+---
+
 ## Batch 6 - Per-App Migration: Batch 1 - ADOPT_NOW
 
 > **Branch:** `migrate-app/<APP_NAME>`
 > **Run:** Once per app
-> **Prerequisite:** Batches 4-5 Batch 1 components confirmed in `packages/ui/src/index.ts`
+> **Prerequisite:** Batch 5.5 is complete for this app, and the required Batch 4-5 components are confirmed in `packages/ui/src/index.ts`
 
 ```
 You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
