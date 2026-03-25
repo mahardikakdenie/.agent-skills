@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Shared Tailwind CSS configuration",
   "exports": {
-    "./tailwind.css": "./tailwind.css"
+    "./tailwind.css": "./tailwind.css",
+    "./semantic-tokens.css": "./semantic-tokens.css"
   },
   "author": "",
   "license": "ISC",

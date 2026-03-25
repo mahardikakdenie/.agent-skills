@@ -1,0 +1,256 @@
+# DataTable Spec
+
+## Metadata
+
+| Field           | Value                                |
+| --------------- | ------------------------------------ |
+| Storybook Group | `Data Display`                       |
+| Component Tier  | `Tier 2 (Composite)`                 |
+| Structure Tier  | `Complex`                            |
+| Based on        | `Table` + `@tanstack/react-table` v8 |
+
+---
+
+## Overview
+
+`DataTable` is the shared advanced table foundation in `@repo/ui`. It preserves the low-level semantic `Table` primitive, then layers TanStack Table state orchestration, render helpers, and reusable shell behavior on top without absorbing domain schemas, route state, or fetch logic.
+
+The implementation supports two real usage modes:
+
+- Managed mode: pass `data`, `columns`, optional `state` / `defaultState`, and generic `tableOptions`.
+- Controlled mode: build a table instance with `useDataTable(...)`, then render it through `DataTable` or `DataTableVirtualized`.
+
+Stories intentionally prefer short description blocks above the table instead of semantic captions. The `caption` prop is still supported for consumers that need semantic table captions.
+
+---
+
+## Public Exports
+
+### Components
+
+- `DataTable`
+- `DataTableVirtualized`
+- `DataTablePagination`
+
+### Hooks
+
+- `useDataTable(...)`
+
+### Utilities
+
+- `dataTableFacetedFilterFn`
+- `dataTableFuzzyFilterFn`
+
+### Public Types
+
+- `DataTableProps`
+- `DataTableManagedProps`
+- `DataTableControlledProps`
+- `DataTableVirtualizedProps`
+- `DataTableOptions`
+- `DataTableState`
+- `DataTableStateChangeHandlers`
+- `DataTablePaginationConfig`
+- `DataTablePaginationProps`
+- `DataTableLayoutOptions`
+- `DataTableRenderContext`
+- `DataTableStatusContext`
+- `DataTableRenderable`
+- `DataTableInstance`
+- TanStack re-exported state and row types documented in `index.ts`
+
+### Internal-only Storybook Utilities
+
+The following controls exist only for Storybook demos and are not part of the public `DataTable` package surface:
+
+- `DataTableToolbar`
+- `DataTableSearch`
+- `DataTableColumnFilter`
+- `DataTableFacetedFilter`
+- `DataTableViewOptions`
+- `DataTableSelectionSummary`
+
+They currently live in `DataTable.story-helpers.tsx`.
+
+---
+
+## Architecture
+
+| Layer                     | Responsibility                                                                                        |
+| ------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `Table`                   | Semantic table structure only                                                                         |
+| `useDataTable(...)`       | State orchestration, row models, filter function registration, controlled/uncontrolled slice handling |
+| `DataTable`               | Shared render shell for standard tabular rendering                                                    |
+| `DataTableVirtualized`    | Shared virtualization shell using TanStack Virtual                                                    |
+| `DataTable.renderers.tsx` | Shared row/header/footer/status/pagination rendering logic                                            |
+| `DataTable.utils.ts`      | Shared table state defaults, filter helpers, layout/style helpers, sizing helpers, and renderable resolution |
+
+The shell remains composition-first: toolbar UI, filter UI, and app workflows stay consumer-owned unless promoted deliberately into the public API.
+
+---
+
+## Supported Capability Scope
+
+| Capability                               | Support | Notes                                                                           |
+| ---------------------------------------- | ------- | ------------------------------------------------------------------------------- |
+| Controlled and uncontrolled state slices | Yes     | Via `state`, `defaultState`, `onStateChange`, and legacy `pagination` shorthand |
+| Client pagination                        | Yes     | Shared pagination UI is rendered via `DataTablePagination`                      |
+| Manual pagination                        | Yes     | Via `tableOptions.manualPagination` and `pageCount` / `rowCount`                |
+| Sorting / multi-sorting                  | Yes     | Shared sort buttons and sort-order badges                                       |
+| Column filtering                         | Yes     | State support plus story-only demo controls                                     |
+| Global filtering                         | Yes     | State support plus story-only demo controls                                     |
+| Fuzzy filtering                          | Yes     | Via `dataTableFuzzyFilterFn`                                                    |
+| Column faceting                          | Yes     | Via TanStack faceting row models and `dataTableFacetedFilterFn`                 |
+| Global faceting                          | Yes     | Exposed through the table instance                                              |
+| Column visibility                        | Yes     | State support; shared UI remains story-only for now                             |
+| Grouping                                 | Yes     | Grouped rows, aggregated cells, expand/collapse controls                        |
+| Expansion                                | Yes     | `renderExpandedContent` slot                                                    |
+| Column ordering                          | Yes     | State support; UI remains consumer-owned                                        |
+| Column pinning                           | Yes     | Sticky left/right pinned columns                                                |
+| Row pinning                              | Yes     | Top / center / bottom row sections                                              |
+| Column sizing / resizing                 | Yes     | Resize handles and state support                                                |
+| Sticky header / sticky footer            | Yes     | Via `layout.stickyHeader`, `layout.stickyFooter`, and `layout.maxBodyHeight`    |
+| Virtualization                           | Yes     | Via dedicated `DataTableVirtualized` companion                                  |
+
+### Intentionally Not in the Public Root API
+
+- Shared toolbar controls are not exported.
+- Route/query synchronization stays app-local.
+- Fetch logic stays app-local.
+- Domain-specific column factories stay app-local.
+- Inline editing workflows stay app-local.
+
+---
+
+## Core Props
+
+### Managed mode
+
+```tsx
+<DataTable
+  data={rows}
+  columns={columns}
+  defaultState={{
+    pagination: { pageIndex: 0, pageSize: 10 },
+    sorting: [{ id: 'customer', desc: false }],
+  }}
+  tableOptions={{
+    enableGlobalFilter: true,
+    enableMultiSort: true,
+    enableColumnResizing: true,
+    enableRowPinning: true,
+  }}
+/>
+```
+
+### Controlled mode
+
+```tsx
+const table = useDataTable({
+  data: rows,
+  columns,
+  state,
+  onStateChange,
+  tableOptions: {
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+  },
+});
+
+<DataTable
+  table={table}
+  renderToolbar={(currentTable) => <MyToolbar table={currentTable} />}
+  renderFooter={(currentTable) => <MyFooter table={currentTable} />}
+/>;
+```
+
+### Virtualized mode
+
+```tsx
+const table = useDataTable({
+  data,
+  columns,
+  tableOptions: { enableGlobalFilter: true },
+});
+
+<DataTableVirtualized
+  table={table}
+  height={420}
+  estimateRowHeight={52}
+  layout={{ stickyHeader: true }}
+/>;
+```
+
+---
+
+## Shared Behavior Notes
+
+- Textual overflow in headers and cells uses tooltip-on-overflow behavior when the rendered value resolves to a textual table value.
+- Grouped rows and aggregated cells use the underlying table value for tooltip labels when the rendered cell content is wrapped in React nodes.
+- Sticky footer stories should avoid unnecessary horizontal overflow when the goal is to demonstrate vertical footer pinning behavior only.
+- `renderStatus`, `emptyState`, and `loadingState` are separate surfaces. `renderStatus` has highest priority.
+
+---
+
+## Accessibility
+
+- Semantic `table`, `thead`, `tbody`, `tfoot`, `tr`, `th`, and `td` output is preserved.
+- Sortable headers expose `aria-sort`.
+- Loading state sets `aria-busy` on the root shell.
+- Resize handles are keyboard-focusable buttons with explicit labels.
+- Sticky headers, sticky footers, and pinned columns remain semantic table cells rather than div-based faux grids.
+- Overflow tooltips only activate when the rendered text is actually truncated.
+
+---
+
+## Storybook Taxonomy
+
+Story file title: `Data Display/DataTable`
+
+- `Sorting`
+- `ColumnOrdering`
+- `ColumnPinning`
+- `ColumnSizing`
+- `ColumnVisibility`
+- `ColumnFiltering`
+- `GlobalFiltering`
+- `FuzzyFiltering`
+- `ColumnFaceting`
+- `GlobalFaceting`
+- `Grouping`
+- `Expanding`
+- `Pagination`
+- `RowSelection`
+- `RowPinning`
+- `StickyHeader`
+- `StickyFooter`
+- `Virtualization`
+
+Notes:
+
+- `StickyHeader` stays full-width and keeps horizontal overflow where useful.
+- `StickyFooter` uses the base column set so the story isolates vertical sticky-footer behavior without a horizontal scrollbar gutter.
+- Storybook-only control helpers are imported from `DataTable.story-helpers.tsx`, not from the package public index.
+
+---
+
+## Do / Don't
+
+| Do                                                                    | Don't                                                                          |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Use `useDataTable(...)` when advanced state ownership is needed.      | Add more public booleans for filtering, visibility, grouping, or selection UI. |
+| Keep shared exports limited to the real stable API.                   | Document Storybook-only helpers as if they were package exports.               |
+| Compose app-specific toolbar and footer UI through render props.      | Move route state, service hooks, or product workflow logic into `DataTable`.   |
+| Use `DataTableVirtualized` when virtualization is genuinely required. | Inflate the base `DataTable` API with speculative virtualization props.        |
+| Prefer external explanatory copy above the table in demos.            | Depend on story captions for behavior documentation.                           |
+
+---
+
+## Changelog
+
+| Date       | Change                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-03-13 | Initial DataTable spec                                                                                                                                                                            |
+| 2026-03-14 | Expanded the shared foundation into managed + controlled shells, added virtualization companion coverage, and documented current story taxonomy                                                   |
+| 2026-03-14 | Aligned the spec with the current public exports, marked toolbar/filter controls as Storybook-only utilities, documented overflow-to-tooltip behavior, and clarified sticky footer story behavior |

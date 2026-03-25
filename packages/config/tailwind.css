@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './semantic-tokens.css';
 
 @theme {
   /* Primary colors (Blue) */
@@ -9,7 +10,7 @@
   --color-primary-60: #015b86;
   --color-primary-80: #013751;
   --color-primary-100: #001620;
-  --color-primary: #016da1;
+  --color-primary-brand: #016da1;
 
   /* Danger colors (Red) */
   --color-danger-10: #ffcdcc;
@@ -19,7 +20,7 @@
   --color-danger-60: #d30300;
   --color-danger-80: #7f0200;
   --color-danger-100: #330100;
-  --color-danger: #fd0300;
+  --color-danger-brand: #fd0300;
 
   /* Warning colors (Yellow) */
   --color-warning-10: #fdf1d9;
@@ -29,7 +30,7 @@
   --color-warning-60: #cc9b36;
   --color-warning-80: #7b5d21;
   --color-warning-100: #312500;
-  --color-warning: #f7c661;
+  --color-warning-brand: #f7c661;
 }
 
 @utility icon-sm {

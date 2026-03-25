@@ -5,11 +5,11 @@ import type React from 'react';
 // ---------------------------------------------------------------------------
 
 /**
- * Extract own props — ensures that consumer-defined props take precedence
+ * Extract own props - ensures that consumer-defined props take precedence
  * over the HTML attribute of the same name when there is a conflict.
  */
 type AsProp<C extends React.ElementType> = {
-  /** The HTML tag or React component to render as. Defaults to `"div"`. */
+  /** The semantic DOM target or React component to render as. Defaults to `"div"`. */
   as?: C;
 };
 
@@ -17,9 +17,9 @@ type AsProp<C extends React.ElementType> = {
  * The full, merged prop type for a polymorphic component.
  *
  * It merges:
- *  1. `OwnProps` — the component's explicit prop interface
- *  2. All native HTML attribute props from `React.ComponentPropsWithoutRef<C>`
- *     minus any keys already declared in `OwnProps` (no conflicts)
+ *  1. `OwnProps` - the component's explicit prop interface
+ *  2. All valid props from `React.ComponentPropsWithoutRef<C>` minus any keys
+ *     already declared in `OwnProps` (no conflicts)
  */
 export type PolymorphicComponentProps<C extends React.ElementType, OwnProps = object> = AsProp<C> &
   OwnProps &
@@ -41,7 +41,11 @@ export type PolymorphicComponentPropsWithRef<
 // Box-specific types
 // ---------------------------------------------------------------------------
 
-/** Own props unique to `Box` (beyond HTML passthrough + polymorphism). */
+export type BoxPadding = 'none' | 'sm' | 'md' | 'lg';
+
+export type BoxContainer = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
+/** Own props unique to `Box` (beyond semantic-target passthrough + polymorphism). */
 export interface BoxOwnProps {
   /**
    * When `true`, `Box` uses Radix `<Slot>` to merge all props onto the
@@ -51,6 +55,26 @@ export interface BoxOwnProps {
    * @default false
    */
   asChild?: boolean;
+  /**
+   * Applies a responsive horizontal padding preset.
+   *
+   * @default 'none'
+   */
+  padding?: BoxPadding;
+  /**
+   * Applies a max-width container preset and centers the rendered element.
+   */
+  container?: BoxContainer;
+  /**
+   * Centers child content with a minimal flex preset.
+   *
+   * @default false
+   */
+  centered?: boolean;
+  /**
+   * Additional classes merged after the preset variants.
+   */
+  className?: string;
 }
 
 /** Full props for `Box` when used with a specific element type `C`. */
@@ -60,7 +84,7 @@ export type BoxProps<C extends React.ElementType = 'div'> = PolymorphicComponent
 >;
 
 /**
- * The polymorphic `Box` component type — exposes the generic signature so
+ * The polymorphic `Box` component type - exposes the generic signature so
  * consumers can annotate component props that accept a `Box`-like API.
  */
 export type BoxComponent = <C extends React.ElementType = 'div'>(

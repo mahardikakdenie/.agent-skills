@@ -1,8 +1,10 @@
 export { Box } from './Box';
 export type {
-  BoxProps,
   BoxComponent,
+  BoxContainer,
   BoxOwnProps,
+  BoxPadding,
+  BoxProps,
   PolymorphicComponentProps,
   PolymorphicComponentPropsWithRef,
 } from './Box.types';
