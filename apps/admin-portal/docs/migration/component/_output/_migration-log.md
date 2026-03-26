@@ -913,3 +913,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Textarea - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Textarea`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/transaction/list/add/page.tsx`, `apps/admin-portal/src/components/forms/RoleForm/index.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/textarea.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: `None`
+

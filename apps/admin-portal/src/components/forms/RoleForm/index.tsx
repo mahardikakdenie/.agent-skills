@@ -30,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@repo/ui";
 
 interface MenuPermissionForm {
   menuId: string;

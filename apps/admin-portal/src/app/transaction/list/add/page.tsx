@@ -32,7 +32,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft, Edit, Plus, Trash2 } from "react-feather";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import {
     Table,
