@@ -25,6 +25,7 @@ export interface ComboboxProps
   options: ComboboxOption[];
   placeholder?: string;
   searchPlaceholder?: string;
+  onSearchValueChange?: (value: string) => void;
   size?: ComboboxSize;
   disabled?: boolean;
   loading?: boolean;
@@ -32,6 +33,8 @@ export interface ComboboxProps
   error?: string | boolean;
   label?: string;
   clearable?: boolean;
+  createOptionLabel?: string | ((searchValue: string) => string);
+  onCreateOption?: (searchValue: string) => void;
   renderOption?: (
     option: ComboboxOption,
     state: ComboboxOptionRenderState,

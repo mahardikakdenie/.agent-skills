@@ -1,5 +1,5 @@
 ﻿import { Command as CommandPrimitive } from 'cmdk';
-import { Check, ChevronsUpDown, LoaderCircle, Search, X } from 'lucide-react';
+import { Check, ChevronsUpDown, LoaderCircle, Plus, Search, X } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@repo/helper';
@@ -47,6 +47,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       options,
       placeholder = 'Select an option',
       searchPlaceholder = 'Search options',
+      onSearchValueChange,
       size = 'md',
       disabled = false,
       loading = false,
@@ -54,6 +55,8 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       error = false,
       label,
       clearable = false,
+      createOptionLabel,
+      onCreateOption,
       renderOption,
       className,
       open,
@@ -75,7 +78,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
     const isControlled = value !== undefined;
     const [uncontrolledValue, setUncontrolledValue] = React.useState<string | undefined>(undefined);
     const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
-    const [searchValue, setSearchValue] = React.useState('');
+    const [uncontrolledSearchValue, setUncontrolledSearchValue] = React.useState('');
     const triggerRef = React.useRef<HTMLButtonElement>(null);
     const searchInputRef = React.useRef<HTMLInputElement>(null);
     const generatedId = React.useId();
@@ -87,10 +90,21 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
     const labelledBy = [ariaLabelledBy, labelId].filter(Boolean).join(' ') || undefined;
     const resolvedOpen = open ?? uncontrolledOpen;
     const currentValue = isControlled ? value : uncontrolledValue;
+    const resolvedSearchValue = uncontrolledSearchValue;
+    const trimmedSearchValue = resolvedSearchValue.trim();
+    const normalizedSearchValue = trimmedSearchValue.toLowerCase();
     const selectedOption = getComboboxOption(options, currentValue);
     const searchLabel = getComboboxSearchLabel(label, searchPlaceholder);
     const invalid = Boolean(error);
     const interactiveDisabled = disabled || loading;
+    const hasExactMatch =
+      normalizedSearchValue.length > 0 &&
+      options.some((option) => [option.label, option.value].some((candidate) => candidate.trim().toLowerCase() === normalizedSearchValue));
+    const canCreateOption = Boolean(onCreateOption) && !interactiveDisabled && normalizedSearchValue.length > 0 && !hasExactMatch;
+    const resolvedCreateOptionLabel =
+      typeof createOptionLabel === 'function'
+        ? createOptionLabel(trimmedSearchValue)
+        : createOptionLabel ?? `Create "${trimmedSearchValue}"`;
     const labelTone = invalid && !interactiveDisabled ? 'destructive' : interactiveDisabled ? 'muted' : 'default';
     const showClearButton = clearable && !interactiveDisabled && currentValue !== undefined;
 
@@ -112,6 +126,11 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       return () => window.cancelAnimationFrame(frame);
     }, [resolvedOpen]);
 
+    const handleSearchValueChange = (nextSearchValue: string) => {
+      setUncontrolledSearchValue(nextSearchValue);
+      onSearchValueChange?.(nextSearchValue);
+    };
+
     const handleOpen = () => {
       if (open === undefined) {
         setUncontrolledOpen(true);
@@ -123,8 +142,18 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
         setUncontrolledOpen(false);
       }
 
-      setSearchValue('');
+      handleSearchValueChange('');
       onClose?.();
+    };
+
+    const handleCreateOption = () => {
+      if (!canCreateOption || !onCreateOption) {
+        return;
+      }
+
+      onCreateOption(trimmedSearchValue);
+      handleClose();
+      triggerRef.current?.focus();
     };
 
     const handleOptionSelect = (nextValue: string) => {
@@ -294,8 +323,14 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 </Box>
                 <CommandPrimitive.Input
                   ref={searchInputRef}
-                  value={searchValue}
-                  onValueChange={setSearchValue}
+                  value={resolvedSearchValue}
+                  onValueChange={handleSearchValueChange}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && canCreateOption) {
+                      event.preventDefault();
+                      handleCreateOption();
+                    }
+                  }}
                   aria-label={searchLabel}
                   autoComplete="off"
                   placeholder={searchPlaceholder}
@@ -319,8 +354,25 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 ) : (
                   <>
                     <CommandPrimitive.Empty className={comboboxEmptyVariants()}>
-                      {getComboboxEmptyText(options, searchValue)}
+                      {getComboboxEmptyText(options, resolvedSearchValue)}
                     </CommandPrimitive.Empty>
+                    {canCreateOption ? (
+                      <CommandPrimitive.Item
+                        value={trimmedSearchValue}
+                        keywords={[trimmedSearchValue, 'create', 'add new']}
+                        className={comboboxItemVariants()}
+                        onSelect={handleCreateOption}
+                      >
+                        <Box as="span" className={comboboxItemContentVariants()}>
+                          <Box as="span" className="flex min-w-0 flex-1 items-center gap-2.5">
+                            <Plus aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" />
+                            <Box as="span" className={comboboxItemLabelVariants()}>
+                              {resolvedCreateOptionLabel}
+                            </Box>
+                          </Box>
+                        </Box>
+                      </CommandPrimitive.Item>
+                    ) : null}
                     {options.map((option) => {
                       const selected = option.value === currentValue;
 

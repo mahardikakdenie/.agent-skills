@@ -769,6 +769,7 @@ export interface ComboboxProps {
   options: ComboboxOption[]
   placeholder?: string
   searchPlaceholder?: string
+  onSearchValueChange?: (value: string) => void
   size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
   loading?: boolean
@@ -776,6 +777,8 @@ export interface ComboboxProps {
   error?: string | boolean
   label?: string
   clearable?: boolean
+  createOptionLabel?: string | ((searchValue: string) => string)
+  onCreateOption?: (searchValue: string) => void
   renderOption?: (option: ComboboxOption, state: ComboboxOptionRenderState) => React.ReactNode
   className?: string
   open?: boolean
@@ -790,6 +793,10 @@ Sizing note:
 Focus note:
 - `Combobox` belongs to the `field-shell-direct` focus family.
 - Open state may not stack a second heavy ring on top of the trigger's keyboard focus treatment.
+
+Contract note:
+- Parent-owned async search is allowed through `onSearchValueChange`, but debounce, fetching, and option refresh remain outside `@repo/ui`.
+- A bounded create-on-enter affordance is allowed through `onCreateOption` plus `createOptionLabel`; business-specific creation semantics remain local.
 
 Story group: `Inputs`
 

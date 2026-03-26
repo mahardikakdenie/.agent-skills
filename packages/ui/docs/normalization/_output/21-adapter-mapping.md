@@ -3,7 +3,7 @@
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
 > Run date: 2026-03-10
-> Last reconciled: 2026-03-25
+> Last reconciled: 2026-03-26
 
 ## Box
 
@@ -546,13 +546,20 @@ Direct adoption guidance:
 - Existing selected id or code values normalize to `value`; existing `onChange`, `setValue`, or `onSelect` callbacks normalize to `onValueChange`.
 - Existing option arrays should map to `options` with `{ label, value, disabled?, keywords? }` instead of widening the shared API with app-shaped records.
 - Existing field labels, required markers, validation text, loading states, and reset affordances map to `label`, `required`, `error`, `loading`, and `clearable`.
+- Parent-owned remote search stays outside the shared package: wire the local debounced or async handler to `onSearchValueChange`, refresh `options` in the parent, and use `loading` for the in-flight state.
+- Bounded create-on-enter flows now map to `onCreateOption` plus `createOptionLabel`; the parent remains responsible for defining the created option, updating `options`, and driving the selected `value`.
 - Rich option rows should move into `renderOption` while trigger text still resolves from `option.label`.
 
 Keep local:
 
-- Remote fetching, debounced search orchestration, async transport, and server-driven filtering.
-- Multi-select, tag creation, "add new item" flows, and phone-code-specific picker behavior.
+- Debounce implementation, remote fetching, transport, caching, and server-driven filtering orchestration.
+- Multi-select, tagging, multi-step creation flows, phone-code-specific picker behavior, and domain-specific create semantics beyond a generic create callback.
 - Domain-specific option shaping, analytics, routing side effects, or permission logic beyond plain props.
+
+Admin-portal Batch 8 / Batch 4 note:
+
+- The legacy customer picker in `apps/admin-portal/src/app/transaction/list/add/page.tsx` can now migrate directly to shared `Combobox` by mapping `id/name` records into shared `options`, wiring the existing debounced search function to `onSearchValueChange`, and moving the add-new customer branch into `onCreateOption` with `createOptionLabel`.
+- No app-local debounce, fetch, or business creation logic moves into `@repo/ui`; only the field shell, list interaction, and bounded create affordance become shared.
 
 ## Command
 
