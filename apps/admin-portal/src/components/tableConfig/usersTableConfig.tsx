@@ -1,6 +1,6 @@
 import { Column } from "@/components/ui/DataTable";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@repo/ui";
 import { Trash } from "react-feather";
 
 interface UsersTableConfigProps {
