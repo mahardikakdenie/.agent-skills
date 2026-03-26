@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { FaSave, FaCheck } from "react-icons/fa";
 import { ChevronLeft } from "react-feather";
 import {
@@ -8,7 +9,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Input } from "@repo/ui";
 import {
   Select,
@@ -109,8 +110,8 @@ export function PartnerCommForm({
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href={AppURL.financePartnerComm}>
-                      Partner Comm
+                    <BreadcrumbLink asChild>
+                      <Link href={AppURL.financePartnerComm}>Partner Comm</Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />

@@ -1,5 +1,6 @@
 ﻿import React from "react";
 import { ChevronLeft } from "react-feather";
+import Link from "next/link";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 
 export interface PageHeaderBreadcrumbItem {
   label: string;
@@ -44,7 +45,9 @@ export const PageHeaderShell: React.FC<PageHeaderShellProps> = ({
                     {item.isCurrentPage ? (
                       <BreadcrumbPage>{item.label}</BreadcrumbPage>
                     ) : item.href ? (
-                      <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                      <BreadcrumbLink asChild>
+                        <Link href={item.href}>{item.label}</Link>
+                      </BreadcrumbLink>
                     ) : (
                       <BreadcrumbLink>{item.label}</BreadcrumbLink>
                     )}

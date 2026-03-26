@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { FaSave } from "react-icons/fa";
 import { ChevronLeft } from "react-feather";
 import {
@@ -9,7 +10,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { useUploadSanction } from "@/hooks/useUploadSanction.hooks";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
@@ -76,8 +77,8 @@ export default function UploadSanctionPage() {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/sanction/list">
-                      Sanction List
+                    <BreadcrumbLink asChild>
+                      <Link href="/sanction/list">Sanction List</Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toastPromise } from "@/lib/toast";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { useBilling } from "@/app/finance/billing/hook";
 import { useScreen } from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
@@ -130,14 +131,14 @@ export default function ImportPage() {
           <Breadcrumb className="sm:block hidden">
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financeBilling}>
-                  Billing
+                <BreadcrumbLink asChild>
+                  <Link href={AppURL.financeBilling}>Billing</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href={`${AppURL.financeBillingDetail}/${id}`}>
-                  Billing Detail
+                <BreadcrumbLink asChild>
+                  <Link href={`${AppURL.financeBillingDetail}/${id}`}>Billing Detail</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

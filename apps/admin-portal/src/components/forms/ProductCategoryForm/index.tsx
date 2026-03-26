@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { FaSave, FaCheck } from "react-icons/fa";
 import { ChevronLeft } from "react-feather";
 import {
@@ -8,7 +9,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Input } from "@repo/ui";
 import { Controller } from "react-hook-form";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
@@ -84,8 +85,8 @@ export function ProductCategoryForm({
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href={AppURL.masterdataProductCategory}>
-                      Product Category
+                    <BreadcrumbLink asChild>
+                      <Link href={AppURL.masterdataProductCategory}>Product Category</Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />

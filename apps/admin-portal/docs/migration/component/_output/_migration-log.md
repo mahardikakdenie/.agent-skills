@@ -1107,3 +1107,28 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Files changed: `apps/admin-portal/docs/migration/component/_output/_migration-log.md`
 - Next required upstream action: `Publish approved adapter guidance or align the shared Breadcrumb contract with the app's legacy compound export surface; the current shared implementation only exposes a flat items[] API, so the replacement path for the existing compound usage is not yet clear.`
 
+## Batch 8 / Batch 4 - Breadcrumb - 2026-03-27
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Breadcrumb`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx`, `apps/admin-portal/src/app/claim/list/import/page.tsx`, `apps/admin-portal/src/app/transaction/list/import/import/page.tsx`, `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx`, `apps/admin-portal/src/app/transaction/list/add/page.tsx`, `apps/admin-portal/src/components/ui/PageHeader/PageHeaderShell.tsx`, `apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx`, `apps/admin-portal/src/app/sanction/list/upload/page.tsx`, `apps/admin-portal/src/app/report/performance/page.tsx`, `apps/admin-portal/src/app/report/campaign/page.tsx`, `apps/admin-portal/src/app/report/claim/page.tsx`, `apps/admin-portal/src/components/forms/BrokerFeeForm/index.tsx`, `apps/admin-portal/src/components/forms/EmailTagForm/index.tsx`, `apps/admin-portal/src/app/product-category/[category]/add/page.tsx`, `apps/admin-portal/src/components/forms/CurrencyForm/index.tsx`, `apps/admin-portal/src/components/forms/UserForm/index.tsx`, `apps/admin-portal/src/components/forms/ChannelForm/index.tsx`, `apps/admin-portal/src/components/forms/CampaignForm/index.tsx`, `apps/admin-portal/src/components/forms/product-category.form.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/product-catalog/package.form.tsx`, `apps/admin-portal/src/components/forms/product-catalog/benefit.form.tsx`, `apps/admin-portal/src/components/forms/SourceForm/index.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx`, `apps/admin-portal/src/components/forms/PartnerManagementForm/index.tsx`, `apps/admin-portal/src/components/forms/SanctionForm/index.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx`, `apps/admin-portal/src/components/forms/RoleForm/index.tsx`, `apps/admin-portal/src/components/forms/PartnerCommForm/index.tsx`, `apps/admin-portal/src/components/forms/ProductForm/index.tsx`, `apps/admin-portal/src/app/finance/billing/add/page.tsx`, `apps/admin-portal/src/components/forms/HolidayDateForm/index.tsx`, `apps/admin-portal/src/components/forms/PageManagementForm/index.tsx`, `apps/admin-portal/src/components/forms/ProductCategoryForm/index.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/GroupForm/index.tsx`, `apps/admin-portal/src/components/forms/InsuranceForm/index.tsx`, `apps/admin-portal/src/components/forms/EmailTemplateForm/index.tsx`, `apps/admin-portal/src/components/forms/HospitalUploadForm/index.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/breadcrumb.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: [`apps/admin-portal/src/components/ui/PageHeader/PageHeaderShell.tsx` - the back affordance still uses a clickable `<div>` without button semantics or keyboard support; revisit in a later accessibility pass]
+
+## Batch 8 / Batch 4 - Breadcrumb - 2026-03-27 - FOLLOW-UP
+
+- Reason: `Internal breadcrumb navigation normalized to Next.js client navigation by replacing shared `BreadcrumbLink href=...` usage with `BreadcrumbLink asChild` + `<Link href=...>` at app usage sites.`
+- Usage sites updated: [`apps/admin-portal/src/components/ui/PageHeader/PageHeaderShell.tsx`, `apps/admin-portal/src/app/transaction/list/import/import/page.tsx`, `apps/admin-portal/src/app/sanction/list/upload/page.tsx`, `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx`, `apps/admin-portal/src/app/transaction/list/add/page.tsx`, `apps/admin-portal/src/components/forms/SourceForm/index.tsx`, `apps/admin-portal/src/components/forms/SanctionForm/index.tsx`, `apps/admin-portal/src/components/forms/ProductCategoryForm/index.tsx`, `apps/admin-portal/src/components/forms/BrokerFeeForm/index.tsx`, `apps/admin-portal/src/components/forms/PartnerCommForm/index.tsx`, `apps/admin-portal/src/components/forms/InsuranceForm/index.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx`, `apps/admin-portal/src/app/finance/billing/add/page.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+

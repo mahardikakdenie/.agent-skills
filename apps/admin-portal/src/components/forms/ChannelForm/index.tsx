@@ -7,7 +7,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Input } from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import {

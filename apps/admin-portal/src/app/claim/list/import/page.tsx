@@ -12,7 +12,7 @@ import { toastPromise } from '@/lib/toast';
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Upload } from "react-feather";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@repo/ui";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
 import { useImportClaims } from "@/services/claims/hooks/mutations";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useBilling } from "@/app/finance/billing/hook";
 import { ChevronLeft, Download, Upload } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -11,7 +12,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import AppURL from "@/constants/app-url.const";
 import { BillingDetailInfo } from "./components/BillingDetailInfo";
@@ -117,8 +118,8 @@ export default function DetailBillingPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financeBilling}>
-                  Billing
+                <BreadcrumbLink asChild>
+                  <Link href={AppURL.financeBilling}>Billing</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

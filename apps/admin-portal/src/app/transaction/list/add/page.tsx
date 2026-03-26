@@ -9,6 +9,7 @@
 
 "use client";
 import _ from "lodash";
+import Link from "next/link";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -16,7 +17,7 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import {
     Select,
     SelectContent,
@@ -429,8 +430,8 @@ export default function AddTransaction() {
                     <Breadcrumb className="sm:block hidden">
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={AppURL.transactionList}>
-                                    Transaction List
+                                <BreadcrumbLink asChild>
+                                    <Link href={AppURL.transactionList}>Transaction List</Link>
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />

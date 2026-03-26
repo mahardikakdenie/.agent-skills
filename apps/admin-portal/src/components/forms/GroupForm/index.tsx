@@ -17,7 +17,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Input } from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { Controller } from "react-hook-form";

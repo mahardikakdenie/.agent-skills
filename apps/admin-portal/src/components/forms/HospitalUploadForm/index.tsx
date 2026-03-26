@@ -9,7 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 

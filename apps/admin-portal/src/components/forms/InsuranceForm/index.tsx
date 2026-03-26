@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Check, ChevronLeft } from "react-feather";
 import {
   Breadcrumb,
@@ -7,7 +8,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Input } from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { Controller } from "react-hook-form";
@@ -98,8 +99,8 @@ export function InsuranceForm({
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href={AppURL.masterdataInsurance}>
-                      Insurance
+                    <BreadcrumbLink asChild>
+                      <Link href={AppURL.masterdataInsurance}>Insurance</Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />

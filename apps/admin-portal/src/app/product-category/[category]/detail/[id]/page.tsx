@@ -20,7 +20,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { ChevronLeft } from "react-feather";
 import ProductDetatilTab from "./product-detail-tab";
 import { useAuth } from "@/context/auth.context";

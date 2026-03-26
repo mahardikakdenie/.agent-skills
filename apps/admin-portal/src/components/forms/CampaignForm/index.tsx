@@ -19,7 +19,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import ChannelSelectionModal from "@/app/promotion/components/channel-selection-modal";
 import InsuranceSelectionModal from "@/app/promotion/components/insurance-selection-modal";
 import ProductSelectionModal from "@/app/promotion/components/product-selection-modal";

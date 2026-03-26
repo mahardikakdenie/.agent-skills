@@ -18,7 +18,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import Link from "next/link";
 import { useScreen } from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
@@ -90,8 +90,8 @@ export default function UploadTransactions() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.transactionList}>
-                  Transactions
+                <BreadcrumbLink asChild>
+                  <Link href={AppURL.transactionList}>Transactions</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

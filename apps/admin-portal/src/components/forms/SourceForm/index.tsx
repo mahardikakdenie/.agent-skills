@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { FaSave, FaCheck } from "react-icons/fa";
 import { ChevronLeft } from "react-feather";
 import {
@@ -8,7 +9,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Input } from "@repo/ui";
 import {
   Select,
@@ -110,8 +111,8 @@ export function SourceForm({
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/source/list">
-                      Source List
+                    <BreadcrumbLink asChild>
+                      <Link href="/source/list">Source List</Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />

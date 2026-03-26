@@ -6,7 +6,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/formatter";
 import Link from "next/link";
@@ -88,8 +88,8 @@ export default function DetailTransaction() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.transactionList}>
-                  Transactions
+                <BreadcrumbLink asChild>
+                  <Link href={AppURL.transactionList}>Transactions</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

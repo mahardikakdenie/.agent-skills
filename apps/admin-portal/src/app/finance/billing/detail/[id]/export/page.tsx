@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useBilling } from "@/app/finance/billing/hook";
 import * as XLSX from "xlsx";
 import { ChevronLeft, Download } from "lucide-react";
@@ -13,7 +14,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -367,8 +368,8 @@ export default function ExportDetailBillingPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financeBilling}>
-                  Billing
+                <BreadcrumbLink asChild>
+                  <Link href={AppURL.financeBilling}>Billing</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

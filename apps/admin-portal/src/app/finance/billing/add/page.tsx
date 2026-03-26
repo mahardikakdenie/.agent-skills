@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useBilling } from "../hook";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, ChevronLeft } from "lucide-react";
@@ -19,7 +20,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+} from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
 import { DataTable } from "@/components/ui/DataTable";
 import { createBillingTransactionTableColumns } from "@/components/tableConfig/billingTransactionTableConfig";
@@ -304,8 +305,8 @@ const CreateBillingPage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href={AppURL.financeBilling}>
-                  Billing
+                <BreadcrumbLink asChild>
+                  <Link href={AppURL.financeBilling}>Billing</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
