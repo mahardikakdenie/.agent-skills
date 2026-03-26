@@ -2,7 +2,7 @@
 import React from "react";
 import { FaPlus, FaSave, FaTrash, FaCheck } from "react-icons/fa";
 import { ChevronLeft, Trash } from "react-feather";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import {
   Select,
   SelectContent,

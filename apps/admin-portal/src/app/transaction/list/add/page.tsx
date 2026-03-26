@@ -31,7 +31,7 @@ import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft, Edit, Plus, Trash2 } from "react-feather";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { Textarea } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import {
@@ -669,7 +669,7 @@ export default function AddTransaction() {
                                             <Input
                                                 type="text"
                                                 id="phone_number"
-                                                inputMode="numeric"
+                                                inputMode="number"
                                                 placeholder="812xxxxxxx"
                                                 {...field}
                                                 readOnly={

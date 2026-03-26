@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { Check, Plus, Trash2, X, Download } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import emptyStateSearchPrompt from "@public/images/empty-state-search-prompt.svg";

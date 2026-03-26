@@ -1057,3 +1057,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Input - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Input`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/transaction/list/add/page.tsx`, `apps/admin-portal/src/app/claim/list/page.tsx`, `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx`, `apps/admin-portal/src/components/ui/Fields/UploadFile/index.tsx`, `apps/admin-portal/src/components/ui/Fields/SelectAutocomplete/index.tsx`, `apps/admin-portal/src/components/ui/DataTable/index.tsx`, `apps/admin-portal/src/app/claim/history/page.tsx`, `apps/admin-portal/src/app/membership/list/upload/page.tsx`, `apps/admin-portal/src/app/policy/list/import/page.tsx`, `apps/admin-portal/src/components/tableConfig/claimTableConfig.tsx`, `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx`, `apps/admin-portal/src/app/masterdata/user/page.tsx`, `apps/admin-portal/src/app/product-category/page.tsx`, `apps/admin-portal/src/app/export-users/page.tsx`, `apps/admin-portal/src/components/forms/EmailTemplateForm/index.tsx`, `apps/admin-portal/src/components/forms/EmailTagForm/index.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-roles.tsx`, `apps/admin-portal/src/components/forms/CurrencyForm/index.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-groups.tsx`, `apps/admin-portal/src/components/forms/ChannelForm/index.tsx`, `apps/admin-portal/src/components/forms/product-category.form.tsx`, `apps/admin-portal/src/components/forms/CampaignForm/index.tsx`, `apps/admin-portal/src/components/forms/product-catalog/package.form.tsx`, `apps/admin-portal/src/components/forms/BrokerFeeForm/index.tsx`, `apps/admin-portal/src/components/forms/product-catalog/field-array-input.tsx`, `apps/admin-portal/src/components/forms/product-catalog/benefit.form.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-form.tsx`, `apps/admin-portal/src/components/forms/PartnerManagementForm/index.tsx`, `apps/admin-portal/src/components/forms/PartnerCommForm/index.tsx`, `apps/admin-portal/src/components/forms/SourceForm/index.tsx`, `apps/admin-portal/src/components/forms/PageManagementForm/index.tsx`, `apps/admin-portal/src/components/forms/SanctionForm/index.tsx`, `apps/admin-portal/src/components/forms/InsuranceForm/index.tsx`, `apps/admin-portal/src/components/forms/RoleForm/index.tsx`, `apps/admin-portal/src/components/forms/ProductForm/index.tsx`, `apps/admin-portal/src/components/forms/ProductCategoryForm/index.tsx`, `apps/admin-portal/src/components/forms/HolidayDateForm/index.tsx`, `apps/admin-portal/src/components/forms/GroupForm/index.tsx`, `apps/admin-portal/src/app/masterdata/partner-management/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/input.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: [`packages/ui/src/Input/Input.types.ts` - consider accepting the native `inputMode="numeric"` alias in the shared Input contract to reduce consumer migration friction]
+

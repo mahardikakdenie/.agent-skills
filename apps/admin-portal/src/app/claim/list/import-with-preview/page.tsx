@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 import EditIcon from "@/components/icons/edit.icon";
 import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Download, Upload } from "react-feather";
 import { useEffect, useState } from "react";

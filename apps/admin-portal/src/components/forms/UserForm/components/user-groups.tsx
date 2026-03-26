@@ -27,7 +27,7 @@ import {
   Trash2,
 } from "react-feather";
 import { useParams } from "react-router-dom";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { StaticImageData } from "next/image";
 
 export const UserGroups = (props: {

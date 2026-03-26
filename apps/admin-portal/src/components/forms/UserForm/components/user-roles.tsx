@@ -27,7 +27,7 @@ import {
   Trash2,
   X,
 } from "react-feather";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import Image, { StaticImageData } from "next/image";
 import { useParams } from "react-router-dom";
 

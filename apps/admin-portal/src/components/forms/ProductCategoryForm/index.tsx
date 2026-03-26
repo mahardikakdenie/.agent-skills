@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { Controller } from "react-hook-form";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 import AppURL from "@/constants/app-url.const";

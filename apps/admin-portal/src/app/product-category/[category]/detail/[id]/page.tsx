@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProducts } from "../../../hooks";
 import { Controller, useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import {
   Select,
   SelectContent,

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from "react-feather";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { usePartnerManagement } from "@/hooks/usePartnerManagement.hooks";
 import { createPartnerTableColumns } from "@/components/tableConfig/partnerManagmentTableConfig";

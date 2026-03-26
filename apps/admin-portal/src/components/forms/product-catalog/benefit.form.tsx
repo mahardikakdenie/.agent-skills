@@ -8,7 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Check, ChevronLeft, Plus, Trash } from "react-feather";

@@ -1,11 +1,11 @@
-﻿"use client";
+"use client";
 import _ from "lodash";
 import React from "react";
 import noData from "@public/images/no-data.webp";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { formatMoneyClaim } from "@/lib/formatter";

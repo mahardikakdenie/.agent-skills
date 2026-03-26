@@ -2,7 +2,7 @@
 import * as XLSX from "xlsx";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { ChevronLeft, X } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@repo/ui";

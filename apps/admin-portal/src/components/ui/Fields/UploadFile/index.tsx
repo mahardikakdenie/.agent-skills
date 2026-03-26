@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Upload, X } from "react-feather";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 
 interface UploadFileProps {
   accept?: string;

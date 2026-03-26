@@ -3,7 +3,7 @@ import Image from "next/image";
 import noData from "@public/images/no-data.webp";
 import { useProducts } from "../hooks";
 import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";

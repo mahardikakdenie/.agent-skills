@@ -1,6 +1,6 @@
 "use client";
 import { useProducts } from "@/app/product-category/hooks";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui";
 import { useEffect, useState } from "react";
 import Papa from "papaparse";
 import { Button } from "@/components/ui/button";
