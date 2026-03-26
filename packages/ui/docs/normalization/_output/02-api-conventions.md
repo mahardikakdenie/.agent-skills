@@ -948,6 +948,8 @@ Story group: `Navigation`
 ### Breadcrumb
 
 ```ts
+// Flat convenience API plus additive compound exports:
+// BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator
 export interface BreadcrumbItem {
   label: string
   href?: string
@@ -955,9 +957,14 @@ export interface BreadcrumbItem {
 }
 
 export interface BreadcrumbProps extends React.HTMLAttributes<HTMLElement> {
-  items: BreadcrumbItem[]
+  items?: BreadcrumbItem[]
   separator?: React.ReactNode
   currentLabel?: string
+  className?: string
+}
+
+export interface BreadcrumbLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  asChild?: boolean
   className?: string
 }
 ```

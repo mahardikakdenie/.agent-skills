@@ -366,9 +366,11 @@ Keep local:
 Direct adoption guidance:
 
 - Legacy ancestor trails and page-header breadcrumb shells map to `Breadcrumb`.
-- Existing ordered breadcrumb arrays normalize to `items`, where each item supplies `label`, optional `href`, and optional `current`.
+- Existing ordered breadcrumb arrays normalize to the canonical flat `items` API, where each item supplies `label`, optional `href`, and optional `current`.
+- Existing JSX-authored breadcrumb trees can migrate directly to the additive compound shared exports: `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, and `BreadcrumbSeparator`.
 - Cases where the current page label is rendered separately from ancestor links map to `currentLabel` instead of forcing a duplicate item shape.
-- Decorative chevrons, slashes, or similar separators map to the shared `separator` prop.
+- Decorative chevrons, slashes, or similar separators map to the shared `separator` prop; the same root-level separator also feeds compound `BreadcrumbSeparator` instances by default.
+- Framework links and callback-style crumbs stay app-local through `BreadcrumbLink asChild`, so `next/link`, router adapters, and button handlers do not move into `@repo/ui`.
 
 Keep local:
 
@@ -654,4 +656,5 @@ Keep local:
 - Interactive steppers, gantt views, schedulers, and drag-and-drop workflow boards.
 - Sorting, filtering, fetching, or route-aware actions attached to each event row.
 - Domain-specific date formatting, actor metadata, and business logic beyond presentation-only ordered history.
+
 

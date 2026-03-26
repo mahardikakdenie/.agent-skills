@@ -644,12 +644,26 @@ Changed:
 - Implemented `packages/ui/src/Breadcrumb` as the first eligible Wave B5.1 navigation component after Wave B4 stabilization.
 - Added the canonical Breadcrumb spec, Storybook coverage, typed exports, and Box-authored semantic `nav` / `ol` / `li` markup aligned to `02-api-conventions.md`.
 - Locked the shared contract around `items`, optional `separator`, and optional `currentLabel`, while keeping router adapters, framework links, and route-building logic local to consuming apps.
-- Kept the API intentionally flat after composition review instead of introducing compound breadcrumb subcomponents or render-prop wrappers.
+- Landed the initial convenience API around `items`, optional `separator`, and optional `currentLabel`; later compound-export follow-up is tracked separately below.
 
 Impact:
 
 - `@repo/ui` export surface now includes `Breadcrumb` alongside the previously shipped navigation primitives.
 - App-local breadcrumb shells can begin converging on one shared semantic trail component while preserving app-owned routing and link composition policy.
+
+---
+
+## 2026-03-27 - Breadcrumb Compound Composition Follow-up
+
+Changed:
+
+- Updated normalization guidance to match the current `packages/ui/src/Breadcrumb` surface, which now includes additive compound exports: `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, and `BreadcrumbSeparator`.
+- Documented `BreadcrumbLink asChild` as the framework-safe composition path for `next/link` wrappers and callback-style crumb buttons, while preserving the flat `items`, `separator`, and `currentLabel` convenience API.
+
+Impact:
+
+- Normalization output no longer references the superseded `renderLink` slot wording or the earlier flat-only breadcrumb contract.
+- Downstream app migrations can choose either the flat data API or compound composition without moving router-specific wrappers into `@repo/ui`.
 
 ---
 

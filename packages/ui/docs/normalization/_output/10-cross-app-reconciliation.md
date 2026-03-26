@@ -86,7 +86,7 @@
 
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Breadcrumb | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` amendment: `items[]`, `separator`, `currentLabel` | Shared shell only; route generation stays local | P1 | LOW | B5.1 |
+| Breadcrumb | NEW_SHARED_COMPONENT | 12 apps; see `05` | implemented in `packages/ui/src/Breadcrumb` | `02` amendment: optional `items[]`, `separator`, `currentLabel`, additive compound exports, and `BreadcrumbLink asChild` | Shared shell only; flat API plus compound migration path; route generation stays local | P1 | LOW | B5.1 |
 | Calendar | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` Calendar | Standalone calendar stays separate from picker wrappers | P1 | MEDIUM | B5.1 |
 | DatePicker | NEW_SHARED_COMPONENT | 22 apps; see `05` | missing | `02` DatePicker | Single-date picking remains distinct from range/month selection, with optional time entry folded into the same contract | P0 | HIGH | B5.1 |
 | DropdownMenu | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` amendment: `items`, `align`, `side`, `onAction` | Generic action menu only | P1 | MEDIUM | B5.1 |

@@ -1,10 +1,17 @@
-﻿import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Box } from '../Box';
-import { Breadcrumb } from './Breadcrumb';
-import type { BreadcrumbItem } from './Breadcrumb.types';
+import {
+  Breadcrumb,
+  BreadcrumbItem as BreadcrumbItemSlot,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from './Breadcrumb';
+import type { BreadcrumbItem as BreadcrumbDataItem } from './Breadcrumb.types';
 
-const baseItems: BreadcrumbItem[] = [
+const baseItems: BreadcrumbDataItem[] = [
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'Settings', href: '/dashboard/settings' },
 ];
@@ -36,7 +43,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Shared breadcrumb trail for ancestor navigation, with semantic nav/list markup and an optional appended current page label.',
+          'Shared breadcrumb trail for ancestor navigation, with semantic nav/list markup, a canonical flat API, and additive compound exports for legacy authored trails.',
       },
     },
   },
@@ -86,6 +93,34 @@ export const CustomSeparator: Story = {
   },
 };
 
+export const Compound: Story = {
+  render: (args) => (
+    <Breadcrumb {...args} items={undefined} currentLabel={undefined}>
+      <BreadcrumbList>
+        <BreadcrumbItemSlot>
+          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+        </BreadcrumbItemSlot>
+        <BreadcrumbSeparator />
+        <BreadcrumbItemSlot>
+          <BreadcrumbLink href="/dashboard/settings">Settings</BreadcrumbLink>
+        </BreadcrumbItemSlot>
+        <BreadcrumbSeparator />
+        <BreadcrumbItemSlot>
+          <BreadcrumbPage>Profile</BreadcrumbPage>
+        </BreadcrumbItemSlot>
+      </BreadcrumbList>
+    </Breadcrumb>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Compatibility path for legacy compound breadcrumb markup. Keep route construction local while reusing the shared semantic shell.',
+      },
+    },
+  },
+};
+
 export const LongLabels: Story = {
   render: (args) => (
     <Box className="max-w-sm">
@@ -113,4 +148,3 @@ export const LongLabels: Story = {
     },
   },
 };
-
