@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import {
   TableHeader,
   TableRow,
@@ -97,13 +97,12 @@ export const UserRoles = (props: {
         </div>
         <Dialog
           open={isModalOpenUser}
-          onOpenChange={(open) => {
-            setIsModalOpenUser(open);
-          }}
+          onClose={() => setIsModalOpenUser(false)}
         >
           <DialogTrigger asChild>
             <Button
               color="warning"
+              onClick={() => setIsModalOpenUser(true)}
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
             >
               <Plus className="w-4 h-4 mr-2" /> Add Role

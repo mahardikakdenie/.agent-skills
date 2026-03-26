@@ -23,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useExportUsers } from "@/hooks/useExportUsers.hooks";
 import { createExportUsersTableColumns } from "@/components/tableConfig/exportUserTableConfig";

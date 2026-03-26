@@ -6,7 +6,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { X } from "lucide-react";
 
 interface BillingDetailActionsProps {
@@ -84,7 +84,7 @@ export const BillingDetailActions = ({
           )}
       </div>
 
-      <Dialog open={openUpdateToPaid} onOpenChange={setOpenUpdateToPaid}>
+      <Dialog open={openUpdateToPaid} onClose={() => setOpenUpdateToPaid(false)}>
         <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
           <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
             <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
@@ -119,7 +119,7 @@ export const BillingDetailActions = ({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={openCancel} onOpenChange={setOpenCancel}>
+      <Dialog open={openCancel} onClose={() => setOpenCancel(false)}>
         <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
           <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
             <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">

@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import {
   Table,
   TableHeader,
@@ -98,13 +98,12 @@ export const UserGroups = (props: {
         </div>
         <Dialog
           open={isModalOpen}
-          onOpenChange={(open) => {
-            setIsModalOpen(open);
-          }}
+          onClose={() => setIsModalOpen(false)}
         >
           <DialogTrigger asChild>
             <Button
               color="warning"
+              onClick={() => setIsModalOpen(true)}
               className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
             >
               <Plus className="w-4 h-4 mr-2" /> Assign Group

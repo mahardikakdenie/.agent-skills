@@ -1,9 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui";
-import { useProduct } from "@/app/masterdata/product/hooks";
 import {
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -11,21 +14,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from "@repo/ui";
+import { useProduct } from "@/app/masterdata/product/hooks";
+import { Dialog } from "@repo/ui";
 import { useEffect, useState } from "react";
 import { productService } from "@/services/product/api/product.service";
 import Image from "next/image";
 import noData from "@public/images/no-data.webp";
 import { Eye, ChevronLeft, ChevronRight } from "react-feather";
 import { useScreen } from "@/context/screen.context";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const AssignPlan = ({
   id,
@@ -336,7 +337,7 @@ const AssignPlan = ({
         </Tabs>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>

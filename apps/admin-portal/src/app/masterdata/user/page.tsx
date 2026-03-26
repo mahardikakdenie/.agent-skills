@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { Controller, useForm } from "react-hook-form";
 import iconWarning from "@public/images/icon-warning.png";
 import { useUsers } from "@/hooks/useUsers.hooks";
@@ -154,7 +154,7 @@ export default function Users() {
 
       <Dialog
         open={isModalChangeStatusOpen}
-        onOpenChange={setIsModalChangeStatusOpen}
+        onClose={() => setIsModalChangeStatusOpen(false)}
       >
         <DialogContent className="w-[90vw] md:w-[600px]">
           <DialogHeader className="items-center gap-4">

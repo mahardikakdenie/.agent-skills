@@ -6,7 +6,7 @@ import {
   Dialog,
   DialogClose,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import {
   Select,
   SelectContent,
@@ -37,7 +37,7 @@ export const ChannelModal = (props: {
     handleAddSelectedChannels,
   } = props;
   return (
-    <Dialog open={isChannelModalOpen} onOpenChange={setIsChannelModalOpen}>
+    <Dialog open={isChannelModalOpen} onClose={() => setIsChannelModalOpen(false)}>
       <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
         <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
           <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center justify-between">

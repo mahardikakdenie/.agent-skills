@@ -9,7 +9,7 @@ import {
   DialogClose,
   DialogContent,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useParams } from "next/navigation";
 import AppURL from "@/constants/app-url.const";
@@ -254,12 +254,13 @@ export default function DetailEndorsement() {
 
                           <Dialog
                             open={isModalOpen}
-                            onOpenChange={setIsModalOpen}
+                            onClose={() => setIsModalOpen(false)}
                           >
                             <DialogTrigger asChild>
                               <Button
                                 variant="outline"
                                 disabled={isUpdating}
+                                onClick={() => setIsModalOpen(true)}
                                 className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full px-5 py-2 h-8"
                               >
                                 Reject
@@ -356,11 +357,12 @@ export default function DetailEndorsement() {
                         {isUpdating ? "Processing..." : "Accept"}
                       </Button>
 
-                      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
                         <DialogTrigger asChild>
                           <Button
                             variant="outline"
                             disabled={isUpdating}
+                            onClick={() => setIsModalOpen(true)}
                             className="border-[#E83F3F] text-[#E83F3F] hover:bg-[#E83F3F] hover:text-white rounded-full px-5 py-2 h-8"
                           >
                             Reject

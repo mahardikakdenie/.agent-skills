@@ -1,5 +1,9 @@
 import { Button } from "@/components/ui/button";
 import {
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -7,18 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui";
+import { Dialog } from "@repo/ui";
 import { usePathname, useRouter } from "next/navigation";
 import ChannelAddModal from "./channel-add-modal";
 import { useEffect, useState } from "react";
 import { useProducts } from "../../../hooks";
 import { Trash2Icon, X } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { UserCheck } from "react-feather";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
@@ -91,7 +89,7 @@ export default function ChannelList(props: { id: string }) {
       />
       <Dialog
         open={openUnassignPlanConfirmation}
-        onOpenChange={setOpenUnassignPlanConfirmation}
+        onClose={() => setOpenUnassignPlanConfirmation(false)}
       >
         <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
           <ContentLoadingWrapper isLoading={isLoadingUnAssignPlans}>

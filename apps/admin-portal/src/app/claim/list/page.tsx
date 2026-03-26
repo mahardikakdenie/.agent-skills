@@ -43,7 +43,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { ClaimItem } from "@/interface";
 import {
@@ -597,7 +597,7 @@ const ClaimsPage = () => {
         </Button>
       </div>
       {isModalOpen && (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <DialogContent className="min-w-96 w-auto max-w-full">
             <p className="text-center">
               <AlertCircle

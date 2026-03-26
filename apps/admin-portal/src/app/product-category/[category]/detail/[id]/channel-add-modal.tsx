@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import {
   Select,
   SelectContent,
@@ -41,7 +41,7 @@ export default function ChannelAddModal(props: {
     }
   };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogContent className="p-0 w-[500px] max-w-full overflow-hidden">
         <ContentLoadingWrapper isLoading={isLoadingAssignPlans}>
           <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">

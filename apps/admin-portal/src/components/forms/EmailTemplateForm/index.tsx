@@ -32,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { stateToHTML } from "draft-js-export-html";
 import { RadioGroup, RadioGroupItem } from "@repo/ui";

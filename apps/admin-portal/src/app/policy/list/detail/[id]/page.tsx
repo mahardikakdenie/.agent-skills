@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { Table, TableCell, TableHead, TableRow } from "@repo/ui";
 import Image from "next/image";

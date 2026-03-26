@@ -30,7 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import {
   Table,
   TableBody,
@@ -314,11 +314,12 @@ export default function GroupForm({
                 {isEdit && (
                   <Dialog
                     open={isRoleModalOpen}
-                    onOpenChange={setIsRoleModalOpen}
+                    onClose={() => setIsRoleModalOpen(false)}
                   >
                     <DialogTrigger asChild>
                       <Button
                         type="button"
+                        onClick={() => setIsRoleModalOpen(true)}
                         className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full ml-auto w-32"
                       >
                         <Plus className="w-4 h-4 mr-2" /> Add Roles
@@ -570,11 +571,12 @@ export default function GroupForm({
                 {isEdit && (
                   <Dialog
                     open={isUserModalOpen}
-                    onOpenChange={setIsUserModalOpen}
+                    onClose={() => setIsUserModalOpen(false)}
                   >
                     <DialogTrigger asChild>
                       <Button
                         type="button"
+                        onClick={() => setIsUserModalOpen(true)}
                         className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full ml-auto w-32"
                       >
                         <Plus className="w-4 h-4 mr-2" /> Add User

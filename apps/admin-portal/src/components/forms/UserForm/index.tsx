@@ -15,7 +15,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
 import { UserForm } from "./components/user-form";
@@ -499,7 +499,7 @@ export function UserFormWrapper({
         {isEdit && (
           <Dialog
             open={!!channelToDelete}
-            onOpenChange={(open) => !open && setChannelToDelete(null)}
+            onClose={() => setChannelToDelete(null)}
           >
             <DialogContent>
               <DialogHeader>
@@ -531,7 +531,7 @@ export function UserFormWrapper({
         {isEdit && (
           <Dialog
             open={!!insurerToDelete}
-            onOpenChange={(open) => !open && setInsurerToDelete(null)}
+            onClose={() => setInsurerToDelete(null)}
           >
             <DialogContent>
               <DialogHeader>

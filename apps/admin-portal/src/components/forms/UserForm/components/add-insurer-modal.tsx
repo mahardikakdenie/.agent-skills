@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { DialogHeader, DialogFooter, DialogContent, Dialog, DialogClose, DialogTitle } from "@/components/ui/dialog";
+import { DialogHeader, DialogFooter, DialogContent, Dialog, DialogClose, DialogTitle } from "@repo/ui";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@repo/ui";
 import { X, Check } from "react-feather";
@@ -26,7 +26,7 @@ export const InsurerModal = (props: {
   } = props;
 
   return (
-    <Dialog open={isInsurerModalOpen} onOpenChange={setIsInsurerModalOpen}>
+    <Dialog open={isInsurerModalOpen} onClose={() => setIsInsurerModalOpen(false)}>
       <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
         <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
           <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center justify-between">

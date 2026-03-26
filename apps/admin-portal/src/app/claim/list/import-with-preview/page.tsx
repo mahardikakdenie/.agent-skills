@@ -12,7 +12,7 @@ import { toastPromise, toastNotification } from "@/lib/toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@repo/ui";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@repo/ui";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription, } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription, } from "@repo/ui";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
