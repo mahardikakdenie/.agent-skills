@@ -977,3 +977,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Table - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Table`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/transaction/list/import/import/page.tsx`, `apps/admin-portal/src/components/ui/DataTable/index.tsx`, `apps/admin-portal/src/app/transaction/list/add/page.tsx`, `apps/admin-portal/src/app/membership/list/upload/page.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-roles.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-insurers.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-groups.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-channels.tsx`, `apps/admin-portal/src/app/masterdata/partner-management/detail/[id]/assign-plan.tsx`, `apps/admin-portal/src/app/product-category/[category]/page.tsx`, `apps/admin-portal/src/components/forms/RoleForm/index.tsx`, `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-detail/page.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-benefit/page.tsx`, `apps/admin-portal/src/components/forms/PageManagementForm/index.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload/page.tsx`, `apps/admin-portal/src/app/masterdata/email-template/tag/page.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/detail-list.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/channel-list.tsx`, `apps/admin-portal/src/components/forms/GroupForm/index.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefit-list.tsx`, `apps/admin-portal/src/components/forms/CurrencyForm/index.tsx`, `apps/admin-portal/src/app/policy/list/import/page.tsx`, `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx`, `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx`, `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/table.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: `None`
+

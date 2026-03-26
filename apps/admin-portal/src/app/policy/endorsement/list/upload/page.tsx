@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, X } from "react-feather";
 import { Button } from "@/components/ui/button";
-import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table, } from "@/components/ui/table";
+import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table, } from "@repo/ui";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";

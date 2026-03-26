@@ -16,7 +16,7 @@ import {
   TableBody,
   TableCell,
   TableFooter,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import {
   Plus,
   X,

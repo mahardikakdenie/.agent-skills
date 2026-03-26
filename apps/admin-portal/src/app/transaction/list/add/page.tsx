@@ -41,7 +41,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { toastNotification } from "@/lib/toast";
 import AppURL from "@/constants/app-url.const";
 import { channelService } from "@/services/channel/api/channel.service";

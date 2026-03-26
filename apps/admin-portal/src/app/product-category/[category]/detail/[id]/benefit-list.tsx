@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { useProducts } from "../../../hooks";
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";

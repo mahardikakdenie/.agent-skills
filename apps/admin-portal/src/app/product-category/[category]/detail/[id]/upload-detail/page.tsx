@@ -11,7 +11,7 @@ import {
   TableBody,
   TableCell,
   Table,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import {
   Select,
   SelectContent,

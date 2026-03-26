@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { capitalizeStringWithChar } from "@/lib/formatter";
 import { toastPromise, toastNotification } from "@/lib/toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@repo/ui";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@repo/ui";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription, } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb";

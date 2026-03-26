@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { useEffect, useState } from "react";
 import { productService } from "@/services/product/api/product.service";
 import Image from "next/image";

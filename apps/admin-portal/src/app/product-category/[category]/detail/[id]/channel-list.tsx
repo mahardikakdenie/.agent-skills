@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { usePathname, useRouter } from "next/navigation";
 import ChannelAddModal from "./channel-add-modal";
 import { useEffect, useState } from "react";

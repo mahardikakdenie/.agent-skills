@@ -9,7 +9,7 @@ import {
   TableBody,
   TableCell,
   Table,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { ChevronLeft, Search, Upload, X } from "react-feather";
 import {
   Breadcrumb,

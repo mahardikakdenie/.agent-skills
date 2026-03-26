@@ -16,7 +16,7 @@ import {
   TableCell,
   TableFooter,
   Table,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import {
   AlertCircle,
   Check,

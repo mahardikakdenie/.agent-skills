@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Table, TableCell, TableHead, TableRow } from "@/components/ui/table";
+import { Table, TableCell, TableHead, TableRow } from "@repo/ui";
 import Image from "next/image";
 import { formatMoney } from "@/lib/formatter";
 import { useEffect } from "react";

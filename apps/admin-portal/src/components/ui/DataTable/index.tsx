@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { ContentLoadingWrapper } from "../Loading/";
 export interface Column<T> {
   key: string;

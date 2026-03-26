@@ -25,7 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { Controller } from "react-hook-form";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@repo/ui";
 import { Plus, Trash2 } from "react-feather";
 
 interface UserChannelsProps {

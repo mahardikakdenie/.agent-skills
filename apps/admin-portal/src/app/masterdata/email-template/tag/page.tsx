@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { usePathname, useRouter } from "next/navigation";
 import { Plus, Trash } from "react-feather";
 import { usePages } from "../hooks";

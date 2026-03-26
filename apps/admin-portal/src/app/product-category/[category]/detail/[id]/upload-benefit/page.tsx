@@ -11,7 +11,7 @@ import {
   TableBody,
   TableCell,
   Table,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { useScreen } from "@/context/screen.context";
 import { useParams, useRouter } from "next/navigation";
 import AppURL from "@/constants/app-url.const";

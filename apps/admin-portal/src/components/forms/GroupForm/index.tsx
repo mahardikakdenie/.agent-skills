@@ -39,7 +39,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import { format } from "date-fns";
 import Image from "next/image";
 import noData from "@public/images/no-data.webp";
