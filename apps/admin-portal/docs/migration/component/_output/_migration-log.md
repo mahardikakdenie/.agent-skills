@@ -1098,3 +1098,12 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Breadcrumb - 2026-03-27 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `API compatibility unclear`
+- Evidence checked: [`packages/ui/src/index.ts` export for `Breadcrumb`, `packages/ui/src/Breadcrumb/Breadcrumb.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` Breadcrumb guidance, `apps/admin-portal/src/components/ui/breadcrumb.tsx`, representative admin-portal usage sites importing `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, and `BreadcrumbSeparator` from `@/components/ui/breadcrumb`]
+- Files changed: `apps/admin-portal/docs/migration/component/_output/_migration-log.md`
+- Next required upstream action: `Publish approved adapter guidance or align the shared Breadcrumb contract with the app's legacy compound export surface; the current shared implementation only exposes a flat items[] API, so the replacement path for the existing compound usage is not yet clear.`
+
