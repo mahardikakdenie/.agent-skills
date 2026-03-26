@@ -945,3 +945,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `none`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Tooltip - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Tooltip`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/components/tableConfig/packageTableConfig.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefit-list.tsx`, `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/tooltip.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: [`apps/admin-portal/src/components/tableConfig/packageTableConfig.tsx` - add an explicit accessible name to the icon-only destructive action button in a later accessibility pass, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefit-list.tsx` - add an explicit accessible name to the icon-only destructive action button in a later accessibility pass]
+

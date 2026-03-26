@@ -9,7 +9,7 @@ import { ChevronLeft, Download, Upload } from "react-feather";
 import { useEffect, useState } from "react";
 import { capitalizeStringWithChar } from "@/lib/formatter";
 import { toastPromise, toastNotification } from "@/lib/toast";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@repo/ui";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription, } from "@/components/ui/dialog";
@@ -454,7 +454,7 @@ export default function ImportWithPreviewPage() {
                         <TooltipTrigger asChild>
                           <div>{AlertCircleIcon("white", "20", "20", "0 0 24 24")}</div>
                         </TooltipTrigger>
-                        <TooltipContent side="top">
+                        <TooltipContent side="top" sideOffset={4}>
                           <p className="text-sm">Edit the column name to resolve the error</p>
                         </TooltipContent>
                       </Tooltip>

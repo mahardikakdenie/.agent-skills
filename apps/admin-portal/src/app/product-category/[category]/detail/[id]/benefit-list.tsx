@@ -17,7 +17,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@repo/ui";
 
 export default function BenefitList(props: { id: string }) {
   const router = useRouter();
@@ -111,7 +111,7 @@ export default function BenefitList(props: { id: string }) {
                             <Trash className="w-4" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent sideOffset={4}>
                           <p className="text-sm">Remove</p>
                         </TooltipContent>
                       </Tooltip>

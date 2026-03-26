@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@repo/ui";
 import { Trash } from "react-feather";
 import { formatCurrency } from "@/components/forms/product-catalog/package.form";
 
@@ -99,7 +99,7 @@ export const createPackageTableColumns = ({
               >
                 Edit
               </Button>
-              <TooltipContent>
+              <TooltipContent sideOffset={4}>
                 <p className="text-sm">Edit</p>
               </TooltipContent>
             </Tooltip>
@@ -121,7 +121,7 @@ export const createPackageTableColumns = ({
                   <Trash className="w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent sideOffset={4}>
                 <p className="text-sm">Remove</p>
               </TooltipContent>
             </Tooltip>
