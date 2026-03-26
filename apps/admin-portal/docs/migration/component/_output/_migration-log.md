@@ -1073,3 +1073,12 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: [`packages/ui/src/Input/Input.types.ts` - consider accepting the native `inputMode="numeric"` alias in the shared Input contract to reduce consumer migration friction]
 
+## Batch 8 / Batch 4 - Combobox - 2026-03-26 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `API compatibility unclear`
+- Evidence checked: [`packages/ui/src/index.ts` export for `Combobox`, `packages/ui/src/Combobox/Combobox.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` Combobox guidance, `apps/admin-portal/src/components/ui/combobox.tsx`, `apps/admin-portal/src/app/transaction/list/add/page.tsx` usage with `onSearch`, `newOptionText`, and create-on-enter behavior]
+- Files changed: `none`
+- Next required upstream action: `Either extend @repo/ui Combobox with an approved external-search/create-option contract, or publish explicit adapter guidance for the admin-portal remote-search/create-on-enter variant before app-side migration resumes.`
+
