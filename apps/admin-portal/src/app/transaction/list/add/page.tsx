@@ -26,13 +26,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/ui/combobox";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft, Edit, Plus, Trash2 } from "react-feather";
-import { Input } from "@repo/ui";
-import { Textarea } from "@repo/ui";
+import { Combobox, Input, Textarea } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import {
     Table,
@@ -209,6 +207,12 @@ export default function AddTransaction() {
     const handleSearchCustomer = _.debounce((query: string) => {
         setSearchCustomer(query);
     }, 300);
+
+    const customerOptions = customers.map((customer) => ({
+        label: customer?.name ?? "",
+        value: customer?.id ?? "",
+        keywords: [customer?.name ?? "", customer?.id ?? ""],
+    }));
 
     const handleAddInsuredObject = () => {
         setValue("participants", [...participants, { value: "", isEdit: false }]);
@@ -588,16 +592,29 @@ export default function AddTransaction() {
                                     rules={{ required: "Customer Name is required" }}
                                     render={({ field }) => (
                                         <Combobox
-                                            {...field}
-                                            onChange={handleCustomerChange}
-                                            onSearch={handleSearchCustomer}
-                                            className={`h-16 border border-gray-300 shadow-sm ${cn(
-                                                errors.customer_id && "border-red-500"
-                                            )}`}
-                                            options={customers}
-                                            newOptionText="Type something and press ‘Enter’ to add a new customer"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.value}
+                                            onBlur={field.onBlur}
+                                            onValueChange={(value) => {
+                                                if (value) {
+                                                    handleCustomerChange(value);
+                                                }
+                                            }}
+                                            onSearchValueChange={handleSearchCustomer}
+                                            className="field-combobox"
+                                            size="lg"
+                                            error={Boolean(errors.customer_id)}
+                                            options={customerOptions}
+                                            createOptionLabel="Type something and press ‘Enter’ to add a new customer"
+                                            onCreateOption={(searchValue) => {
+                                                handleCustomerChange(searchValue, {
+                                                    id: searchValue,
+                                                    name: searchValue,
+                                                });
+                                            }}
                                             placeholder="Input name"
-                                            placeholderInput="Find Customer Name"
+                                            searchPlaceholder="Find Customer Name"
                                         />
                                     )}
                                 />

@@ -1082,3 +1082,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Files changed: `none`
 - Next required upstream action: `Either extend @repo/ui Combobox with an approved external-search/create-option contract, or publish explicit adapter guidance for the admin-portal remote-search/create-on-enter variant before app-side migration resumes.`
 
+## Batch 8 / Batch 4 - Combobox - 2026-03-27
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Combobox`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/transaction/list/add/page.tsx`]
+- Local file deleted: `apps/admin-portal/src/components/ui/combobox.tsx`
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: `None`
+
