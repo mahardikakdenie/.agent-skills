@@ -21,10 +21,47 @@ export interface BreadcrumbItemProps extends React.LiHTMLAttributes<HTMLLIElemen
   className?: string;
 }
 
-export interface BreadcrumbLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  asChild?: boolean;
+interface BreadcrumbLinkBaseProps {
   className?: string;
+  children?: React.ReactNode;
 }
+
+export interface BreadcrumbLinkAsChildProps
+  extends BreadcrumbLinkBaseProps,
+    Omit<React.HTMLAttributes<HTMLElement>, 'children' | 'className' | 'href'> {
+  asChild: true;
+  children: React.ReactElement;
+  href?: never;
+}
+
+export interface BreadcrumbLinkAnchorProps
+  extends BreadcrumbLinkBaseProps,
+    Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'children' | 'className'> {
+  asChild?: false;
+  href: string;
+}
+
+export interface BreadcrumbLinkButtonProps
+  extends BreadcrumbLinkBaseProps,
+    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'className' | 'href'> {
+  asChild?: false;
+  href?: undefined;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
+}
+
+export interface BreadcrumbLinkTextProps
+  extends BreadcrumbLinkBaseProps,
+    Omit<React.HTMLAttributes<HTMLSpanElement>, 'children' | 'className' | 'href' | 'onClick'> {
+  asChild?: false;
+  href?: undefined;
+  onClick?: undefined;
+}
+
+export type BreadcrumbLinkProps =
+  | BreadcrumbLinkAsChildProps
+  | BreadcrumbLinkAnchorProps
+  | BreadcrumbLinkButtonProps
+  | BreadcrumbLinkTextProps;
 
 export interface BreadcrumbPageProps extends React.HTMLAttributes<HTMLSpanElement> {
   className?: string;

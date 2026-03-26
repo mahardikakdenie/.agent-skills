@@ -1,3 +1,4 @@
+import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Box } from '../Box';
@@ -15,6 +16,12 @@ const baseItems: BreadcrumbDataItem[] = [
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'Settings', href: '/dashboard/settings' },
 ];
+
+const DemoRouteLink = React.forwardRef<HTMLAnchorElement, React.ComponentPropsWithoutRef<'a'>>(
+  (props, ref) => <Box as="a" ref={ref} {...props} />,
+);
+
+DemoRouteLink.displayName = 'DemoRouteLink';
 
 const meta = {
   title: 'Navigation/Breadcrumb',
@@ -116,6 +123,40 @@ export const Compound: Story = {
       description: {
         story:
           'Compatibility path for legacy compound breadcrumb markup. Keep route construction local while reusing the shared semantic shell.',
+      },
+    },
+  },
+};
+
+export const InteractiveModes: Story = {
+  render: (args) => (
+    <Breadcrumb {...args} items={undefined} currentLabel={undefined}>
+      <BreadcrumbList>
+        <BreadcrumbItemSlot>
+          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+        </BreadcrumbItemSlot>
+        <BreadcrumbSeparator />
+        <BreadcrumbItemSlot>
+          <BreadcrumbLink onClick={() => undefined}>Users</BreadcrumbLink>
+        </BreadcrumbItemSlot>
+        <BreadcrumbSeparator />
+        <BreadcrumbItemSlot>
+          <BreadcrumbLink asChild>
+            <DemoRouteLink href="/users/detail">Detail</DemoRouteLink>
+          </BreadcrumbLink>
+        </BreadcrumbItemSlot>
+        <BreadcrumbSeparator />
+        <BreadcrumbItemSlot>
+          <BreadcrumbPage>Profile</BreadcrumbPage>
+        </BreadcrumbItemSlot>
+      </BreadcrumbList>
+    </Breadcrumb>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Exercises the three supported interactive breadcrumb paths: direct `href` anchors, callback-only button crumbs, and framework-routing composition through `BreadcrumbLink asChild`.',
       },
     },
   },

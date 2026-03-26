@@ -7,6 +7,8 @@ import { Box } from '../Box';
 import type {
   BreadcrumbItem as BreadcrumbDataItem,
   BreadcrumbItemProps,
+  BreadcrumbLinkAnchorProps,
+  BreadcrumbLinkButtonProps,
   BreadcrumbLinkProps,
   BreadcrumbListProps,
   BreadcrumbPageProps,
@@ -62,6 +64,14 @@ function renderTrailItems(items: BreadcrumbDataItem[]) {
       </React.Fragment>
     );
   });
+}
+
+function isBreadcrumbLinkAnchorProps(props: BreadcrumbLinkProps): props is BreadcrumbLinkAnchorProps {
+  return !props.asChild && typeof props.href === 'string';
+}
+
+function isBreadcrumbLinkButtonProps(props: BreadcrumbLinkProps): props is BreadcrumbLinkButtonProps {
+  return !props.asChild && props.href === undefined && typeof props.onClick === 'function';
 }
 
 /**
@@ -128,67 +138,69 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
 
 BreadcrumbItem.displayName = 'BreadcrumbItem';
 
-export const BreadcrumbLink = React.forwardRef<HTMLElement, BreadcrumbLinkProps>(
-  ({ asChild = false, className, href, children, onClick, ...props }, ref) => {
-    const interactiveClassName = cn(breadcrumbTextVariants({ tone: 'link' }), className);
+export const BreadcrumbLink = React.forwardRef<HTMLElement, BreadcrumbLinkProps>((props, ref) => {
+  const interactiveClassName = cn(breadcrumbTextVariants({ tone: 'link' }), props.className);
+  const textClassName = cn(breadcrumbTextVariants({ tone: 'muted' }), props.className);
 
-    if (asChild) {
-      return (
-        <Box asChild data-slot="breadcrumb-link" className={interactiveClassName} {...(props as React.HTMLAttributes<HTMLElement>)}>
-          {children}
-        </Box>
-      );
-    }
+  if (props.asChild) {
+    const { asChild: _asChild, className: _className, children, ...slotProps } = props;
 
-    if (href) {
-      return (
-        <Box
-          as="a"
-          ref={ref as React.Ref<HTMLAnchorElement>}
-          href={href}
-          data-slot="breadcrumb-link"
-          className={interactiveClassName}
-          onClick={onClick}
-          {...props}
-        >
-          {children}
-        </Box>
-      );
-    }
+    return (
+      <Box asChild data-slot="breadcrumb-link" className={interactiveClassName} {...slotProps}>
+        {children}
+      </Box>
+    );
+  }
 
-    if (onClick) {
-      const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-        onClick(event as unknown as React.MouseEvent<HTMLAnchorElement>);
-      };
-
-      return (
-        <Box
-          as="button"
-          ref={ref as React.Ref<HTMLButtonElement>}
-          type="button"
-          data-slot="breadcrumb-link"
-          className={interactiveClassName}
-          onClick={handleClick}
-          {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-        >
-          {children}
-        </Box>
-      );
-    }
+  if (isBreadcrumbLinkAnchorProps(props)) {
+    const { className: _className, children, href, ...anchorProps } = props;
 
     return (
       <Box
-        as="span"
-        ref={ref as React.Ref<HTMLSpanElement>}
-        data-slot="breadcrumb-text"
-        className={cn(breadcrumbTextVariants({ tone: 'muted' }), className)}
-        {...(props as React.HTMLAttributes<HTMLSpanElement>)}
+        as="a"
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={href}
+        data-slot="breadcrumb-link"
+        className={interactiveClassName}
+        {...anchorProps}
       >
         {children}
       </Box>
     );
-  },
-);
+  }
+
+  if (isBreadcrumbLinkButtonProps(props)) {
+    const { className: _className, children, onClick, type = 'button', ...buttonProps } = props;
+
+    return (
+      <Box
+        as="button"
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type={type}
+        data-slot="breadcrumb-link"
+        className={interactiveClassName}
+        onClick={onClick}
+        {...buttonProps}
+      >
+        {children}
+      </Box>
+    );
+  }
+
+  const { className: _className, children, ...spanProps } = props;
+
+  return (
+    <Box
+      as="span"
+      ref={ref as React.Ref<HTMLSpanElement>}
+      data-slot="breadcrumb-text"
+      className={textClassName}
+      {...spanProps}
+    >
+      {children}
+    </Box>
+  );
+});
 
 BreadcrumbLink.displayName = 'BreadcrumbLink';
 
