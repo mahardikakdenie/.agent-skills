@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Trash } from "react-feather";
-import { Drawer, DrawerTrigger } from "@/components/ui/drewer";
 import { Column } from "../ui/DataTable";
 
 interface CampaignItem {
@@ -88,14 +87,13 @@ export const createCampaignTableColumns = ({
     className: "text-center align-middle w-20",
     render: (campaign) => (
       <div className="flex space-x-2">
-        <Drawer direction="right">
-          <DrawerTrigger
-            className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
-            onClick={() => handleViewDetail(campaign.campaign_id)}
-          >
-            View
-          </DrawerTrigger>
-        </Drawer>
+        <button
+          type="button"
+          className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
+          onClick={() => handleViewDetail(campaign.campaign_id)}
+        >
+          View
+        </button>
 
         <Button
           variant="ghost"

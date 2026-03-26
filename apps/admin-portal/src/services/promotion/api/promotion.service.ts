@@ -20,7 +20,7 @@ const del = async <T>(url: string) => (await promotionApi.delete<T>(url)).data;
 export const promotionService = {
   getCampaigns: (params?: Record<string, unknown>) =>
     get(withQuery(PROMOTION_ENDPOINTS.campaigns, params)),
-  getCampaignById: (id: string) => get(PROMOTION_ENDPOINTS.campaignDetail(id)),
+  getCampaignById: (id: string) => get(withQuery(PROMOTION_ENDPOINTS.campaignDetail(id), { id })),
   searchCampaigns: (params?: Record<string, unknown>) =>
     get(withQuery(PROMOTION_ENDPOINTS.campaignSearch, params)),
 
@@ -33,7 +33,7 @@ export const promotionService = {
   exportCampaignReportInsurance: (params?: Record<string, unknown>) =>
     get(withQuery(PROMOTION_ENDPOINTS.campaignReportExportInsurance, params)),
 
-  getCampaignHistory: (id: string) => get(PROMOTION_ENDPOINTS.campaignHistory(id)),
+  getCampaignHistory: (id: string) => get(withQuery(PROMOTION_ENDPOINTS.campaignHistory(id), { id })),
   createCampaign: (payload: unknown) => post(PROMOTION_ENDPOINTS.campaigns, payload),
   updateCampaign: (id: string, payload: unknown) =>
     put(PROMOTION_ENDPOINTS.campaignUpdate(id), payload),

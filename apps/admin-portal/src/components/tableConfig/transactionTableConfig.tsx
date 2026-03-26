@@ -8,7 +8,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drewer";
+} from "@repo/ui";
 import { X } from "react-feather";
 import Image from "next/image";
 import { Column } from "../ui/DataTable";

@@ -9,7 +9,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drewer";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useSanction } from "@/hooks/useSanction.hooks";
 import { createSanctionTableColumns } from "@/components/tableConfig/sanctionTableConfig";
@@ -96,7 +96,7 @@ export default function SanctionPage() {
         noDataText="No sanction data available"
       />
 
-      <Drawer direction="right" open={drawerOpen} onOpenChange={setDrawerOpen}>
+      <Drawer direction="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <DrawerContent>
           <DrawerHeader>
             <DrawerClose className="absolute right-2 top-2">

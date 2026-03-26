@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Trash } from "react-feather";
 import { format } from "date-fns";
-import { Drawer, DrawerTrigger } from "@/components/ui/drewer";
 import { Column } from "../ui/DataTable";
 
 export const createSourceTableColumns = ({
@@ -60,14 +59,13 @@ export const createSourceTableColumns = ({
     render: (source) => {
       return (
         <div className="flex space-x-2">
-          <Drawer direction="right">
-            <DrawerTrigger
-              className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
-              onClick={() => handleViewDetail(source.id)}
-            >
-              View
-            </DrawerTrigger>
-          </Drawer>
+          <button
+            type="button"
+            className="bg-[#016DA1] text-white px-4 py-2 rounded-full"
+            onClick={() => handleViewDetail(source.id)}
+          >
+            View
+          </button>
           <Button
             variant="ghost"
             disabled={!canDelete}

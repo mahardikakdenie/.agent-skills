@@ -60,7 +60,9 @@ interface UseCampaignProps {
   setDrawerOpen: (open: boolean) => void;
 
   isLoading: boolean;
+  isDetailLoading: boolean;
   isError: boolean;
+  detailError: string | null;
   error: any;
 
   refetch: () => void;
@@ -92,6 +94,8 @@ export function useCampaign(): UseCampaignProps {
   const [selectedPromotion, setSelectedPromotion] =
     useState<PromotionItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -241,13 +245,25 @@ export function useCampaign(): UseCampaignProps {
   );
 
   const handleViewDetail = useCallback(async (id: string) => {
+    setDrawerOpen(true);
+    setIsDetailLoading(true);
+    setDetailError(null);
+    setSelectedPromotion(null);
+    setChannelNames(new Map());
+    setInsuranceNames(new Map());
+    setProductNames(new Map());
+    setPlanNames(new Map());
+    setVouchers([]);
+    setEmbeddedDiscount([]);
+
     try {
       const response: any = await promotionService.getCampaignById(id);
       const promotionData =
         response?.data?.[0] ?? response?.data?.data?.[0] ?? null;
       setSelectedPromotion(promotionData);
-      setDrawerOpen(true);
+
       if (!promotionData) {
+        setDetailError("Campaign details are not available.");
         return;
       }
 
@@ -364,6 +380,9 @@ export function useCampaign(): UseCampaignProps {
       await fetchNames();
     } catch (err) {
       console.error("Failed to fetch promotion details:", err);
+      setDetailError("Failed to load campaign details.");
+    } finally {
+      setIsDetailLoading(false);
     }
   }, []);
 
@@ -415,7 +434,9 @@ export function useCampaign(): UseCampaignProps {
     setDrawerOpen,
 
     isLoading,
+    isDetailLoading,
     isError,
+    detailError,
     error,
 
     refetch,

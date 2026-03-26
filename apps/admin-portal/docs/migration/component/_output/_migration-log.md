@@ -993,3 +993,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Drewer - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Drawer`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/source/list/page.tsx`, `apps/admin-portal/src/app/sanction/list/page.tsx`, `apps/admin-portal/src/app/promotion/campaign/page.tsx`, `apps/admin-portal/src/components/tableConfig/sourceTableConfig.tsx`, `apps/admin-portal/src/components/tableConfig/sanctionTableConfig.tsx`, `apps/admin-portal/src/components/tableConfig/campaignTableConfig.tsx`, `apps/admin-portal/src/components/tableConfig/transactionTableConfig.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/drewer.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: `None`
+

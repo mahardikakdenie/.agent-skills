@@ -7,7 +7,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drewer";
+} from "@repo/ui";
 import { format } from "date-fns";
 import { DataTable } from "@/components/ui/DataTable";
 import { useCampaign } from "@/hooks/useCampaign.hooks";
@@ -40,6 +40,8 @@ export default function PromotionPage() {
     setDrawerOpen,
 
     isLoading,
+    isDetailLoading,
+    detailError,
 
     handleViewDetail,
     handleEditCampaign,
@@ -98,11 +100,16 @@ export default function PromotionPage() {
         className="campaign-table"
       />
 
-      <Drawer direction="right" open={drawerOpen} onOpenChange={setDrawerOpen}>
+      <Drawer direction="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerClose className="absolute right-2 top-2">
-              <Button variant="ghost" onClick={() => setDrawerOpen(false)}>
+            <DrawerClose asChild>
+              <Button
+                variant="ghost"
+                className="absolute right-2 top-2"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close campaign details"
+              >
                 <X />
               </Button>
             </DrawerClose>
@@ -111,7 +118,21 @@ export default function PromotionPage() {
             </DrawerTitle>
           </DrawerHeader>
           <div className="flex flex-col w-full h-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl overflow-y-auto">
-            <div className="rounded-lg flex flex-col gap-4 text-black">
+            {isDetailLoading ? (
+              <div className="flex flex-1 items-center justify-center text-sm font-medium text-black">
+                Loading campaign details...
+              </div>
+            ) : detailError ? (
+              <div className="flex flex-1 items-center justify-center text-sm font-medium text-red-600">
+                {detailError}
+              </div>
+            ) : !selectedPromotion ? (
+              <div className="flex flex-1 items-center justify-center text-sm font-medium text-black">
+                No campaign details available.
+              </div>
+            ) : (
+              <>
+                <div className="rounded-lg flex flex-col gap-4 text-black">
               <div className="flex gap-2 text-sm font-medium">
                 <div className="sm:min-w-40 sm:w-40 min-w-32">
                   Campaign Name
@@ -323,18 +344,17 @@ export default function PromotionPage() {
               )}
             </div>
 
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() =>
-                  selectedPromotion &&
-                  handleEditCampaign(selectedPromotion.campaign_id)
-                }
-                disabled={!canEdit}
-                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2 flex items-center justify-center"
-              >
-                <Edit className="w-4 h-4 mr-2" /> Edit
-              </button>
-            </div>
+                <div className="flex justify-center mt-4">
+                  <button
+                    onClick={() => handleEditCampaign(selectedPromotion.campaign_id)}
+                    disabled={!canEdit}
+                    className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2 flex items-center justify-center"
+                  >
+                    <Edit className="w-4 h-4 mr-2" /> Edit
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </DrawerContent>
       </Drawer>

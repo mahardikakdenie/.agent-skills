@@ -9,7 +9,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drewer";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useSource } from "@/hooks/useSource.hooks";
 import { createSourceTableColumns } from "@/components/tableConfig/sourceTableConfig";
@@ -86,7 +86,7 @@ export default function SourcePage() {
         noDataText="No source data available"
       />
 
-      <Drawer direction="right" open={drawerOpen} onOpenChange={setDrawerOpen}>
+      <Drawer direction="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <DrawerContent>
           <DrawerHeader>
             <DrawerClose className="absolute right-2 top-2">
