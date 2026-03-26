@@ -60,7 +60,9 @@ This component intentionally stops at the field-shell boundary. It does not impl
 | `clearable`     | `boolean`                                                               | `false`     | No       | Shows a clear button when the field has a value and is interactive.         |
 | `onChange`      | `(event: React.ChangeEvent<HTMLInputElement>) => void`                  | `undefined` | No       | Standard React input change handler.                                        |
 | `onValueChange` | `(value: string) => void`                                               | `undefined` | No       | Convenience callback with the current string value.                         |
-| `className`     | `string`                                                                | `undefined` | No       | Consumer override merged onto the outer field wrapper through `cn()`.       |
+| `fieldClassName` | `string`                                                               | `undefined` | No       | Consumer override merged onto the outer field wrapper through `cn()`.        |
+| `inputClassName` | `string`                                                               | `undefined` | No       | Consumer override merged onto the semantic `input` element for text or placeholder styling. |
+| `className`     | `string`                                                                | `undefined` | No       | Consumer override merged onto the visible input control shell through `cn()`. |
 | `...props`      | `React.InputHTMLAttributes<HTMLInputElement>`                           | -           | No       | Native input props such as `name`, `placeholder`, `maxLength`, and `autoComplete`. |
 
 ---

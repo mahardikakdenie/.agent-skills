@@ -24,5 +24,7 @@ export interface InputProps
   clearable?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onValueChange?: (value: string) => void;
+  fieldClassName?: string;
+  inputClassName?: string;
   className?: string;
 }

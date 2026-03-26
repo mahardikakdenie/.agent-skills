@@ -53,6 +53,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       leftIcon,
       rightIcon,
       clearable = false,
+      fieldClassName,
+      inputClassName,
       className,
       id,
       type,
@@ -108,7 +110,18 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       resolvedType !== 'file' &&
       currentValue.length > 0;
     const labelTone = hasError && !disabled ? 'destructive' : disabled ? 'muted' : 'default';
+    const derivedInputClassName = React.useMemo(() => {
+      if (!className) {
+        return undefined;
+      }
 
+      const forwardedUtilityTokens = className
+        .split(/\s+/)
+        .filter((token) => token.includes('placeholder:') || token.includes('file:'))
+        .join(' ');
+
+      return forwardedUtilityTokens || undefined;
+    }, [className]);
     React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -138,7 +151,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     };
 
     return (
-      <Box data-slot="input-field" className={cn(inputFieldVariants(), className)}>
+      <Box data-slot="input-field" className={cn(inputFieldVariants(), fieldClassName)}>
         {label ? (
           <Box
             as="label"
@@ -158,7 +171,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <Box
           data-slot="input-control"
           aria-busy={loading || undefined}
-          className={inputControlVariants({ variant, size, invalid: hasError, disabled })}
+          className={cn(
+            inputControlVariants({ variant, size, invalid: hasError, disabled }),
+            className,
+          )}
         >
           {leftIcon ? (
             <Box
@@ -187,7 +203,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={hasError || undefined}
             aria-describedby={describedBy}
             aria-labelledby={labelledBy}
-            className={inputElementVariants({ size })}
+            className={cn(inputElementVariants({ size }), derivedInputClassName, inputClassName)}
             onChange={handleChange}
             {...props}
           />
