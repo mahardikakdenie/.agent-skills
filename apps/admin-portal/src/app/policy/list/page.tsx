@@ -8,8 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar, Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";

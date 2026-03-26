@@ -4,7 +4,7 @@ import React from "react";
 import { format } from "date-fns";
 import { Download, X } from "react-feather";
 import { CalendarIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
+import { Calendar, Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
   SelectContent,
