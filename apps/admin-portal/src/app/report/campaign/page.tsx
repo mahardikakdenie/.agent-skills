@@ -4,6 +4,7 @@ import React from "react";
 import { format } from "date-fns";
 import { Download, X } from "react-feather";
 import { CalendarIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +15,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
@@ -104,7 +100,7 @@ export default function ReportCampaignPage() {
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent sideOffset={4} className="w-auto p-0" align="start">
                 <Calendar
                   mode="range"
                   defaultMonth={new Date()}

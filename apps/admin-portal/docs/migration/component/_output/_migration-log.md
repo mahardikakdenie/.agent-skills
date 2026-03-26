@@ -897,3 +897,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `none`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - Popover - 2026-03-26
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `Popover`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/components/ui/combobox.tsx`, `apps/admin-portal/src/app/claim/list/page.tsx`, `apps/admin-portal/src/app/report/claim/page.tsx`, `apps/admin-portal/src/app/finance/billing/page.tsx`, `apps/admin-portal/src/app/report/campaign/page.tsx`, `apps/admin-portal/src/app/policy/list/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/popover.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: `None`
+

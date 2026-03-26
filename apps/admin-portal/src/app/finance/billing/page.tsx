@@ -8,11 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { useBilling } from "./hook";
@@ -147,7 +143,7 @@ export default function BillingPage() {
                   : "Select Period"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent sideOffset={4} className="w-auto p-0" align="start">
               <div className="flex gap-2 sm:w-auto w-full relative p-4">
                 <Select
                   value={dateTmp.getMonth().toString()}

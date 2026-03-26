@@ -1,12 +1,15 @@
 import * as React from "react";
 import { Check, ChevronDown, PlusIcon } from "lucide-react";
-import { Command, CommandGroup, CommandInput, CommandItem } from "@repo/ui";
-import { cn } from "@/lib/utils";
 import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@repo/ui";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 type Option = {
@@ -56,7 +59,7 @@ export const Combobox: React.FC<ComboBoxProps> = ({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpen={() => setOpen(true)} onClose={() => setOpen(false)}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -71,7 +74,10 @@ export const Combobox: React.FC<ComboBoxProps> = ({
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full max-h-96 min-w-[var(--radix-popover-trigger-width)] overflow-y-auto p-0">
+      <PopoverContent
+        sideOffset={4}
+        className="w-full max-h-96 min-w-[var(--radix-popover-trigger-width)] overflow-y-auto p-0"
+      >
         <Command>
           <CommandInput
             placeholder={placeholderInput}

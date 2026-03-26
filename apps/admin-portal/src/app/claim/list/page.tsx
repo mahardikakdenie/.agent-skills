@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { formatMoneyClaim } from "@/lib/formatter";
 import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { useAuth } from "@/context/auth.context";
 import { usePathname, useRouter } from "next/navigation";
 import { claimsService } from "@/services/claims/api/claims.service";
@@ -17,11 +18,6 @@ import {
   useClaimConfigurations,
 } from "@/services/claims/hooks/queries";
 import { useUpdateClaimStatus } from "@/services/claims/hooks/mutations";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -519,7 +515,7 @@ const ClaimsPage = () => {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent sideOffset={4} className="w-auto p-0" align="start">
               <Calendar
                 mode="range"
                 defaultMonth={new Date()}
