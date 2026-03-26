@@ -85,7 +85,7 @@ Based on cross-app reconciliation of all 27 baseline summaries:
 | `Spinner` / `Skeleton` | [x] SHARED - `@repo/ui` | Shared loading primitives only; apps compose them directly |
 | `Loading` / `Loader` / `LoadingWrapper` / `SuspenseFallback` shells | [ ] LOCAL - app-local by default | Loading layout wrappers, suspense fallbacks, branded shells, and retry/error-aware containers stay app-owned |
 | Branded full-page loaders (logo) | [ ] LOCAL | App identity |
-| `Breadcrumb` shell | [x] SHARED | 12 apps; `renderLink` slot for framework injection |
+| `Breadcrumb` shell | [x] SHARED | 12 apps; flat `items` API plus `BreadcrumbLink asChild` composition for framework injection |
 | Route-linked breadcrumbs | [ ] LOCAL - wraps `Breadcrumb` with route config | `next/link` stays out of packages/ui |
 | `Pagination` | [x] SHARED | 16 apps |
 | `Tabs` | [x] SHARED | 13 apps |
@@ -135,7 +135,7 @@ Post-Batch 1.5, shells from all 27 apps were evaluated:
 | SKIPPED by apps (documented with reason) | 100+ | Deferred to Phase 05A re-evaluation |
 
 Notable cross-app shared shell candidates surfaced from Batch 1.5:
-- `BreadcrumbsShell` (agent-admin) -> canonical candidate for `Breadcrumb` with `renderLink` slot
+- `BreadcrumbsShell` (agent-admin) -> canonical candidate for `Breadcrumb` with additive compound exports and `BreadcrumbLink asChild`
 - `DashboardSidebarShell` (gen-ai-portal) -> app-local only (domain nav config)
 - `InfoProductShell`, `ViewImageShell` (grab-landing-page) -> Phase 04 candidates
 - `CompareShell`, `FormStepShell`, `NavigationBarShell` (ecommerce-gelm) -> Phase 04 candidates
@@ -179,7 +179,7 @@ process.env.NEXT_PUBLIC_*
 **Allowed pattern** for components that render links (e.g., `Breadcrumb`):
 
 ```tsx
-// Pass an asChild render-prop or 'as' polymorphic prop - consumer injects next/link
+// Compose with asChild so the consumer injects next/link or a button element
 <BreadcrumbLink asChild>
   <Link href="/dashboard">Dashboard</Link>
 </BreadcrumbLink>

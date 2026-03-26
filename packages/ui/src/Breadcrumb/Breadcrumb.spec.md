@@ -15,12 +15,18 @@
 
 `Breadcrumb` is a lightweight ancestor trail for page-level orientation and optional backtracking through a shallow information hierarchy. It stays intentionally app-agnostic: the shared component owns only semantic breadcrumb markup, separator rendering, and current-page semantics, while route construction and router integration stay in the consuming app.
 
-Cross-app baseline evidence converges on a flat API with ordered `items`, an optional custom separator, and explicit current-page treatment. The shared contract avoids render props, router wrappers, or truncation policies so it can normalize simple link trails without taking ownership of app-specific navigation behavior.
+Cross-app baseline evidence converged on two valid authoring modes:
+
+- a concise flat API with ordered `items`, an optional custom separator, and explicit current-page treatment
+- a compound composition path for legacy JSX-authored trails and framework-link injection
+
+The shared contract still avoids router wrappers, truncation policy, or route derivation so it can normalize breadcrumb shells without taking ownership of app-specific navigation behavior.
 
 **When to use:**
 
 - Show a page's ancestor path near a title, toolbar, or content header.
 - Render plain anchor navigation for route segments already expressed as `href` strings.
+- Preserve authored breadcrumb markup when migrating an existing compound trail.
 - Append a current-page label when ancestors and current page are authored separately.
 
 **When NOT to use:**
@@ -37,10 +43,10 @@ Cross-app baseline evidence converges on a flat API with ordered `items`, an opt
 | Root primitive | `Box as="nav"` + `Box as="ol"` | Preserves semantic breadcrumb structure while enforcing the Box-only authored DOM rule. |
 | CVA strategy | Slot-based internal CVA classes | The component has no public variant prop, but root, link, current item, and separator surfaces still need canonical token-driven styling. |
 | Controlled vs uncontrolled | none | `Breadcrumb` is display-only and has no internal behavioral state. |
-| Public API shape | flat `items[]` + optional `currentLabel` | Keeps the component simple and avoids compound subcomponents for a trail pattern that does not need shared context. |
-| Link strategy | plain `href` strings only | Keeps `@repo/ui` free of `next/link` or app router dependencies. |
-| Composition review | keep flat; no compound exports | `vercel-composition-patterns` review found no compound-context need and no boolean-sprawl risk. |
-| Box-only DOM policy | explicit | All authored markup in implementation and stories must render through `Box`, including `nav`, `ol`, `li`, `a`, and `span`. |
+| Public API shape | flat `items[]` plus additive compound exports | Keeps the concise convenience path while providing an app-agnostic migration surface for legacy authored trails. |
+| Link strategy | plain `href` strings by default; `asChild` for injected links/buttons | Keeps `@repo/ui` free of `next/link` or app router dependencies while still supporting framework-specific composition. |
+| Composition review | compound exports accepted as compatibility surface | Shared context remains minimal and only supplies the default separator, so the additive surface stays defensible and app-agnostic. |
+| Box-only DOM policy | explicit | All authored markup in implementation and stories must render through `Box`, including `nav`, `ol`, `li`, `a`, `button`, and `span`. |
 
 ---
 
@@ -48,9 +54,10 @@ Cross-app baseline evidence converges on a flat API with ordered `items`, an opt
 
 | Prop | Type | Default | Required | Description |
 | ---- | ---- | ------- | -------- | ----------- |
-| `items` | `BreadcrumbItem[]` | - | Yes | Ordered ancestor items. Each item may provide `href` and may mark itself as the current page with `current`. |
+| `items` | `BreadcrumbItem[]` | - | No | Ordered ancestor items for the concise flat API. Each item may provide `href` and may mark itself as the current page with `current`. |
 | `separator` | `React.ReactNode` | chevron icon | No | Decorative separator rendered between breadcrumb items. |
 | `currentLabel` | `string` | `undefined` | No | Appends a final current-page crumb when `items` does not already include one. Ignored if any item has `current: true`. |
+| `children` | `React.ReactNode` | `undefined` | No | Compound breadcrumb markup authored with `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, and `BreadcrumbSeparator`. |
 | `className` | `string` | `undefined` | No | Consumer override merged last through `cn()`. |
 | `...props` | `React.HTMLAttributes<HTMLElement>` | - | No | Native `nav` attributes such as `aria-label`, `id`, `data-*`, and test hooks. |
 
@@ -64,6 +71,14 @@ export interface BreadcrumbItem {
 }
 ```
 
+### Compound Exports
+
+- `BreadcrumbList`: ordered-list wrapper for authored breadcrumb items
+- `BreadcrumbItem`: list item wrapper for one crumb
+- `BreadcrumbLink`: shared crumb link surface; renders an anchor for `href`, a button for callback-only navigation, or composes via `asChild`
+- `BreadcrumbPage`: current-page text with `aria-current="page"`
+- `BreadcrumbSeparator`: decorative separator; inherits the root `separator` prop when not given explicit children
+
 ---
 
 ## Visual Contract
@@ -71,6 +86,7 @@ export interface BreadcrumbItem {
 | Surface | Description | Use |
 | ------- | ----------- | --- |
 | Ancestor link | Muted text with hover and visible focus ring | Use for navigable earlier trail items. |
+| Callback crumb | Link-styled button with the same hover and focus affordance | Use for app-owned back/list navigation that is not expressed as a plain `href`. |
 | Non-link ancestor | Muted text without interactive affordance | Use when an item is informational only. |
 | Current page | Stronger foreground text with `aria-current="page"` | Use for the active page label. |
 | Separator | Decorative chevron by default | Use only as visual structure; never as meaningful content. |
@@ -82,8 +98,8 @@ export interface BreadcrumbItem {
 | State | Visual Behavior | Accessibility |
 | ----- | --------------- | ------------- |
 | Default | Ordered trail with muted ancestors and a stronger current page | Root is a labeled `nav`; current crumb exposes `aria-current="page"`. |
-| Hover | Ancestor links increase contrast and underline | Visual feedback only on actual links. |
-| Focus | Links show a visible `focus-visible` ring | Keyboard users can see current focus target. |
+| Hover | Ancestor links and callback crumbs increase contrast and underline | Visual feedback only on interactive crumbs. |
+| Focus | Interactive crumbs show a visible `focus-visible` ring | Keyboard users can see the current focus target. |
 | Custom separator | Consumer node replaces the default chevron | Separator stays `aria-hidden` and decorative. |
 | Long labels | Trail wraps across lines instead of clipping semantics | Labels remain readable and in DOM order on narrow screens. |
 
@@ -98,21 +114,23 @@ export interface BreadcrumbItem {
 - Root renders as `nav` with `aria-label="Breadcrumb"` by default.
 - Items render inside an ordered list to preserve trail structure.
 - The current page renders as non-link text with `aria-current="page"`.
+- Callback-only crumbs render as `button`, not clickable `span` or `div` wrappers.
 - Separators are always decorative and hidden from assistive technology.
 
 ### Keyboard Map
 
 | Key | Behavior |
 | --- | -------- |
-| `Tab` | Moves focus through ancestor links in DOM order |
-| `Shift+Tab` | Moves backward through focused breadcrumb links |
-| `Enter` | Activates the focused ancestor link |
+| `Tab` | Moves focus through interactive ancestor crumbs in DOM order |
+| `Shift+Tab` | Moves backward through focused breadcrumb links/buttons |
+| `Enter` | Activates the focused ancestor link or callback crumb |
+| `Space` | Activates the focused callback crumb when it renders as a button |
 
 ### Focus Management
 
 - `Breadcrumb` does not manage focus programmatically.
 - Focus remains consumer-owned and follows normal document order.
-- Only actual ancestor links are tabbable; the current page is not interactive.
+- Only actual interactive crumbs are tabbable; the current page is not interactive.
 
 ### Screen Reader Notes
 
@@ -173,6 +191,52 @@ export interface BreadcrumbItem {
 />
 ```
 
+### 5. Legacy compound composition
+
+```tsx
+<Breadcrumb separator="/">
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/dashboard/settings">Settings</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Profile</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
+
+### 6. Framework link or callback crumb
+
+```tsx
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink asChild>
+        <Link href="/dashboard">Dashboard</Link>
+      </BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbLink asChild>
+        <button type="button" onClick={handleBackToList}>
+          Users
+        </button>
+      </BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Detail</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
+
 ---
 
 ## Do / Don't
@@ -181,8 +245,10 @@ export interface BreadcrumbItem {
 | --- | ----- |
 | Keep route construction and framework link wrappers in the consuming app. | Import `next/link` or any router package into `@repo/ui`. |
 | Mark the active page with `current: true` or provide `currentLabel`. | Make the current breadcrumb item interactive. |
+| Use the flat `items[]` API for simple data-driven trails and the compound exports for legacy JSX-authored trails. | Force every migration into `items[]` when the existing authored trail already composes cleanly. |
+| Use `BreadcrumbLink asChild` for framework links or callback buttons. | Rely on app-specific router wrappers inside `@repo/ui`. |
 | Supply only decorative content through `separator`. | Put meaningful copy or controls into the separator slot. |
-| Keep authored shared JSX on `Box` in both implementation and stories. | Hand-write native `nav`, `ol`, `li`, `a`, or `span` tags in shared authored JSX. |
+| Keep authored shared JSX on `Box` in both implementation and stories. | Hand-write native `nav`, `ol`, `li`, `a`, `button`, or `span` tags in shared authored JSX. |
 | Use `className` for local spacing or width adjustments. | Add app-specific truncation, router, or analytics logic to the shared component. |
 
 ---
@@ -194,12 +260,14 @@ export interface BreadcrumbItem {
 - [x] `Default`
 - [x] `CurrentItem`
 - [x] `CustomSeparator`
+- [x] `Compound`
 - [x] `LongLabels`
 
 ---
 
 ## Per-App Baseline Inputs Consulted
 
+- `packages/ui/docs/normalization/per-app/admin-portal_baseline-summary.md`
 - `packages/ui/docs/normalization/per-app/admin-portal-boost_baseline-summary.md`
 - `packages/ui/docs/normalization/per-app/agent-admin_baseline-summary.md`
 - `packages/ui/docs/normalization/per-app/claim-portal_baseline-summary.md`
@@ -208,6 +276,7 @@ export interface BreadcrumbItem {
 Key recurring needs captured:
 
 - Flat ancestor trail API with `items` and optional custom separator
+- Compound breadcrumb shells already authored in app code
 - Current-page semantics as the last crumb
 - Router-specific link behavior staying outside the shared package
 
@@ -218,3 +287,4 @@ Key recurring needs captured:
 | Date | Change |
 | ---- | ------ |
 | 2026-03-11 | Initial Breadcrumb spec |
+| 2026-03-27 | Added additive compound exports as the approved legacy migration path while preserving the flat `items[]` API |
