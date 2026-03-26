@@ -2,8 +2,23 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-25
+> Last reconciled: 2026-03-26
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-03-26 - Combobox Parent-Search And Create-Option Contract Landed
+
+Changed:
+
+- Extended `packages/ui/src/Combobox` with a narrow parent-owned search notification hook (`onSearchValueChange`) and a bounded generic create affordance (`onCreateOption` + `createOptionLabel`).
+- Kept debounce, remote fetching, transport, and business-specific creation semantics explicitly outside `@repo/ui`.
+- Updated the Combobox spec, Storybook coverage, and adapter mapping so the admin-portal customer picker migration has an explicit upstream contract instead of a blocked compatibility gap.
+
+Impact:
+
+- Later app-side reruns can adopt the shared Combobox for remote-search plus create-on-enter flows without guessing whether those behaviors are supported.
+- The shared package remains app-agnostic: parents still own async search orchestration, option refresh, and the meaning of any newly created item.
 
 ---
 

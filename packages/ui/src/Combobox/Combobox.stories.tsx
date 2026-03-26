@@ -25,6 +25,12 @@ const assigneeOptions: ComboboxOption[] = [
   { label: 'Dion Prasetyo', value: 'dion', disabled: true, keywords: ['finance'] },
 ];
 
+const customerSeedOptions: ComboboxOption[] = [
+  { label: 'Atlas Shipping', value: 'atlas-shipping', keywords: ['atlas', 'shipping'] },
+  { label: 'Beacon Logistics', value: 'beacon-logistics', keywords: ['beacon', 'logistics'] },
+  { label: 'Crescent Foods', value: 'crescent-foods', keywords: ['crescent', 'foods'] },
+];
+
 function renderCountryOption(
   option: ComboboxOption,
   state: { selected: boolean; disabled: boolean },
@@ -97,6 +103,7 @@ const meta = {
     required: false,
     error: false,
     clearable: false,
+    createOptionLabel: undefined,
   },
   argTypes: {
     label: { control: 'text' },
@@ -112,9 +119,12 @@ const meta = {
     required: { control: 'boolean' },
     error: { control: 'text' },
     clearable: { control: 'boolean' },
+    createOptionLabel: { control: 'text' },
     open: { control: 'boolean' },
     renderOption: { table: { disable: true } },
     onValueChange: { action: 'value changed' },
+    onSearchValueChange: { action: 'search changed' },
+    onCreateOption: { action: 'create option' },
     onClose: { action: 'closed' },
   },
   parameters: {
@@ -122,7 +132,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Searchable single-select field built from the shared Popover surface and a cmdk command list.',
+          'Searchable single-select field built from the shared Popover surface and a cmdk command list, with optional parent-owned search refresh and create-option hooks.',
       },
     },
   },
@@ -332,6 +342,85 @@ export const Clearable: Story = {
     };
 
     return <ClearableStory />;
+  },
+};
+
+export const ExternalSearchAndCreate: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Parent-owned search refresh and create-on-enter flow: the shared field emits search changes, the parent debounces and refreshes options, and creation stays a generic callback.',
+      },
+    },
+  },
+  render: () => {
+    const ExternalSearchAndCreateStory = () => {
+      const [value, setValue] = React.useState<string | undefined>(undefined);
+      const [query, setQuery] = React.useState('');
+      const deferredQuery = React.useDeferredValue(query);
+      const [loading, setLoading] = React.useState(false);
+      const [allOptions, setAllOptions] = React.useState(customerSeedOptions);
+      const [visibleOptions, setVisibleOptions] = React.useState(customerSeedOptions);
+
+      React.useEffect(() => {
+        setLoading(true);
+
+        const timer = window.setTimeout(() => {
+          const normalizedQuery = deferredQuery.trim().toLowerCase();
+
+          setVisibleOptions(
+            normalizedQuery.length === 0
+              ? allOptions
+              : allOptions.filter((option) => {
+                  const haystack = [option.label, option.value, ...(option.keywords ?? [])]
+                    .join(' ')
+                    .toLowerCase();
+                  return haystack.includes(normalizedQuery);
+                }),
+          );
+          setLoading(false);
+        }, 300);
+
+        return () => window.clearTimeout(timer);
+      }, [allOptions, deferredQuery]);
+
+      return (
+        <Box className="flex w-[360px] flex-col gap-3">
+          <Combobox
+            label="Customer"
+            placeholder="Input name"
+            searchPlaceholder="Find Customer Name"
+            options={visibleOptions}
+            value={value}
+            loading={loading}
+            onValueChange={setValue}
+            onSearchValueChange={setQuery}
+            createOptionLabel="Type something and press Enter to add a new customer"
+            onCreateOption={(searchValue) => {
+              const nextOption = {
+                label: searchValue,
+                value: searchValue,
+                keywords: [searchValue],
+              };
+
+              setAllOptions((previousOptions) => [...previousOptions, nextOption]);
+              setVisibleOptions((previousOptions) => [...previousOptions, nextOption]);
+              setValue(nextOption.value);
+              setQuery('');
+            }}
+          />
+          <Box as="p" className="text-sm text-muted-foreground">
+            Search Query: {query || 'none'}
+          </Box>
+          <Box as="p" className="text-sm text-muted-foreground">
+            Selected Value: {value || 'none'}
+          </Box>
+        </Box>
+      );
+    };
+
+    return <ExternalSearchAndCreateStory />;
   },
 };
 
