@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { stateToHTML } from "draft-js-export-html";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@repo/ui";
 import { Label } from "@radix-ui/react-label";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
