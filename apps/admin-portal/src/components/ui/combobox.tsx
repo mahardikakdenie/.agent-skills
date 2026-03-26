@@ -1,12 +1,7 @@
 import * as React from "react";
 import { Check, ChevronDown, PlusIcon } from "lucide-react";
+import { Command, CommandGroup, CommandInput, CommandItem } from "@repo/ui";
 import { cn } from "@/lib/utils";
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
