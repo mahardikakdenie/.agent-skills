@@ -83,7 +83,7 @@ export default function Users() {
           User
         </h1>
 
-        <div className="relative w-1/2 ml-auto shadow-sm">
+        <div className="w-1/2 ml-auto">
           <div className="flex justify-end items-center">
             {canSearchAllAccount && (
               <div className="mr-3 w-1/2">
@@ -119,10 +119,16 @@ export default function Users() {
               <Input
                 type="text"
                 placeholder="Search by Name or Email"
+                aria-label="Search users by name or email"
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border p-3 rounded-md pr-10 w-full h-12"
+                className="h-12 shadow-sm"
+                rightIcon={
+                  <Search
+                    aria-hidden="true"
+                    className="h-4 w-4 text-[#016da1]"
+                  />
+                }
               />
-              <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
             </div>
           </div>
         </div>

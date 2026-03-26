@@ -88,15 +88,21 @@ export default function ClaimHistoryPage() {
           <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
             NIK / Passport / Claim Number
           </div>
-          <div className="relative mb-1.5">
+          <div className="mb-1.5">
             <Input
               type="text"
               placeholder="Search by Claim ID"
+              aria-label="Search claim history by claim ID"
               value={searchData}
               onChange={(e) => handleSearch(e.target.value)}
-              className="border p-3 rounded-md pr-10 w-full"
+              className="h-10"
+              rightIcon={
+                <Search
+                  aria-hidden="true"
+                  className="h-4 w-4 text-[#016da1]"
+                />
+              }
             />
-            <Search className="absolute top-1/2 w-4 h-4 right-3 transform -translate-y-1/2 text-[#016da1]" />
           </div>
           {!isSearchParamValid && (
             <p className="text-[#E83F3F] text-xs">
@@ -113,7 +119,7 @@ export default function ClaimHistoryPage() {
               onValueChange={handleSelectPolicy}
               disabled={disableSelectPolicy}
             >
-              <SelectTrigger className="h-full">
+              <SelectTrigger className="h-10">
                 <SelectValue placeholder={disableSelectPolicy ? "-" : ""} />
               </SelectTrigger>
               <SelectContent>
@@ -132,7 +138,7 @@ export default function ClaimHistoryPage() {
               onValueChange={handleSelectPlan}
               disabled={disableSelectPlan}
             >
-              <SelectTrigger className="h-full">
+              <SelectTrigger className="h-10">
                 <SelectValue
                   placeholder={disableSelectPlan ? "-" : "All Plan"}
                 />

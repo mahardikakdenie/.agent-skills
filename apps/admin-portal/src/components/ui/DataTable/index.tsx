@@ -73,14 +73,20 @@ export function DataTable<T extends Record<string, any>>({
   return (
     <div className="w-full bg-white rounded-lg p-4">
       {search && (
-        <div className="relative w-full mb-4">
+        <div className="w-full mb-4">
           <Input
             type="text"
             placeholder={search.placeholder || "Search..."}
+            aria-label={search.placeholder || "Search"}
             onChange={(e) => search.onSearch(e.target.value)}
-            className="border p-3 rounded-md pr-10 w-full text-sm h-12"
+            className="h-12 text-sm shadow-sm"
+            rightIcon={
+              <Search
+                aria-hidden="true"
+                className="h-4 w-4 text-[#016da1]"
+              />
+            }
           />
-          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
       )}
 

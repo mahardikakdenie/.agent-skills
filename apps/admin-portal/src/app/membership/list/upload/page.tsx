@@ -239,7 +239,8 @@ export default function UploadMembership() {
                           id="transactionId"
                           placeholder="Insert Transaction Id"
                           onChange={(e) => setTransaction(e.target.value)}
-                          className="mt-1 block w-full placeholder:text-black h-16 border-gray-300 rounded-md shadow-sm"
+                          className="mt-1 block w-full h-16 border-gray-300 rounded-md shadow-sm"
+                          inputClassName="placeholder:text-black"
                       />
                     </div>
                 )}
@@ -255,7 +256,8 @@ export default function UploadMembership() {
                           id="chunkNumber"
                           placeholder="Insert Number of Chunk"
                           onChange={(e) => setChunkNumber(e.target.value)}
-                          className="mt-1 block w-full placeholder:text-black h-16 border-gray-300 rounded-md shadow-sm"
+                          className="mt-1 block w-full h-16 border-gray-300 rounded-md shadow-sm"
+                          inputClassName="placeholder:text-black"
                       />
                     </div>
                 )}
@@ -300,7 +302,8 @@ export default function UploadMembership() {
                                 id="policyTerm"
                                 placeholder="Insert Policy Term"
                                 onChange={(e) => setPolicyTerm(e.target.value)}
-                                className="mt-1 block w-full placeholder:text-black h-16 border-gray-300 rounded-md shadow-sm"
+                                className="mt-1 block w-full h-16 border-gray-300 rounded-md shadow-sm"
+                                inputClassName="placeholder:text-black"
                             />
                           </div>
 

@@ -46,14 +46,20 @@ export default function PartnerIntegration() {
         <h1 className="text-black font-bold sm:text-2xl text-xl sm:mt-2">
           Partner Management
         </h1>
-        <div className="relative max-w-sm w-full ml-auto shadow-sm">
+        <div className="max-w-sm w-full ml-auto">
           <Input
             type="text"
             placeholder="Search by Name or Email"
+            aria-label="Search partners by name or email"
             onChange={(e) => handleSearch(e.target.value)}
-            className="border p-3 rounded-md pr-10 w-full"
+            className="h-12 shadow-sm"
+            rightIcon={
+              <Search
+                aria-hidden="true"
+                className="h-4 w-4 text-[#016da1]"
+              />
+            }
           />
-          <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#016da1]" />
         </div>
         <Button
           onClick={addNewPartner}
