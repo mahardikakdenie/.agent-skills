@@ -1132,3 +1132,12 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Build: PASS
 - Smoke routes: `SKIPPED - manual verification pending`
 
+## Batch 8 / Batch 4 - DateRangePicker - 2026-03-27 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `API compatibility unclear`
+- Evidence checked: [`packages/ui/src/index.ts` export for `DateRangePicker`, `packages/ui/src/DateRangePicker/DateRangePicker.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` DateRangePicker guidance, `packages/ui/src/DateRangePicker/DateRangePicker.tsx` controlled `value` / `onChange` behavior, `apps/admin-portal/src/components/ui/date-range-picker.tsx`, `apps/admin-portal/src/app/dashboard/transaction/page.tsx`, `apps/admin-portal/src/app/dashboard/policy/page.tsx`, `apps/admin-portal/src/app/dashboard/claim/page.tsx`, `apps/admin-portal/src/hooks/useTransactionDashboard.hooks.tsx`, `apps/admin-portal/src/hooks/usePolicyDashboard.hooks.tsx`, `apps/admin-portal/src/hooks/useClaimDashboard.hooks.tsx`]
+- Files changed: `none`
+- Next required upstream action: `Publish approved adapter guidance or extend the shared DateRangePicker contract so the admin-portal dashboard picker can preserve its current initial rendered range and completed-range-only commit behavior without introducing stateful app-local adapter logic.`
+
