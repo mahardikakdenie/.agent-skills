@@ -315,11 +315,10 @@ export interface SelectOptionRenderState {
   disabled: boolean
 }
 
-export interface SelectProps {
+export interface SelectBaseProps {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string | undefined) => void
-  options: SelectOption[]
   placeholder?: string
   size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
@@ -335,10 +334,24 @@ export interface SelectProps {
   onClose?: () => void
   onOpen?: () => void
 }
+
+export interface SelectFlatProps extends SelectBaseProps {
+  options: SelectOption[]
+  children?: never
+}
+
+export interface SelectCompoundProps extends SelectBaseProps {
+  children: React.ReactNode
+  options?: never
+}
+
+export type SelectProps = SelectFlatProps | SelectCompoundProps
 ```
 
 Shared-scope note:
 - `Select` is the static single-select contract only.
+- The flat `options` API remains the preferred normalized path for simple static lists.
+- Additive compound exports (`SelectTrigger`, `SelectValue`, `SelectContent`, `SelectGroup`, `SelectLabel`, `SelectItem`, `SelectSeparator`, `SelectScrollUpButton`, `SelectScrollDownButton`) remain supported for migration-safe Radix-style composition.
 - Search-driven selection belongs to `Combobox`.
 - Multi-select and phone-code-specific flows remain separate migration targets and must not be folded back into this API.
 

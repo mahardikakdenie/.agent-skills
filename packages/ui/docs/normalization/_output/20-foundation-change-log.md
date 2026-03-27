@@ -2,8 +2,23 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-26
+> Last reconciled: 2026-03-27
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-03-27 - Select Compound Composition Compatibility Landed
+
+Changed:
+
+- Extended the documented shared `Select` contract to match the current `packages/ui/src/Select` surface, which now supports both the normalized flat `options` API and additive Radix-style compound exports.
+- Kept the shared normalization ruling unchanged for scope: `Select` remains the static single-select target, while searchable flows stay on `Combobox` and multi-select remains out of contract.
+- Realigned `01-component-taxonomy.md`, `02-api-conventions.md`, `04-shared-vs-local-boundary.md`, `10-cross-app-reconciliation.md`, `11-master-component-roadmap.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` so the docs no longer imply a flat-only migration path.
+
+Impact:
+
+- Downstream apps with existing Radix-style select composition can now migrate directly to `@repo/ui` without flattening their trees on day one.
+- The normalization set now treats the flat `options` API as the preferred shared default, with compound composition documented as a compatibility path instead of an app-local adapter exception.
 
 ---
 

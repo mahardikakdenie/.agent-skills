@@ -3,7 +3,15 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
-import { Select } from './Select';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from './Select';
 import {
   selectSizeValues,
   type SelectOption,
@@ -325,6 +333,36 @@ export const CustomOptionContent: Story = {
     docs: {
       description: {
         story: 'Uses a custom ReactNode option layout while keeping the selected trigger value text-driven.',
+      },
+    },
+  },
+};
+
+export const CompoundComposition: Story = {
+  render: () => (
+    <Box className="grid gap-3 md:max-w-sm">
+      <Select defaultValue="sg">
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select a country" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Available Countries</SelectLabel>
+            {countryOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the Radix-style compound Select surface retained for migration-safe compatibility and advanced composition.',
       },
     },
   },

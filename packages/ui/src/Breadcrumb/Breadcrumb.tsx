@@ -143,7 +143,9 @@ export const BreadcrumbLink = React.forwardRef<HTMLElement, BreadcrumbLinkProps>
   const textClassName = cn(breadcrumbTextVariants({ tone: 'muted' }), props.className);
 
   if (props.asChild) {
-    const { asChild: _asChild, className: _className, children, ...slotProps } = props;
+    const { asChild, className, children, ...slotProps } = props;
+    void asChild;
+    void className;
 
     return (
       <Box asChild data-slot="breadcrumb-link" className={interactiveClassName} {...slotProps}>
@@ -153,7 +155,8 @@ export const BreadcrumbLink = React.forwardRef<HTMLElement, BreadcrumbLinkProps>
   }
 
   if (isBreadcrumbLinkAnchorProps(props)) {
-    const { className: _className, children, href, ...anchorProps } = props;
+    const { className, children, href, ...anchorProps } = props;
+    void className;
 
     return (
       <Box
@@ -170,7 +173,8 @@ export const BreadcrumbLink = React.forwardRef<HTMLElement, BreadcrumbLinkProps>
   }
 
   if (isBreadcrumbLinkButtonProps(props)) {
-    const { className: _className, children, onClick, type = 'button', ...buttonProps } = props;
+    const { className, children, onClick, type = 'button', ...buttonProps } = props;
+    void className;
 
     return (
       <Box
@@ -187,7 +191,8 @@ export const BreadcrumbLink = React.forwardRef<HTMLElement, BreadcrumbLinkProps>
     );
   }
 
-  const { className: _className, children, ...spanProps } = props;
+  const { className, children, ...spanProps } = props;
+  void className;
 
   return (
     <Box

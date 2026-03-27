@@ -13,7 +13,7 @@
 
 ## Overview
 
-`Select` is the shared static single-select primitive for choosing one value from a known option list. It wraps Radix Select for accessible combobox, listbox, and keyboard behavior while keeping all authored shared DOM on `Box`, including the trigger, label, content shell, viewport, items, and validation messaging.
+`Select` is the shared static single-select primitive for choosing one value from a known option list. It wraps Radix Select for accessible combobox, listbox, and keyboard behavior and now supports both the normalized flat `options` API and the Radix-style compound composition surface used by legacy app code.
 
 This shared contract stays intentionally focused on non-searchable single selection. Search-driven selection belongs to `Combobox`, while multi-select and phone-code-specific flows stay out of this contract. The current surface also supports trigger-level reset and custom option layout rendering without changing the selected trigger label contract.
 
@@ -39,7 +39,7 @@ The trigger follows the shared field-shell size family used by `Input`, `DatePic
 | Decision | Choice | Rationale |
 | --- | --- | --- |
 | Primitive | `@radix-ui/react-select` | Radix provides the required combobox/listbox semantics, keyboard navigation, and portal-backed overlay behavior. |
-| Public API shape | Flat prop-driven component with `options` | The shared contract is a static single-select wrapper, not a public compound primitive family. |
+| Public API shape | Flat `options` API plus compound exports | The flat API remains the preferred normalized path for simple static lists, while the compound surface keeps migration-safe compatibility with legacy Radix/shadcn usage and advanced composition. |
 | Controlled vs uncontrolled | both | Cross-app baselines mix controlled and uncontrolled usage, and Radix supports both cleanly. |
 | Open-state API | `open`, `defaultOpen`, `onOpen`, `onClose` | Keeps the shared surface aligned with normalized open/close naming without leaking raw `onOpenChange`. |
 | Size scale | `xs | sm | md | lg`, default `md` | Keeps static selection on the same field-shell density ladder as `Input` and the other normalized field triggers. |
@@ -58,7 +58,7 @@ The trigger follows the shared field-shell size family used by `Input`, `DatePic
 | `value` | `string` | `undefined` | No | Controlled selected value. |
 | `defaultValue` | `string` | `undefined` | No | Uncontrolled initial selected value. |
 | `onValueChange` | `(value: string \| undefined) => void` | `undefined` | No | Called when a new option is selected or when a clearable select is reset to the placeholder state. |
-| `options` | `SelectOption[]` | - | Yes | Flat list of available static options. |
+| `options` | `SelectOption[]` | - | Yes (flat mode) | Flat list of available static options. |
 | `placeholder` | `string` | `undefined` | No | Placeholder content shown when no option is selected. |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | No | Shared field-shell size aligned to `Input` trigger density. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger and closes interaction. |
@@ -74,6 +74,20 @@ The trigger follows the shared field-shell size family used by `Input`, `DatePic
 | `onClose` | `() => void` | `undefined` | No | Called when the menu closes. |
 | `className` | `string` | `undefined` | No | Consumer override merged onto the outer field wrapper through `cn()`. |
 | `...props` | Radix root props | - | No | Pass-through root props such as `name`, `form`, `autoComplete`, and `dir`. |
+
+### Compound exports
+
+- `SelectTrigger`
+- `SelectValue`
+- `SelectContent`
+- `SelectGroup`
+- `SelectLabel`
+- `SelectItem`
+- `SelectSeparator`
+- `SelectScrollUpButton`
+- `SelectScrollDownButton`
+
+The compound surface exists for migration-safe compatibility and advanced composition. The flat `options` API remains the preferred shared default for simple static lists.
 
 ### Complex Prop Shapes
 
@@ -113,6 +127,7 @@ export interface SelectOptionRenderState {
 - Selected option text is announced through Radix `Value` / `ItemText` behavior.
 - `renderOption` does not replace the option's accessible text; selection and trigger text still resolve from `option.label`.
 - Error messaging is announced through the `aria-describedby` chain when `error` is a string.
+- Compound composition must preserve the standard Radix structure: `SelectTrigger` and `SelectContent` stay siblings under `Select`, and `SelectValue` should use `placeholder` or explicit children instead of app-local custom props.
 
 ---
 
@@ -160,6 +175,23 @@ export interface SelectOptionRenderState {
 />
 ```
 
+### 4. Compound composition
+
+```tsx
+<Select defaultValue="sg">
+  <SelectTrigger>
+    <SelectValue placeholder="Select a country" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectGroup>
+      <SelectLabel>Countries</SelectLabel>
+      <SelectItem value="my">Malaysia</SelectItem>
+      <SelectItem value="sg">Singapore</SelectItem>
+    </SelectGroup>
+  </SelectContent>
+</Select>
+```
+
 ---
 
 ## Storybook Stories Required
@@ -176,6 +208,7 @@ export interface SelectOptionRenderState {
 - [x] `LoadingState`
 - [x] `Clearable`
 - [x] `CustomOptionContent`
+- [x] `CompoundComposition`
 
 ---
 
@@ -188,3 +221,4 @@ export interface SelectOptionRenderState {
 | 2026-03-12 | Added `renderOption` support while preserving trigger label text |
 | 2026-03-17 | Added the normalized `xs | sm | md | lg` size contract aligned to the shared Input field-shell scale |
 | 2026-03-17 | Documented the calmer direct field-shell focus treatment and non-stacking open-state emphasis |
+| 2026-03-27 | Added the Radix-style compound export surface while keeping the flat `options` API as the preferred normalized path |

@@ -25,6 +25,8 @@ export const selectLabelVariants = cva('text-sm font-medium leading-none', {
   },
 });
 
+export const selectContentLabelVariants = cva('px-3 py-1.5 text-xs font-semibold text-muted-foreground');
+
 export const selectTriggerVariants = cva(
   [
     'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background py-1.5 text-left leading-none shadow-sm',
