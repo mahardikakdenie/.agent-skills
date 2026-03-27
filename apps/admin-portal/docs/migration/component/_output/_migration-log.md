@@ -1141,6 +1141,22 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Files changed: `none`
 - Next required upstream action: `Publish approved adapter guidance or extend the shared DateRangePicker contract so the admin-portal dashboard picker can preserve its current initial rendered range and completed-range-only commit behavior without introducing stateful app-local adapter logic.`
 
+## Batch 8 / Batch 4 - DateRangePicker - 2026-03-27
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `DateRangePicker`
+- Migration mode: `direct`
+- Adapter file: `none`
+- Usage sites updated: [`apps/admin-portal/src/app/dashboard/transaction/page.tsx`, `apps/admin-portal/src/app/dashboard/policy/page.tsx`, `apps/admin-portal/src/app/dashboard/claim/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/date-range-picker.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: `None`
+
 ## Batch 8 / Batch 4 - Select - 2026-03-27 - BLOCKED
 
 - Audit classification: `NEW_SHARED_COMPONENT`

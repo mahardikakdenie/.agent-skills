@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { DateRangePicker } from "@repo/ui";
 import {
   Select,
   SelectContent,
@@ -13,7 +14,6 @@ import { Controller, useForm } from "react-hook-form";
 import PieChart from "@/components/ui/recharts/piechart";
 import LineChart from "@/components/ui/recharts/dashedlinechart";
 import DetailTable from "@/components/ui/recharts/table-policy";
-import DatePickerDropdown from "@/components/ui/date-range-picker";
 import BarChartComp from "@/components/ui/recharts/barchart-horizontal";
 import useTransactionDashboard from "@/hooks/useTransactionDashboard.hooks";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
@@ -53,13 +53,6 @@ export default function DashboardTransaction() {
       plan: selectedPlan,
     },
   });
-
-  const handleDateChange = (startDate: string, endDate: string) => {
-    setDateRange({
-      from: new Date(startDate),
-      to: new Date(endDate),
-    });
-  };
 
   return (
     <div className="w-full bg-[#ebf6ff] p-5 bg-blue min-h-screen">
@@ -161,7 +154,14 @@ export default function DashboardTransaction() {
               )}
             />
           </div>
-          <DatePickerDropdown onDateChange={handleDateChange} />
+          <DateRangePicker
+            value={dateRange ?? null}
+            onChange={(range) =>
+              setDateRange(range?.from ? { from: range.from, to: range.to } : undefined)
+            }
+            changeBehavior="complete"
+            className="text-xs [&_[data-slot=date-range-picker-control]]:min-h-[46px] [&_[data-slot=date-range-picker-control]]:border-0 [&_[data-slot=date-range-picker-control]]:bg-white [&_[data-slot=date-range-picker-control]]:shadow [&_[data-slot=date-range-picker-trigger]]:text-[13px]"
+          />
         </div>
       </div>
       <ContentLoadingWrapper
