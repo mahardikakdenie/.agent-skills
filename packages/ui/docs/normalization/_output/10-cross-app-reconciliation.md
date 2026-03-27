@@ -74,7 +74,7 @@
 | Label | NEW_SHARED_COMPONENT | 10 apps; see `05` | missing | `02` amendment: `htmlFor`, `required`, `disabled`, `tone` | Label becomes first-class instead of app-side duplication | P1 | LOW | B4 |
 | Pagination | NEW_SHARED_COMPONENT | 16 apps; see `05` | missing | `02` Pagination | Generic page navigation only; data fetching stays local | P0 | MEDIUM | B4 |
 | RadioGroup | NEW_SHARED_COMPONENT | 11 apps; see `05` | missing | `02` RadioGroup | Shared exclusive-choice control only | P1 | LOW | B4 |
-| Select | NEW_SHARED_COMPONENT | 25 apps; see `05` | missing | `02` Select | Static selection contract only; searchable selection routes to `Combobox` | P0 | HIGH | B4 |
+| Select | NEW_SHARED_COMPONENT | 25 apps; see `05` | missing | `02` Select | Static selection contract only; flat default API plus additive compound migration path, searchable selection routes to `Combobox` | P0 | HIGH | B4 |
 | Skeleton | NEW_SHARED_COMPONENT | 10 apps; see `05` | missing | `02` Skeleton | Structural placeholder, not a loader shell | P0 | LOW | B4 |
 | Spinner | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` amendment: `size`, `label`, `inline`, `overlay` | Inline wait-state primitive only | P0 | LOW | B4 |
 | Switch | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` Switch | Shared toggle only; feature semantics stay local | P1 | LOW | B4 |

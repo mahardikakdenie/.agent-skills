@@ -16,7 +16,7 @@ export interface SelectOptionRenderState {
   disabled: boolean;
 }
 
-export interface SelectProps
+interface SelectBaseProps
   extends Omit<
     React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>,
     'children' | 'value' | 'defaultValue' | 'onValueChange' | 'onOpenChange' | 'disabled' | 'required'
@@ -24,7 +24,6 @@ export interface SelectProps
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string | undefined) => void;
-  options: SelectOption[];
   placeholder?: string;
   size?: SelectSize;
   disabled?: boolean;
@@ -44,3 +43,25 @@ export interface SelectProps
   'aria-describedby'?: string;
   'aria-labelledby'?: string;
 }
+
+export interface SelectFlatProps extends SelectBaseProps {
+  options: SelectOption[];
+  children?: never;
+}
+
+export interface SelectCompoundProps extends SelectBaseProps {
+  children: React.ReactNode;
+  options?: never;
+}
+
+export type SelectProps = SelectFlatProps | SelectCompoundProps;
+
+export type SelectTriggerProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>;
+export type SelectValueProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>;
+export type SelectContentProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>;
+export type SelectGroupProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Group>;
+export type SelectLabelProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>;
+export type SelectItemProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>;
+export type SelectSeparatorProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>;
+export type SelectScrollUpButtonProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>;
+export type SelectScrollDownButtonProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>;

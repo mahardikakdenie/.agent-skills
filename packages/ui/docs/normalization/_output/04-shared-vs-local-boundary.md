@@ -78,7 +78,7 @@ Based on cross-app reconciliation of all 27 baseline summaries:
 |---|---|---|
 | `Dialog` / `Modal` (shell, no content) | [x] SHARED - `@repo/ui` | 26 apps need it; Radix-based |
 | Domain forms embeded in Dialog | [ ] LOCAL - content stays in app | Business logic in dialog body |
-| `Select` (single, multi, searchable, phone code) | [x] SHARED - `@repo/ui` | 25 apps; consolidated via mode prop |
+| `Select` (single, multi, searchable, phone code) | [x] SHARED - `@repo/ui` | 25 apps; static single-select shared via flat default API plus additive compound exports |
 | `Select` with API call for options | [ ] LOCAL - container wraps Select primitive | Data fetching not in shared layer |
 | `DataTable` | [x] SHARED - generic (no domain columns) | 6 apps are explicit `DataTable` candidates; broader `Table` primitives are needed by 12 apps |
 | Domain table column configs | [ ] LOCAL | Schema-specific |

@@ -3,7 +3,7 @@
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
 > Run date: 2026-03-10
-> Last reconciled: 2026-03-26
+> Last reconciled: 2026-03-27
 
 ## Box
 
@@ -294,6 +294,17 @@ Keep local:
 - Searchable, filterable, async, or typeahead selection flows; those should migrate to `Combobox`.
 - Multi-select, checkbox-list, staged-confirmation, or summary-label pickers.
 - Phone-code-specific selection and any select wrapper that still embeds query params, routing, service hooks, or domain-specific option shaping.
+
+Admin-portal Batch 8 / Batch 4 note:
+
+- The upstream blocker is resolved by the shared compound export surface now available from `@repo/ui`: `Select`, `SelectTrigger`, `SelectContent`, `SelectGroup`, `SelectItem`, `SelectValue`, `SelectLabel`, `SelectSeparator`, `SelectScrollUpButton`, and `SelectScrollDownButton`.
+- For the 49 current admin-portal files that import from `@/components/ui/select`, the primary migration path is now a direct import-source swap to `@repo/ui` while preserving the existing Radix-style composition and current `value`, `defaultValue`, `onValueChange`, `disabled`, and `className` usage.
+- Sites that manually render trigger text inside `<SelectValue>{...}</SelectValue>` can keep that pattern on the shared component; it remains a supported Radix-compatible composition path.
+- The flat `options` API remains valid and is still the preferred shared default for simple static selects, but admin-portal Batch 8 does not need to flatten existing compound usage during the initial migration.
+- Two known legacy cleanups remain app-side and should be handled during migration because they are not part of the shared contract:
+  - Replace the local-only `content` prop on `SelectValue` with standard `placeholder` or explicit children.
+  - Normalize malformed trees where `SelectContent` is nested inside `SelectTrigger`; the shared component follows the standard Radix sibling structure under `Select`.
+- This is a shared API extension, not a thin local adapter path. No app-local state orchestration or business logic is required to bridge the current compound usage surface.
 
 ## Switch
 

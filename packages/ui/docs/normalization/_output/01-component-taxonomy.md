@@ -35,7 +35,7 @@
 | Checkbox | `Checkbox` | `@radix-ui/react-checkbox` | [ ] missing | 20 | Present in admin-portal, customer-portal, teman-affiliate-microsite, ecommerce-teman, claim-portal, agent-microsite, gelm-xproject-microsite, ticket-portal, getrev-da-microsite, grab-landing-page |
 | RadioGroup | `RadioGroup` | `@radix-ui/react-radio-group` | [ ] missing | 11 | Consolidates: `RadioGroup`, `RadioButton`, `CustomRadio`, `CustomRadioGroup` |
 | Switch | `Switch` | `@radix-ui/react-switch` | [ ] missing | 9 | Present in teman-affiliate-admin, admin-portal, customer-portal, ticket-portal, teman-affiliate-portal |
-| Select | `Select` | `@radix-ui/react-select` | [ ] missing | 25 | Consolidates all Select/MultiSelect/SelectAutocomplete variants; mode flags |
+| Select | `Select` | `@radix-ui/react-select` | [ ] missing | 25 | Canonical static single-select target; searchable flows route to `Combobox`, and additive compound exports cover legacy Radix-style migration |
 | Table | `Table` | semantic table targets via `Box as="table"` and related tags | [ ] missing | 12 | Structural only - no data. Sub-components: `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`, `TableFooter` |
 | Badge | `Badge` | - | [ ] missing | 11 | Consolidates: `Badge` across 7+ apps; short status chip |
 | Avatar | `Avatar` | `@radix-ui/react-avatar` | [ ] missing | 6 | Consolidates: `Avatar` across teman-affiliate-admin, gegm-friendcover-admin, claim-portal |
