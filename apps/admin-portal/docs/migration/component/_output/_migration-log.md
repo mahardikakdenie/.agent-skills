@@ -1182,3 +1182,12 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: `None`
 
+## Batch 8 / Batch 4 - UploadFile - 2026-03-27 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `API compatibility unclear`
+- Evidence checked: [`packages/ui/src/index.ts` export for `FileUpload`, `packages/ui/src/FileUpload/FileUpload.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` FileUpload guidance, `packages/ui/src/FileUpload/FileUpload.tsx`, `apps/admin-portal/src/components/ui/Fields/UploadFile/index.tsx`, `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` usage with filename-string `value` data and `onFileChange({ file, base64, fileName })` callbacks]
+- Files changed: `none`
+- Next required upstream action: `Publish approved adapter guidance or extend the shared FileUpload contract so admin-portal can preserve existing filename-string display state and the current file/base64/fileName callback behavior without introducing non-trivial app-local adapter logic.`
+
