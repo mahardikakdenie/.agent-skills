@@ -1141,3 +1141,12 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Files changed: `none`
 - Next required upstream action: `Publish approved adapter guidance or extend the shared DateRangePicker contract so the admin-portal dashboard picker can preserve its current initial rendered range and completed-range-only commit behavior without introducing stateful app-local adapter logic.`
 
+## Batch 8 / Batch 4 - Select - 2026-03-27 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `API compatibility unclear`
+- Evidence checked: [`packages/ui/src/index.ts` export for `Select`, `packages/ui/src/Select/Select.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` Select guidance, `packages/ui/src/Select/Select.tsx`, `apps/admin-portal/src/components/ui/select.tsx`, representative admin-portal usage sites importing `Select`, `SelectContent`, `SelectGroup`, `SelectItem`, `SelectTrigger`, and `SelectValue` from `@/components/ui/select`]
+- Files changed: `none`
+- Next required upstream action: `Publish approved adapter guidance or align the shared Select contract with the app's legacy compound export surface; the current shared implementation is a flat prop-driven API, so the replacement path for existing compound Select usage is not yet clear.`
+
