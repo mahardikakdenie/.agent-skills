@@ -22,7 +22,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { EditorState } from "draft-js";
 import {
   Dialog,
@@ -674,3 +674,4 @@ export default function EmailTemplateForm({
     </ContentLoadingWrapper>
   );
 }
+

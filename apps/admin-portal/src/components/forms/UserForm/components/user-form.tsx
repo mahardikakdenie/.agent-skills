@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { EyeOff, Eye } from "react-feather";
 import { Controller, Control, FieldErrors } from "react-hook-form";
 import { passwordValidationRules } from "@/lib/password";
@@ -429,3 +429,4 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
 );
 
 export { UserFormComponent as UserForm };
+

@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 
 interface PartnerManagementFormProps {
   mode: "create" | "edit";
@@ -379,3 +379,4 @@ export default function PartnerManagementForm({
     </ContentLoadingWrapper>
   );
 }
+

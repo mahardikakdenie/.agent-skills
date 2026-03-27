@@ -19,7 +19,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { useParams, useRouter } from "next/navigation";
 import AppURL from "@/constants/app-url.const";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
@@ -143,3 +143,4 @@ export default function UploadPlanDetail() {
     </ContentLoadingWrapper>
   );
 }
+

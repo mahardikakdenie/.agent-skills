@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
 
 interface HolidayFormProps {
@@ -296,3 +296,4 @@ export default function HolidayForm({
     </ContentLoadingWrapper>
   );
 }
+

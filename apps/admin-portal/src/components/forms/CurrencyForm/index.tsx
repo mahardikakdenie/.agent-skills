@@ -17,7 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import {
   Table,
   TableBody,
@@ -374,3 +374,4 @@ export function CurrencyForm({
     </ContentLoadingWrapper>
   );
 }
+

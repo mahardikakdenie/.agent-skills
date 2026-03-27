@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Controller } from "react-hook-form";
 import {
   Breadcrumb,
@@ -894,3 +894,4 @@ export default function CampaignForm({ mode, campaignId }: CampaignFormProps) {
     </ContentLoadingWrapper>
   );
 }
+

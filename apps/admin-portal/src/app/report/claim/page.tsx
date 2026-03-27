@@ -22,7 +22,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useClaimReport } from "@/hooks/useClaimReport.hooks";
 import { createClaimReportTableColumns } from "@/components/tableConfig/claimReportTableConfig";
@@ -175,3 +175,4 @@ const ReportClaimPage = () => {
 };
 
 export default ReportClaimPage;
+

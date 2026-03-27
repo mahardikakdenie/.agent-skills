@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter, DialogContent, Dialog, DialogClose, DialogTitle } from "@repo/ui";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
 import { Spinner } from "@repo/ui";
 import { X, Check } from "react-feather";
 
@@ -90,3 +90,4 @@ export const InsurerModal = (props: {
     </Dialog>
   );
 };
+

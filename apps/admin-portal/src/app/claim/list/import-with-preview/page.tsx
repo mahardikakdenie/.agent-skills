@@ -11,7 +11,7 @@ import { capitalizeStringWithChar } from "@/lib/formatter";
 import { toastPromise, toastNotification } from "@/lib/toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@repo/ui";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@repo/ui";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, } from "@repo/ui";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription, } from "@repo/ui";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@repo/ui";
 import {useScreen} from "@/context/screen.context";
@@ -633,3 +633,4 @@ export default function ImportWithPreviewPage() {
     </div>
   );
 };
+

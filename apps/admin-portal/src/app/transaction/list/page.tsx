@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import _ from "lodash";
 import React from "react";
 import noData from "@public/images/no-data.webp";
@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import useTransactions from "@/hooks/useTransactions.hooks";
@@ -216,4 +216,5 @@ export default function TransactionsPage() {
     </div>
   );
 }
+
 

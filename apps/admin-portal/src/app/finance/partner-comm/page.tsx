@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "@/components/ui/DataTable";
 import { usePartnerComm } from "@/hooks/usePartnerComm.hooks";
@@ -113,3 +113,4 @@ export default function PartnerCommPage() {
     </div>
   );
 }
+

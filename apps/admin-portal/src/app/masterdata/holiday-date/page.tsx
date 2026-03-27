@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 
 export default function HolidayPage() {
   const {
@@ -149,3 +149,4 @@ export default function HolidayPage() {
     </ContentLoadingWrapper>
   );
 }
+

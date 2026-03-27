@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 
 interface EmailTagFormProps {
   mode: "create" | "edit";
@@ -183,3 +183,4 @@ export default function EmailTagForm({
     </ContentLoadingWrapper>
   );
 }
+

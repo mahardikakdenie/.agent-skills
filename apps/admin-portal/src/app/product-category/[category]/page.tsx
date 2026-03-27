@@ -26,7 +26,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
 import ExtendedSidemenu, { SubmenuItem } from "@/components/extended-sidemenu";
 import { productService } from "@/services/product/api/product.service";
@@ -370,3 +370,4 @@ export default function ProductCatalogPage() {
     </div>
   );
 }
+

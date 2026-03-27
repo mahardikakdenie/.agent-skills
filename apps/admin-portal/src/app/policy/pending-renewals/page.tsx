@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { DataTable } from "@/components/ui/DataTable";
 import noData from "@public/images/no-data.webp";
@@ -14,7 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 
 export default function PendingRenewals() {
   const router = useRouter();
@@ -133,4 +133,5 @@ export default function PendingRenewals() {
     </div>
   );
 }
+
 

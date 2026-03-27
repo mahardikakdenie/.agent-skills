@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
@@ -87,3 +87,4 @@ export default function ChannelAddModal(props: {
     </Dialog>
   );
 }
+

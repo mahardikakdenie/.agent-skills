@@ -14,7 +14,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import ExtendedSidemenu from "@/components/extended-sidemenu";
 import {
@@ -185,3 +185,4 @@ function ProductCatalogContent({ category }: ProductCatalogContentProps) {
     </div>
   );
 }
+

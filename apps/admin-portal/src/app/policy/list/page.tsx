@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   Select,
@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Calendar, Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
@@ -388,4 +388,5 @@ export default function PolicyPage() {
     </div>
   );
 }
+
 

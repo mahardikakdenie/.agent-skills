@@ -14,7 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import {
   Dialog,
   DialogClose,
@@ -416,3 +416,4 @@ export const createDocumentTableColumns = ({
     ),
   },
 ];
+

@@ -15,7 +15,7 @@ import { Input } from "@repo/ui";
 import { ChevronLeft, X } from "react-feather";
 import { Button } from "@/components/ui/button";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table, } from "@repo/ui";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";
 import { useChannelsV1 } from "@/services/channel/hooks/queries";
@@ -217,3 +217,4 @@ export default function UploadEndorsement() {
         </div>
     );
 };
+

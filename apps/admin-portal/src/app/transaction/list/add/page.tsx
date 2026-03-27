@@ -25,7 +25,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -1584,3 +1584,4 @@ export default function AddTransaction() {
         </div>
     );
 };
+

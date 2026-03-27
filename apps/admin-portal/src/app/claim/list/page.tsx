@@ -24,7 +24,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import {
   AlertCircle,
   Check,
@@ -920,4 +920,5 @@ const ClaimsPage = () => {
 };
 
 export default ClaimsPage;
+
 

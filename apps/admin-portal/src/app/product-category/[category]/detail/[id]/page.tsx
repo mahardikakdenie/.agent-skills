@@ -12,7 +12,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -406,3 +406,4 @@ export default function DetaildPage({
     </>
   );
 }
+

@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
@@ -302,3 +302,4 @@ export default function BillingPage() {
     </div>
   );
 }
+

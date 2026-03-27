@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Controller, useForm } from "react-hook-form";
 import { numberSimpleFormatter } from "@/lib/formatter";
 
@@ -239,3 +239,4 @@ export default function DashboardClaim() {
     </div>
   );
 }
+

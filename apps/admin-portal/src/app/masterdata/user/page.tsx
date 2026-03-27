@@ -12,7 +12,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import {
   Dialog,
   DialogContent,
@@ -200,4 +200,5 @@ export default function Users() {
     </div>
   );
 }
+
 

@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import {
   Table,
   TableBody,
@@ -468,3 +468,4 @@ export default function RoleForm({
     </ContentLoadingWrapper>
   );
 }
+

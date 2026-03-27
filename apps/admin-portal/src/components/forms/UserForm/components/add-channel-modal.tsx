@@ -14,7 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Spinner } from "@repo/ui";
 import { X, Check } from "react-feather";
 
@@ -106,3 +106,4 @@ export const ChannelModal = (props: {
     </Dialog>
   );
 };
+

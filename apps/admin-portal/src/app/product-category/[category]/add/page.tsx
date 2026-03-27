@@ -7,8 +7,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-} from "@/components/ui/select";
-import { SelectValue } from "@radix-ui/react-select";
+  SelectValue,
+} from "@repo/ui";
 import { useEffect, useState } from "react";
 import { Controller, Form, useForm } from "react-hook-form";
 import { useProducts } from "../../hooks";
@@ -404,3 +404,5 @@ export default function AddPlanPage() {
     </ContentLoadingWrapper>
   );
 }
+
+

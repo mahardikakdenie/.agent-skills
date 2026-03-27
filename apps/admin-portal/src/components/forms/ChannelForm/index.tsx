@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Controller } from "react-hook-form";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
@@ -221,3 +221,4 @@ export function ChannelForm({
     </ContentLoadingWrapper>
   );
 }
+

@@ -22,7 +22,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useCampaignReport } from "@/hooks/useCampaignReport.hooks";
 import { createCampaignReportTableColumns } from "@/components/tableConfig/campaignReportTableConfig";
@@ -229,3 +229,4 @@ export default function ReportCampaignPage() {
     </div>
   );
 }
+

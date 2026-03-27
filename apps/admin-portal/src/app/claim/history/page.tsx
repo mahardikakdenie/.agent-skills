@@ -12,7 +12,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useClaimHistory } from "@/hooks/useClaimHistory.hooks";
 import { createClaimHistoryTableColumns } from "@/components/tableConfig/claimHistoryTableConfig";
@@ -189,4 +189,5 @@ export default function ClaimHistoryPage() {
     </div>
   );
 }
+
 

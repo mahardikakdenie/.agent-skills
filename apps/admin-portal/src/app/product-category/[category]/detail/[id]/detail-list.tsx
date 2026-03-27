@@ -17,7 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Upload } from "react-feather";
 import AppURL from "@/constants/app-url.const";
 
@@ -96,3 +96,4 @@ export default function DetailList(props: { id: string }) {
     </>
   );
 }
+

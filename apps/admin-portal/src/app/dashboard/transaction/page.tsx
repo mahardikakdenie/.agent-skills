@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Controller, useForm } from "react-hook-form";
 
 import PieChart from "@/components/ui/recharts/piechart";
@@ -208,3 +208,4 @@ export default function DashboardTransaction() {
     </div>
   );
 }
+

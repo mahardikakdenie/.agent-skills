@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import Image from "next/image";
 import { countries } from "@/app/masterdata/user/user.const";
 
@@ -53,3 +53,4 @@ const SelectPhoneCode: React.FC<SelectPhoneCodeProps> = ({
 };
 
 export default SelectPhoneCode;
+

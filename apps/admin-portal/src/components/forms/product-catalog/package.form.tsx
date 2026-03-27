@@ -17,7 +17,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
@@ -640,3 +640,4 @@ const ProductCategoryPackageForm = ({
 };
 
 export default ProductCategoryPackageForm;
+

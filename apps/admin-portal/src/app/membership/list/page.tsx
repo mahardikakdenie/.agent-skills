@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useMembership } from "@/hooks/useMembership.hooks";
 import { createMembershipTableColumns } from "@/components/tableConfig/membershipTableConfig";
@@ -150,3 +150,4 @@ export default function MembershipPage() {
     </div>
   );
 }
+

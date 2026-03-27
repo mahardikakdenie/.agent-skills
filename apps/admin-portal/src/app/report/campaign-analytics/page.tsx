@@ -41,7 +41,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { BiMoney } from "react-icons/bi";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 import { useCampaignAnalytics } from "@/hooks/useCampaignAnalytics.hooks";
@@ -671,3 +671,4 @@ const CampaignAnalyticsPage = () => {
 };
 
 export default CampaignAnalyticsPage;
+

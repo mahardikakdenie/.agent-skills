@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useBilling } from "../hook";
@@ -526,3 +526,4 @@ const CreateBillingPage = () => {
 };
 
 export default CreateBillingPage;
+

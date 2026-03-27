@@ -18,7 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import { Controller } from "react-hook-form";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 import AppURL from "@/constants/app-url.const";
@@ -306,3 +306,4 @@ export function BrokerFeeForm({
     </ContentLoadingWrapper>
   );
 }
+
