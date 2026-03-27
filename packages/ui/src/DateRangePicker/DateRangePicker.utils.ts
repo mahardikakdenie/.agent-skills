@@ -10,7 +10,11 @@ import {
 } from 'date-fns';
 import type { Matcher } from 'react-day-picker';
 
-import type { DateRangePickerPreset, DateRangeValue } from './DateRangePicker.types';
+import type {
+  DateRangePickerChangeBehavior,
+  DateRangePickerPreset,
+  DateRangeValue,
+} from './DateRangePicker.types';
 
 interface NormalizeDateRangeOptions {
   preserveTime?: boolean;
@@ -141,6 +145,17 @@ export function getDateRangePickerInitialMonth(
 
 export function isDateRangeComplete(value?: DateRangeValue | null) {
   return Boolean(value?.from && value?.to);
+}
+
+export function shouldEmitDateRangeChange(
+  value: DateRangeValue | null,
+  changeBehavior: DateRangePickerChangeBehavior,
+) {
+  if (!value) {
+    return true;
+  }
+
+  return changeBehavior === 'partial' || isDateRangeComplete(value);
 }
 
 export function areDateRangesEqual(

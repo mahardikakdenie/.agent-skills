@@ -8,6 +8,9 @@ import {
 
 export const dateRangePickerVariantValues = inputVariantValues;
 export const dateRangePickerSizeValues = inputSizeValues;
+export const dateRangePickerChangeBehaviorValues = ['partial', 'complete'] as const;
+
+export type DateRangePickerChangeBehavior = (typeof dateRangePickerChangeBehaviorValues)[number];
 
 export interface DateRangeValue {
   from?: Date;
@@ -28,6 +31,7 @@ export interface DateRangePickerProps
   size?: InputSize;
   value?: DateRangeValue | null;
   onChange?: (value: DateRangeValue | null) => void;
+  changeBehavior?: DateRangePickerChangeBehavior;
   presets?: DateRangePickerPreset[];
   minDate?: Date;
   maxDate?: Date;

@@ -16,6 +16,7 @@ import {
 } from '../Form';
 import { DateRangePicker } from './DateRangePicker';
 import {
+  dateRangePickerChangeBehaviorValues,
   dateRangePickerSizeValues,
   dateRangePickerVariantValues,
   type DateRangePickerPreset,
@@ -74,6 +75,7 @@ function getRangeLabel(value: DateRangeValue | null | undefined, withTime: boole
 
 function DateRangePickerStory({
   initialValue = null,
+  changeBehavior,
   presets,
   minDate,
   maxDate,
@@ -93,6 +95,7 @@ function DateRangePickerStory({
     <StoryFrame>
       <DateRangePicker
         value={value}
+        changeBehavior={changeBehavior}
         presets={presets}
         minDate={minDate}
         maxDate={maxDate}
@@ -187,6 +190,7 @@ const meta = {
   args: {
     variant: 'default',
     size: 'md',
+    changeBehavior: 'partial',
     initialValue: {
       from: new Date(2026, 0, 15),
       to: new Date(2026, 0, 21),
@@ -217,6 +221,10 @@ const meta = {
     size: {
       control: 'select',
       options: dateRangePickerSizeValues,
+    },
+    changeBehavior: {
+      control: 'select',
+      options: dateRangePickerChangeBehaviorValues,
     },
     presets: {
       control: false,
@@ -257,7 +265,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Shared date-range picker composed from the Calendar and Popover primitives, with optional generic presets, optional time entry, min/max bounds, clear support, and Box-only authored JSX.',
+          'Shared date-range picker composed from the Calendar and Popover primitives, with optional generic presets, optional time entry, min/max bounds, clear support, configurable partial-versus-complete change emission, and Box-only authored JSX.',
       },
     },
   },
@@ -334,6 +342,21 @@ export const Sizes: Story = {
     docs: {
       description: {
         story: 'Shows the full shared size scale, matching the Input component density contract.',
+      },
+    },
+  },
+};
+
+export const CompleteOnlyChange: Story = {
+  args: {
+    initialValue: null,
+    changeBehavior: 'complete',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Defers the parent onChange callback until both range boundaries are selected while the picker still previews the in-progress selection internally.',
       },
     },
   },

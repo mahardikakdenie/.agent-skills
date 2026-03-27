@@ -101,7 +101,7 @@
 | Avatar | NEW_SHARED_COMPONENT | 6 apps; see `05` | missing | `02` amendment: `src`, `alt`, `fallback`, `size` | Avatar stays visual-only | P2 | LOW | B5.2 |
 | Combobox | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` Combobox | Searchable selection kept distinct from static select | P1 | HIGH | B5.2 |
 | DataTable | NEW_SHARED_COMPONENT | 6 apps; see `05` | missing | `02` DataTable | Generic headless table only; domain columns and workflows stay local | P1 | HIGH | B5.2 |
-| DateRangePicker | NEW_SHARED_COMPONENT | 7 apps; see `05` | missing | `02` amendment: `value`, `onChange`, `presets`, `minDate`, `maxDate`, optional time bounds | Range selection stays separate from single-date picking while supporting optional start/end times | P2 | HIGH | B5.2 |
+| DateRangePicker | NEW_SHARED_COMPONENT | 7 apps; see `05` | missing | `02` amendment: `value`, `onChange`, optional `changeBehavior`, `presets`, `minDate`, `maxDate`, optional time bounds | Range selection stays separate from single-date picking while supporting optional start/end times and complete-only parent commits when needed | P2 | HIGH | B5.2 |
 | FileUpload | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` FileUpload | Shared upload UX only; transport and storage stay local | P1 | MEDIUM | B5.2 |
 | Image | NEW_SHARED_COMPONENT | 13 apps; see `05` | missing | `02` amendment: `src`, `alt`, `fallback`, `ratio`, `fit` | Shared image rendering only; framework and viewer concerns stay local | P1 | MEDIUM | B5.2 |
 | NavigationMenu | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` amendment: `items`, `orientation`, `collapsed`, `onNavigate` | Route trees and auth gating stay local | P2 | HIGH | B5.2 |

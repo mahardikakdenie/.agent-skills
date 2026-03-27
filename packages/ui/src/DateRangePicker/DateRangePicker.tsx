@@ -1,6 +1,7 @@
 import { CalendarDays, X } from 'lucide-react';
 import * as React from 'react';
 import { isSameDay, startOfDay, startOfMonth } from 'date-fns';
+import type { DateRange as DayPickerDateRange } from 'react-day-picker';
 
 import { cn } from '@repo/helper';
 
@@ -44,6 +45,7 @@ import {
   hasDateRangeValue,
   isDateRangeComplete,
   normalizeDateRangeValue,
+  shouldEmitDateRangeChange,
 } from './DateRangePicker.utils';
 
 function getEarlierTimeValue(...values: Array<string | undefined>) {
@@ -76,6 +78,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       onChange,
       variant = 'default',
       size = 'md',
+      changeBehavior = 'partial',
       presets,
       minDate,
       maxDate,
@@ -109,7 +112,9 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     const hintId = `${triggerId}-hint`;
     const errorId = typeof error === 'string' ? `${triggerId}-error` : undefined;
     const isControlled = value !== undefined;
+    const shouldDeferChange = changeBehavior === 'complete';
     const [uncontrolledValue, setUncontrolledValue] = React.useState<DateRangeValue | null>(null);
+    const [draftValue, setDraftValue] = React.useState<DateRangeValue | null | undefined>(undefined);
     const [open, setOpen] = React.useState(false);
     const [hoveredDate, setHoveredDate] = React.useState<Date | undefined>();
     const [draftStartTime, setDraftStartTime] = React.useState(defaultDateRangePickerStartTimeValue);
@@ -118,13 +123,24 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     const pendingRestartRangeRef = React.useRef<DateRangeValue | null>(null);
     const resolvedMinDate = minDateTime ?? minDate;
     const resolvedMaxDate = maxDateTime ?? maxDate;
-    const selectedRange = React.useMemo(
+    const committedRange = React.useMemo(
       () =>
         normalizeDateRangeValue(isControlled ? value ?? null : uncontrolledValue, {
           preserveTime: withTime,
         }),
       [isControlled, uncontrolledValue, value, withTime],
     );
+    const selectedRange = shouldDeferChange && draftValue !== undefined ? draftValue : committedRange;
+    const calendarSelectedRange = React.useMemo<DayPickerDateRange | undefined>(() => {
+      if (!selectedRange?.from) {
+        return undefined;
+      }
+
+      return {
+        from: selectedRange.from,
+        to: selectedRange.to,
+      };
+    }, [selectedRange]);
     const [visibleMonth, setVisibleMonth] = React.useState(() =>
       getDateRangePickerInitialMonth(selectedRange, resolvedMinDate, resolvedMaxDate),
     );
@@ -233,6 +249,10 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     React.useImperativeHandle(ref, () => triggerRef.current as HTMLButtonElement);
 
     React.useEffect(() => {
+      setDraftValue(undefined);
+    }, [committedRange, shouldDeferChange]);
+
+    React.useEffect(() => {
       setVisibleMonth(getDateRangePickerInitialMonth(selectedRange, resolvedMinDate, resolvedMaxDate));
     }, [resolvedMaxDate, resolvedMinDate, selectedRange]);
 
@@ -270,6 +290,25 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       }
 
       onChange?.(normalizedValue);
+
+      return normalizedValue;
+    };
+
+    const updateSelectedValue = (nextValue: DateRangeValue | null) => {
+      const normalizedValue = normalizeDateRangeValue(nextValue, {
+        preserveTime: withTime,
+      });
+
+      if (shouldEmitDateRangeChange(normalizedValue, changeBehavior)) {
+        if (shouldDeferChange) {
+          setDraftValue(normalizedValue);
+        }
+
+        return commitValue(normalizedValue);
+      }
+
+      setDraftValue(normalizedValue);
+      return normalizedValue;
     };
 
     const applyDraftTimes = (nextValue: DateRangeValue | undefined) => {
@@ -321,9 +360,19 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       setOpen(true);
     };
 
-    const handleClose = () => {
+    const handleClose = (resetIncompleteDraft = true) => {
       pendingRestartRangeRef.current = null;
       setHoveredDate(undefined);
+
+      if (
+        resetIncompleteDraft &&
+        shouldDeferChange &&
+        draftValue != null &&
+        !isDateRangeComplete(draftValue)
+      ) {
+        setDraftValue(undefined);
+      }
+
       setOpen(false);
     };
 
@@ -332,7 +381,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
 
       if (restartRange) {
         pendingRestartRangeRef.current = null;
-        commitValue(restartRange);
+        updateSelectedValue(restartRange);
         setHoveredDate(undefined);
         setVisibleMonth(startOfMonth(restartRange.from as Date));
         return;
@@ -340,14 +389,14 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
 
       const normalizedValue = applyDraftTimes(nextValue);
 
-      commitValue(normalizedValue);
+      updateSelectedValue(normalizedValue);
 
       if (normalizedValue?.from) {
         setVisibleMonth(startOfMonth(normalizedValue.from));
       }
 
       if (isDateRangeComplete(normalizedValue) && !withTime) {
-        handleClose();
+        handleClose(false);
       }
     };
 
@@ -357,7 +406,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       });
 
       pendingRestartRangeRef.current = null;
-      commitValue(normalizedValue);
+      updateSelectedValue(normalizedValue);
       setHoveredDate(undefined);
 
       if (normalizedValue?.from) {
@@ -365,7 +414,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       }
 
       if (!withTime) {
-        handleClose();
+        handleClose(false);
       }
     };
 
@@ -373,7 +422,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       event.preventDefault();
       event.stopPropagation();
       pendingRestartRangeRef.current = null;
-      commitValue(null);
+      updateSelectedValue(null);
       setHoveredDate(undefined);
       triggerRef.current?.focus();
     };
@@ -439,7 +488,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
         },
       );
 
-      commitValue(nextRange);
+      updateSelectedValue(nextRange);
       setDraftStartTime(
         formatDateRangePickerTimeValue(nextRange?.from, defaultDateRangePickerStartTimeValue),
       );
@@ -473,7 +522,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
         },
       );
 
-      commitValue(nextRange);
+      updateSelectedValue(nextRange);
       setDraftEndTime(
         formatDateRangePickerTimeValue(nextRange?.to, defaultDateRangePickerEndTimeValue),
       );
@@ -591,7 +640,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
                     mode="range"
                     month={visibleMonth}
                     onMonthChange={setVisibleMonth}
-                    selected={selectedRange ?? undefined}
+                    selected={calendarSelectedRange}
                     classNames={calendarClassNames}
                     modifiers={previewState?.modifiers}
                     modifiersClassNames={previewModifierClassNames}
@@ -696,7 +745,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
                   mode="range"
                   month={visibleMonth}
                   onMonthChange={setVisibleMonth}
-                  selected={selectedRange ?? undefined}
+                  selected={calendarSelectedRange}
                   classNames={calendarClassNames}
                   modifiers={previewState?.modifiers}
                   modifiersClassNames={previewModifierClassNames}
