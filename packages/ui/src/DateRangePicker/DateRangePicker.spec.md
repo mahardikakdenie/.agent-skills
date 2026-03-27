@@ -15,7 +15,7 @@
 
 `DateRangePicker` is the shared date-range field shell for flows that need a bounded start and end date without embedding app-specific save, apply, or routing behavior into `@repo/ui`. It keeps the authored trigger, preset row, and error markup on `Box`, composes the already-shipped shared `Calendar` in `range` mode, and uses the shared `Popover` surface so the entire date family stays visually and behaviorally aligned.
 
-The public value stays a simple `DateRangeValue | null`, with optional preset shortcuts for common generic ranges such as "This week" or "Last 30 days." In plain date-only mode without presets, the popover chrome stays bare so the shared two-month `Calendar` remains the primary surface instead of being double-framed. When `withTime` is enabled, or when preset chrome is present, the same contract uses a framed composite shell and carries minute-precision start and end times plus UI-enforced `minDateTime` / `maxDateTime` bounds without becoming a separate component. Workflow-specific apply buttons, server-driven presets, query-string sync, and business validation remain local composition.
+The public value stays a simple `DateRangeValue | null`, with optional preset shortcuts for common generic ranges such as "This week" or "Last 30 days." In plain date-only mode without presets, the popover chrome stays bare so the shared two-month `Calendar` remains the primary surface instead of being double-framed. When `withTime` is enabled, or when preset chrome is present, the same contract uses a framed composite shell and carries minute-precision start and end times plus UI-enforced `minDateTime` / `maxDateTime` bounds without becoming a separate component. `changeBehavior` keeps the same controlled `value` / `onChange` contract while letting parents either receive every partial selection (`partial`, default) or only completed ranges (`complete`) without forcing an app-local state adapter. Workflow-specific apply buttons, server-driven presets, query-string sync, and business validation remain local composition.
 
 **When to use:**
 
@@ -39,6 +39,7 @@ The public value stays a simple `DateRangeValue | null`, with optional preset sh
 | Root composition                      | Shared `Popover` + shared `Calendar` in `range` mode   | Reuses shipped overlay and date-grid behavior instead of creating a parallel range implementation.                                                                |
 | Value contract                        | `DateRangeValue \| null`                               | Keeps the shared API decoupled from `react-day-picker` while staying simple for apps.                                                                             |
 | Controlled vs uncontrolled value      | both                                                   | Matches the surrounding date-family patterns and allows lightweight local usage.                                                                                  |
+| Change emission behavior               | `'partial'` by default, optional `'complete'`          | Preserves current shared behavior while allowing apps to defer `onChange` until a full range is selected without hiding in-progress selection inside the picker. |
 | Controlled vs uncontrolled open state | internal only                                          | `02-api-conventions.md` does not require public open-state control here, so the surface stays narrow.                                                             |
 | Presets model                         | optional flat `presets[]` array                        | Covers the recurring shortcut need without turning the component into a workflow shell.                                                                           |
 | Calendar viewport                     | two months                                             | Improves range selection usability while still stacking safely on small screens through shared calendar styling.                                                  |
@@ -54,7 +55,8 @@ The public value stays a simple `DateRangeValue | null`, with optional preset sh
 | Prop             | Type                                      | Default        | Required | Description                                                                                                               |
 | ---------------- | ----------------------------------------- | -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `value`          | `DateRangeValue \| null`                  | internal state | No       | Controlled selected range.                                                                                                |
-| `onChange`       | `(value: DateRangeValue \| null) => void` | `undefined`    | No       | Called after calendar selection, preset selection, or clear.                                                              |
+| `onChange`       | `(value: DateRangeValue \| null) => void` | `undefined`    | No       | Called after calendar selection, preset selection, or clear according to `changeBehavior`.                               |
+| `changeBehavior` | `'partial' \| 'complete'`                 | `'partial'`    | No       | Controls whether parent `onChange` fires for in-progress start-date selections or only after the range is complete.      |
 | `variant`        | `'default' \| 'outline' \| 'ghost'`       | `'default'`    | No       | Applies the shared Input-aligned trigger shell variant.                                                                   |
 | `size`           | `'xs' \| 'sm' \| 'md' \| 'lg'`            | `'md'`         | No       | Applies the shared Input-aligned trigger height and spacing scale.                                                        |
 | `presets`        | `DateRangePickerPreset[]`                 | `[]`           | No       | Optional generic shortcut ranges rendered above the calendar.                                                             |
@@ -106,7 +108,7 @@ export interface DateRangePickerPreset {
 | State          | Visual Behavior                                                                                                                                                   | Accessibility                                                                    |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Default        | Trigger shows `Select date range...` in muted text                                                                                                                | Placeholder text becomes the accessible name if no external label is provided    |
-| Partial range  | Trigger shows the selected start date followed by `- ...`                                                                                                         | Keeps the popover open so the end date can be completed                          |
+| Partial range  | Trigger shows the selected start date followed by `- ...`; in `changeBehavior="complete"` this preview stays local until an end date is chosen                 | Keeps the popover open so the end date can be completed                          |
 | Range preview  | Calendar shows a soft contiguous preview from the chosen start date to the hovered or focused candidate end date                                                  | Supports mouse and keyboard exploration before the end date is committed         |
 | Complete range | Trigger shows `from - to`                                                                                                                                         | Selected calendar range is announced through the visible trigger text            |
 | Reselection    | Clicking a new day after a complete range starts a fresh partial range and keeps the calendar open                                                                | Prevents accidental close while the user resets the range                        |
@@ -172,7 +174,17 @@ export interface DateRangePickerPreset {
 <DateRangePicker value={travelWindow} onChange={setTravelWindow} clearable />
 ```
 
-### 2. With presets
+### 2. Complete-only parent updates
+
+```tsx
+<DateRangePicker
+  value={reportWindow}
+  onChange={setReportWindow}
+  changeBehavior="complete"
+/>
+```
+
+### 3. With presets
 
 ```tsx
 <DateRangePicker
@@ -191,7 +203,7 @@ export interface DateRangePickerPreset {
 />
 ```
 
-### 3. With bounds and validation
+### 4. With bounds and validation
 
 ```tsx
 <DateRangePicker
@@ -203,7 +215,7 @@ export interface DateRangePickerPreset {
 />
 ```
 
-### 4. With time entry
+### 5. With time entry
 
 ```tsx
 <DateRangePicker
@@ -216,7 +228,7 @@ export interface DateRangePickerPreset {
 />
 ```
 
-### 5. Shared form composition
+### 6. Shared form composition
 
 ```tsx
 <FormField
@@ -240,6 +252,7 @@ export interface DateRangePickerPreset {
 | Do                                                                                       | Don't                                                                                                    |
 | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Use `presets` only for generic shortcut ranges.                                          | Add business-specific save/apply or API-driven preset behavior to the shared component.                  |
+| Use `changeBehavior="complete"` when the parent should only react to fully selected ranges. | Build an app-local adapter just to suppress partial `onChange` emissions from the shared picker.         |
 | Use `minDate` and `maxDate` for generic range boundaries.                                | Push domain validation, eligibility logic, or routing sync into `@repo/ui`.                              |
 | Compose visible labels through shared `Form` primitives or button `aria-*` props.        | Widen the shared API with app-local `label`, `onSave`, or `onApply` props just to match one app wrapper. |
 | Use `clearable` when parent surfaces need an explicit reset action.                      | Rely on hidden workflow buttons or local wrapper state to clear the shared value.                        |
@@ -255,6 +268,7 @@ export interface DateRangePickerPreset {
 - [x] `Basic`
 - [x] `Variants`
 - [x] `Sizes`
+- [x] `Complete Only Change`
 - [x] `With Presets`
 - [x] `With Bounds`
 - [x] `Clearable`
@@ -269,6 +283,7 @@ Roadmap alignment:
 - `DateRangePicker.Basic` -> `Basic`
 - `DateRangePicker.Variants` -> `Variants`
 - `DateRangePicker.Sizes` -> `Sizes`
+- `DateRangePicker.CompleteOnlyChange` -> `Complete Only Change`
 - `DateRangePicker.Presets` -> `With Presets`
 - `DateRangePicker.Invalid` -> `Error State`
 - `DateRangePicker.WithTime` -> `With Time`
@@ -294,3 +309,4 @@ Roadmap alignment:
 | 2026-03-13 | Aligned public `variant` / `size` props and required Storybook `Variants` / `Sizes` coverage with the shared Input contract |
 | 2026-03-17 | Updated trigger-shell and inline time-input focus guidance to the calmer Wave 1 recipe while keeping preset buttons deferred |
 | 2026-03-17 | Moved preset buttons onto the shared compact-control focus recipe as part of Wave 2 |
+| 2026-03-27 | Added `changeBehavior` so parents can opt into complete-only `onChange` emission while the picker still renders in-progress range selection internally |

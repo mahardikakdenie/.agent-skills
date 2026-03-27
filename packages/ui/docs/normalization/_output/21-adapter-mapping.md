@@ -514,6 +514,7 @@ Direct adoption guidance:
 - Existing `defaultFromDate`, `defaultEndDate`, `onDateChange`, and similar split start/end callbacks should normalize to one `value` object plus `onChange`.
 - Existing min/max range bounds map directly to `minDate` and `maxDate`; date-time range bounds map to `minDateTime` and `maxDateTime` when `withTime` is enabled.
 - Existing reset affordances should collapse into `clearable` plus `onChange(null)`.
+- Legacy flows that should only commit after both boundaries are chosen should map to `changeBehavior="complete"` instead of adding an app-local buffering adapter.
 - Existing generic shortcuts such as "last 7 days" or "this month" should normalize to `presets`, provided they do not encode business rules or workflow side effects.
 - Plain date-only range pickers should keep the shared two-month calendar as the main bare surface; framed popover chrome belongs to `withTime` or explicit preset rows.
 - Shared form composition should provide visible labels through `FormLabel` and `FormControl` rather than widening the picker contract with another label prop.
@@ -523,6 +524,11 @@ Keep local:
 - Save/apply buttons, explicit submit flows, and business-specific side effects attached to range selection.
 - Domain-specific or server-driven preset logic, route/query synchronization, and analytics orchestration.
 - Month-only, quarter, or localized workflow pickers that exceed the shared start/end range contract.
+
+Admin-portal Batch 8 / Batch 4 note:
+
+- The dashboard filter picker can now migrate directly to shared `DateRangePicker` by mapping the existing shared `dateRange` state to `value`, wiring the existing setter to `onChange`, and setting `changeBehavior="complete"` so URL/query updates still wait for a full range.
+- No app-local adapter state is required; the shared picker keeps incomplete selections visible internally until the end date is chosen.
 
 ## Avatar
 

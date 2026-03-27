@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-03-27 - DateRangePicker Complete-Only Change Behavior Landed
+
+Changed:
+
+- Extended `packages/ui/src/DateRangePicker` with a generic `changeBehavior` prop so shared consumers can preserve either partial-emission or complete-only parent updates on the existing `value` / `onChange` contract.
+- Kept the default shared behavior unchanged at `changeBehavior='partial'`, while adding internal draft buffering so complete-only mode still shows in-progress range selection without an app-local adapter.
+- Realigned `02-api-conventions.md`, `11-master-component-roadmap.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` so the normalization output set now documents the upstream migration path explicitly.
+
+Impact:
+
+- Downstream apps with legacy complete-only date-range commits can now adopt shared `DateRangePicker` directly by setting `changeBehavior='complete'`.
+- The shared package remains app-agnostic because the new API is a generic emission policy, not route, query, or business logic.
+
+---
+
 ## 2026-03-26 - Combobox Parent-Search And Create-Option Contract Landed
 
 Changed:

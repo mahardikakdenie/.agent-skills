@@ -1044,6 +1044,7 @@ export interface DateRangeValue {
 export interface DateRangePickerProps {
   value?: DateRangeValue | null
   onChange?: (value: DateRangeValue | null) => void
+  changeBehavior?: 'partial' | 'complete'  // default: 'partial'
   variant?: 'default' | 'outline' | 'ghost'
   size?: 'xs' | 'sm' | 'md' | 'lg'
   presets?: Array<{ label: string; value: DateRangeValue }>
@@ -1066,6 +1067,10 @@ Time policy:
 - `withTime` enables minute-precision start and end time entry while keeping the public range contract as plain `Date` values.
 - `timezone` is a display-context hint only. Any timezone conversion or server-time synchronization remains app-local.
 - `minDateTime` and `maxDateTime` are enforced in the picker UI across both the date and time portions when `withTime` is enabled.
+
+Change policy:
+- `changeBehavior='partial'` is the default and preserves the current shared behavior of emitting partial selections through `onChange`.
+- `changeBehavior='complete'` defers parent `onChange` until both boundaries are selected while the picker still previews the in-progress range internally.
 
 Surface policy:
 - Trigger styling follows the shared Input family through public `variant` and `size` props.
