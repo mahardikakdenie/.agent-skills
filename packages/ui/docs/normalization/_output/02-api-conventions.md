@@ -821,6 +821,7 @@ Story group: `Inputs`
 export interface FileUploadProps {
   value?: File | File[] | null
   onChange?: (file: File | File[] | null) => void
+  displayValue?: string | string[] | null
   accept?: string
   multiple?: boolean
   disabled?: boolean
@@ -832,6 +833,9 @@ export interface FileUploadProps {
   className?: string
 }
 ```
+
+Migration note:
+- Persisted filename strings or already-uploaded file labels should map to `displayValue`, while `value` stays on the shared `File | File[] | null` contract.
 
 Story group: `Inputs`
 

@@ -1,6 +1,7 @@
 import type * as React from 'react';
 
 export type FileUploadValue = File | File[] | null;
+export type FileUploadDisplayValue = string | string[] | null;
 
 export interface FileUploadProps
   extends Omit<
@@ -9,6 +10,7 @@ export interface FileUploadProps
   > {
   value?: FileUploadValue;
   onChange?: (file: FileUploadValue) => void;
+  displayValue?: FileUploadDisplayValue;
   accept?: string;
   multiple?: boolean;
   disabled?: boolean;

@@ -2,8 +2,23 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-27
+> Last reconciled: 2026-03-28
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-03-28 - FileUpload Display-Value Contract Synced
+
+Changed:
+
+- Realigned the normalization `FileUpload` API contract with the shipped `packages/ui/src/FileUpload` surface by documenting `displayValue?: string | string[] | null` alongside the existing `value` and `onChange` contract.
+- Updated the implementation batch history so Wave B5.2 no longer reads as if `FileUpload` stopped at the original `File`-only selection surface.
+- Kept the normalization boundary unchanged: `displayValue` is only for externally supplied filename labels, while upload transport, file transforms, previews, and workflow-specific orchestration remain app-local.
+
+Impact:
+
+- Downstream apps that store persisted filenames separately can now rely on the `_output` docs without inferring the `displayValue` escape hatch from source or Storybook alone.
+- The normalization set stays internally consistent with the existing adapter guidance, which already routes legacy string-based filename state through `displayValue` instead of widening `value`.
 
 ---
 

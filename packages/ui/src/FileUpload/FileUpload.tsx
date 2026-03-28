@@ -5,7 +5,7 @@ import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
 import { Label } from '../Label';
-import type { FileUploadProps, FileUploadValue } from './FileUpload.types';
+import type { FileUploadDisplayValue, FileUploadProps, FileUploadValue } from './FileUpload.types';
 import {
   fileUploadActionButtonVariants,
   fileUploadBodyVariants,
@@ -32,6 +32,16 @@ function normalizeFileUploadValue(value: FileUploadValue | undefined): File[] {
   }
 
   return Array.isArray(value) ? value : [value];
+}
+
+function normalizeFileUploadDisplayValue(value: FileUploadDisplayValue | undefined): string[] {
+  if (!value) {
+    return [];
+  }
+
+  const displayValues = Array.isArray(value) ? value : [value];
+
+  return displayValues.map(getDisplayFileName).filter(Boolean);
 }
 
 function resolveFileUploadChangeValue(files: File[], multiple: boolean): FileUploadValue {
@@ -61,6 +71,19 @@ function formatAcceptLabel(accept: string): string {
     .filter(Boolean)
     .map((token) => token.replace(/^\./, '').toUpperCase())
     .join(', ');
+}
+
+function getDisplayFileName(displayValue: string): string {
+  const normalizedValue = displayValue.trim();
+
+  if (!normalizedValue) {
+    return '';
+  }
+
+  const pathSegments = normalizedValue.split('/');
+  const fileName = pathSegments[pathSegments.length - 1] ?? normalizedValue;
+
+  return fileName.split('?')[0] ?? fileName;
 }
 
 function getFileIdentity(file: File): string {
@@ -95,22 +118,22 @@ function containsDraggedFiles(dataTransfer: DataTransfer | null | undefined): bo
 
 function getSelectionTitle({
   dragActive,
-  files,
+  selectionCount,
   multiple,
 }: {
   dragActive: boolean;
-  files: File[];
+  selectionCount: number;
   multiple: boolean;
 }): string {
   if (dragActive) {
     if (multiple) {
-      return files.length > 0 ? 'Drop files to add' : 'Drop files to upload';
+      return selectionCount > 0 ? 'Drop files to add' : 'Drop files to upload';
     }
 
-    return files.length > 0 ? 'Drop file to replace' : 'Drop file to upload';
+    return selectionCount > 0 ? 'Drop file to replace' : 'Drop file to upload';
   }
 
-  if (files.length === 0) {
+  if (selectionCount === 0) {
     return multiple ? 'Drag and drop files here' : 'Drag and drop a file here';
   }
 
@@ -120,32 +143,34 @@ function getSelectionTitle({
 function getSelectionSummary({
   accept,
   dragActive,
-  files,
+  selectionCount,
   maxSize,
   multiple,
 }: {
   accept?: string;
   dragActive: boolean;
-  files: File[];
+  selectionCount: number;
   maxSize?: number;
   multiple: boolean;
 }): string {
   if (dragActive) {
     if (multiple) {
-      return files.length > 0
+      return selectionCount > 0
         ? 'Release to append these files to the current selection.'
         : 'Release to select these files.';
     }
 
-    return files.length > 0
+    return selectionCount > 0
       ? 'Release to replace the current file.'
       : 'Release to select this file.';
   }
 
-  if (files.length > 0) {
-    return multiple
-      ? `${files.length} files selected. Review the list below or keep adding more.`
-      : '1 file selected. Review the item below or replace it anytime.';
+  if (selectionCount > 0) {
+    if (multiple || selectionCount > 1) {
+      return `${selectionCount} files selected. Review the list below or keep adding more.`;
+    }
+
+    return '1 file selected. Review the item below or replace it anytime.';
   }
 
   const hints = [
@@ -178,6 +203,10 @@ function getFileMetaLabel(file: File): string {
     : formatBytes(file.size);
 }
 
+function getDisplayValueKey(displayValue: string, index: number): string {
+  return `${displayValue}-${index}`;
+}
+
 /**
  * Shared file-selection field shell with optional list rendering, item-level
  * remove actions, and generic max-size validation. Upload transport, previews,
@@ -188,6 +217,7 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
     const {
       value,
       onChange,
+      displayValue,
       accept,
       multiple = false,
       disabled = false,
@@ -219,7 +249,9 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
     const summaryId = `${inputId}-summary`;
     const messageId = typeof error === 'string' || localError ? `${inputId}-message` : undefined;
     const files = isControlled ? normalizeFileUploadValue(value) : uncontrolledFiles;
-    const hasFiles = files.length > 0;
+    const displayValues = files.length === 0 ? normalizeFileUploadDisplayValue(displayValue) : [];
+    const selectionCount = files.length > 0 ? files.length : displayValues.length;
+    const hasFiles = selectionCount > 0;
     const invalid = Boolean(error) || Boolean(localError);
     const message = typeof error === 'string' ? error : localError;
     const describedBy =
@@ -233,12 +265,17 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
         : hasFiles
           ? 'default'
           : 'muted';
-    const actionLabel = getSelectionTitle({ dragActive: isDragActive, files, multiple });
     const selectionSummary = getSelectionSummary({
       accept,
       dragActive: isDragActive,
-      files,
+      selectionCount,
       maxSize,
+      multiple,
+    });
+    const canClearDisplayValue = showRemoveButtons && files.length === 0 && displayValues.length === 1;
+    const resolvedActionLabel = getSelectionTitle({
+      dragActive: isDragActive,
+      selectionCount,
       multiple,
     });
 
@@ -391,6 +428,17 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
       inputRef.current?.focus();
     };
 
+    const handleClearDisplayValue = () => {
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
+
+      setLocalError(null);
+      onChange?.(null);
+      onClear?.();
+      inputRef.current?.focus();
+    };
+
     return (
       <Box data-slot="file-upload-field" className={cn(fileUploadFieldVariants(), className)}>
         {label ? (
@@ -463,7 +511,7 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
                     dragActive: isDragActive,
                   })}
                 >
-                  {actionLabel}
+                  {resolvedActionLabel}
                 </Box>
                 <Box
                   as="span"
@@ -480,37 +528,72 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
 
         {hasFiles ? (
           <Box as="ul" data-slot="file-upload-list" className={fileUploadListVariants()}>
-            {files.map((file, index) => (
-              <Box as="li" key={getFileKey(file, index)} className={fileUploadListItemVariants()}>
-                <Box as="span" aria-hidden="true" className={fileUploadFileIconVariants()}>
-                  <FileText />
-                </Box>
-                <Box className={fileUploadFileBodyVariants()}>
-                  <Box as="span" className={fileUploadFileNameVariants()}>
-                    {file.name}
-                  </Box>
-                  <Box as="span" className={fileUploadFileMetaVariants()}>
-                    {getFileMetaLabel(file)}
-                  </Box>
-                </Box>
-                {showRemoveButtons ? (
+            {files.length > 0
+              ? files.map((file, index) => (
                   <Box
-                    as="button"
-                    type="button"
-                    aria-label={`Remove ${file.name}`}
-                    className={fileUploadActionButtonVariants()}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                    }}
-                    onClick={() => {
-                      handleRemove(index);
-                    }}
+                    as="li"
+                    key={getFileKey(file, index)}
+                    className={fileUploadListItemVariants()}
                   >
-                    <X aria-hidden="true" className="h-4 w-4" />
+                    <Box as="span" aria-hidden="true" className={fileUploadFileIconVariants()}>
+                      <FileText />
+                    </Box>
+                    <Box className={fileUploadFileBodyVariants()}>
+                      <Box as="span" className={fileUploadFileNameVariants()}>
+                        {file.name}
+                      </Box>
+                      <Box as="span" className={fileUploadFileMetaVariants()}>
+                        {getFileMetaLabel(file)}
+                      </Box>
+                    </Box>
+                    {showRemoveButtons ? (
+                      <Box
+                        as="button"
+                        type="button"
+                        aria-label={`Remove ${file.name}`}
+                        className={fileUploadActionButtonVariants()}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                        }}
+                        onClick={() => {
+                          handleRemove(index);
+                        }}
+                      >
+                        <X aria-hidden="true" className="h-4 w-4" />
+                      </Box>
+                    ) : null}
                   </Box>
-                ) : null}
-              </Box>
-            ))}
+                ))
+              : displayValues.map((displayItem, index) => (
+                  <Box
+                    as="li"
+                    key={getDisplayValueKey(displayItem, index)}
+                    className={fileUploadListItemVariants()}
+                  >
+                    <Box as="span" aria-hidden="true" className={fileUploadFileIconVariants()}>
+                      <FileText />
+                    </Box>
+                    <Box className={fileUploadFileBodyVariants()}>
+                      <Box as="span" className={fileUploadFileNameVariants()}>
+                        {displayItem}
+                      </Box>
+                    </Box>
+                    {canClearDisplayValue ? (
+                      <Box
+                        as="button"
+                        type="button"
+                        aria-label={`Remove ${displayItem}`}
+                        className={fileUploadActionButtonVariants()}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                        }}
+                        onClick={handleClearDisplayValue}
+                      >
+                        <X aria-hidden="true" className="h-4 w-4" />
+                      </Box>
+                    ) : null}
+                  </Box>
+                ))}
           </Box>
         ) : null}
 

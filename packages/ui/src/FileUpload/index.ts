@@ -1,2 +1,2 @@
 export { FileUpload } from './FileUpload';
-export type { FileUploadProps, FileUploadValue } from './FileUpload.types';
+export type { FileUploadDisplayValue, FileUploadProps, FileUploadValue } from './FileUpload.types';

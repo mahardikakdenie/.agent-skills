@@ -3,7 +3,7 @@ import * as React from 'react';
 import { fn } from 'storybook/test';
 
 import { FileUpload } from './FileUpload';
-import type { FileUploadProps, FileUploadValue } from './FileUpload.types';
+import type { FileUploadDisplayValue, FileUploadProps, FileUploadValue } from './FileUpload.types';
 
 function createFile(name: string, type: string, bytes: number) {
   return new File([new Uint8Array(bytes)], name, { type });
@@ -14,22 +14,33 @@ const claimPng = createFile('claim.png', 'image/png', 96 * 1024);
 
 function ControlledStoryView({
   initialValue = null,
+  initialDisplayValue = null,
   onChange,
   onClear,
   ...props
-}: FileUploadProps & { initialValue?: FileUploadValue }) {
+}: FileUploadProps & {
+  initialValue?: FileUploadValue;
+  initialDisplayValue?: FileUploadDisplayValue;
+}) {
   const [selectedValue, setSelectedValue] = React.useState<FileUploadValue>(initialValue);
+  const [selectedDisplayValue, setSelectedDisplayValue] =
+    React.useState<FileUploadDisplayValue>(initialDisplayValue);
 
   return (
     <FileUpload
       {...props}
       value={selectedValue}
+      displayValue={selectedDisplayValue}
       onChange={(nextValue) => {
         setSelectedValue(nextValue);
+        if (nextValue) {
+          setSelectedDisplayValue(null);
+        }
         onChange?.(nextValue);
       }}
       onClear={() => {
         setSelectedValue(null);
+        setSelectedDisplayValue(null);
         onClear?.();
       }}
     />
@@ -74,6 +85,9 @@ const meta = {
       control: 'boolean',
     },
     value: {
+      control: false,
+    },
+    displayValue: {
       control: false,
     },
     onChange: {
@@ -165,6 +179,23 @@ export const ClearableSelection: Story = {
       description: {
         story:
           'Shows the item-level remove action and the richer selected-file card treatment for an already chosen file.',
+      },
+    },
+  },
+};
+
+export const ExistingFileLabel: Story = {
+  args: {
+    clearable: true,
+  },
+  render: (args) => (
+    <ControlledStoryView {...args} initialDisplayValue="already-uploaded-proof.pdf" />
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the generic externally supplied filename label contract for already-uploaded files while keeping file selection itself on the shared File-based API.',
       },
     },
   },
