@@ -1191,3 +1191,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Files changed: `none`
 - Next required upstream action: `Publish approved adapter guidance or extend the shared FileUpload contract so admin-portal can preserve existing filename-string display state and the current file/base64/fileName callback behavior without introducing non-trivial app-local adapter logic.`
 
+## Batch 8 / Batch 4 - UploadFile - 2026-03-28
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Shared export used: `FileUpload`
+- Migration mode: `adapter`
+- Adapter file: `apps/admin-portal/src/components/ui/FileUpload.tsx`
+- Usage sites updated: [`apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx`]
+- Local file deleted: [`apps/admin-portal/src/components/ui/Fields/UploadFile/index.tsx`]
+- Typecheck: PASS
+- Lint: PASS
+- Build: PASS
+- Smoke routes: `SKIPPED - manual verification pending`
+- Parity notes: `manual verification pending`
+- Post-Migration Improvement Candidates: [`packages/ui/src/FileUpload/FileUpload.tsx` - if manual parity review flags the shared dropzone copy as too different from the legacy placeholder-only affordance, consider an upstream idle-copy customization hook that keeps the shared accessibility contract intact without reintroducing app-local file-input shells`]
+
