@@ -3996,13 +3996,13 @@
 ### SelectPhoneCode
 
 - **File:** src/components/ui/select-phone-code.tsx
-- **Classification:** NEW_SHARED_COMPONENT
-- **Batch:** 4
-- **@repo/ui status:** missing
-- **API delta:** N/A (@repo/ui export missing)
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** exists via `Select`
+- **API delta:** App-local phone-code wrapper should continue composing shared `Select`; do not treat it as a standalone shared-ui intake.
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
-- **Reason kept app-local:** N/A
+- **Risk notes:** Wrapper is specific to the admin-portal user form, depends on app-owned country metadata, and renders `next/image` flag cells around the shared select primitive.
+- **Reason kept app-local:** Queue correction - this is a domain-specific compatibility wrapper on top of shared `Select`, not a canonical shared component target.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none

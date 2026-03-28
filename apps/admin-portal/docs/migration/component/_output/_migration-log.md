@@ -1284,3 +1284,20 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Queue impact: `The prior 2026-03-29 BLOCKED entry is superseded as a queue-selection outcome. Future admin-portal work should keep the wrapper API local and only share the loading primitive layer.`
 - Next action: `Do not select Loading as a standalone Batch 8 / Batch 4 component in future admin-portal runs.`
 
+## Batch 8 / Batch 4 - SelectPhoneCode - 2026-03-29 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `export missing`
+- Evidence checked: [`apps/admin-portal/docs/migration/component/_output/_audit-report.md` entry for `SelectPhoneCode`, `apps/admin-portal/src/components/ui/select-phone-code.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-form.tsx` usage, `packages/ui/src/index.ts`, `packages/ui/src/Select/Select.spec.md`, `packages/ui/src/Combobox/Combobox.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` Select and Combobox guidance]
+- Files changed: `none`
+- Next required upstream action: `Reconcile SelectPhoneCode out of the standalone Batch 4 queue or publish an approved shared replacement path first. Today @repo/ui does not export/spec a canonical SelectPhoneCode component, and the adapter guidance treats phone-code pickers as app-local wrappers on top of shared Select or Combobox rather than a standalone shared target.`
+
+## Batch 8 / Batch 4 - SelectPhoneCode - 2026-03-29 - CORRECTION
+
+- Decision: `Remove SelectPhoneCode from the standalone Batch 4 / shared-ui queue.`
+- Rationale: `SelectPhoneCode` is an admin-portal-specific phone-code wrapper used by the user form. It already composes shared `Select`, depends on app-owned country metadata, and renders Next.js image cells, so it should remain app-local rather than being treated as a canonical shared component target.
+- Output docs updated: [`_audit-report.md`, `_component-backlog.csv`, `_per-app-baseline-summary.md`, `_parity-checklist.md`]
+- Queue impact: `The prior 2026-03-29 BLOCKED entry is superseded as a queue-selection outcome. Future work should keep the wrapper local and only share the underlying select primitive.`
+- Next action: `Do not select SelectPhoneCode as a standalone Batch 8 / Batch 4 component in future admin-portal runs.`
+

@@ -232,7 +232,7 @@
 "Piechart","KEEP_APP_LOCAL","N/A","P3","MEDIUM","src/components/ui/recharts/piechart.tsx","","XS","MEDIUM","YES","LOW","prop-injection","NO","LOW","prop-injection - convert domain-shaped inputs into plain props for a reusable shell",""
 "TablePolicy","KEEP_APP_LOCAL","N/A","P3","MEDIUM","src/components/ui/recharts/table-policy.tsx","","XS","MEDIUM","YES","LOW","prop-injection","NO","LOW","prop-injection - convert domain-shaped inputs into plain props for a reusable shell",""
 "Select","NEW_SHARED_COMPONENT","4","P1","MEDIUM","src/components/ui/select.tsx","","M","MEDIUM","NO","NONE","none","NO","","","Inputs"
-"SelectPhoneCode","NEW_SHARED_COMPONENT","4","P0","HIGH","src/components/ui/select-phone-code.tsx","","L","HIGH","NO","NONE","none","NO","","","Inputs"
+"SelectPhoneCode","KEEP_APP_LOCAL","N/A","P0","HIGH","src/components/ui/select-phone-code.tsx","Select","L","HIGH","NO","NONE","none","NO","NONE","phone-code picker stays app-local; keep composing shared Select with app-owned country metadata and Next.js image cells instead of queuing standalone Phase 04 intake","Inputs"
 "Spinner","NEW_SHARED_COMPONENT","4","P2","LOW","src/components/ui/spinner.tsx","","S","LOW","NO","NONE","none","NO","","","Feedback"
 "Switch","NEW_SHARED_COMPONENT","4","P1","MEDIUM","src/components/ui/switch.tsx","","M","MEDIUM","NO","NONE","none","NO","","","Inputs"
 "Table","NEW_SHARED_COMPONENT","4","P1","MEDIUM","src/components/ui/table.tsx","","M","MEDIUM","NO","NONE","none","NO","","","Data Display"

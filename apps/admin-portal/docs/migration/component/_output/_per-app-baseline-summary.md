@@ -44,9 +44,9 @@
 - Popover (src/components/ui/popover.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - RadioGroup (src/components/ui/radio-group.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Select (src/components/ui/select.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
-- SelectPhoneCode (src/components/ui/select-phone-code.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 
 ## Queue Corrections
+- SelectPhoneCode (src/components/ui/select-phone-code.tsx): removed from the standalone Batch 4 shared-ui queue. It is an admin-portal-specific phone-code wrapper for the user form that already composes shared `Select`; keep the wrapper local and do not treat it as a canonical shared component target.
 - SelectAutocomplete (src/components/ui/Fields/SelectAutocomplete/index.tsx): removed from the standalone Batch 4 shared-ui queue. Searchable selection is already normalized to shared `Combobox`; future admin-portal work should migrate the wrapper's usage site to `Combobox` rather than treating `SelectAutocomplete` as a second shared component target.
 - Loading (src/components/ui/loading.tsx, src/components/ui/Loading/index.tsx): removed from the standalone Batch 4 shared-ui queue. Shared loading scope is the `Spinner` / `Skeleton` primitive layer only; admin-portal keeps the wrapper shells local and now composes shared `Spinner` inside them instead of treating `Loading` as a canonical shared component target.
 - Spinner (src/components/ui/spinner.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
