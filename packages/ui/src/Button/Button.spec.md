@@ -16,6 +16,7 @@
 `Button` is the shared action primitive for calls to action, inline actions, form submission, and low-level link-like affordances that need a consistent token-driven visual contract across apps. It stays app-agnostic by exposing only presentational variants, size, loading/disabled states, icon slots, and optional `asChild` composition.
 
 Cross-app baselines converge on a flat API: variant, size, loading, disabled, and icon support. The shared contract deliberately avoids app-specific routing, submit orchestration, or domain booleans, while still preserving common legacy needs such as destructive/warning emphasis and polymorphic rendering.
+The canonical size baseline now aligns `xs`, `sm`, `md`, and `lg` by height with the shared field-shell family used by `Input` and `DatePicker`, so adjacent controls do not need compensating size props. `xl` remains the action-only extension for higher-emphasis layouts.
 
 **When to use:**
 
@@ -76,11 +77,11 @@ Cross-app baselines converge on a flat API: variant, size, loading, disabled, an
 
 | Size | Behavior              | Intended use                                |
 | ---- | --------------------- | ------------------------------------------- |
-| `xs` | Tightest density      | Dense tables and compact inline actions.    |
-| `sm` | Small action control  | Secondary toolbars and grouped actions.     |
-| `md` | Default size          | Standard form and page actions.             |
-| `lg` | Larger action control | Prominent card and modal actions.           |
-| `xl` | Largest shared size   | High-emphasis hero or confirmation actions. |
+| `xs` | Tightest density aligned to compact field shells | Dense tables and compact inline actions.    |
+| `sm` | Small action control aligned to shared field shells | Secondary toolbars and grouped actions.     |
+| `md` | Default size aligned with shared field-shell controls | Standard form and page actions.             |
+| `lg` | Larger action control aligned to prominent field shells | Prominent card and modal actions.           |
+| `xl` | Action-only extension beyond the shared field-shell range | High-emphasis hero or confirmation actions. |
 
 ---
 
@@ -196,3 +197,4 @@ Cross-app baselines converge on a flat API: variant, size, loading, disabled, an
 | ---------- | ------------------- |
 | 2026-03-10 | Initial Button spec |
 | 2026-03-17 | Normalized Button focus to the shared compact-control recipe and removed the detached offset halo |
+| 2026-03-28 | Realigned Button size heights so `xs` through `lg` match the shared field-shell control baseline used by `Input` and `DatePicker` |

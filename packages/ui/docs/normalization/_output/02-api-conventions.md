@@ -170,6 +170,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 Story group: `Buttons`
 
+Sizing note:
+- `Button` keeps the shared action-control size family `xs | sm | md | lg | xl`, default `md`.
+- `xs`, `sm`, `md`, and `lg` align by height with the shared field-shell family used by `Input`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, and `MonthPicker`, so adjacent action and field controls do not need compensating size overrides.
+- `xl` remains the action-only extension for higher-emphasis layouts and does not imply a matching field-shell size.
+
 ---
 
 ### Input
