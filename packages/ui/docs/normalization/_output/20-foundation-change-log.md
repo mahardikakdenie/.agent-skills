@@ -37,6 +37,21 @@ Impact:
 
 ---
 
+## 2026-03-29 - Loading Queue Correction Reconciled To Shared Spinner Primitive
+
+Changed:
+
+- Corrected the normalization interpretation for admin-portal `Loading` wrappers so they no longer read as standalone shared-component intake candidates.
+- Reaffirmed the canonical loading boundary: `Spinner` and `Skeleton` are the shared primitives, while loading wrappers, mounted-content blockers, and suspense fallback shells stay app-local composition.
+- Updated `21-adapter-mapping.md` so the admin-portal queue correction is explicit and downstream reruns do not keep selecting `Loading` as if `@repo/ui` needed a canonical wrapper export.
+
+Impact:
+
+- Downstream app queues can stop treating `Loading` / `LoadingWrapper` shells as pending Phase 04 shared-ui work when the real migration is only primitive adoption inside the local wrapper.
+- Admin-portal can keep its wrapper API and compose shared `Spinner` internally without creating a second shared loading identity beyond the existing primitive layer.
+
+---
+
 ## 2026-03-28 - FileUpload Display-Value Contract Synced
 
 Changed:
