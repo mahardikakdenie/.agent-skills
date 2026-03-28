@@ -256,6 +256,12 @@ Direct adoption guidance:
 - Keep inline swap behavior, full-page loading swaps, mounted-content blockers, and suspense fallback layout in app code, even when the visual indicator itself comes from shared primitives.
 - Reuse local wrapper components per app when they encode recurring layout only for that app, but do not treat them as migration targets into `@repo/ui`.
 
+Admin-portal queue correction note:
+
+- `apps/admin-portal/src/components/ui/loading.tsx` and `apps/admin-portal/src/components/ui/Loading/index.tsx` should not stay in the standalone Batch 4 queue.
+- Reconcile those entries to `KEEP_APP_LOCAL`, retain the wrapper API in the app, and swap the internal visual indicator to shared `Spinner` instead of inventing a canonical shared `Loading` wrapper.
+- The migration boundary here is primitive adoption, not wrapper extraction: preserve the local `isLoading`, `overlay`, `fullScreen`, `loadingText`, and mounted-content blocking behavior while converging only the spinner implementation.
+
 Keep local:
 
 - Branded logo loaders, campaign animations, and library-specific art direction.
