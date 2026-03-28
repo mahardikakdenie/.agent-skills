@@ -204,7 +204,7 @@
 "Dialog","NEW_SHARED_COMPONENT","4","P0","HIGH","src/components/ui/dialog.tsx","","L","HIGH","NO","NONE","none","NO","","","Overlays"
 "Drewer","NEW_SHARED_COMPONENT","4","P0","HIGH","src/components/ui/drewer.tsx","","L","HIGH","NO","NONE","none","NO","","","Overlays"
 "DropdownMenu","NEW_SHARED_COMPONENT","4","P0","HIGH","src/components/ui/dropdown-menu.tsx","","L","HIGH","NO","NONE","none","NO","","","Overlays"
-"SelectAutocomplete","NEW_SHARED_COMPONENT","4","P0","HIGH","src/components/ui/Fields/SelectAutocomplete/index.tsx","","L","HIGH","NO","NONE","none","NO","","","Inputs"
+"SelectAutocomplete","KEEP_APP_LOCAL","N/A","P0","HIGH","src/components/ui/Fields/SelectAutocomplete/index.tsx","Combobox","L","HIGH","NO","NONE","none","NO","NONE","canonical target reconciled to shared Combobox; do not treat wrapper as standalone Phase 04 intake","Inputs"
 "UploadFile","NEW_SHARED_COMPONENT","4","P0","HIGH","src/components/ui/Fields/UploadFile/index.tsx","","L","HIGH","NO","NONE","none","NO","","","Inputs"
 "Form","NEW_SHARED_COMPONENT","4","P0","HIGH","src/components/ui/form.tsx","","L","HIGH","NO","NONE","none","NO","","","Inputs"
 "Image","SPLIT","1.5","P2","LOW","src/components/ui/image.tsx","","M","LOW","YES","HIGH","render-prop","DONE","HIGH","split into ImageContainer + OptimizeImageShell",""

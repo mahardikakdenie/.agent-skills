@@ -6,8 +6,8 @@
 
 ## Component Count Summary
 - Total components audited: 275
-- KEEP_APP_LOCAL: 235
-- NEW_SHARED_COMPONENT: 36
+- KEEP_APP_LOCAL: 236
+- NEW_SHARED_COMPONENT: 35
 - SPLIT: 4
 
 ## Top 5 Highest-Parity-Risk Items
@@ -28,7 +28,7 @@
 - Calendar (src/components/ui/calendar.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Card (src/components/ui/card.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Checkbox (src/components/ui/checkbox.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
-- Combobox (src/components/ui/combobox.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
+- Combobox (src/components/ui/combobox.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained. Canonical searchable-select target also covers the legacy SelectAutocomplete wrapper family.
 - Command (src/components/ui/command.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - DataTable (src/components/ui/DataTable/index.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - DateRangePicker (src/components/ui/date-range-picker.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
@@ -46,8 +46,10 @@
 - Popover (src/components/ui/popover.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - RadioGroup (src/components/ui/radio-group.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Select (src/components/ui/select.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
-- SelectAutocomplete (src/components/ui/Fields/SelectAutocomplete/index.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - SelectPhoneCode (src/components/ui/select-phone-code.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
+
+## Queue Corrections
+- SelectAutocomplete (src/components/ui/Fields/SelectAutocomplete/index.tsx): removed from the standalone Batch 4 shared-ui queue. Searchable selection is already normalized to shared `Combobox`; future admin-portal work should migrate the wrapper's usage site to `Combobox` rather than treating `SelectAutocomplete` as a second shared component target.
 - Spinner (src/components/ui/spinner.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Switch (src/components/ui/switch.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Table (src/components/ui/table.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
@@ -57,7 +59,7 @@
 - UploadFile (src/components/ui/Fields/UploadFile/index.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 
 ## KEEP_APP_LOCAL Refactor Candidates
-- Total KEEP_APP_LOCAL: 235
+- Total KEEP_APP_LOCAL: 236
 - KEEP_APP_LOCAL with SoC potential HIGH or MEDIUM: 34
 - Top 3 candidates:
 - src/app/masterdata/partner-management/detail/[id]/assign-plan.tsx: SoC=HIGH, strategy=render-prop, Batch 1.5 status=SKIPPED

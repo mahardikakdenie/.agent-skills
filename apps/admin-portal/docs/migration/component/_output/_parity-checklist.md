@@ -186,13 +186,6 @@
 - [ ] State parity (loading, error, disabled, empty)
 - [ ] Prop API still compiles after swap
 
-## SelectAutocomplete
-
-- [ ] Interaction parity (click, hover, keyboard)
-- [ ] Visual parity (layout, spacing, color - token delta OK)
-- [ ] State parity (loading, error, disabled, empty)
-- [ ] Prop API still compiles after swap
-
 ## SelectPhoneCode
 
 - [ ] Interaction parity (click, hover, keyboard)

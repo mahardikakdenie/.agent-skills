@@ -1249,3 +1249,20 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Queue impact: `Both OptimizeImageShell entries are reclassified to KEEP_APP_LOCAL (Batch 1.5), and the prior 2026-03-29 BLOCKED entry should be treated as superseded by this queue correction rather than as an upstream dependency.`
 - Next action: `Do not select OptimizeImageShell for future Batch 8 / Batch 4 runs in admin-portal.`
 
+## Batch 8 / Batch 4 - SelectAutocomplete - 2026-03-29 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `API compatibility unclear`
+- Evidence checked: [`apps/admin-portal/docs/migration/component/_output/_audit-report.md` entry for `SelectAutocomplete`, `apps/admin-portal/src/components/ui/Fields/SelectAutocomplete/index.tsx`, `apps/admin-portal/src/app/export-users/page.tsx` usage with controlled `searchValue`, `onSearchChange`, `loading`, and `isSearching` flows, `packages/ui/src/index.ts`, `packages/ui/src/Combobox/Combobox.spec.md`, `packages/ui/src/Combobox/Combobox.tsx`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` Combobox guidance]
+- Files changed: `none`
+- Next required upstream action: `Publish approved adapter guidance or extend the shared Combobox contract so admin-portal can preserve the current controlled async-search behavior for SelectAutocomplete, including parent-driven search text and searching-state UX, without introducing stateful app-local adapter logic.`
+
+## Batch 8 / Batch 4 - SelectAutocomplete - 2026-03-29 - CORRECTION
+
+- Decision: `Remove SelectAutocomplete from the standalone Batch 4 / shared-ui queue.`
+- Rationale: `SelectAutocomplete` is not a second canonical shared component; searchable single-select behavior is already normalized to shared `Combobox`, and the admin-portal wrapper should be treated as an app-local compatibility layer until its usage site migrates to that shared target.
+- Output docs updated: [`_audit-report.md`, `_component-backlog.csv`, `_per-app-baseline-summary.md`, `_parity-checklist.md`]
+- Queue impact: `The prior 2026-03-29 BLOCKED entry is superseded as a queue-selection outcome. Future work should target admin-portal's remaining SelectAutocomplete usage as a Combobox migration, not as a new standalone Batch 4 component.`
+- Next action: `Do not select SelectAutocomplete as a standalone Batch 8 / Batch 4 component in future admin-portal runs.`
+

@@ -3506,19 +3506,19 @@
 ### SelectAutocomplete
 
 - **File:** src/components/ui/Fields/SelectAutocomplete/index.tsx
-- **Classification:** NEW_SHARED_COMPONENT
-- **Batch:** 4
-- **@repo/ui status:** missing
-- **API delta:** N/A (@repo/ui export missing)
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** exists via `Combobox`
+- **API delta:** Canonical searchable-selection target is shared `Combobox`; do not treat this wrapper as a standalone shared-ui intake.
 - **Parity risk:** HIGH
-- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
-- **Reason kept app-local:** N/A
+- **Risk notes:** Local wrapper still carries admin-portal-specific controlled search text and searching-state UX around the canonical shared searchable-select contract.
+- **Reason kept app-local:** Queue correction - shared searchable selection is already standardized under `Combobox`; this wrapper should only remain local until a direct or thin-adapter usage-site migration replaces it.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none
 - **Batch 1.5 candidate:** NO
 - **Refactor potential:** N/A
-- **Refactor strategy:** N/A
+- **Refactor strategy:** canonical target reconciled to shared `Combobox`; no standalone Phase 04 shared-ui build target remains for this wrapper
 - **Story group:** Inputs
 
 ### UploadFile
