@@ -130,20 +130,6 @@
 - [ ] State parity (loading, error, disabled, empty)
 - [ ] Prop API still compiles after swap
 
-## Loading
-
-- [ ] Interaction parity (click, hover, keyboard)
-- [ ] Visual parity (layout, spacing, color - token delta OK)
-- [ ] State parity (loading, error, disabled, empty)
-- [ ] Prop API still compiles after swap
-
-## Loading
-
-- [ ] Interaction parity (click, hover, keyboard)
-- [ ] Visual parity (layout, spacing, color - token delta OK)
-- [ ] State parity (loading, error, disabled, empty)
-- [ ] Prop API still compiles after swap
-
 ## Menubar
 
 - [ ] Interaction parity (click, hover, keyboard)

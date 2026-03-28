@@ -6,8 +6,8 @@
 
 ## Component Count Summary
 - Total components audited: 275
-- KEEP_APP_LOCAL: 236
-- NEW_SHARED_COMPONENT: 35
+- KEEP_APP_LOCAL: 238
+- NEW_SHARED_COMPONENT: 33
 - SPLIT: 4
 
 ## Top 5 Highest-Parity-Risk Items
@@ -38,8 +38,6 @@
 - Form (src/components/ui/form.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Input (src/components/ui/input.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Label (src/components/ui/label.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
-- Loading (src/components/ui/Loading/index.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
-- Loading (src/components/ui/loading.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Menubar (src/components/ui/menubar.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - NavigationMenu (src/components/ui/navigation-menu.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Pagination (src/components/ui/pagination.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
@@ -50,6 +48,7 @@
 
 ## Queue Corrections
 - SelectAutocomplete (src/components/ui/Fields/SelectAutocomplete/index.tsx): removed from the standalone Batch 4 shared-ui queue. Searchable selection is already normalized to shared `Combobox`; future admin-portal work should migrate the wrapper's usage site to `Combobox` rather than treating `SelectAutocomplete` as a second shared component target.
+- Loading (src/components/ui/loading.tsx, src/components/ui/Loading/index.tsx): removed from the standalone Batch 4 shared-ui queue. Shared loading scope is the `Spinner` / `Skeleton` primitive layer only; admin-portal keeps the wrapper shells local and now composes shared `Spinner` inside them instead of treating `Loading` as a canonical shared component target.
 - Spinner (src/components/ui/spinner.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Switch (src/components/ui/switch.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Table (src/components/ui/table.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.

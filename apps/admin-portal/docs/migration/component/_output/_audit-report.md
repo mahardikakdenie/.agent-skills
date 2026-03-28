@@ -3664,13 +3664,13 @@
 ### Loading
 
 - **File:** src/components/ui/loading.tsx
-- **Classification:** NEW_SHARED_COMPONENT
-- **Batch:** 4
-- **@repo/ui status:** missing
-- **API delta:** N/A (@repo/ui export missing)
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** exists via `Spinner`
+- **API delta:** Wrapper stays app-local; internal indicator can compose shared `Spinner`.
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
-- **Reason kept app-local:** N/A
+- **Risk notes:** Full-screen loading wrapper still owns overlay layout treatment rather than mapping to a canonical shared wrapper.
+- **Reason kept app-local:** Loading wrappers and suspense-fallback shells are app-local composition concerns; shared loading scope is limited to primitives such as `Spinner` and `Skeleton`.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none
@@ -3682,13 +3682,13 @@
 ### Loading
 
 - **File:** src/components/ui/Loading/index.tsx
-- **Classification:** NEW_SHARED_COMPONENT
-- **Batch:** 4
-- **@repo/ui status:** missing
-- **API delta:** N/A (@repo/ui export missing)
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** exists via `Spinner`
+- **API delta:** Wrapper stays app-local; internal indicator can compose shared `Spinner`.
 - **Parity risk:** MEDIUM
-- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
-- **Reason kept app-local:** N/A
+- **Risk notes:** Wrapper owns mounted-content blocking, overlay policy, and loading copy while the shared package only standardizes the spinner primitive.
+- **Reason kept app-local:** Loading wrappers and suspense-fallback shells are app-local composition concerns; shared loading scope is limited to primitives such as `Spinner` and `Skeleton`.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none

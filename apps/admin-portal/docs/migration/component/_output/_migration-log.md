@@ -1266,3 +1266,21 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Queue impact: `The prior 2026-03-29 BLOCKED entry is superseded as a queue-selection outcome. Future work should target admin-portal's remaining SelectAutocomplete usage as a Combobox migration, not as a new standalone Batch 4 component.`
 - Next action: `Do not select SelectAutocomplete as a standalone Batch 8 / Batch 4 component in future admin-portal runs.`
 
+## Batch 8 / Batch 4 - Loading - 2026-03-29 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `export missing`
+- Evidence checked: [`apps/admin-portal/docs/migration/component/_output/_audit-report.md` entry for `Loading`, `apps/admin-portal/src/components/ui/Loading/index.tsx`, representative usage sites importing `ContentLoadingWrapper` from `@/components/ui/Loading/index`, `packages/ui/src/index.ts`, `packages/ui/src/Spinner/Spinner.spec.md`, `packages/ui/src/Skeleton/Skeleton.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` Loading Wrappers and Suspense Fallbacks guidance]
+- Files changed: `none`
+- Next required upstream action: `Reconcile the audit queue before any Loading migration. The adapter guidance explicitly keeps loading wrappers app-local and @repo/ui does not export/spec a canonical Loading wrapper today, so either reclassify admin-portal's Loading wrappers out of Batch 4 or ship an approved shared Loading target with export, spec, and replacement guidance first.`
+
+## Batch 8 / Batch 4 - Loading - 2026-03-29 - CORRECTION
+
+- Decision: `Remove Loading from the standalone Batch 4 / shared-ui queue.`
+- Rationale: `Loading` in admin-portal is a local wrapper family, not a second canonical shared component. Shared loading scope is the `Spinner` / `Skeleton` primitive layer; wrapper layout, mounted-content blocking, and suspense-fallback composition stay app-local.
+- Output docs updated: [`_audit-report.md`, `_component-backlog.csv`, `_per-app-baseline-summary.md`, `_parity-checklist.md`]
+- App-local alignment: [`apps/admin-portal/src/components/ui/loading.tsx`, `apps/admin-portal/src/components/ui/Loading/index.tsx`] now compose shared `Spinner` internally instead of using a separate local spinner implementation.
+- Queue impact: `The prior 2026-03-29 BLOCKED entry is superseded as a queue-selection outcome. Future admin-portal work should keep the wrapper API local and only share the loading primitive layer.`
+- Next action: `Do not select Loading as a standalone Batch 8 / Batch 4 component in future admin-portal runs.`
+

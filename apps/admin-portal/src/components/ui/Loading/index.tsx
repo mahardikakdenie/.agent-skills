@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Oval } from "react-loader-spinner";
+import { Spinner } from "@repo/ui";
 
 interface LoadingWrapperProps {
   children: React.ReactNode;
@@ -15,17 +15,11 @@ interface LoadingWrapperProps {
   loadingClassName?: string;
 }
 
-const sizeMap = {
-  sm: { height: 30, width: 30 },
-  md: { height: 50, width: 50 },
-  lg: { height: 70, width: 70 },
-  xl: { height: 100, width: 100 },
-};
-
-const colorMap = {
-  primary: "#016da1",
-  white: "#FFFFFF",
-  gray: "#6B7280",
+const spinnerSizeClassMap = {
+  sm: "[&_[data-slot=spinner-icon]]:size-[30px]",
+  md: "[&_[data-slot=spinner-icon]]:size-[50px]",
+  lg: "[&_[data-slot=spinner-icon]]:size-[70px]",
+  xl: "[&_[data-slot=spinner-icon]]:size-[100px]",
 };
 
 export default function LoadingWrapper({
@@ -39,36 +33,25 @@ export default function LoadingWrapper({
   className = "",
   loadingClassName = "",
 }: LoadingWrapperProps) {
-  const spinnerProps = sizeMap[loadingSize];
-  const spinnerColor = colorMap[loadingColor];
+  const sharedSpinnerSize =
+    loadingSize === "sm" ? "sm" : loadingSize === "md" ? "md" : "lg";
+  const iconColorClassName =
+    loadingColor === "white"
+      ? "[&_[data-slot=spinner-icon]]:text-white [&_[data-slot=spinner-label]]:text-white"
+      : loadingColor === "gray"
+      ? "[&_[data-slot=spinner-icon]]:text-gray-600 [&_[data-slot=spinner-label]]:text-gray-600"
+      : "[&_[data-slot=spinner-icon]]:text-primary [&_[data-slot=spinner-label]]:text-primary";
 
   const LoadingSpinner = () => (
     <div
-      className={`flex flex-col items-center justify-center gap-4 w-full ${loadingClassName}`}
+      className={`flex w-full flex-col items-center justify-center gap-4 ${loadingClassName}`}
     >
-      <Oval
-        height={spinnerProps.height}
-        width={spinnerProps.width}
-        color={spinnerColor}
-        secondaryColor={loadingColor === "white" ? "#E5E7EB" : "#aacee0"}
-        strokeWidth={5}
-        strokeWidthSecondary={5}
-        ariaLabel="oval-loading"
-        visible={true}
+      <Spinner
+        size={sharedSpinnerSize}
+        label={loadingText}
+        aria-label={loadingText || "Loading"}
+        className={`${iconColorClassName} ${spinnerSizeClassMap[loadingSize]} [&_[data-slot=spinner-label]]:text-base [&_[data-slot=spinner-label]]:font-semibold`}
       />
-      {loadingText && (
-        <p
-          className={`text-base font-semibold ${
-            loadingColor === "white"
-              ? "text-white"
-              : loadingColor === "primary"
-              ? "text-primary"
-              : "text-gray-600"
-          }`}
-        >
-          {loadingText}
-        </p>
-      )}
     </div>
   );
 
