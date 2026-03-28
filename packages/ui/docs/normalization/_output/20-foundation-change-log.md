@@ -363,6 +363,21 @@ Impact:
 - `@repo/ui` export surface now includes `Button` alongside `Box`, `Alert`, and `Badge`.
 - App-local CTA, toolbar, and submit button shells can begin mapping toward a single shared Button contract without routing or business-logic coupling.
 
+---
+
+## 2026-03-28 - Button Size Baseline Realignment
+
+Changed:
+
+- Realigned `packages/ui/src/Button/Button.variants.ts` so `Button` height tokens now match the shared field-shell control baseline for `xs`, `sm`, `md`, and `lg`.
+- Preserved the existing `Button` API surface and default `size="md"` while removing the prior visual mismatch that made default buttons render shorter than adjacent `Input` and `DatePicker` controls.
+- Synced the Button spec, Storybook sizing description, and normalization API conventions so the documented contract now explicitly states that only `xl` sits outside the shared field-shell range.
+
+Impact:
+
+- Default `Button` and default `Input` / `DatePicker` pairings now align without compensating size props at usage sites.
+- Consumers keep the same size vocabulary, but the shared baseline now better supports mixed field + action layouts in forms, filters, and toolbar shells.
+
 ## 2026-03-10 - Card Batch 4 Delivery
 
 Changed:

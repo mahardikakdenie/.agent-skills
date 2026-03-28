@@ -26,11 +26,11 @@ export const buttonVariants = cva(
         warning: 'bg-warning text-warning-foreground shadow-sm enabled:hover:bg-warning/90',
       },
       size: {
-        xs: 'h-7 px-2.5 text-xs',
-        sm: 'h-8 px-3 text-xs',
-        md: 'h-9 px-4 text-sm',
-        lg: 'h-10 px-5 text-sm',
-        xl: 'h-11 px-6 text-base',
+        xs: 'h-8 px-2.5 text-xs',
+        sm: 'h-9 px-3 text-xs',
+        md: 'h-10 px-4 text-sm',
+        lg: 'h-11 px-5 text-sm',
+        xl: 'h-12 px-6 text-base',
       },
     },
     compoundVariants: [

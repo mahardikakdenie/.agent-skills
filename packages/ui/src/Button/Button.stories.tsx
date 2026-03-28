@@ -104,7 +104,7 @@ export const Sizes: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Shows the full shared size scale from dense actions to extra-large emphasis.',
+        story: 'Shows the shared action size scale, with `xs` through `lg` aligned to the Input and DatePicker control heights plus an `xl` emphasis extension.',
       },
     },
   },
@@ -180,4 +180,3 @@ export const IconSlots: Story = {
     },
   },
 };
-
