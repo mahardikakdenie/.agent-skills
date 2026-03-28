@@ -1223,3 +1223,12 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Parity notes: `manual verification pending`
 - Post-Migration Improvement Candidates: [`packages/ui/src/Button/Button.types.ts` - consider adding a documented icon-only shared sizing recipe so dense action-table consumers do not need local square-width normalization during future Button migrations`]
 
+## Batch 8 / Batch 4 - DataTable - 2026-03-28 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `API compatibility unclear`
+- Evidence checked: [`packages/ui/src/index.ts` export for `DataTable`, `packages/ui/src/DataTable/DataTable.spec.md`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` DataTable guidance, `packages/ui/src/DataTable/DataTable.tsx`, `packages/ui/src/DataTable/DataTable.renderers.tsx`, `apps/admin-portal/src/components/ui/DataTable/index.tsx`, `apps/admin-portal/src/app/claim/list/page.tsx` usage of `getRowClassName`, `apps/admin-portal/src/app/finance/unmatch-billing/page.tsx` usage of `classNameHeading`, representative admin-portal table config files using `className` / `classNameHeading` cell and header styling hooks]
+- Files changed: `none`
+- Next required upstream action: `Publish approved adapter guidance or extend the shared DataTable contract with documented row-level and column header/cell class hooks that a thin adapter can target; without those surfaces, admin-portal cannot preserve existing row state highlighting and header/cell styling parity safely.`
+
