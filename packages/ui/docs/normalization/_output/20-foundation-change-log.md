@@ -2,8 +2,23 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-28
+> Last reconciled: 2026-03-29
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-03-29 - Combobox Controlled Search Contract Synced
+
+Changed:
+
+- Extended the documented shared `Combobox` contract to match the shipped `packages/ui/src/Combobox` surface, which now supports optional controlled search text through `searchValue` alongside the existing `onSearchValueChange` hook.
+- Kept the default shared behavior backward compatible: when `searchValue` is omitted, the search input still manages its own internal query state.
+- Reconciled the Combobox spec and adapter mapping so downstream migrations can preserve parent-owned visible query state without widening `@repo/ui` into debounce, fetch, or business-status props.
+
+Impact:
+
+- Downstream apps with local searchable-select wrappers can now map controlled query text directly onto the shared `Combobox` contract instead of keeping that gap in an app-local fork.
+- The shared package remains app-agnostic because the new prop only controls visible input state; async orchestration, searching copy, transport, and domain logic still stay outside `@repo/ui`.
 
 ---
 

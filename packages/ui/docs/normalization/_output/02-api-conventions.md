@@ -828,6 +828,7 @@ export interface ComboboxProps {
   options: ComboboxOption[]
   placeholder?: string
   searchPlaceholder?: string
+  searchValue?: string
   onSearchValueChange?: (value: string) => void
   size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
@@ -854,7 +855,8 @@ Focus note:
 - Open state may not stack a second heavy ring on top of the trigger's keyboard focus treatment.
 
 Contract note:
-- Parent-owned async search is allowed through `onSearchValueChange`, but debounce, fetching, and option refresh remain outside `@repo/ui`.
+- Search text may stay internal or be controlled through `searchValue`; parent-owned async search still flows through `onSearchValueChange`.
+- Debounce, fetching, and option refresh remain outside `@repo/ui`.
 - A bounded create-on-enter affordance is allowed through `onCreateOption` plus `createOptionLabel`; business-specific creation semantics remain local.
 
 Story group: `Inputs`
