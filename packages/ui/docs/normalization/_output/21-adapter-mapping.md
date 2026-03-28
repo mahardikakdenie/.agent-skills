@@ -601,6 +601,7 @@ Direct adoption guidance:
 
 - Legacy attachment pickers, supporting-document inputs, and lightweight upload entry fields map to `FileUpload`.
 - Existing `file`, `files`, `selectedFiles`, or similar local state should normalize to `value`; selection callbacks normalize to `onChange`.
+- Existing persisted filename strings or already-uploaded file labels should map to `displayValue` instead of widening `value` away from the shared `File | File[] | null` contract.
 - Existing accepted-format, multiple-selection, max-size, label, invalid-state, and clear/reset behavior map to `accept`, `multiple`, `maxSize`, `label`, `error`, `clearable`, and `onClear`.
 - Sequential multi-file picks should append through the shared component rather than replacing the entire selection list in parent code.
 - The shared dropzone already provides direct drag-and-drop feedback and release-state copy, so local wrappers should not recreate competing hover-only drop targets around the same field.
@@ -610,6 +611,17 @@ Keep local:
 - Upload transport, presigned URL flows, progress indicators, retry logic, and auth-aware file handling.
 - Image cropping, camera capture, OCR, preview galleries, and identity-document workflows.
 - Domain-specific validation rules or submission orchestration beyond generic file selection and size checks.
+
+Admin-portal Batch 8 / Batch 4 note:
+
+- The upstream blocker is resolved by the shared `displayValue` prop on `FileUpload`. Admin-portal can now show the existing filename string it stores in claim form state without forcing `@repo/ui` to accept non-`File` values on `value`.
+- The admin-portal claim upload page should migrate through a thin local adapter, not a direct import, because its `onFileChange({ file, base64, fileName })` contract still performs app-owned `FileReader` to base64 conversion for claim payload assembly.
+- Thin adapter shape:
+  - Map legacy `value` to shared props with `value={typeof value === 'string' || Array.isArray(value) ? null : value}` and `displayValue={typeof value === 'string' || Array.isArray(value) ? value : null}`.
+  - Map legacy `onChange(file)` directly from shared `onChange` for any callers that still need the raw `File`.
+  - Map legacy `onFileChange` inside the adapter by reading the selected shared `File` into a data URL locally, then calling the existing app callback with `{ file, base64, fileName }`.
+  - Keep `accept`, `disabled`, `label`, `error`, and `clearable` as straight pass-through props.
+- Do not move base64 conversion into `@repo/ui`. It is a claim-page data-shaping concern, not generic selection UI behavior.
 
 ## Image
 
