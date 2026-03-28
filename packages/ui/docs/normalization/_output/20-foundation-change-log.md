@@ -22,6 +22,21 @@ Impact:
 
 ---
 
+## 2026-03-28 - DataTable Styling Hooks Synced
+
+Changed:
+
+- Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` surface, which now exposes `getRowClassName(...)` plus TanStack `columnDef.meta.headerCellClassName` and `columnDef.meta.cellClassName`.
+- Realigned the canonical API and adapter docs so legacy row-level styling hooks and lightweight header/body class fields have an explicit thin-adapter migration path instead of relying on DOM patching.
+- Kept the shared boundary generic: the new hooks only expose styling surfaces around existing row/header/cell render shells and do not move business formatting, routing, or table workflow logic into `@repo/ui`.
+
+Impact:
+
+- Downstream apps with local table wrappers can now preserve row striping, status highlighting, and cell alignment during migration without widening the shared contract into admin-only variants.
+- The normalization output set now matches the current DataTable spec and export surface, including the detail that header class hooks apply to both the semantic header cell and the shipped sortable header button.
+
+---
+
 ## 2026-03-27 - Select Compound Composition Compatibility Landed
 
 Changed:

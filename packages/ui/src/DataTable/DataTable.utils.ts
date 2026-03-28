@@ -177,6 +177,17 @@ export function resolveRenderable<TData extends RowData>(
   return renderable;
 }
 
+export function resolveDataTableClassName<TContext>(
+  className: string | ((context: TContext) => string | undefined) | undefined,
+  context: TContext,
+) {
+  if (typeof className === 'function') {
+    return className(context);
+  }
+
+  return className;
+}
+
 
 export function getPinnedColumnStyles<TData extends RowData>(
   column: Column<TData, unknown>,
