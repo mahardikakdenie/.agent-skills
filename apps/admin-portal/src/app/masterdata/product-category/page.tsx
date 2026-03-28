@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "@/components/ui/DataTable";
 import { useProductCategory } from "@/hooks/useProductCategory.hooks";

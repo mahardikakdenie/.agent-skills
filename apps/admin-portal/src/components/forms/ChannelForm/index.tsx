@@ -9,7 +9,7 @@ import {
   BreadcrumbPage,
 } from "@repo/ui";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Select,
   SelectContent,
@@ -221,4 +221,3 @@ export function ChannelForm({
     </ContentLoadingWrapper>
   );
 }
-

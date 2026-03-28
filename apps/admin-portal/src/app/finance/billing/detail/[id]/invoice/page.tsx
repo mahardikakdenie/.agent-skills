@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useBilling } from "@/app/finance/billing/hook";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { useScreen } from "@/context/screen.context";
 import { useGeneratePdfService } from "@/services/helper/hooks/mutations";
 

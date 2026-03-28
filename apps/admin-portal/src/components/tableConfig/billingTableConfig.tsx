@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { formatDate, formatMoney } from "@/lib/formatter";
 import { Column } from "@/components/ui/DataTable";
 import { EyeIcon, File } from "lucide-react";
@@ -100,7 +100,8 @@ export const createBillingTableColumns = ({
           <div className="relative group">
             <Button
               variant="ghost"
-              size="icon"
+              size="md"
+              className="w-9 px-0"
               onClick={() =>
                 onViewDetail(billing.id, searchChannel, searchType)
               }
@@ -114,7 +115,8 @@ export const createBillingTableColumns = ({
           <div className="relative group">
             <Button
               variant="ghost"
-              size="icon"
+              size="md"
+              className="w-9 px-0"
               onClick={() =>
                 onViewInvoice(billing.id, searchType, searchChannel)
               }

@@ -1,5 +1,5 @@
 import { formatMoney } from "@/lib/formatter";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Drawer,
   DrawerClose,

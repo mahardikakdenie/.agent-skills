@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Dialog,
   DialogContent,
@@ -53,14 +53,14 @@ export const BillingDetailActions = ({
           disabled={billing.status !== "waiting-for-payment" || isUpdating}
           className="rounded-full bg-green-600 hover:bg-green-700 disabled:opacity-50"
         >
-          ✓ Mark as Paid
+          ? Mark as Paid
         </Button>
 
         <Button
           onClick={onViewInvoice}
           className="rounded-full bg-blue-600 hover:bg-blue-700"
         >
-          📄 View {isInsurer ? "Invoice" : "Billing Listing"}
+          ?? View {isInsurer ? "Invoice" : "Billing Listing"}
         </Button>
 
         <Button
@@ -69,7 +69,7 @@ export const BillingDetailActions = ({
           variant="destructive"
           className="rounded-full bg-white border text-red-700 border-red-700 hover:bg-red-700 hover:text-white"
         >
-          ✕ Cancel {billingType}
+          ? Cancel {billingType}
         </Button>
 
         {billing.status === "pending-reconcilliation" &&
@@ -79,7 +79,7 @@ export const BillingDetailActions = ({
               disabled={isUpdating}
               className="rounded-full bg-green-600 hover:bg-green-700"
             >
-              ✓ Confirm Reconciliation
+              ? Confirm Reconciliation
             </Button>
           )}
       </div>

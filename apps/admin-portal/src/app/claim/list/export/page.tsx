@@ -1,4 +1,4 @@
-﻿// "use client";
+// "use client";
 //
 // import React from "react";
 // import {ClaimExportView} from "@/views/claim/export/export.view";
@@ -13,7 +13,7 @@ import noData from "@public/images/no-data.webp";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Spinner } from "@repo/ui";
 import useExportClaim from "@/hooks/useExportClaim.hooks";
 
@@ -195,4 +195,3 @@ export default function ExportPage() {
     </div>
   );
 }
-

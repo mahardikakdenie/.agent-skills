@@ -5,7 +5,7 @@ import { Form, Field } from "react-final-form";
 import { useParams } from "next/navigation";
 
 import { PageHeader } from "@/components/ui/PageHeader";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import UploadFile from "@/components/ui/FileUpload";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 import { useDetailClaim } from "@/hooks/useDetailClaim.hooks";

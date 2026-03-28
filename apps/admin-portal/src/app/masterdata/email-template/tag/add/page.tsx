@@ -7,7 +7,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Check, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";

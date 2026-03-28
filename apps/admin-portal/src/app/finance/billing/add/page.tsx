@@ -10,7 +10,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useBilling } from "../hook";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { CheckIcon, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -526,4 +526,3 @@ const CreateBillingPage = () => {
 };
 
 export default CreateBillingPage;
-

@@ -21,7 +21,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
@@ -404,5 +404,4 @@ export default function AddPlanPage() {
     </ContentLoadingWrapper>
   );
 }
-
 

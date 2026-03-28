@@ -10,7 +10,7 @@
 import { useState } from "react";
 import { toastPromise } from '@/lib/toast';
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { ChevronLeft, Upload } from "react-feather";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@repo/ui";
 import {useScreen} from "@/context/screen.context";

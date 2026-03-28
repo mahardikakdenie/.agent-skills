@@ -10,7 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 
 interface HospitalUploadFormProps {

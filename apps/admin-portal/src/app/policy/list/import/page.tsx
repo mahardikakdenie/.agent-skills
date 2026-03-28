@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, X } from "react-feather";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@repo/ui";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
 import {useScreen} from "@/context/screen.context";
@@ -58,7 +58,7 @@ export default function ImportPolicyPage() {
     setFile(null);
     setXlsxData([]);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // ✅ this clears the file name
+      fileInputRef.current.value = ''; // ? this clears the file name
     }
   };
 
@@ -87,7 +87,7 @@ export default function ImportPolicyPage() {
             { type: "text/csv" }
           );
 
-          // ✅ Trigger download
+          // ? Trigger download
           // const url = URL.createObjectURL(csvFile);
           // const a = document.createElement('a');
           // a.href = url;
@@ -225,4 +225,3 @@ export default function ImportPolicyPage() {
     </div>
   );
 };
-

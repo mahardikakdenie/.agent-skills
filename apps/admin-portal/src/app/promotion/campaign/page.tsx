@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Plus, X, Edit } from "react-feather";
 import {
   Drawer,

@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Table, TableCell, TableHead, TableRow } from "@repo/ui";
 import Image from "next/image";
 import { formatMoney } from "@/lib/formatter";

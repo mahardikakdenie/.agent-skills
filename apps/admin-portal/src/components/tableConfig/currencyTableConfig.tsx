@@ -1,5 +1,5 @@
 import { Column } from "@/components/ui/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 
 interface CurrencyTableConfigProps {
   handleEdit: (id: string) => void;

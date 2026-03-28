@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@repo/ui";
 import { ChevronLeft, X } from "react-feather";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@repo/ui";
 import {useScreen} from "@/context/screen.context";
 import AppURL from "@/constants/app-url.const";

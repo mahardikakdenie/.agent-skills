@@ -1,5 +1,5 @@
 import { Column } from "@/components/ui/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { EditIcon, TrashIcon } from "lucide-react";
 import { formatMoney } from "@/lib/formatter";
 
@@ -52,7 +52,8 @@ export const createPartnerCommTableColumns = ({
           <div className="relative group">
             <Button
               variant="ghost"
-              size="icon"
+              size="md"
+              className="w-9 px-0"
               onClick={() => handleEdit(item.id)}
             >
               <EditIcon className="h-4 w-4" />
@@ -66,7 +67,8 @@ export const createPartnerCommTableColumns = ({
           <div className="relative group">
             <Button
               variant="ghost"
-              size="icon"
+              size="md"
+              className="w-9 px-0"
               onClick={() => handleDelete(item.id)}
             >
               <TrashIcon className="h-4 w-4 text-red-600" />

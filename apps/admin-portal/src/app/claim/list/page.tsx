@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { useEffect, useState } from "react";
 import { formatMoneyClaim } from "@/lib/formatter";
 import { Calendar, Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
@@ -920,5 +920,4 @@ const ClaimsPage = () => {
 };
 
 export default ClaimsPage;
-
 

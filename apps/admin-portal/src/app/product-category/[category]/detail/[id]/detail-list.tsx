@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Table,
   TableBody,
@@ -96,4 +96,3 @@ export default function DetailList(props: { id: string }) {
     </>
   );
 }
-

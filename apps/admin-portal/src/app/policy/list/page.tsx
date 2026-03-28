@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { usePathname, useRouter } from "next/navigation";
 import { Download, Upload, X } from "react-feather";
 import noData from "@public/images/no-data.webp";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import usePolicies from "@/hooks/usePolicies.hooks";
 import { DataTable } from "@/components/ui/DataTable";
 import { createPolicyTableColumns } from "@/components/tableConfig/policyTableConfig";
@@ -388,5 +388,4 @@ export default function PolicyPage() {
     </div>
   );
 }
-
 

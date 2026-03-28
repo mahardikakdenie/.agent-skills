@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Dialog,
   DialogClose,
@@ -87,4 +87,3 @@ export default function ChannelAddModal(props: {
     </Dialog>
   );
 }
-

@@ -7,7 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { formatMoney } from "@/lib/formatter";
 import Link from "next/link";
 import { ChevronLeft } from "react-feather";

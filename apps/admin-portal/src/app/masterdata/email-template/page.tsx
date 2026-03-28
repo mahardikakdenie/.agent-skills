@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Plus } from "react-feather";
 import { DataTable } from "@/components/ui/DataTable";
 import { useEmailTemplate } from "@/hooks/useEmailTemplate.hooks";

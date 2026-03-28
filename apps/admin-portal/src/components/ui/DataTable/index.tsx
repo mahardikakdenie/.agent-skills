@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Input } from "@repo/ui";
 import { ChevronLeft, ChevronRight, Search } from "react-feather";
 import {

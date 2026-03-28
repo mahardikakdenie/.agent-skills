@@ -1,5 +1,5 @@
 import { Column } from "@/components/ui/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { EditIcon, TrashIcon } from "lucide-react";
 import { formatDate } from "@/lib/formatter";
 
@@ -53,7 +53,8 @@ export const createHolidayTableColumns = ({
         <div className="relative group">
           <Button
             variant="ghost"
-            size="icon"
+            size="md"
+            className="w-9 px-0"
             disabled={!canEdit}
             onClick={() => handleEdit(item.id)}
           >
@@ -66,7 +67,8 @@ export const createHolidayTableColumns = ({
         <div className="relative group">
           <Button
             variant="ghost"
-            size="icon"
+            size="md"
+            className="w-9 px-0"
             disabled={!canDelete}
             onClick={() => handleDelete(item.id)}
           >

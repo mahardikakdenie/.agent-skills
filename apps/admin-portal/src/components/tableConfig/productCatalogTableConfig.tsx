@@ -1,5 +1,5 @@
 import { Column } from "@/components/ui/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 

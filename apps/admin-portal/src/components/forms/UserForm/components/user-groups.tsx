@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Dialog,
   DialogClose,
@@ -32,8 +32,8 @@ import { StaticImageData } from "next/image";
 
 export const UserGroups = (props: {
   userGroup: any[];
-  selectedUserGroups: string[]; // ✅ Already correct
-  handleSelectGroup: (ids: string[]) => void; // ✅ Change from (id: string) to (ids: string[])
+  selectedUserGroups: string[]; // ? Already correct
+  handleSelectGroup: (ids: string[]) => void; // ? Change from (id: string) to (ids: string[])
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
   group: any;

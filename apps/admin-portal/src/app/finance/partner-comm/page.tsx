@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Select,
   SelectContent,
@@ -113,4 +113,3 @@ export default function PartnerCommPage() {
     </div>
   );
 }
-

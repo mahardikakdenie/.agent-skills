@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Column } from "@/components/ui/DataTable";
 import type { PackageDto } from "@/services/product/api/product.types";
 import {

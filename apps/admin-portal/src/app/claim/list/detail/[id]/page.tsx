@@ -6,7 +6,7 @@ import noImage from "@public/images/no-image.png";
 import JourneyVerticalImage from "@/components/ui/journey-vertical.image";
 import { useState, useEffect } from "react";
 import { X } from "react-feather";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";
 import { formatMoney, formatMoneyClaim } from "@/lib/formatter";

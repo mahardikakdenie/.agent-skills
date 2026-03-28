@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { PlusIcon } from "lucide-react";
 import { useHolidayDate } from "@/hooks/useHolidayDate.hooks";
 import { createHolidayTableColumns } from "@/components/tableConfig/holidayDateTableConfig";
@@ -149,4 +149,3 @@ export default function HolidayPage() {
     </ContentLoadingWrapper>
   );
 }
-

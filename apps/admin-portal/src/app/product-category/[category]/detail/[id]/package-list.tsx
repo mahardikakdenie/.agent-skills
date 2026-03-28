@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import noData from "@public/images/no-data.webp";
 import { Plus, Upload } from "react-feather";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
 import type { PackageDto } from "@/services/product/api/product.types";

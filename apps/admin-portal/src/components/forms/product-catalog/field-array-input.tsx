@@ -5,7 +5,7 @@ import {
   FieldErrors,
 } from "react-hook-form";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 
 type ArrayFieldProps = {
   name: string;

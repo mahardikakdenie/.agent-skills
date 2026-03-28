@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { useBilling } from "./hook";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { ChevronLeft, ChevronRight, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatDate, formatMoney } from "@/lib/formatter";
@@ -302,4 +302,3 @@ export default function BillingPage() {
     </div>
   );
 }
-

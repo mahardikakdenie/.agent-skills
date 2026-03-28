@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@repo/ui";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Controller } from "react-hook-form";
 import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
 import {
@@ -468,4 +468,3 @@ export default function RoleForm({
     </ContentLoadingWrapper>
   );
 }
-

@@ -4,7 +4,7 @@ import noData from "@public/images/no-data.webp";
 import { useProducts } from "../hooks";
 import { useEffect, useState } from "react";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { useAuth } from "@/context/auth.context";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
@@ -370,4 +370,3 @@ export default function ProductCatalogPage() {
     </div>
   );
 }
-

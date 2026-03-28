@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import AppURL from "@/constants/app-url.const";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Input } from "@repo/ui";
 import {
   Select,
@@ -185,4 +185,3 @@ function ProductCatalogContent({ category }: ProductCatalogContentProps) {
     </div>
   );
 }
-

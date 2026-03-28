@@ -6,7 +6,7 @@ import { Download, X } from "react-feather";
 import { CalendarIcon } from "lucide-react";
 import { Calendar, Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -175,4 +175,3 @@ const ReportClaimPage = () => {
 };
 
 export default ReportClaimPage;
-

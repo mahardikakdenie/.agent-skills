@@ -11,7 +11,7 @@ import { EyeOff, Eye } from "react-feather";
 import { Controller, Control, FieldErrors } from "react-hook-form";
 import { passwordValidationRules } from "@/lib/password";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { forwardRef } from "react";
 import SelectPhoneCode from "@/components/ui/select-phone-code";
 
@@ -429,4 +429,3 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
 );
 
 export { UserFormComponent as UserForm };
-

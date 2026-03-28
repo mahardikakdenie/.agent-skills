@@ -13,7 +13,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
 import { BillingDetailInfo } from "./components/BillingDetailInfo";
 import { BillingDetailActions } from "./components/BillingDetailActions";

@@ -4,7 +4,7 @@ import EditIcon from "@/components/icons/edit.icon";
 import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 import { useRouter } from "next/navigation";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { ChevronLeft, Download, Upload } from "react-feather";
 import { useEffect, useState } from "react";
 import { capitalizeStringWithChar } from "@/lib/formatter";
@@ -633,4 +633,3 @@ export default function ImportWithPreviewPage() {
     </div>
   );
 };
-

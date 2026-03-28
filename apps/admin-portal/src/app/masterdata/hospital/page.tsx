@@ -1,7 +1,7 @@
 "use client";
 
 import { Upload } from "react-feather";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useHospital } from "@/hooks/useHospital.hooks";
 import { createHospitalTableColumns } from "@/components/tableConfig/hospitalTableConfig";

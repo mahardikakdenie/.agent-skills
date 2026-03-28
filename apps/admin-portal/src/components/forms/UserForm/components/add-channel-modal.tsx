@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   DialogHeader,
   DialogFooter,
@@ -106,4 +106,3 @@ export const ChannelModal = (props: {
     </Dialog>
   );
 };
-

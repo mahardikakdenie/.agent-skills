@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Plus, Search } from "react-feather";
 import { Input } from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";

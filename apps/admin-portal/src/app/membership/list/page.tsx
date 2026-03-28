@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Download, Upload } from "react-feather";
 import {
   Select,
@@ -150,4 +150,3 @@ export default function MembershipPage() {
     </div>
   );
 }
-

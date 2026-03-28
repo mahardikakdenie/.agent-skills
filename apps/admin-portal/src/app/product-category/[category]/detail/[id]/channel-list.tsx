@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   DialogClose,
   DialogContent,
@@ -70,7 +70,8 @@ export default function ChannelList(props: { id: string }) {
                     setChannel(channelPlan.channel);
                     setOpenUnassignPlanConfirmation(true);
                   }}
-                  size={"icon"}
+                  size="md"
+                  className="w-9 px-0"
                 >
                   <Trash2Icon size={20} color="red" />
                 </Button>

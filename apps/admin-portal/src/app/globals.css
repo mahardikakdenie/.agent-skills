@@ -380,6 +380,41 @@ th {
   min-width: 1rem;
 }
 
+/* Preserve legacy admin-portal Button colors when shared Button adds enabled:hover styles. */
+[data-slot="button"][class*="bg-[#F5BA41]"][class*="hover:bg-[#F5BA41]"]:enabled:hover,
+[data-slot="button"][class*="bg-[#F5BA41]"][class*="hover:bg-[#F5BA41]"]:enabled:active {
+  background-color: #f5ba41 !important;
+}
+
+[data-slot="button"][class*="bg-[#F5BA41]"][class*="hover:bg-[#e6a92d]"]:enabled:hover,
+[data-slot="button"][class*="bg-[#F5BA41]"][class*="hover:bg-[#e6a92d]"]:enabled:active {
+  background-color: #e6a92d !important;
+}
+
+[data-slot="button"][class*="bg-[#F5BA41]"][class*="hover:bg-[#e4ab3a]"]:enabled:hover,
+[data-slot="button"][class*="bg-[#F5BA41]"][class*="hover:bg-[#e4ab3a]"]:enabled:active {
+  background-color: #e4ab3a !important;
+}
+
+[data-slot="button"][class*="bg-[#016DA1]"][class*="hover:bg-[#0482C2]"]:enabled:hover,
+[data-slot="button"][class*="bg-[#016DA1]"][class*="hover:bg-[#0482C2]"]:enabled:active {
+  background-color: #0482c2 !important;
+}
+
+[data-slot="button"][class*="bg-[#016DA1]"][class*="hover:bg-[#016DA1]"]:enabled:hover,
+[data-slot="button"][class*="bg-[#016DA1]"][class*="hover:bg-[#016DA1]"]:enabled:active {
+  background-color: #016da1 !important;
+}
+
+[data-slot="button"][class*="bg-[#016DA1]"][class*="hover:bg-[#2d9ae6]"]:enabled:hover,
+[data-slot="button"][class*="bg-[#016DA1]"][class*="hover:bg-[#2d9ae6]"]:enabled:active {
+  background-color: #2d9ae6 !important;
+}
+
+[data-slot="button"][class*="bg-[#f1ac2d]"][class*="hover:bg-[#dba237]"]:enabled:hover,
+[data-slot="button"][class*="bg-[#f1ac2d]"][class*="hover:bg-[#dba237]"]:enabled:active {
+  background-color: #dba237 !important;
+}
 
 .table-transaction table td:nth-child(2),
 .table-transaction table td:nth-child(4),

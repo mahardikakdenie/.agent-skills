@@ -13,7 +13,7 @@ import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Download } from "react-feather";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { formatMoney, formatDateTimeWithTZ } from "@/lib/formatter";
 import { Spinner } from "@repo/ui";
 import {useAuth} from "@/context/auth.context";

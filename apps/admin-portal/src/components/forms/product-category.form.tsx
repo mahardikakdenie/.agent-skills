@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Check, ChevronLeft } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { z } from "zod";
 import validator from "validator";
 import { zodResolver } from "@hookform/resolvers/zod";

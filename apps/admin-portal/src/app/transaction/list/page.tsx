@@ -3,7 +3,7 @@ import _ from "lodash";
 import React from "react";
 import noData from "@public/images/no-data.webp";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { useRouter } from "next/navigation";
 import { Download, Upload } from "react-feather";
 import {
@@ -216,5 +216,4 @@ export default function TransactionsPage() {
     </div>
   );
 }
-
 

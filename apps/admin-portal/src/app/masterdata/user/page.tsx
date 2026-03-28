@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Plus, Search } from "react-feather";
 import { DataTable } from "@/components/ui/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Input } from "@repo/ui";
 import {
   Select,
@@ -200,5 +200,4 @@ export default function Users() {
     </div>
   );
 }
-
 

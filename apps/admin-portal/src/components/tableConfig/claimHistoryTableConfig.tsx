@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { formatMoneyClaim } from "@/lib/formatter";
 import moment from "moment";
 import { Column } from "../ui/DataTable";

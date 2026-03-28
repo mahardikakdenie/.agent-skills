@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { format } from "date-fns";
 import { Trash } from "react-feather";
 import { Column } from "../ui/DataTable";

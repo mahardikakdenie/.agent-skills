@@ -3,7 +3,7 @@
 import React from "react";
 import { Check, Plus, Trash2, X, Download } from "lucide-react";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import Image from "next/image";
 import emptyStateSearchPrompt from "@public/images/empty-state-search-prompt.svg";
 import {
@@ -393,5 +393,4 @@ const ExportUsersPage = () => {
 
 ExportUsersPage.displayName = "ExportUsersPage";
 export default ExportUsersPage;
-
 

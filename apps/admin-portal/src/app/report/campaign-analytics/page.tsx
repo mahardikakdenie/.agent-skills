@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import {
   Select,
   SelectContent,
@@ -345,7 +345,7 @@ const CampaignAnalyticsPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-semibold mb-4">
-                  📊 Campaign Status
+                  ?? Campaign Status
                 </h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -381,7 +381,7 @@ const CampaignAnalyticsPage = () => {
               </div>
 
               <div className="hidden bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">📈 Engagement</h3>
+                <h3 className="text-xl font-semibold mb-4">?? Engagement</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart
                     data={engagementData}
@@ -416,7 +416,7 @@ const CampaignAnalyticsPage = () => {
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">📈 Funnel</h3>
+                <h3 className="text-xl font-semibold mb-4">?? Funnel</h3>
                 <ResponsiveContainer width="100%" height={400}>
                   <FunnelChart>
                     <Tooltip />
@@ -438,7 +438,7 @@ const CampaignAnalyticsPage = () => {
 
             <div className="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">
-                ⏱️ Performance Over Time
+                ?? Performance Over Time
               </h3>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={timeData}>
@@ -485,7 +485,7 @@ const CampaignAnalyticsPage = () => {
 
             <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">
-                📅 Opens & Clicks Trends
+                ?? Opens & Clicks Trends
               </h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={openClickTrend}>
@@ -511,7 +511,7 @@ const CampaignAnalyticsPage = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-4">🏆 Top Performers</h3>
+              <h3 className="text-xl font-semibold mb-4">?? Top Performers</h3>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
@@ -539,7 +539,7 @@ const CampaignAnalyticsPage = () => {
 
             <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
               <h3 className="text-xl font-semibold mb-4">
-                ⚠️ Issues & Actions
+                ?? Issues & Actions
               </h3>
               <div className="space-y-4">
                 {totalBounces > 0 && (
@@ -605,12 +605,12 @@ const CampaignAnalyticsPage = () => {
 
             <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
               <h3 className="text-xl font-semibold mb-4">
-                📋 Campaign Summary
+                ?? Campaign Summary
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <h4 className="font-medium mb-2">
-                    🎯 Performance Highlights
+                    ?? Performance Highlights
                   </h4>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Open rate {openRate}%</li>
@@ -625,7 +625,7 @@ const CampaignAnalyticsPage = () => {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-2">📊 Key Metrics</h4>
+                  <h4 className="font-medium mb-2">?? Key Metrics</h4>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Bounce rate: {bounceRate}%</li>
 
@@ -648,7 +648,7 @@ const CampaignAnalyticsPage = () => {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-2">🔗 Click Details</h4>
+                  <h4 className="font-medium mb-2">?? Click Details</h4>
                   {clickLinks.length > 0 ? (
                     <div className="text-sm">
                       <p className="mb-1">Top clicked link:</p>
@@ -671,4 +671,3 @@ const CampaignAnalyticsPage = () => {
 };
 
 export default CampaignAnalyticsPage;
-

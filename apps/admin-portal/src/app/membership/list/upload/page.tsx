@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, X } from "react-feather";
 import { Input } from "@repo/ui";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@repo/ui";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
 import {useAuth} from "@/context/auth.context";
@@ -381,4 +381,3 @@ export default function UploadMembership() {
       </div>
   );
 };
-

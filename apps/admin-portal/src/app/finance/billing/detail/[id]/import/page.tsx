@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { toastPromise } from "@/lib/toast";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { ChevronLeft, Upload } from "lucide-react";
 import {
   Breadcrumb,
@@ -240,7 +240,7 @@ export default function ImportPage() {
           {uploadStatus === "success" && (
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-green-700 text-center font-medium">
-                ✓ File uploaded successfully! Redirecting...
+                ? File uploaded successfully! Redirecting...
               </p>
             </div>
           )}
@@ -248,7 +248,7 @@ export default function ImportPage() {
           {uploadStatus === "error" && (
             <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700 text-center font-medium">
-                ✗ Upload failed. Please try again.
+                ? Upload failed. Please try again.
               </p>
             </div>
           )}

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { Input } from "@repo/ui";
 import { formatMoneyClaim, formatDate } from "@/lib/formatter";
 import { Column } from "@/components/ui/DataTable";
@@ -416,4 +416,3 @@ export const createDocumentTableColumns = ({
     ),
   },
 ];
-
