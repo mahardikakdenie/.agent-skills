@@ -238,6 +238,41 @@ const wideInvoiceColumns: ColumnDef<InvoiceRow>[] = [
   },
 ];
 
+const styledInvoiceColumns: ColumnDef<InvoiceRow>[] = [
+  {
+    accessorKey: 'customer',
+    header: 'Customer',
+    size: 180,
+    meta: {
+      cellClassName: 'font-medium',
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    size: 120,
+  },
+  {
+    accessorKey: 'region',
+    header: 'Region',
+    size: 100,
+  },
+  {
+    accessorKey: 'premium',
+    header: 'Premium',
+    size: 140,
+    meta: {
+      headerCellClassName: 'text-right',
+      cellClassName: 'text-right',
+    },
+    cell: ({ row }) => (
+      <Box as='span' className='tabular-nums'>
+        RM {row.original.premium.toFixed(2)}
+      </Box>
+    ),
+  },
+];
+
 function createSelectionColumn(): ColumnDef<InvoiceRow> {
   return {
     id: 'select',
@@ -448,6 +483,7 @@ const meta = {
     renderStatus: { control: false },
     renderExpandedContent: { control: false },
     emptyState: { control: false },
+    getRowClassName: { control: false },
     loadingState: { control: false },
     state: { control: false },
     defaultState: { control: false },
@@ -1054,6 +1090,34 @@ function RowPinningExample() {
   );
 }
 
+function StylingHooksExample() {
+  return (
+    <Box className='grid gap-4'>
+      <StoryHint>
+        This isolates the shared styling surfaces: `getRowClassName` for row-level treatment and
+        `columnDef.meta.headerCellClassName` / `columnDef.meta.cellClassName` for header and body
+        cells.
+      </StoryHint>
+      <DataTable<InvoiceRow, unknown>
+        columns={styledInvoiceColumns}
+        data={invoices}
+        defaultState={{
+          pagination: {
+            pageIndex: 0,
+            pageSize: 6,
+          },
+        }}
+        getRowClassName={({ row }) =>
+          row.original.status === 'Pending' ? 'bg-muted/30' : undefined
+        }
+        tableOptions={{
+          getRowId: (row) => row.id,
+        }}
+      />
+    </Box>
+  );
+}
+
 function StickyHeaderExample() {
   const table = useDataTable({
     data: scrollInvoices,
@@ -1263,6 +1327,21 @@ export const RowPinning: Story = {
     await userEvent.click(canvas.getAllByRole('button', { name: /^top$/i })[1]!);
     const rows = canvas.getAllByRole('row');
     await expect(rows[1]).toHaveTextContent('Marcus Lim');
+  },
+};
+
+export const StylingHooks: Story = {
+  render: () => <StylingHooksExample />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const premiumCell = canvas.getByText('RM 215.00').closest('td');
+    const pendingRow = canvas.getByText('Marcus Lim').closest('tr');
+
+    await expect(premiumCell).not.toBeNull();
+    await expect(pendingRow).not.toBeNull();
+    await expect(canvas.getByRole('columnheader', { name: /premium/i })).toHaveClass('text-right');
+    await expect(premiumCell).toHaveClass('text-right');
+    await expect(pendingRow).toHaveClass('bg-muted/30');
   },
 };
 

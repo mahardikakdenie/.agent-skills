@@ -22,6 +22,7 @@ import type {
   DataTableLayoutOptions,
   DataTablePaginationProps,
   DataTableRenderContext,
+  DataTableRowClassName,
   DataTableStatusContext,
 } from './DataTable.types';
 import {
@@ -31,6 +32,7 @@ import {
   getSkeletonWidthClass,
   getSortDirectionLabel,
   hasMeaningfulFilterValue,
+  resolveDataTableClassName,
   resolvePageSizeOptions,
 } from './DataTable.utils';
 import {
@@ -254,6 +256,7 @@ export function createDataTableStatusContext<TData extends RowData>({
 export function renderDataTableHeader<TData extends RowData>(
   header: Header<TData, unknown>,
   sortingCount: number,
+  headerClassName?: string,
 ) {
   const sortDirection = header.column.getIsSorted();
   const canSort = header.column.getCanSort();
@@ -266,17 +269,23 @@ export function renderDataTableHeader<TData extends RowData>(
   const renderedHeader = flexRender(header.column.columnDef.header, header.getContext());
 
   if (!canSort) {
-    return withOverflowTooltip(renderedHeader, dataTableHeaderContentVariants());
+    return withOverflowTooltip(
+      renderedHeader,
+      cn(dataTableHeaderContentVariants(), headerClassName),
+    );
   }
 
   return (
     <Box
       as='button'
       type='button'
-      className={dataTableSortButtonVariants({
-        sortable: canSort,
-        sorted: Boolean(sortDirection),
-      })}
+      className={cn(
+        dataTableSortButtonVariants({
+          sortable: canSort,
+          sorted: Boolean(sortDirection),
+        }),
+        headerClassName,
+      )}
       onClick={header.column.getToggleSortingHandler()}
     >
       {withOverflowTooltip(renderedHeader, 'min-w-0 flex-1 truncate')}
@@ -368,29 +377,47 @@ export function renderDataTableCellContent<TData extends RowData>(
 }
 
 export function DataTableBodyRow<TData extends RowData>({
+  getRowClassName,
   row,
+  rowIndex,
   table,
   visibleColumnCount,
   renderExpandedContent,
 }: {
+  getRowClassName?: DataTableRowClassName<TData>;
   row: Row<TData>;
+  rowIndex: number;
   table: DataTableInstance<TData>;
   visibleColumnCount: number;
   renderExpandedContent?: (row: Row<TData>, table: DataTableInstance<TData>) => React.ReactNode;
 }) {
   const isPinnedRow = row.getIsPinned();
+  const resolvedRowClassName = getRowClassName?.({
+    row,
+    rowIndex,
+    table,
+  });
 
   return (
     <React.Fragment key={row.id}>
       <TableRow
         data-pinned={isPinnedRow || undefined}
         data-state={row.getIsSelected() ? 'selected' : undefined}
-        className={cn(isPinnedRow ? 'bg-muted/20' : undefined)}
+        className={cn(isPinnedRow ? 'bg-muted/20' : undefined, resolvedRowClassName)}
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell
             key={cell.id}
-            className={cn(cell.column.getIsPinned() ? 'bg-background' : undefined)}
+            className={cn(
+              cell.column.getIsPinned() ? 'bg-background' : undefined,
+              resolveDataTableClassName(cell.column.columnDef.meta?.cellClassName, {
+                cell,
+                row,
+                rowIndex,
+                column: cell.column,
+                table,
+              }),
+            )}
             style={getPinnedColumnStyles(cell.column)}
           >
             {renderDataTableCellContent(row, cell)}

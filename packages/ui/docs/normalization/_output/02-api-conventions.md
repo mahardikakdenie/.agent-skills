@@ -642,6 +642,7 @@ export interface DataTablePaginationConfig {
 
 export interface DataTableShellProps<TData extends RowData> {
   loading?: boolean
+  getRowClassName?: DataTableRowClassName<TData>
   renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode
   renderPagination?: (table: DataTableInstance<TData>) => React.ReactNode
   renderStatus?: (context: DataTableStatusContext<TData>) => React.ReactNode | null
@@ -665,6 +666,44 @@ export interface DataTableVirtualizedProps<TData extends RowData>
   estimateRowHeight?: number
   overscan?: number
 }
+
+export interface DataTableRowClassNameContext<TData extends RowData> {
+  row: Row<TData>
+  rowIndex: number
+  table: DataTableInstance<TData>
+}
+
+export interface DataTableHeaderClassNameContext<TData extends RowData, TValue = unknown> {
+  header: Header<TData, TValue>
+  column: Column<TData, TValue>
+  table: DataTableInstance<TData>
+}
+
+export interface DataTableCellClassNameContext<TData extends RowData, TValue = unknown> {
+  cell: Cell<TData, TValue>
+  row: Row<TData>
+  rowIndex: number
+  column: Column<TData, TValue>
+  table: DataTableInstance<TData>
+}
+
+export type DataTableRowClassName<TData extends RowData> =
+  (context: DataTableRowClassNameContext<TData>) => string | undefined
+
+export type DataTableHeaderClassName<TData extends RowData, TValue = unknown> =
+  | string
+  | ((context: DataTableHeaderClassNameContext<TData, TValue>) => string | undefined)
+
+export type DataTableCellClassName<TData extends RowData, TValue = unknown> =
+  | string
+  | ((context: DataTableCellClassNameContext<TData, TValue>) => string | undefined)
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    headerCellClassName?: DataTableHeaderClassName<TData, TValue>
+    cellClassName?: DataTableCellClassName<TData, TValue>
+  }
+}
 ```
 
 Story group: `Data Display`
@@ -674,6 +713,8 @@ Normalization notes:
 - Public exports are `DataTable`, `DataTableVirtualized`, `DataTablePagination`, `useDataTable`, `dataTableFacetedFilterFn`, and `dataTableFuzzyFilterFn`.
 - Toolbar/search/filter/view/selection helper controls currently remain Storybook-only utilities, not package exports.
 - Stories prefer explanatory copy above the table instead of relying on captions, but the semantic `caption` prop remains supported.
+- Shared styling extensibility is now app-agnostic and explicit: row classes map through `getRowClassName(...)`, while header/body cell classes map through `columnDef.meta.headerCellClassName` and `columnDef.meta.cellClassName`.
+- `meta.headerCellClassName` applies to both the semantic `<th>` shell and the shipped sortable header button so alignment utilities keep working on sortable and non-sortable columns.
 - Dependency: `@tanstack/react-table` v8. `DataTableVirtualized` additionally depends on TanStack Virtual through the shared package.
 - Internal helper consolidation is now centered in `DataTable.utils.ts`; layout and sticky style helpers are not split into a separate `DataTable.layout.ts` layer anymore.
 

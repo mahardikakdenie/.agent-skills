@@ -1,6 +1,8 @@
 import type * as React from 'react';
 import type { InputProps } from '../Input';
 import type {
+  Cell,
+  Column,
   ColumnDef,
   ColumnFiltersState,
   ColumnOrderState,
@@ -10,6 +12,7 @@ import type {
   FilterFn,
   FilterFnOption,
   GroupingState,
+  Header,
   OnChangeFn,
   PaginationState,
   Row,
@@ -124,6 +127,38 @@ export interface DataTableStatusContext<TData extends RowData>
   isEmpty: boolean;
 }
 
+export interface DataTableRowClassNameContext<TData extends RowData> {
+  row: Row<TData>;
+  rowIndex: number;
+  table: DataTableInstance<TData>;
+}
+
+export interface DataTableHeaderClassNameContext<TData extends RowData, TValue = unknown> {
+  header: Header<TData, TValue>;
+  column: Column<TData, TValue>;
+  table: DataTableInstance<TData>;
+}
+
+export interface DataTableCellClassNameContext<TData extends RowData, TValue = unknown> {
+  cell: Cell<TData, TValue>;
+  row: Row<TData>;
+  rowIndex: number;
+  column: Column<TData, TValue>;
+  table: DataTableInstance<TData>;
+}
+
+export type DataTableRowClassName<TData extends RowData> = (
+  context: DataTableRowClassNameContext<TData>,
+) => string | undefined;
+
+export type DataTableHeaderClassName<TData extends RowData, TValue = unknown> =
+  | string
+  | ((context: DataTableHeaderClassNameContext<TData, TValue>) => string | undefined);
+
+export type DataTableCellClassName<TData extends RowData, TValue = unknown> =
+  | string
+  | ((context: DataTableCellClassNameContext<TData, TValue>) => string | undefined);
+
 export type DataTableRenderable<TData extends RowData> =
   | React.ReactNode
   | ((context: DataTableRenderContext<TData>) => React.ReactNode);
@@ -131,6 +166,7 @@ export type DataTableRenderable<TData extends RowData> =
 export interface DataTableShellProps<TData extends RowData>
   extends React.HTMLAttributes<HTMLDivElement> {
   loading?: boolean;
+  getRowClassName?: DataTableRowClassName<TData>;
   renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode;
   renderPagination?: (table: DataTableInstance<TData>) => React.ReactNode;
   renderStatus?: (context: DataTableStatusContext<TData>) => React.ReactNode | null;
@@ -245,6 +281,13 @@ export interface DataTablePaginationProps<TData extends RowData>
 
 export type DataTableFilterFn<TData extends RowData> = FilterFn<TData>;
 export type DataTableFilterFnOption<TData extends RowData> = FilterFnOption<TData>;
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    headerCellClassName?: DataTableHeaderClassName<TData, TValue>;
+    cellClassName?: DataTableCellClassName<TData, TValue>;
+  }
+}
 
 export type {
   ColumnDef,

@@ -53,6 +53,12 @@ Stories intentionally prefer short description blocks above the table instead of
 - `DataTablePaginationConfig`
 - `DataTablePaginationProps`
 - `DataTableLayoutOptions`
+- `DataTableRowClassName`
+- `DataTableRowClassNameContext`
+- `DataTableHeaderClassName`
+- `DataTableHeaderClassNameContext`
+- `DataTableCellClassName`
+- `DataTableCellClassNameContext`
 - `DataTableRenderContext`
 - `DataTableStatusContext`
 - `DataTableRenderable`
@@ -109,6 +115,7 @@ The shell remains composition-first: toolbar UI, filter UI, and app workflows st
 | Column pinning                           | Yes     | Sticky left/right pinned columns                                                |
 | Row pinning                              | Yes     | Top / center / bottom row sections                                              |
 | Column sizing / resizing                 | Yes     | Resize handles and state support                                                |
+| Row and cell styling hooks               | Yes     | Via `getRowClassName(...)` and column `meta.headerCellClassName` / `meta.cellClassName` |
 | Sticky header / sticky footer            | Yes     | Via `layout.stickyHeader`, `layout.stickyFooter`, and `layout.maxBodyHeight`    |
 | Virtualization                           | Yes     | Via dedicated `DataTableVirtualized` companion                                  |
 
@@ -182,12 +189,42 @@ const table = useDataTable({
 />;
 ```
 
+### Styling extensibility
+
+```tsx
+const columns: ColumnDef<InvoiceRow>[] = [
+  {
+    accessorKey: 'premium',
+    header: 'Premium',
+    meta: {
+      headerCellClassName: 'text-right',
+      cellClassName: 'text-right',
+    },
+  },
+];
+
+<DataTable
+  columns={columns}
+  data={rows}
+  getRowClassName={({ row, rowIndex }) =>
+    row.original.status === 'Pending' && rowIndex % 2 === 0 ? 'bg-muted/30' : undefined
+  }
+/>;
+```
+
+Adapter note:
+
+- Legacy row hooks such as `getRowClassName(item, index)` should map through `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.
+- Legacy column props such as `classNameHeading` and `className` should map into `columnDef.meta.headerCellClassName` and `columnDef.meta.cellClassName`.
+
 ---
 
 ## Shared Behavior Notes
 
 - Textual overflow in headers and cells uses tooltip-on-overflow behavior when the rendered value resolves to a textual table value.
 - Grouped rows and aggregated cells use the underlying table value for tooltip labels when the rendered cell content is wrapped in React nodes.
+- `meta.headerCellClassName` styles the semantic header cell shell and the shared sortable header button so common alignment utilities keep working for sortable and non-sortable columns.
+- Row styling hooks apply to the primary rendered body row. Expanded content rows keep the shared default shell unless the consumer styles the expanded content directly.
 - Sticky footer stories should avoid unnecessary horizontal overflow when the goal is to demonstrate vertical footer pinning behavior only.
 - `renderStatus`, `emptyState`, and `loadingState` are separate surfaces. `renderStatus` has highest priority.
 
@@ -223,6 +260,7 @@ Story file title: `Data Display/DataTable`
 - `Pagination`
 - `RowSelection`
 - `RowPinning`
+- `StylingHooks`
 - `StickyHeader`
 - `StickyFooter`
 - `Virtualization`
@@ -254,3 +292,4 @@ Notes:
 | 2026-03-13 | Initial DataTable spec                                                                                                                                                                            |
 | 2026-03-14 | Expanded the shared foundation into managed + controlled shells, added virtualization companion coverage, and documented current story taxonomy                                                   |
 | 2026-03-14 | Aligned the spec with the current public exports, marked toolbar/filter controls as Storybook-only utilities, documented overflow-to-tooltip behavior, and clarified sticky footer story behavior |
+| 2026-03-28 | Added app-agnostic styling extensibility through `getRowClassName(...)` and column `meta.headerCellClassName` / `meta.cellClassName`, then documented the thin-adapter mapping path             |

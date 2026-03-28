@@ -43,6 +43,7 @@ import type {
 } from './DataTable.types';
 import {
   getHeaderCellStyles,
+  resolveDataTableClassName,
   getTableStyle,
   getViewportStyle,
   resolvePageSizeOptions,
@@ -58,6 +59,7 @@ function DataTableRenderShell<TData extends RowData>({
   rootRef,
   table,
   loading = false,
+  getRowClassName,
   renderToolbar,
   renderPagination,
   renderStatus,
@@ -120,6 +122,14 @@ function DataTableRenderShell<TData extends RowData>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   const resizeHandler = header.getResizeHandler();
+                  const headerCellClassName = resolveDataTableClassName(
+                    header.column.columnDef.meta?.headerCellClassName,
+                    {
+                      header,
+                      column: header.column,
+                      table,
+                    },
+                  );
 
                   return (
                     <TableHead
@@ -132,12 +142,13 @@ function DataTableRenderShell<TData extends RowData>({
                       className={cn(
                         header.column.getIsPinned() ? 'bg-background' : undefined,
                         header.column.getCanResize() ? 'relative' : undefined,
+                        headerCellClassName,
                       )}
                       colSpan={header.colSpan}
                       scope='col'
                       style={getHeaderCellStyles(header.column, layout)}
                     >
-                      {renderDataTableHeader(header, sortingCount)}
+                      {renderDataTableHeader(header, sortingCount, headerCellClassName)}
                       {header.column.getCanResize() ? (
                         <Box
                           as='button'
@@ -174,28 +185,34 @@ function DataTableRenderShell<TData extends RowData>({
               )
             ) : displayedRowCount ? (
               <>
-                {topRows.map((row) => (
+                {topRows.map((row, rowIndex) => (
                   <DataTableBodyRow
                     key={row.id}
+                    getRowClassName={getRowClassName}
                     row={row}
+                    rowIndex={rowIndex}
                     table={table}
                     visibleColumnCount={visibleColumnCount}
                     renderExpandedContent={renderExpandedContent}
                   />
                 ))}
-                {centerRows.map((row) => (
+                {centerRows.map((row, rowIndex) => (
                   <DataTableBodyRow
                     key={row.id}
+                    getRowClassName={getRowClassName}
                     row={row}
+                    rowIndex={topRows.length + rowIndex}
                     table={table}
                     visibleColumnCount={visibleColumnCount}
                     renderExpandedContent={renderExpandedContent}
                   />
                 ))}
-                {bottomRows.map((row) => (
+                {bottomRows.map((row, rowIndex) => (
                   <DataTableBodyRow
                     key={row.id}
+                    getRowClassName={getRowClassName}
                     row={row}
+                    rowIndex={topRows.length + centerRows.length + rowIndex}
                     table={table}
                     visibleColumnCount={visibleColumnCount}
                     renderExpandedContent={renderExpandedContent}

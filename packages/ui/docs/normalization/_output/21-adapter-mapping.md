@@ -3,7 +3,7 @@
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
 > Run date: 2026-03-10
-> Last reconciled: 2026-03-27
+> Last reconciled: 2026-03-28
 
 ## Box
 
@@ -346,10 +346,31 @@ Direct adoption guidance:
 - Legacy admin tables, policy lists, invoice tables, and claims tables that already combine a semantic table shell with client-side sorting, filtering, grouping, or page-number pagination map to `DataTable`.
 - Existing headless column definitions should normalize to TanStack `ColumnDef<TData>` records passed through the shared `columns` prop; business formatting should stay inside cell renderers while the shared component owns the shell and row-model plumbing.
 - Existing TanStack-based table hooks can normalize to controlled `table` mode by feeding `useDataTable(...)` output into `DataTable` or `DataTableVirtualized`; simpler adapters can stay on the managed `data` + `columns` path.
+- Existing row-level visual hooks such as `getRowClassName(item, index)` now map to the shared `getRowClassName={({ row, rowIndex }) => ...}` prop.
+- Legacy header-cell styling fields such as `classNameHeading` now map to `columnDef.meta.headerCellClassName`.
+  The shared header class is applied to the semantic `<th>` shell and the shipped sortable header button so alignment utilities continue to work on sortable columns.
+- Legacy body-cell styling fields such as `className` now map to `columnDef.meta.cellClassName`.
 - Existing toolbar search inputs should collapse into consumer-owned `renderToolbar={(table) => ...}` composition. Do not assume the Storybook-only `DataTableToolbar` helper is part of the package public API.
 - Existing empty, loading, no-results, and summary rows map to `emptyState`, `loadingState`, `renderStatus`, and `renderFooter`.
 - Existing shared pager layouts can keep the shipped table pagination control through `renderPagination={(table) => ...}` plus `DataTablePagination` instead of rebuilding page-number controls from scratch.
 - Existing virtualized long lists that still fit a generic tabular contract can normalize to `DataTableVirtualized`; only app-specific virtualization shells that exceed the shared contract should stay local.
+
+Adapter path:
+
+- Direct import is enough when the app already defines TanStack `ColumnDef<TData>` records or can do so inline.
+- A thin adapter is expected when the legacy table API still exposes lightweight column config objects plus styling fields such as `classNameHeading`, `className`, or `getRowClassName`.
+- Thin adapter shape:
+  - Map each legacy column into `ColumnDef<TData>`.
+  - Map `classNameHeading` into `meta.headerCellClassName`.
+  - Map `className` into `meta.cellClassName`.
+  - Map `getRowClassName(item, index)` into `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.
+  - Keep sorting, filtering, pagination, routing, and business actions in the app adapter or parent surface.
+
+Admin-portal Batch 8 / Batch 4 note:
+
+- The upstream blocker is resolved at the shared `@repo/ui` contract level.
+- Admin-portal should migrate through a thin adapter rather than through DOM class patching or a widened app-specific shared API.
+- No admin-only classes, variants, or behavior moved into `@repo/ui`; only the generic styling surfaces were added.
 
 Keep local:
 
