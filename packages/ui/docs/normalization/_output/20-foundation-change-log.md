@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-03-29 - SelectAutocomplete Queue Correction Reconciled To Combobox
+
+Changed:
+
+- Corrected the normalization backlog so admin-portal `SelectAutocomplete` no longer appears as a standalone shared-component intake alongside `Combobox`.
+- Reaffirmed the canonical boundary that searchable single-select flows normalize to shared `Combobox`, while local wrapper names such as `SelectAutocomplete` remain app-side migration concerns instead of second shared identities.
+- Updated `12-master-backlog.csv` and `21-adapter-mapping.md` so the normalization `_output` set no longer suggests a duplicate shared target for the same interaction family.
+
+Impact:
+
+- Downstream app queues can stop selecting `SelectAutocomplete` as if it still needed separate Phase 04 shared-ui build work.
+- Remaining admin-portal work should focus on migrating the local wrapper usage to shared `Combobox` with the right parity path, not on inventing a new shared component name.
+
+---
+
 ## 2026-03-28 - FileUpload Display-Value Contract Synced
 
 Changed:

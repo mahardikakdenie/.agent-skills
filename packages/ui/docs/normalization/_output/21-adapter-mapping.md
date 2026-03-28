@@ -599,6 +599,8 @@ Keep local:
 Admin-portal Batch 8 / Batch 4 note:
 
 - The legacy customer picker in `apps/admin-portal/src/app/transaction/list/add/page.tsx` can now migrate directly to shared `Combobox` by mapping `id/name` records into shared `options`, wiring the existing debounced search function to `onSearchValueChange`, and moving the add-new customer branch into `onCreateOption` with `createOptionLabel`.
+- The legacy `SelectAutocomplete` wrapper in `apps/admin-portal/src/components/ui/Fields/SelectAutocomplete/index.tsx` is not a second shared-component target. Reconcile it to the same shared `Combobox` contract instead of queuing standalone shared-ui intake for `SelectAutocomplete`.
+- For that admin-portal wrapper, the remaining parity question is downstream migration shape, not shared-component identity: searchable selection is already resolved to `Combobox`.
 - No app-local debounce, fetch, or business creation logic moves into `@repo/ui`; only the field shell, list interaction, and bounded create affordance become shared.
 
 ## Command

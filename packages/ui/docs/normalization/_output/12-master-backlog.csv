@@ -1966,7 +1966,7 @@
 "SeeIcon","KEEP_APP_LOCAL","N/A","P3","MEDIUM","XS","agent-web-portal","partial","no","low"
 "Select","NEW_SHARED_COMPONENT","4","P0","HIGH","S","admin-portal|admin-portal-boost|affiliate-admin|affiliate-portal|agent-admin|agent-portal|agent-web-portal|claim-portal|partner-portal|teman-affiliate-admin|teman-affiliate-portal|ticket-portal","partial","yes","high"
 "Select primitives","NEW_SHARED_COMPONENT","4","P1","high","M","boost-product-fe","partial","yes","high"
-"SelectAutocomplete","NEW_SHARED_COMPONENT","4","P0","HIGH","L","admin-portal","missing","yes","high"
+"SelectAutocomplete","KEEP_APP_LOCAL","N/A","P0","HIGH","L","admin-portal","exists via Combobox","no","medium"
 "SelectBank","SPLIT","1.5","P1","MEDIUM","XS","claim-portal","missing","no","high"
 "SelectBankContainer","KEEP_APP_LOCAL","N/A","P1","LOW","XS","claim-portal","missing","no","low"
 "SelectBankShell","KEEP_APP_LOCAL","N/A","P2","LOW","XS","claim-portal","missing","no","low"
