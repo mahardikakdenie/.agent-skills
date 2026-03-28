@@ -1232,3 +1232,20 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Files changed: `none`
 - Next required upstream action: `Publish approved adapter guidance or extend the shared DataTable contract with documented row-level and column header/cell class hooks that a thin adapter can target; without those surfaces, admin-portal cannot preserve existing row state highlighting and header/cell styling parity safely.`
 
+## Batch 8 / Batch 4 - OptimizeImageShell - 2026-03-29 - BLOCKED
+
+- Audit classification: `NEW_SHARED_COMPONENT`
+- Audit batch: `4`
+- Blocker: `export missing`
+- Evidence checked: [`apps/admin-portal/docs/migration/component/_output/_audit-report.md` entry for `OptimizeImageShell`, `apps/admin-portal/src/components/ui/OptimizeImageShell.tsx`, `apps/admin-portal/src/components/ui/image.tsx`, `packages/ui/src/index.ts`, `packages/ui/src/Image/Image.spec.md`, `packages/ui/src/Image/Image.tsx`, `packages/ui/docs/normalization/_output/21-adapter-mapping.md` Image guidance]
+- Files changed: `none`
+- Next required upstream action: `Publish an approved shared replacement path for the audit-named OptimizeImageShell component. Either export/spec an app-agnostic shared shell that preserves the current render-prop + next/image container split, or reconcile the audit target to shared Image with explicit adapter guidance for keeping next/image optimization local without changing the admin-portal Image container contract.`
+
+## Batch 8 / Batch 4 - OptimizeImageShell - 2026-03-29 - CORRECTION
+
+- Decision: `Remove OptimizeImageShell from the Batch 4 / shared-ui queue.`
+- Rationale: `OptimizeImageShell` is not intended to be a standalone shared-ui target; it is a thin app-local render-prop shell that exists only to preserve the local `next/image` container split and optimization concerns.
+- Output docs updated: [`_audit-report.md`, `_component-backlog.csv`, `_per-app-baseline-summary.md`, `_parity-checklist.md`]
+- Queue impact: `Both OptimizeImageShell entries are reclassified to KEEP_APP_LOCAL (Batch 1.5), and the prior 2026-03-29 BLOCKED entry should be treated as superseded by this queue correction rather than as an upstream dependency.`
+- Next action: `Do not select OptimizeImageShell for future Batch 8 / Batch 4 runs in admin-portal.`
+

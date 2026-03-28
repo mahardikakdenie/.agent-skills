@@ -158,20 +158,6 @@
 - [ ] State parity (loading, error, disabled, empty)
 - [ ] Prop API still compiles after swap
 
-## OptimizeImageShell
-
-- [ ] Interaction parity (click, hover, keyboard)
-- [ ] Visual parity (layout, spacing, color - token delta OK)
-- [ ] State parity (loading, error, disabled, empty)
-- [ ] Prop API still compiles after swap
-
-## OptimizeImageShell
-
-- [ ] Interaction parity (click, hover, keyboard)
-- [ ] Visual parity (layout, spacing, color - token delta OK)
-- [ ] State parity (loading, error, disabled, empty)
-- [ ] Prop API still compiles after swap
-
 ## Pagination
 
 - [ ] Interaction parity (click, hover, keyboard)

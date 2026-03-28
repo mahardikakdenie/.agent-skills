@@ -3032,19 +3032,19 @@
 ### OptimizeImageShell
 
 - **File:** src/components/OptimizeImageShell.tsx
-- **Classification:** NEW_SHARED_COMPONENT
-- **Batch:** 4
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** 1.5
 - **@repo/ui status:** missing
-- **API delta:** N/A (@repo/ui export missing)
+- **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
-- **Reason kept app-local:** N/A
+- **Risk notes:** Render-prop shell exists only to keep `next/image` optimization and priority-loading concerns in the app-owned image container.
+- **Reason kept app-local:** `next/image` optimization wrapper; not a standalone shared-ui target.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none
 - **Batch 1.5 candidate:** DONE
-- **Refactor potential:** N/A
-- **Refactor strategy:** N/A
+- **Refactor potential:** NONE
+- **Refactor strategy:** shell retained locally after split; no Phase 04 shared-ui intake
 - **Story group:** Data Display
 
 ### Pagination
@@ -3736,19 +3736,19 @@
 ### OptimizeImageShell
 
 - **File:** src/components/ui/OptimizeImageShell.tsx
-- **Classification:** NEW_SHARED_COMPONENT
-- **Batch:** 4
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** 1.5
 - **@repo/ui status:** missing
-- **API delta:** N/A (@repo/ui export missing)
+- **API delta:** N/A (stays app-local in Batch 1).
 - **Parity risk:** LOW
-- **Risk notes:** Reusable visual primitive candidate for shared UI extraction.
-- **Reason kept app-local:** N/A
+- **Risk notes:** Render-prop shell exists only to keep `next/image` optimization and priority-loading concerns in the app-owned image container.
+- **Reason kept app-local:** `next/image` optimization wrapper; not a standalone shared-ui target.
 - **Is monolith:** NO
 - **SoC potential:** NONE
 - **SoC strategy:** none
 - **Batch 1.5 candidate:** DONE
-- **Refactor potential:** N/A
-- **Refactor strategy:** N/A
+- **Refactor potential:** NONE
+- **Refactor strategy:** shell retained locally after split; no Phase 04 shared-ui intake
 - **Story group:** Data Display
 
 ### PageHeader
