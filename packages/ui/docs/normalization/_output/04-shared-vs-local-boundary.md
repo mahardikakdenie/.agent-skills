@@ -139,7 +139,7 @@ Notable cross-app shared shell candidates surfaced from Batch 1.5:
 - `DashboardSidebarShell` (gen-ai-portal) -> app-local only (domain nav config)
 - `InfoProductShell`, `ViewImageShell` (grab-landing-page) -> Phase 04 candidates
 - `CompareShell`, `FormStepShell`, `NavigationBarShell` (ecommerce-gelm) -> Phase 04 candidates
-- `SelectPhoneCodeShell`, `NavigationBarShell`, `FileUploadShell` (sso-portal) -> Phase 04 candidates
+- `NavigationBarShell`, `FileUploadShell` (sso-portal) -> Phase 04 candidates
 
 ---
 
