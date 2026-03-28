@@ -13,9 +13,9 @@
 
 ## Overview
 
-`Combobox` is the shared searchable single-select field for option sets that are too large or noisy for the static `Select` primitive, but still need an app-agnostic shell inside `@repo/ui`. It combines the shipped `Popover` surface with a `cmdk` command list so consumers get searchable option discovery, keyboard navigation, inline empty state handling, and normalized validation treatment without embedding routing, fetch logic, or domain-specific shaping in the shared package.
+`Combobox` is the shared searchable single-select field for option sets that are too large or noisy for the static `Select` primitive, but still need an app-agnostic shell inside `@repo/ui`. It combines the shipped `Popover` surface with a `cmdk` command list so consumers get searchable option discovery, keyboard navigation, inline empty state handling, optional controlled search text, and normalized validation treatment without embedding routing, fetch logic, or domain-specific shaping in the shared package.
 
-This shared contract intentionally stays narrower than some local baseline variants. It covers label and error wiring, trigger placeholder, client-side search, parent-owned search notifications, disabled and loading treatment, clearable reset behavior, an optional create-on-enter affordance, and custom option-row rendering. It still does not absorb multi-select, remote transport, phone-code specialization, domain-specific creation semantics, or app-specific result formatting. Those remain app-local.
+This shared contract intentionally stays narrower than some local baseline variants. It covers label and error wiring, trigger placeholder, client-side search, optional parent-owned search text, parent-owned search notifications, disabled and loading treatment, clearable reset behavior, an optional create-on-enter affordance, and custom option-row rendering. It still does not absorb multi-select, remote transport, phone-code specialization, domain-specific creation semantics, or app-specific result formatting. Those remain app-local.
 
 `Combobox` now participates in the shared field-shell sizing family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`. The public size ladder is `xs | sm | md | lg`, with `md` as the default.
 
@@ -24,7 +24,8 @@ This shared contract intentionally stays narrower than some local baseline varia
 - Use `Combobox` for searchable single selection where the full option list can be supplied as plain props.
 - Use it when `Select` is too rigid because users need inline filtering before choosing one option.
 - Use `clearable` when the chosen value must return to the placeholder state from the trigger shell.
-- Use `onSearchValueChange` together with parent-owned `options` refresh and `loading` when async search should stay outside `@repo/ui`.
+- Use `onSearchValueChange` for parent search notifications, and add `searchValue` when the parent also needs to control the visible query text.
+- Use `searchValue`, `onSearchValueChange`, parent-owned `options` refresh, and `loading` together when async search should stay outside `@repo/ui`.
 - Use `onCreateOption` for a bounded create-on-enter affordance where the parent still owns what gets created and how the new option is stored.
 
 **When NOT to use:**
@@ -44,7 +45,7 @@ This shared contract intentionally stays narrower than some local baseline varia
 | Public API shape | Flat prop-driven component | A single field contract is the clearest shared surface here. |
 | Controlled vs uncontrolled selection | both | Cross-app baselines mix local-state and controlled usage; the shared component should support both cleanly. |
 | Open-state API | `open` + internal fallback + `onClose` | Matches the canonical shared naming in `02-api-conventions.md` without widening to raw `onOpenChange`. |
-| Search model | Internal input + `onSearchValueChange` notification | Searchable selection remains the shared need while debounce, fetch timing, and option refresh stay parent-owned. |
+| Search model | Internal fallback + optional controlled `searchValue` + `onSearchValueChange` | Searchable selection remains the shared need while visible query control, debounce, fetch timing, and option refresh stay parent-owned. |
 | Create behavior | `onCreateOption` + `createOptionLabel` | Covers the smallest reusable create-on-enter affordance without hard-coding business semantics into the shared package. |
 | Clear behavior | `clearable` + `onValueChange(undefined)` | Resets selected state without inventing a second callback contract. |
 | Rich option layout | `renderOption` | Supports denser result rows while keeping the trigger and accessible label contract text-first. |
@@ -61,7 +62,8 @@ This shared contract intentionally stays narrower than some local baseline varia
 | `onValueChange` | `(value: string | undefined) => void` | `undefined` | No | Called when the user selects an option or clears the current value. |
 | `options` | `ComboboxOption[]` | - | Yes | Flat searchable option list. |
 | `placeholder` | `string` | `'Select an option'` | No | Trigger copy shown when no option is selected. |
-| `searchPlaceholder` | `string` | `'Search options'` | No | Placeholder inside the searchable command input. |
+| `searchPlaceholder` | `string` | `'Search options…'` | No | Placeholder inside the searchable command input. |
+| `searchValue` | `string` | internal state | No | Controlled search input text. When omitted, the component manages the query internally. |
 | `onSearchValueChange` | `(value: string) => void` | `undefined` | No | Notifies the parent whenever the search input changes so debounce, fetching, and option refresh can stay external. |
 | `size` | `'xs' | 'sm' | 'md' | 'lg'` | `'md'` | No | Shared field-shell density applied to the trigger and searchable input row. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger and option interaction. |
@@ -103,7 +105,7 @@ export interface ComboboxOptionRenderState {
 | Default | Trigger shows placeholder or selected option label | Trigger exposes combobox-style expand/collapse state |
 | Open | Trigger keeps border-led shell emphasis while the popover opens instead of layering a second heavy focus treatment | Trigger exposes `aria-expanded="true"` and popup relationship |
 | Search | Typing filters the option list inside the command surface, and the search row keeps a visible keyboard-focus treatment when the popup input owns focus | `cmdk` manages active item movement and announcement |
-| Parent-owned search refresh | Parent can respond to `onSearchValueChange`, debounce externally, toggle `loading`, and replace `options` without changing the shared field shell | Async orchestration stays outside the shared package; the trigger still exposes `aria-busy` while loading |
+| Parent-owned search refresh | Parent can control `searchValue` or respond to `onSearchValueChange`, debounce externally, toggle `loading`, and replace `options` without changing the shared field shell | Async orchestration stays outside the shared package; the trigger still exposes `aria-busy` while loading |
 | Empty | Searchable list shows `No options found` when no match remains | Empty state remains visible text, not icon-only |
 | Loading | Trigger disables interaction and list shows a loading row | Trigger exposes `aria-busy="true"`; loading row uses polite status semantics |
 | Disabled Option | Disabled rows remain visible but cannot be chosen | `cmdk` item disabling is preserved |
@@ -173,8 +175,9 @@ export interface ComboboxOptionRenderState {
 <Combobox
   label="Customer"
   placeholder="Input name"
-  searchPlaceholder="Find Customer Name"
+  searchPlaceholder="Find Customer Name…"
   value={customerId}
+  searchValue={customerSearch}
   options={customerOptions}
   loading={customersLoading}
   onValueChange={setCustomerId}
@@ -220,6 +223,7 @@ Roadmap alignment:
 
 | Date | Change |
 | --- | --- |
+| 2026-03-29 | Added optional controlled `searchValue` support so parents can keep the visible query in sync during shared async-search migration without moving search orchestration into `@repo/ui`. |
 | 2026-03-26 | Added parent-owned `onSearchValueChange` and bounded `onCreateOption` / `createOptionLabel` support so remote-search and create-on-enter flows can adopt the shared field shell without embedding fetch logic in `@repo/ui`. |
 | 2026-03-12 | Initial Combobox spec |
 | 2026-03-12 | Added `clearable`, `renderOption`, and non-forced open Storybook coverage |

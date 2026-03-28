@@ -95,7 +95,7 @@ const meta = {
   args: {
     label: 'Country',
     placeholder: 'Select an option',
-    searchPlaceholder: 'Search Countries',
+    searchPlaceholder: 'Search Countries…',
     size: 'md',
     options,
     disabled: false,
@@ -123,6 +123,7 @@ const meta = {
     open: { control: 'boolean' },
     renderOption: { table: { disable: true } },
     onValueChange: { action: 'value changed' },
+    searchValue: { control: 'text' },
     onSearchValueChange: { action: 'search changed' },
     onCreateOption: { action: 'create option' },
     onClose: { action: 'closed' },
@@ -132,7 +133,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Searchable single-select field built from the shared Popover surface and a cmdk command list, with optional parent-owned search refresh and create-option hooks.',
+          'Searchable single-select field built from the shared Popover surface and a cmdk command list, with optional controlled search text, parent-owned search refresh, and create-option hooks.',
       },
     },
   },
@@ -162,7 +163,7 @@ export const Search: Story = {
   args: {
     label: 'Assignee',
     placeholder: 'Select Assignee',
-    searchPlaceholder: 'Search Team Members',
+    searchPlaceholder: 'Search Team Members…',
     options: assigneeOptions,
   },
   parameters: {
@@ -188,7 +189,7 @@ export const Sizes: Story = {
           label={`Size ${size.toUpperCase()}`}
           size={size}
           placeholder={`Select a ${size} field`}
-          searchPlaceholder={`Search ${size} options`}
+          searchPlaceholder={`Search ${size} options…`}
           initialValue="my"
           options={options}
         />
@@ -210,7 +211,7 @@ export const Empty: Story = {
   args: {
     label: 'Occupation',
     options: [],
-    searchPlaceholder: 'Search Occupations',
+    searchPlaceholder: 'Search Occupations…',
   },
   parameters: {
     docs: {
@@ -248,7 +249,7 @@ export const DisabledOption: Story = {
   args: {
     label: 'Assignee',
     placeholder: 'Select Assignee',
-    searchPlaceholder: 'Search Team Members',
+    searchPlaceholder: 'Search Team Members…',
     options: assigneeOptions,
   },
   parameters: {
@@ -390,9 +391,10 @@ export const ExternalSearchAndCreate: Story = {
           <Combobox
             label="Customer"
             placeholder="Input name"
-            searchPlaceholder="Find Customer Name"
+            searchPlaceholder="Find Customer Name…"
             options={visibleOptions}
             value={value}
+            searchValue={query}
             loading={loading}
             onValueChange={setValue}
             onSearchValueChange={setQuery}
@@ -428,7 +430,7 @@ export const CustomOptionContent: Story = {
   args: {
     label: 'Country',
     placeholder: 'Select An Option',
-    searchPlaceholder: 'Search Countries',
+    searchPlaceholder: 'Search Countries…',
     options,
     renderOption: renderCountryOption,
   },

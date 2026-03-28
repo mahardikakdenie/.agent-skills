@@ -46,7 +46,8 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       onValueChange,
       options,
       placeholder = 'Select an option',
-      searchPlaceholder = 'Search options',
+      searchPlaceholder = 'Search options…',
+      searchValue,
       onSearchValueChange,
       size = 'md',
       disabled = false,
@@ -76,6 +77,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
     ref,
   ) => {
     const isControlled = value !== undefined;
+    const isSearchControlled = searchValue !== undefined;
     const [uncontrolledValue, setUncontrolledValue] = React.useState<string | undefined>(undefined);
     const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
     const [uncontrolledSearchValue, setUncontrolledSearchValue] = React.useState('');
@@ -90,7 +92,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
     const labelledBy = [ariaLabelledBy, labelId].filter(Boolean).join(' ') || undefined;
     const resolvedOpen = open ?? uncontrolledOpen;
     const currentValue = isControlled ? value : uncontrolledValue;
-    const resolvedSearchValue = uncontrolledSearchValue;
+    const resolvedSearchValue = isSearchControlled ? searchValue : uncontrolledSearchValue;
     const trimmedSearchValue = resolvedSearchValue.trim();
     const normalizedSearchValue = trimmedSearchValue.toLowerCase();
     const selectedOption = getComboboxOption(options, currentValue);
@@ -127,7 +129,10 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
     }, [resolvedOpen]);
 
     const handleSearchValueChange = (nextSearchValue: string) => {
-      setUncontrolledSearchValue(nextSearchValue);
+      if (!isSearchControlled) {
+        setUncontrolledSearchValue(nextSearchValue);
+      }
+
       onSearchValueChange?.(nextSearchValue);
     };
 
@@ -349,7 +354,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                     className={comboboxLoadingRowVariants()}
                   >
                     <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
-                    Loading options
+                    Loading options…
                   </Box>
                 ) : (
                   <>

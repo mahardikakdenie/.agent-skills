@@ -25,6 +25,7 @@ export interface ComboboxProps
   options: ComboboxOption[];
   placeholder?: string;
   searchPlaceholder?: string;
+  searchValue?: string;
   onSearchValueChange?: (value: string) => void;
   size?: ComboboxSize;
   disabled?: boolean;

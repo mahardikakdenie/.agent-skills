@@ -584,15 +584,17 @@ Direct adoption guidance:
 
 - Legacy searchable single-select fields, searchable dropdown buttons, and filter pickers map to `Combobox`.
 - Existing selected id or code values normalize to `value`; existing `onChange`, `setValue`, or `onSelect` callbacks normalize to `onValueChange`.
+- Existing controlled search-query props or state normalize to `searchValue`, while query-change handlers normalize to `onSearchValueChange`.
 - Existing option arrays should map to `options` with `{ label, value, disabled?, keywords? }` instead of widening the shared API with app-shaped records.
 - Existing field labels, required markers, validation text, loading states, and reset affordances map to `label`, `required`, `error`, `loading`, and `clearable`.
-- Parent-owned remote search stays outside the shared package: wire the local debounced or async handler to `onSearchValueChange`, refresh `options` in the parent, and use `loading` for the in-flight state.
+- Parent-owned remote search stays outside the shared package: optionally control the visible query through `searchValue`, wire the local debounced or async handler to `onSearchValueChange`, refresh `options` in the parent, and use `loading` for the in-flight state when the shared loading row matches the intended UX.
 - Bounded create-on-enter flows now map to `onCreateOption` plus `createOptionLabel`; the parent remains responsible for defining the created option, updating `options`, and driving the selected `value`.
 - Rich option rows should move into `renderOption` while trigger text still resolves from `option.label`.
 
 Keep local:
 
 - Debounce implementation, remote fetching, transport, caching, and server-driven filtering orchestration.
+- Searching helper copy or other non-blocking status text that should remain separate from the shared loading row.
 - Multi-select, tagging, multi-step creation flows, phone-code-specific picker behavior, and domain-specific create semantics beyond a generic create callback.
 - Domain-specific option shaping, analytics, routing side effects, or permission logic beyond plain props.
 
@@ -600,8 +602,8 @@ Admin-portal Batch 8 / Batch 4 note:
 
 - The legacy customer picker in `apps/admin-portal/src/app/transaction/list/add/page.tsx` can now migrate directly to shared `Combobox` by mapping `id/name` records into shared `options`, wiring the existing debounced search function to `onSearchValueChange`, and moving the add-new customer branch into `onCreateOption` with `createOptionLabel`.
 - The legacy `SelectAutocomplete` wrapper in `apps/admin-portal/src/components/ui/Fields/SelectAutocomplete/index.tsx` is not a second shared-component target. Reconcile it to the same shared `Combobox` contract instead of queuing standalone shared-ui intake for `SelectAutocomplete`.
-- For that admin-portal wrapper, the remaining parity question is downstream migration shape, not shared-component identity: searchable selection is already resolved to `Combobox`.
-- No app-local debounce, fetch, or business creation logic moves into `@repo/ui`; only the field shell, list interaction, and bounded create affordance become shared.
+- That wrapper's controlled `searchValue` prop can now map directly to shared `searchValue`, so the remaining parity question is downstream migration shape, not shared-component identity.
+- No app-local debounce, fetch, searching-state copy, or business creation logic moves into `@repo/ui`; only the field shell, query control, list interaction, and bounded create affordance become shared.
 
 ## Command
 
