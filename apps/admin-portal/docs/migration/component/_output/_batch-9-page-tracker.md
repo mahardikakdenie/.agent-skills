@@ -1,0 +1,1927 @@
+# Batch 9 Page Tracker - admin-portal
+
+## Purpose
+
+This file is the page-level source of truth for Batch 9 stabilization in `apps/admin-portal`.
+
+It tracks which routes are already stabilized, which are still pending, which are blocked, and which are deferred specifically because of DataTable.
+
+Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for page-scoped artifact naming and per-route stabilization runs.
+
+## Legend
+
+- `NOT_STARTED`
+- `IN_PROGRESS`
+- `PASS`
+- `FAIL`
+- `BLOCKED`
+- `DEFERRED_DATA_TABLE`
+- `OUT_OF_SCOPE`
+
+## Status Rules
+
+- `PASS` requires explicit existing route-level evidence. Never infer it from component migration alone.
+- `DEFERRED_DATA_TABLE` is used only when DataTable is the primary blocker.
+- `BLOCKED` is used for non-DataTable blockers.
+- `NOT_STARTED` is the default for in-scope pages without route-level stabilization evidence.
+- `OUT_OF_SCOPE` is used for routes that are not real Batch 9 stabilization targets.
+
+## Summary
+
+| Metric | Count |
+|---|---:|
+| Total discovered page.tsx routes | 115 |
+| In-scope pages | 114 |
+| Smoke routes | 10 |
+| DataTable-dependent pages | 38 |
+| PASS | 0 |
+| IN_PROGRESS | 0 |
+| FAIL | 0 |
+| BLOCKED | 0 |
+| DEFERRED_DATA_TABLE | 32 |
+| NOT_STARTED | 82 |
+| OUT_OF_SCOPE | 1 |
+
+## Page Status
+
+| Route | Route label | Page file | Smoke route | DataTable | Status | Last checked | Evidence | Notes |
+|---|---|---|---|---|---|---|---|---|
+| `/dashboard/transaction` | `dashboard-transaction` | `apps/admin-portal/src/app/dashboard/transaction/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9. |
+| `/dashboard/policy` | `dashboard-policy` | `apps/admin-portal/src/app/dashboard/policy/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9. |
+| `/dashboard/claim` | `dashboard-claim` | `apps/admin-portal/src/app/dashboard/claim/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9. |
+| `/transaction/list` | `transaction-list` | `apps/admin-portal/src/app/transaction/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/policy/list` | `policy-list` | `apps/admin-portal/src/app/policy/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/policy/endorsement/list` | `policy-endorsement-list` | `apps/admin-portal/src/app/policy/endorsement/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation noted an internal redirect to the querystring variant. |
+| `/membership/list` | `membership-list` | `apps/admin-portal/src/app/membership/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state. |
+| `/finance/billing` | `finance-billing` | `apps/admin-portal/src/app/finance/billing/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state. |
+| `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/` | `root` | `apps/admin-portal/src/app/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | Home dashboard route with no explicit Batch 9 route-stabilization evidence yet. |
+| `/claim/history` | `claim-history` | `apps/admin-portal/src/app/claim/history/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/claim/list/detail/[id]` | `claim-list-detail-id` | `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/claim/list/export` | `claim-list-export` | `apps/admin-portal/src/app/claim/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/claim/list/import` | `claim-list-import` | `apps/admin-portal/src/app/claim/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/export-users` | `export-users` | `apps/admin-portal/src/app/export-users/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/finance/billing/add` | `finance-billing-add` | `apps/admin-portal/src/app/finance/billing/add/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/finance/billing/detail/[id]` | `finance-billing-detail-id` | `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/finance/billing/detail/[id]/export` | `finance-billing-detail-id-export` | `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/billing/detail/[id]/import` | `finance-billing-detail-id-import` | `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/billing/detail/[id]/invoice` | `finance-billing-detail-id-invoice` | `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/broker-fee` | `finance-broker-fee` | `apps/admin-portal/src/app/finance/broker-fee/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/finance/broker-fee/add` | `finance-broker-fee-add` | `apps/admin-portal/src/app/finance/broker-fee/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/broker-fee/detail/[id]` | `finance-broker-fee-detail-id` | `apps/admin-portal/src/app/finance/broker-fee/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/partner-comm` | `finance-partner-comm` | `apps/admin-portal/src/app/finance/partner-comm/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/finance/partner-comm/add` | `finance-partner-comm-add` | `apps/admin-portal/src/app/finance/partner-comm/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/partner-comm/detail/[id]` | `finance-partner-comm-detail-id` | `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/unmatch-billing` | `finance-unmatch-billing` | `apps/admin-portal/src/app/finance/unmatch-billing/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/channel` | `masterdata-channel` | `apps/admin-portal/src/app/masterdata/channel/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/channel/add` | `masterdata-channel-add` | `apps/admin-portal/src/app/masterdata/channel/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/channel/detail/[id]` | `masterdata-channel-detail-id` | `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/currency` | `masterdata-currency` | `apps/admin-portal/src/app/masterdata/currency/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/currency/add` | `masterdata-currency-add` | `apps/admin-portal/src/app/masterdata/currency/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/currency/detail/[id]` | `masterdata-currency-detail-id` | `apps/admin-portal/src/app/masterdata/currency/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-tag` | `masterdata-email-tag` | `apps/admin-portal/src/app/masterdata/email-tag/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/email-tag/add` | `masterdata-email-tag-add` | `apps/admin-portal/src/app/masterdata/email-tag/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-tag/detail/[id]` | `masterdata-email-tag-detail-id` | `apps/admin-portal/src/app/masterdata/email-tag/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-template` | `masterdata-email-template` | `apps/admin-portal/src/app/masterdata/email-template/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/email-template/add` | `masterdata-email-template-add` | `apps/admin-portal/src/app/masterdata/email-template/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-template/detail/[id]` | `masterdata-email-template-detail-id` | `apps/admin-portal/src/app/masterdata/email-template/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-template/tag` | `masterdata-email-template-tag` | `apps/admin-portal/src/app/masterdata/email-template/tag/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-template/tag/add` | `masterdata-email-template-tag-add` | `apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/group` | `masterdata-group` | `apps/admin-portal/src/app/masterdata/group/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/group/add` | `masterdata-group-add` | `apps/admin-portal/src/app/masterdata/group/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/group/detail/[id]` | `masterdata-group-detail-id` | `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/holiday-date` | `masterdata-holiday-date` | `apps/admin-portal/src/app/masterdata/holiday-date/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/holiday-date/add` | `masterdata-holiday-date-add` | `apps/admin-portal/src/app/masterdata/holiday-date/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/holiday-date/detail/[id]` | `masterdata-holiday-date-detail-id` | `apps/admin-portal/src/app/masterdata/holiday-date/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/hospital` | `masterdata-hospital` | `apps/admin-portal/src/app/masterdata/hospital/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/hospital/upload` | `masterdata-hospital-upload` | `apps/admin-portal/src/app/masterdata/hospital/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/insurance` | `masterdata-insurance` | `apps/admin-portal/src/app/masterdata/insurance/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/insurance/add` | `masterdata-insurance-add` | `apps/admin-portal/src/app/masterdata/insurance/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/insurance/detail/[id]` | `masterdata-insurance-detail-id` | `apps/admin-portal/src/app/masterdata/insurance/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/page-management` | `masterdata-page-management` | `apps/admin-portal/src/app/masterdata/page-management/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/page-management/add` | `masterdata-page-management-add` | `apps/admin-portal/src/app/masterdata/page-management/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/page-management/detail/[id]` | `masterdata-page-management-detail-id` | `apps/admin-portal/src/app/masterdata/page-management/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/partner-management` | `masterdata-partner-management` | `apps/admin-portal/src/app/masterdata/partner-management/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/partner-management/add` | `masterdata-partner-management-add` | `apps/admin-portal/src/app/masterdata/partner-management/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/partner-management/detail/[id]` | `masterdata-partner-management-detail-id` | `apps/admin-portal/src/app/masterdata/partner-management/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/product` | `masterdata-product` | `apps/admin-portal/src/app/masterdata/product/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/product-category` | `masterdata-product-category` | `apps/admin-portal/src/app/masterdata/product-category/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/product-category/add` | `masterdata-product-category-add` | `apps/admin-portal/src/app/masterdata/product-category/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/product-category/detail/[id]` | `masterdata-product-category-detail-id` | `apps/admin-portal/src/app/masterdata/product-category/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/product/add` | `masterdata-product-add` | `apps/admin-portal/src/app/masterdata/product/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/product/detail` | `masterdata-product-detail` | `apps/admin-portal/src/app/masterdata/product/detail/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/role` | `masterdata-role` | `apps/admin-portal/src/app/masterdata/role/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/role/add` | `masterdata-role-add` | `apps/admin-portal/src/app/masterdata/role/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/role/detail/[id]` | `masterdata-role-detail-id` | `apps/admin-portal/src/app/masterdata/role/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/user/add` | `masterdata-user-add` | `apps/admin-portal/src/app/masterdata/user/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/user/detail/[id]` | `masterdata-user-detail-id` | `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/membership/list/detail/[id]` | `membership-list-detail-id` | `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/membership/list/export` | `membership-list-export` | `apps/admin-portal/src/app/membership/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/membership/list/upload` | `membership-list-upload` | `apps/admin-portal/src/app/membership/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/policy/endorsement/list/detail/[id]` | `policy-endorsement-list-detail-id` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/policy/endorsement/list/detail/[id]/upload` | `policy-endorsement-list-detail-id-upload` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/policy/endorsement/list/export` | `policy-endorsement-list-export` | `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/policy/endorsement/list/upload` | `policy-endorsement-list-upload` | `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/policy/list/detail/[id]` | `policy-list-detail-id` | `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/policy/list/export` | `policy-list-export` | `apps/admin-portal/src/app/policy/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/policy/list/import` | `policy-list-import` | `apps/admin-portal/src/app/policy/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/policy/pending-renewals` | `policy-pending-renewals` | `apps/admin-portal/src/app/policy/pending-renewals/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/product-category` | `product-category` | `apps/admin-portal/src/app/product-category/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/product-category/[category]` | `product-category-category` | `apps/admin-portal/src/app/product-category/[category]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/add` | `product-category-category-add` | `apps/admin-portal/src/app/product-category/[category]/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]` | `product-category-category-detail-id` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/product-category/[category]/detail/[id]/add-benefit` | `product-category-category-detail-id-add-benefit` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-benefit/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/add-package` | `product-category-category-detail-id-add-package` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-package/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/benefits` | `product-category-category-detail-id-benefits` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefits/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/details` | `product-category-category-detail-id-details` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/details/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/edit-package/[packageId]` | `product-category-category-detail-id-edit-package-packageid` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/edit-package/[packageId]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/upload` | `product-category-category-detail-id-upload` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/upload-benefit` | `product-category-category-detail-id-upload-benefit` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-benefit/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/upload-detail` | `product-category-category-detail-id-upload-detail` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-detail/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/promotion/campaign` | `promotion-campaign` | `apps/admin-portal/src/app/promotion/campaign/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/promotion/campaign/add` | `promotion-campaign-add` | `apps/admin-portal/src/app/promotion/campaign/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/promotion/campaign/detail/[id]` | `promotion-campaign-detail-id` | `apps/admin-portal/src/app/promotion/campaign/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/promotion/campaign/edit/[id]` | `promotion-campaign-edit-id` | `apps/admin-portal/src/app/promotion/campaign/edit/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/report/campaign` | `report-campaign` | `apps/admin-portal/src/app/report/campaign/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/report/campaign-analytics` | `report-campaign-analytics` | `apps/admin-portal/src/app/report/campaign-analytics/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/report/performance` | `report-performance` | `apps/admin-portal/src/app/report/performance/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/sanction/list` | `sanction-list` | `apps/admin-portal/src/app/sanction/list/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/sanction/list/add` | `sanction-list-add` | `apps/admin-portal/src/app/sanction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/sanction/list/detail/[id]` | `sanction-list-detail-id` | `apps/admin-portal/src/app/sanction/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/sanction/list/upload` | `sanction-list-upload` | `apps/admin-portal/src/app/sanction/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/source/list` | `source-list` | `apps/admin-portal/src/app/source/list/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/source/list/add` | `source-list-add` | `apps/admin-portal/src/app/source/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/source/list/detail/[id]` | `source-list-detail-id` | `apps/admin-portal/src/app/source/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/transaction/list/add` | `transaction-list-add` | `apps/admin-portal/src/app/transaction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/transaction/list/detail/[id]` | `transaction-list-detail-id` | `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/transaction/list/export` | `transaction-list-export` | `apps/admin-portal/src/app/transaction/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/transaction/list/import/import` | `transaction-list-import-import` | `apps/admin-portal/src/app/transaction/list/import/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/oauth/msal` | `oauth-msal` | `apps/admin-portal/src/app/oauth/msal/page.tsx` | NO | NO | `OUT_OF_SCOPE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Technical MSAL callback route that completes auth and redirects home; not a Batch 9 page-stabilization target. |
+
+## Route Details
+
+### /dashboard/transaction
+
+- Page file: `apps/admin-portal/src/app/dashboard/transaction/page.tsx`
+- Route label: `dashboard-transaction`
+- Smoke route: `YES`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `none`
+- Notes: Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9.
+
+### /dashboard/policy
+
+- Page file: `apps/admin-portal/src/app/dashboard/policy/page.tsx`
+- Route label: `dashboard-policy`
+- Smoke route: `YES`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `none`
+- Notes: Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9.
+
+### /dashboard/claim
+
+- Page file: `apps/admin-portal/src/app/dashboard/claim/page.tsx`
+- Route label: `dashboard-claim`
+- Smoke route: `YES`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `none`
+- Notes: Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9.
+
+### /transaction/list
+
+- Page file: `apps/admin-portal/src/app/transaction/list/page.tsx`
+- Route label: `transaction-list`
+- Smoke route: `YES`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /policy/list
+
+- Page file: `apps/admin-portal/src/app/policy/list/page.tsx`
+- Route label: `policy-list`
+- Smoke route: `YES`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /policy/endorsement/list
+
+- Page file: `apps/admin-portal/src/app/policy/endorsement/list/page.tsx`
+- Route label: `policy-endorsement-list`
+- Smoke route: `YES`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /claim/list
+
+- Page file: `apps/admin-portal/src/app/claim/list/page.tsx`
+- Route label: `claim-list`
+- Smoke route: `YES`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation noted an internal redirect to the querystring variant.
+
+### /membership/list
+
+- Page file: `apps/admin-portal/src/app/membership/list/page.tsx`
+- Route label: `membership-list`
+- Smoke route: `YES`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state.
+
+### /finance/billing
+
+- Page file: `apps/admin-portal/src/app/finance/billing/page.tsx`
+- Route label: `finance-billing`
+- Smoke route: `YES`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state.
+
+### /masterdata/user
+
+- Page file: `apps/admin-portal/src/app/masterdata/user/page.tsx`
+- Route label: `masterdata-user`
+- Smoke route: `YES`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `present`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /
+
+- Page file: `apps/admin-portal/src/app/page.tsx`
+- Route label: `root`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: Home dashboard route with no explicit Batch 9 route-stabilization evidence yet.
+
+### /claim/history
+
+- Page file: `apps/admin-portal/src/app/claim/history/page.tsx`
+- Route label: `claim-history`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /claim/list/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx`
+- Route label: `claim-list-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+
+### /claim/list/detail/[id]/upload-data
+
+- Page file: `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx`
+- Route label: `claim-list-detail-id-upload-data`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /claim/list/export
+
+- Page file: `apps/admin-portal/src/app/claim/list/export/page.tsx`
+- Route label: `claim-list-export`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /claim/list/import
+
+- Page file: `apps/admin-portal/src/app/claim/list/import/page.tsx`
+- Route label: `claim-list-import`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /claim/list/import-with-preview
+
+- Page file: `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx`
+- Route label: `claim-list-import-with-preview`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /export-users
+
+- Page file: `apps/admin-portal/src/app/export-users/page.tsx`
+- Route label: `export-users`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /finance/billing/add
+
+- Page file: `apps/admin-portal/src/app/finance/billing/add/page.tsx`
+- Route label: `finance-billing-add`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+
+### /finance/billing/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx`
+- Route label: `finance-billing-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+
+### /finance/billing/detail/[id]/export
+
+- Page file: `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx`
+- Route label: `finance-billing-detail-id-export`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /finance/billing/detail/[id]/import
+
+- Page file: `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx`
+- Route label: `finance-billing-detail-id-import`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /finance/billing/detail/[id]/invoice
+
+- Page file: `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx`
+- Route label: `finance-billing-detail-id-invoice`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /finance/broker-fee
+
+- Page file: `apps/admin-portal/src/app/finance/broker-fee/page.tsx`
+- Route label: `finance-broker-fee`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /finance/broker-fee/add
+
+- Page file: `apps/admin-portal/src/app/finance/broker-fee/add/page.tsx`
+- Route label: `finance-broker-fee-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /finance/broker-fee/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/finance/broker-fee/detail/[id]/page.tsx`
+- Route label: `finance-broker-fee-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /finance/partner-comm
+
+- Page file: `apps/admin-portal/src/app/finance/partner-comm/page.tsx`
+- Route label: `finance-partner-comm`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /finance/partner-comm/add
+
+- Page file: `apps/admin-portal/src/app/finance/partner-comm/add/page.tsx`
+- Route label: `finance-partner-comm-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /finance/partner-comm/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx`
+- Route label: `finance-partner-comm-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /finance/unmatch-billing
+
+- Page file: `apps/admin-portal/src/app/finance/unmatch-billing/page.tsx`
+- Route label: `finance-unmatch-billing`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/channel
+
+- Page file: `apps/admin-portal/src/app/masterdata/channel/page.tsx`
+- Route label: `masterdata-channel`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/channel/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/channel/add/page.tsx`
+- Route label: `masterdata-channel-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/channel/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx`
+- Route label: `masterdata-channel-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/currency
+
+- Page file: `apps/admin-portal/src/app/masterdata/currency/page.tsx`
+- Route label: `masterdata-currency`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/currency/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/currency/add/page.tsx`
+- Route label: `masterdata-currency-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/currency/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/currency/detail/[id]/page.tsx`
+- Route label: `masterdata-currency-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/email-tag
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-tag/page.tsx`
+- Route label: `masterdata-email-tag`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/email-tag/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-tag/add/page.tsx`
+- Route label: `masterdata-email-tag-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/email-tag/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-tag/detail/[id]/page.tsx`
+- Route label: `masterdata-email-tag-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/email-template
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-template/page.tsx`
+- Route label: `masterdata-email-template`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/email-template/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-template/add/page.tsx`
+- Route label: `masterdata-email-template-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/email-template/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-template/detail/[id]/page.tsx`
+- Route label: `masterdata-email-template-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/email-template/tag
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-template/tag/page.tsx`
+- Route label: `masterdata-email-template-tag`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/email-template/tag/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx`
+- Route label: `masterdata-email-template-tag-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/group
+
+- Page file: `apps/admin-portal/src/app/masterdata/group/page.tsx`
+- Route label: `masterdata-group`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/group/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/group/add/page.tsx`
+- Route label: `masterdata-group-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/group/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx`
+- Route label: `masterdata-group-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/holiday-date
+
+- Page file: `apps/admin-portal/src/app/masterdata/holiday-date/page.tsx`
+- Route label: `masterdata-holiday-date`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/holiday-date/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/holiday-date/add/page.tsx`
+- Route label: `masterdata-holiday-date-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/holiday-date/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/holiday-date/detail/[id]/page.tsx`
+- Route label: `masterdata-holiday-date-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/hospital
+
+- Page file: `apps/admin-portal/src/app/masterdata/hospital/page.tsx`
+- Route label: `masterdata-hospital`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/hospital/upload
+
+- Page file: `apps/admin-portal/src/app/masterdata/hospital/upload/page.tsx`
+- Route label: `masterdata-hospital-upload`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/insurance
+
+- Page file: `apps/admin-portal/src/app/masterdata/insurance/page.tsx`
+- Route label: `masterdata-insurance`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/insurance/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/insurance/add/page.tsx`
+- Route label: `masterdata-insurance-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/insurance/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/insurance/detail/[id]/page.tsx`
+- Route label: `masterdata-insurance-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/page-management
+
+- Page file: `apps/admin-portal/src/app/masterdata/page-management/page.tsx`
+- Route label: `masterdata-page-management`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/page-management/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/page-management/add/page.tsx`
+- Route label: `masterdata-page-management-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/page-management/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/page-management/detail/[id]/page.tsx`
+- Route label: `masterdata-page-management-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/partner-management
+
+- Page file: `apps/admin-portal/src/app/masterdata/partner-management/page.tsx`
+- Route label: `masterdata-partner-management`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/partner-management/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/partner-management/add/page.tsx`
+- Route label: `masterdata-partner-management-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/partner-management/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/partner-management/detail/[id]/page.tsx`
+- Route label: `masterdata-partner-management-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/product
+
+- Page file: `apps/admin-portal/src/app/masterdata/product/page.tsx`
+- Route label: `masterdata-product`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/product-category
+
+- Page file: `apps/admin-portal/src/app/masterdata/product-category/page.tsx`
+- Route label: `masterdata-product-category`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/product-category/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/product-category/add/page.tsx`
+- Route label: `masterdata-product-category-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/product-category/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/product-category/detail/[id]/page.tsx`
+- Route label: `masterdata-product-category-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/product/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/product/add/page.tsx`
+- Route label: `masterdata-product-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/product/detail
+
+- Page file: `apps/admin-portal/src/app/masterdata/product/detail/page.tsx`
+- Route label: `masterdata-product-detail`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/role
+
+- Page file: `apps/admin-portal/src/app/masterdata/role/page.tsx`
+- Route label: `masterdata-role`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /masterdata/role/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/role/add/page.tsx`
+- Route label: `masterdata-role-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/role/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/role/detail/[id]/page.tsx`
+- Route label: `masterdata-role-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/user/add
+
+- Page file: `apps/admin-portal/src/app/masterdata/user/add/page.tsx`
+- Route label: `masterdata-user-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /masterdata/user/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx`
+- Route label: `masterdata-user-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /membership/list/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx`
+- Route label: `membership-list-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /membership/list/export
+
+- Page file: `apps/admin-portal/src/app/membership/list/export/page.tsx`
+- Route label: `membership-list-export`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /membership/list/upload
+
+- Page file: `apps/admin-portal/src/app/membership/list/upload/page.tsx`
+- Route label: `membership-list-upload`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /policy/endorsement/list/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx`
+- Route label: `policy-endorsement-list-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+
+### /policy/endorsement/list/detail/[id]/upload
+
+- Page file: `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx`
+- Route label: `policy-endorsement-list-detail-id-upload`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /policy/endorsement/list/export
+
+- Page file: `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx`
+- Route label: `policy-endorsement-list-export`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /policy/endorsement/list/upload
+
+- Page file: `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx`
+- Route label: `policy-endorsement-list-upload`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /policy/list/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx`
+- Route label: `policy-list-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+
+### /policy/list/export
+
+- Page file: `apps/admin-portal/src/app/policy/list/export/page.tsx`
+- Route label: `policy-list-export`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /policy/list/import
+
+- Page file: `apps/admin-portal/src/app/policy/list/import/page.tsx`
+- Route label: `policy-list-import`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /policy/pending-renewals
+
+- Page file: `apps/admin-portal/src/app/policy/pending-renewals/page.tsx`
+- Route label: `policy-pending-renewals`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /product-category
+
+- Page file: `apps/admin-portal/src/app/product-category/page.tsx`
+- Route label: `product-category`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /product-category/[category]
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/page.tsx`
+- Route label: `product-category-category`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/add
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/add/page.tsx`
+- Route label: `product-category-category-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx`
+- Route label: `product-category-category-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+
+### /product-category/[category]/detail/[id]/add-benefit
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-benefit/page.tsx`
+- Route label: `product-category-category-detail-id-add-benefit`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]/add-package
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-package/page.tsx`
+- Route label: `product-category-category-detail-id-add-package`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]/benefits
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefits/page.tsx`
+- Route label: `product-category-category-detail-id-benefits`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]/details
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/details/page.tsx`
+- Route label: `product-category-category-detail-id-details`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]/edit-package/[packageId]
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/edit-package/[packageId]/page.tsx`
+- Route label: `product-category-category-detail-id-edit-package-packageid`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]/upload
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload/page.tsx`
+- Route label: `product-category-category-detail-id-upload`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]/upload-benefit
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-benefit/page.tsx`
+- Route label: `product-category-category-detail-id-upload-benefit`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /product-category/[category]/detail/[id]/upload-detail
+
+- Page file: `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-detail/page.tsx`
+- Route label: `product-category-category-detail-id-upload-detail`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /promotion/campaign
+
+- Page file: `apps/admin-portal/src/app/promotion/campaign/page.tsx`
+- Route label: `promotion-campaign`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /promotion/campaign/add
+
+- Page file: `apps/admin-portal/src/app/promotion/campaign/add/page.tsx`
+- Route label: `promotion-campaign-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /promotion/campaign/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/promotion/campaign/detail/[id]/page.tsx`
+- Route label: `promotion-campaign-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /promotion/campaign/edit/[id]
+
+- Page file: `apps/admin-portal/src/app/promotion/campaign/edit/[id]/page.tsx`
+- Route label: `promotion-campaign-edit-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /report/campaign
+
+- Page file: `apps/admin-portal/src/app/report/campaign/page.tsx`
+- Route label: `report-campaign`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /report/campaign-analytics
+
+- Page file: `apps/admin-portal/src/app/report/campaign-analytics/page.tsx`
+- Route label: `report-campaign-analytics`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /report/claim
+
+- Page file: `apps/admin-portal/src/app/report/claim/page.tsx`
+- Route label: `report-claim`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /report/performance
+
+- Page file: `apps/admin-portal/src/app/report/performance/page.tsx`
+- Route label: `report-performance`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /sanction/list
+
+- Page file: `apps/admin-portal/src/app/sanction/list/page.tsx`
+- Route label: `sanction-list`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /sanction/list/add
+
+- Page file: `apps/admin-portal/src/app/sanction/list/add/page.tsx`
+- Route label: `sanction-list-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /sanction/list/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/sanction/list/detail/[id]/page.tsx`
+- Route label: `sanction-list-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /sanction/list/upload
+
+- Page file: `apps/admin-portal/src/app/sanction/list/upload/page.tsx`
+- Route label: `sanction-list-upload`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /source/list
+
+- Page file: `apps/admin-portal/src/app/source/list/page.tsx`
+- Route label: `source-list`
+- Smoke route: `NO`
+- DataTable dependency: `YES`
+- Status: `DEFERRED_DATA_TABLE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `DataTable`
+- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+
+### /source/list/add
+
+- Page file: `apps/admin-portal/src/app/source/list/add/page.tsx`
+- Route label: `source-list-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /source/list/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/source/list/detail/[id]/page.tsx`
+- Route label: `source-list-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `none`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /transaction/list/add
+
+- Page file: `apps/admin-portal/src/app/transaction/list/add/page.tsx`
+- Route label: `transaction-list-add`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /transaction/list/detail/[id]
+
+- Page file: `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx`
+- Route label: `transaction-list-detail-id`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /transaction/list/export
+
+- Page file: `apps/admin-portal/src/app/transaction/list/export/page.tsx`
+- Route label: `transaction-list-export`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /transaction/list/import/import
+
+- Page file: `apps/admin-portal/src/app/transaction/list/import/import/page.tsx`
+- Route label: `transaction-list-import-import`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `NOT_STARTED`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `none`
+- Notes: No explicit Batch 9 route-stabilization evidence found.
+
+### /oauth/msal
+
+- Page file: `apps/admin-portal/src/app/oauth/msal/page.tsx`
+- Route label: `oauth-msal`
+- Smoke route: `NO`
+- DataTable dependency: `NO`
+- Status: `OUT_OF_SCOPE`
+- Last checked: `2026-03-30`
+- Evidence:
+  - _migration-log.md: `present`
+  - comparison-log.md: `none`
+  - screenshots: `none`
+- Blocker type: `n/a`
+- Notes: Technical MSAL callback route that completes auth and redirects home; not a Batch 9 page-stabilization target.
+
+## Execution Steps
+
+1. Discover every apps/admin-portal/src/app/**/page.tsx route.
+2. Convert file paths into route paths.
+3. Decide whether each route is in-scope or out-of-scope for Batch 9.
+4. Detect whether each in-scope route depends on deferred DataTable usage.
+5. Check existing migration docs/artifacts for explicit route-level evidence.
+6. Assign the correct status using the status rules above.
+7. Generate the tracker file with:
+    - accurate summary counts
+    - one row per discovered route
+    - one detail block per discovered route
+8. Sort routes in a predictable order:
+    - official smoke routes first, in the same order as verification-gate.md
+    - remaining in-scope routes next, alphabetical by route
+    - out-of-scope routes last, alphabetical by route
+
+## Guardrails
+
+- Do NOT start per-page stabilization changes
+- Do NOT edit ../feat_ui
+- Do NOT invent evidence that does not exist
+- Do NOT mark any page PASS without explicit route-level evidence
+- Do NOT classify a page as DEFERRED_DATA_TABLE unless DataTable is truly the main blocker
+- Prefer NOT_STARTED over speculative BLOCKED
+- Keep notes concise and evidence-based
+
+## Final Report
+
+Return:
+
+- total discovered page routes
+- DataTable-dependent page count
+- summary by status
+- any ambiguous routes that were conservatively classified
+- confirmation that _batch-9-page-tracker.md was created or refreshed
