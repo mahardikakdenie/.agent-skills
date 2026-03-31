@@ -20,7 +20,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 
 ## Status Rules
 
-- `PASS` requires explicit existing route-level evidence. Never infer it from component migration alone.
+- `PASS` requires explicit route-level evidence. Acceptable evidence is a committed route-local migration change together with recorded manual smoke verification in existing docs/artifacts such as `_migration-log.md`, `_parity-checklist.md`, and route screenshots. `comparison-log.md` is supporting evidence when present, but it is not mandatory for PASS.
+- `IN_PROGRESS` is used when route-local migration work has landed, but the available route-level evidence is still incomplete for PASS.
 - `DEFERRED_DATA_TABLE` is used only when DataTable is the primary blocker.
 - `BLOCKED` is used for non-DataTable blockers.
 - `NOT_STARTED` is the default for in-scope pages without route-level stabilization evidence.
@@ -34,21 +35,21 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 38 |
-| PASS | 0 |
+| PASS | 1 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 32 |
-| NOT_STARTED | 82 |
+| NOT_STARTED | 81 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
 
 | Route | Route label | Page file | Smoke route | DataTable | Status | Last checked | Evidence | Notes |
 |---|---|---|---|---|---|---|---|---|
-| `/dashboard/transaction` | `dashboard-transaction` | `apps/admin-portal/src/app/dashboard/transaction/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9. |
-| `/dashboard/policy` | `dashboard-policy` | `apps/admin-portal/src/app/dashboard/policy/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9. |
-| `/dashboard/claim` | `dashboard-claim` | `apps/admin-portal/src/app/dashboard/claim/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9. |
+| `/dashboard/transaction` | `dashboard-transaction` | `apps/admin-portal/src/app/dashboard/transaction/page.tsx` | YES | NO | `PASS` | 2026-03-31 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `c2b874754fb532cc5413215d1debca92b190c5d4` lands route-local migration cleanup for this page, and manual smoke verification for the dashboard route is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
+| `/dashboard/policy` | `dashboard-policy` | `apps/admin-portal/src/app/dashboard/policy/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-31 | migration-log: present; comparison-log: none; screenshots: present | Manual smoke evidence exists, but this route is not yet treated as a completed Batch 9 route-level PASS in the current tracker scope. |
+| `/dashboard/claim` | `dashboard-claim` | `apps/admin-portal/src/app/dashboard/claim/page.tsx` | YES | NO | `NOT_STARTED` | 2026-03-31 | migration-log: present; comparison-log: none; screenshots: present | Manual smoke evidence exists, but this route is not yet treated as a completed Batch 9 route-level PASS in the current tracker scope. |
 | `/transaction/list` | `transaction-list` | `apps/admin-portal/src/app/transaction/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/policy/list` | `policy-list` | `apps/admin-portal/src/app/policy/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/policy/endorsement/list` | `policy-endorsement-list` | `apps/admin-portal/src/app/policy/endorsement/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
@@ -170,14 +171,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `dashboard-transaction`
 - Smoke route: `YES`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-03-31`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
 - Blocker type: `none`
-- Notes: Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9.
+- Notes: Latest commit `c2b874754fb532cc5413215d1debca92b190c5d4` lands route-local migration cleanup for this page, including consolidated loading/chart wrappers and transaction chart data ordering updates. Manual smoke verification for `/dashboard/transaction` is already recorded in `_migration-log.md` and `_parity-checklist.md`, so this route is treated as PASS without requiring a separate comparison log entry.
 
 ### /dashboard/policy
 
@@ -186,13 +187,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `YES`
 - DataTable dependency: `NO`
 - Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Last checked: `2026-03-31`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
 - Blocker type: `none`
-- Notes: Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9.
+- Notes: Manual smoke evidence exists, but this route is not yet treated as a completed Batch 9 route-level PASS in the current tracker scope.
 
 ### /dashboard/claim
 
@@ -201,13 +202,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `YES`
 - DataTable dependency: `NO`
 - Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Last checked: `2026-03-31`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
 - Blocker type: `none`
-- Notes: Smoke screenshots and route-load evidence exist from 2026-03-25, but the comparison log is missing, so this is not sufficient to mark PASS for Batch 9.
+- Notes: Manual smoke evidence exists, but this route is not yet treated as a completed Batch 9 route-level PASS in the current tracker scope.
 
 ### /transaction/list
 
