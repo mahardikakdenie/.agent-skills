@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@repo/ui";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 import { UserForm } from "./components/user-form";
 import { UserGroups } from "./components/user-groups";

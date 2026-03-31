@@ -26,7 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui";
-import { ContentLoadingWrapper } from "../../ui/Loading/index";
+import { ContentLoadingWrapper } from "../../ui/loading";
 import { toastNotification } from "@/lib/toast";
 
 const schema: z.ZodType<any> = z.lazy(() =>

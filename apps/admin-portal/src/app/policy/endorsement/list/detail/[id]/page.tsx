@@ -18,7 +18,7 @@ import {
   createCompareDataTableColumns,
   createEndorsementDetailsTableColumns,
 } from "@/components/tableConfig/endorsementTableConfig";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 export default function DetailEndorsement() {

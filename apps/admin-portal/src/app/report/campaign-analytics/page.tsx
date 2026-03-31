@@ -43,7 +43,7 @@ import {
   SelectValue,
 } from "@repo/ui";
 import { BiMoney } from "react-icons/bi";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import { useCampaignAnalytics } from "@/hooks/useCampaignAnalytics.hooks";
 
 const CampaignAnalyticsPage = () => {

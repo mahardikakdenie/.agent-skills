@@ -22,7 +22,7 @@ import {
 } from "@repo/ui";
 import { useParams, useRouter } from "next/navigation";
 import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function UploadPlanDetail() {
   const params = useParams();

@@ -25,7 +25,7 @@ import { Button } from "@repo/ui";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function AddPlanPage() {
   const router = useRouter();

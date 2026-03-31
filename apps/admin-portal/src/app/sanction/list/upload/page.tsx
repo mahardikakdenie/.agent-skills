@@ -12,7 +12,7 @@ import {
   BreadcrumbPage,
 } from "@repo/ui";
 import { useUploadSanction } from "@/hooks/useUploadSanction.hooks";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 const ErrorModal = ({
   isOpen,

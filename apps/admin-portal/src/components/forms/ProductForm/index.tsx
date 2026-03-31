@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@repo/ui";
 import { Controller } from "react-hook-form";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import AppURL from "@/constants/app-url.const";
 
 interface ProductFormProps {

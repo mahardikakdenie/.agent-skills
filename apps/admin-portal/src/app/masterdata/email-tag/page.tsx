@@ -5,7 +5,7 @@ import { Button } from "@repo/ui";
 import { Plus } from "react-feather";
 import { useEmailTag } from "@/hooks/useEmailTag.hooks";
 import { createEmailTagTableColumns } from "@/components/tableConfig/emailTagTableConfig";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function EmailTagPage() {
   const {

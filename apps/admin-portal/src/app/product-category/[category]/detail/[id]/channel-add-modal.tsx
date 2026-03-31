@@ -16,7 +16,7 @@ import {
 } from "@repo/ui";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function ChannelAddModal(props: {
   id: string;

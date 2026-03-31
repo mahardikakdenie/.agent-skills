@@ -4,7 +4,7 @@ import { Button } from "@repo/ui";
 import { PlusIcon } from "lucide-react";
 import { useHolidayDate } from "@/hooks/useHolidayDate.hooks";
 import { createHolidayTableColumns } from "@/components/tableConfig/holidayDateTableConfig";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import { DataTable } from "@/components/ui/DataTable";
 import {
   Select,

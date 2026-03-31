@@ -304,7 +304,9 @@ export default function useTransactionDashboard(): UseTransactionDashboardProps 
       return acc;
     }, {} as Record<string, { status: string; count: number }>);
 
-    return Object.values(grouped) as { status: string; count: number }[];
+    return (Object.values(grouped) as { status: string; count: number }[]).sort(
+      (a, b) => new Date(a.status).getTime() - new Date(b.status).getTime()
+    );
   }, [statisticsData]);
 
   const tableData = useMemo(() => {

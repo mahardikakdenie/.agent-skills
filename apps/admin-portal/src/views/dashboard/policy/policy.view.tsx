@@ -6,9 +6,9 @@ import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
 import { ListPolicyStatisticDataRequest, PolicyData } from "@/types/policy";
 
-import PieChart from "@/components/recharts/piechart";
+import PieChart from "@/components/ui/charts/piechart";
 import LineChart from "@/components/recharts/linechart-policy";
-import DetailTable from "@/components/recharts/table-policy";
+import DetailTable from "@/components/table-policy";
 import Select from "@/components/select";
 import { primary } from "@/constants/app-common.const";
 import DatePickerDropdown from "@/components/date-range-picker";

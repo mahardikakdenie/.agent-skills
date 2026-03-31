@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@repo/ui";
 import UploadFile from "@/components/ui/FileUpload";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import { useDetailClaim } from "@/hooks/useDetailClaim.hooks";
 import { ClaimFieldInputType } from "@/interface";
 import AppURL from "@/constants/app-url.const";

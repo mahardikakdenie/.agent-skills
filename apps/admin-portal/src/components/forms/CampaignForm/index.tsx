@@ -25,7 +25,7 @@ import InsuranceSelectionModal from "@/app/promotion/components/insurance-select
 import ProductSelectionModal from "@/app/promotion/components/product-selection-modal";
 import PlanSelectionModal from "@/app/promotion/components/plan-selection-modal";
 import { useCampaignForm } from "@/hooks/useCampaignForm.hooks";
-import { ContentLoadingWrapper } from "../../ui/Loading/index";
+import { ContentLoadingWrapper } from "../../ui/loading";
 
 interface CampaignFormProps {
   mode: "create" | "edit";

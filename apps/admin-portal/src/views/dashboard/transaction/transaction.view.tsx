@@ -1,36 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { productService } from "@/services/product/api/product.service";
-import { transactionService } from "@/services/transaction/api/transaction.service";
-import { useScreen } from "@/context/screen.context";
-import { useAuth } from "@/context/auth.context";
-import { primary } from "@/constants/app-common.const";
-import { ListTransactionStatisticDataRequest, Transaction } from "@/types/transaction";
-import { formatDateTimeWithTZ, formatMoney } from "@/helpers/app.helper";
+import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 
-import PieChart from "@/components/recharts/piechart";
-import LineChart from "@/components/recharts/dashedlinechart";
-import DetailTable from "@/components/recharts/table-policy";
-import Select from "@/components/select";
-import DatePickerDropdown from "@/components/date-range-picker";
-import BarChartComp from "@/components/recharts/barchart-horizontal";
+import DatePickerDropdown from '@/components/date-range-picker';
+import Select from '@/components/select';
+import DetailTable from '@/components/table-policy';
+import BarChartComp from '@/components/ui/charts/barchart-horizontal';
+import LineChart from '@/components/ui/charts/dashedlinechart';
+import PieChart from '@/components/ui/charts/piechart';
+import { primary } from '@/constants/app-common.const';
+import { useAuth } from '@/context/auth.context';
+import { useScreen } from '@/context/screen.context';
+import { formatDateTimeWithTZ, formatMoney } from '@/helpers/app.helper';
+import { productService } from '@/services/product/api/product.service';
+import { transactionService } from '@/services/transaction/api/transaction.service';
+import { ListTransactionStatisticDataRequest, Transaction } from '@/types/transaction';
 
 const policyColumns = [
-  { key: "created_at", label: "Created At" },
-  { key: "plan_name", label: "Plan Name" },
-  { key: "price", label: "Price" },
-  { key: "transaction", label: "Transaction" },
+  { key: 'created_at', label: 'Created At' },
+  { key: 'plan_name', label: 'Plan Name' },
+  { key: 'price', label: 'Price' },
+  { key: 'transaction', label: 'Transaction' },
 ];
 
 export const DashboardTransaction = () => {
   const { setLoading } = useScreen();
   const { handleResponseError, user } = useAuth();
-  const [transactionStatisticData, setTransactionStatisticData] = useState<Transaction | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<string>("");
+  const [transactionStatisticData, setTransactionStatisticData] = useState<Transaction | null>(
+    null,
+  );
+  const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [productOptions, setProductOptions] = useState<any[]>([]);
-  const [selectedInsurance, setSelectedInsurance] = useState<string>("");
+  const [selectedInsurance, setSelectedInsurance] = useState<string>('');
   const [insuranceOptions, setInsuranceOptions] = useState<any[]>([]);
-  const [selectedPlan, setSelectedPlan] = useState<string>("");
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [planOptions, setPlanOptions] = useState<any[]>([]);
   const [from, setFrom] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -39,7 +41,7 @@ export const DashboardTransaction = () => {
     setFrom(startDate);
     setTo(endDate);
   };
-  
+
   const today = new Date();
   const thirtyDaysLater = new Date();
   thirtyDaysLater.setDate(today.getDate() - 30);
@@ -50,19 +52,17 @@ export const DashboardTransaction = () => {
         setLoading(true);
         const params: ListTransactionStatisticDataRequest = {
           channel: user?.all_channels?.[0] || undefined,
-          sort: "desc",
-          ...(selectedInsurance !== "All" && selectedInsurance && { insurance: selectedInsurance }),
-          ...(selectedProduct !== "All" && selectedProduct && { product: selectedProduct }),
-          ...(selectedPlan !== "All" && selectedPlan && { plan: selectedPlan }),
-          
-          from: from || thirtyDaysLater.toISOString().split("T")[0],
-          to: to || today.toISOString().split("T")[0], 
+          sort: 'desc',
+          ...(selectedInsurance !== 'All' && selectedInsurance && { insurance: selectedInsurance }),
+          ...(selectedProduct !== 'All' && selectedProduct && { product: selectedProduct }),
+          ...(selectedPlan !== 'All' && selectedPlan && { plan: selectedPlan }),
+
+          from: from || thirtyDaysLater.toISOString().split('T')[0],
+          to: to || today.toISOString().split('T')[0],
         };
-  
-        const response: any = await transactionService.getTransactionStatistics(
-          params as any
-        );
-  
+
+        const response: any = await transactionService.getTransactionStatistics(params as any);
+
         if (response?.data) {
           setTransactionStatisticData(response.data);
         }
@@ -72,7 +72,7 @@ export const DashboardTransaction = () => {
         setLoading(false);
       }
     };
-  
+
     fetchDataTransaction().then();
 
     if (selectedProduct && selectedInsurance && selectedPlan && from && to) {
@@ -86,7 +86,7 @@ export const DashboardTransaction = () => {
     const fetchInsuranceFilter = async () => {
       try {
         setLoading(true);
-        const updatedList = [{ label: "INSURANCE NAME", value: "All" }];
+        const updatedList = [{ label: 'INSURANCE NAME', value: 'All' }];
         if (user?.all_insurances && user?.all_insurances?.length > 0) {
           for (let i = 0; i < user.all_insurances.length; i++) {
             const insId = user.all_insurances[i];
@@ -110,27 +110,28 @@ export const DashboardTransaction = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   useEffect(() => {
     const fetchProductFilter = async () => {
       try {
         setLoading(true);
-        
+
         const response: any = await productService.getProducts({
           page: 1,
           pageSize: 100,
           channelId: user?.all_channels?.[0] || undefined,
-          ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
+          ...(selectedInsurance !== 'All' &&
+            selectedInsurance && { insuranceId: selectedInsurance }),
         });
-  
+
         if (Array.isArray(response?.data)) {
           const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));
-          
-          const updatedList = [{ label: "INSURANCE PRODUCT", value: "All" }, ...list];
-          
+
+          const updatedList = [{ label: 'INSURANCE PRODUCT', value: 'All' }, ...list];
+
           setProductOptions(updatedList);
           setSelectedProduct(updatedList[0].value);
         }
@@ -141,12 +142,12 @@ export const DashboardTransaction = () => {
       }
     };
     fetchProductFilter().then();
-    
+
     if (selectedInsurance) fetchProductFilter().then();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedInsurance]);
-  
+
   useEffect(() => {
     const fetchPlanFilter = async () => {
       try {
@@ -154,17 +155,17 @@ export const DashboardTransaction = () => {
         const response: any = await productService.getPlans({
           page: 1,
           pageSize: 20,
-          ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
+          ...(selectedProduct !== 'All' && selectedProduct && { productId: selectedProduct }),
         });
-  
+
         if (Array.isArray(response?.data)) {
           const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));
-          
-          const updatedList = [{ label: "PLAN NAME", value: "All" }, ...list];
-          
+
+          const updatedList = [{ label: 'PLAN NAME', value: 'All' }, ...list];
+
           setPlanOptions(updatedList);
           setSelectedPlan(updatedList[0].value);
         }
@@ -176,80 +177,79 @@ export const DashboardTransaction = () => {
     };
     fetchPlanFilter().then();
 
-    if (selectedProduct && selectedProduct !== "All" && selectedProduct !== "") fetchPlanFilter().then();
+    if (selectedProduct && selectedProduct !== 'All' && selectedProduct !== '')
+      fetchPlanFilter().then();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProduct]);
-  
-  const groupedData: { name: string; value: number }[] =  Array.isArray(transactionStatisticData)? transactionStatisticData
-    .map((item: any) => item.transaction_packages || [])
-    .reduce((acc, curr) => acc.concat(curr), [])
-    .map((product: any) => product.package_data.plan)
-    .filter((plan: any) => plan?.name)
-    .reduce((acc: Record<string, { name: string; value: number }>, item: any) => {
-      if (!acc[item.name]) {
-        acc[item.name] = { name: item.name, value: 0 };
-      }
-      acc[item.name].value += 1;
-      return acc;
-    }, {})
-  : [];
+
+  const groupedData: { name: string; value: number }[] = Array.isArray(transactionStatisticData)
+    ? transactionStatisticData
+        .map((item: any) => item.transaction_packages || [])
+        .reduce((acc, curr) => acc.concat(curr), [])
+        .map((product: any) => product.package_data.plan)
+        .filter((plan: any) => plan?.name)
+        .reduce((acc: Record<string, { name: string; value: number }>, item: any) => {
+          if (!acc[item.name]) {
+            acc[item.name] = { name: item.name, value: 0 };
+          }
+          acc[item.name].value += 1;
+          return acc;
+        }, {})
+    : [];
 
   const pieChart = Object.values(groupedData);
 
   const lineChart = Array.isArray(transactionStatisticData)
-  ? transactionStatisticData
-    .map((item) => ({
-      date: format(new Date(item.created_at), "yyyy-MM-dd"),
-    }))
-    .reduce(
-      (acc: { date: string; count: number }[], record) => {
-        const existing = acc.find((item) => item.date === record.date);
-        if (existing) {
-          existing.count += 1;
-        } else {
-          acc.push({ date: record.date, count: 1 });
+    ? transactionStatisticData
+        .map((item) => ({
+          date: format(new Date(item.created_at), 'yyyy-MM-dd'),
+        }))
+        .reduce((acc: { date: string; count: number }[], record) => {
+          const existing = acc.find((item) => item.date === record.date);
+          if (existing) {
+            existing.count += 1;
+          } else {
+            acc.push({ date: record.date, count: 1 });
+          }
+          return acc;
+        }, [])
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    : [];
+
+  const barChart: { status: string; count: number }[] = Object.values(
+    (Array.isArray(transactionStatisticData) ? transactionStatisticData : []).reduce(
+      (acc, policy) => {
+        const formattedDate = format(new Date(policy.created_at), 'yyyy-MM-dd');
+        const price = parseFloat(policy.transaction_packages?.[0]?.price) || 0;
+
+        if (!acc[formattedDate]) {
+          acc[formattedDate] = { status: formattedDate, count: 0 };
         }
+        acc[formattedDate].count += price;
         return acc;
       },
-      []
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  : [];
-
-  const barChart = Object.values(
-    (Array.isArray(transactionStatisticData) ? transactionStatisticData : [])
-      .reduce(
-        (acc, policy) => {
-          const formattedDate = format(new Date(policy.created_at), "yyyy-MM-dd");
-          const price = parseFloat(policy.transaction_packages?.[0]?.price) || 0;
-  
-          if (!acc[formattedDate]) {
-            acc[formattedDate] = { status: formattedDate, count: 0 };
-          }
-          acc[formattedDate].count += price;
-          return acc;
-        },
-        {} as Record<string, { status: string; count: number }>
-      )
+      {} as Record<string, { status: string; count: number }>,
+    ),
   ) as { status: string; count: number }[];
-  
-  
-  const tableData = Array.isArray(transactionStatisticData) ? transactionStatisticData.map((item) => {
-    return {
-      created_at: formatDateTimeWithTZ(item.created_at),
-      plan_name: item.transaction_packages?.[0]?.package_data?.plan?.name,
-      price: `${item.transaction_packages?.[0]?.currency} ${formatMoney(item.transaction_packages?.[0]?.price)}`,
-      transaction: item.transaction_packages?.[0]?.quantity,
-    };
-  }): [];
+
+  barChart.sort((a, b) => new Date(a.status).getTime() - new Date(b.status).getTime());
+
+  const tableData = Array.isArray(transactionStatisticData)
+    ? transactionStatisticData.map((item) => {
+        return {
+          created_at: formatDateTimeWithTZ(item.created_at),
+          plan_name: item.transaction_packages?.[0]?.package_data?.plan?.name,
+          price: `${item.transaction_packages?.[0]?.currency} ${formatMoney(item.transaction_packages?.[0]?.price)}`,
+          transaction: item.transaction_packages?.[0]?.quantity,
+        };
+      })
+    : [];
 
   return (
     <div className="mx-auto py-5 px-7 bg-[#ebf6ff] min-h-screen">
       <div className="text-center bg-white px-5 py-4 rounded-md shadow-sm mb-5">
-        <h5 className="text-2xl font-bold text-primary">
-          Insurance Sales Performance Dashboard
-        </h5>
+        <h5 className="text-2xl font-bold text-primary">Insurance Sales Performance Dashboard</h5>
       </div>
       <div className="flex gap-3">
         <div className="grid grid-cols-4 gap-4 mb-4 w-full">
@@ -259,7 +259,9 @@ export const DashboardTransaction = () => {
             additionalClassNameSelect="pl-4 shadow h-[46px]"
             withBorder={false}
             value={selectedInsurance}
-            onChange={(value) => { setSelectedInsurance(value.toString());}}
+            onChange={(value) => {
+              setSelectedInsurance(value.toString());
+            }}
             options={insuranceOptions}
           />
           <Select
@@ -267,9 +269,11 @@ export const DashboardTransaction = () => {
             placeholderSelectClassName="truncate"
             additionalClassNameSelect="pl-4 shadow h-[46px]"
             withBorder={false}
-            disabled={selectedInsurance === "All" || selectedInsurance === ""}
+            disabled={selectedInsurance === 'All' || selectedInsurance === ''}
             value={selectedProduct}
-            onChange={(value) => { setSelectedProduct(value.toString());}}
+            onChange={(value) => {
+              setSelectedProduct(value.toString());
+            }}
             options={productOptions}
           />
           <Select
@@ -277,9 +281,11 @@ export const DashboardTransaction = () => {
             placeholderSelectClassName="truncate"
             additionalClassNameSelect="pl-4 shadow h-[46px]"
             withBorder={false}
-            disabled={selectedProduct === "All" || selectedProduct === ""}
+            disabled={selectedProduct === 'All' || selectedProduct === ''}
             value={selectedPlan}
-            onChange={(value) => { setSelectedPlan(value.toString());}}
+            onChange={(value) => {
+              setSelectedPlan(value.toString());
+            }}
             options={planOptions}
           />
           <DatePickerDropdown onDateChange={handleDateChange} />
@@ -290,7 +296,7 @@ export const DashboardTransaction = () => {
           <div className="bg-white py-5 rounded-md shadow-sm w-full">
             <h5 className="font-semibold mb-3 pl-5">Daily Sales Performance</h5>
             <div className="h-[400px]">
-              <LineChart data={lineChart} />
+              <LineChart data={lineChart} seriesLabel="Transactions" />
             </div>
           </div>
         </div>
@@ -298,7 +304,11 @@ export const DashboardTransaction = () => {
           <div className="bg-white pt-5 rounded-md shadow-sm">
             <h5 className="font-semibold pl-5">Daily GWP Performance</h5>
             <div className="w-full h-[431px]">
-              <BarChartComp data={barChart} />
+              <BarChartComp
+                data={barChart}
+                seriesLabel="GWP"
+                valueFormatter={(value) => `IDR ${formatMoney(Number(value) || 0)}`}
+              />
             </div>
           </div>
         </div>

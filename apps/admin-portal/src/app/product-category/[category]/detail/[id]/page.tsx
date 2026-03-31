@@ -25,7 +25,7 @@ import { ChevronLeft } from "react-feather";
 import ProductDetatilTab from "./product-detail-tab";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function DetaildPage({
   params,

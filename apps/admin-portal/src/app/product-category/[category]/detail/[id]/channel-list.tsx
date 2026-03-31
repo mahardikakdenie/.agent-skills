@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useProducts } from "../../../hooks";
 import { Trash2Icon, X } from "lucide-react";
 import { UserCheck } from "react-feather";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function ChannelList(props: { id: string }) {
   const { id } = props;

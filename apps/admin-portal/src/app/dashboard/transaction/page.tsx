@@ -1,28 +1,31 @@
-"use client";
-import React from "react";
-import { DateRangePicker } from "@repo/ui";
+'use client';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
 import {
+  Box,
+  DateRangePicker,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui";
-import { Controller, useForm } from "react-hook-form";
+} from '@repo/ui';
 
-import PieChart from "@/components/ui/recharts/piechart";
-import LineChart from "@/components/ui/recharts/dashedlinechart";
-import DetailTable from "@/components/ui/recharts/table-policy";
-import BarChartComp from "@/components/ui/recharts/barchart-horizontal";
-import useTransactionDashboard from "@/hooks/useTransactionDashboard.hooks";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import DetailTable from '@/components/table-policy';
+import { ContentLoadingWrapper } from '@/components/ui/loading';
+import LineChart from '@/components/ui/charts/dashedlinechart';
+import PieChart from '@/components/ui/charts/piechart';
+import BarChartComp from '@/components/ui/charts/barchart-horizontal';
+import useTransactionDashboard from '@/hooks/useTransactionDashboard.hooks';
+import { formatMoney } from '@/lib/formatter';
 
 const policyColumns = [
-  { key: "created_at", label: "Created At" },
-  { key: "plan_name", label: "Plan Name" },
-  { key: "price", label: "Price" },
-  { key: "transaction", label: "Transaction" },
+  { key: 'created_at', label: 'Created At' },
+  { key: 'plan_name', label: 'Plan Name' },
+  { key: 'price', label: 'Price' },
+  { key: 'transaction', label: 'Transaction' },
 ];
 
 export default function DashboardTransaction() {
@@ -55,15 +58,15 @@ export default function DashboardTransaction() {
   });
 
   return (
-    <div className="w-full bg-[#ebf6ff] p-5 bg-blue min-h-screen">
-      <div className="text-center bg-primary px-5 py-4 rounded-md shadow-sm mb-5">
-        <h5 className="text-2xl font-bold text-white">
+    <Box className="w-full bg-[#ebf6ff] p-5 bg-blue min-h-screen">
+      <Box className="text-center bg-primary px-5 py-4 rounded-md shadow-sm mb-5">
+        <Box as="h5" className="text-2xl font-bold text-white">
           Insurance Sales Performance Dashboard
-        </h5>
-      </div>
-      <div className="flex gap-3">
-        <div className="grid grid-cols-4 gap-4 mb-4 w-full">
-          <div>
+        </Box>
+      </Box>
+      <Box className="flex gap-3">
+        <Box className="grid grid-cols-4 gap-4 mb-4 w-full">
+          <Box>
             <Controller
               name="insurance"
               control={control}
@@ -81,10 +84,7 @@ export default function DashboardTransaction() {
                   <SelectContent>
                     <SelectGroup>
                       {insuranceOptions.map((insurance: any) => (
-                        <SelectItem
-                          key={insurance.value}
-                          value={insurance.value}
-                        >
+                        <SelectItem key={insurance.value} value={insurance.value}>
                           {insurance.label}
                         </SelectItem>
                       ))}
@@ -93,17 +93,15 @@ export default function DashboardTransaction() {
                 </Select>
               )}
             />
-          </div>
-          <div>
+          </Box>
+          <Box>
             <Controller
               name="product"
               control={control}
               render={({ field }) => (
                 <Select
                   value={selectedProduct}
-                  disabled={
-                    selectedInsuranceId === "All" || selectedInsuranceId === ""
-                  }
+                  disabled={selectedInsuranceId === 'All' || selectedInsuranceId === ''}
                   onValueChange={(value) => {
                     field.onChange(value);
                     setSelectedProduct(value);
@@ -124,15 +122,15 @@ export default function DashboardTransaction() {
                 </Select>
               )}
             />
-          </div>
-          <div>
+          </Box>
+          <Box>
             <Controller
               name="plan"
               control={control}
               render={({ field }) => (
                 <Select
                   value={selectedPlan}
-                  disabled={selectedProduct === "All" || selectedProduct === ""}
+                  disabled={selectedProduct === 'All' || selectedProduct === ''}
                   onValueChange={(value) => {
                     field.onChange(value);
                     setSelectedPlan(value);
@@ -153,7 +151,7 @@ export default function DashboardTransaction() {
                 </Select>
               )}
             />
-          </div>
+          </Box>
           <DateRangePicker
             value={dateRange ?? null}
             onChange={(range) =>
@@ -162,50 +160,59 @@ export default function DashboardTransaction() {
             changeBehavior="complete"
             className="text-xs [&_[data-slot=date-range-picker-control]]:min-h-[46px] [&_[data-slot=date-range-picker-control]]:border-0 [&_[data-slot=date-range-picker-control]]:bg-white [&_[data-slot=date-range-picker-control]]:shadow [&_[data-slot=date-range-picker-trigger]]:text-[13px]"
           />
-        </div>
-      </div>
+        </Box>
+      </Box>
       <ContentLoadingWrapper
         isLoading={isLoadingStatistics}
         loadingText="Loading transaction statistics..."
       >
-        <div className="grid grid-cols-12 gap-4 mb-4">
-          <div className="col-span-6">
-            <div className="bg-white py-5 rounded-md shadow-sm w-full">
-              <h5 className="font-semibold mb-3 pl-5">
+        <Box className="grid grid-cols-12 gap-4 mb-4">
+          <Box className="col-span-6">
+            <Box className="bg-white py-5 rounded-md shadow-sm w-full">
+              <Box as="h5" className="font-semibold mb-3 pl-5">
                 Daily Sales Performance
-              </h5>
-              <div className="h-[400px]">
-                <LineChart data={lineChartData} />
-              </div>
-            </div>
-          </div>
-          <div className="col-span-6">
-            <div className="bg-white pt-5 rounded-md shadow-sm">
-              <h5 className="font-semibold pl-5">Daily GWP Performance</h5>
-              <div className="w-full h-[431px]">
-                <BarChartComp data={barChartData} />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-1">
-            <div className="bg-white p-5 rounded-md shadow-sm">
-              <h5 className="font-semibold">Total Sales by Plan Name</h5>
-              <div className="w-full h-[403px]">
+              </Box>
+              <Box className="h-[400px]">
+                <LineChart data={lineChartData} seriesLabel="Transactions" />
+              </Box>
+            </Box>
+          </Box>
+          <Box className="col-span-6">
+            <Box className="bg-white pt-5 rounded-md shadow-sm">
+              <Box as="h5" className="font-semibold pl-5">
+                Daily GWP Performance
+              </Box>
+              <Box className="w-full h-[431px]">
+                <BarChartComp
+                  data={barChartData}
+                  seriesLabel="GWP"
+                  valueFormatter={(value) => `IDR ${formatMoney(Number(value) || 0)}`}
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+        <Box className="grid grid-cols-3 gap-4">
+          <Box className="col-span-1">
+            <Box className="bg-white p-5 rounded-md shadow-sm">
+              <Box as="h5" className="font-semibold">
+                Total Sales by Plan Name
+              </Box>
+              <Box className="w-full h-[403px]">
                 <PieChart data={pieChartData} />
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-white p-5 rounded-md shadow-sm w-full table-transaction min-h-[466px]">
-              <h5 className="font-semibold mb-3">Latest Transactions</h5>
+              </Box>
+            </Box>
+          </Box>
+          <Box className="col-span-2">
+            <Box className="bg-white p-5 rounded-md shadow-sm w-full table-transaction min-h-[466px]">
+              <Box as="h5" className="font-semibold mb-3">
+                Latest Transactions
+              </Box>
               <DetailTable data={tableData} columns={policyColumns} />
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
       </ContentLoadingWrapper>
-    </div>
+    </Box>
   );
 }
-

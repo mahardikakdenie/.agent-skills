@@ -22,7 +22,7 @@ import { DataTable, Column } from "@/components/ui/DataTable";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { claimHasValue } from "@/lib/utils";
 import { useDetailClaim } from "@/hooks/useDetailClaim.hooks";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import { useClaimHistories } from "@/services/claims/hooks/queries";
 import AppURL from "@/constants/app-url.const";
 

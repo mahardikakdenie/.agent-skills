@@ -5,7 +5,7 @@ import { Button } from "@repo/ui";
 import { DataTable } from "@/components/ui/DataTable";
 import { useHospital } from "@/hooks/useHospital.hooks";
 import { createHospitalTableColumns } from "@/components/tableConfig/hospitalTableConfig";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function HospitalListPage() {
   const {

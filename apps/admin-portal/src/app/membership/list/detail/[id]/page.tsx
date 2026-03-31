@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useMembershipDetail } from "@/hooks/useMembershipDetail.hooks";
 import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 export default function DetailMembership() {

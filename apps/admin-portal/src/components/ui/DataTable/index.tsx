@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui";
-import { ContentLoadingWrapper } from "../Loading/";
+import { ContentLoadingWrapper } from "../loading";
 export interface Column<T> {
   key: string;
   header: string;

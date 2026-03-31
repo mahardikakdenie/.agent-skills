@@ -15,7 +15,7 @@ import {
 import { useScreen } from "@/context/screen.context";
 import { useParams, useRouter } from "next/navigation";
 import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 export default function UploadPackage() {
   const params = useParams();

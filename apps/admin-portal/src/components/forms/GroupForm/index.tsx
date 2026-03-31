@@ -21,7 +21,7 @@ import {
 import { Input } from "@repo/ui";
 import { Button } from "@repo/ui";
 import { Controller } from "react-hook-form";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 import {
   Dialog,
   DialogClose,

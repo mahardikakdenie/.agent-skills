@@ -12,11 +12,11 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { numberSimpleFormatter } from "@/lib/formatter";
 
-import PieChart from "@/components/ui/recharts/piechart";
+import PieChart from "@/components/ui/charts/piechart";
 import LineChart from "@/components/ui/recharts/linechart-policy";
-import DetailTable from "@/components/ui/recharts/table-policy";
+import DetailTable from "@/components/table-policy";
 import usePolicyDashboard from "@/hooks/usePolicyDashboard.hooks";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 const policyColumns = [
   { key: "number", label: "Number" },

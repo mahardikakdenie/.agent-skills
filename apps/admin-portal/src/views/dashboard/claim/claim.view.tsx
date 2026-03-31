@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import PieChart from "@/components/recharts/piechart";
-import LineChart from "@/components/recharts/linechart";
-import DetailTable from "@/components/recharts/table-policy";
+import PieChart from "@/components/ui/charts/piechart";
+import LineChart from "@/components/ui/charts/linechart";
+import DetailTable from "@/components/table-policy";
 import BarChartComp from "@/components/recharts/barchart-vertical";
 import Select from "@/components/select";
 import DatePickerDropdown from "@/components/date-range-picker";
@@ -22,6 +22,25 @@ const claimColumns = [
   { key: "amount", label: "Amount" },
   { key: "amount_approved", label: "Amount Approved" },
   { key: "status", label: "Status" },
+];
+
+const claimLineChartSeries = [
+  {
+    dataKey: "total_claim_amount",
+    name: "Total Claim Amount",
+    type: "bar" as const,
+    color: "#e83f3f94",
+    yAxisId: "right",
+    barSize: 40,
+    valueFormatter: (value: number | string) => formatMoney(Number(value) || 0),
+  },
+  {
+    dataKey: "count",
+    name: "Total Claims",
+    type: "line" as const,
+    color: "#006de5",
+    yAxisId: "left",
+  },
 ];
 
 export const DashboardClaim = () => {
@@ -326,7 +345,7 @@ export const DashboardClaim = () => {
             <div className="bg-white py-5 rounded-md shadow-sm w-full mb-4">
               <h5 className="font-semibold mb-3 pl-5">Claim Trends</h5>
               <div className="h-[300px]">
-                <LineChart data={lineChart} />
+                <LineChart data={lineChart} series={claimLineChartSeries} />
               </div>
             </div>
           </div>

@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@repo/ui";
 import { Button } from "@repo/ui";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 interface HospitalUploadFormProps {
   selectedFile: File | null;

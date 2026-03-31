@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@repo/ui";
 import { Controller } from "react-hook-form";
-import { ContentLoadingWrapper } from "../../ui/Loading/index";
+import { ContentLoadingWrapper } from "../../ui/loading";
 
 interface Insurance {
   id: string;

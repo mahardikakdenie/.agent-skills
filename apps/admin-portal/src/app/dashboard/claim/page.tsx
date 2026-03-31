@@ -12,12 +12,13 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { numberSimpleFormatter } from "@/lib/formatter";
 
-import PieChart from "@/components/ui/recharts/piechart";
-import LineChart from "@/components/ui/recharts/linechart";
-import DetailTable from "@/components/ui/recharts/table-policy";
+import PieChart from "@/components/ui/charts/piechart";
+import LineChart from "@/components/ui/charts/linechart";
+import DetailTable from "@/components/table-policy";
 import BarChartComp from "@/components/ui/recharts/barchart-vertical";
 import useClaimDashboard from "@/hooks/useClaimDashboard.hooks";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
+import { formatMoney } from "@/lib/formatter";
 
 const claimColumns = [
   { key: "created_at", label: "Created At" },
@@ -26,6 +27,25 @@ const claimColumns = [
   { key: "amount", label: "Amount" },
   { key: "amount_approved", label: "Amount Approved" },
   { key: "status", label: "Status" },
+];
+
+const claimLineChartSeries = [
+  {
+    dataKey: "total_claim_amount",
+    name: "Total Claim Amount",
+    type: "bar" as const,
+    color: "#e83f3f94",
+    yAxisId: "right",
+    barSize: 40,
+    valueFormatter: (value: number | string) => formatMoney(Number(value) || 0),
+  },
+  {
+    dataKey: "count",
+    name: "Total Claims",
+    type: "line" as const,
+    color: "#006de5",
+    yAxisId: "left",
+  },
 ];
 
 export default function DashboardClaim() {
@@ -225,7 +245,7 @@ export default function DashboardClaim() {
               <div className="bg-white py-5 rounded-md shadow-sm w-full mb-4">
                 <h5 className="font-semibold mb-3 pl-5">Claim Trends</h5>
                 <div className="h-[300px]">
-                  <LineChart data={lineChartData} />
+                  <LineChart data={lineChartData} series={claimLineChartSeries} />
                 </div>
               </div>
             </div>

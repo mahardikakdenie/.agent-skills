@@ -29,7 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AppURL from "@/constants/app-url.const";
 import { useProducts } from "@/app/product-category/hooks";
 import { FieldArrayInput } from "./field-array-input";
-import { ContentLoadingWrapper } from "@/components/ui/Loading/index";
+import { ContentLoadingWrapper } from "@/components/ui/loading";
 
 type FormFieldType = {
   label: string;
