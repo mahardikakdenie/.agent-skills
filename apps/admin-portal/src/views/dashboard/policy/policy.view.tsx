@@ -7,7 +7,7 @@ import { useAuth } from "@/context/auth.context";
 import { ListPolicyStatisticDataRequest, PolicyData } from "@/types/policy";
 
 import PieChart from "@/components/ui/charts/piechart";
-import LineChart from "@/components/recharts/linechart-policy";
+import LineChart from "@/components/linechart-policy";
 import DetailTable from "@/components/table-policy";
 import Select from "@/components/select";
 import { primary } from "@/constants/app-common.const";

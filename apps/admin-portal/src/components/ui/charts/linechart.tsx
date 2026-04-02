@@ -1,14 +1,26 @@
-"use client";
+'use client';
 
-import { Box } from "@repo/ui";
-import { ResponsiveContainer, Legend, Tooltip, CartesianGrid, XAxis, YAxis, Line, Bar, ComposedChart } from "recharts";
+import type { ReactNode } from 'react';
+import {
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Line,
+  Bar,
+  ComposedChart,
+} from 'recharts';
 
-type ChartDatum = Record<string, string | number | null | undefined>;
+import { Box } from '@repo/ui';
 
-interface ChartSeriesConfig {
+export type ChartDatum = Record<string, string | number | null | undefined>;
+
+export interface ChartSeriesConfig {
   dataKey: string;
   name: string;
-  type: "line" | "bar";
+  type: 'line' | 'bar';
   color: string;
   yAxisId?: string;
   valueFormatter?: (value: number | string) => string;
@@ -17,10 +29,27 @@ interface ChartSeriesConfig {
   activeDotRadius?: number;
 }
 
-interface ChartAxisConfig {
+type ChartAxisDomainValue = number | 'auto' | 'dataMin' | 'dataMax';
+
+export interface ChartAxisConfig {
   yAxisId: string;
-  orientation?: "left" | "right";
+  orientation?: 'left' | 'right';
   tickFontSize?: number;
+  domain?: [ChartAxisDomainValue, ChartAxisDomainValue];
+}
+
+export interface LineChartTooltipEntry {
+  dataKey?: string;
+  name?: string;
+  value?: number | string;
+  payload: ChartDatum;
+}
+
+export interface CustomTooltipRendererProps {
+  active?: boolean;
+  payload?: LineChartTooltipEntry[];
+  tooltipLabelKey: string;
+  seriesByKey: Record<string, ChartSeriesConfig>;
 }
 
 interface LineChartCompProps {
@@ -29,48 +58,48 @@ interface LineChartCompProps {
   xAxisDataKey?: string;
   tooltipLabelKey?: string;
   yAxes?: ChartAxisConfig[];
-}
-
-interface LineChartTooltipEntry {
-  dataKey?: string;
-  name?: string;
-  value?: number | string;
-  payload: ChartDatum;
-}
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: LineChartTooltipEntry[];
-  tooltipLabelKey: string;
-  seriesByKey: Record<string, ChartSeriesConfig>;
+  legendFormatter?: (value: string, entry: unknown, index: number) => ReactNode;
+  tooltipContent?: (props: CustomTooltipRendererProps) => ReactNode;
 }
 
 const defaultYAxisConfig: ChartAxisConfig[] = [
-  { yAxisId: "left", tickFontSize: 12 },
-  { yAxisId: "right", orientation: "right", tickFontSize: 12 },
+  { yAxisId: 'left', tickFontSize: 12 },
+  { yAxisId: 'right', orientation: 'right', tickFontSize: 12 },
 ];
 
 const chartMargin = { top: 5, right: 50, left: 0, bottom: 5 };
 
 const formatTooltipValue = (
   value: number | string | undefined,
-  formatter?: (value: number | string) => string
+  formatter?: (value: number | string) => string,
 ) => {
   if (value === undefined) {
-    return "-";
+    return '-';
   }
 
   return formatter ? formatter(value) : String(value);
 };
 
-const CustomTooltip = ({ active, payload, tooltipLabelKey, seriesByKey }: CustomTooltipProps) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  tooltipLabelKey,
+  seriesByKey,
+  tooltipContent,
+}: CustomTooltipRendererProps & {
+  tooltipContent?: (props: CustomTooltipRendererProps) => ReactNode;
+}) => {
+  if (tooltipContent) {
+    return tooltipContent({ active, payload, tooltipLabelKey, seriesByKey });
+  }
+
   if (active && payload && payload.length) {
     const label = payload[0]?.payload?.[tooltipLabelKey];
 
     return (
       <Box className="rounded-md border bg-white p-4 text-xs text-gray-700 shadow-md">
         <Box as="p" className="mb-2 text-xs">
-          <Box as="strong">{label !== undefined ? String(label) : "-"}</Box>
+          <Box as="strong">{label !== undefined ? String(label) : '-'}</Box>
         </Box>
         {payload.map((entry, index) => {
           const config = entry.dataKey ? seriesByKey[entry.dataKey] : undefined;
@@ -78,7 +107,7 @@ const CustomTooltip = ({ active, payload, tooltipLabelKey, seriesByKey }: Custom
 
           return (
             <Box as="p" key={`${entry.dataKey ?? entryLabel}-${index}`} className="text-xs">
-              {entryLabel}:{" "}
+              {entryLabel}:{' '}
               <Box as="strong">{formatTooltipValue(entry.value, config?.valueFormatter)}</Box>
             </Box>
           );
@@ -92,9 +121,11 @@ const CustomTooltip = ({ active, payload, tooltipLabelKey, seriesByKey }: Custom
 export default function LineChartComp({
   data,
   series,
-  xAxisDataKey = "date",
-  tooltipLabelKey = "date",
+  xAxisDataKey = 'date',
+  tooltipLabelKey = 'date',
   yAxes = defaultYAxisConfig,
+  legendFormatter,
+  tooltipContent,
 }: LineChartCompProps) {
   const seriesByKey = Object.fromEntries(series.map((entry) => [entry.dataKey, entry]));
 
@@ -109,16 +140,25 @@ export default function LineChartComp({
               key={axis.yAxisId}
               yAxisId={axis.yAxisId}
               orientation={axis.orientation}
+              domain={axis.domain}
               tick={{ fontSize: axis.tickFontSize ?? 12 }}
             />
           ))}
-          <Tooltip content={<CustomTooltip tooltipLabelKey={tooltipLabelKey} seriesByKey={seriesByKey} />} />
-          <Legend wrapperStyle={{ fontSize: "10px" }} />
+          <Tooltip
+            content={
+              <CustomTooltip
+                tooltipLabelKey={tooltipLabelKey}
+                seriesByKey={seriesByKey}
+                tooltipContent={tooltipContent}
+              />
+            }
+          />
+          <Legend formatter={legendFormatter} wrapperStyle={{ fontSize: '10px' }} />
           {series.map((entry) =>
-            entry.type === "bar" ? (
+            entry.type === 'bar' ? (
               <Bar
                 key={entry.dataKey}
-                yAxisId={entry.yAxisId ?? "right"}
+                yAxisId={entry.yAxisId ?? 'right'}
                 dataKey={entry.dataKey}
                 fill={entry.color}
                 barSize={entry.barSize ?? 40}
@@ -127,7 +167,7 @@ export default function LineChartComp({
             ) : (
               <Line
                 key={entry.dataKey}
-                yAxisId={entry.yAxisId ?? "left"}
+                yAxisId={entry.yAxisId ?? 'left'}
                 type="monotone"
                 dataKey={entry.dataKey}
                 stroke={entry.color}
@@ -135,7 +175,7 @@ export default function LineChartComp({
                 activeDot={{ r: entry.activeDotRadius ?? 8 }}
                 name={entry.name}
               />
-            )
+            ),
           )}
         </ComposedChart>
       </ResponsiveContainer>

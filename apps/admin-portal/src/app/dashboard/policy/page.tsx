@@ -1,6 +1,9 @@
-"use client";
-import React from "react";
-import { DateRangePicker } from "@repo/ui";
+'use client';
+
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
+import { Box, DateRangePicker } from '@repo/ui';
 import {
   Select,
   SelectContent,
@@ -8,21 +11,20 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui";
-import { Controller, useForm } from "react-hook-form";
-import { numberSimpleFormatter } from "@/lib/formatter";
+} from '@repo/ui';
 
-import PieChart from "@/components/ui/charts/piechart";
-import LineChart from "@/components/ui/recharts/linechart-policy";
-import DetailTable from "@/components/table-policy";
-import usePolicyDashboard from "@/hooks/usePolicyDashboard.hooks";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
+import LineChart from '@/components/linechart-policy';
+import DetailTable from '@/components/table-policy';
+import PieChart from '@/components/ui/charts/piechart';
+import { ContentLoadingWrapper } from '@/components/ui/loading';
+import usePolicyDashboard from '@/hooks/usePolicyDashboard.hooks';
+import { numberSimpleFormatter } from '@/lib/formatter';
 
 const policyColumns = [
-  { key: "number", label: "Number" },
-  { key: "plan_name", label: "Plan Name" },
-  { key: "status", label: "Status" },
-  { key: "created_at", label: "Created At" },
+  { key: 'number', label: 'Number' },
+  { key: 'plan_name', label: 'Plan Name' },
+  { key: 'status', label: 'Status' },
+  { key: 'created_at', label: 'Created At' },
 ];
 
 export default function DashboardPolicy() {
@@ -56,15 +58,15 @@ export default function DashboardPolicy() {
   });
 
   return (
-    <div className="w-full p-5 bg-[#ebf6ff] min-h-screen">
-      <div className="text-center bg-primary px-5 py-4 rounded-md shadow-sm mb-5">
-        <h5 className="text-2xl font-bold text-white">
+    <Box className="w-full p-5 bg-[#ebf6ff] min-h-screen">
+      <Box className="text-center bg-primary px-5 py-4 rounded-md shadow-sm mb-5">
+        <Box as="h5" className="text-2xl font-bold text-white">
           Insurance Policy Performance Dashboard
-        </h5>
-      </div>
-      <div className="flex gap-3">
-        <div className="grid grid-cols-4 gap-4 mb-4 w-full">
-          <div>
+        </Box>
+      </Box>
+      <Box className="flex gap-3">
+        <Box className="grid grid-cols-4 gap-4 mb-4 w-full">
+          <Box>
             <Controller
               name="insurance"
               control={control}
@@ -82,10 +84,7 @@ export default function DashboardPolicy() {
                   <SelectContent>
                     <SelectGroup>
                       {insuranceOptions.map((insurance: any) => (
-                        <SelectItem
-                          key={insurance.value}
-                          value={insurance.value}
-                        >
+                        <SelectItem key={insurance.value} value={insurance.value}>
                           {insurance.label}
                         </SelectItem>
                       ))}
@@ -94,17 +93,15 @@ export default function DashboardPolicy() {
                 </Select>
               )}
             />
-          </div>
-          <div>
+          </Box>
+          <Box>
             <Controller
               name="product"
               control={control}
               render={({ field }) => (
                 <Select
                   value={selectedProduct}
-                  disabled={
-                    selectedInsuranceId === "All" || selectedInsuranceId === ""
-                  }
+                  disabled={selectedInsuranceId === 'All' || selectedInsuranceId === ''}
                   onValueChange={(value) => {
                     field.onChange(value);
                     setSelectedProduct(value);
@@ -125,15 +122,15 @@ export default function DashboardPolicy() {
                 </Select>
               )}
             />
-          </div>
-          <div>
+          </Box>
+          <Box>
             <Controller
               name="plan"
               control={control}
               render={({ field }) => (
                 <Select
                   value={selectedPlan}
-                  disabled={selectedProduct === "All" || selectedProduct === ""}
+                  disabled={selectedProduct === 'All' || selectedProduct === ''}
                   onValueChange={(value) => {
                     field.onChange(value);
                     setSelectedPlan(value);
@@ -154,7 +151,7 @@ export default function DashboardPolicy() {
                 </Select>
               )}
             />
-          </div>
+          </Box>
           <DateRangePicker
             value={dateRange ?? null}
             onChange={(range) =>
@@ -163,53 +160,60 @@ export default function DashboardPolicy() {
             changeBehavior="complete"
             className="text-xs [&_[data-slot=date-range-picker-control]]:min-h-[46px] [&_[data-slot=date-range-picker-control]]:border-0 [&_[data-slot=date-range-picker-control]]:bg-white [&_[data-slot=date-range-picker-control]]:shadow [&_[data-slot=date-range-picker-trigger]]:text-[13px]"
           />
-        </div>
-      </div>
+        </Box>
+      </Box>
       <ContentLoadingWrapper
         isLoading={isLoadingStatistics}
         loadingText="Loading policy statistics..."
       >
-        <div className="grid grid-cols-12 gap-4 mb-4">
-          <div className="col-span-4 grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-                <p className="text-3xl font-bold text-center mb-1">
+        <Box className="grid grid-cols-12 gap-4 mb-4">
+          <Box className="col-span-4 grid gap-4">
+            <Box className="grid grid-cols-2 gap-4">
+              <Box className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+                <Box as="p" className="text-3xl font-bold text-center mb-1">
                   {totalPolicies}
-                </p>
-                <h5 className="text-xs">Total Policies</h5>
-              </div>
-              <div className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-                <p className="text-3xl font-bold text-center mb-1">
+                </Box>
+                <Box as="h5" className="text-xs">
+                  Total Policies
+                </Box>
+              </Box>
+              <Box className="bg-white p-4 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+                <Box as="p" className="text-3xl font-bold text-center mb-1">
                   {numberSimpleFormatter(totalPremium)}
-                </p>
-                <h5 className="text-xs">Total GWP</h5>
-              </div>
-            </div>
-            <div className="bg-white p-5 rounded-md shadow-sm">
-              <h5 className="font-semibold">Policy Type</h5>
-              <div className="w-full h-[300px]">
+                </Box>
+                <Box as="h5" className="text-xs">
+                  Total GWP
+                </Box>
+              </Box>
+            </Box>
+            <Box className="bg-white p-5 rounded-md shadow-sm">
+              <Box as="h5" className="font-semibold">
+                Policy Type
+              </Box>
+              <Box className="w-full h-[300px]">
                 <PieChart data={pieChartData} />
-              </div>
-            </div>
-          </div>
-          <div className="col-span-8">
-            <div className="bg-white py-5 rounded-md shadow-sm w-full">
-              <h5 className="font-semibold mb-3 pl-5">
+              </Box>
+            </Box>
+          </Box>
+          <Box className="col-span-8">
+            <Box className="bg-white py-5 rounded-md shadow-sm w-full">
+              <Box as="h5" className="font-semibold mb-3 pl-5">
                 Daily Policy Counts Trends
-              </h5>
-              <div className="h-[400px]">
+              </Box>
+              <Box className="h-[400px]">
                 <LineChart data={lineChartData} />
-              </div>
-            </div>
-          </div>
-        </div>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
 
-        <div className="bg-white p-5 rounded-md shadow-sm w-full table-policy">
-          <h5 className="font-semibold mb-3">Detail Policy</h5>
+        <Box className="bg-white p-5 rounded-md shadow-sm w-full table-policy">
+          <Box as="h5" className="font-semibold mb-3">
+            Detail Policy
+          </Box>
           <DetailTable data={tableData} columns={policyColumns} />
-        </div>
+        </Box>
       </ContentLoadingWrapper>
-    </div>
+    </Box>
   );
 }
-
