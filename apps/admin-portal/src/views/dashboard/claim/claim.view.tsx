@@ -1,61 +1,61 @@
-import React, { useEffect, useState } from "react";
-import PieChart from "@/components/ui/charts/piechart";
-import LineChart from "@/components/ui/charts/linechart";
-import DetailTable from "@/components/table-policy";
-import BarChartComp from "@/components/recharts/barchart-vertical";
-import Select from "@/components/select";
-import DatePickerDropdown from "@/components/date-range-picker";
+import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 
-import { format } from "date-fns";
-import { Claim, ClaimStatisticDataRequest } from "@/types/claim";
-import { claimsService } from "@/services/claims/api/claims.service";
-import { productService } from "@/services/product/api/product.service";
-import { useScreen } from "@/context/screen.context";
-import { useAuth } from "@/context/auth.context";
-import { formatDateTimeWithTZ, formatMoney, numberSimpleFormatter } from "@/helpers/app.helper";
-import { primary } from "@/constants/app-common.const";
+import DatePickerDropdown from '@/components/date-range-picker';
+import Select from '@/components/select';
+import DetailTable from '@/components/table-policy';
+import VerticalBarChart from '@/components/ui/charts/barchart-vertical';
+import LineChart from '@/components/ui/charts/linechart';
+import PieChart from '@/components/ui/charts/piechart';
+import { primary } from '@/constants/app-common.const';
+import { useAuth } from '@/context/auth.context';
+import { useScreen } from '@/context/screen.context';
+import { formatDateTimeWithTZ, formatMoney, numberSimpleFormatter } from '@/helpers/app.helper';
+import { claimsService } from '@/services/claims/api/claims.service';
+import { productService } from '@/services/product/api/product.service';
+import { Claim, ClaimStatisticDataRequest } from '@/types/claim';
 
 const claimColumns = [
-  { key: "created_at", label: "Created At" },
-  { key: "number", label: "Number" },
-  { key: "type", label: "Type" },
-  { key: "amount", label: "Amount" },
-  { key: "amount_approved", label: "Amount Approved" },
-  { key: "status", label: "Status" },
+  { key: 'created_at', label: 'Created At' },
+  { key: 'number', label: 'Number' },
+  { key: 'type', label: 'Type' },
+  { key: 'amount', label: 'Amount' },
+  { key: 'amount_approved', label: 'Amount Approved' },
+  { key: 'status', label: 'Status' },
 ];
 
 const claimLineChartSeries = [
   {
-    dataKey: "total_claim_amount",
-    name: "Total Claim Amount",
-    type: "bar" as const,
-    color: "#e83f3f94",
-    yAxisId: "right",
+    dataKey: 'total_claim_amount',
+    name: 'Total Claim Amount',
+    type: 'bar' as const,
+    color: '#e83f3f94',
+    yAxisId: 'right',
     barSize: 40,
     valueFormatter: (value: number | string) => formatMoney(Number(value) || 0),
   },
   {
-    dataKey: "count",
-    name: "Total Claims",
-    type: "line" as const,
-    color: "#006de5",
-    yAxisId: "left",
+    dataKey: 'count',
+    name: 'Total Claims',
+    type: 'line' as const,
+    color: '#006de5',
+    yAxisId: 'left',
   },
 ];
 
 export const DashboardClaim = () => {
   const { setLoading } = useScreen();
   const { handleResponseError, user } = useAuth();
-  const [ claimStatisticData, setClaimStatisticData] = useState<Claim | null>(null);
-  const [ totalClaimAmount, setTotalClaimAmount] = useState<number>(0);
-  const [ totalClaimAmountApproved, setTotalClaimAmountApproved] = useState<number>(0);
-  const [ totalClaim, setTotalClaim] = useState<number>(0);
-  const [ totalClaimApproved, setTotalClaimApproved] = useState<number>(0);
-  const [selectedProduct, setSelectedProduct] = useState<string>("");
+  const [claimStatisticData, setClaimStatisticData] = useState<Claim | null>(null);
+  const [totalClaimAmount, setTotalClaimAmount] = useState<number>(0);
+  const [totalClaimAmountApproved, setTotalClaimAmountApproved] = useState<number>(0);
+  const [totalClaim, setTotalClaim] = useState<number>(0);
+  const [totalClaimApproved, setTotalClaimApproved] = useState<number>(0);
+  const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [productOptions, setProductOptions] = useState<any[]>([]);
-  const [selectedInsurance, setSelectedInsurance] = useState<string>("");
+  const [selectedInsurance, setSelectedInsurance] = useState<string>('');
   const [insuranceOptions, setInsuranceOptions] = useState<any[]>([]);
-  const [selectedPlan, setSelectedPlan] = useState<string>("");
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [planOptions, setPlanOptions] = useState<any[]>([]);
   const [from, setFrom] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -71,18 +71,16 @@ export const DashboardClaim = () => {
         setLoading(true);
         const params: ClaimStatisticDataRequest = {
           channel: user?.all_channels?.[0] || undefined,
-          sort: "desc",
-          ...(selectedInsurance !== "All" && selectedInsurance && { insurance: selectedInsurance }),
-          ...(selectedProduct !== "All" && selectedProduct && { product: selectedProduct }),
-          ...(selectedPlan !== "All" && selectedPlan && { plan: selectedPlan }),
+          sort: 'desc',
+          ...(selectedInsurance !== 'All' && selectedInsurance && { insurance: selectedInsurance }),
+          ...(selectedProduct !== 'All' && selectedProduct && { product: selectedProduct }),
+          ...(selectedPlan !== 'All' && selectedPlan && { plan: selectedPlan }),
           ...(from && { from }),
           ...(to && { to }),
         };
-  
-        const response: any = await claimsService.getClaimStatistics(
-          params as any
-        );
-  
+
+        const response: any = await claimsService.getClaimStatistics(params as any);
+
         if (response) {
           setClaimStatisticData(response?.data || []);
           setTotalClaimAmount(response?.total_claim_amount || 0);
@@ -98,7 +96,8 @@ export const DashboardClaim = () => {
     };
     fetchDataPolicy().then();
 
-    if (selectedProduct && selectedInsurance && selectedPlan && from && to) fetchDataPolicy().then();
+    if (selectedProduct && selectedInsurance && selectedPlan && from && to)
+      fetchDataPolicy().then();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProduct, selectedInsurance, selectedPlan, from, to]);
@@ -107,7 +106,7 @@ export const DashboardClaim = () => {
     const fetchInsuranceFilter = async () => {
       try {
         setLoading(true);
-        const updatedList = [{ label: "INSURANCE NAME", value: "All" }];
+        const updatedList = [{ label: 'INSURANCE NAME', value: 'All' }];
         if (user?.all_insurances && user?.all_insurances?.length > 0) {
           for (let i = 0; i < user.all_insurances.length; i++) {
             const insId = user.all_insurances[i];
@@ -131,27 +130,28 @@ export const DashboardClaim = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   useEffect(() => {
     const fetchProductFilter = async () => {
       try {
         setLoading(true);
-        
+
         const response: any = await productService.getProducts({
           page: 1,
           pageSize: 100,
           channelId: user?.all_channels?.[0] || undefined,
-          ...(selectedInsurance !== "All" && selectedInsurance && { insuranceId: selectedInsurance }),
+          ...(selectedInsurance !== 'All' &&
+            selectedInsurance && { insuranceId: selectedInsurance }),
         });
-  
+
         if (Array.isArray(response?.data)) {
           const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));
-          
-          const updatedList = [{ label: "INSURANCE PRODUCT", value: "All" }, ...list];
-          
+
+          const updatedList = [{ label: 'INSURANCE PRODUCT', value: 'All' }, ...list];
+
           setProductOptions(updatedList);
           setSelectedProduct(updatedList[0].value);
         }
@@ -162,12 +162,12 @@ export const DashboardClaim = () => {
       }
     };
     fetchProductFilter().then();
-    
+
     if (selectedInsurance) fetchProductFilter().then();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedInsurance]);
-  
+
   useEffect(() => {
     const fetchPlanFilter = async () => {
       try {
@@ -175,17 +175,17 @@ export const DashboardClaim = () => {
         const response: any = await productService.getPlans({
           page: 1,
           pageSize: 20,
-          ...(selectedProduct !== "All" && selectedProduct && { productId: selectedProduct }),
+          ...(selectedProduct !== 'All' && selectedProduct && { productId: selectedProduct }),
         });
-  
+
         if (Array.isArray(response?.data)) {
           const list = response.data.map((prod: any) => ({
             label: prod.name,
             value: prod.id,
           }));
-          
-          const updatedList = [{ label: "PLAN NAME", value: "All" }, ...list];
-          
+
+          const updatedList = [{ label: 'PLAN NAME', value: 'All' }, ...list];
+
           setPlanOptions(updatedList);
           setSelectedPlan(updatedList[0].value);
         }
@@ -197,48 +197,52 @@ export const DashboardClaim = () => {
     };
     fetchPlanFilter().then();
 
-    if (selectedProduct && selectedProduct !== "All" && selectedProduct !== "") fetchPlanFilter().then();
+    if (selectedProduct && selectedProduct !== 'All' && selectedProduct !== '')
+      fetchPlanFilter().then();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProduct]);
 
-  const groupedData: Record<string, { name: string; value: number }> = (Array.isArray(claimStatisticData) ? claimStatisticData : []).reduce((acc, item) => {
+  const groupedData: Record<string, { name: string; value: number }> = (
+    Array.isArray(claimStatisticData) ? claimStatisticData : []
+  ).reduce(
+    (acc, item) => {
       if (item?.type) {
-        if (!acc[item.type]) { acc[item.type] = { name: item.type, value: 0 };
-        } acc[item.type].value += 1;
+        if (!acc[item.type]) {
+          acc[item.type] = { name: item.type, value: 0 };
+        }
+        acc[item.type].value += 1;
       }
       return acc;
-    }, {} as Record<string, { name: string; value: number }>
+    },
+    {} as Record<string, { name: string; value: number }>,
   );
 
   const pieChart: { name: string; value: number }[] = Object.values(groupedData);
 
   const lineChart = Array.isArray(claimStatisticData)
-  ? claimStatisticData
-      .map((item) => ({
-        date: format(new Date(item.created_at), "yyyy-MM-dd"),
-        count: totalClaim,
-        total_claim_amount: totalClaimAmount,
-      }))
-      .reduce(
-        (acc: { date: string; count: number; total_claim_amount: number }[], record) => {
+    ? claimStatisticData
+        .map((item) => ({
+          date: format(new Date(item.created_at), 'yyyy-MM-dd'),
+          count: totalClaim,
+          total_claim_amount: totalClaimAmount,
+        }))
+        .reduce((acc: { date: string; count: number; total_claim_amount: number }[], record) => {
           const existing = acc.find((item) => item.date === record.date);
           if (existing) {
             existing.count += record.count;
-            existing.total_claim_amount += record.count; 
+            existing.total_claim_amount += record.count;
           } else {
-            acc.push({ 
-              date: record.date, 
-              count: totalClaim, 
-              total_claim_amount: totalClaimAmountApproved
+            acc.push({
+              date: record.date,
+              count: totalClaim,
+              total_claim_amount: totalClaimAmountApproved,
             });
           }
           return acc;
-        },
-        []
-      )
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  : [];
+        }, [])
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    : [];
 
   const barChart = Object.values(
     (Array.isArray(claimStatisticData) ? claimStatisticData : []).reduce(
@@ -249,27 +253,27 @@ export const DashboardClaim = () => {
         acc[claim.status].count += 1;
         return acc;
       },
-      {} as Record<string, { status: string; count: number }>
-    )
-  ) as { status: string; count: number }[]; 
+      {} as Record<string, { status: string; count: number }>,
+    ),
+  ) as { status: string; count: number }[];
 
-  const tableData = Array.isArray(claimStatisticData) ? claimStatisticData.map((item) => ({
-    created_at: formatDateTimeWithTZ(item.created_at),
-    number: item.number,
-    type: item.type,
-    amount: `${formatMoney(item.amount)}`,
-    amount_approved: `${formatMoney(item.amount_approved)}`,
-    status: item.status
-  })): [];
+  const tableData = Array.isArray(claimStatisticData)
+    ? claimStatisticData.map((item) => ({
+        created_at: formatDateTimeWithTZ(item.created_at),
+        number: item.number,
+        type: item.type,
+        amount: `${formatMoney(item.amount)}`,
+        amount_approved: `${formatMoney(item.amount_approved)}`,
+        status: item.status,
+      }))
+    : [];
 
   return (
     <div className="mx-auto py-5 px-7 bg-[#ebf6ff] min-h-screen">
       <div className="text-center bg-white px-5 py-4 rounded-md shadow-sm mb-5">
-        <h5 className="text-2xl font-bold text-primary">
-          Insurance Claim Performance Dashboard
-        </h5>
+        <h5 className="text-2xl font-bold text-primary">Insurance Claim Performance Dashboard</h5>
       </div>
-      
+
       <div className="flex gap-3">
         <div className="grid grid-cols-4 gap-4 mb-4 w-full">
           <Select
@@ -278,7 +282,9 @@ export const DashboardClaim = () => {
             additionalClassNameSelect="pl-4 shadow h-[46px]"
             withBorder={false}
             value={selectedInsurance}
-            onChange={(value) => { setSelectedInsurance(value.toString());}}
+            onChange={(value) => {
+              setSelectedInsurance(value.toString());
+            }}
             options={insuranceOptions}
           />
           <Select
@@ -286,9 +292,11 @@ export const DashboardClaim = () => {
             placeholderSelectClassName="truncate"
             additionalClassNameSelect="pl-4 shadow h-[46px]"
             withBorder={false}
-            disabled={selectedInsurance === "All" || selectedInsurance === ""}
+            disabled={selectedInsurance === 'All' || selectedInsurance === ''}
             value={selectedProduct}
-            onChange={(value) => { setSelectedProduct(value.toString());}}
+            onChange={(value) => {
+              setSelectedProduct(value.toString());
+            }}
             options={productOptions}
           />
           <Select
@@ -296,9 +304,11 @@ export const DashboardClaim = () => {
             placeholderSelectClassName="truncate"
             additionalClassNameSelect="pl-4 shadow h-[46px]"
             withBorder={false}
-            disabled={selectedProduct === "All" || selectedProduct === ""}
+            disabled={selectedProduct === 'All' || selectedProduct === ''}
             value={selectedPlan}
-            onChange={(value) => { setSelectedPlan(value.toString());}}
+            onChange={(value) => {
+              setSelectedPlan(value.toString());
+            }}
             options={planOptions}
           />
           <DatePickerDropdown onDateChange={handleDateChange} />
@@ -307,11 +317,15 @@ export const DashboardClaim = () => {
 
       <div className="grid grid-cols-4 gap-4 mb-4">
         <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-center">{numberSimpleFormatter(totalClaimAmount)}</p>
+          <p className="text-3xl font-bold text-center">
+            {numberSimpleFormatter(totalClaimAmount)}
+          </p>
           <h5 className="text-xs">Total Claim Amount</h5>
         </div>
         <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-center">{numberSimpleFormatter(totalClaimAmountApproved)}</p>
+          <p className="text-3xl font-bold text-center">
+            {numberSimpleFormatter(totalClaimAmountApproved)}
+          </p>
           <h5 className="text-xs">Total Claim Amount Approved</h5>
         </div>
         <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
@@ -319,7 +333,9 @@ export const DashboardClaim = () => {
           <h5 className="text-xs">Total Claim</h5>
         </div>
         <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-center">{numberSimpleFormatter(totalClaimApproved)}</p>
+          <p className="text-3xl font-bold text-center">
+            {numberSimpleFormatter(totalClaimApproved)}
+          </p>
           <h5 className="text-xs">Total Claim Approved</h5>
         </div>
       </div>
@@ -335,7 +351,7 @@ export const DashboardClaim = () => {
             <div className="bg-white p-5 rounded-md shadow-sm">
               <h5 className="font-semibold">Claim Status</h5>
               <div className="w-full h-[503px]">
-                <BarChartComp data={barChart} />
+                <VerticalBarChart data={barChart} />
               </div>
             </div>
           </div>
@@ -351,7 +367,7 @@ export const DashboardClaim = () => {
           </div>
           <div className="bg-white p-5 rounded-md shadow-sm w-full table-claim">
             <h5 className="font-semibold mb-3">Detail Claim</h5>
-              <DetailTable data={tableData} columns={claimColumns} />
+            <DetailTable data={tableData} columns={claimColumns} />
           </div>
         </div>
       </div>
