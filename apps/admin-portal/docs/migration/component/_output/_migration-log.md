@@ -1351,3 +1351,17 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Verification note: `This logging update is based on the committed route-local refactor plus previously recorded manual smoke evidence for /dashboard/claim already present in _migration-log.md and _parity-checklist.md; no new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /dashboard/claim as PASS because the route has both committed route-local migration cleanup and existing recorded smoke verification evidence.`
 
+## Batch 9 - /transaction/list Route Refactor Follow-up - 2026-04-02
+
+- Commit: `e8901af0fafe893e04fd8abf5215b7bcfcb987d3` (`refactor(admin-portal): modernize transaction list table UI`)
+- Route focus: `/transaction/list`
+- Migration intent: `Finish the remaining route-local cleanup on the transaction list by standardizing the status filter and table chrome on shared primitives, densifying the table layout, and aligning row actions and detail-drawer presentation with the current design-system patterns while preserving existing filtering, search, export, and pagination behavior.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/transaction/list/page.tsx` now renders the route shell with `Box`, replaces bespoke status-tab markup with shared `Tabs`, and switches the add/export controls to shared `Button` usage with built-in left icons.
+  - `apps/admin-portal/src/components/ui/DataTable/index.tsx` now supports an optional `density` mode, shared `Select`-based pagination controls, denser compact table styling, and clearer page navigation while remaining backward compatible for existing consumers.
+  - `apps/admin-portal/src/components/tableConfig/transactionTableConfig.tsx` now applies explicit column sizing/alignment hooks, wrapped content cells, badge-style status rendering, and a shared `Button`-based row action trigger with a cleaner transaction-details drawer layout.
+- Files changed (route-focused): [`apps/admin-portal/src/app/transaction/list/page.tsx`, `apps/admin-portal/src/components/tableConfig/transactionTableConfig.tsx`, `apps/admin-portal/src/components/ui/DataTable/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box, Button, Select, and Tabs primitives, while extending the app-local DataTable surface in backward-compatible ways that can be reused by other admin-portal table routes.`
+- Verification note: `This logging update is based on the committed route-local refactor plus previously recorded manual smoke evidence for /transaction/list already present in _migration-log.md and _parity-checklist.md; no new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /transaction/list as PASS because the route has both committed route-local migration cleanup and existing recorded smoke verification evidence.`
+

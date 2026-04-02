@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 38 |
-| PASS | 3 |
+| PASS | 4 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 32 |
+| DEFERRED_DATA_TABLE | 31 |
 | NOT_STARTED | 79 |
 | OUT_OF_SCOPE | 1 |
 
@@ -50,7 +50,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/dashboard/transaction` | `dashboard-transaction` | `apps/admin-portal/src/app/dashboard/transaction/page.tsx` | YES | NO | `PASS` | 2026-03-31 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `c2b874754fb532cc5413215d1debca92b190c5d4` lands route-local migration cleanup for this page, and manual smoke verification for the dashboard route is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/dashboard/policy` | `dashboard-policy` | `apps/admin-portal/src/app/dashboard/policy/page.tsx` | YES | NO | `PASS` | 2026-04-02 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `cc3ad67852e37df51712706be77db29e475aaca4` lands route-local chart consolidation and `Box` cleanup for this page, and prior manual smoke verification for `/dashboard/policy` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/dashboard/claim` | `dashboard-claim` | `apps/admin-portal/src/app/dashboard/claim/page.tsx` | YES | NO | `PASS` | 2026-04-02 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `f544827241360913c1f6e55edb4c32b58fdbe61d` lands route-local vertical bar chart consolidation and `Box` cleanup for this page, and prior manual smoke verification for `/dashboard/claim` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
-| `/transaction/list` | `transaction-list` | `apps/admin-portal/src/app/transaction/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/transaction/list` | `transaction-list` | `apps/admin-portal/src/app/transaction/list/page.tsx` | YES | YES | `PASS` | 2026-04-02 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `e8901af0fafe893e04fd8abf5215b7bcfcb987d3` lands route-local transaction list table modernization across the page, transaction table config, and shared local DataTable surface, and prior manual smoke verification for `/transaction/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/policy/list` | `policy-list` | `apps/admin-portal/src/app/policy/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/policy/endorsement/list` | `policy-endorsement-list` | `apps/admin-portal/src/app/policy/endorsement/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation noted an internal redirect to the querystring variant. |
@@ -216,14 +216,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `transaction-list`
 - Smoke route: `YES`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-02`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+- Blocker type: `none`
+- Notes: Latest commit `e8901af0fafe893e04fd8abf5215b7bcfcb987d3` lands route-local transaction list table modernization across the page, transaction table config, and shared local DataTable surface, and prior manual smoke verification for `/transaction/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`.
 
 ### /policy/list
 
