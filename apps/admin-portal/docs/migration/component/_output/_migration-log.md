@@ -1319,3 +1319,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Verification status: `No fresh typecheck, lint, build, or smoke run was executed as part of this documentation-only logging pass.`
 - Post-Migration Improvement Candidates: [`apps/admin-portal/src/app/dashboard/policy/page.tsx` and `apps/admin-portal/src/views/dashboard/policy/policy.view.tsx` still depend on retained app-local `linechart-policy`, and `apps/admin-portal/src/app/dashboard/claim/page.tsx` still depends on retained app-local `barchart-vertical`; if dashboard chart cleanup continues, fold those remaining legacy wrappers into the same consolidated local chart surface.`]
 
+## Batch 9 - /dashboard/policy Route Refactor Follow-up - 2026-04-02
+
+- Commit: `cc3ad67852e37df51712706be77db29e475aaca4` (`refactor(admin-portal): unify policy chart with shared line chart component`)
+- Route focus: `/dashboard/policy`
+- Migration intent: `Finish the remaining route-local cleanup on the policy dashboard by removing duplicate line-chart wrappers, standardizing the chart implementation on the shared local chart surface, and aligning the route page layout with @repo/ui Box composition.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/dashboard/policy/page.tsx` now renders the route layout with `Box` instead of native layout/text tags while preserving the existing page structure and styling.
+  - `apps/admin-portal/src/components/linechart-policy.tsx` is introduced as the single retained app-local policy chart wrapper, and both `apps/admin-portal/src/app/dashboard/policy/page.tsx` and `apps/admin-portal/src/views/dashboard/policy/policy.view.tsx` are repointed to that path.
+  - Legacy duplicate wrappers at `apps/admin-portal/src/components/recharts/linechart-policy.tsx` and `apps/admin-portal/src/components/ui/recharts/linechart-policy.tsx` are removed from the active route path.
+  - `apps/admin-portal/src/components/ui/charts/linechart.tsx` now supports optional custom legend formatting, tooltip rendering, and y-axis domain configuration so the policy dashboard can keep its prior trend-chart behavior on top of the shared composed-chart implementation without breaking existing consumers.
+- Files changed (route-focused): [`apps/admin-portal/src/app/dashboard/policy/page.tsx`, `apps/admin-portal/src/components/linechart-policy.tsx`, `apps/admin-portal/src/components/ui/charts/linechart.tsx`, `apps/admin-portal/src/views/dashboard/policy/policy.view.tsx`]
+- Local files deleted (superseded wrappers): [`apps/admin-portal/src/components/recharts/linechart-policy.tsx`, `apps/admin-portal/src/components/ui/recharts/linechart-policy.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box primitives and extends the app-local chart wrapper API in backward-compatible ways.`
+- Verification note: `This logging update is based on the committed route-local refactor plus previously recorded manual smoke evidence for /dashboard/policy already present in _migration-log.md and _parity-checklist.md; no new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /dashboard/policy as PASS because the route has both committed route-local migration cleanup and existing recorded smoke verification evidence.`
+
