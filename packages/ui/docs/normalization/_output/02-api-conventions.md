@@ -741,6 +741,10 @@ Normalization notes:
 ### Pagination
 
 ```ts
+export type NavigationSurfaceVariant = 'outline' | 'shadow' | 'ghost'
+export type NavigationSurfaceVariantAlias = 'default'  // compatibility alias for 'shadow'
+export type NavigationSurfaceVariantProp = NavigationSurfaceVariant | NavigationSurfaceVariantAlias
+
 export interface PaginationProps {
   currentPage: number
   totalPages: number
@@ -748,6 +752,7 @@ export interface PaginationProps {
   pageSize?: number
   onPageSizeChange?: (size: number) => void
   pageSizeOptions?: number[]
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   className?: string
 }
 ```
@@ -755,6 +760,12 @@ export interface PaginationProps {
 Sizing note:
 - `Pagination` has no public `size` prop in the shared contract.
 - Any internal `default` or `compact` density handling stays private and must not be promoted into public API in this pass.
+
+Navigation-surface note:
+- The shared navigation-surface variant family now covers `Pagination`, `Tabs`, `DropdownMenu`, `NavigationMenu`, and `Menubar`.
+- Canonical new usage defaults to `variant='outline'`.
+- Legacy `variant='default'` remains a compatibility alias for the elevated `shadow` treatment where the public contract still accepts it.
+- `shadow` is the explicit shared replacement for older elevated nav shells and one-off `isWithShadow` style toggles.
 
 Story group: `Navigation`
 
@@ -1020,12 +1031,23 @@ export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultValue?: string
   onValueChange?: (value: string) => void
   orientation?: 'horizontal' | 'vertical'
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   className?: string
   children?: React.ReactNode
+}
+
+export interface TabsTriggerProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>, 'asChild' | 'className'> {
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
+  className?: string
 }
 ```
 
 Story group: `Navigation`
+
+Contract note:
+- Root `variant` cascades to `TabsTrigger`.
+- Individual triggers may override `variant` locally without widening the shared tabs layout contract into a public size family.
 
 ---
 
@@ -1068,24 +1090,55 @@ export interface DropdownMenuProps {
   onAction?: (value: string) => void
   disabled?: boolean
   modal?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   children: React.ReactNode
 }
 
-export interface DropdownMenuContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  align?: 'start' | 'center' | 'end'
-  side?: 'top' | 'right' | 'bottom' | 'left'
-  sideOffset?: number
+export interface DropdownMenuContentProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>, 'asChild' | 'children' | 'className'> {
   className?: string
   children: React.ReactNode
 }
 
-export interface DropdownMenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DropdownMenuItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item>, 'asChild' | 'children'> {
   value?: string
   icon?: React.ReactNode
   shortcut?: React.ReactNode
   inset?: boolean
   destructive?: boolean
-  disabled?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface DropdownMenuCheckboxItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>, 'asChild' | 'children'> {
+  value?: string
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  destructive?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface DropdownMenuRadioItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>, 'asChild' | 'children'> {
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  destructive?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface DropdownMenuSubTriggerProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger>, 'asChild' | 'children'> {
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  inset?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
   className?: string
   children?: React.ReactNode
 }
@@ -1098,6 +1151,10 @@ export interface DropdownMenuItemProps extends React.HTMLAttributes<HTMLDivEleme
 ```
 
 Story group: `Overlays`
+
+Contract note:
+- Root `variant` cascades to interactive menu rows and submenu triggers.
+- Explicit item-level `variant` wins locally, so apps can keep mixed elevation inside one menu without widening the shared contract into separate tone families.
 
 ---
 
@@ -1185,6 +1242,7 @@ Story group: `Data Display`
 ```ts
 export interface NavigationMenuProps
   extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>, 'children' | 'className'> {
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   className?: string
   children: React.ReactNode
 }
@@ -1203,6 +1261,7 @@ export interface NavigationMenuItemProps
 
 export interface NavigationMenuTriggerProps
   extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>, 'asChild'> {
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
   className?: string
   children?: React.ReactNode
 }
@@ -1216,6 +1275,7 @@ export interface NavigationMenuContentProps
 export interface NavigationMenuLinkProps
   extends Omit<React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link>, 'asChild' | 'className'> {
   asChild?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
   className?: string
   children?: React.ReactNode
 }
@@ -1238,6 +1298,10 @@ export interface NavigationMenuViewportProps
 Story group: `Navigation`
 
 Migration note: the earlier flat `items[]` / `collapsed` / `onNavigate` draft was dropped because route trees, auth gating, and information architecture must remain app-local. Apps should map their local route data into the compound shared parts instead.
+
+Contract note:
+- Root `variant` cascades to `NavigationMenuTrigger` and `NavigationMenuLink`.
+- Explicit trigger/link `variant` overrides stay allowed for mixed rails and hero-nav treatments without widening the shared API back into route-aware presets.
 
 ---
 
@@ -1328,8 +1392,16 @@ export interface MenubarProps
   extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root>, 'children' | 'className'> {
   disabled?: boolean
   onAction?: (value: string) => void
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   className?: string
   children: React.ReactNode
+}
+
+export interface MenubarTriggerProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Trigger>, 'asChild'> {
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
+  className?: string
+  children?: React.ReactNode
 }
 
 export interface MenubarContentProps
@@ -1345,6 +1417,7 @@ export interface MenubarItemProps
   shortcut?: React.ReactNode
   inset?: boolean
   destructive?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
   className?: string
   children?: React.ReactNode
 }
@@ -1355,6 +1428,7 @@ export interface MenubarCheckboxItemProps
   icon?: React.ReactNode
   shortcut?: React.ReactNode
   destructive?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
   className?: string
   children?: React.ReactNode
 }
@@ -1364,6 +1438,17 @@ export interface MenubarRadioItemProps
   icon?: React.ReactNode
   shortcut?: React.ReactNode
   destructive?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
+  className?: string
+  children?: React.ReactNode
+}
+
+export interface MenubarSubTriggerProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubTrigger>, 'asChild' | 'children'> {
+  icon?: React.ReactNode
+  shortcut?: React.ReactNode
+  inset?: boolean
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: inherits root variant
   className?: string
   children?: React.ReactNode
 }
@@ -1381,6 +1466,10 @@ export interface MenubarShortcutProps extends React.HTMLAttributes<HTMLSpanEleme
 Story group: `Navigation`
 
 Migration note: the earlier flat `items[]` draft is replaced by a compound command-bar surface so apps can keep local menu shaping, nested export groups, checkbox preferences, radio choices, and shortcut copy in JSX instead of forcing that variation into one shared record schema.
+
+Contract note:
+- Root `variant` cascades to top-level triggers, standard items, selection items, and submenu triggers.
+- Explicit trigger/item `variant` overrides remain allowed so desktop command bars can mix low-chrome and elevated sections without introducing a second shared menubar family.
 
 ---
 

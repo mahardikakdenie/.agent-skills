@@ -7,6 +7,14 @@ import { Box } from '../Box';
 import { tabsContentVariants, tabsListVariants, tabsRootVariants, tabsTriggerVariants } from './Tabs.variants';
 import type { TabsContentProps, TabsListProps, TabsOrientation, TabsProps, TabsTriggerProps } from './Tabs.types';
 
+interface TabsVariantContextValue {
+  variant: NonNullable<TabsProps['variant']>;
+}
+
+const TabsVariantContext = React.createContext<TabsVariantContextValue>({
+  variant: 'outline',
+});
+
 /**
  * Shared tabs root built on Radix Tabs with a narrow, app-agnostic contract.
  * Radix owns the tab semantics and keyboard behavior while Box owns the
@@ -19,24 +27,27 @@ export const Tabs = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>
       defaultValue,
       onValueChange,
       orientation = 'horizontal',
+      variant = 'outline',
       className,
       children,
       ...props
     },
     ref,
   ) => (
-    <TabsPrimitive.Root
-      ref={ref}
-      value={value}
-      defaultValue={defaultValue}
-      onValueChange={onValueChange}
-      orientation={orientation}
-      asChild
-    >
-      <Box data-slot="tabs" className={cn(tabsRootVariants({ orientation }), className)} {...props}>
-        {children}
-      </Box>
-    </TabsPrimitive.Root>
+    <TabsVariantContext.Provider value={{ variant }}>
+      <TabsPrimitive.Root
+        ref={ref}
+        value={value}
+        defaultValue={defaultValue}
+        onValueChange={onValueChange}
+        orientation={orientation}
+        asChild
+      >
+        <Box data-slot="tabs" className={cn(tabsRootVariants({ orientation }), className)} {...props}>
+          {children}
+        </Box>
+      </TabsPrimitive.Root>
+    </TabsVariantContext.Provider>
   ),
 );
 
@@ -65,18 +76,23 @@ TabsList.displayName = 'TabsList';
 export const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
   TabsTriggerProps
->(({ className, children, ...props }, ref) => (
-  <TabsPrimitive.Trigger ref={ref} asChild {...props}>
-    <Box
-      as="button"
-      type="button"
-      data-slot="tabs-trigger"
-      className={cn(tabsTriggerVariants(), className)}
-    >
-      {children}
-    </Box>
-  </TabsPrimitive.Trigger>
-));
+>(({ className, children, variant, ...props }, ref) => {
+  const { variant: inheritedVariant } = React.use(TabsVariantContext);
+  const resolvedVariant = variant ?? inheritedVariant;
+
+  return (
+    <TabsPrimitive.Trigger ref={ref} asChild {...props}>
+      <Box
+        as="button"
+        type="button"
+        data-slot="tabs-trigger"
+        className={cn(tabsTriggerVariants({ variant: resolvedVariant }), className)}
+      >
+        {children}
+      </Box>
+    </TabsPrimitive.Trigger>
+  );
+});
 
 TabsTrigger.displayName = 'TabsTrigger';
 

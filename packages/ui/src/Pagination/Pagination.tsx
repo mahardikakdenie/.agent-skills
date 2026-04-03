@@ -88,6 +88,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
       pageSize,
       onPageSizeChange,
       pageSizeOptions,
+      variant = 'outline',
       className,
       ...props
     },
@@ -178,7 +179,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                 type="button"
                 aria-label="Go to first page"
                 disabled={!canGoBackward}
-                className={paginationButtonVariants({ size: buttonSize })}
+                className={paginationButtonVariants({ variant, size: buttonSize })}
                 onClick={() => {
                   triggerPageChange(1);
                 }}
@@ -196,7 +197,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                 type="button"
                 aria-label="Go to previous page"
                 disabled={!canGoBackward}
-                className={paginationButtonVariants({ size: buttonSize })}
+                className={paginationButtonVariants({ variant, size: buttonSize })}
                 onClick={() => {
                   triggerPageChange(resolvedCurrentPage - 1);
                 }}
@@ -215,7 +216,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                     <Box
                       as="span"
                       aria-current="page"
-                      className={paginationCurrentPageVariants({ size: buttonSize })}
+                      className={paginationCurrentPageVariants({ variant, size: buttonSize })}
                     >
                       {item}
                     </Box>
@@ -224,7 +225,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                       as="button"
                       type="button"
                       aria-label={`Go to page ${item}`}
-                      className={paginationButtonVariants({ size: buttonSize })}
+                      className={paginationButtonVariants({ variant, size: buttonSize })}
                       onClick={() => {
                         triggerPageChange(item);
                       }}
@@ -253,7 +254,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                 type="button"
                 aria-label="Go to next page"
                 disabled={!canGoForward}
-                className={paginationButtonVariants({ size: buttonSize })}
+                className={paginationButtonVariants({ variant, size: buttonSize })}
                 onClick={() => {
                   triggerPageChange(resolvedCurrentPage + 1);
                 }}
@@ -271,7 +272,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                 type="button"
                 aria-label="Go to last page"
                 disabled={!canGoForward}
-                className={paginationButtonVariants({ size: buttonSize })}
+                className={paginationButtonVariants({ variant, size: buttonSize })}
                 onClick={() => {
                   triggerPageChange(resolvedTotalPages);
                 }}

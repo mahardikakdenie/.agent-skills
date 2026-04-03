@@ -70,6 +70,7 @@ Direct adoption guidance:
 - APIs using `totalItems`, `totalData`, `limit`, or `itemsPerPage` should compute `totalPages` in the parent surface before rendering `Pagination`.
 - Existing rows-per-page selectors map to `pageSize`, `pageSizeOptions`, and `onPageSizeChange`.
 - First, previous, next, and last buttons plus numeric page jumps map directly to the shared control set; active-page emphasis maps to the built-in `aria-current="page"` state.
+- Legacy elevated pager shells or borderless compact pagers should normalize to `variant="shadow"` or `variant="ghost"`; canonical new usage defaults to `variant="outline"`, while `variant="default"` remains a migration-safe alias for `shadow`.
 
 Keep local:
 
@@ -404,6 +405,7 @@ Direct adoption guidance:
 - Existing controlled `value` plus `onChange` or `onValueChange` flows normalize to `value` and `onValueChange`; simple local-state tabsets can normalize to `defaultValue`.
 - Vertical settings rails map to `orientation="vertical"`; wider horizontal trigger sets can rely on the shared overflow behavior instead of adding app-local scroll wrappers directly on the tablist.
 - Existing panel bodies should stay consumer-owned and move inside `TabsContent` rather than being flattened into new shared props.
+- Older elevated pill rails or low-chrome tab treatments should normalize to root `variant="shadow"` or `variant="ghost"`; individual `TabsTrigger` instances can still override `variant` locally, and legacy `variant="default"` remains a migration-safe alias for `shadow`.
 
 Keep local:
 
@@ -452,6 +454,7 @@ Direct adoption guidance:
 - Existing grouped sections, non-interactive headings, and divider rows map to `DropdownMenuGroup`, `DropdownMenuLabel`, and `DropdownMenuSeparator`.
 - Existing toggle and view-mode menu rows map to `DropdownMenuCheckboxItem`, `DropdownMenuRadioGroup`, and `DropdownMenuRadioItem` instead of custom icon + ARIA wiring.
 - Existing nested export or more-actions groups map to `DropdownMenuSub`, `DropdownMenuSubTrigger`, and `DropdownMenuSubContent`.
+- Legacy elevated action rows or transparent toolbar menus should normalize to root `variant="shadow"` or `variant="ghost"`; individual rows and submenu triggers can still override `variant` locally, and legacy `variant="default"` remains a migration-safe alias for `shadow`.
 
 Keep local:
 
@@ -468,6 +471,7 @@ Direct adoption guidance:
 - Existing shortcut labels map to `MenubarShortcut`; grouped headings and separators map to `MenubarLabel` and `MenubarSeparator`.
 - Existing toggleable view preferences map to `MenubarCheckboxItem`, `MenubarRadioGroup`, and `MenubarRadioItem`, while nested export or share branches map to `MenubarSub`, `MenubarSubTrigger`, and `MenubarSubContent`.
 - Existing click handlers that dispatch a simple action string can normalize to root-level `onAction` plus per-item `value`.
+- Older raised command bars or transparent trigger rows should normalize to root `variant="shadow"` or `variant="ghost"`; triggers, items, and submenu triggers can still override `variant` locally, and legacy `variant="default"` remains a migration-safe alias for `shadow`.
 
 Keep local:
 
@@ -484,6 +488,7 @@ Direct adoption guidance:
 - Existing current-route styling should normalize to `NavigationMenuLink active`, while framework-specific routing still composes locally through `asChild`.
 - Existing richer mega-menu panels should map to `NavigationMenuContent` plus `NavigationMenuViewport`, with all inner destinations still rendered through `NavigationMenuLink`.
 - Existing active-trigger affordances map to `NavigationMenuIndicator` instead of app-local underline or arrow wrappers.
+- Older raised nav pills or low-chrome marketing rails should normalize to root `variant="shadow"` or `variant="ghost"`; triggers and links can still override `variant` locally, and legacy `variant="default"` remains a migration-safe alias for `shadow`.
 
 Keep local:
 

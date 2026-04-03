@@ -41,11 +41,13 @@ interface MenubarContextValue {
   disabled: boolean;
   onAction?: (value: string) => void;
   registerDisabledMenu: (value: string | undefined, disabled: boolean) => void;
+  variant: NonNullable<MenubarProps['variant']>;
 }
 
 const MenubarContext = React.createContext<MenubarContextValue>({
   disabled: false,
   registerDisabledMenu: () => undefined,
+  variant: 'outline',
 });
 
 const MenubarMenuValueContext = React.createContext<string | undefined>(undefined);
@@ -123,7 +125,20 @@ function createActionHandler(
 }
 
 export const Menubar = React.forwardRef<React.ElementRef<typeof MenubarPrimitive.Root>, MenubarProps>(
-  ({ className, disabled = false, onAction, value, defaultValue = '', onValueChange, children, ...props }, ref) => {
+  (
+    {
+      className,
+      disabled = false,
+      onAction,
+      variant = 'outline',
+      value,
+      defaultValue = '',
+      onValueChange,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const isControlled = value !== undefined;
     const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
     const currentValue = isControlled ? value : uncontrolledValue;
@@ -158,7 +173,7 @@ export const Menubar = React.forwardRef<React.ElementRef<typeof MenubarPrimitive
     );
 
     return (
-      <MenubarContext.Provider value={{ disabled, onAction, registerDisabledMenu }}>
+      <MenubarContext.Provider value={{ disabled, onAction, registerDisabledMenu, variant }}>
         <MenubarPrimitive.Root ref={ref} asChild value={currentValue} onValueChange={handleValueChange} {...props}>
           <Box data-slot="menubar" className={cn(menubarRootVariants(), className)}>
             {children}
@@ -216,6 +231,7 @@ export const MenubarTrigger = React.forwardRef<
     {
       className,
       disabled,
+      variant,
       children,
       onPointerMove,
       onPointerDown,
@@ -229,6 +245,7 @@ export const MenubarTrigger = React.forwardRef<
     const menuContext = useMenubarContext();
     const menuValue = useMenubarMenuValue();
     const isDisabled = disabled ?? menuContext.disabled;
+    const resolvedVariant = variant ?? menuContext.variant;
 
     React.useEffect(() => {
       menuContext.registerDisabledMenu(menuValue, isDisabled);
@@ -254,7 +271,7 @@ export const MenubarTrigger = React.forwardRef<
           as="button"
           type="button"
           data-slot="menubar-trigger"
-          className={cn(menubarTriggerVariants(), className)}
+          className={cn(menubarTriggerVariants({ variant: resolvedVariant }), className)}
         >
           {children}
         </Box>
@@ -326,8 +343,23 @@ export const MenubarSeparator = React.forwardRef<
 MenubarSeparator.displayName = 'MenubarSeparator';
 
 export const MenubarItem = React.forwardRef<React.ElementRef<typeof MenubarPrimitive.Item>, MenubarItemProps>(
-  ({ value, icon, shortcut, inset = false, destructive = false, className, children, onSelect, ...props }, ref) => {
+  (
+    {
+      value,
+      icon,
+      shortcut,
+      inset = false,
+      destructive = false,
+      variant,
+      className,
+      children,
+      onSelect,
+      ...props
+    },
+    ref,
+  ) => {
     const menuContext = useMenubarContext();
+    const resolvedVariant = variant ?? menuContext.variant;
 
     return (
       <MenubarPrimitive.Item
@@ -336,7 +368,10 @@ export const MenubarItem = React.forwardRef<React.ElementRef<typeof MenubarPrimi
         onSelect={createActionHandler(value, menuContext.onAction, onSelect)}
         {...props}
       >
-        <Box data-slot="menubar-item" className={cn(menubarItemVariants({ inset, destructive }), className)}>
+        <Box
+          data-slot="menubar-item"
+          className={cn(menubarItemVariants({ variant: resolvedVariant, inset, destructive }), className)}
+        >
           <MenubarItemLayout icon={icon} shortcut={shortcut}>
             {children}
           </MenubarItemLayout>
@@ -351,8 +386,9 @@ MenubarItem.displayName = 'MenubarItem';
 export const MenubarCheckboxItem = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.CheckboxItem>,
   MenubarCheckboxItemProps
->(({ value, icon, shortcut, destructive = false, className, children, onSelect, ...props }, ref) => {
+>(({ value, icon, shortcut, destructive = false, variant, className, children, onSelect, ...props }, ref) => {
   const menuContext = useMenubarContext();
+  const resolvedVariant = variant ?? menuContext.variant;
 
   return (
     <MenubarPrimitive.CheckboxItem
@@ -360,11 +396,11 @@ export const MenubarCheckboxItem = React.forwardRef<
       asChild
       onSelect={createActionHandler(value, menuContext.onAction, onSelect)}
       {...props}
-    >
-      <Box
-        data-slot="menubar-checkbox-item"
-        className={cn(menubarSelectionItemVariants({ destructive }), className)}
       >
+        <Box
+          data-slot="menubar-checkbox-item"
+          className={cn(menubarSelectionItemVariants({ variant: resolvedVariant, destructive }), className)}
+        >
         <MenubarPrimitive.ItemIndicator asChild>
           <Box as="span" data-slot="menubar-checkbox-indicator" className={menubarIndicatorVariants()}>
             <Check aria-hidden="true" className="h-4 w-4" />
@@ -383,8 +419,9 @@ MenubarCheckboxItem.displayName = 'MenubarCheckboxItem';
 export const MenubarRadioItem = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.RadioItem>,
   MenubarRadioItemProps
->(({ value, icon, shortcut, destructive = false, className, children, onSelect, ...props }, ref) => {
+>(({ value, icon, shortcut, destructive = false, variant, className, children, onSelect, ...props }, ref) => {
   const menuContext = useMenubarContext();
+  const resolvedVariant = variant ?? menuContext.variant;
 
   return (
     <MenubarPrimitive.RadioItem
@@ -394,7 +431,10 @@ export const MenubarRadioItem = React.forwardRef<
       onSelect={createActionHandler(value, menuContext.onAction, onSelect)}
       {...props}
     >
-      <Box data-slot="menubar-radio-item" className={cn(menubarSelectionItemVariants({ destructive }), className)}>
+      <Box
+        data-slot="menubar-radio-item"
+        className={cn(menubarSelectionItemVariants({ variant: resolvedVariant, destructive }), className)}
+      >
         <MenubarPrimitive.ItemIndicator asChild>
           <Box as="span" data-slot="menubar-radio-indicator" className={menubarIndicatorVariants()}>
             <Circle aria-hidden="true" className="h-2.5 w-2.5 fill-current" />
@@ -419,6 +459,7 @@ export const MenubarSubTrigger = React.forwardRef<
       icon,
       shortcut,
       inset = false,
+      variant,
       className,
       children,
       disabled,
@@ -432,6 +473,8 @@ export const MenubarSubTrigger = React.forwardRef<
     ref,
   ) => {
     const isDisabled = Boolean(disabled);
+    const { variant: inheritedVariant } = useMenubarContext();
+    const resolvedVariant = variant ?? inheritedVariant;
 
     return (
       <MenubarPrimitive.SubTrigger
@@ -445,7 +488,10 @@ export const MenubarSubTrigger = React.forwardRef<
         onKeyDown={createDisabledGuard(isDisabled, onKeyDown)}
         {...props}
       >
-        <Box data-slot="menubar-sub-trigger" className={cn(menubarItemVariants({ inset }), className)}>
+        <Box
+          data-slot="menubar-sub-trigger"
+          className={cn(menubarItemVariants({ variant: resolvedVariant, inset }), className)}
+        >
           <MenubarItemLayout icon={icon} shortcut={shortcut} chevron>
             {children}
           </MenubarItemLayout>

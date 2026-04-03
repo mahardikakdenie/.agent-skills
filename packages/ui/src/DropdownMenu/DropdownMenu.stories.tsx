@@ -46,7 +46,9 @@ function IconTrigger({ disabled = false }: { disabled?: boolean }) {
   );
 }
 
-function BasicMenu(args: Pick<DropdownMenuProps, 'defaultOpen' | 'disabled' | 'onOpen' | 'onClose' | 'onAction'>) {
+function BasicMenu(
+  args: Pick<DropdownMenuProps, 'defaultOpen' | 'disabled' | 'onOpen' | 'onClose' | 'onAction' | 'variant'>,
+) {
   return (
     <StoryFrame>
       <DropdownMenu
@@ -55,6 +57,7 @@ function BasicMenu(args: Pick<DropdownMenuProps, 'defaultOpen' | 'disabled' | 'o
         onOpen={args.onOpen}
         onClose={args.onClose}
         onAction={args.onAction}
+        variant={args.variant}
       >
         <ActionTrigger disabled={args.disabled} />
         <DropdownMenuContent align="end">
@@ -142,7 +145,8 @@ function ControlledMenu({
   onOpen,
   onClose,
   onAction,
-}: Pick<DropdownMenuProps, 'onOpen' | 'onClose' | 'onAction'>) {
+  variant,
+}: Pick<DropdownMenuProps, 'onOpen' | 'onClose' | 'onAction' | 'variant'>) {
   const [open, setOpen] = React.useState(true);
 
   return (
@@ -165,6 +169,7 @@ function ControlledMenu({
             onClose?.();
           }}
           onAction={onAction}
+          variant={variant}
         >
           <IconTrigger />
           <DropdownMenuContent align="end">
@@ -185,6 +190,7 @@ const meta = {
     defaultOpen: false,
     disabled: false,
     modal: true,
+    variant: 'outline',
     onOpen: fn(),
     onClose: fn(),
     onAction: fn(),
@@ -199,6 +205,10 @@ const meta = {
     },
     modal: {
       control: 'boolean',
+    },
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow', 'ghost', 'default'],
     },
     open: {
       control: false,
@@ -232,6 +242,7 @@ const meta = {
       onOpen={args.onOpen}
       onClose={args.onClose}
       onAction={args.onAction}
+      variant={args.variant}
     />
   ),
 } satisfies Meta<typeof DropdownMenu>;
@@ -291,12 +302,30 @@ export const ControlledOpen: Story = {
     onAction: fn(),
   },
   render: (args) => (
-    <ControlledMenu onOpen={args.onOpen} onClose={args.onClose} onAction={args.onAction} />
+    <ControlledMenu
+      onOpen={args.onOpen}
+      onClose={args.onClose}
+      onAction={args.onAction}
+      variant={args.variant}
+    />
   ),
   parameters: {
     docs: {
       description: {
         story: 'Demonstrates the controlled pattern where menu visibility is driven by parent state.',
+      },
+    },
+  },
+};
+
+export const ShadowVariant: Story = {
+  args: {
+    variant: 'shadow',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Applies the explicit elevated navigation-item treatment to the composed menu rows.',
       },
     },
   },

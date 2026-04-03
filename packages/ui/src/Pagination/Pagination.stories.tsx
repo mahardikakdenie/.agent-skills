@@ -75,6 +75,7 @@ const meta = {
   args: {
     currentPage: 4,
     totalPages: 12,
+    variant: 'outline',
     onPageChange: fn(),
     pageSize: 20,
     onPageSizeChange: fn(),
@@ -86,6 +87,10 @@ const meta = {
     },
     totalPages: {
       control: { type: 'number', min: 1, step: 1 },
+    },
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow', 'ghost', 'default'],
     },
     pageSize: {
       control: { type: 'number', min: 1, step: 1 },
@@ -180,3 +185,8 @@ export const DisabledState: Story = {
   },
 };
 
+export const ShadowVariant: Story = {
+  args: {
+    variant: 'shadow',
+  },
+};

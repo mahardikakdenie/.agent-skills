@@ -57,6 +57,7 @@ This component intentionally ships as a flat compound export family instead of a
 | `onAction` | `(value: string) => void` | `undefined` | No | Shared action callback invoked by composed items that provide a `value`. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger through shared root context. |
 | `modal` | `boolean` | `true` | No | Radix modal behavior flag for focus and pointer handling. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared navigation-surface treatment applied to menu items and submenu triggers. Legacy `default` remains a compatibility alias for `shadow`. |
 | `children` | `React.ReactNode` | - | Yes | Composed trigger, content, and item structure. |
 
 ### Content
@@ -78,6 +79,7 @@ This component intentionally ships as a flat compound export family instead of a
 | `shortcut` | `React.ReactNode` | `undefined` | No | Trailing shortcut or helper copy rendered on the right. |
 | `inset` | `boolean` | `false` | No | Adds left padding for nested or iconless alignment cases. |
 | `destructive` | `boolean` | `false` | No | Applies destructive emphasis for irreversible actions. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | inherited from root | No | Optional per-item override. Explicit item-level selection wins over the root `variant`. |
 | `disabled` | `boolean` | `false` | No | Prevents selection and applies disabled styling. |
 | `className` | `string` | `undefined` | No | Consumer override merged onto the item shell. |
 | `children` | `React.ReactNode` | - | Yes | Visible item label and any custom inline content. |
@@ -94,11 +96,13 @@ This component intentionally ships as a flat compound export family instead of a
 
 ## Variants
 
-`DropdownMenu` intentionally keeps visual variants internal. Shared menu behavior depends on a single canonical surface rather than a growing `variant`, `tone`, or density matrix.
+`DropdownMenu` now normalizes item surfaces around one shared navigation vocabulary. The root `variant` cascades to items and submenu triggers, while each interactive row can still override it explicitly when needed.
 
 | Shared treatment | Description | When to use |
 | --- | --- | --- |
-| Default menu item | Neutral action row with hover and keyboard-highlight styling | General action menus and row menus. |
+| `outline` | Bordered menu row with no shadow in the resting state | Default menu treatment and the fallback when `variant` is omitted. |
+| `shadow` | Bordered menu row with `shadow-sm` on the interactive item itself | Use when the menu rows need stronger elevation. |
+| `ghost` | Borderless menu row with transparent resting chrome | Low-chrome action clusters inside already elevated overlays. |
 | Destructive item | Destructive text and highlighted state | Delete, archive, revoke, or similar irreversible actions. |
 | Checkbox / radio item | Left indicator slot reserved for selection state | Preference toggles and mutually exclusive view choices. |
 | Submenu trigger | Right chevron affordance with nested content | Secondary action groups or mode categories. |

@@ -62,6 +62,7 @@ The shared public API is intentionally compound: `NavigationMenu`, `NavigationMe
 | `delayDuration` | `number` | `200` | No | Trigger-open pointer delay forwarded to Radix. |
 | `skipDelayDuration` | `number` | `300` | No | Follow-up pointer delay window forwarded to Radix. |
 | `dir` | `'ltr' \| 'rtl'` | inherited | No | Text direction forwarded to Radix. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared navigation-surface treatment applied to `NavigationMenuTrigger` and `NavigationMenuLink`. Legacy `default` remains a compatibility alias for `shadow`. |
 | `className` | `string` | `undefined` | No | Consumer override merged onto the root wrapper. |
 | `children` | `React.ReactNode` | - | Yes | Composed navigation structure. |
 
@@ -71,9 +72,9 @@ The shared public API is intentionally compound: `NavigationMenu`, `NavigationMe
 | --- | --- | --- |
 | `NavigationMenuList` | Shared wrapper for top-level items | `className` |
 | `NavigationMenuItem` | One top-level navigation item | `value`, `className` |
-| `NavigationMenuTrigger` | Opens a content panel for an item | inherits Radix trigger props |
+| `NavigationMenuTrigger` | Opens a content panel for an item | inherits Radix trigger props plus optional `variant` override |
 | `NavigationMenuContent` | Shared content panel surface | `forceMount`, `onPointerEnter`, `onPointerLeave` |
-| `NavigationMenuLink` | Styled navigation link with optional `asChild` | `active`, `href`, `asChild` |
+| `NavigationMenuLink` | Styled navigation link with optional `asChild` | `active`, `href`, `asChild`, `variant` |
 | `NavigationMenuIndicator` | Active item indicator | `forceMount` |
 | `NavigationMenuViewport` | Shared viewport surface for animated content sizing | `forceMount` |
 
@@ -81,12 +82,13 @@ The shared public API is intentionally compound: `NavigationMenu`, `NavigationMe
 
 ## Variants
 
-`NavigationMenu` keeps visual branching intentionally narrow. The shared contract is one navigation system with orientation-aware layout rather than multiple variant families.
+`NavigationMenu` keeps its layout contract narrow, but its owned interactive surfaces now normalize around one shared variant vocabulary. The root `variant` cascades to triggers and links, while explicit trigger/link `variant` props still win locally.
 
 | Shared treatment | Description | When to use |
 | --- | --- | --- |
-| Trigger | Top-level disclosure control with chevron affordance | Items that reveal richer content |
-| Direct link | Top-level or inner navigation destination | Items that go straight to a page |
+| `outline` trigger/link | Bordered interactive surface with no resting shadow | Default navigation treatment and the fallback when `variant` is omitted |
+| `shadow` trigger/link | Bordered interactive surface with `shadow-sm` on the actual trigger or link | Use when the navigation affordance should read as elevated |
+| `ghost` trigger/link | Borderless transparent interactive surface | Use on already elevated or visually dense navigation rails |
 | Active link | Accent-backed link state | Current route styling supplied by the app through `active` |
 | Content panel | Tokenized popover-like card | Mega-menu, grouped destinations, or richer navigation copy |
 | Viewport | Animated content viewport | Menus that rely on Radix advanced viewport sizing |

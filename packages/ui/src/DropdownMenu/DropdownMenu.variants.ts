@@ -19,9 +19,19 @@ export const dropdownMenuLabelVariants = cva('px-2 py-1.5 text-xs font-semibold 
 export const dropdownMenuSeparatorVariants = cva('-mx-1 my-1 h-px bg-border');
 
 export const dropdownMenuItemVariants = cva(
-  'relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-2 py-2 text-sm outline-none transition-colors motion-reduce:transition-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
+  'relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-2 py-2 text-sm outline-none transition-colors motion-reduce:transition-none data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
   {
     variants: {
+      variant: {
+        outline:
+          'border border-border bg-background text-foreground shadow-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-foreground shadow-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+      },
       inset: {
         true: 'pl-8',
         false: '',
@@ -32,6 +42,7 @@ export const dropdownMenuItemVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'outline',
       inset: false,
       destructive: false,
     },
@@ -39,15 +50,26 @@ export const dropdownMenuItemVariants = cva(
 );
 
 export const dropdownMenuSelectionItemVariants = cva(
-  'relative flex cursor-pointer select-none items-center gap-2 rounded-lg py-2 pl-8 pr-2 text-sm outline-none transition-colors motion-reduce:transition-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
+  'relative flex cursor-pointer select-none items-center gap-2 rounded-lg py-2 pl-8 pr-2 text-sm outline-none transition-colors motion-reduce:transition-none data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
   {
     variants: {
+      variant: {
+        outline:
+          'border border-border bg-background text-foreground shadow-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-foreground shadow-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+      },
       destructive: {
         true: 'text-destructive data-[highlighted]:bg-destructive/10 data-[highlighted]:text-destructive',
         false: '',
       },
     },
     defaultVariants: {
+      variant: 'outline',
       destructive: false,
     },
   }

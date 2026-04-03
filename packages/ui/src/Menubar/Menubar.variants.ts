@@ -6,24 +6,37 @@ const directDenseSurfaceFocus = getDenseSurfaceFocusRecipe('direct');
 
 export const menubarRootVariants = cva(
   [
-    'inline-flex w-max items-center gap-1 rounded-2xl border border-border/70 bg-background/90 p-1.5 text-foreground shadow-sm ring-1 ring-border/30',
-    'supports-[backdrop-filter]:bg-background/80 supports-[backdrop-filter]:backdrop-blur-xl',
+    'inline-flex w-max items-center gap-2 text-foreground',
   ].join(' '),
 );
 
 export const menubarTriggerVariants = cva(
   [
-    'inline-flex h-9 min-w-[4.25rem] select-none items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[0.8125rem] font-medium text-foreground/80 outline-none',
+    'inline-flex h-9 min-w-[4.25rem] select-none items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[0.8125rem] font-medium outline-none',
     'transition-all motion-reduce:transition-none',
-    'hover:bg-muted/80 hover:text-foreground',
     directDenseSurfaceFocus.base,
-    'data-[state=open]:bg-background data-[state=open]:text-foreground data-[state=open]:shadow-sm',
-    'data-[highlighted]:bg-background data-[highlighted]:text-foreground data-[highlighted]:shadow-sm',
     'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
-    '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-foreground/80 [&[data-disabled]:hover]:shadow-none',
-    '[&[data-disabled][data-highlighted]]:bg-transparent [&[data-disabled][data-highlighted]]:text-foreground/80 [&[data-disabled][data-highlighted]]:shadow-none',
-    '[&[data-disabled][data-state=open]]:bg-transparent [&[data-disabled][data-state=open]]:text-foreground/80',
+    '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-muted-foreground [&[data-disabled]:hover]:shadow-none',
+    '[&[data-disabled][data-highlighted]]:bg-transparent [&[data-disabled][data-highlighted]]:text-muted-foreground [&[data-disabled][data-highlighted]]:shadow-none',
+    '[&[data-disabled][data-state=open]]:bg-transparent [&[data-disabled][data-state=open]]:text-muted-foreground',
   ].join(' '),
+  {
+    variants: {
+      variant: {
+        outline:
+          'border border-border bg-background text-foreground shadow-none hover:bg-muted/80 hover:text-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground data-[highlighted]:bg-accent/60 data-[highlighted]:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm hover:bg-muted/80 hover:text-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground data-[highlighted]:bg-accent/60 data-[highlighted]:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-muted-foreground shadow-none hover:bg-muted/80 hover:text-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground data-[highlighted]:bg-accent/60 data-[highlighted]:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm hover:bg-muted/80 hover:text-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground data-[highlighted]:bg-accent/60 data-[highlighted]:text-accent-foreground',
+      },
+    },
+    defaultVariants: {
+      variant: 'outline',
+    },
+  },
 );
 
 export const menubarContentVariants = cva(
@@ -55,8 +68,6 @@ export const menubarItemVariants = cva(
   [
     'relative flex min-w-0 cursor-pointer select-none items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium outline-none',
     'transition-colors motion-reduce:transition-none',
-    'data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground',
-    'data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
     'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
     '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-inherit',
     '[&[data-disabled][data-highlighted]]:bg-transparent [&[data-disabled][data-highlighted]]:text-inherit',
@@ -64,6 +75,16 @@ export const menubarItemVariants = cva(
   ].join(' '),
   {
     variants: {
+      variant: {
+        outline:
+          'border border-transparent bg-transparent text-foreground shadow-none data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-foreground shadow-none data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+      },
       inset: {
         true: 'pl-8',
         false: '',
@@ -74,6 +95,7 @@ export const menubarItemVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'outline',
       inset: false,
       destructive: false,
     },
@@ -84,8 +106,6 @@ export const menubarSelectionItemVariants = cva(
   [
     'relative flex min-w-0 cursor-pointer select-none items-center gap-2.5 rounded-xl py-2 pl-9 pr-2.5 text-sm font-medium outline-none',
     'transition-colors motion-reduce:transition-none',
-    'data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground',
-    'data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
     'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
     '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-inherit',
     '[&[data-disabled][data-highlighted]]:bg-transparent [&[data-disabled][data-highlighted]]:text-inherit',
@@ -93,12 +113,23 @@ export const menubarSelectionItemVariants = cva(
   ].join(' '),
   {
     variants: {
+      variant: {
+        outline:
+          'border border-transparent bg-transparent text-foreground shadow-none data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-foreground shadow-none data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm data-[highlighted]:bg-accent/80 data-[highlighted]:text-accent-foreground data-[state=open]:bg-accent/80 data-[state=open]:text-accent-foreground',
+      },
       destructive: {
         true: 'text-destructive data-[highlighted]:bg-destructive/10 data-[highlighted]:text-destructive data-[state=open]:bg-destructive/10 data-[state=open]:text-destructive [&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-destructive [&[data-disabled][data-highlighted]]:bg-transparent [&[data-disabled][data-highlighted]]:text-destructive [&[data-disabled][data-state=open]]:bg-transparent [&[data-disabled][data-state=open]]:text-destructive',
         false: '',
       },
     },
     defaultVariants: {
+      variant: 'outline',
       destructive: false,
     },
   },
