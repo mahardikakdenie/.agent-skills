@@ -1091,7 +1091,7 @@ export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   orientation?: 'horizontal' | 'vertical';
-  variant?: 'outline' | 'ghost'; // default: 'outline'
+  variant?: 'outline' | 'ghost' | 'underline'; // default: 'outline'
   className?: string;
   children?: React.ReactNode;
 }
@@ -1100,7 +1100,7 @@ export interface TabsTriggerProps extends Omit<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>,
   'asChild' | 'className'
 > {
-  variant?: 'outline' | 'ghost'; // default: inherits root variant
+  variant?: 'outline' | 'ghost' | 'underline'; // default: inherits root variant
   className?: string;
 }
 ```
@@ -1109,8 +1109,9 @@ Story group: `Navigation`
 
 Contract note:
 
-- Root `variant` cascades to `TabsTrigger`.
+- Root `variant` cascades to both `TabsList` spacing and `TabsTrigger`.
 - Individual triggers may override `variant` locally without widening the shared tabs layout contract into a public size family.
+- Horizontal `TabsList` overflow stays built into the shared shell, including the shared scroll affordance when the trigger row exceeds the available width.
 - `Tabs` intentionally does not expose the elevated `shadow` or legacy `default` alias used by some other navigation surfaces.
 
 ---
