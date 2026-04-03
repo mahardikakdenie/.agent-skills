@@ -27,7 +27,7 @@ type MenubarStoryArgs = Omit<MenubarProps, 'children'>;
 function StorySurface({ children }: { children: React.ReactNode }) {
   return (
     <Box className="flex min-h-[18rem] w-full items-start justify-center bg-muted/20 p-8">
-      <Box className="w-full max-w-3xl rounded-2xl border border-border/70 bg-background p-5 shadow-sm">
+      <Box className="w-full max-w-3xl p-2">
         {children}
       </Box>
     </Box>
@@ -53,7 +53,10 @@ function StatusRow({ label, value }: { label: string; value: string }) {
 }
 
 function FileCommandMenubar(
-  args: Pick<MenubarProps, 'defaultValue' | 'value' | 'onValueChange' | 'disabled' | 'onAction' | 'loop' | 'dir'>,
+  args: Pick<
+    MenubarProps,
+    'defaultValue' | 'value' | 'onValueChange' | 'disabled' | 'onAction' | 'loop' | 'dir' | 'variant'
+  >,
 ) {
   return (
     <Menubar
@@ -64,6 +67,7 @@ function FileCommandMenubar(
       loop={args.loop}
       dir={args.dir}
       onAction={args.onAction}
+      variant={args.variant}
     >
       <MenubarMenu value="file">
         <MenubarTrigger>File</MenubarTrigger>
@@ -121,7 +125,10 @@ function FileCommandMenubar(
 }
 
 function BasicMenubar(
-  args: Pick<MenubarProps, 'defaultValue' | 'value' | 'onValueChange' | 'disabled' | 'onAction' | 'loop' | 'dir'>,
+  args: Pick<
+    MenubarProps,
+    'defaultValue' | 'value' | 'onValueChange' | 'disabled' | 'onAction' | 'loop' | 'dir' | 'variant'
+  >,
 ) {
   return (
     <StorySurface>
@@ -167,7 +174,8 @@ function PreferenceMenubar() {
 function ControlledMenubar({
   onAction,
   onValueChange,
-}: Pick<MenubarProps, 'onAction' | 'onValueChange'>) {
+  variant,
+}: Pick<MenubarProps, 'onAction' | 'onValueChange' | 'variant'>) {
   const [value, setValue] = React.useState('');
   const [activeMenuLabel, setActiveMenuLabel] = React.useState('none');
 
@@ -178,6 +186,7 @@ function ControlledMenubar({
         <FileCommandMenubar
           value={value}
           onAction={onAction}
+          variant={variant}
           onValueChange={(nextValue) => {
             setValue(nextValue);
             if (nextValue) {
@@ -237,6 +246,7 @@ const meta: Meta<MenubarStoryArgs> = {
   args: {
     loop: true,
     disabled: false,
+    variant: 'outline',
     defaultValue: '',
     onValueChange: fn(),
     onAction: fn(),
@@ -247,6 +257,10 @@ const meta: Meta<MenubarStoryArgs> = {
     },
     disabled: {
       control: 'boolean',
+    },
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow', 'ghost', 'default'],
     },
     defaultValue: {
       control: 'select',
@@ -284,6 +298,7 @@ const meta: Meta<MenubarStoryArgs> = {
       loop={args.loop}
       dir={args.dir}
       value={args.value}
+      variant={args.variant}
     />
   ),
 };
@@ -333,9 +348,21 @@ export const ControlledValue: Story = {
     onAction: fn(),
     onValueChange: fn(),
   },
-  render: (args) => <ControlledMenubar onAction={args.onAction} onValueChange={args.onValueChange} />,
+  render: (args) => (
+    <ControlledMenubar
+      onAction={args.onAction}
+      onValueChange={args.onValueChange}
+      variant={args.variant}
+    />
+  ),
 };
 
 export const DisabledMenus: Story = {
   render: () => <DisabledMenusStory />,
+};
+
+export const ShadowVariant: Story = {
+  args: {
+    variant: 'shadow',
+  },
 };

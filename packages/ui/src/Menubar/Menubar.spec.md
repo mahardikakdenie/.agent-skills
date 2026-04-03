@@ -57,6 +57,7 @@ The public API stays compound through `Menubar`, `MenubarMenu`, `MenubarTrigger`
 | `dir` | `'ltr' \| 'rtl'` | inherited | No | Directionality forwarded to the roving-focus group. |
 | `disabled` | `boolean` | `false` | No | Disables all top-level triggers through shared root context. |
 | `onAction` | `(value: string) => void` | `undefined` | No | Shared action callback invoked by item rows that provide a `value`. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared navigation-surface treatment applied to top-level triggers and menu items. Legacy `default` remains a compatibility alias for `shadow`. |
 | `className` | `string` | `undefined` | No | Consumer override merged onto the root shell. |
 | `children` | `React.ReactNode` | - | Yes | Composed menu structure. |
 
@@ -65,17 +66,17 @@ The public API stays compound through `Menubar`, `MenubarMenu`, `MenubarTrigger`
 | Sub-component | Purpose | Key props |
 | --- | --- | --- |
 | `MenubarMenu` | Defines one top-level menu group | `value` |
-| `MenubarTrigger` | Top-level command-bar trigger | `disabled`, `children` |
+| `MenubarTrigger` | Top-level command-bar trigger | `disabled`, `variant`, `children` |
 | `MenubarContent` | Main menu panel | `align`, `alignOffset`, `sideOffset` |
 | `MenubarGroup` | Groups related items within content | `className` |
 | `MenubarLabel` | Non-interactive group label | `inset` |
-| `MenubarItem` | Standard action row | `value`, `icon`, `shortcut`, `inset`, `destructive` |
-| `MenubarCheckboxItem` | Toggle row with checked indicator | `checked`, `onCheckedChange`, `value` |
+| `MenubarItem` | Standard action row | `value`, `icon`, `shortcut`, `inset`, `destructive`, `variant` |
+| `MenubarCheckboxItem` | Toggle row with checked indicator | `checked`, `onCheckedChange`, `value`, `variant` |
 | `MenubarRadioGroup` | State container for radio rows | `value`, `onValueChange` |
-| `MenubarRadioItem` | Radio row with selected indicator | `value`, `shortcut`, `destructive` |
+| `MenubarRadioItem` | Radio row with selected indicator | `value`, `shortcut`, `destructive`, `variant` |
 | `MenubarSeparator` | Visual separator between item groups | none |
 | `MenubarSub` | Nested submenu state wrapper | `open`, `defaultOpen`, `onOpenChange` |
-| `MenubarSubTrigger` | Parent row that opens a submenu | `icon`, `shortcut`, `inset` |
+| `MenubarSubTrigger` | Parent row that opens a submenu | `icon`, `shortcut`, `inset`, `variant` |
 | `MenubarSubContent` | Nested submenu panel | `sideOffset` |
 | `MenubarShortcut` | Trailing shortcut or helper copy | `className`, `children` |
 
@@ -83,13 +84,14 @@ The public API stays compound through `Menubar`, `MenubarMenu`, `MenubarTrigger`
 
 ## Variants
 
-`Menubar` intentionally keeps visual variants internal. Cross-app demand points to one shared desktop command-bar surface rather than multiple `variant`, `tone`, or density branches.
+`Menubar` now uses the shared navigation-surface vocabulary across its interactive slots. The root `variant` cascades to triggers and item rows, and any item-level `variant` override takes precedence.
 
 | Shared treatment | Description | When to use |
 | --- | --- | --- |
 | Default root shell | Compact bordered command bar | General admin or desktop-like command bars |
-| Active trigger | Accent-backed top-level trigger | Currently open top-level menu |
-| Default item | Neutral action row with hover and keyboard highlight styling | Standard command rows |
+| `outline` | Bordered interactive trigger or item with no resting shadow | Default command-bar treatment and the fallback when `variant` is omitted |
+| `shadow` | Bordered interactive trigger or item with `shadow-sm` on the owned interactive node | Use when the command bar needs stronger separation |
+| `ghost` | Borderless, transparent resting trigger or item | Low-chrome command bars on already elevated shells |
 | Destructive item | Destructive emphasis for irreversible actions | Delete, revoke, remove, or reset commands |
 | Checkbox / radio item | Left indicator slot reserved for selection state | View preferences and mode selection |
 | Submenu trigger | Right-chevron affordance with nested content | Secondary command groups |

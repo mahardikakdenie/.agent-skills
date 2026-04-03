@@ -52,6 +52,7 @@ This component does not fetch data, derive page counts from totals, sync routes,
 | `pageSize` | `number` | `undefined` | No | Current rows-per-page value shown in the optional selector. |
 | `onPageSizeChange` | `(size: number) => void` | `undefined` | No | Called when the optional rows-per-page selector changes. |
 | `pageSizeOptions` | `number[]` | `undefined` | No | Available rows-per-page choices for the optional selector. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared navigation-surface treatment applied to the page buttons and current-page token. Legacy `default` remains a compatibility alias for `shadow`. |
 | `className` | `string` | `undefined` | No | Consumer override merged last through `cn()`. |
 | `...props` | `React.HTMLAttributes<HTMLElement>` | - | No | Root `nav` attributes such as `id`, `aria-*`, and `data-*`. |
 
@@ -59,11 +60,13 @@ This component does not fetch data, derive page counts from totals, sync routes,
 
 ## Variants
 
-`Pagination` has no public `variant` or `size` props. Its visual states come from slot styling and page-count-aware compaction.
+`Pagination` keeps size internal, but now exposes the shared navigation-surface `variant` contract so all owned page controls default to `outline` with no resting shadow.
 
 | Variant | Description | When to use |
 | ------- | ----------- | ----------- |
-| Default range | Numeric page buttons plus first/previous/next/last controls | Most paged surfaces with a manageable number of pages. |
+| `outline` | Bordered page controls with no shadow in the resting state | Default pagination treatment and the fallback when `variant` is omitted. |
+| `shadow` | Bordered page controls with `shadow-sm` on the actual buttons and current-page token | Use when the pagination row needs more elevation. |
+| `ghost` | Borderless page controls with transparent resting chrome | Low-chrome pagination on dense panels or cards. |
 | Compact range | Numeric buttons collapse to an ellipsis window around the active page | Large page counts where showing every page button would create visual noise. |
 | With page size selector | Adds a small rows-per-page control before the status text | Tables and list views that expose page-size changes. |
 

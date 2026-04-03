@@ -20,16 +20,22 @@ export const paginationListVariants = cva('flex flex-wrap items-center gap-1');
 
 export const paginationButtonVariants = cva(
   [
-    'inline-flex min-w-9 cursor-pointer touch-manipulation items-center justify-center gap-1 rounded-md border border-input',
-    'bg-background px-3 py-0 text-sm font-medium shadow-sm transition-colors motion-reduce:transition-none',
+    'inline-flex min-w-9 cursor-pointer touch-manipulation items-center justify-center gap-1 rounded-md',
+    'px-3 py-0 text-sm font-medium transition-colors motion-reduce:transition-none',
     directDenseSurfaceFocus.base,
     'disabled:cursor-not-allowed disabled:opacity-50',
   ].join(' '),
   {
     variants: {
-      active: {
-        false: 'text-foreground enabled:hover:bg-accent enabled:hover:text-accent-foreground',
-        true: 'border-primary bg-primary text-primary-foreground shadow-sm',
+      variant: {
+        outline:
+          'border border-border bg-background text-foreground shadow-none enabled:hover:bg-accent enabled:hover:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm enabled:hover:bg-accent enabled:hover:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-foreground shadow-none enabled:hover:bg-accent enabled:hover:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm enabled:hover:bg-accent enabled:hover:text-accent-foreground',
       },
       size: {
         default: 'h-9',
@@ -37,7 +43,7 @@ export const paginationButtonVariants = cva(
       },
     },
     defaultVariants: {
-      active: false,
+      variant: 'outline',
       size: 'default',
     },
   },
@@ -45,17 +51,23 @@ export const paginationButtonVariants = cva(
 
 export const paginationCurrentPageVariants = cva(
   [
-    'inline-flex min-w-9 items-center justify-center rounded-md border border-primary bg-primary px-3',
-    'py-0 text-sm font-medium text-primary-foreground shadow-sm tabular-nums',
+    'inline-flex min-w-9 items-center justify-center rounded-md px-3 py-0 text-sm font-medium tabular-nums',
   ].join(' '),
   {
     variants: {
+      variant: {
+        outline: 'border border-border bg-accent/60 text-accent-foreground shadow-none',
+        shadow: 'border border-border bg-accent/60 text-accent-foreground shadow-sm',
+        ghost: 'border border-transparent bg-accent/60 text-accent-foreground shadow-none',
+        default: 'border border-border bg-accent/60 text-accent-foreground shadow-sm',
+      },
       size: {
         default: 'h-9',
         compact: 'h-8 text-xs',
       },
     },
     defaultVariants: {
+      variant: 'outline',
       size: 'default',
     },
   },

@@ -18,8 +18,7 @@ export const navigationMenuRootVariants = cva('relative text-foreground', {
 
 export const navigationMenuListVariants = cva(
   [
-    'group/list relative z-20 m-0 flex list-none items-center gap-1 rounded-2xl border border-border/70 bg-background/90 p-1.5 text-foreground shadow-sm ring-1 ring-border/30',
-    'supports-[backdrop-filter]:bg-background/80 supports-[backdrop-filter]:backdrop-blur-xl',
+    'group/list relative z-20 m-0 flex list-none items-center gap-2 text-foreground',
   ].join(' '),
   {
     variants: {
@@ -36,24 +35,32 @@ export const navigationMenuListVariants = cva(
 
 export const navigationMenuTriggerVariants = cva(
   [
-    'group inline-flex h-10 min-w-[4.5rem] select-none items-center justify-center gap-1 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium text-foreground/80 outline-none',
+    'group inline-flex h-10 min-w-[4.5rem] select-none items-center justify-center gap-1 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium outline-none',
     'transition-all motion-reduce:transition-none',
-    'hover:bg-muted/80 hover:text-foreground',
     directDenseSurfaceFocus.base,
-    'data-[active]:bg-accent/60 data-[active]:text-accent-foreground',
-    'data-[state=open]:bg-background data-[state=open]:text-foreground data-[state=open]:shadow-sm',
     'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
-    '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-foreground/80 [&[data-disabled]:hover]:shadow-none',
-    '[&[data-disabled][data-state=open]]:bg-transparent',
+    '[&[data-disabled]:hover]:bg-transparent [&[data-disabled]:hover]:text-muted-foreground [&[data-disabled]:hover]:shadow-none',
+    '[&[data-disabled][data-state=open]]:bg-transparent [&[data-disabled][data-state=open]]:text-muted-foreground',
   ].join(' '),
   {
     variants: {
+      variant: {
+        outline:
+          'border border-border bg-background text-foreground shadow-none hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-muted-foreground shadow-none hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground data-[state=open]:bg-accent/60 data-[state=open]:text-accent-foreground',
+      },
       orientation: {
         horizontal: '',
         vertical: 'w-full justify-between',
       },
     },
     defaultVariants: {
+      variant: 'outline',
       orientation: 'horizontal',
     },
   },
@@ -61,20 +68,29 @@ export const navigationMenuTriggerVariants = cva(
 
 export const navigationMenuLinkVariants = cva(
   [
-    'inline-flex h-10 min-w-[4.5rem] select-none items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium text-foreground/80 outline-none',
+    'inline-flex h-10 min-w-[4.5rem] select-none items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium outline-none',
     'transition-all motion-reduce:transition-none',
-    'hover:bg-muted/80 hover:text-foreground',
     directDenseSurfaceFocus.base,
-    'data-[active]:bg-accent/60 data-[active]:text-accent-foreground data-[active]:shadow-sm',
   ].join(' '),
   {
     variants: {
+      variant: {
+        outline:
+          'border border-border bg-background text-foreground shadow-none hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground',
+        shadow:
+          'border border-border bg-background text-foreground shadow-sm hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground',
+        ghost:
+          'border border-transparent bg-transparent text-muted-foreground shadow-none hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground',
+        default:
+          'border border-border bg-background text-foreground shadow-sm hover:bg-muted/80 hover:text-foreground data-[active]:bg-accent/60 data-[active]:text-accent-foreground',
+      },
       orientation: {
         horizontal: '',
         vertical: 'w-full justify-start',
       },
     },
     defaultVariants: {
+      variant: 'outline',
       orientation: 'horizontal',
     },
   },

@@ -31,10 +31,12 @@ import type {
 interface DropdownMenuContextValue {
   disabled: boolean;
   onAction?: (value: string) => void;
+  variant: NonNullable<DropdownMenuProps['variant']>;
 }
 
 const DropdownMenuContext = React.createContext<DropdownMenuContextValue>({
   disabled: false,
+  variant: 'outline',
 });
 
 function useDropdownMenuContext() {
@@ -98,11 +100,13 @@ export function DropdownMenu({
   onAction,
   disabled = false,
   modal = true,
+  variant = 'outline',
   children,
 }: DropdownMenuProps) {
   const contextValue = {
     disabled,
     onAction,
+    variant,
   };
 
   return (
@@ -212,8 +216,10 @@ DropdownMenuSeparator.displayName = 'DropdownMenuSeparator';
 export const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   DropdownMenuItemProps
->(({ value, icon, shortcut, inset = false, destructive = false, className, children, onSelect, ...props }, ref) => {
+>(
+  ({ value, icon, shortcut, inset = false, destructive = false, variant, className, children, onSelect, ...props }, ref) => {
   const menuContext = useDropdownMenuContext();
+  const resolvedVariant = variant ?? menuContext.variant;
 
   return (
     <DropdownMenuPrimitive.Item
@@ -224,7 +230,7 @@ export const DropdownMenuItem = React.forwardRef<
     >
       <Box
         data-slot='dropdown-menu-item'
-        className={cn(dropdownMenuItemVariants({ inset, destructive }), className)}
+        className={cn(dropdownMenuItemVariants({ variant: resolvedVariant, inset, destructive }), className)}
       >
         <DropdownMenuItemLayout icon={icon} shortcut={shortcut}>
           {children}
@@ -239,8 +245,10 @@ DropdownMenuItem.displayName = 'DropdownMenuItem';
 export const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
   DropdownMenuCheckboxItemProps
->(({ value, icon, shortcut, destructive = false, className, children, onSelect, ...props }, ref) => {
+>(
+  ({ value, icon, shortcut, destructive = false, variant, className, children, onSelect, ...props }, ref) => {
   const menuContext = useDropdownMenuContext();
+  const resolvedVariant = variant ?? menuContext.variant;
 
   return (
     <DropdownMenuPrimitive.CheckboxItem
@@ -251,7 +259,7 @@ export const DropdownMenuCheckboxItem = React.forwardRef<
     >
       <Box
         data-slot='dropdown-menu-checkbox-item'
-        className={cn(dropdownMenuSelectionItemVariants({ destructive }), className)}
+        className={cn(dropdownMenuSelectionItemVariants({ variant: resolvedVariant, destructive }), className)}
       >
         <DropdownMenuPrimitive.ItemIndicator asChild>
           <Box as='span' data-slot='dropdown-menu-checkbox-indicator' className={dropdownMenuIndicatorVariants()}>
@@ -271,8 +279,10 @@ DropdownMenuCheckboxItem.displayName = 'DropdownMenuCheckboxItem';
 export const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
   DropdownMenuRadioItemProps
->(({ value, icon, shortcut, destructive = false, className, children, onSelect, ...props }, ref) => {
+>(
+  ({ value, icon, shortcut, destructive = false, variant, className, children, onSelect, ...props }, ref) => {
   const menuContext = useDropdownMenuContext();
+  const resolvedVariant = variant ?? menuContext.variant;
 
   return (
     <DropdownMenuPrimitive.RadioItem
@@ -284,7 +294,7 @@ export const DropdownMenuRadioItem = React.forwardRef<
     >
       <Box
         data-slot='dropdown-menu-radio-item'
-        className={cn(dropdownMenuSelectionItemVariants({ destructive }), className)}
+        className={cn(dropdownMenuSelectionItemVariants({ variant: resolvedVariant, destructive }), className)}
       >
         <DropdownMenuPrimitive.ItemIndicator asChild>
           <Box as='span' data-slot='dropdown-menu-radio-indicator' className={dropdownMenuIndicatorVariants()}>
@@ -304,14 +314,22 @@ DropdownMenuRadioItem.displayName = 'DropdownMenuRadioItem';
 export const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
   DropdownMenuSubTriggerProps
->(({ icon, shortcut, inset = false, className, children, ...props }, ref) => (
-  <DropdownMenuPrimitive.SubTrigger ref={ref} asChild {...props}>
-    <Box data-slot='dropdown-menu-sub-trigger' className={cn(dropdownMenuItemVariants({ inset }), className)}>
-      <DropdownMenuItemLayout icon={icon} shortcut={shortcut} chevron>
-        {children}
-      </DropdownMenuItemLayout>
-    </Box>
-  </DropdownMenuPrimitive.SubTrigger>
-));
+>(({ icon, shortcut, inset = false, variant, className, children, ...props }, ref) => {
+  const { variant: inheritedVariant } = useDropdownMenuContext();
+  const resolvedVariant = variant ?? inheritedVariant;
+
+  return (
+    <DropdownMenuPrimitive.SubTrigger ref={ref} asChild {...props}>
+      <Box
+        data-slot='dropdown-menu-sub-trigger'
+        className={cn(dropdownMenuItemVariants({ variant: resolvedVariant, inset }), className)}
+      >
+        <DropdownMenuItemLayout icon={icon} shortcut={shortcut} chevron>
+          {children}
+        </DropdownMenuItemLayout>
+      </Box>
+    </DropdownMenuPrimitive.SubTrigger>
+  );
+});
 
 DropdownMenuSubTrigger.displayName = 'DropdownMenuSubTrigger';

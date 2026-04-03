@@ -55,6 +55,7 @@ The shared contract is intentionally narrow. The root component only standardize
 | `defaultValue` | `string` | `undefined` | No | Uncontrolled initial tab value. |
 | `onValueChange` | `(value: string) => void` | `undefined` | No | Called when the active tab changes. |
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | No | Changes keyboard navigation and list/panel layout direction. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared navigation-surface treatment applied to `TabsTrigger`. Legacy `default` remains a compatibility alias for `shadow`. |
 | `className` | `string` | `undefined` | No | Consumer override merged last through `cn()`. |
 | `children` | `React.ReactNode` | `undefined` | No | `TabsList`, `TabsTrigger`, and `TabsContent` composition. |
 | `...props` | `React.HTMLAttributes<HTMLDivElement>` | - | No | Standard DOM props such as `id`, `data-*`, `aria-*`, and `dir`. |
@@ -64,19 +65,21 @@ The shared contract is intentionally narrow. The root component only standardize
 | Component | Props type | Purpose |
 | --- | --- | --- |
 | `TabsList` | `TabsPrimitive.List` props | Shared tablist shell; consumers should provide `aria-label` or `aria-labelledby` when the nearby heading is not sufficient. |
-| `TabsTrigger` | `TabsPrimitive.Trigger` props | Interactive tab button; requires `value` and supports `disabled`. |
+| `TabsTrigger` | `TabsPrimitive.Trigger` props | Interactive tab button; requires `value`, supports `disabled`, and accepts an optional `variant` override. |
 | `TabsContent` | `TabsPrimitive.Content` props | Tab panel wrapper; requires a matching `value`. |
 
 ---
 
 ## Variants
 
-`Tabs` deliberately ships without public `variant` or `size` props. Cross-app baselines showed both underline and pill-style tabs, but the normalized contract does not justify encoding that drift as shared API yet.
+`Tabs` now exposes the shared navigation-surface `variant` contract while still keeping size internal. The root `variant` cascades to triggers, and an individual `TabsTrigger` can override it explicitly when needed.
 
 | Shared treatment | Description | When to use |
 | --- | --- | --- |
 | Default list shell | Tokenized list container with subtle surface separation | General navigation tabs and settings panels |
-| Active trigger | Raised active trigger surface with foreground emphasis | Shared baseline selected state |
+| `outline` trigger | Bordered trigger with no resting shadow | Default tab treatment and the fallback when `variant` is omitted |
+| `shadow` trigger | Bordered trigger with `shadow-sm` on the actual tab button | Use when the tab rail should feel more elevated |
+| `ghost` trigger | Borderless transparent trigger | Low-chrome tab rails on already elevated surfaces |
 | Vertical orientation | Stacked list with full-width triggers next to content | Side-rail settings and detail pages |
 | Scrollable horizontal list | Overflow-enabled trigger row without wrapping | Longer tab labels or many sibling tabs |
 | App-local visual tuning | `className` on list/trigger/content | Narrow parity deltas that do not justify a new shared prop |

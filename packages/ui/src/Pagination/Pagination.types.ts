@@ -1,5 +1,7 @@
 import type * as React from 'react';
 
+import type { NavigationSurfaceVariantProp } from '../utils/navigation-surface-variants';
+
 export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
   currentPage: number;
   totalPages: number;
@@ -7,5 +9,6 @@ export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
   pageSize?: number;
   onPageSizeChange?: (size: number) => void;
   pageSizeOptions?: number[];
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
 }

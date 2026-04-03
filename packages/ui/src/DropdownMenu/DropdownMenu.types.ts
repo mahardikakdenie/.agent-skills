@@ -1,6 +1,8 @@
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import type * as React from 'react';
 
+import type { NavigationSurfaceVariantProp } from '../utils/navigation-surface-variants';
+
 export interface DropdownMenuProps {
   open?: boolean;
   defaultOpen?: boolean;
@@ -9,6 +11,7 @@ export interface DropdownMenuProps {
   onAction?: (value: string) => void;
   disabled?: boolean;
   modal?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   children: React.ReactNode;
 }
 
@@ -42,6 +45,7 @@ export interface DropdownMenuItemProps
   shortcut?: React.ReactNode;
   inset?: boolean;
   destructive?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }
@@ -52,6 +56,7 @@ export interface DropdownMenuCheckboxItemProps
   icon?: React.ReactNode;
   shortcut?: React.ReactNode;
   destructive?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }
@@ -61,6 +66,7 @@ export interface DropdownMenuRadioItemProps
   icon?: React.ReactNode;
   shortcut?: React.ReactNode;
   destructive?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }
@@ -70,6 +76,7 @@ export interface DropdownMenuSubTriggerProps
   icon?: React.ReactNode;
   shortcut?: React.ReactNode;
   inset?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }

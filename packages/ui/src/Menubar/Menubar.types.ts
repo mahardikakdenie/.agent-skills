@@ -1,6 +1,8 @@
 import * as MenubarPrimitive from '@radix-ui/react-menubar';
 import type * as React from 'react';
 
+import type { NavigationSurfaceVariantProp } from '../utils/navigation-surface-variants';
+
 export interface MenubarProps
   extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root>, 'children' | 'className'> {
   /**
@@ -13,6 +15,7 @@ export interface MenubarProps
    * Shared action callback invoked by items that provide a `value`.
    */
   onAction?: (value: string) => void;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children: React.ReactNode;
 }
@@ -21,6 +24,7 @@ export type MenubarMenuProps = React.ComponentPropsWithoutRef<typeof MenubarPrim
 
 export interface MenubarTriggerProps
   extends Omit<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Trigger>, 'asChild'> {
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }
@@ -61,6 +65,7 @@ export interface MenubarItemProps
   shortcut?: React.ReactNode;
   inset?: boolean;
   destructive?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }
@@ -71,6 +76,7 @@ export interface MenubarCheckboxItemProps
   icon?: React.ReactNode;
   shortcut?: React.ReactNode;
   destructive?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }
@@ -86,6 +92,7 @@ export interface MenubarRadioItemProps
   icon?: React.ReactNode;
   shortcut?: React.ReactNode;
   destructive?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }
@@ -99,6 +106,7 @@ export interface MenubarSubTriggerProps
   icon?: React.ReactNode;
   shortcut?: React.ReactNode;
   inset?: boolean;
+  variant?: NavigationSurfaceVariantProp;
   className?: string;
   children?: React.ReactNode;
 }

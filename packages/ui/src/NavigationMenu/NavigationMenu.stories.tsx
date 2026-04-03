@@ -56,7 +56,7 @@ function SolutionCard({ card }: { card: NavigationFeatureCard }) {
   return (
     <NavigationMenuLink
       href={card.href}
-      className="flex h-full w-full max-w-full flex-col items-start justify-start gap-3 whitespace-normal rounded-2xl border border-border/70 bg-background/60 p-4 text-left shadow-sm ring-0 hover:border-border hover:bg-accent/40"
+      className="flex h-full w-full max-w-full flex-col items-start justify-start gap-3 whitespace-normal rounded-2xl p-4 text-left hover:bg-accent/30"
     >
       <Box className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
         {card.icon}
@@ -80,7 +80,14 @@ function SolutionCard({ card }: { card: NavigationFeatureCard }) {
 function SharedNavigationMenu(
   args: Pick<
     NavigationMenuProps,
-    'defaultValue' | 'value' | 'onValueChange' | 'orientation' | 'dir' | 'delayDuration' | 'skipDelayDuration'
+    | 'defaultValue'
+    | 'value'
+    | 'onValueChange'
+    | 'orientation'
+    | 'dir'
+    | 'delayDuration'
+    | 'skipDelayDuration'
+    | 'variant'
   >,
 ) {
   return (
@@ -92,6 +99,7 @@ function SharedNavigationMenu(
       dir={args.dir}
       delayDuration={args.delayDuration}
       skipDelayDuration={args.skipDelayDuration}
+      variant={args.variant}
     >
       <NavigationMenuList>
         <NavigationMenuItem>
@@ -228,6 +236,7 @@ const meta: Meta<NavigationMenuStoryArgs> = {
   args: {
     orientation: 'horizontal',
     defaultValue: '',
+    variant: 'outline',
     delayDuration: 200,
     skipDelayDuration: 300,
     onValueChange: fn(),
@@ -240,6 +249,10 @@ const meta: Meta<NavigationMenuStoryArgs> = {
     defaultValue: {
       control: 'select',
       options: ['', 'solutions'],
+    },
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow', 'ghost', 'default'],
     },
     value: {
       control: false,
@@ -270,6 +283,7 @@ const meta: Meta<NavigationMenuStoryArgs> = {
       dir={args.dir}
       delayDuration={args.delayDuration}
       skipDelayDuration={args.skipDelayDuration}
+      variant={args.variant}
     />
   ),
 };
@@ -294,4 +308,10 @@ export const AsChildLinks: Story = {
 
 export const DisabledTrigger: Story = {
   render: () => <DisabledTriggerStory />,
+};
+
+export const ShadowVariant: Story = {
+  args: {
+    variant: 'shadow',
+  },
 };

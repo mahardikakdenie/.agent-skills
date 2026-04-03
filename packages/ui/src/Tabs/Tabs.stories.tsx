@@ -4,7 +4,6 @@ import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../Card';
 import { Input } from '../Input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
 import type { TabsOrientation, TabsProps } from './Tabs.types';
@@ -115,16 +114,20 @@ function StoryPanel({
   children: React.ReactNode;
 }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-      <CardFooter className="justify-end">
+    <Box className="grid gap-5 rounded-2xl border border-border/60 bg-background px-1 py-3">
+      <Box className="grid gap-1">
+        <Box as="h3" className="text-2xl font-semibold tracking-tight text-foreground">
+          {title}
+        </Box>
+        <Box as="p" className="text-sm text-muted-foreground">
+          {description}
+        </Box>
+      </Box>
+      <Box>{children}</Box>
+      <Box className="flex justify-end">
         <Button type="button">Save changes</Button>
-      </CardFooter>
-    </Card>
+      </Box>
+    </Box>
   );
 }
 
@@ -178,6 +181,7 @@ function TabsStoryHarness({
 function TabsExample({
   items,
   orientation = 'horizontal',
+  variant = 'outline',
   onValueChange,
   value,
   defaultValue,
@@ -185,6 +189,7 @@ function TabsExample({
 }: {
   items: StoryTab[];
   orientation?: TabsOrientation;
+  variant?: TabsProps['variant'];
   onValueChange?: (value: string) => void;
   value?: string;
   defaultValue?: string;
@@ -195,6 +200,7 @@ function TabsExample({
       className={className}
       defaultValue={defaultValue ?? items[0]?.value}
       orientation={orientation}
+      variant={variant}
       value={value}
       onValueChange={onValueChange}
     >
@@ -250,6 +256,7 @@ const meta = {
   args: {
     defaultValue: defaultTabs[0]!.value,
     orientation: 'horizontal',
+    variant: 'outline',
     onValueChange: fn(),
   },
   argTypes: {
@@ -264,6 +271,10 @@ const meta = {
     orientation: {
       control: 'select',
       options: tabsOrientationValues,
+    },
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow', 'ghost', 'default'],
     },
     onValueChange: {
       action: 'value changed',
@@ -283,6 +294,7 @@ const meta = {
       className="max-w-3xl"
       defaultValue={args.defaultValue}
       orientation={args.orientation}
+      variant={args.variant}
       value={args.value}
       onValueChange={args.onValueChange}
       items={defaultTabs}
@@ -376,3 +388,8 @@ export const ControlledMode: Story = {
   },
 };
 
+export const ShadowVariant: Story = {
+  args: {
+    variant: 'shadow',
+  },
+};
