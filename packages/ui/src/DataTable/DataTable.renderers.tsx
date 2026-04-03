@@ -104,7 +104,12 @@ export function DataTableDefaultLoadingState<TData extends RowData>({
           {visibleColumns.map((column, cellIndex) => (
             <TableCell
               key={`loading-cell-${rowIndex}-${column.id}`}
-              className={dataTableSkeletonCellVariants()}
+              className={cn(
+                dataTableSkeletonCellVariants(),
+                typeof column.columnDef.meta?.cellClassName === 'string'
+                  ? column.columnDef.meta.cellClassName
+                  : undefined,
+              )}
             >
               {rowIndex === 0 && cellIndex === 0 ? (
                 <Box as="span" className="sr-only">
