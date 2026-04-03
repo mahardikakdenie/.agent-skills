@@ -199,7 +199,13 @@ export const MonthPicker = React.forwardRef<HTMLButtonElement, MonthPickerProps>
           <PopoverAnchor asChild>
             <Box
               data-slot="month-picker-control"
-              className={monthPickerControlVariants({ variant, size, invalid: hasError, disabled })}
+              className={monthPickerControlVariants({
+                variant,
+                size,
+                invalid: hasError,
+                open,
+                disabled,
+              })}
             >
               <PopoverTrigger asChild>
                 <Box

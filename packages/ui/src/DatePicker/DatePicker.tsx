@@ -219,7 +219,13 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
           <PopoverAnchor asChild>
             <Box
               data-slot="date-picker-control"
-              className={datePickerControlVariants({ variant, size, invalid: hasError, disabled })}
+              className={datePickerControlVariants({
+                variant,
+                size,
+                invalid: hasError,
+                open: resolvedOpen,
+                disabled,
+              })}
             >
               <PopoverTrigger asChild>
                 <Box
