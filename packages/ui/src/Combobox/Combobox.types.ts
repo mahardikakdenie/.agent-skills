@@ -1,6 +1,10 @@
 import type * as React from 'react';
 
+import { inputVariantValues, type InputVariant } from '../Input/Input.types';
+
+export const comboboxVariantValues = inputVariantValues;
 export const comboboxSizeValues = ['xs', 'sm', 'md', 'lg'] as const;
+export type ComboboxVariant = InputVariant;
 export type ComboboxSize = (typeof comboboxSizeValues)[number];
 
 export interface ComboboxOption {
@@ -27,6 +31,7 @@ export interface ComboboxProps
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchValueChange?: (value: string) => void;
+  variant?: ComboboxVariant;
   size?: ComboboxSize;
   disabled?: boolean;
   loading?: boolean;

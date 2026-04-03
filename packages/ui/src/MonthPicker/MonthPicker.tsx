@@ -55,7 +55,7 @@ export const MonthPicker = React.forwardRef<HTMLButtonElement, MonthPickerProps>
     {
       value,
       onChange,
-      variant = 'default',
+      variant = 'outline',
       size = 'md',
       minMonth,
       maxMonth,

@@ -1,6 +1,7 @@
 import { cva } from 'class-variance-authority';
 
 import { getSegmentedInputFocusRecipe } from '../utils/focus-normalization';
+import { fieldVariantOptions } from '../utils/field-variants';
 
 const segmentedInputFocus = getSegmentedInputFocusRecipe();
 
@@ -17,11 +18,7 @@ export const otpInputSlotVariants = cva(
   ].join(' '),
   {
     variants: {
-      variant: {
-        default: 'border-input bg-background shadow-sm',
-        outline: 'border-border bg-background shadow-none',
-        ghost: 'border-transparent bg-muted/40 shadow-none',
-      },
+      variant: fieldVariantOptions,
       size: {
         sm: 'h-10 w-10 text-base',
         md: 'h-12 w-12 text-lg',
@@ -57,7 +54,7 @@ export const otpInputSlotVariants = cva(
       },
     ],
     defaultVariants: {
-      variant: 'default',
+      variant: 'outline',
       size: 'md',
       invalid: false,
       filled: false,

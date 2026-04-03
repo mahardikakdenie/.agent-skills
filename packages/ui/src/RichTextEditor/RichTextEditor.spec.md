@@ -55,6 +55,7 @@ This shared contract is intentionally scoped to core rich-text behavior only: pa
 | `onChange` | `(value: string) => void` | `undefined` | No | Called whenever the editor emits a sanitized HTML update. |
 | `onBlur` | `() => void` | `undefined` | No | Called when the editor loses focus. |
 | `onFocus` | `() => void` | `undefined` | No | Called when the editor gains focus. |
+| `variant` | `'outline' | 'shadow' | 'ghost' | 'default'` | `'outline'` | No | Shared field-shell appearance applied to the outer editor shell. Legacy `default` remains a compatibility alias for `shadow`. |
 | `toolbar` | `'default' | 'minimal' | 'none'` | `'default'` | No | Shared toolbar preset. |
 | `readonly` | `boolean` | `false` | No | Sets the editor to non-editable mode and hides the toolbar. |
 | `sanitize` | `boolean | ((html: string) => string)` | `true` | No | Enables the shared DOMPurify-based sanitizer or allows an app-owned sanitizer function. |
@@ -218,6 +219,7 @@ Toolbar guidance:
 
 - [x] `Basic`
 - [x] `Toolbar`
+- [x] `Variants`
 - [x] `Readonly`
 - [x] `Sanitization`
 - [x] `ErrorState`

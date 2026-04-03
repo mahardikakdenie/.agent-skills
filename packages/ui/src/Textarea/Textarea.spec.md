@@ -36,7 +36,7 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 | Root primitive | `Box` + semantic textarea | Satisfies the Box-only authored DOM rule while keeping native multiline semantics and ref forwarding. |
 | CVA strategy | Slot-based | Field shell, control shell, textarea node, helper text, error text, and clear action need independent state styling. |
 | Controlled vs uncontrolled | both | App baselines mix `value` and `defaultValue`; the shared primitive must support native controlled and uncontrolled patterns. |
-| Shared visual API | no `variant` / no `size` | The normalized `02` contract keeps Textarea intentionally narrow; rows, width, and layout remain native or consumer-owned. |
+| Shared visual API | `variant`, no `size` | `Textarea` now aligns with the shared field-shell variant vocabulary while keeping rows, width, and layout native or consumer-owned. |
 | `asChild` support | no | The semantic root must stay an actual textarea element. |
 | Composition review | flat API retained | `vercel-composition-patterns` evaluation found no need for compound parts or extra mode booleans on this primitive. |
 | Box-only DOM rule | explicit | Wrapper, control shell, textarea node, helper text, error text, and clear button all render through `Box`. |
@@ -48,6 +48,7 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 | Prop | Type | Default | Required | Description |
 | --- | --- | --- | --- | --- |
 | `error` | `string \| boolean` | `false` | No | Marks the field invalid; string values also render inline error text. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared field shell appearance. Legacy `default` remains a compatibility alias for `shadow`. |
 | `disabled` | `boolean` | `false` | No | Disables editing and updates visual treatment. |
 | `required` | `boolean` | `false` | No | Applies native required semantics and updates the visible label indicator. |
 | `label` | `string` | `undefined` | No | Field label associated with the textarea through `htmlFor`. |
@@ -157,6 +158,7 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 **Story file title:** `'Inputs/Textarea'`
 
 - [x] `Default`
+- [x] `Variants`
 - [x] `Resize`
 - [x] `ErrorState`
 - [x] `DisabledState`
@@ -178,4 +180,3 @@ This component intentionally stays at the plain-text field-shell boundary. It do
 | --- | --- |
 | 2026-03-10 | Initial Textarea spec |
 | 2026-03-17 | Updated the direct-element focus guidance to the calmer Wave 1 field-shell recipe |
-

@@ -55,6 +55,7 @@ This component intentionally stops at the selection boundary. It does not upload
 | `displayValue` | `string \| string[] \| null`                  | `undefined` | No       | Externally supplied filename label or labels for already-uploaded files when the parent does not retain a `File` object.            |
 | `accept`       | `string`                                      | `undefined` | No       | Native accept filter passed to the hidden file input.                                                                                |
 | `multiple`     | `boolean`                                     | `false`     | No       | Allows multiple file selection and list rendering. Sequential picks append to the existing selection.                                |
+| `variant`      | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No     | Shared field-shell appearance applied to the visible dropzone. Legacy `default` remains a compatibility alias for `shadow`.         |
 | `disabled`     | `boolean`                                     | `false`     | No       | Disables selection and item remove actions.                                                                                          |
 | `maxSize`      | `number`                                      | `undefined` | No       | Optional generic client-side size limit in bytes.                                                                                    |
 | `error`        | `string \| boolean`                           | `false`     | No       | Marks the field invalid; string values render inline error copy.                                                                     |
@@ -68,7 +69,7 @@ This component intentionally stops at the selection boundary. It does not upload
 
 ## Variants
 
-`FileUpload` does not expose a public `variant` prop. The reusable surface is intentionally stable so apps converge on one file-field shell instead of reintroducing styling booleans.
+`FileUpload` now exposes the shared field-shell variant vocabulary so upload entry points can align with adjacent inputs without reintroducing app-local style booleans.
 
 ### Selection modes
 
@@ -209,6 +210,7 @@ This component intentionally stops at the selection boundary. It does not upload
 
 - [x] `Default`
 - [x] `MultipleFiles`
+- [x] `Variants`
 - [x] `ErrorState`
 - [x] `DisabledState`
 - [x] `ClearableSelection`

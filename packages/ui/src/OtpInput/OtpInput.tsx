@@ -60,7 +60,7 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
       value,
       onValueChange,
       length = DEFAULT_LENGTH,
-      variant = 'default',
+      variant = 'outline',
       size = 'md',
       disabled = false,
       error = false,

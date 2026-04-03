@@ -1,8 +1,12 @@
 import type * as SelectPrimitive from '@radix-ui/react-select';
 import type * as React from 'react';
 
+import { inputVariantValues, type InputVariant } from '../Input/Input.types';
+
+export const selectVariantValues = inputVariantValues;
 export const selectSizeValues = ['xs', 'sm', 'md', 'lg'] as const;
 
+export type SelectVariant = InputVariant;
 export type SelectSize = (typeof selectSizeValues)[number];
 
 export interface SelectOption {
@@ -25,6 +29,7 @@ interface SelectBaseProps
   defaultValue?: string;
   onValueChange?: (value: string | undefined) => void;
   placeholder?: string;
+  variant?: SelectVariant;
   size?: SelectSize;
   disabled?: boolean;
   loading?: boolean;

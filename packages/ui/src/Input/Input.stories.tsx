@@ -17,7 +17,7 @@ const meta = {
   component: Input,
   tags: ['autodocs'],
   args: {
-    variant: 'default',
+    variant: 'outline',
     size: 'md',
     inputMode: 'text',
     disabled: false,
@@ -273,4 +273,3 @@ export const Clearable: Story = {
     },
   },
 };
-

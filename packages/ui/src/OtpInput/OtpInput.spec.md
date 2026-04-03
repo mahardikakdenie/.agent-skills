@@ -13,7 +13,7 @@
 
 ## Overview
 
-`OtpInput` is the shared segmented one-time-password entry field for verification and confirmation flows that need a short fixed-length code without carrying route logic, resend timers, or submission policy into `@repo/ui`. The recurring app baselines all converge on the same low-level behavior: numeric-only slot entry, automatic focus advance, backspace navigation, whole-code paste, disabled treatment, and a simple error state that can be wired into page or modal shells owned by the consuming app. Its visual chrome now follows the shared `Input` and `DatePicker` family by supporting the same `default`, `outline`, and `ghost` variant vocabulary.
+`OtpInput` is the shared segmented one-time-password entry field for verification and confirmation flows that need a short fixed-length code without carrying route logic, resend timers, or submission policy into `@repo/ui`. The recurring app baselines all converge on the same low-level behavior: numeric-only slot entry, automatic focus advance, backspace navigation, whole-code paste, disabled treatment, and a simple error state that can be wired into page or modal shells owned by the consuming app. Its visual chrome now follows the shared `Input` and `DatePicker` family by supporting the same `outline`, `shadow`, and `ghost` variant vocabulary while preserving legacy `default` as a compatibility alias for `shadow`.
 
 The shared component stays intentionally flat. It does not own transport, cooldown timers, channel messaging, resend actions, or business validation rules. Those concerns remain local and compose around `OtpInput`, while `@repo/ui` standardizes the segmented field UI, keyboard behavior, and accessibility wiring.
 
@@ -50,7 +50,7 @@ The shared component stays intentionally flat. It does not own transport, cooldo
 | `value` | `string` | `undefined` | No | Controlled OTP value. Non-digit characters are ignored and extra characters are trimmed to `length`. |
 | `onValueChange` | `(value: string) => void` | `undefined` | No | Called whenever the normalized OTP string changes. |
 | `length` | `number` | `6` | No | Number of OTP slots to render. |
-| `variant` | `'default' \| 'outline' \| 'ghost'` | `'default'` | No | Shared slot chrome aligned with `Input` and `DatePicker`. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared slot chrome aligned with `Input` and `DatePicker`. Legacy `default` remains a compatibility alias for `shadow`. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | No | Shared OTP slot size scale. |
 | `disabled` | `boolean` | `false` | No | Disables entry and focus movement. |
 | `error` | `string \| boolean` | `false` | No | Marks the field invalid; string values render inline error copy. |
@@ -66,8 +66,8 @@ The shared component stays intentionally flat. It does not own transport, cooldo
 
 | Variant | Description | When to use |
 | --- | --- | --- |
-| `default` | Bordered slot with background and subtle shadow | Standard forms, modal verification, and general OTP flows |
-| `outline` | Lower-elevation bordered slot | Layered surfaces and denser cards where shadow is unnecessary |
+| `outline` | Bordered slot without shadow | Standard forms, modal verification, and general OTP flows |
+| `shadow` | Bordered slot with background and subtle shadow | Layered surfaces that still benefit from extra elevation |
 | `ghost` | Minimal chrome with muted background | Inline verification utilities and quieter supporting surfaces |
 
 ### Size scale

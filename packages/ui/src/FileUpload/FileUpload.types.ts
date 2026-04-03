@@ -1,5 +1,7 @@
 import type * as React from 'react';
 
+import { type InputVariant } from '../Input/Input.types';
+
 export type FileUploadValue = File | File[] | null;
 export type FileUploadDisplayValue = string | string[] | null;
 
@@ -13,6 +15,7 @@ export interface FileUploadProps
   displayValue?: FileUploadDisplayValue;
   accept?: string;
   multiple?: boolean;
+  variant?: InputVariant;
   disabled?: boolean;
   maxSize?: number;
   error?: string | boolean;

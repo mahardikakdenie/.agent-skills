@@ -188,7 +188,7 @@ const meta = {
   component: DateRangePicker,
   tags: ['autodocs'],
   args: {
-    variant: 'default',
+    variant: 'outline',
     size: 'md',
     changeBehavior: 'partial',
     initialValue: {

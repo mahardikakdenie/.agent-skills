@@ -5,6 +5,7 @@ import {
   getDenseSurfaceFocusRecipe,
   getFieldShellFocusRecipe,
 } from '../utils/focus-normalization';
+import { fieldVariantOptions } from '../utils/field-variants';
 
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
 const compositeDenseSurfaceFocus = getDenseSurfaceFocusRecipe('composite');
@@ -29,13 +30,14 @@ export const comboboxControlVariants = cva('relative w-full');
 
 export const comboboxTriggerVariants = cva(
   [
-    'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background text-left shadow-sm',
+    'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background text-left',
     'transition-colors touch-manipulation',
     directFieldShellFocus.base,
     'motion-reduce:transition-none',
   ].join(' '),
   {
     variants: {
+      variant: fieldVariantOptions,
       size: {
         xs: 'min-h-8 px-2.5 text-xs',
         sm: 'min-h-9 px-3 text-sm',
@@ -44,7 +46,7 @@ export const comboboxTriggerVariants = cva(
       },
       invalid: {
         true: directFieldShellFocus.invalid,
-        false: 'border-input',
+        false: '',
       },
       disabled: {
         true: 'cursor-not-allowed opacity-60',
@@ -87,6 +89,7 @@ export const comboboxTriggerVariants = cva(
       },
     ],
     defaultVariants: {
+      variant: 'outline',
       size: 'md',
       invalid: false,
       disabled: false,

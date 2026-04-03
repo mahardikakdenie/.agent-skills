@@ -17,7 +17,7 @@
 
 This shared contract stays intentionally focused on non-searchable single selection. Search-driven selection belongs to `Combobox`, while multi-select and phone-code-specific flows stay out of this contract. The current surface also supports trigger-level reset and custom option layout rendering without changing the selected trigger label contract.
 
-The trigger follows the shared field-shell size family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`: `xs | sm | md | lg`, default `md`.
+The trigger follows the shared field-shell family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`: variant `outline | shadow | ghost` with `outline` as the default, plus size `xs | sm | md | lg` with `md` as the default. Legacy `default` remains a compatibility alias for `shadow`.
 
 **When to use:**
 
@@ -60,6 +60,7 @@ The trigger follows the shared field-shell size family used by `Input`, `DatePic
 | `onValueChange` | `(value: string \| undefined) => void` | `undefined` | No | Called when a new option is selected or when a clearable select is reset to the placeholder state. |
 | `options` | `SelectOption[]` | - | Yes (flat mode) | Flat list of available static options. |
 | `placeholder` | `string` | `undefined` | No | Placeholder content shown when no option is selected. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared field-shell appearance aligned with the input family. Legacy `default` remains a compatibility alias for `shadow`. |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | No | Shared field-shell size aligned to `Input` trigger density. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger and closes interaction. |
 | `loading` | `boolean` | `false` | No | Shows a loading spinner and disables the trigger. |
@@ -199,6 +200,7 @@ export interface SelectOptionRenderState {
 **Story file title:** `'Inputs/Select'`
 
 - [x] `Default`
+- [x] `Variants`
 - [x] `Sizes`
 - [x] `Placeholder`
 - [x] `LongList`

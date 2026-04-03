@@ -76,7 +76,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     {
       value,
       onChange,
-      variant = 'default',
+      variant = 'outline',
       size = 'md',
       changeBehavior = 'partial',
       presets,

@@ -177,11 +177,27 @@ Sizing note:
 
 ---
 
+### Shared field-shell variant family
+
+```ts
+export type FieldVariant = 'outline' | 'shadow' | 'ghost'
+export type FieldVariantAlias = 'default'  // compatibility alias for 'shadow'
+export type InputVariant = FieldVariant | FieldVariantAlias
+```
+
+Field-variant note:
+- The shared field-shell variant family now covers `Input`, `Textarea`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `FileUpload`, `OtpInput`, and `RichTextEditor`.
+- Canonical new usage defaults to `variant='outline'`.
+- Legacy `variant='default'` remains a compatibility alias for the elevated `shadow` treatment where the public contract still accepts it.
+- `shadow` is the explicit shared replacement for older elevated field shells and one-off `isWithShadow` style toggles.
+
+---
+
 ### Input
 
 ```ts
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
-  variant?: 'default' | 'outline' | 'ghost'
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   inputMode?: 'text' | 'email' | 'phone' | 'currency' | 'number' | 'password'
   error?: string | boolean
@@ -218,6 +234,7 @@ Story group: `Inputs`
 
 ```ts
 export interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   error?: string | boolean
   disabled?: boolean
   required?: boolean
@@ -325,6 +342,7 @@ export interface SelectBaseProps {
   defaultValue?: string
   onValueChange?: (value: string | undefined) => void
   placeholder?: string
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
   loading?: boolean
@@ -768,8 +786,8 @@ Story group: `Data Display`
 
 ```ts
 export interface DatePickerProps {
-  variant?: 'default' | 'outline' | 'ghost'
-  size?: 'xs' | 'sm' | 'md' | 'lg'
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
+  size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   formatDate?: (date: Date) => string
   value?: Date | null
   onChange?: (date: Date | null) => void
@@ -830,6 +848,7 @@ export interface ComboboxProps {
   searchPlaceholder?: string
   searchValue?: string
   onSearchValueChange?: (value: string) => void
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
   loading?: boolean
@@ -896,7 +915,7 @@ export interface OtpInputProps {
   value?: string
   onValueChange?: (value: string) => void
   length?: number  // default: 6
-  variant?: 'default' | 'outline' | 'ghost'
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
   size?: 'sm' | 'md' | 'lg'  // default: 'md'
   disabled?: boolean
   error?: string | boolean
@@ -1110,8 +1129,8 @@ export interface DateRangePickerProps {
   value?: DateRangeValue | null
   onChange?: (value: DateRangeValue | null) => void
   changeBehavior?: 'partial' | 'complete'  // default: 'partial'
-  variant?: 'default' | 'outline' | 'ghost'
-  size?: 'xs' | 'sm' | 'md' | 'lg'
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
+  size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   presets?: Array<{ label: string; value: DateRangeValue }>
   minDate?: Date
   maxDate?: Date
@@ -1371,8 +1390,8 @@ Migration note: the earlier flat `items[]` draft is replaced by a compound comma
 export interface MonthPickerProps {
   value?: Date | null
   onChange?: (value: Date | null) => void
-  variant?: 'default' | 'outline' | 'ghost'
-  size?: 'xs' | 'sm' | 'md' | 'lg'
+  variant?: 'outline' | 'shadow' | 'ghost' | 'default'  // default: 'outline'
+  size?: 'xs' | 'sm' | 'md' | 'lg'  // default: 'md'
   minMonth?: Date
   maxMonth?: Date
   disabled?: boolean

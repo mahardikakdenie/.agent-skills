@@ -220,6 +220,7 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
       displayValue,
       accept,
       multiple = false,
+      variant = 'outline',
       disabled = false,
       maxSize,
       error = false,
@@ -451,6 +452,7 @@ export const FileUpload = React.forwardRef<HTMLInputElement, FileUploadProps>(
           <Box
             data-slot="file-upload-dropzone"
             className={fileUploadDropzoneVariants({
+              variant,
               invalid,
               disabled,
               dragActive: isDragActive,

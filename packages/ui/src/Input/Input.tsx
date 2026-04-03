@@ -41,7 +41,7 @@ const nativeInputModeMap: Record<InputMode, React.HTMLAttributes<HTMLInputElemen
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
-      variant = 'default',
+      variant = 'outline',
       size = 'md',
       inputMode = 'text',
       error = false,
