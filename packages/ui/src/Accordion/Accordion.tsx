@@ -5,15 +5,6 @@ import * as React from 'react';
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
-import {
-  accordionChevronVariants,
-  accordionContentInnerVariants,
-  accordionContentVariants,
-  accordionHeaderVariants,
-  accordionItemVariants,
-  accordionRootVariants,
-  accordionTriggerVariants,
-} from './Accordion.variants';
 import type {
   AccordionContentProps,
   AccordionHeaderProps,
@@ -23,6 +14,23 @@ import type {
   AccordionSingleProps,
   AccordionTriggerProps,
 } from './Accordion.types';
+import {
+  accordionChevronVariants,
+  accordionContentInnerVariants,
+  accordionContentVariants,
+  accordionHeaderVariants,
+  accordionItemVariants,
+  accordionRootVariants,
+  accordionTriggerVariants,
+} from './Accordion.variants';
+
+interface AccordionVariantContextValue {
+  variant: NonNullable<AccordionProps['variant']>;
+}
+
+const AccordionVariantContext = React.createContext<AccordionVariantContextValue>({
+  variant: 'outline',
+});
 
 /**
  * Shared inline disclosure group built on Radix Accordion.
@@ -32,21 +40,36 @@ import type {
  */
 export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>((props, ref) => {
   if (props.type === 'multiple') {
-    const { type, value, defaultValue, onValueChange, className, children, ...rest } =
-      props as AccordionMultipleProps;
+    const {
+      type,
+      value,
+      defaultValue,
+      onValueChange,
+      variant = 'outline',
+      className,
+      children,
+      ...rest
+    } = props as AccordionMultipleProps;
 
     return (
-      <AccordionPrimitive.Root
-        type={type}
-        value={value}
-        defaultValue={defaultValue}
-        onValueChange={onValueChange}
-        asChild
-      >
-        <Box ref={ref} data-slot="accordion" className={cn(accordionRootVariants(), className)} {...rest}>
-          {children}
-        </Box>
-      </AccordionPrimitive.Root>
+      <AccordionVariantContext.Provider value={{ variant }}>
+        <AccordionPrimitive.Root
+          type={type}
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={onValueChange}
+          asChild
+        >
+          <Box
+            ref={ref}
+            data-slot="accordion"
+            className={cn(accordionRootVariants(), className)}
+            {...rest}
+          >
+            {children}
+          </Box>
+        </AccordionPrimitive.Root>
+      </AccordionVariantContext.Provider>
     );
   }
 
@@ -56,24 +79,32 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>((props
     value,
     defaultValue,
     onValueChange,
+    variant = 'outline',
     className,
     children,
     ...rest
   } = props as AccordionSingleProps;
 
   return (
-    <AccordionPrimitive.Root
-      type={type}
-      collapsible={collapsible}
-      value={value}
-      defaultValue={defaultValue}
-      onValueChange={onValueChange}
-      asChild
-    >
-      <Box ref={ref} data-slot="accordion" className={cn(accordionRootVariants(), className)} {...rest}>
-        {children}
-      </Box>
-    </AccordionPrimitive.Root>
+    <AccordionVariantContext.Provider value={{ variant }}>
+      <AccordionPrimitive.Root
+        type={type}
+        collapsible={collapsible}
+        value={value}
+        defaultValue={defaultValue}
+        onValueChange={onValueChange}
+        asChild
+      >
+        <Box
+          ref={ref}
+          data-slot="accordion"
+          className={cn(accordionRootVariants(), className)}
+          {...rest}
+        >
+          {children}
+        </Box>
+      </AccordionPrimitive.Root>
+    </AccordionVariantContext.Provider>
   );
 });
 
@@ -82,13 +113,21 @@ Accordion.displayName = 'Accordion';
 export const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
   AccordionItemProps
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Item ref={ref} asChild {...props}>
-    <Box data-slot="accordion-item" className={cn(accordionItemVariants(), className)}>
-      {children}
-    </Box>
-  </AccordionPrimitive.Item>
-));
+>(({ className, children, variant, ...props }, ref) => {
+  const { variant: inheritedVariant } = React.use(AccordionVariantContext);
+  const resolvedVariant = variant ?? inheritedVariant;
+
+  return (
+    <AccordionPrimitive.Item ref={ref} asChild {...props}>
+      <Box
+        data-slot="accordion-item"
+        className={cn(accordionItemVariants({ variant: resolvedVariant }), className)}
+      >
+        {children}
+      </Box>
+    </AccordionPrimitive.Item>
+  );
+});
 
 AccordionItem.displayName = 'AccordionItem';
 
@@ -110,11 +149,21 @@ export const AccordionTrigger = React.forwardRef<
   AccordionTriggerProps
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Trigger ref={ref} asChild {...props}>
-    <Box data-slot="accordion-trigger" as="button" type="button" className={cn(accordionTriggerVariants(), className)}>
+    <Box
+      data-slot="accordion-trigger"
+      as="button"
+      type="button"
+      className={cn(accordionTriggerVariants(), className)}
+    >
       <Box as="span" className="flex-1 text-left">
         {children}
       </Box>
-      <Box as="span" aria-hidden="true" data-slot="accordion-chevron" className={accordionChevronVariants()}>
+      <Box
+        as="span"
+        aria-hidden="true"
+        data-slot="accordion-chevron"
+        className={accordionChevronVariants()}
+      >
         <ChevronDown className="h-4 w-4" />
       </Box>
     </Box>
@@ -129,7 +178,10 @@ export const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content ref={ref} asChild {...props}>
     <Box data-slot="accordion-content" className={accordionContentVariants()}>
-      <Box data-slot="accordion-content-inner" className={cn(accordionContentInnerVariants(), className)}>
+      <Box
+        data-slot="accordion-content-inner"
+        className={cn(accordionContentInnerVariants(), className)}
+      >
         {children}
       </Box>
     </Box>

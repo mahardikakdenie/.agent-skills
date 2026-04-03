@@ -11,6 +11,7 @@ const meta = {
   args: {
     src: 'https://github.com/shadcn.png',
     alt: 'Shadcn UI',
+    variant: 'outline',
     size: 'md',
   },
   argTypes: {
@@ -26,6 +27,10 @@ const meta = {
     size: {
       control: 'select',
       options: avatarSizeValues,
+    },
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow'],
     },
     className: {
       control: 'text',
@@ -63,8 +68,20 @@ export const Fallback: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Shows the derived initials fallback when no image source is provided.',
+        story: 'Shows the derived initials fallback when no image source is provided.',
+      },
+    },
+  },
+};
+
+export const Shadow: Story = {
+  args: {
+    variant: 'shadow',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Applies the explicit `shadow` surface variant on the avatar shell.',
       },
     },
   },
@@ -86,13 +103,11 @@ export const Sizes: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Compares the shared avatar size scale from compact to profile-summary usage.',
+        story: 'Compares the shared avatar size scale from compact to profile-summary usage.',
       },
     },
   },
 };
-
 
 export const StackedGroup: Story = {
   render: () => (
@@ -119,4 +134,3 @@ export const StackedGroup: Story = {
     },
   },
 };
-

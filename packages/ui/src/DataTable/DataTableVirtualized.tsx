@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { type RowData } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import * as React from 'react';
 
 import { cn } from '@repo/helper';
 
@@ -27,13 +27,6 @@ import {
   renderDataTableHeader,
   renderDataTableStatusRow,
 } from './DataTable.renderers';
-import {
-  dataTablePaginationShellVariants,
-  dataTableResizeHandleVariants,
-  dataTableRootVariants,
-  dataTableStatusCellVariants,
-  dataTableViewportVariants,
-} from './DataTable.variants';
 import type { DataTableVirtualizedProps } from './DataTable.types';
 import {
   getHeaderCellStyles,
@@ -44,10 +37,18 @@ import {
   resolveRenderable,
   toCssDimension,
 } from './DataTable.utils';
+import {
+  dataTablePaginationShellVariants,
+  dataTableResizeHandleVariants,
+  dataTableRootVariants,
+  dataTableStatusCellVariants,
+  dataTableViewportVariants,
+} from './DataTable.variants';
 
-type DataTableVirtualizedRenderShellProps<TData extends RowData> = DataTableVirtualizedProps<TData> & {
-  rootRef?: React.ForwardedRef<HTMLDivElement>;
-};
+type DataTableVirtualizedRenderShellProps<TData extends RowData> =
+  DataTableVirtualizedProps<TData> & {
+    rootRef?: React.ForwardedRef<HTMLDivElement>;
+  };
 
 function DataTableVirtualizedRenderShell<TData extends RowData>({
   rootRef,
@@ -55,6 +56,7 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
   height,
   estimateRowHeight = 52,
   overscan = 8,
+  variant = 'outline',
   loading = false,
   getRowClassName,
   renderToolbar,
@@ -110,7 +112,7 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
   return (
     <Box
       ref={rootRef}
-      data-slot='data-table-virtualized'
+      data-slot="data-table-virtualized"
       aria-busy={loading || undefined}
       className={cn(dataTableRootVariants(), className)}
       {...props}
@@ -119,8 +121,8 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
 
       <Box
         ref={viewportRef}
-        data-slot='data-table-viewport'
-        className={dataTableViewportVariants()}
+        data-slot="data-table-viewport"
+        className={dataTableViewportVariants({ variant })}
         style={{
           ...getViewportStyle(layout),
           height: toCssDimension(height),
@@ -157,14 +159,14 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
                         headerCellClassName,
                       )}
                       colSpan={header.colSpan}
-                      scope='col'
+                      scope="col"
                       style={getHeaderCellStyles(header.column, layout)}
                     >
                       {renderDataTableHeader(header, sortingCount, headerCellClassName)}
                       {header.column.getCanResize() ? (
                         <Box
-                          as='button'
-                          type='button'
+                          as="button"
+                          type="button"
                           aria-label={`Resize ${header.column.id} column`}
                           className={dataTableResizeHandleVariants({
                             resizing: header.column.getIsResizing(),
@@ -208,10 +210,10 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
                   />
                 ))}
                 {topPaddingHeight > 0 ? (
-                  <TableRow aria-hidden='true'>
+                  <TableRow aria-hidden="true">
                     <TableCell
                       colSpan={visibleColumnCount}
-                      className='h-0 border-0 p-0'
+                      className="h-0 border-0 p-0"
                       style={{ height: `${topPaddingHeight}px` }}
                     />
                   </TableRow>
@@ -235,10 +237,10 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
                   );
                 })}
                 {bottomPaddingHeight > 0 ? (
-                  <TableRow aria-hidden='true'>
+                  <TableRow aria-hidden="true">
                     <TableCell
                       colSpan={visibleColumnCount}
-                      className='h-0 border-0 p-0'
+                      className="h-0 border-0 p-0"
                       style={{ height: `${bottomPaddingHeight}px` }}
                     />
                   </TableRow>
@@ -269,13 +271,13 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
         </Table>
       </Box>
 
-      {shouldShowPagination ? (
-        customPagination ?? (
-          <Box className={dataTablePaginationShellVariants()}>
-            <DataTablePagination pageSizeOptions={resolvedPageSizeOptions} table={table} />
-          </Box>
-        )
-      ) : null}
+      {shouldShowPagination
+        ? (customPagination ?? (
+            <Box className={dataTablePaginationShellVariants()}>
+              <DataTablePagination pageSizeOptions={resolvedPageSizeOptions} table={table} />
+            </Box>
+          ))
+        : null}
     </Box>
   );
 }

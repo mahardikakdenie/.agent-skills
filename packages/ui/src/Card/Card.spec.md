@@ -25,19 +25,20 @@
 
 ## Design Decisions
 
-| Decision                   | Choice                                                                    | Rationale                                                             |
-| -------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Primitive                  | `Box` + custom composition                                                | No Radix primitive is needed.                                         |
-| CVA strategy               | slot-based base classes                                                   | Stable slots, no canonical public variant prop.                       |
-| Controlled vs uncontrolled | n/a                                                                       | Structural and stateless.                                             |
-| Portal                     | no                                                                        | Normal document-flow surface.                                         |
-| Sub-components             | `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` | Named composition avoids boolean prop sprawl.                         |
-| Box-only DOM rule          | explicit                                                                  | All authored DOM in implementation and stories renders through `Box`. |
+| Decision                   | Choice                                                                    | Rationale                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Primitive                  | `Box` + custom composition                                                | No Radix primitive is needed.                                                                  |
+| CVA strategy               | slot-based with explicit surface variant                                  | Stable slots stay intact while the root now owns the shared `outline` / `shadow` surface axis. |
+| Controlled vs uncontrolled | n/a                                                                       | Structural and stateless.                                                                      |
+| Portal                     | no                                                                        | Normal document-flow surface.                                                                  |
+| Sub-components             | `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` | Named composition avoids boolean prop sprawl.                                                  |
+| Box-only DOM rule          | explicit                                                                  | All authored DOM in implementation and stories renders through `Box`.                          |
 
 ## Props Interface
 
 | Prop        | Type                                   | Default     | Required | Description                                                                      |
 | ----------- | -------------------------------------- | ----------- | -------- | -------------------------------------------------------------------------------- |
+| `variant`   | `'outline' \| 'shadow'`                | `'outline'` | No       | Shared surface treatment applied to the actual card root.                        |
 | `className` | `string`                               | `undefined` | No       | Consumer override merged last through `cn()`.                                    |
 | `children`  | `React.ReactNode`                      | `undefined` | No       | Composed card content and subcomponents.                                         |
 | `...props`  | `React.HTMLAttributes<HTMLDivElement>` | -           | No       | Native container props such as `id`, `role`, `tabIndex`, `aria-*`, and `data-*`. |
@@ -52,15 +53,18 @@ Sub-components:
 
 ## Variants
 
-`Card` has no canonical public `variant` or `size` prop. Elevated, dense, bordered, or interactive treatment remains composition via `className` and native props so the shared API stays structural.
+`Card` exposes a narrow shared surface axis while keeping density, hover treatment, and layout composition caller-owned.
+
+- `outline`: bordered card surface with no resting shadow. This is the default and the fallback when `variant` is omitted.
+- `shadow`: bordered card surface with `shadow-sm` on the actual card root.
 
 ## States
 
 | State                   | Visual Behavior                                                   | Accessibility                                  |
 | ----------------------- | ----------------------------------------------------------------- | ---------------------------------------------- |
-| Default                 | Rounded bordered surface with background and subtle shadow        | Neutral container with no forced role          |
+| Default                 | Rounded bordered surface with background and no resting shadow    | Neutral container with no forced role          |
 | Header/footer           | Slot spacing groups heading, body, and actions                    | Semantic heading and description remain opt-in |
-| Elevated composition    | Stronger shadow via `className`                                   | No semantic change                             |
+| Shadow variant          | Explicit elevated surface via `variant="shadow"`                  | No semantic change                             |
 | Interactive composition | Consumer supplies `role`, `tabIndex`, handlers, and hover classes | Keyboard support remains consumer-owned        |
 
 ## Accessibility
@@ -99,13 +103,14 @@ Screen reader notes:
 
 ## Do / Don't
 
-| Do                                                                                 | Don't                                                               |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Use named subcomponents for heading, description, content, and footer structure.   | Add boolean props such as `hasFooter`, `withBorder`, or `elevated`. |
-| Keep domain-specific statistics, formatting, and service state outside `@repo/ui`. | Turn `Card` into a business-specific widget.                        |
-| Use `className` for elevation, density, or hover refinements.                      | Expand the API for every visual permutation seen in one app.        |
-| Provide keyboard semantics when the card becomes interactive.                      | Add `role=button` without `tabIndex` and keyboard handling.         |
-| Keep authored JSX Box-only.                                                        | Hand-write native DOM tags in shared authored JSX.                  |
+| Do                                                                                 | Don't                                                                |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Use named subcomponents for heading, description, content, and footer structure.   | Add boolean props such as `hasFooter`, `withBorder`, or `elevated`.  |
+| Keep domain-specific statistics, formatting, and service state outside `@repo/ui`. | Turn `Card` into a business-specific widget.                         |
+| Use `variant="shadow"` when the shared card root should own elevation.             | Reintroduce base shadow classes that make the default card elevated. |
+| Use `className` for density or hover refinements.                                  | Expand the API for every visual permutation seen in one app.         |
+| Provide keyboard semantics when the card becomes interactive.                      | Add `role=button` without `tabIndex` and keyboard handling.          |
+| Keep authored JSX Box-only.                                                        | Hand-write native DOM tags in shared authored JSX.                   |
 
 ## Storybook Stories Required
 
@@ -113,11 +118,11 @@ Screen reader notes:
 
 - [x] `Basic`
 - [x] `HeaderFooter`
-- [x] `ElevatedComposition`
+- [x] `ShadowVariant`
 
 ## Changelog
 
-| Date       | Author | Change            |
-| ---------- | ------ | ----------------- |
-| 2026-03-10 | Codex  | Initial Card spec |
-
+| Date       | Author | Change                                                                                              |
+| ---------- | ------ | --------------------------------------------------------------------------------------------------- |
+| 2026-03-10 | Codex  | Initial Card spec                                                                                   |
+| 2026-04-03 | Codex  | Added normalized `outline` / `shadow` surface variants with `outline` as the default card treatment |

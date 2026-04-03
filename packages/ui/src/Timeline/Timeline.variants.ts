@@ -51,11 +51,14 @@ export const timelineConnectorVariants = cva('bg-border', {
 export const timelineMarkerVariants = cva(
   [
     'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
-    'shadow-sm',
     'transition-colors motion-reduce:transition-none',
   ].join(' '),
   {
     variants: {
+      variant: {
+        outline: 'shadow-none',
+        shadow: 'shadow-sm',
+      },
       statusTone: {
         default: 'border-border bg-muted text-foreground',
         success: 'border-success/30 bg-success/10 text-success',
@@ -65,6 +68,7 @@ export const timelineMarkerVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'outline',
       statusTone: 'default',
     },
   },
@@ -82,6 +86,9 @@ export const timelineBodyVariants = cva('flex min-w-0 flex-col', {
   },
 });
 
-export const timelineTitleVariants = cva('min-w-0 break-words text-sm font-semibold leading-5 text-foreground');
-export const timelineDescriptionVariants = cva('min-w-0 break-words text-sm leading-5 text-muted-foreground');
-
+export const timelineTitleVariants = cva(
+  'min-w-0 break-words text-sm font-semibold leading-5 text-foreground',
+);
+export const timelineDescriptionVariants = cva(
+  'min-w-0 break-words text-sm leading-5 text-muted-foreground',
+);

@@ -1,5 +1,5 @@
-import * as React from 'react';
 import type { RowData } from '@tanstack/react-table';
+import * as React from 'react';
 
 import { cn } from '@repo/helper';
 
@@ -26,14 +26,6 @@ import {
   renderDataTableHeader,
   renderDataTableStatusRow,
 } from './DataTable.renderers';
-import { useDataTable } from './useDataTable';
-import {
-  dataTablePaginationShellVariants,
-  dataTableResizeHandleVariants,
-  dataTableRootVariants,
-  dataTableStatusCellVariants,
-  dataTableViewportVariants,
-} from './DataTable.variants';
 import type {
   DataTableControlledProps,
   DataTableInstance,
@@ -49,6 +41,14 @@ import {
   resolvePageSizeOptions,
   resolveRenderable,
 } from './DataTable.utils';
+import {
+  dataTablePaginationShellVariants,
+  dataTableResizeHandleVariants,
+  dataTableRootVariants,
+  dataTableStatusCellVariants,
+  dataTableViewportVariants,
+} from './DataTable.variants';
+import { useDataTable } from './useDataTable';
 
 type DataTableRenderShellProps<TData extends RowData> = DataTableShellProps<TData> & {
   rootRef?: React.ForwardedRef<HTMLDivElement>;
@@ -58,6 +58,7 @@ type DataTableRenderShellProps<TData extends RowData> = DataTableShellProps<TDat
 function DataTableRenderShell<TData extends RowData>({
   rootRef,
   table,
+  variant = 'outline',
   loading = false,
   getRowClassName,
   renderToolbar,
@@ -102,7 +103,7 @@ function DataTableRenderShell<TData extends RowData>({
   return (
     <Box
       ref={rootRef}
-      data-slot='data-table'
+      data-slot="data-table"
       aria-busy={loading || undefined}
       className={cn(dataTableRootVariants(), className)}
       {...props}
@@ -110,8 +111,8 @@ function DataTableRenderShell<TData extends RowData>({
       {toolbarContent}
 
       <Box
-        data-slot='data-table-viewport'
-        className={dataTableViewportVariants()}
+        data-slot="data-table-viewport"
+        className={dataTableViewportVariants({ variant })}
         style={getViewportStyle(layout)}
       >
         <Table style={getTableStyle(table)}>
@@ -145,14 +146,14 @@ function DataTableRenderShell<TData extends RowData>({
                         headerCellClassName,
                       )}
                       colSpan={header.colSpan}
-                      scope='col'
+                      scope="col"
                       style={getHeaderCellStyles(header.column, layout)}
                     >
                       {renderDataTableHeader(header, sortingCount, headerCellClassName)}
                       {header.column.getCanResize() ? (
                         <Box
-                          as='button'
-                          type='button'
+                          as="button"
+                          type="button"
                           aria-label={`Resize ${header.column.id} column`}
                           className={dataTableResizeHandleVariants({
                             resizing: header.column.getIsResizing(),
@@ -234,29 +235,20 @@ function DataTableRenderShell<TData extends RowData>({
         </Table>
       </Box>
 
-      {shouldShowPagination ? (
-        customPagination ?? (
-          <Box className={dataTablePaginationShellVariants()}>
-            <DataTablePagination pageSizeOptions={resolvedPageSizeOptions} table={table} />
-          </Box>
-        )
-      ) : null}
+      {shouldShowPagination
+        ? (customPagination ?? (
+            <Box className={dataTablePaginationShellVariants()}>
+              <DataTablePagination pageSizeOptions={resolvedPageSizeOptions} table={table} />
+            </Box>
+          ))
+        : null}
     </Box>
   );
 }
 
 const ManagedDataTable = React.forwardRef<HTMLDivElement, DataTableManagedProps<RowData, unknown>>(
   (
-    {
-      data,
-      columns,
-      state,
-      defaultState,
-      onStateChange,
-      pagination,
-      tableOptions,
-      ...props
-    },
+    { data, columns, state, defaultState, onStateChange, pagination, tableOptions, ...props },
     ref,
   ) => {
     const table = useDataTable({

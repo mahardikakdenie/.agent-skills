@@ -1,5 +1,3 @@
-import type * as React from 'react';
-import type { InputProps } from '../Input';
 import type {
   Cell,
   Column,
@@ -24,6 +22,10 @@ import type {
   TableOptions,
   VisibilityState,
 } from '@tanstack/react-table';
+import type * as React from 'react';
+
+import type { InputProps } from '../Input';
+import type { DisplaySurfaceVariant } from '../utils/display-surface-variants';
 
 export type DataTableInstance<TData> = TanStackTable<TData>;
 
@@ -66,41 +68,40 @@ export interface DataTablePaginationConfig {
   onPageSizeChange?: (pageSize: number) => void;
 }
 
-export interface DataTableOptions<TData extends RowData>
-  extends Pick<
-    TableOptions<TData>,
-    | 'autoResetPageIndex'
-    | 'columnResizeMode'
-    | 'defaultColumn'
-    | 'debugAll'
-    | 'debugColumns'
-    | 'debugHeaders'
-    | 'debugRows'
-    | 'debugTable'
-    | 'enableColumnFilters'
-    | 'enableColumnPinning'
-    | 'enableColumnResizing'
-    | 'enableExpanding'
-    | 'enableFilters'
-    | 'enableGlobalFilter'
-    | 'enableGrouping'
-    | 'enableMultiRowSelection'
-    | 'enableMultiSort'
-    | 'enablePinning'
-    | 'enableRowPinning'
-    | 'enableRowSelection'
-    | 'enableSubRowSelection'
-    | 'filterFns'
-    | 'getRowCanExpand'
-    | 'getRowId'
-    | 'getSubRows'
-    | 'globalFilterFn'
-    | 'keepPinnedRows'
-    | 'manualExpanding'
-    | 'manualGrouping'
-    | 'meta'
-    | 'paginateExpandedRows'
-  > {
+export interface DataTableOptions<TData extends RowData> extends Pick<
+  TableOptions<TData>,
+  | 'autoResetPageIndex'
+  | 'columnResizeMode'
+  | 'defaultColumn'
+  | 'debugAll'
+  | 'debugColumns'
+  | 'debugHeaders'
+  | 'debugRows'
+  | 'debugTable'
+  | 'enableColumnFilters'
+  | 'enableColumnPinning'
+  | 'enableColumnResizing'
+  | 'enableExpanding'
+  | 'enableFilters'
+  | 'enableGlobalFilter'
+  | 'enableGrouping'
+  | 'enableMultiRowSelection'
+  | 'enableMultiSort'
+  | 'enablePinning'
+  | 'enableRowPinning'
+  | 'enableRowSelection'
+  | 'enableSubRowSelection'
+  | 'filterFns'
+  | 'getRowCanExpand'
+  | 'getRowId'
+  | 'getSubRows'
+  | 'globalFilterFn'
+  | 'keepPinnedRows'
+  | 'manualExpanding'
+  | 'manualGrouping'
+  | 'meta'
+  | 'paginateExpandedRows'
+> {
   manualFiltering?: boolean;
   manualPagination?: boolean;
   manualSorting?: boolean;
@@ -121,8 +122,9 @@ export interface DataTableRenderContext<TData extends RowData> {
   pageSizeOptions: number[];
 }
 
-export interface DataTableStatusContext<TData extends RowData>
-  extends DataTableRenderContext<TData> {
+export interface DataTableStatusContext<
+  TData extends RowData,
+> extends DataTableRenderContext<TData> {
   loading: boolean;
   isEmpty: boolean;
 }
@@ -163,8 +165,10 @@ export type DataTableRenderable<TData extends RowData> =
   | React.ReactNode
   | ((context: DataTableRenderContext<TData>) => React.ReactNode);
 
-export interface DataTableShellProps<TData extends RowData>
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface DataTableShellProps<
+  TData extends RowData,
+> extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: DisplaySurfaceVariant;
   loading?: boolean;
   getRowClassName?: DataTableRowClassName<TData>;
   renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode;
@@ -190,13 +194,13 @@ export interface UseDataTableProps<TData extends RowData, TValue = unknown> {
 }
 
 export interface DataTableManagedProps<TData extends RowData, TValue = unknown>
-  extends DataTableShellProps<TData>,
-    UseDataTableProps<TData, TValue> {
+  extends DataTableShellProps<TData>, UseDataTableProps<TData, TValue> {
   table?: never;
 }
 
-export interface DataTableControlledProps<TData extends RowData>
-  extends DataTableShellProps<TData> {
+export interface DataTableControlledProps<
+  TData extends RowData,
+> extends DataTableShellProps<TData> {
   table: DataTableInstance<TData>;
   data?: never;
   columns?: never;
@@ -207,8 +211,10 @@ export interface DataTableControlledProps<TData extends RowData>
   tableOptions?: never;
 }
 
-export interface DataTableVirtualizedProps<TData extends RowData>
-  extends Omit<DataTableShellProps<TData>, 'renderExpandedContent'> {
+export interface DataTableVirtualizedProps<TData extends RowData> extends Omit<
+  DataTableShellProps<TData>,
+  'renderExpandedContent'
+> {
   table: DataTableInstance<TData>;
   height: number;
   estimateRowHeight?: number;
@@ -219,27 +225,26 @@ export type DataTableProps<TData extends RowData, TValue = unknown> =
   | DataTableControlledProps<TData>
   | DataTableManagedProps<TData, TValue>;
 
-export interface DataTableToolbarProps<TData extends RowData>
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface DataTableToolbarProps<
+  TData extends RowData,
+> extends React.HTMLAttributes<HTMLDivElement> {
   table?: DataTableInstance<TData>;
   filterColumnId?: string;
   filterPlaceholder?: string;
   actions?: React.ReactNode;
 }
 
-export interface DataTableSearchProps<TData extends RowData>
-  extends Omit<
-    InputProps,
-    'value' | 'defaultValue' | 'onChange' | 'onValueChange' | 'label' | 'helperText' | 'error'
-  > {
+export interface DataTableSearchProps<TData extends RowData> extends Omit<
+  InputProps,
+  'value' | 'defaultValue' | 'onChange' | 'onValueChange' | 'label' | 'helperText' | 'error'
+> {
   table: DataTableInstance<TData>;
 }
 
-export interface DataTableColumnFilterProps<TData extends RowData>
-  extends Omit<
-    InputProps,
-    'value' | 'defaultValue' | 'onChange' | 'onValueChange' | 'label' | 'helperText' | 'error'
-  > {
+export interface DataTableColumnFilterProps<TData extends RowData> extends Omit<
+  InputProps,
+  'value' | 'defaultValue' | 'onChange' | 'onValueChange' | 'label' | 'helperText' | 'error'
+> {
   table: DataTableInstance<TData>;
   columnId: string;
 }
@@ -250,8 +255,9 @@ export interface DataTableFacetedFilterOption {
   count?: number;
 }
 
-export interface DataTableFacetedFilterProps<TData extends RowData>
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface DataTableFacetedFilterProps<
+  TData extends RowData,
+> extends React.HTMLAttributes<HTMLDivElement> {
   table: DataTableInstance<TData>;
   columnId: string;
   title: string;
@@ -259,22 +265,25 @@ export interface DataTableFacetedFilterProps<TData extends RowData>
   emptyLabel?: string;
 }
 
-export interface DataTableViewOptionsProps<TData extends RowData>
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface DataTableViewOptionsProps<
+  TData extends RowData,
+> extends React.HTMLAttributes<HTMLDivElement> {
   table: DataTableInstance<TData>;
   label?: string;
 }
 
-export interface DataTableSelectionSummaryProps<TData extends RowData>
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface DataTableSelectionSummaryProps<
+  TData extends RowData,
+> extends React.HTMLAttributes<HTMLDivElement> {
   table: DataTableInstance<TData>;
   singularLabel?: string;
   pluralLabel?: string;
   clearLabel?: string;
 }
 
-export interface DataTablePaginationProps<TData extends RowData>
-  extends React.HTMLAttributes<HTMLElement> {
+export interface DataTablePaginationProps<
+  TData extends RowData,
+> extends React.HTMLAttributes<HTMLElement> {
   table: DataTableInstance<TData>;
   pageSizeOptions?: number[];
 }
@@ -286,6 +295,7 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     headerCellClassName?: DataTableHeaderClassName<TData, TValue>;
     cellClassName?: DataTableCellClassName<TData, TValue>;
+    cellContentClassName?: string;
   }
 }
 

@@ -4,12 +4,8 @@ import * as React from 'react';
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
-import {
-  avatarFallbackVariants,
-  avatarImageVariants,
-  avatarRootVariants,
-} from './Avatar.variants';
 import type { AvatarProps } from './Avatar.types';
+import { avatarFallbackVariants, avatarImageVariants, avatarRootVariants } from './Avatar.variants';
 
 const FALLBACK_DELAY_MS = 300;
 
@@ -47,9 +43,8 @@ function getInitials(value?: string) {
  * states such as presence badges or grouped stacks stay consumer-composed.
  */
 export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
-  ({ src, alt, fallback, size = 'md', className, ...props }, ref) => {
-    const [loadingStatus, setLoadingStatus] =
-      React.useState<AvatarLoadingStatus>('idle');
+  ({ src, alt, fallback, variant = 'outline', size = 'md', className, ...props }, ref) => {
+    const [loadingStatus, setLoadingStatus] = React.useState<AvatarLoadingStatus>('idle');
 
     const resolvedFallback = fallback ?? getInitials(alt) ?? '?';
 
@@ -64,7 +59,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
           data-slot="avatar"
           data-size={size}
           data-loading-status={loadingStatus}
-          className={cn(avatarRootVariants({ size }), className)}
+          className={cn(avatarRootVariants({ variant, size }), className)}
           {...props}
         >
           {src ? (

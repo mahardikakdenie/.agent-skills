@@ -3,12 +3,15 @@ import { cva } from 'class-variance-authority';
 export const avatarRootVariants = cva(
   [
     'relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full',
-    'border border-border bg-muted text-muted-foreground shadow-sm',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'motion-reduce:transition-none',
   ].join(' '),
   {
     variants: {
+      variant: {
+        outline: 'border border-border bg-muted text-muted-foreground shadow-none',
+        shadow: 'border border-border bg-muted text-muted-foreground shadow-sm',
+      },
       size: {
         sm: 'h-8 w-8 text-xs',
         md: 'h-10 w-10 text-sm',
@@ -17,6 +20,7 @@ export const avatarRootVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'outline',
       size: 'md',
     },
   },

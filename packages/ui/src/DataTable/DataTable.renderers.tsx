@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { flexRender, type Cell, type Header, type Row, type RowData } from '@tanstack/react-table';
 import {
   ArrowDown,
   ArrowUp,
@@ -8,7 +8,7 @@ import {
   Inbox,
   SearchX,
 } from 'lucide-react';
-import { flexRender, type Cell, type Header, type Row, type RowData } from '@tanstack/react-table';
+import * as React from 'react';
 
 import { cn } from '@repo/helper';
 
@@ -53,41 +53,33 @@ import {
   dataTableStatusContentVariants,
 } from './DataTable.variants';
 
-function DataTableSortIcon({
-  sortDirection,
-}: {
-  sortDirection: false | 'asc' | 'desc';
-}) {
+function DataTableSortIcon({ sortDirection }: { sortDirection: false | 'asc' | 'desc' }) {
   if (sortDirection === 'asc') {
-    return <ArrowUp aria-hidden='true' className={dataTableSortIconVariants()} />;
+    return <ArrowUp aria-hidden="true" className={dataTableSortIconVariants()} />;
   }
 
   if (sortDirection === 'desc') {
-    return <ArrowDown aria-hidden='true' className={dataTableSortIconVariants()} />;
+    return <ArrowDown aria-hidden="true" className={dataTableSortIconVariants()} />;
   }
 
-  return <ArrowUpDown aria-hidden='true' className={dataTableSortIconVariants()} />;
+  return <ArrowUpDown aria-hidden="true" className={dataTableSortIconVariants()} />;
 }
 
-export function DataTableDefaultEmptyState({
-  filtered,
-}: {
-  filtered: boolean;
-}) {
+export function DataTableDefaultEmptyState({ filtered }: { filtered: boolean }) {
   const EmptyIcon = filtered ? SearchX : Inbox;
 
   return (
-    <Box data-slot='data-table-empty-state' className={dataTableEmptyStateVariants()}>
+    <Box data-slot="data-table-empty-state" className={dataTableEmptyStateVariants()}>
       <Box
-        data-slot='data-table-empty-icon-shell'
-        className='flex h-11 w-11 items-center justify-center rounded-full border border-border bg-muted/45 text-muted-foreground'
+        data-slot="data-table-empty-icon-shell"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-muted/45 text-muted-foreground"
       >
-        <EmptyIcon aria-hidden='true' className='h-4.5 w-4.5' />
+        <EmptyIcon aria-hidden="true" className="h-4.5 w-4.5" />
       </Box>
-      <Box as='span' className={dataTableEmptyTitleVariants()}>
+      <Box as="span" className={dataTableEmptyTitleVariants()}>
         {filtered ? 'No matching rows' : 'No records yet'}
       </Box>
-      <Box as='span' className='max-w-[26rem] text-sm leading-6 text-muted-foreground text-pretty'>
+      <Box as="span" className="max-w-[26rem] text-sm leading-6 text-muted-foreground text-pretty">
         {filtered
           ? 'Adjust or clear filters to see results.'
           : 'Records will appear here when available.'}
@@ -106,7 +98,7 @@ export function DataTableDefaultLoadingState({
   return (
     <>
       {Array.from({ length: rowCount }, (_, rowIndex) => (
-        <TableRow key={`loading-row-${rowIndex}`} data-slot='data-table-loading-row'>
+        <TableRow key={`loading-row-${rowIndex}`} data-slot="data-table-loading-row">
           {Array.from({ length: columnCount }, (_, cellIndex) => (
             <TableCell
               key={`loading-cell-${rowIndex}-${cellIndex}`}
@@ -114,12 +106,15 @@ export function DataTableDefaultLoadingState({
             >
               <Box className={dataTableSkeletonRowVariants()}>
                 {rowIndex === 0 && cellIndex === 0 ? (
-                  <Box as='span' className='sr-only'>
+                  <Box as="span" className="sr-only">
                     Loading table rows
                   </Box>
                 ) : null}
                 <Skeleton
-                  className={cn('h-4 max-w-full rounded-full', getSkeletonWidthClass(rowIndex, cellIndex))}
+                  className={cn(
+                    'h-4 max-w-full rounded-full',
+                    getSkeletonWidthClass(rowIndex, cellIndex),
+                  )}
                 />
               </Box>
             </TableCell>
@@ -130,15 +125,12 @@ export function DataTableDefaultLoadingState({
   );
 }
 
-function withOverflowTooltip(
-  content: React.ReactNode,
-  className: string,
-) {
+function withOverflowTooltip(content: React.ReactNode, className: string) {
   const resolvedClassName = cn('block min-w-0 max-w-full', className);
 
   if (typeof content !== 'string' && typeof content !== 'number') {
     return (
-      <Box as='span' className={resolvedClassName}>
+      <Box as="div" className={resolvedClassName}>
         {content}
       </Box>
     );
@@ -151,7 +143,89 @@ function withOverflowTooltip(
   );
 }
 
+function withInlineOverflowTooltip(content: React.ReactNode, className: string) {
+  const resolvedClassName = cn('block min-w-0 max-w-full', className);
+
+  if (typeof content !== 'string' && typeof content !== 'number') {
+    return (
+      <Box as="span" className={resolvedClassName}>
+        {content}
+      </Box>
+    );
+  }
+
+  return (
+    <DataTableInlineOverflowTooltip className={resolvedClassName} label={String(content)}>
+      {content}
+    </DataTableInlineOverflowTooltip>
+  );
+}
+
 function DataTableOverflowTooltip({
+  label,
+  className,
+  children,
+}: {
+  label: string;
+  className: string;
+  children: React.ReactNode;
+}) {
+  const contentRef = React.useRef<HTMLDivElement | null>(null);
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
+
+  React.useEffect(() => {
+    const element = contentRef.current;
+
+    if (!element) {
+      return undefined;
+    }
+
+    const updateOverflowState = () => {
+      setIsOverflowing(
+        element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight,
+      );
+    };
+
+    const animationFrameId = window.requestAnimationFrame(updateOverflowState);
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateOverflowState);
+
+      return () => {
+        window.cancelAnimationFrame(animationFrameId);
+        window.removeEventListener('resize', updateOverflowState);
+      };
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateOverflowState();
+    });
+
+    resizeObserver.observe(element);
+
+    if (element.parentElement) {
+      resizeObserver.observe(element.parentElement);
+    }
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
+    };
+  }, [label]);
+
+  return (
+    <Tooltip disabled={!isOverflowing}>
+      <TooltipTrigger asChild>
+        <Box ref={contentRef} as="div" className={className}>
+          {children}
+        </Box>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function DataTableInlineOverflowTooltip({
   label,
   className,
   children,
@@ -206,7 +280,7 @@ function DataTableOverflowTooltip({
   return (
     <Tooltip disabled={!isOverflowing}>
       <TooltipTrigger asChild>
-        <Box ref={contentRef} as='span' className={className}>
+        <Box ref={contentRef} as="span" className={className}>
           {children}
         </Box>
       </TooltipTrigger>
@@ -269,7 +343,7 @@ export function renderDataTableHeader<TData extends RowData>(
   const renderedHeader = flexRender(header.column.columnDef.header, header.getContext());
 
   if (!canSort) {
-    return withOverflowTooltip(
+    return withInlineOverflowTooltip(
       renderedHeader,
       cn(dataTableHeaderContentVariants(), headerClassName),
     );
@@ -277,8 +351,8 @@ export function renderDataTableHeader<TData extends RowData>(
 
   return (
     <Box
-      as='button'
-      type='button'
+      as="button"
+      type="button"
       className={cn(
         dataTableSortButtonVariants({
           sortable: canSort,
@@ -288,9 +362,9 @@ export function renderDataTableHeader<TData extends RowData>(
       )}
       onClick={header.column.getToggleSortingHandler()}
     >
-      {withOverflowTooltip(renderedHeader, 'min-w-0 flex-1 truncate')}
+      {withInlineOverflowTooltip(renderedHeader, 'min-w-0 flex-1 truncate')}
       {sortIndex > -1 ? (
-        <Box as='span' className={dataTableSortIndexVariants()}>
+        <Box as="span" className={dataTableSortIndexVariants()}>
           {sortIndex + 1}
         </Box>
       ) : null}
@@ -303,6 +377,8 @@ export function renderDataTableCellContent<TData extends RowData>(
   row: Row<TData>,
   cell: Cell<TData, unknown>,
 ) {
+  const cellContentClassName = cell.column.columnDef.meta?.cellContentClassName ?? 'truncate';
+
   if (cell.getIsGrouped()) {
     const groupedContent = flexRender(cell.column.columnDef.cell, cell.getContext());
     const groupedTooltipLabel = getOverflowTooltipLabel(cell.getValue());
@@ -311,29 +387,32 @@ export function renderDataTableCellContent<TData extends RowData>(
       <Box className={dataTableGroupedCellVariants()}>
         {row.getCanExpand() ? (
           <Box
-            as='button'
-            type='button'
+            as="button"
+            type="button"
             aria-label={row.getIsExpanded() ? 'Collapse grouped row' : 'Expand grouped row'}
             className={dataTableGroupedToggleVariants()}
             onClick={row.getToggleExpandedHandler()}
           >
             {row.getIsExpanded() ? (
-              <ChevronDown aria-hidden='true' className='h-4 w-4' />
+              <ChevronDown aria-hidden="true" className="h-4 w-4" />
             ) : (
-              <ChevronRight aria-hidden='true' className='h-4 w-4' />
+              <ChevronRight aria-hidden="true" className="h-4 w-4" />
             )}
           </Box>
         ) : null}
         {groupedTooltipLabel ? (
-          <DataTableOverflowTooltip className='block min-w-0 flex-1 truncate' label={groupedTooltipLabel}>
+          <DataTableOverflowTooltip
+            className={cn('block min-w-0 flex-1', cellContentClassName)}
+            label={groupedTooltipLabel}
+          >
             {groupedContent}
           </DataTableOverflowTooltip>
         ) : (
-          <Box as='span' className='block min-w-0 flex-1 truncate'>
+          <Box as="div" className={cn('block min-w-0 flex-1', cellContentClassName)}>
             {groupedContent}
           </Box>
         )}
-        <Box as='span' className={dataTableGroupedCellCountVariants()}>
+        <Box as="span" className={dataTableGroupedCellCountVariants()}>
           {row.subRows.length}
         </Box>
       </Box>
@@ -349,13 +428,13 @@ export function renderDataTableCellContent<TData extends RowData>(
 
     if (aggregatedTooltipLabel) {
       return (
-        <DataTableOverflowTooltip className='truncate' label={aggregatedTooltipLabel}>
+        <DataTableOverflowTooltip className={cellContentClassName} label={aggregatedTooltipLabel}>
           {aggregatedContent}
         </DataTableOverflowTooltip>
       );
     }
 
-    return withOverflowTooltip(aggregatedContent, 'truncate');
+    return withOverflowTooltip(aggregatedContent, cellContentClassName);
   }
 
   if (cell.getIsPlaceholder()) {
@@ -364,16 +443,17 @@ export function renderDataTableCellContent<TData extends RowData>(
 
   const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
   const cellTooltipLabel = getOverflowTooltipLabel(cell.getValue());
+  const isPrimitiveCellContent = typeof cellContent === 'string' || typeof cellContent === 'number';
 
-  if (cellTooltipLabel) {
+  if (cellTooltipLabel && isPrimitiveCellContent) {
     return (
-      <DataTableOverflowTooltip className='truncate' label={cellTooltipLabel}>
+      <DataTableOverflowTooltip className={cellContentClassName} label={cellTooltipLabel}>
         {cellContent}
       </DataTableOverflowTooltip>
     );
   }
 
-  return withOverflowTooltip(cellContent, 'truncate');
+  return withOverflowTooltip(cellContent, cellContentClassName);
 }
 
 export function DataTableBodyRow<TData extends RowData>({
@@ -427,7 +507,10 @@ export function DataTableBodyRow<TData extends RowData>({
 
       {renderExpandedContent && row.getIsExpanded() ? (
         <TableRow data-state={row.getIsSelected() ? 'selected' : undefined}>
-          <TableCell colSpan={visibleColumnCount} className={dataTableExpandedContentCellVariants()}>
+          <TableCell
+            colSpan={visibleColumnCount}
+            className={dataTableExpandedContentCellVariants()}
+          >
             {renderExpandedContent(row, table)}
           </TableCell>
         </TableRow>
@@ -436,14 +519,11 @@ export function DataTableBodyRow<TData extends RowData>({
   );
 }
 
-export function renderDataTableStatusRow(
-  content: React.ReactNode,
-  visibleColumnCount: number,
-) {
+export function renderDataTableStatusRow(content: React.ReactNode, visibleColumnCount: number) {
   return (
     <TableRow>
       <TableCell colSpan={visibleColumnCount} className={dataTableStatusCellVariants()}>
-        <Box data-slot='data-table-status' className={dataTableStatusContentVariants()}>
+        <Box data-slot="data-table-status" className={dataTableStatusContentVariants()}>
           {content}
         </Box>
       </TableCell>
@@ -451,13 +531,8 @@ export function renderDataTableStatusRow(
   );
 }
 
-export function getDefaultLoadingRowCount<TData extends RowData>(
-  table: DataTableInstance<TData>,
-) {
-  return Math.min(
-    Math.max(table.getState().pagination.pageSize, DEFAULT_LOADING_ROW_COUNT),
-    6,
-  );
+export function getDefaultLoadingRowCount<TData extends RowData>(table: DataTableInstance<TData>) {
+  return Math.min(Math.max(table.getState().pagination.pageSize, DEFAULT_LOADING_ROW_COUNT), 6);
 }
 
 export function renderDataTableFooters<TData extends RowData>({
@@ -471,7 +546,9 @@ export function renderDataTableFooters<TData extends RowData>({
 }) {
   const footerGroups = table.getFooterGroups();
   const hasColumnFooters = footerGroups.some((group) =>
-    group.headers.some((header) => !header.isPlaceholder && header.column.columnDef.footer !== undefined),
+    group.headers.some(
+      (header) => !header.isPlaceholder && header.column.columnDef.footer !== undefined,
+    ),
   );
   const customFooter = renderFooter?.(table);
 
@@ -531,16 +608,25 @@ export function DataTablePagination<TData extends RowData>({
 
   return (
     <Box
-      as='section'
-      data-slot='data-table-pagination'
+      as="section"
+      data-slot="data-table-pagination"
       className={cn('pt-1', className)}
       {...props}
     >
       <Box className={dataTablePaginationMetaVariants()}>
-        <Box as='p' className='text-sm text-muted-foreground'>
-          Showing <Box as='span' className='font-medium text-foreground tabular-nums'>{pageStart}</Box>-
-          <Box as='span' className='font-medium text-foreground tabular-nums'>{pageEnd}</Box> of{' '}
-          <Box as='span' className='font-medium text-foreground tabular-nums'>{rowCount}</Box>
+        <Box as="p" className="text-sm text-muted-foreground">
+          Showing{' '}
+          <Box as="span" className="font-medium text-foreground tabular-nums">
+            {pageStart}
+          </Box>
+          -
+          <Box as="span" className="font-medium text-foreground tabular-nums">
+            {pageEnd}
+          </Box>{' '}
+          of{' '}
+          <Box as="span" className="font-medium text-foreground tabular-nums">
+            {rowCount}
+          </Box>
         </Box>
       </Box>
       <Pagination
@@ -564,5 +650,3 @@ export function DataTablePagination<TData extends RowData>({
 }
 
 export { getSortDirectionLabel };
-
-

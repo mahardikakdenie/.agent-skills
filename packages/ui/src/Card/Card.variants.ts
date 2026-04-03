@@ -1,7 +1,18 @@
 import { cva } from 'class-variance-authority';
 
 export const cardRootVariants = cva(
-  'rounded-lg border border-border bg-card text-card-foreground shadow-sm transition-shadow motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+  'rounded-lg transition-shadow motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+  {
+    variants: {
+      variant: {
+        outline: 'border border-border bg-card text-card-foreground shadow-none',
+        shadow: 'border border-border bg-card text-card-foreground shadow-sm',
+      },
+    },
+    defaultVariants: {
+      variant: 'outline',
+    },
+  },
 );
 
 export const cardHeaderVariants = cva('flex flex-col gap-1.5 p-6');

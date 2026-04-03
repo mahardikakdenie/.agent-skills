@@ -7,6 +7,23 @@
 
 ---
 
+## 2026-04-03 - Shared Display Surface Defaults Reconciled Across Data-Display Components
+
+Changed:
+
+- Realigned shared data-display surfaces so newly normalized display shells now default to `variant='outline'` with no resting shadow.
+- Added a small internal display-surface source of truth in `packages/ui/src/utils/display-surface-variants.ts` for the shared `outline | shadow` family used by `Card`, `Avatar`, `Accordion`, `DataTable`, and `Timeline`.
+- Moved shadow treatment out of base classes and onto explicit surface variants on the actual owned render surface for those components.
+- Updated stories/specs and reconciled `02-api-conventions.md`, `11-master-component-roadmap.md`, and `13-implementation-batches.md` so the normalization `_output` set no longer implies shadowed defaults or the older Card story naming.
+- Kept existing compatibility behavior intact for already-normalized alias-driven components such as `Alert` and `Badge`, while leaving structurally neutral primitives like `Table`, `Skeleton`, and `Image` out of the new public surface-variant family.
+
+Impact:
+
+- Downstream migrations now have one clearer display-surface rule: omit `variant` for a bordered flat surface, or pass `variant='shadow'` when the shared component should own elevation.
+- The default rendering path no longer bakes accidental shadow into shared display containers, which reduces visual drift and makes variant precedence predictable.
+
+---
+
 ## 2026-04-03 - Shared Navigation Surface Variant Family Reconciled Across Navigation Surfaces
 
 Changed:
@@ -51,6 +68,22 @@ Impact:
 
 - Downstream migrations can normalize elevated versus border-only field shells through one shared prop family instead of per-component booleans or inconsistent defaults.
 - Existing apps that still pass `variant='default'` keep a migration-safe path, but the canonical docs, specs, and stories now point new adoption to `outline`.
+
+---
+
+## 2026-04-03 - DataTable Cell Content Styling Hook Synced
+
+Changed:
+
+- Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` surface, which now also exposes TanStack `columnDef.meta.cellContentClassName` alongside the existing row, header-cell, and body-cell styling hooks.
+- Clarified the boundary between `meta.cellClassName` and `meta.cellContentClassName`: the first styles the semantic `<td>` shell, while the second styles the shared overflow-aware content wrapper inside the body cell.
+- Reconciled the DataTable spec, `02-api-conventions.md`, and `21-adapter-mapping.md` so thin adapters can map legacy inner-value class hooks without patching DOM structure or widening the shared API with app-specific variants.
+- Documented the current overflow behavior precisely: standard body cells only infer automatic overflow tooltips from primitive rendered content, while grouped and aggregated rows still use underlying table values for tooltip labels.
+
+Impact:
+
+- Downstream apps with local table wrappers can now preserve inner content alignment, flex layout, or truncation overrides separately from `<td>` shell styling during migration.
+- The normalization output set now matches the shipped render boundary and no longer implies that every custom React-node body cell automatically receives the same tooltip inference path as plain text cells.
 
 ---
 
@@ -1234,5 +1267,3 @@ Impact:
 
 - The canonical shared date family now consists of `Calendar`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - Ready apps should map single-value date-time inputs to `DatePicker` with `withTime` and bounded start/end date-time windows to `DateRangePicker` with `withTime`.
-
-

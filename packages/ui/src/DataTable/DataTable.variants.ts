@@ -14,9 +14,17 @@ export const dataTableToolbarActionsVariants = cva(
   'flex flex-wrap items-center gap-2 lg:justify-end',
 );
 
-export const dataTableViewportVariants = cva(
-  'w-full max-w-full overflow-auto rounded-lg border border-border bg-background',
-);
+export const dataTableViewportVariants = cva('w-full max-w-full overflow-auto rounded-lg', {
+  variants: {
+    variant: {
+      outline: 'border border-border bg-background shadow-none',
+      shadow: 'border border-border bg-background shadow-sm',
+    },
+  },
+  defaultVariants: {
+    variant: 'outline',
+  },
+});
 
 export const dataTableHeaderContentVariants = cva('block min-w-0 max-w-full truncate');
 
@@ -54,7 +62,9 @@ export const dataTableEmptyStateVariants = cva(
   'mx-auto flex max-w-md flex-col items-center gap-2 py-0.5 text-center',
 );
 
-export const dataTableEmptyTitleVariants = cva('text-sm font-semibold tracking-tight text-foreground');
+export const dataTableEmptyTitleVariants = cva(
+  'text-sm font-semibold tracking-tight text-foreground',
+);
 
 export const dataTableSkeletonRowVariants = cva('flex items-center py-1');
 
@@ -108,5 +118,3 @@ export const dataTableViewOptionsButtonVariants = cva('gap-2');
 export const dataTableSelectionSummaryVariants = cva(
   'inline-flex items-center gap-2 rounded-md border border-border bg-muted/30 px-3 py-1.5 text-sm text-muted-foreground',
 );
-
-

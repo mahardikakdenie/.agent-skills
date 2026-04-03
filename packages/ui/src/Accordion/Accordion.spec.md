@@ -2,12 +2,12 @@
 
 ## Metadata
 
-| Field | Value |
-| --- | --- |
-| Storybook Group | `Data Display` |
-| Component Tier | `Tier 2 (Composite)` |
-| Structure Tier | `Complex` |
-| Based on | `@radix-ui/react-accordion` |
+| Field           | Value                       |
+| --------------- | --------------------------- |
+| Storybook Group | `Data Display`              |
+| Component Tier  | `Tier 2 (Composite)`        |
+| Structure Tier  | `Complex`                   |
+| Based on        | `@radix-ui/react-accordion` |
 
 ---
 
@@ -34,15 +34,15 @@ The public API stays compound through `Accordion`, `AccordionItem`, `AccordionHe
 
 ## Design Decisions
 
-| Decision | Choice | Rationale |
-| --- | --- | --- |
-| Primitive | `@radix-ui/react-accordion` | The roadmap explicitly targets Radix Accordion and the primitive already solves keyboard and ARIA behavior correctly. |
-| Public API shape | compound exports | Keeps content flexible and avoids an over-specific `items[]` contract that would not survive cross-app variation. |
-| Controlled vs uncontrolled | both | Existing baselines use both default-open and externally managed active-section flows. |
-| Visual variants | none in this pass | Cross-app demand does not justify shared visual mode props yet; structural styling plus `className` is sufficient. |
-| State model | single and multiple modes | Matches both the roadmap contract and the claim-portal baseline. |
-| Motion strategy | CSS grid-row transition | Avoids extra animation dependencies while keeping open and close motion legible. |
-| Box-only DOM policy | explicit | Root, item, heading, trigger, content wrapper, and story markup all render through `Box` or Radix `asChild` composition. |
+| Decision                   | Choice                                       | Rationale                                                                                                                |
+| -------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Primitive                  | `@radix-ui/react-accordion`                  | The roadmap explicitly targets Radix Accordion and the primitive already solves keyboard and ARIA behavior correctly.    |
+| Public API shape           | compound exports                             | Keeps content flexible and avoids an over-specific `items[]` contract that would not survive cross-app variation.        |
+| Controlled vs uncontrolled | both                                         | Existing baselines use both default-open and externally managed active-section flows.                                    |
+| Visual variants            | shared `outline` / `shadow` surface variants | Keeps the default disclosure shell flat while allowing explicit elevation on the actual item container when needed.      |
+| State model                | single and multiple modes                    | Matches both the roadmap contract and the claim-portal baseline.                                                         |
+| Motion strategy            | CSS grid-row transition                      | Avoids extra animation dependencies while keeping open and close motion legible.                                         |
+| Box-only DOM policy        | explicit                                     | Root, item, heading, trigger, content wrapper, and story markup all render through `Box` or Radix `asChild` composition. |
 
 ---
 
@@ -50,50 +50,52 @@ The public API stays compound through `Accordion`, `AccordionItem`, `AccordionHe
 
 ### Root
 
-| Prop | Type | Default | Required | Description |
-| --- | --- | --- | --- | --- |
-| `type` | `'single' \| 'multiple'` | `'single'` | No | Controls whether one or several sections may stay open. |
-| `collapsible` | `boolean` | `false` | No | Allows the open section to fully collapse when `type="single"`. |
-| `value` | `string \| string[]` | `undefined` | No | Controlled open item value(s). |
-| `defaultValue` | `string \| string[]` | `undefined` | No | Uncontrolled initial open item value(s). |
-| `onValueChange` | `(value: string) => void` or `(value: string[]) => void` | `undefined` | No | Called when the open item set changes. In single collapsible mode, a fully closed state comes back as `''` from Radix. |
-| `className` | `string` | `undefined` | No | Consumer override merged onto the shared root wrapper. |
-| `children` | `React.ReactNode` | - | Yes | Composed `AccordionItem` children. |
+| Prop            | Type                                                     | Default     | Required | Description                                                                                                            |
+| --------------- | -------------------------------------------------------- | ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `type`          | `'single' \| 'multiple'`                                 | `'single'`  | No       | Controls whether one or several sections may stay open.                                                                |
+| `collapsible`   | `boolean`                                                | `false`     | No       | Allows the open section to fully collapse when `type="single"`.                                                        |
+| `value`         | `string \| string[]`                                     | `undefined` | No       | Controlled open item value(s).                                                                                         |
+| `defaultValue`  | `string \| string[]`                                     | `undefined` | No       | Uncontrolled initial open item value(s).                                                                               |
+| `onValueChange` | `(value: string) => void` or `(value: string[]) => void` | `undefined` | No       | Called when the open item set changes. In single collapsible mode, a fully closed state comes back as `''` from Radix. |
+| `variant`       | `'outline' \| 'shadow'`                                  | `'outline'` | No       | Shared item-shell surface treatment cascaded from the root to each `AccordionItem`.                                    |
+| `className`     | `string`                                                 | `undefined` | No       | Consumer override merged onto the shared root wrapper.                                                                 |
+| `children`      | `React.ReactNode`                                        | -           | Yes      | Composed `AccordionItem` children.                                                                                     |
 
 ### Compound exports
 
-| Component | Props type | Purpose |
-| --- | --- | --- |
-| `AccordionItem` | `AccordionPrimitive.Item` props + `className` | Shared item shell; requires a unique `value`. |
-| `AccordionHeader` | `AccordionPrimitive.Header` props + `className` | Semantic heading wrapper for the trigger. |
-| `AccordionTrigger` | `AccordionPrimitive.Trigger` props + `className` | Shared disclosure button with built-in chevron indicator. |
-| `AccordionContent` | `AccordionPrimitive.Content` props + `className` | Animated inline content wrapper for expanded panel content. |
+| Component          | Props type                                                | Purpose                                                                                      |
+| ------------------ | --------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `AccordionItem`    | `AccordionPrimitive.Item` props + `variant` + `className` | Shared item shell; requires a unique `value`. Item-level `variant` overrides the root value. |
+| `AccordionHeader`  | `AccordionPrimitive.Header` props + `className`           | Semantic heading wrapper for the trigger.                                                    |
+| `AccordionTrigger` | `AccordionPrimitive.Trigger` props + `className`          | Shared disclosure button with built-in chevron indicator.                                    |
+| `AccordionContent` | `AccordionPrimitive.Content` props + `className`          | Animated inline content wrapper for expanded panel content.                                  |
 
 ---
 
 ## Visual Contract
 
-`Accordion` does not expose public `variant` or `size` props in this pass. The normalized visual baseline is a bordered stacked disclosure list with shared spacing and focus behavior.
+`Accordion` exposes one narrow shared surface axis for item shells while keeping spacing, motion, and disclosure behavior unchanged.
 
-| Shared treatment | Description | When to use |
-| --- | --- | --- |
-| Default item shell | Rounded bordered section with neutral card surface | General inline disclosures and settings detail blocks |
-| Open item | Subtle border emphasis and content reveal | Active or expanded section |
-| Disabled item | Muted opacity and blocked interaction | Temporarily unavailable sections |
-| Consumer tuning | `className` on root, item, trigger, or content | Narrow parity deltas that do not justify a new shared prop |
+| Shared treatment     | Description                                                              | When to use                                                                        |
+| -------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `outline` item shell | Rounded bordered section with neutral card surface and no resting shadow | Default inline disclosures and the fallback when `variant` is omitted              |
+| `shadow` item shell  | Rounded bordered section with `shadow-sm` on the actual item container   | Use when stacked disclosures need stronger separation from the surrounding surface |
+| Open item            | Subtle border emphasis and content reveal                                | Active or expanded section                                                         |
+| Disabled item        | Muted opacity and blocked interaction                                    | Temporarily unavailable sections                                                   |
+| Consumer tuning      | `className` on root, item, trigger, or content                           | Narrow parity deltas beyond the normalized surface variants                        |
 
 ---
 
 ## States
 
-| State | Visual behavior | Accessibility |
-| --- | --- | --- |
-| Collapsed | Trigger visible, content hidden | Trigger exposes `aria-expanded="false"` |
-| Expanded | Trigger remains visible and content reveals inline | Trigger exposes `aria-expanded="true"` and links to content via Radix ids |
-| Single mode | Opening one item closes the previously open item | Keyboard focus stays on the active trigger |
-| Multiple mode | Several items may remain open together | Each trigger manages its own expanded state |
-| Disabled | Trigger dims and does not respond to input | Disabled item is removed from interaction |
-| Focus | Trigger shows the shared dense-surface focus treatment without a detached offset halo | Keyboard users can track focus clearly |
+| State         | Visual behavior                                                                       | Accessibility                                                             |
+| ------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Collapsed     | Trigger visible, content hidden                                                       | Trigger exposes `aria-expanded="false"`                                   |
+| Expanded      | Trigger remains visible and content reveals inline                                    | Trigger exposes `aria-expanded="true"` and links to content via Radix ids |
+| Single mode   | Opening one item closes the previously open item                                      | Keyboard focus stays on the active trigger                                |
+| Multiple mode | Several items may remain open together                                                | Each trigger manages its own expanded state                               |
+| Disabled      | Trigger dims and does not respond to input                                            | Disabled item is removed from interaction                                 |
+| Focus         | Trigger shows the shared dense-surface focus treatment without a detached offset halo | Keyboard users can track focus clearly                                    |
 
 ---
 
@@ -101,23 +103,23 @@ The public API stays compound through `Accordion`, `AccordionItem`, `AccordionHe
 
 ### ARIA roles & attributes
 
-| Element | Role / Attribute | Value |
-| --- | --- | --- |
-| Header | semantic heading | Provided through `AccordionHeader` with `Box as="h3"` |
-| Trigger | native button | Managed by Radix with `aria-expanded` and `aria-controls` |
-| Content | region / content wrapper | Managed by Radix and linked back to the trigger |
-| Disabled item | `data-disabled` / native disabled behavior | Prevents activation and focus movement onto the trigger |
+| Element       | Role / Attribute                           | Value                                                     |
+| ------------- | ------------------------------------------ | --------------------------------------------------------- |
+| Header        | semantic heading                           | Provided through `AccordionHeader` with `Box as="h3"`     |
+| Trigger       | native button                              | Managed by Radix with `aria-expanded` and `aria-controls` |
+| Content       | region / content wrapper                   | Managed by Radix and linked back to the trigger           |
+| Disabled item | `data-disabled` / native disabled behavior | Prevents activation and focus movement onto the trigger   |
 
 ### Keyboard map
 
-| Key | Behavior |
-| --- | --- |
+| Key                 | Behavior                                              |
+| ------------------- | ----------------------------------------------------- |
 | `Tab` / `Shift+Tab` | Moves into and out of the accordion in document order |
-| `Enter` / `Space` | Toggles the focused section |
-| `ArrowDown` | Moves focus to the next trigger |
-| `ArrowUp` | Moves focus to the previous trigger |
-| `Home` | Moves focus to the first trigger |
-| `End` | Moves focus to the last trigger |
+| `Enter` / `Space`   | Toggles the focused section                           |
+| `ArrowDown`         | Moves focus to the next trigger                       |
+| `ArrowUp`           | Moves focus to the previous trigger                   |
+| `Home`              | Moves focus to the first trigger                      |
+| `End`               | Moves focus to the last trigger                       |
 
 ### Focus management
 
@@ -213,14 +215,14 @@ const [value, setValue] = React.useState('eligibility');
 
 ## Do / Don't
 
-| Do | Don't |
-| --- | --- |
+| Do                                                                    | Don't                                                                                             |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | Use compound children so each item can own its own content structure. | Add a fixed `items[]` API to the shared component just because one app currently uses that shape. |
-| Use `type="single"` with `collapsible` for FAQ and summary sections. | Rebuild close/open state in app code for the shared baseline. |
-| Map local arrays into `AccordionItem` children when migrating. | Move domain formatting or service logic into the shared trigger or content. |
-| Keep trigger labels short and meaningful. | Put long paragraphs directly into the trigger label. |
-| Use `className` for narrow spacing parity deltas. | Add new boolean props for every local border, spacing, or icon variation. |
-| Keep authored shared markup on `Box`. | Hand-write native DOM tags in the shared component or stories. |
+| Use `type="single"` with `collapsible` for FAQ and summary sections.  | Rebuild close/open state in app code for the shared baseline.                                     |
+| Map local arrays into `AccordionItem` children when migrating.        | Move domain formatting or service logic into the shared trigger or content.                       |
+| Keep trigger labels short and meaningful.                             | Put long paragraphs directly into the trigger label.                                              |
+| Use `className` for narrow spacing parity deltas.                     | Add new boolean props for every local border, spacing, or icon variation.                         |
+| Keep authored shared markup on `Box`.                                 | Hand-write native DOM tags in the shared component or stories.                                    |
 
 ---
 
@@ -243,7 +245,8 @@ Roadmap alignment:
 
 ## Changelog
 
-| Date | Change |
-| --- | --- |
-| 2026-03-12 | Initial Accordion spec |
+| Date       | Change                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| 2026-03-12 | Initial Accordion spec                                                                           |
 | 2026-03-17 | Normalized trigger focus to the shared dense-surface recipe and removed the detached offset halo |
+| 2026-04-03 | Added normalized `outline` / `shadow` item-shell variants with `outline` as the default          |
