@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
 import { fn } from 'storybook/test';
 
+import { Box } from '../Box';
+import { inputVariantValues } from '../Input/Input.types';
 import { FileUpload } from './FileUpload';
 import type { FileUploadDisplayValue, FileUploadProps, FileUploadValue } from './FileUpload.types';
 
@@ -55,6 +57,7 @@ const meta = {
     label: 'Supporting documents',
     accept: '.pdf,.png,.jpg',
     multiple: false,
+    variant: 'outline',
     disabled: false,
     maxSize: 5 * 1024 * 1024,
     error: false,
@@ -71,6 +74,10 @@ const meta = {
     },
     multiple: {
       control: 'boolean',
+    },
+    variant: {
+      control: 'select',
+      options: inputVariantValues,
     },
     disabled: {
       control: 'boolean',
@@ -136,6 +143,29 @@ export const MultipleFiles: Story = {
       description: {
         story:
           'Shows additive multi-file behavior, where later picker selections and drag-drop intake append to the existing list instead of replacing it.',
+      },
+    },
+  },
+};
+
+export const Variants: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-3">
+      {inputVariantValues.map((variant) => (
+        <ControlledStoryView
+          key={variant}
+          variant={variant}
+          label={`${variant.charAt(0).toUpperCase() + variant.slice(1)} upload`}
+          initialValue={invoicePdf}
+          clearable
+        />
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compares the shared file-upload field variants on the actual dropzone shell.',
       },
     },
   },

@@ -46,7 +46,7 @@ This component intentionally stops at the field-shell boundary. It does not impl
 
 | Prop            | Type                                                                    | Default     | Required | Description                                                                 |
 | --------------- | ----------------------------------------------------------------------- | ----------- | -------- | --------------------------------------------------------------------------- |
-| `variant`       | `'default' \| 'outline' \| 'ghost'`                                     | `'default'` | No       | Shared field shell appearance.                                              |
+| `variant`       | `'outline' \| 'shadow' \| 'ghost' \| 'default'`                         | `'outline'` | No       | Shared field shell appearance. Legacy `default` remains a compatibility alias for `shadow`. |
 | `size`          | `'xs' \| 'sm' \| 'md' \| 'lg'`                                          | `'md'`      | No       | Shared density scale for the control and surrounding copy.                  |
 | `inputMode`     | `'text' \| 'email' \| 'phone' \| 'currency' \| 'number' \| 'password'` | `'text'`    | No       | Normalized semantic entry intent that also maps sensible native attributes. |
 | `error`         | `string \| boolean`                                                     | `false`     | No       | Marks the field invalid; string values also render inline error text.       |
@@ -71,9 +71,13 @@ This component intentionally stops at the field-shell boundary. It does not impl
 
 | Variant   | Description                                 | When to use                                                     |
 | --------- | ------------------------------------------- | --------------------------------------------------------------- |
-| `default` | Bordered surface with background and shadow | Standard form and filter inputs.                                |
-| `outline` | Lower-elevation bordered shell              | Dense or layered layouts that already provide strong surfaces.  |
+| `outline` | Bordered surface without shadow             | Standard form and filter inputs.                                |
+| `shadow`  | Bordered surface with background and shadow | Layered forms that still benefit from extra elevation.          |
 | `ghost`   | Minimal chrome with muted background        | Toolbar search and inline utility fields with lighter emphasis. |
+
+Legacy compatibility:
+
+- `default` remains supported as an alias for `shadow`.
 
 ## Sizes
 

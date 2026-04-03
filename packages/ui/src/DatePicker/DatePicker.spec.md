@@ -52,7 +52,7 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 
 | Prop | Type | Default | Required | Description |
 | --------------- | ----------------------------------------------------------------------- | ----------- | -------- | --------------------------------------------------------------------------- |
-| `variant` | `'default' \| 'outline' \| 'ghost'` | `'default'` | No | Shared field shell appearance aligned with `Input`. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared field shell appearance aligned with `Input`. Legacy `default` remains a compatibility alias for `shadow`. |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | No | Shared density scale for the trigger shell and affordances. |
 | `formatDate` | `(date: Date) => string` | localized medium date | No | Optional display-only formatter for the selected value shown inside the trigger. |
 | `value` | `Date \| null` | internal state | No | Controlled selected date. |
@@ -82,9 +82,13 @@ It composes the shipped `Calendar` and `Popover` primitives, keeps the authored 
 
 | Variant | Description | When to use |
 | --------- | ------------------------------------------- | --------------------------------------------------------------- |
-| `default` | Bordered surface with background and shadow | Standard form and filter date fields. |
-| `outline` | Lower-elevation bordered shell | Dense or layered layouts that already provide strong surfaces. |
+| `outline` | Bordered surface without shadow | Standard form and filter date fields. |
+| `shadow` | Bordered surface with background and shadow | Layered forms that still benefit from extra elevation. |
 | `ghost` | Minimal chrome with muted background | Toolbar filters and inline utility date fields. |
+
+Legacy compatibility:
+
+- `default` remains supported as an alias for `shadow`.
 
 ## Sizes
 

@@ -4,6 +4,7 @@ import {
   getCompactControlFocusRecipe,
   getFieldShellFocusRecipe,
 } from '../utils/focus-normalization';
+import { fieldVariantOptions } from '../utils/field-variants';
 
 const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
@@ -20,11 +21,7 @@ export const dateRangePickerControlVariants = cva(
   ].join(' '),
   {
     variants: {
-      variant: {
-        default: 'border-input bg-background shadow-sm',
-        outline: 'border-border bg-background',
-        ghost: 'border-transparent bg-muted/40 shadow-none',
-      },
+      variant: fieldVariantOptions,
       size: {
         xs: 'min-h-8 px-2.5',
         sm: 'min-h-9 px-3',
@@ -41,7 +38,7 @@ export const dateRangePickerControlVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'default',
+      variant: 'outline',
       size: 'md',
       invalid: false,
       disabled: false,
@@ -175,7 +172,7 @@ export const dateRangePickerTimeLabelVariants = cva(
 
 export const dateRangePickerTimeInputVariants = cva(
   [
-    'h-8 w-full min-w-0 rounded-md border border-input bg-background px-2.5 text-sm tabular-nums text-foreground shadow-sm',
+    'h-8 w-full min-w-0 rounded-md border border-border bg-background px-2.5 text-sm tabular-nums text-foreground',
     'transition-colors motion-reduce:transition-none',
     directFieldShellFocus.base,
     'disabled:cursor-not-allowed disabled:opacity-60',

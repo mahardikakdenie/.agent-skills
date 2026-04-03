@@ -42,7 +42,7 @@ import {
 export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
   (
     {
-      variant = 'default',
+      variant = 'outline',
       size = 'md',
       formatDate,
       value,

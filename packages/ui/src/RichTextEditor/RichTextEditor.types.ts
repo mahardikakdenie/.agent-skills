@@ -1,5 +1,7 @@
 import type * as React from 'react';
 
+import { type InputVariant } from '../Input/Input.types';
+
 export const richTextEditorToolbarModeValues = ['default', 'minimal', 'none'] as const;
 export const richTextEditorToolbarActionValues = [
   'paragraph',
@@ -32,6 +34,7 @@ export interface RichTextEditorProps
   onChange?: (value: string) => void;
   onBlur?: () => void;
   onFocus?: () => void;
+  variant?: InputVariant;
   toolbar?: RichTextEditorToolbarMode;
   readonly?: boolean;
   sanitize?: boolean | RichTextEditorSanitizer;

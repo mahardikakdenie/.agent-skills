@@ -17,7 +17,7 @@
 
 This shared contract intentionally stays narrower than some local baseline variants. It covers label and error wiring, trigger placeholder, client-side search, optional parent-owned search text, parent-owned search notifications, disabled and loading treatment, clearable reset behavior, an optional create-on-enter affordance, and custom option-row rendering. It still does not absorb multi-select, remote transport, phone-code specialization, domain-specific creation semantics, or app-specific result formatting. Those remain app-local.
 
-`Combobox` now participates in the shared field-shell sizing family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`. The public size ladder is `xs | sm | md | lg`, with `md` as the default.
+`Combobox` now participates in the shared field-shell family used by `Input`, `DatePicker`, `DateRangePicker`, and `MonthPicker`. The public trigger variants are `outline | shadow | ghost`, with `outline` as the default, and the size ladder remains `xs | sm | md | lg`, with `md` as the default. Legacy `default` remains a compatibility alias for `shadow`.
 
 **When to use:**
 
@@ -65,6 +65,7 @@ This shared contract intentionally stays narrower than some local baseline varia
 | `searchPlaceholder` | `string` | `'Search options…'` | No | Placeholder inside the searchable command input. |
 | `searchValue` | `string` | internal state | No | Controlled search input text. When omitted, the component manages the query internally. |
 | `onSearchValueChange` | `(value: string) => void` | `undefined` | No | Notifies the parent whenever the search input changes so debounce, fetching, and option refresh can stay external. |
+| `variant` | `'outline' | 'shadow' | 'ghost' | 'default'` | `'outline'` | No | Shared field-shell appearance applied to the trigger. Legacy `default` remains a compatibility alias for `shadow`. |
 | `size` | `'xs' | 'sm' | 'md' | 'lg'` | `'md'` | No | Shared field-shell density applied to the trigger and searchable input row. |
 | `disabled` | `boolean` | `false` | No | Disables the trigger and option interaction. |
 | `loading` | `boolean` | `false` | No | Shows loading treatment and blocks selection while options are refreshing. |
@@ -199,6 +200,7 @@ export interface ComboboxOptionRenderState {
 
 - [x] `Default`
 - [x] `Search`
+- [x] `Variants`
 - [x] `Sizes`
 - [x] `Empty`
 - [x] `DisabledState`

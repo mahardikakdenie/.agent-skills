@@ -4,6 +4,7 @@ import {
   getCompactControlFocusRecipe,
   getFieldShellFocusRecipe,
 } from '../utils/focus-normalization';
+import { fieldVariantOptions } from '../utils/field-variants';
 
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
@@ -14,16 +15,17 @@ export const textareaControlVariants = cva('relative w-full');
 
 export const textareaElementVariants = cva(
   [
-    'min-h-24 w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm text-foreground shadow-sm',
+    'min-h-24 w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm text-foreground',
     'transition-colors motion-reduce:transition-none',
     'placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60',
     directFieldShellFocus.base,
   ].join(' '),
   {
     variants: {
+      variant: fieldVariantOptions,
       invalid: {
         true: directFieldShellFocus.invalid,
-        false: 'border-input',
+        false: '',
       },
       clearable: {
         true: 'pr-10',
@@ -31,6 +33,7 @@ export const textareaElementVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'outline',
       invalid: false,
       clearable: false,
     },

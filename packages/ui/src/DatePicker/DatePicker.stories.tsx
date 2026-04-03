@@ -155,7 +155,7 @@ const meta = {
   component: DatePicker,
   tags: ['autodocs'],
   args: {
-    variant: 'default',
+    variant: 'outline',
     size: 'md',
     formatDate: undefined,
     label: 'Travel Date',

@@ -49,6 +49,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       searchPlaceholder = 'Search options…',
       searchValue,
       onSearchValueChange,
+      variant = 'outline',
       size = 'md',
       disabled = false,
       loading = false,
@@ -253,6 +254,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 aria-haspopup="listbox"
                 aria-controls={listId}
                 className={comboboxTriggerVariants({
+                  variant,
                   size,
                   disabled: interactiveDisabled,
                   invalid,

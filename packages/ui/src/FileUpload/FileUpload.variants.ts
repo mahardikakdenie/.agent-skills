@@ -1,20 +1,23 @@
 import { cva } from 'class-variance-authority';
 
+import { fieldVariantOptions } from '../utils/field-variants';
+
 export const fileUploadFieldVariants = cva('grid w-full gap-1.5');
 
 export const fileUploadControlVariants = cva('grid gap-2');
 
 export const fileUploadDropzoneVariants = cva(
   [
-    'relative isolate flex min-h-32 items-center justify-center gap-3 overflow-hidden rounded-xl border border-dashed px-4 py-5 shadow-sm',
+    'relative isolate flex min-h-32 items-center justify-center gap-3 overflow-hidden rounded-xl border border-dashed px-4 py-5',
     'bg-background ring-offset-background transition-[border-color,background-color,box-shadow,transform] motion-reduce:transition-none',
     'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
   ].join(' '),
   {
     variants: {
+      variant: fieldVariantOptions,
       invalid: {
         true: 'border-destructive/80 focus-within:ring-destructive/30',
-        false: 'border-input/80',
+        false: '',
       },
       disabled: {
         true: 'cursor-not-allowed bg-muted/20 opacity-70',
@@ -30,6 +33,7 @@ export const fileUploadDropzoneVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'outline',
       invalid: false,
       disabled: false,
       dragActive: false,

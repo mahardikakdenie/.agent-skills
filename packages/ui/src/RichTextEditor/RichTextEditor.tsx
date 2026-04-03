@@ -36,6 +36,7 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
       onChange,
       onBlur,
       onFocus,
+      variant = 'outline',
       toolbar = 'default',
       readonly = false,
       sanitize = true,
@@ -274,7 +275,7 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
 
         <Box
           data-slot='rich-text-editor-shell'
-          className={richTextEditorShellVariants({ invalid: hasError, readonly })}
+          className={richTextEditorShellVariants({ variant, invalid: hasError, readonly })}
           onKeyDownCapture={(event) => {
             handleRichTextEditorShellKeyDown({
               event,

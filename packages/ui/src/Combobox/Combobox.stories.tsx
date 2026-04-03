@@ -5,6 +5,7 @@ import { Box } from '../Box';
 import { Combobox } from './Combobox';
 import {
   comboboxSizeValues,
+  comboboxVariantValues,
   type ComboboxOption,
   type ComboboxProps,
 } from './Combobox.types';
@@ -96,6 +97,7 @@ const meta = {
     label: 'Country',
     placeholder: 'Select an option',
     searchPlaceholder: 'Search Countries…',
+    variant: 'outline',
     size: 'md',
     options,
     disabled: false,
@@ -109,6 +111,10 @@ const meta = {
     label: { control: 'text' },
     placeholder: { control: 'text' },
     searchPlaceholder: { control: 'text' },
+    variant: {
+      control: 'select',
+      options: comboboxVariantValues,
+    },
     size: {
       control: 'select',
       options: comboboxSizeValues,
@@ -202,6 +208,32 @@ export const Sizes: Story = {
       description: {
         story:
           'Shows the full shared field-shell size scale aligned with `Select` from `xs` through `lg`.',
+      },
+    },
+  },
+};
+
+export const Variants: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-3">
+      {comboboxVariantValues.map((variant) => (
+        <ComboboxStoryHarness
+          key={variant}
+          variant={variant}
+          label={variant.charAt(0).toUpperCase() + variant.slice(1)}
+          placeholder={`Select ${variant}`}
+          searchPlaceholder={`Search ${variant} options…`}
+          initialValue="my"
+          options={options}
+        />
+      ))}
+    </Box>
+  ),
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story: 'Compares the shared combobox trigger variants aligned with the input family.',
       },
     },
   },

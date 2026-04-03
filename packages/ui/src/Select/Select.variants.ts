@@ -4,6 +4,7 @@ import {
   getCompactControlFocusRecipe,
   getFieldShellFocusRecipe,
 } from '../utils/focus-normalization';
+import { fieldVariantOptions } from '../utils/field-variants';
 
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
@@ -29,13 +30,14 @@ export const selectContentLabelVariants = cva('px-3 py-1.5 text-xs font-semibold
 
 export const selectTriggerVariants = cva(
   [
-    'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background py-1.5 text-left leading-none shadow-sm',
+    'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background py-1.5 text-left leading-none',
     'transition-colors motion-reduce:transition-none',
     directFieldShellFocus.base,
     'data-[placeholder]:text-muted-foreground data-[state=open]:border-ring',
   ].join(' '),
   {
     variants: {
+      variant: fieldVariantOptions,
       size: {
         xs: 'min-h-8 px-2.5 text-xs',
         sm: 'min-h-9 px-3 text-sm',
@@ -44,7 +46,7 @@ export const selectTriggerVariants = cva(
       },
       invalid: {
         true: [directFieldShellFocus.invalid, 'data-[state=open]:border-destructive'].join(' '),
-        false: 'border-input',
+        false: '',
       },
       disabled: {
         true: 'cursor-not-allowed opacity-60',
@@ -78,6 +80,7 @@ export const selectTriggerVariants = cva(
       },
     ],
     defaultVariants: {
+      variant: 'outline',
       size: 'md',
       invalid: false,
       disabled: false,

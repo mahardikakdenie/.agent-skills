@@ -153,6 +153,18 @@ Keep local:
 - Centered modal confirmations that should instead migrate to `Dialog`.
 - Branded or campaign-specific sheets whose art direction, animation, or content policy is intentionally app-owned.
 
+## Shared Field-Shell Variant Family
+
+Direct adoption guidance:
+
+- The current shared field-shell components normalize visual chrome through `variant="outline" | "shadow" | "ghost"`, with `outline` as the canonical default for new shared usage.
+- Legacy elevated field shells that visually matched the older default treatment should map to `variant="shadow"`; `variant="default"` remains only as a compatibility alias where the shipped component surface still accepts it.
+- Older booleans and styling flags such as `withBorder`, `isWithShadow`, `bordered`, `plain`, or muted ghost-style wrappers should collapse into this shared variant family plus `className`, not into new component-specific appearance props.
+
+Scope:
+
+- `Input`, `Textarea`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `FileUpload`, `OtpInput`, and `RichTextEditor`
+
 ## Input
 
 Direct adoption guidance:

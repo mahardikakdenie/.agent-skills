@@ -141,7 +141,7 @@ const meta = {
   component: MonthPicker,
   tags: ['autodocs'],
   args: {
-    variant: 'default',
+    variant: 'outline',
     size: 'md',
     initialValue: new Date(2026, 6, 1),
     minMonth: undefined,

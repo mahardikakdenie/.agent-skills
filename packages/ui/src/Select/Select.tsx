@@ -60,6 +60,7 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
 }
 
 interface SelectContextValue {
+  variant: NonNullable<SelectProps['variant']>;
   size: NonNullable<SelectProps['size']>;
   disabled: boolean;
   invalid: boolean;
@@ -103,6 +104,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
     options,
     children,
     placeholder,
+    variant = 'outline',
     size = 'md',
     disabled = false,
     loading = false,
@@ -172,6 +174,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
   const contextValue = React.useMemo<SelectContextValue>(
     () => ({
       size,
+      variant,
       disabled: interactiveDisabled,
       invalid,
       loading,
@@ -192,6 +195,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>((selectPr
       loading,
       showClearButton,
       size,
+      variant,
       triggerId,
       handleClear,
     ],
@@ -322,6 +326,7 @@ export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerPr
             data-slot="select-trigger"
             className={cn(
               selectTriggerVariants({
+                variant: context.variant,
                 size: context.size,
                 invalid: context.invalid,
                 disabled: context.disabled,

@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Box } from '../Box';
 import { Textarea } from './Textarea';
+import { textareaVariantValues } from './Textarea.types';
 
 function ControlledTextareaStory(props: React.ComponentProps<typeof Textarea>) {
   const [value, setValue] = React.useState('');
@@ -15,6 +16,7 @@ const meta = {
   component: Textarea,
   tags: ['autodocs'],
   args: {
+    variant: 'outline',
     disabled: false,
     clearable: false,
     label: 'Notes',
@@ -23,6 +25,10 @@ const meta = {
     rows: 4,
   },
   argTypes: {
+    variant: {
+      control: 'select',
+      options: textareaVariantValues,
+    },
     disabled: {
       control: 'boolean',
     },
@@ -98,6 +104,29 @@ export const Resize: Story = {
   },
 };
 
+export const Variants: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-3">
+      {textareaVariantValues.map((variant) => (
+        <Textarea
+          key={variant}
+          variant={variant}
+          label={variant.charAt(0).toUpperCase() + variant.slice(1)}
+          placeholder={`Textarea variant: ${variant}`}
+          rows={4}
+        />
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compares the canonical shared textarea field variants.',
+      },
+    },
+  },
+};
+
 export const ErrorState: Story = {
   args: {
     label: 'Description',
@@ -160,4 +189,3 @@ export const Clearable: Story = {
     },
   },
 };
-

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { fn } from 'storybook/test';
 
 import { Box } from '../Box';
+import { inputVariantValues } from '../Input/Input.types';
 import { RichTextEditor } from './RichTextEditor';
 import { richTextEditorToolbarModeValues, type RichTextEditorProps } from './RichTextEditor.types';
 
@@ -51,6 +52,7 @@ const meta = {
   tags: ['autodocs'],
   args: {
     initialValue: '<p>Start with a short update.</p>',
+    variant: 'outline',
     toolbar: 'default',
     readonly: false,
     sanitize: true,
@@ -78,6 +80,10 @@ const meta = {
     },
     onFocus: {
       action: 'focused',
+    },
+    variant: {
+      control: 'select',
+      options: inputVariantValues,
     },
     toolbar: {
       control: 'select',
@@ -155,6 +161,29 @@ export const Toolbar: Story = {
       description: {
         story:
           'Compares the default and minimal toolbar presets without widening the shared API into app-specific actions.',
+      },
+    },
+  },
+};
+
+export const Variants: Story = {
+  render: () => (
+    <Box className='grid gap-6 lg:grid-cols-3'>
+      {inputVariantValues.map((variant) => (
+        <RichTextEditorStory
+          key={variant}
+          variant={variant}
+          initialValue='<p>Field variant preview.</p>'
+          label={variant.charAt(0).toUpperCase() + variant.slice(1)}
+          helperText={`Rich text editor using the ${variant} field shell.`}
+        />
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compares the shared rich text editor field variants on the outer editor shell.',
       },
     },
   },

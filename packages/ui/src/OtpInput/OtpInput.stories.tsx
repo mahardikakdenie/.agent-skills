@@ -42,7 +42,7 @@ const meta = {
   args: {
     value: '',
     length: 6,
-    variant: 'default',
+    variant: 'outline',
     size: 'md',
     disabled: false,
     error: false,
@@ -126,7 +126,7 @@ export const Variants: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Compares the shared `default`, `outline`, and `ghost` slot chrome aligned with the input family.',
+        story: 'Compares the shared `outline`, `shadow`, and `ghost` slot chrome aligned with the input family.',
       },
     },
   },

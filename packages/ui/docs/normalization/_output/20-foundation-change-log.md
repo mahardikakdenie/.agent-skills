@@ -2,8 +2,24 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-03-29
+> Last reconciled: 2026-04-03
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-04-03 - Shared Field Variant Family Reconciled Across Input Surfaces
+
+Changed:
+
+- Introduced one internal field-variant source of truth in `packages/ui/src/utils/field-variants.ts` and realigned the input-family surfaces around it.
+- Synced `Input`, `Textarea`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, `MonthPicker`, `FileUpload`, `OtpInput`, and `RichTextEditor` to the same public `outline | shadow | ghost` vocabulary.
+- Switched canonical new usage for those field shells to `variant='outline'` while keeping legacy `variant='default'` accepted as a compatibility alias for the elevated `shadow` treatment.
+- Extended the normalization `_output` set so `02-api-conventions.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` now match the shipped source instead of the earlier mixed default/variant story.
+
+Impact:
+
+- Downstream migrations can normalize elevated versus border-only field shells through one shared prop family instead of per-component booleans or inconsistent defaults.
+- Existing apps that still pass `variant='default'` keep a migration-safe path, but the canonical docs, specs, and stories now point new adoption to `outline`.
 
 ---
 

@@ -22,6 +22,7 @@ import {
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
+      variant = 'outline',
       error = false,
       disabled = false,
       required = false,
@@ -115,7 +116,11 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             autoComplete={autoComplete ?? 'off'}
             aria-invalid={hasError || undefined}
             aria-describedby={describedBy}
-            className={textareaElementVariants({ invalid: hasError, clearable: showClearButton })}
+            className={textareaElementVariants({
+              variant,
+              invalid: hasError,
+              clearable: showClearButton,
+            })}
             onChange={handleChange}
             {...props}
           />

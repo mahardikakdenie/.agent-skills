@@ -1,16 +1,19 @@
 import { cva } from 'class-variance-authority';
 
+import { fieldVariantOptions } from '../utils/field-variants';
+
 export const richTextEditorFieldVariants = cva('flex w-full flex-col gap-2');
 
 export const richTextEditorLabelVariants = cva('text-sm font-medium text-foreground');
 
 export const richTextEditorShellVariants = cva(
-  'overflow-hidden rounded-lg border bg-background text-foreground shadow-sm transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20',
+  'overflow-hidden rounded-lg border bg-background text-foreground transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20',
   {
     variants: {
+      variant: fieldVariantOptions,
       invalid: {
         true: 'border-destructive/70 focus-within:border-destructive focus-within:ring-destructive/15',
-        false: 'border-input',
+        false: '',
       },
       readonly: {
         true: 'bg-muted/20',
@@ -18,6 +21,7 @@ export const richTextEditorShellVariants = cva(
       },
     },
     defaultVariants: {
+      variant: 'outline',
       invalid: false,
       readonly: false,
     },

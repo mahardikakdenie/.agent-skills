@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from './Select';
 import {
+  selectVariantValues,
   selectSizeValues,
   type SelectOption,
   type SelectProps,
@@ -119,6 +120,7 @@ const meta = {
     label: 'Country',
     placeholder: 'Select a country',
     options: countryOptions,
+    variant: 'outline',
     size: 'md',
     defaultValue: undefined,
     disabled: false,
@@ -136,6 +138,10 @@ const meta = {
     },
     placeholder: {
       control: 'text',
+    },
+    variant: {
+      control: 'select',
+      options: selectVariantValues,
     },
     size: {
       control: 'select',
@@ -222,6 +228,30 @@ export const Sizes: Story = {
     docs: {
       description: {
         story: 'Shows the full shared field-shell size scale aligned with `Input` from `xs` through `lg`.',
+      },
+    },
+  },
+};
+
+export const Variants: Story = {
+  render: () => (
+    <Box className="grid gap-4 md:grid-cols-3">
+      {selectVariantValues.map((variant) => (
+        <SelectStoryHarness
+          key={variant}
+          variant={variant}
+          label={variant.charAt(0).toUpperCase() + variant.slice(1)}
+          placeholder={`Select variant: ${variant}`}
+          defaultValue="my"
+          options={countryOptions}
+        />
+      ))}
+    </Box>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compares the shared select trigger variants aligned with the input family.',
       },
     },
   },

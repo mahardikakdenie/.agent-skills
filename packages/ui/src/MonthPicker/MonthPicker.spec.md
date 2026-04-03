@@ -55,7 +55,7 @@ The header year is clickable and opens a scrollable year list inside the same po
 | --- | --- | --- | --- | --- |
 | `value` | `Date \| null` | internal state | No | Controlled selected month. Any provided date is normalized to the first day of its month for display and selection behavior. |
 | `onChange` | `(value: Date \| null) => void` | `undefined` | No | Called after month selection or clear. Selected values are normalized to the first day of the month. |
-| `variant` | `'default' \| 'outline' \| 'ghost'` | `'default'` | No | Applies the shared Input-aligned trigger shell variant. |
+| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Applies the shared Input-aligned trigger shell variant. Legacy `default` remains a compatibility alias for `shadow`. |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | No | Applies the shared Input-aligned trigger height and spacing scale. |
 | `minMonth` | `Date` | `undefined` | No | Disables months before this bound and limits previous-year navigation. |
 | `maxMonth` | `Date` | `undefined` | No | Disables months after this bound and limits next-year navigation. |
