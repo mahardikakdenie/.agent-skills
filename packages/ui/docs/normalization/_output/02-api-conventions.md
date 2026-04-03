@@ -657,6 +657,11 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 
 Story group: `Feedback`
 
+Normalization notes:
+
+- Keep `Skeleton` decorative by default and shape-only: consumers still own width, height, radius, and composition through `className`.
+- The shared visual contract is now a muted surface with layered pulse plus a token-driven shimmer highlight, and this motion is intentionally preserved even when reduced-motion preferences are enabled.
+
 ---
 
 ### Table (structural primitive)

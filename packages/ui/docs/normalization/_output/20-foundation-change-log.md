@@ -682,6 +682,21 @@ Impact:
 
 - RadioGroup now aligns more closely with the shared input family and recurring per-app validation patterns without introducing route, domain, or card-layout coupling.
 
+## 2026-04-04 - Skeleton Shimmer Visibility Refresh
+
+Changed:
+
+- Replaced the original subtle pulse-only `Skeleton` treatment with a stronger layered pulse-plus-shimmer treatment authored through the shared semantic-token foundation and `Skeleton` base variants.
+- Kept the shared loading boundary unchanged: `Skeleton` remains a Box-authored structural placeholder primitive rather than adopting Spinner's SVG track-and-arc implementation.
+- Updated the Skeleton spec, Storybook description, and normalization API notes to reflect the stronger shimmer treatment and the decision to preserve animation even when reduced-motion preferences are enabled.
+
+Impact:
+
+- Loading placeholders in `@repo/ui` should now read more clearly against both light and dark muted surfaces without any API expansion.
+- Consumers still compose text, avatar, block, card, and table placeholders exactly the same way; only the default visual motion changed.
+
+---
+
 ## 2026-03-10 - Skeleton Batch 4 Delivery
 
 Changed:

@@ -23,7 +23,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Shape-only loading placeholder primitive for inline, block, and composed skeleton layouts.',
+          'Shape-only loading placeholder primitive for inline, block, and composed skeleton layouts with a shared shimmer treatment.',
       },
     },
   },
@@ -36,7 +36,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Baseline block placeholder shaped only through `className`.',
+        story: 'Baseline block placeholder shaped only through `className`, now using the shared shimmer treatment for better loading visibility.',
       },
     },
   },
@@ -99,4 +99,3 @@ export const CardPlaceholder: Story = {
     },
   },
 }
-
