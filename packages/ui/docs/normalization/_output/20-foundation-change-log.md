@@ -7,6 +7,22 @@
 
 ---
 
+## 2026-04-03 - DataTable Header Content And Loading Skeleton Hooks Synced
+
+Changed:
+
+- Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` surface, which now separates `columnDef.meta.headerCellClassName` from `columnDef.meta.headerContentClassName` and adds `columnDef.meta.loadingSkeletonClassName` plus `columnDef.meta.loadingSkeleton`.
+- Clarified the render boundary precisely: header-shell classes style the semantic `<th>`, header-content classes style the shared header-content wrapper or sortable trigger, and column-level loading placeholders stay inside the default shared loading-row renderer.
+- Documented that the default loading state now resolves against `table.getVisibleLeafColumns()` so hidden columns do not emit skeleton cells and visible columns can supply their own placeholder treatment through column meta.
+- Reconciled `02-api-conventions.md` and `21-adapter-mapping.md` so thin adapters can map legacy header-shell classes, inner header-label classes, and column-level loading placeholders without DOM patching or app-specific API widening.
+
+Impact:
+
+- Downstream migrations can preserve header alignment and sortable-label styling separately instead of overloading one header class hook for both jobs.
+- Apps that only need per-column loading placeholder customization can stay on the shared loading-row path rather than replacing the entire `loadingState` surface.
+
+---
+
 ## 2026-04-03 - Shared Display Surface Defaults Reconciled Across Data-Display Components
 
 Changed:
@@ -158,7 +174,7 @@ Changed:
 Impact:
 
 - Downstream apps with local table wrappers can now preserve row striping, status highlighting, and cell alignment during migration without widening the shared contract into admin-only variants.
-- The normalization output set now matches the current DataTable spec and export surface, including the detail that header class hooks apply to both the semantic header cell and the shipped sortable header button.
+- The normalization output set established the initial row/header/body-cell styling-hook migration path without widening the shared contract into app-specific variants.
 
 ---
 
