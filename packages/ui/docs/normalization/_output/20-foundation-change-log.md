@@ -71,6 +71,22 @@ Impact:
 
 ---
 
+## 2026-04-03 - DataTable Cell Content Styling Hook Synced
+
+Changed:
+
+- Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` surface, which now also exposes TanStack `columnDef.meta.cellContentClassName` alongside the existing row, header-cell, and body-cell styling hooks.
+- Clarified the boundary between `meta.cellClassName` and `meta.cellContentClassName`: the first styles the semantic `<td>` shell, while the second styles the shared overflow-aware content wrapper inside the body cell.
+- Reconciled the DataTable spec, `02-api-conventions.md`, and `21-adapter-mapping.md` so thin adapters can map legacy inner-value class hooks without patching DOM structure or widening the shared API with app-specific variants.
+- Documented the current overflow behavior precisely: standard body cells only infer automatic overflow tooltips from primitive rendered content, while grouped and aggregated rows still use underlying table values for tooltip labels.
+
+Impact:
+
+- Downstream apps with local table wrappers can now preserve inner content alignment, flex layout, or truncation overrides separately from `<td>` shell styling during migration.
+- The normalization output set now matches the shipped render boundary and no longer implies that every custom React-node body cell automatically receives the same tooltip inference path as plain text cells.
+
+---
+
 ## 2026-03-29 - Combobox Controlled Search Contract Synced
 
 Changed:

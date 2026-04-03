@@ -97,27 +97,27 @@ The shell remains composition-first: toolbar UI, filter UI, and app workflows st
 
 ## Supported Capability Scope
 
-| Capability                               | Support | Notes                                                                                   |
-| ---------------------------------------- | ------- | --------------------------------------------------------------------------------------- |
-| Controlled and uncontrolled state slices | Yes     | Via `state`, `defaultState`, `onStateChange`, and legacy `pagination` shorthand         |
-| Client pagination                        | Yes     | Shared pagination UI is rendered via `DataTablePagination`                              |
-| Manual pagination                        | Yes     | Via `tableOptions.manualPagination` and `pageCount` / `rowCount`                        |
-| Sorting / multi-sorting                  | Yes     | Shared sort buttons and sort-order badges                                               |
-| Column filtering                         | Yes     | State support plus story-only demo controls                                             |
-| Global filtering                         | Yes     | State support plus story-only demo controls                                             |
-| Fuzzy filtering                          | Yes     | Via `dataTableFuzzyFilterFn`                                                            |
-| Column faceting                          | Yes     | Via TanStack faceting row models and `dataTableFacetedFilterFn`                         |
-| Global faceting                          | Yes     | Exposed through the table instance                                                      |
-| Column visibility                        | Yes     | State support; shared UI remains story-only for now                                     |
-| Grouping                                 | Yes     | Grouped rows, aggregated cells, expand/collapse controls                                |
-| Expansion                                | Yes     | `renderExpandedContent` slot                                                            |
-| Column ordering                          | Yes     | State support; UI remains consumer-owned                                                |
-| Column pinning                           | Yes     | Sticky left/right pinned columns                                                        |
-| Row pinning                              | Yes     | Top / center / bottom row sections                                                      |
-| Column sizing / resizing                 | Yes     | Resize handles and state support                                                        |
-| Row and cell styling hooks               | Yes     | Via `getRowClassName(...)` and column `meta.headerCellClassName` / `meta.cellClassName` |
-| Sticky header / sticky footer            | Yes     | Via `layout.stickyHeader`, `layout.stickyFooter`, and `layout.maxBodyHeight`            |
-| Virtualization                           | Yes     | Via dedicated `DataTableVirtualized` companion                                          |
+| Capability                                | Support | Notes                                                                                                                 |
+| ----------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| Controlled and uncontrolled state slices  | Yes     | Via `state`, `defaultState`, `onStateChange`, and legacy `pagination` shorthand                                       |
+| Client pagination                         | Yes     | Shared pagination UI is rendered via `DataTablePagination`                                                            |
+| Manual pagination                         | Yes     | Via `tableOptions.manualPagination` and `pageCount` / `rowCount`                                                      |
+| Sorting / multi-sorting                   | Yes     | Shared sort buttons and sort-order badges                                                                             |
+| Column filtering                          | Yes     | State support plus story-only demo controls                                                                           |
+| Global filtering                          | Yes     | State support plus story-only demo controls                                                                           |
+| Fuzzy filtering                           | Yes     | Via `dataTableFuzzyFilterFn`                                                                                          |
+| Column faceting                           | Yes     | Via TanStack faceting row models and `dataTableFacetedFilterFn`                                                       |
+| Global faceting                           | Yes     | Exposed through the table instance                                                                                    |
+| Column visibility                         | Yes     | State support; shared UI remains story-only for now                                                                   |
+| Grouping                                  | Yes     | Grouped rows, aggregated cells, expand/collapse controls                                                              |
+| Expansion                                 | Yes     | `renderExpandedContent` slot                                                                                          |
+| Column ordering                           | Yes     | State support; UI remains consumer-owned                                                                              |
+| Column pinning                            | Yes     | Sticky left/right pinned columns                                                                                      |
+| Row pinning                               | Yes     | Top / center / bottom row sections                                                                                    |
+| Column sizing / resizing                  | Yes     | Resize handles and state support                                                                                      |
+| Row, cell, and cell-content styling hooks | Yes     | Via `getRowClassName(...)` and column `meta.headerCellClassName` / `meta.cellClassName` / `meta.cellContentClassName` |
+| Sticky header / sticky footer             | Yes     | Via `layout.stickyHeader`, `layout.stickyFooter`, and `layout.maxBodyHeight`                                          |
+| Virtualization                            | Yes     | Via dedicated `DataTableVirtualized` companion                                                                        |
 
 ### Intentionally Not in the Public Root API
 
@@ -207,6 +207,7 @@ const columns: ColumnDef<InvoiceRow>[] = [
     meta: {
       headerCellClassName: 'text-right',
       cellClassName: 'text-right',
+      cellContentClassName: 'truncate text-right',
     },
   },
 ];
@@ -224,14 +225,16 @@ Adapter note:
 
 - Legacy row hooks such as `getRowClassName(item, index)` should map through `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.
 - Legacy column props such as `classNameHeading` and `className` should map into `columnDef.meta.headerCellClassName` and `columnDef.meta.cellClassName`.
+- When the legacy styling target belongs on the overflow-aware inner content wrapper instead of the `<td>` shell, map it into `columnDef.meta.cellContentClassName`.
 
 ---
 
 ## Shared Behavior Notes
 
-- Textual overflow in headers and cells uses tooltip-on-overflow behavior when the rendered value resolves to a textual table value.
+- Textual overflow in headers and primitive body-cell content uses tooltip-on-overflow behavior when the rendered output resolves to a string or number.
 - Grouped rows and aggregated cells use the underlying table value for tooltip labels when the rendered cell content is wrapped in React nodes.
 - `meta.headerCellClassName` styles the semantic header cell shell and the shared sortable header button so common alignment utilities keep working for sortable and non-sortable columns.
+- `meta.cellClassName` styles the semantic `<td>` shell, while `meta.cellContentClassName` styles the shared inner content wrapper that owns truncation and overflow measurement.
 - Row styling hooks apply to the primary rendered body row. Expanded content rows keep the shared default shell unless the consumer styles the expanded content directly.
 - Sticky footer stories should avoid unnecessary horizontal overflow when the goal is to demonstrate vertical footer pinning behavior only.
 - `renderStatus`, `emptyState`, and `loadingState` are separate surfaces. `renderStatus` has highest priority.
@@ -303,3 +306,4 @@ Notes:
 | 2026-03-14 | Aligned the spec with the current public exports, marked toolbar/filter controls as Storybook-only utilities, documented overflow-to-tooltip behavior, and clarified sticky footer story behavior |
 | 2026-03-28 | Added app-agnostic styling extensibility through `getRowClassName(...)` and column `meta.headerCellClassName` / `meta.cellClassName`, then documented the thin-adapter mapping path               |
 | 2026-04-03 | Added normalized `outline` / `shadow` viewport variants with `outline` as the default shell treatment                                                                                             |
+| 2026-04-03 | Added `meta.cellContentClassName` for inner body-content styling and clarified that automatic overflow tooltips on standard cells only bind to primitive rendered content                         |

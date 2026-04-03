@@ -257,7 +257,7 @@ const styledInvoiceColumns: ColumnDef<InvoiceRow>[] = [
     header: 'Customer',
     size: 180,
     meta: {
-      cellClassName: 'font-medium',
+      cellContentClassName: 'truncate font-medium',
     },
   },
   {
@@ -1224,8 +1224,9 @@ function StylingHooksExample() {
     <Box className="grid gap-4">
       <StoryHint>
         This isolates the shared styling surfaces: `getRowClassName` for row-level treatment and
-        `columnDef.meta.headerCellClassName` / `columnDef.meta.cellClassName` for header and body
-        cells.
+        `columnDef.meta.headerCellClassName` / `columnDef.meta.cellClassName` /
+        `columnDef.meta.cellContentClassName` for header, body-cell shell, and inner body-content
+        styling.
       </StoryHint>
       <DataTable<InvoiceRow, unknown>
         columns={styledInvoiceColumns}

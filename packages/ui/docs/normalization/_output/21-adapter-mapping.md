@@ -369,6 +369,7 @@ Direct adoption guidance:
 - Legacy header-cell styling fields such as `classNameHeading` now map to `columnDef.meta.headerCellClassName`.
   The shared header class is applied to the semantic `<th>` shell and the shipped sortable header button so alignment utilities continue to work on sortable columns.
 - Legacy body-cell styling fields such as `className` now map to `columnDef.meta.cellClassName`.
+- Legacy inner-content styling fields such as `contentClassName`, `valueClassName`, or local truncation/alignment helpers now map to `columnDef.meta.cellContentClassName` when the override belongs on the shared overflow-measured body-content wrapper rather than the `<td>` shell.
 - Existing toolbar search inputs should collapse into consumer-owned `renderToolbar={(table) => ...}` composition. Do not assume the Storybook-only `DataTableToolbar` helper is part of the package public API.
 - Existing empty, loading, no-results, and summary rows map to `emptyState`, `loadingState`, `renderStatus`, and `renderFooter`.
 - Existing shared pager layouts can keep the shipped table pagination control through `renderPagination={(table) => ...}` plus `DataTablePagination` instead of rebuilding page-number controls from scratch.
@@ -382,6 +383,7 @@ Adapter path:
   - Map each legacy column into `ColumnDef<TData>`.
   - Map `classNameHeading` into `meta.headerCellClassName`.
   - Map `className` into `meta.cellClassName`.
+  - Map inner content-wrapper classes such as `contentClassName` or truncation overrides into `meta.cellContentClassName`.
   - Map `getRowClassName(item, index)` into `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.
   - Keep sorting, filtering, pagination, routing, and business actions in the app adapter or parent surface.
 
@@ -733,5 +735,3 @@ Keep local:
 - Interactive steppers, gantt views, schedulers, and drag-and-drop workflow boards.
 - Sorting, filtering, fetching, or route-aware actions attached to each event row.
 - Domain-specific date formatting, actor metadata, and business logic beyond presentation-only ordered history.
-
-

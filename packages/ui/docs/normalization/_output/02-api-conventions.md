@@ -754,6 +754,7 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     headerCellClassName?: DataTableHeaderClassName<TData, TValue>;
     cellClassName?: DataTableCellClassName<TData, TValue>;
+    cellContentClassName?: string;
   }
 }
 ```
@@ -765,8 +766,9 @@ Normalization notes:
 - Public exports are `DataTable`, `DataTableVirtualized`, `DataTablePagination`, `useDataTable`, `dataTableFacetedFilterFn`, and `dataTableFuzzyFilterFn`.
 - Toolbar/search/filter/view/selection helper controls currently remain Storybook-only utilities, not package exports.
 - Stories prefer explanatory copy above the table instead of relying on captions, but the semantic `caption` prop remains supported.
-- Shared styling extensibility is now app-agnostic and explicit: row classes map through `getRowClassName(...)`, while header/body cell classes map through `columnDef.meta.headerCellClassName` and `columnDef.meta.cellClassName`.
+- Shared styling extensibility is now app-agnostic and explicit: row classes map through `getRowClassName(...)`, header/body cell-shell classes map through `columnDef.meta.headerCellClassName` and `columnDef.meta.cellClassName`, and inner body-content wrapper classes map through `columnDef.meta.cellContentClassName`.
 - `meta.headerCellClassName` applies to both the semantic `<th>` shell and the shipped sortable header button so alignment utilities keep working on sortable and non-sortable columns.
+- `meta.cellClassName` styles the semantic `<td>` shell, while `meta.cellContentClassName` styles the shared overflow-aware content wrapper inside that cell.
 - Dependency: `@tanstack/react-table` v8. `DataTableVirtualized` additionally depends on TanStack Virtual through the shared package.
 - Internal helper consolidation is now centered in `DataTable.utils.ts`; layout and sticky style helpers are not split into a separate `DataTable.layout.ts` layer anymore.
 

@@ -295,6 +295,7 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     headerCellClassName?: DataTableHeaderClassName<TData, TValue>;
     cellClassName?: DataTableCellClassName<TData, TValue>;
+    cellContentClassName?: string;
   }
 }
 
