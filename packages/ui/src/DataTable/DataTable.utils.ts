@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react';
 import type { Column, FilterFn, RowData } from '@tanstack/react-table';
 import { functionalUpdate } from '@tanstack/react-table';
+import type { CSSProperties } from 'react';
 
 import type {
   DataTableInstance,
@@ -18,7 +18,10 @@ export const SKELETON_WIDTHS = ['w-12', 'w-20', 'w-24', 'w-28', 'w-32', 'w-36'];
 
 function normalizeSearchText(value: unknown): string {
   if (Array.isArray(value)) {
-    return value.map((entry) => normalizeSearchText(entry)).filter(Boolean).join(' ');
+    return value
+      .map((entry) => normalizeSearchText(entry))
+      .filter(Boolean)
+      .join(' ');
   }
 
   if (value === null || value === undefined) {
@@ -188,7 +191,6 @@ export function resolveDataTableClassName<TContext>(
   return className;
 }
 
-
 export function getPinnedColumnStyles<TData extends RowData>(
   column: Column<TData, unknown>,
 ): CSSProperties {
@@ -203,16 +205,20 @@ export function getPinnedColumnStyles<TData extends RowData>(
   if (pinnedPosition === 'left') {
     styles.position = 'sticky';
     styles.left = column.getStart('left');
-    styles.zIndex = 3;
-    styles.backgroundColor = 'hsl(var(--background))';
+    styles.zIndex = 4;
+    styles.backgroundColor = 'var(--data-table-pinned-bg-base, hsl(var(--background)))';
+    styles.backgroundImage = 'var(--data-table-pinned-bg-overlay, none)';
+    styles.backgroundClip = 'padding-box';
     styles.boxShadow = '1px 0 0 hsl(var(--border))';
   }
 
   if (pinnedPosition === 'right') {
     styles.position = 'sticky';
     styles.right = column.getAfter('right');
-    styles.zIndex = 3;
-    styles.backgroundColor = 'hsl(var(--background))';
+    styles.zIndex = 4;
+    styles.backgroundColor = 'var(--data-table-pinned-bg-base, hsl(var(--background)))';
+    styles.backgroundImage = 'var(--data-table-pinned-bg-overlay, none)';
+    styles.backgroundClip = 'padding-box';
     styles.boxShadow = '-1px 0 0 hsl(var(--border))';
   }
 
@@ -285,27 +291,21 @@ export function toCssDimension(value?: number | string) {
   return typeof value === 'number' ? `${value}px` : value;
 }
 
-export function getColumnFilterValueAsString(
-  column?: { getFilterValue: () => unknown },
-) {
+export function getColumnFilterValueAsString(column?: { getFilterValue: () => unknown }) {
   const filterValue = column?.getFilterValue();
 
   return typeof filterValue === 'string' ? filterValue : '';
 }
 
-export function getColumnFilterValueAsArray(
-  column?: { getFilterValue: () => unknown },
-) {
+export function getColumnFilterValueAsArray(column?: { getFilterValue: () => unknown }) {
   const filterValue = column?.getFilterValue();
 
-  return Array.isArray(filterValue)
-    ? filterValue.map((value) => String(value))
-    : ([] as string[]);
+  return Array.isArray(filterValue) ? filterValue.map((value) => String(value)) : ([] as string[]);
 }
 
-export function getFacetedFilterOptions(
-  column?: { getFacetedUniqueValues: () => Map<unknown, number> },
-) {
+export function getFacetedFilterOptions(column?: {
+  getFacetedUniqueValues: () => Map<unknown, number>;
+}) {
   if (!column) {
     return [] as Array<{ label: string; value: string; count: number }>;
   }
@@ -328,4 +328,3 @@ export function updateArrayFilterValue(currentValue: string[], nextValue: string
 export function applyUpdater<T>(updater: T | ((old: T) => T), currentValue: T) {
   return functionalUpdate(updater, currentValue);
 }
-

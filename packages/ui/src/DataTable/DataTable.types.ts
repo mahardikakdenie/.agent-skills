@@ -294,8 +294,11 @@ export type DataTableFilterFnOption<TData extends RowData> = FilterFnOption<TDat
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     headerCellClassName?: DataTableHeaderClassName<TData, TValue>;
+    headerContentClassName?: DataTableHeaderClassName<TData, TValue>;
     cellClassName?: DataTableCellClassName<TData, TValue>;
     cellContentClassName?: string;
+    loadingSkeletonClassName?: string;
+    loadingSkeleton?: React.ReactNode;
   }
 }
 

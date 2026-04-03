@@ -88,35 +88,42 @@ export function DataTableDefaultEmptyState({ filtered }: { filtered: boolean }) 
   );
 }
 
-export function DataTableDefaultLoadingState({
-  columnCount,
+export function DataTableDefaultLoadingState<TData extends RowData>({
+  table,
   rowCount,
 }: {
-  columnCount: number;
+  table: DataTableInstance<TData>;
   rowCount: number;
 }) {
+  const visibleColumns = table.getVisibleLeafColumns();
+
   return (
     <>
       {Array.from({ length: rowCount }, (_, rowIndex) => (
         <TableRow key={`loading-row-${rowIndex}`} data-slot="data-table-loading-row">
-          {Array.from({ length: columnCount }, (_, cellIndex) => (
+          {visibleColumns.map((column, cellIndex) => (
             <TableCell
-              key={`loading-cell-${rowIndex}-${cellIndex}`}
+              key={`loading-cell-${rowIndex}-${column.id}`}
               className={dataTableSkeletonCellVariants()}
             >
-              <Box className={dataTableSkeletonRowVariants()}>
-                {rowIndex === 0 && cellIndex === 0 ? (
-                  <Box as="span" className="sr-only">
-                    Loading table rows
-                  </Box>
-                ) : null}
-                <Skeleton
-                  className={cn(
-                    'h-4 max-w-full rounded-full',
-                    getSkeletonWidthClass(rowIndex, cellIndex),
-                  )}
-                />
-              </Box>
+              {rowIndex === 0 && cellIndex === 0 ? (
+                <Box as="span" className="sr-only">
+                  Loading table rows
+                </Box>
+              ) : null}
+              {column.columnDef.meta?.loadingSkeleton ? (
+                <Box className="min-w-0 max-w-full">{column.columnDef.meta.loadingSkeleton}</Box>
+              ) : (
+                <Box className={dataTableSkeletonRowVariants()}>
+                  <Skeleton
+                    className={cn(
+                      'h-4 max-w-full rounded-full',
+                      column.columnDef.meta?.loadingSkeletonClassName ??
+                        getSkeletonWidthClass(rowIndex, cellIndex),
+                    )}
+                  />
+                </Box>
+              )}
             </TableCell>
           ))}
         </TableRow>
@@ -330,7 +337,7 @@ export function createDataTableStatusContext<TData extends RowData>({
 export function renderDataTableHeader<TData extends RowData>(
   header: Header<TData, unknown>,
   sortingCount: number,
-  headerClassName?: string,
+  headerContentClassName?: string,
 ) {
   const sortDirection = header.column.getIsSorted();
   const canSort = header.column.getCanSort();
@@ -345,7 +352,7 @@ export function renderDataTableHeader<TData extends RowData>(
   if (!canSort) {
     return withInlineOverflowTooltip(
       renderedHeader,
-      cn(dataTableHeaderContentVariants(), headerClassName),
+      cn(dataTableHeaderContentVariants(), headerContentClassName),
     );
   }
 
@@ -358,7 +365,7 @@ export function renderDataTableHeader<TData extends RowData>(
           sortable: canSort,
           sorted: Boolean(sortDirection),
         }),
-        headerClassName,
+        headerContentClassName,
       )}
       onClick={header.column.getToggleSortingHandler()}
     >
@@ -472,6 +479,7 @@ export function DataTableBodyRow<TData extends RowData>({
   renderExpandedContent?: (row: Row<TData>, table: DataTableInstance<TData>) => React.ReactNode;
 }) {
   const isPinnedRow = row.getIsPinned();
+  const isSelectedRow = row.getIsSelected();
   const resolvedRowClassName = getRowClassName?.({
     row,
     rowIndex,
@@ -481,15 +489,20 @@ export function DataTableBodyRow<TData extends RowData>({
   return (
     <React.Fragment key={row.id}>
       <TableRow
-        data-pinned={isPinnedRow || undefined}
-        data-state={row.getIsSelected() ? 'selected' : undefined}
-        className={cn(isPinnedRow ? 'bg-muted/20' : undefined, resolvedRowClassName)}
+        data-pinned-row={isPinnedRow ? 'true' : undefined}
+        data-state={isSelectedRow ? 'selected' : undefined}
+        className={cn(
+          '[--data-table-pinned-bg-base:hsl(var(--background))] [--data-table-pinned-bg-overlay:none] hover:[--data-table-pinned-bg-overlay:linear-gradient(0deg,_hsl(var(--muted)/0.5),_hsl(var(--muted)/0.5))] data-[state=selected]:[--data-table-pinned-bg-base:hsl(var(--muted))] data-[state=selected]:[--data-table-pinned-bg-overlay:none] data-[state=selected]:hover:[--data-table-pinned-bg-base:hsl(var(--muted))] data-[state=selected]:hover:[--data-table-pinned-bg-overlay:none] data-[pinned-row=true]:[--data-table-pinned-bg-base:hsl(var(--muted))] data-[pinned-row=true]:[--data-table-pinned-bg-overlay:none] bg-background',
+          isPinnedRow ? 'bg-muted/20' : undefined,
+          resolvedRowClassName,
+        )}
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell
             key={cell.id}
+            data-pinned-cell={cell.column.getIsPinned() ? 'true' : undefined}
             className={cn(
-              cell.column.getIsPinned() ? 'bg-background' : undefined,
+              cell.column.getIsPinned() ? 'relative overflow-hidden bg-background' : undefined,
               resolveDataTableClassName(cell.column.columnDef.meta?.cellClassName, {
                 cell,
                 row,

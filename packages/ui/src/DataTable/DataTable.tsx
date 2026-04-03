@@ -131,6 +131,14 @@ function DataTableRenderShell<TData extends RowData>({
                       table,
                     },
                   );
+                  const headerContentClassName = resolveDataTableClassName(
+                    header.column.columnDef.meta?.headerContentClassName,
+                    {
+                      header,
+                      column: header.column,
+                      table,
+                    },
+                  );
 
                   return (
                     <TableHead
@@ -149,7 +157,7 @@ function DataTableRenderShell<TData extends RowData>({
                       scope="col"
                       style={getHeaderCellStyles(header.column, layout)}
                     >
-                      {renderDataTableHeader(header, sortingCount, headerCellClassName)}
+                      {renderDataTableHeader(header, sortingCount, headerContentClassName)}
                       {header.column.getCanResize() ? (
                         <Box
                           as="button"
@@ -179,10 +187,7 @@ function DataTableRenderShell<TData extends RowData>({
               resolvedLoadingState ? (
                 renderDataTableStatusRow(resolvedLoadingState, visibleColumnCount)
               ) : (
-                <DataTableDefaultLoadingState
-                  columnCount={visibleColumnCount}
-                  rowCount={loadingRowCount}
-                />
+                <DataTableDefaultLoadingState table={table} rowCount={loadingRowCount} />
               )
             ) : displayedRowCount ? (
               <>

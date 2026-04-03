@@ -366,10 +366,10 @@ Direct adoption guidance:
 - Existing headless column definitions should normalize to TanStack `ColumnDef<TData>` records passed through the shared `columns` prop; business formatting should stay inside cell renderers while the shared component owns the shell and row-model plumbing.
 - Existing TanStack-based table hooks can normalize to controlled `table` mode by feeding `useDataTable(...)` output into `DataTable` or `DataTableVirtualized`; simpler adapters can stay on the managed `data` + `columns` path.
 - Existing row-level visual hooks such as `getRowClassName(item, index)` now map to the shared `getRowClassName={({ row, rowIndex }) => ...}` prop.
-- Legacy header-cell styling fields such as `classNameHeading` now map to `columnDef.meta.headerCellClassName`.
-  The shared header class is applied to the semantic `<th>` shell and the shipped sortable header button so alignment utilities continue to work on sortable columns.
+- Legacy header styling fields such as `classNameHeading` now need to map by target: shell-level classes belong on `columnDef.meta.headerCellClassName`, while alignment or label-wrapper classes that should ride on the shared sortable trigger belong on `columnDef.meta.headerContentClassName`.
 - Legacy body-cell styling fields such as `className` now map to `columnDef.meta.cellClassName`.
 - Legacy inner-content styling fields such as `contentClassName`, `valueClassName`, or local truncation/alignment helpers now map to `columnDef.meta.cellContentClassName` when the override belongs on the shared overflow-measured body-content wrapper rather than the `<td>` shell.
+- Legacy loading placeholder config can stay on the shared loading-row path by mapping width/class tweaks into `columnDef.meta.loadingSkeletonClassName` or bespoke per-column skeleton content into `columnDef.meta.loadingSkeleton`.
 - Existing toolbar search inputs should collapse into consumer-owned `renderToolbar={(table) => ...}` composition. Do not assume the Storybook-only `DataTableToolbar` helper is part of the package public API.
 - Existing empty, loading, no-results, and summary rows map to `emptyState`, `loadingState`, `renderStatus`, and `renderFooter`.
 - Existing shared pager layouts can keep the shipped table pagination control through `renderPagination={(table) => ...}` plus `DataTablePagination` instead of rebuilding page-number controls from scratch.
@@ -381,9 +381,11 @@ Adapter path:
 - A thin adapter is expected when the legacy table API still exposes lightweight column config objects plus styling fields such as `classNameHeading`, `className`, or `getRowClassName`.
 - Thin adapter shape:
   - Map each legacy column into `ColumnDef<TData>`.
-  - Map `classNameHeading` into `meta.headerCellClassName`.
+  - Map header-shell classes into `meta.headerCellClassName`.
+  - Map header label / sortable-trigger wrapper classes into `meta.headerContentClassName`.
   - Map `className` into `meta.cellClassName`.
   - Map inner content-wrapper classes such as `contentClassName` or truncation overrides into `meta.cellContentClassName`.
+  - Map per-column loading placeholder classes into `meta.loadingSkeletonClassName`, or full custom placeholder nodes into `meta.loadingSkeleton`, when the app should keep the shared loading row instead of replacing `loadingState`.
   - Map `getRowClassName(item, index)` into `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.
   - Keep sorting, filtering, pagination, routing, and business actions in the app adapter or parent surface.
 
