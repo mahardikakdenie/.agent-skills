@@ -1,13 +1,13 @@
-import type * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleAlert, CircleCheckBig, CircleX, Info, TriangleAlert } from 'lucide-react';
+import type * as React from 'react';
 import { expect, fn, userEvent, within } from 'storybook/test';
 
 import { Box } from '../Box';
 import { Alert } from './Alert';
-import { alertVariantValues, type AlertVariant } from './Alert.types';
+import { alertToneValues, alertSurfaceVariantValues, type AlertTone } from './Alert.types';
 
-const iconMap: Record<AlertVariant, React.ReactNode> = {
+const iconMap: Record<AlertTone, React.ReactNode> = {
   default: <Info aria-hidden="true" className="h-5 w-5" />,
   success: <CircleCheckBig aria-hidden="true" className="h-5 w-5" />,
   info: <CircleAlert aria-hidden="true" className="h-5 w-5" />,
@@ -20,7 +20,7 @@ const meta = {
   component: Alert,
   tags: ['autodocs'],
   args: {
-    variant: 'default',
+    tone: 'default',
     title: 'Changes saved',
     description: 'Your updates are now available to the rest of the team.',
     dismissible: false,
@@ -28,7 +28,11 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: alertVariantValues,
+      options: alertSurfaceVariantValues,
+    },
+    tone: {
+      control: 'select',
+      options: alertToneValues,
     },
     title: {
       control: 'text',
@@ -54,7 +58,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Inline semantic feedback surface for neutral, success, info, warning, and destructive messaging.',
+          'Inline semantic feedback surface with normalized `outline` and `shadow` surface variants plus semantic `tone`.',
       },
     },
   },
@@ -67,7 +71,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Baseline inline alert with title and supporting description.',
+        story: 'Baseline inline alert using the default outline surface with no shadow.',
       },
     },
   },
@@ -75,22 +79,33 @@ export const Default: Story = {
 
 export const Variants: Story = {
   render: () => (
-    <Box className="grid max-w-3xl gap-4">
-      {alertVariantValues.map((variant) => (
-        <Alert
-          key={variant}
-          variant={variant}
-          title={`${variant.charAt(0).toUpperCase()}${variant.slice(1)} state`}
-          description="Shared semantic variants stay token-driven and inline."
-          icon={iconMap[variant]}
-        />
+    <Box className="grid max-w-5xl gap-5">
+      {alertSurfaceVariantValues.map((variant) => (
+        <Box key={variant} className="grid gap-3">
+          <Box as="p" className="text-sm font-semibold text-foreground">
+            {variant.charAt(0).toUpperCase()}
+            {variant.slice(1)}
+          </Box>
+          <Box className="grid gap-3">
+            {alertToneValues.map((tone) => (
+              <Alert
+                key={`${variant}-${tone}`}
+                variant={variant}
+                tone={tone}
+                title={`${tone.charAt(0).toUpperCase()}${tone.slice(1)} state`}
+                description="Shared feedback tones stay semantic while surface treatment stays explicit."
+                icon={iconMap[tone]}
+              />
+            ))}
+          </Box>
+        </Box>
       ))}
     </Box>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Shows all supported semantic variants with representative icons.',
+        story: 'Compares every supported surface and tone combination on the actual alert root.',
       },
     },
   },
@@ -98,7 +113,7 @@ export const Variants: Story = {
 
 export const WithIcon: Story = {
   args: {
-    variant: 'info',
+    tone: 'info',
     title: 'Verification pending',
     description: 'We sent a confirmation code to the registered mobile number.',
     icon: <CircleAlert aria-hidden="true" className="h-5 w-5" />,
@@ -114,7 +129,8 @@ export const WithIcon: Story = {
 
 export const Dismissible: Story = {
   args: {
-    variant: 'warning',
+    variant: 'shadow',
+    tone: 'warning',
     title: 'Review incomplete details',
     description: 'A few required fields still need attention before continuing.',
     dismissible: true,
@@ -139,7 +155,8 @@ export const Dismissible: Story = {
 export const LongContent: Story = {
   render: () => (
     <Alert
-      variant="destructive"
+      variant="shadow"
+      tone="destructive"
       title="Unable to process the latest update"
       description="Please review the highlighted items below before trying again."
       icon={<CircleX aria-hidden="true" className="h-5 w-5" />}
@@ -159,4 +176,3 @@ export const LongContent: Story = {
     },
   },
 };
-

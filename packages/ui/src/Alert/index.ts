@@ -1,2 +1,3 @@
 export { Alert } from './Alert';
-export type { AlertProps, AlertVariant } from './Alert.types';
+export { alertSurfaceVariantValues, alertToneValues, alertVariantValues } from './Alert.types';
+export type { AlertProps, AlertSurfaceVariant, AlertTone, AlertVariant } from './Alert.types';

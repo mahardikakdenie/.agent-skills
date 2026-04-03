@@ -11,13 +11,16 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-primary text-primary-foreground',
-        secondary: 'border-transparent bg-secondary text-secondary-foreground',
-        destructive: 'border-transparent bg-destructive text-destructive-foreground',
-        outline: 'border-border bg-background text-foreground',
-        success: 'border-transparent bg-success text-success-foreground',
-        warning: 'border-transparent bg-warning text-warning-foreground',
-        info: 'border-transparent bg-info text-info-foreground',
+        outline: '',
+        solid: '',
+      },
+      tone: {
+        default: '',
+        secondary: '',
+        destructive: '',
+        success: '',
+        warning: '',
+        info: '',
       },
       size: {
         sm: 'min-h-5 px-2 py-0.5 text-xs',
@@ -25,8 +28,71 @@ export const badgeVariants = cva(
         lg: 'min-h-7 px-3 py-1.5 text-sm',
       },
     },
+    compoundVariants: [
+      {
+        variant: 'outline',
+        tone: 'default',
+        className: 'border-border bg-background text-foreground',
+      },
+      {
+        variant: 'outline',
+        tone: 'secondary',
+        className: 'border-border bg-background text-muted-foreground',
+      },
+      {
+        variant: 'outline',
+        tone: 'destructive',
+        className: 'border-destructive/30 bg-background text-destructive',
+      },
+      {
+        variant: 'outline',
+        tone: 'success',
+        className: 'border-success/30 bg-background text-success',
+      },
+      {
+        variant: 'outline',
+        tone: 'warning',
+        className: 'border-warning/30 bg-background text-warning',
+      },
+      {
+        variant: 'outline',
+        tone: 'info',
+        className: 'border-info/30 bg-background text-info',
+      },
+      {
+        variant: 'solid',
+        tone: 'default',
+        className: 'border-transparent bg-primary text-primary-foreground',
+      },
+      {
+        variant: 'solid',
+        tone: 'secondary',
+        className: 'border-transparent bg-secondary text-secondary-foreground',
+      },
+      {
+        variant: 'solid',
+        tone: 'destructive',
+        className: 'border-transparent bg-destructive text-destructive-foreground',
+      },
+      {
+        variant: 'solid',
+        tone: 'success',
+        className: 'border-transparent bg-success text-success-foreground',
+      },
+      {
+        variant: 'solid',
+        tone: 'warning',
+        className: 'border-transparent bg-warning text-warning-foreground',
+      },
+      {
+        variant: 'solid',
+        tone: 'info',
+        className: 'border-transparent bg-info text-info-foreground',
+      },
+    ],
     defaultVariants: {
-      variant: 'default',
+      variant: 'outline',
+      tone: 'default',
       size: 'md',
     },
   },

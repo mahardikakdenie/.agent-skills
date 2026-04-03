@@ -1,13 +1,41 @@
-import * as React from 'react';
 import { X } from 'lucide-react';
+import * as React from 'react';
 
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
-import type { AlertProps, AlertVariant } from './Alert.types';
+import type { AlertProps, AlertTone, AlertVariant } from './Alert.types';
 import { alertVariants } from './Alert.variants';
 
-const alertAccentClasses: Record<AlertVariant, string> = {
+const legacyAlertVariantToneMap = {
+  default: 'default',
+  success: 'success',
+  info: 'info',
+  warning: 'warning',
+  destructive: 'destructive',
+} as const satisfies Record<Exclude<AlertVariant, 'outline' | 'shadow'>, AlertTone>;
+
+function resolveAlertPresentation(
+  variant: AlertVariant | undefined,
+  tone: AlertTone | undefined,
+): {
+  variant: 'outline' | 'shadow';
+  tone: AlertTone;
+} {
+  if (!variant || variant === 'outline' || variant === 'shadow') {
+    return {
+      variant: variant ?? 'outline',
+      tone: tone ?? 'default',
+    };
+  }
+
+  return {
+    variant: 'shadow',
+    tone: tone ?? legacyAlertVariantToneMap[variant],
+  };
+}
+
+const alertAccentClasses: Record<AlertTone, string> = {
   default: 'text-muted-foreground',
   success: 'text-success',
   info: 'text-info',
@@ -15,7 +43,7 @@ const alertAccentClasses: Record<AlertVariant, string> = {
   destructive: 'text-destructive',
 };
 
-const alertTitleClasses: Record<AlertVariant, string> = {
+const alertTitleClasses: Record<AlertTone, string> = {
   default: 'text-foreground',
   success: 'text-success',
   info: 'text-info',
@@ -34,7 +62,8 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
   (
     {
       className,
-      variant = 'default',
+      variant,
+      tone,
       title,
       description,
       children,
@@ -48,8 +77,11 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     },
     ref,
   ) => {
+    const resolvedPresentation = resolveAlertPresentation(variant, tone);
+    const resolvedTone = resolvedPresentation.tone;
     const showDismissControl = dismissible && typeof onClose === 'function';
-    const resolvedRole = role ?? (variant === 'warning' || variant === 'destructive' ? 'alert' : 'status');
+    const resolvedRole =
+      role ?? (resolvedTone === 'warning' || resolvedTone === 'destructive' ? 'alert' : 'status');
     const resolvedAriaLive = ariaLive ?? (resolvedRole === 'alert' ? 'assertive' : 'polite');
 
     return (
@@ -58,7 +90,14 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         role={resolvedRole}
         aria-live={resolvedAriaLive}
         aria-atomic={ariaAtomic ?? true}
-        className={cn(alertVariants({ variant, dismissible: showDismissControl }), className)}
+        className={cn(
+          alertVariants({
+            variant: resolvedPresentation.variant,
+            tone: resolvedTone,
+            dismissible: showDismissControl,
+          }),
+          className,
+        )}
         {...props}
       >
         <Box className="flex items-start gap-3">
@@ -66,7 +105,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
             <Box
               aria-hidden="true"
               data-slot="alert-icon"
-              className={cn('mt-0.5 shrink-0', alertAccentClasses[variant])}
+              className={cn('mt-0.5 shrink-0', alertAccentClasses[resolvedTone])}
             >
               {icon}
             </Box>
@@ -77,7 +116,10 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
               <Box
                 as="h5"
                 data-slot="alert-title"
-                className={cn('font-semibold leading-5 tracking-tight', alertTitleClasses[variant])}
+                className={cn(
+                  'font-semibold leading-5 tracking-tight',
+                  alertTitleClasses[resolvedTone],
+                )}
               >
                 {title}
               </Box>
@@ -103,7 +145,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
               'transition-colors hover:bg-background/70',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
               'focus-visible:ring-offset-background motion-reduce:transition-none',
-              alertAccentClasses[variant],
+              alertAccentClasses[resolvedTone],
             )}
             onClick={onClose}
           >
