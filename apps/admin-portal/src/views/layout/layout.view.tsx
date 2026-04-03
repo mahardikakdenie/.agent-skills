@@ -350,7 +350,7 @@ export const LayoutView = ({
       </nav>
 
       <main
-        className={`overflow-y-auto sm:scrollable bg-[#F8F8F8] ${
+        className={`flex flex-col overflow-y-auto sm:scrollable bg-[#F8F8F8] ${
           isMenuOpen && !isMobileView
             ? "sm:w-[calc(100%-20%)] sm:ml-[20%]"
             : "w-full"
@@ -360,7 +360,7 @@ export const LayoutView = ({
           backgroundRepeat: "no-repeat",
           backgroundSize: "30%",
           backgroundPosition: "bottom right",
-          minHeight: "100vh",
+          height: "calc(100vh - var(--fs-navbar-height, 64px))",
         }}
       >
         {isForbidden ? (
