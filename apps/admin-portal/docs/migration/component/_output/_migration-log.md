@@ -1365,3 +1365,34 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Verification note: `This logging update is based on the committed route-local refactor plus previously recorded manual smoke evidence for /transaction/list already present in _migration-log.md and _parity-checklist.md; no new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /transaction/list as PASS because the route has both committed route-local migration cleanup and existing recorded smoke verification evidence.`
 
+## Batch 9 - /transaction/list Route Follow-up - 2026-04-03
+
+- Commits:
+  - `41963542b86e85cd525886019b6ebd7f3da849f1` (`feat(admin-portal): revamp transaction list table UX`)
+  - `15a85cb9716ee439143ddfafbc32d9297decca0e` (`fix(admin-portal): align transaction table cells and loading states`)
+- Route focus: `/transaction/list`
+- Migration intent: `Continue the route-local transaction list stabilization by moving the page fully onto the shared DataTable instance API, tightening compact pagination and column sizing behavior, and then smoothing the visual alignment between loaded rows and skeleton states.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/transaction/list/page.tsx` is refreshed around the shared `DataTable` API with manual pagination, pinned columns, custom toolbar search, compact pagination wiring, and viewport-aware layout sizing for the route shell.
+  - `apps/admin-portal/src/components/tableConfig/transactionTableConfig.tsx` now carries explicit `ColumnDef` metadata for sizing, wrapping, alignment, loading skeletons, and the later `align-middle` follow-up so mixed-height rows and loading placeholders stay visually consistent.
+  - `apps/admin-portal/src/components/ui/compact-table-pagination.tsx` is introduced as the reusable denser pagination surface for this route, including shared page-size selection and previous/next controls.
+  - The follow-up fix keeps the same transaction list UX direction while refining row-number skeleton geometry and body-cell vertical alignment to reduce perceived layout shift during loading and after hydration.
+- Files changed (route-focused): [`apps/admin-portal/src/app/transaction/list/page.tsx`, `apps/admin-portal/src/components/tableConfig/transactionTableConfig.tsx`, `apps/admin-portal/src/components/ui/compact-table-pagination.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The route now composes the existing shared DataTable primitives and route-local table configuration/pagination helpers more consistently than the earlier 2026-04-02 snapshot.`
+- Verification note: `This logging update is based on the committed 2026-04-03 route-local follow-up work plus previously recorded manual smoke evidence for /transaction/list already present in _migration-log.md and _parity-checklist.md; no new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should reference the 2026-04-03 transaction list follow-up commits as the latest PASS evidence for this route.`
+
+## Batch 9 - /policy/list Route Refactor Follow-up - 2026-04-03
+
+- Route focus: `/policy/list`
+- Migration intent: `Complete the remaining route-local cleanup on the policy list by standardizing the filter toolbar and status tabs on shared primitives, moving the route onto the current DataTable surface, and tightening table sizing/pagination behavior without changing the existing search, import, export, and detail-navigation flows.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/policy/list/page.tsx` now renders the route shell with `Box`, replaces the bespoke date-picker and tab markup with shared `DateRangePicker` and `Tabs`, and aligns the import/export actions plus search toolbar to the shared `Button` and `Input` primitives.
+  - `apps/admin-portal/src/app/policy/list/page.tsx` now mounts the shared `@repo/ui` `DataTable` directly with manual pagination, pinned columns, explicit empty state, and compact table toolbar/pagination rendering instead of relying on the legacy local table wrapper behavior.
+  - `apps/admin-portal/src/components/tableConfig/policyTableConfig.tsx` now defines the policy list columns against the shared table contract with explicit sizing, wrapped content cells, badge-style status rendering, a compact shared `Button` row action, and `Box`-based replacements for the remaining native wrapper elements left in the legacy pending-renewals renderers.
+  - `apps/admin-portal/src/components/ui/compact-table-pagination.tsx` now removes residual button/select shadows so the route pagination chrome matches the denser table treatment used by the updated policy list page.
+- Files changed (route-focused): [`apps/admin-portal/src/app/policy/list/page.tsx`, `apps/admin-portal/src/components/tableConfig/policyTableConfig.tsx`, `apps/admin-portal/src/components/ui/compact-table-pagination.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box, Button, DataTable, DateRangePicker, Input, Select, and Tabs primitives while extending only app-local policy table configuration and pagination styling.`
+- Verification note: `This logging update is based on the current route-local source changes plus previously recorded manual smoke evidence for /policy/list already present in _migration-log.md and _parity-checklist.md; no new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /policy/list as PASS because the route has been executed in the current migration pass and existing smoke verification evidence was already recorded earlier.`
+
