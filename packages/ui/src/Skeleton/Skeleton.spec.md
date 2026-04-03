@@ -35,7 +35,7 @@ Cross-app baseline demand converges on one shared primitive with consumer-owned 
 | Decision                   | Choice                          | Rationale                                                                                             |
 | -------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | Root primitive             | `Box` with default `div` target | Keeps authored shared DOM inside the Box-only policy while matching the canonical HTML div contract. |
-| CVA strategy               | Base-only root classes          | The primitive only needs shared pulse, radius, and muted-surface styles; shape stays consumer-owned. |
+| CVA strategy               | Base-only root classes          | The primitive only needs shared shimmer, radius, and muted-surface styles; shape stays consumer-owned. |
 | Controlled vs uncontrolled | none                            | `Skeleton` is visual-only and has no behavioral state.                                                |
 | API sprawl                 | no `variant`, `rows`, or `size` | The same outcomes are clearer through composition and `className` than new mode props or booleans.   |
 | Accessibility default      | decorative                      | Most skeletons should stay hidden from assistive tech unless consumers opt into an announced status. |
@@ -73,8 +73,8 @@ Cross-app baseline demand converges on one shared primitive with consumer-owned 
 
 | State               | Visual Behavior                                              | Accessibility                                                                  |
 | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| Loading             | Muted surface with pulse animation and rounded corners       | Decorative by default; hidden from assistive tech unless consumers opt in.     |
-| Reduced motion      | Pulse animation stops under `prefers-reduced-motion`         | Avoids unnecessary motion for users who request reduced animation.              |
+| Loading             | Muted surface with layered pulse plus a moving shimmer highlight and rounded corners | Decorative by default; hidden from assistive tech unless consumers opt in.     |
+| Reduced motion      | Same animated treatment is preserved even when reduced-motion preferences are enabled | Current product direction prioritizes keeping skeleton motion visible across devices. |
 | Circle / avatar     | Consumer supplies `rounded-full` and fixed size classes      | Decorative shapes remain `aria-hidden` unless explicitly labelled.              |
 | Long-form / stacked | Multiple instances compose readable loading rhythm           | Keep semantic loading context on the parent when the placeholder set matters.   |
 | Announced status    | Consumer passes `role="status"` and accessible labelling     | Makes a standalone loading placeholder discoverable to assistive technology.    |
@@ -189,4 +189,4 @@ Cross-app baseline demand converges on one shared primitive with consumer-owned 
 | Date       | Change                |
 | ---------- | --------------------- |
 | 2026-03-10 | Initial Skeleton spec |
-
+| 2026-04-04 | Swapped subtle pulse styling for a clearer shimmer treatment |

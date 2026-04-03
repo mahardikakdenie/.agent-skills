@@ -120,3 +120,17 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 0.25rem);
 }
+
+@theme {
+  --animate-skeleton-shimmer: skeleton-shimmer 1.35s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+
+  @keyframes skeleton-shimmer {
+    0% {
+      transform: translateX(-150%) skewX(-18deg);
+    }
+
+    100% {
+      transform: translateX(260%) skewX(-18deg);
+    }
+  }
+}
