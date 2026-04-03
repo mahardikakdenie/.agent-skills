@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Box } from '../Box';
 import { Timeline } from './Timeline';
-import { timelineOrientationValues, timelineStatusToneValues, type TimelineItem } from './Timeline.types';
+import {
+  timelineOrientationValues,
+  timelineStatusToneValues,
+  type TimelineItem,
+} from './Timeline.types';
 
 const defaultItems: TimelineItem[] = [
   {
@@ -56,6 +60,7 @@ const meta = {
   args: {
     items: defaultItems,
     orientation: 'vertical',
+    variant: 'outline',
     statusTone: 'default',
   },
   argTypes: {
@@ -65,6 +70,10 @@ const meta = {
     orientation: {
       control: 'select',
       options: timelineOrientationValues,
+    },
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow'],
     },
     statusTone: {
       control: 'select',
@@ -88,7 +97,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {  parameters: {
+export const Basic: Story = {
+  parameters: {
     docs: {
       description: {
         story: 'Baseline vertical timeline for ordered status or milestone history.',
@@ -97,7 +107,8 @@ export const Basic: Story = {  parameters: {
   },
 };
 
-export const Horizontal: Story = {  args: {
+export const Horizontal: Story = {
+  args: {
     items: defaultItems,
     orientation: 'horizontal',
   },
@@ -110,7 +121,8 @@ export const Horizontal: Story = {  args: {
   },
 };
 
-export const Dense: Story = {  render: () => (
+export const Dense: Story = {
+  render: () => (
     <Box className="max-w-sm">
       <Timeline
         items={[
@@ -142,23 +154,38 @@ export const Dense: Story = {  render: () => (
   parameters: {
     docs: {
       description: {
-        story: 'Shows a denser presentation using consumer-owned className overrides instead of an extra density prop.',
+        story:
+          'Shows a denser presentation using consumer-owned className overrides instead of an extra density prop.',
       },
     },
   },
 };
 
-export const Status: Story = {  args: {
+export const Status: Story = {
+  args: {
     items: statusItems,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates per-item semantic marker tones for mixed status history inside one timeline.',
+        story:
+          'Demonstrates per-item semantic marker tones for mixed status history inside one timeline.',
       },
     },
   },
 };
 
-
-
+export const ShadowMarkers: Story = {
+  args: {
+    items: statusItems,
+    variant: 'shadow',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Adds the explicit `shadow` marker treatment while keeping tone-driven color semantics unchanged.',
+      },
+    },
+  },
+};

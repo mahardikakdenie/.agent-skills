@@ -1,5 +1,7 @@
 import type * as React from 'react';
 
+import type { DisplaySurfaceVariant } from '../utils/display-surface-variants';
+
 export const timelineOrientationValues = ['vertical', 'horizontal'] as const;
 export type TimelineOrientation = (typeof timelineOrientationValues)[number];
 
@@ -17,12 +19,14 @@ export interface TimelineItem {
   id: string;
   title: React.ReactNode;
   description?: React.ReactNode;
+  variant?: DisplaySurfaceVariant;
   statusTone?: TimelineStatusTone;
 }
 
 export interface TimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   items: TimelineItem[];
   orientation?: TimelineOrientation;
+  variant?: DisplaySurfaceVariant;
   statusTone?: TimelineStatusTone;
   className?: string;
 }

@@ -6,7 +6,6 @@ import { Box } from '../Box';
 import { Button } from '../Button';
 import { Checkbox } from '../Checkbox';
 import { TableCell, TableRow } from '../Table';
-import { DataTable, DataTableVirtualized, dataTableFacetedFilterFn, dataTableFuzzyFilterFn, useDataTable } from './index';
 import {
   DataTableColumnFilter,
   DataTableFacetedFilter,
@@ -15,7 +14,19 @@ import {
   DataTableToolbar,
   DataTableViewOptions,
 } from './DataTable.story-helpers';
-import type { ColumnDef, DataTableInstance, DataTableOptions, RowPinningState } from './DataTable.types';
+import type {
+  ColumnDef,
+  DataTableInstance,
+  DataTableOptions,
+  RowPinningState,
+} from './DataTable.types';
+import {
+  DataTable,
+  DataTableVirtualized,
+  dataTableFacetedFilterFn,
+  dataTableFuzzyFilterFn,
+  useDataTable,
+} from './index';
 
 type InvoiceRow = {
   id: string;
@@ -168,7 +179,9 @@ const largeInvoices = createLargeInvoices(240);
 const scrollInvoices = createLargeInvoices(64);
 const defaultPageSizeOptions = [4, 6, 10];
 const facetedFilter = dataTableFacetedFilterFn as ColumnDef<InvoiceRow>['filterFn'];
-const fuzzyGlobalFilter = dataTableFuzzyFilterFn as NonNullable<DataTableOptions<InvoiceRow>['globalFilterFn']>;
+const fuzzyGlobalFilter = dataTableFuzzyFilterFn as NonNullable<
+  DataTableOptions<InvoiceRow>['globalFilterFn']
+>;
 
 const invoiceColumns: ColumnDef<InvoiceRow>[] = [
   {
@@ -177,7 +190,7 @@ const invoiceColumns: ColumnDef<InvoiceRow>[] = [
     enableHiding: false,
     size: 120,
     cell: ({ row }) => (
-      <Box as='span' className='font-medium'>
+      <Box as="span" className="font-medium">
         {row.original.id}
       </Box>
     ),
@@ -193,7 +206,7 @@ const invoiceColumns: ColumnDef<InvoiceRow>[] = [
     filterFn: facetedFilter,
     aggregationFn: 'count',
     size: 120,
-    aggregatedCell: ({ row }) => <Box as='span'>{row.subRows.length} invoices</Box>,
+    aggregatedCell: ({ row }) => <Box as="span">{row.subRows.length} invoices</Box>,
   },
   {
     accessorKey: 'channel',
@@ -218,12 +231,12 @@ const invoiceColumns: ColumnDef<InvoiceRow>[] = [
     aggregationFn: 'sum',
     size: 140,
     cell: ({ row }) => (
-      <Box as='span' className='tabular-nums'>
+      <Box as="span" className="tabular-nums">
         RM {row.original.premium.toFixed(2)}
       </Box>
     ),
     aggregatedCell: ({ getValue }) => (
-      <Box as='span' className='font-medium tabular-nums'>
+      <Box as="span" className="font-medium tabular-nums">
         RM {Number(getValue() ?? 0).toFixed(2)}
       </Box>
     ),
@@ -266,7 +279,7 @@ const styledInvoiceColumns: ColumnDef<InvoiceRow>[] = [
       cellClassName: 'text-right',
     },
     cell: ({ row }) => (
-      <Box as='span' className='tabular-nums'>
+      <Box as="span" className="tabular-nums">
         RM {row.original.premium.toFixed(2)}
       </Box>
     ),
@@ -278,8 +291,11 @@ function createSelectionColumn(): ColumnDef<InvoiceRow> {
     id: 'select',
     header: ({ table }) => (
       <Checkbox
-        aria-label='Select all rows'
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() ? 'indeterminate' : false)}
+        aria-label="Select all rows"
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() ? 'indeterminate' : false)
+        }
         onCheckedChange={(checked) => {
           table.toggleAllPageRowsSelected(Boolean(checked));
         }}
@@ -312,7 +328,7 @@ function createExpandColumn(): ColumnDef<InvoiceRow> {
     enableHiding: false,
     size: 120,
     cell: ({ row }) => (
-      <Button size='sm' variant='ghost' onClick={row.getToggleExpandedHandler()}>
+      <Button size="sm" variant="ghost" onClick={row.getToggleExpandedHandler()}>
         {row.getIsExpanded() ? 'Hide notes' : 'Show notes'}
       </Button>
     ),
@@ -360,10 +376,10 @@ function createRowPinningColumn(): ColumnDef<InvoiceRow> {
     size: 272,
     minSize: 272,
     cell: ({ row, table }) => (
-      <Box className='flex min-w-[252px] items-center gap-1.5 whitespace-nowrap'>
+      <Box className="flex min-w-[252px] items-center gap-1.5 whitespace-nowrap">
         <Button
-          size='sm'
-          variant='ghost'
+          size="sm"
+          variant="ghost"
           onClick={() => {
             setPinnedRow(table as DataTableInstance<InvoiceRow>, row.id, 'top');
           }}
@@ -371,8 +387,8 @@ function createRowPinningColumn(): ColumnDef<InvoiceRow> {
           Top
         </Button>
         <Button
-          size='sm'
-          variant='ghost'
+          size="sm"
+          variant="ghost"
           onClick={() => {
             setPinnedRow(table as DataTableInstance<InvoiceRow>, row.id, 'bottom');
           }}
@@ -380,8 +396,8 @@ function createRowPinningColumn(): ColumnDef<InvoiceRow> {
           Bottom
         </Button>
         <Button
-          size='sm'
-          variant='ghost'
+          size="sm"
+          variant="ghost"
           onClick={() => {
             setPinnedRow(table as DataTableInstance<InvoiceRow>, row.id, false);
           }}
@@ -395,11 +411,14 @@ function createRowPinningColumn(): ColumnDef<InvoiceRow> {
 
 function NotesPanel({ row }: { row: InvoiceRow }) {
   return (
-    <Box className='grid gap-2 md:grid-cols-[160px_1fr]'>
-      <Box as='span' className='text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground'>
+    <Box className="grid gap-2 md:grid-cols-[160px_1fr]">
+      <Box
+        as="span"
+        className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+      >
         Underwriting Note
       </Box>
-      <Box as='p' className='text-sm leading-6 text-foreground'>
+      <Box as="p" className="text-sm leading-6 text-foreground">
         {row.notes}
       </Box>
     </Box>
@@ -408,7 +427,7 @@ function NotesPanel({ row }: { row: InvoiceRow }) {
 
 function StoryHint({ children }: { children: React.ReactNode }) {
   return (
-    <Box className='rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm leading-6 text-muted-foreground'>
+    <Box className="rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm leading-6 text-muted-foreground">
       {children}
     </Box>
   );
@@ -422,28 +441,35 @@ function GlobalFacetPanel({
   premiumRange?: [number, number];
 }) {
   return (
-    <Box className='grid gap-4 rounded-lg border border-border bg-muted/20 p-4'>
+    <Box className="grid gap-4 rounded-lg border border-border bg-muted/20 p-4">
       <Box>
-        <Box as='h3' className='text-sm font-semibold text-foreground'>
+        <Box as="h3" className="text-sm font-semibold text-foreground">
           Global facet intelligence
         </Box>
-        <Box as='p' className='mt-1 text-sm leading-6 text-muted-foreground'>
-          Unlike column faceting, global faceting derives one suggestion pool across every globally searchable column. It is useful for autocomplete, search hints, and derived global ranges.
+        <Box as="p" className="mt-1 text-sm leading-6 text-muted-foreground">
+          Unlike column faceting, global faceting derives one suggestion pool across every globally
+          searchable column. It is useful for autocomplete, search hints, and derived global ranges.
         </Box>
       </Box>
       <Box>
-        <Box as='p' className='text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground'>
+        <Box
+          as="p"
+          className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+        >
           Autocomplete suggestions
         </Box>
-        <Box className='mt-2 flex flex-wrap gap-2'>
+        <Box className="mt-2 flex flex-wrap gap-2">
           {suggestions.map((suggestion) => (
             <Box
               key={suggestion.label}
-              as='span'
-              className='inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-sm text-foreground'
+              as="span"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-sm text-foreground"
             >
-              <Box as='span'>{suggestion.label}</Box>
-              <Box as='span' className='rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground'>
+              <Box as="span">{suggestion.label}</Box>
+              <Box
+                as="span"
+                className="rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+              >
                 {suggestion.count}
               </Box>
             </Box>
@@ -452,11 +478,15 @@ function GlobalFacetPanel({
       </Box>
       {premiumRange ? (
         <Box>
-          <Box as='p' className='text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground'>
+          <Box
+            as="p"
+            className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+          >
             Global numeric range
           </Box>
-          <Box as='p' className='mt-2 text-sm text-foreground'>
-            Premium values currently span RM {premiumRange[0].toFixed(2)} to RM {premiumRange[1].toFixed(2)}.
+          <Box as="p" className="mt-2 text-sm text-foreground">
+            Premium values currently span RM {premiumRange[0].toFixed(2)} to RM{' '}
+            {premiumRange[1].toFixed(2)}.
           </Box>
         </Box>
       ) : null}
@@ -478,6 +508,10 @@ const meta = {
     },
   },
   argTypes: {
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow'],
+    },
     renderToolbar: { control: false },
     renderPagination: { control: false },
     renderStatus: { control: false },
@@ -497,6 +531,62 @@ const meta = {
 export default meta;
 
 type Story = StoryObj;
+
+export const SurfaceVariants: Story = {
+  render: () => {
+    const outlineTable = useDataTable({
+      data: invoices.slice(0, 6),
+      columns: invoiceColumns,
+      defaultState: {
+        pagination: {
+          pageIndex: 0,
+          pageSize: 6,
+        },
+      },
+      tableOptions: {
+        getRowId: (row) => row.id,
+      },
+    });
+    const shadowTable = useDataTable({
+      data: invoices.slice(0, 6),
+      columns: invoiceColumns,
+      defaultState: {
+        pagination: {
+          pageIndex: 0,
+          pageSize: 6,
+        },
+      },
+      tableOptions: {
+        getRowId: (row) => row.id,
+      },
+    });
+
+    return (
+      <Box className="grid gap-6 xl:grid-cols-2">
+        <Box className="space-y-3">
+          <Box as="h3" className="text-sm font-semibold tracking-tight text-foreground">
+            Outline
+          </Box>
+          <DataTable table={outlineTable} variant="outline" />
+        </Box>
+        <Box className="space-y-3">
+          <Box as="h3" className="text-sm font-semibold tracking-tight text-foreground">
+            Shadow
+          </Box>
+          <DataTable table={shadowTable} variant="shadow" />
+        </Box>
+      </Box>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Compares the normalized default outline viewport against the explicit shadow viewport on the actual DataTable shell.',
+      },
+    },
+  },
+};
 
 function SortingExample() {
   const table = useDataTable({
@@ -524,7 +614,7 @@ function SortingExample() {
       renderToolbar={() => (
         <DataTableToolbar
           actions={
-            <Box as='span' className='text-sm text-muted-foreground'>
+            <Box as="span" className="text-sm text-muted-foreground">
               Shift-click a second sortable header to stack sort order.
             </Box>
           }
@@ -557,26 +647,42 @@ function ColumnOrderingExample() {
           actions={
             <>
               <Button
-                size='sm'
-                variant='outline'
+                size="sm"
+                variant="outline"
                 onClick={() => {
-                  currentTable.setColumnOrder(['customer', 'id', 'status', 'region', 'channel', 'premium', 'assignee']);
+                  currentTable.setColumnOrder([
+                    'customer',
+                    'id',
+                    'status',
+                    'region',
+                    'channel',
+                    'premium',
+                    'assignee',
+                  ]);
                 }}
               >
                 Customer-first layout
               </Button>
               <Button
-                size='sm'
-                variant='outline'
+                size="sm"
+                variant="outline"
                 onClick={() => {
-                  currentTable.setColumnOrder(['region', 'channel', 'status', 'customer', 'assignee', 'premium', 'id']);
+                  currentTable.setColumnOrder([
+                    'region',
+                    'channel',
+                    'status',
+                    'customer',
+                    'assignee',
+                    'premium',
+                    'id',
+                  ]);
                 }}
               >
                 Operations layout
               </Button>
               <Button
-                size='sm'
-                variant='ghost'
+                size="sm"
+                variant="ghost"
                 onClick={() => {
                   currentTable.resetColumnOrder();
                 }}
@@ -617,7 +723,7 @@ function ColumnPinningExample() {
   });
 
   return (
-    <Box className='grid max-w-[780px] gap-4'>
+    <Box className="grid max-w-[780px] gap-4">
       <StoryHint>
         Scroll horizontally. `Customer` should stay pinned on the left and `Premium` on the right.
       </StoryHint>
@@ -629,8 +735,8 @@ function ColumnPinningExample() {
             actions={
               <>
                 <Button
-                  size='sm'
-                  variant='outline'
+                  size="sm"
+                  variant="outline"
                   onClick={() => {
                     currentTable.setColumnPinning({ left: ['id', 'customer'], right: ['premium'] });
                   }}
@@ -638,8 +744,8 @@ function ColumnPinningExample() {
                   Pin invoice + customer
                 </Button>
                 <Button
-                  size='sm'
-                  variant='ghost'
+                  size="sm"
+                  variant="ghost"
                   onClick={() => {
                     currentTable.resetColumnPinning();
                   }}
@@ -687,8 +793,8 @@ function ColumnSizingExample() {
         <DataTableToolbar
           actions={
             <Button
-              size='sm'
-              variant='ghost'
+              size="sm"
+              variant="ghost"
               onClick={() => {
                 currentTable.resetColumnSizing();
               }}
@@ -748,8 +854,16 @@ function ColumnFilteringExample() {
       table={table}
       renderToolbar={(currentTable) => (
         <DataTableToolbar>
-          <DataTableColumnFilter table={currentTable} columnId='customer' placeholder='Filter customer names...' />
-          <DataTableColumnFilter table={currentTable} columnId='assignee' placeholder='Filter owners...' />
+          <DataTableColumnFilter
+            table={currentTable}
+            columnId="customer"
+            placeholder="Filter customer names..."
+          />
+          <DataTableColumnFilter
+            table={currentTable}
+            columnId="assignee"
+            placeholder="Filter owners..."
+          />
         </DataTableToolbar>
       )}
     />
@@ -774,15 +888,19 @@ function GlobalFilteringExample() {
   });
 
   return (
-    <Box className='grid gap-4'>
+    <Box className="grid gap-4">
       <StoryHint>
-        This story uses the same approximate query as `FuzzyFiltering`, but keeps the default strict substring matcher. It should return no rows.
+        This story uses the same approximate query as `FuzzyFiltering`, but keeps the default strict
+        substring matcher. It should return no rows.
       </StoryHint>
       <DataTable
         table={table}
         renderToolbar={(currentTable) => (
           <DataTableToolbar>
-            <DataTableSearch table={currentTable} placeholder='Search strictly across all columns...' />
+            <DataTableSearch
+              table={currentTable}
+              placeholder="Search strictly across all columns..."
+            />
           </DataTableToolbar>
         )}
       />
@@ -809,15 +927,19 @@ function FuzzyFilteringExample() {
   });
 
   return (
-    <Box className='grid gap-4'>
+    <Box className="grid gap-4">
       <StoryHint>
-        This story starts with the same `Alica` query, but uses the shared fuzzy filter. Approximate matches such as `Alica`, `Dnl`, or `Rzal` should still resolve.
+        This story starts with the same `Alica` query, but uses the shared fuzzy filter. Approximate
+        matches such as `Alica`, `Dnl`, or `Rzal` should still resolve.
       </StoryHint>
       <DataTable
         table={table}
         renderToolbar={(currentTable) => (
           <DataTableToolbar>
-            <DataTableSearch table={currentTable} placeholder='Search with approximate matches...' />
+            <DataTableSearch
+              table={currentTable}
+              placeholder="Search with approximate matches..."
+            />
           </DataTableToolbar>
         )}
       />
@@ -845,9 +967,9 @@ function ColumnFacetingExample() {
       table={table}
       renderToolbar={(currentTable) => (
         <DataTableToolbar>
-          <DataTableFacetedFilter table={currentTable} columnId='status' title='Status' />
-          <DataTableFacetedFilter table={currentTable} columnId='channel' title='Channel' />
-          <DataTableFacetedFilter table={currentTable} columnId='region' title='Region' />
+          <DataTableFacetedFilter table={currentTable} columnId="status" title="Status" />
+          <DataTableFacetedFilter table={currentTable} columnId="channel" title="Channel" />
+          <DataTableFacetedFilter table={currentTable} columnId="region" title="Region" />
         </DataTableToolbar>
       )}
     />
@@ -877,20 +999,20 @@ function GlobalFacetingExample() {
   const premiumRange = table.getGlobalFacetedMinMaxValues();
 
   return (
-    <Box className='grid gap-4'>
+    <Box className="grid gap-4">
       <DataTable
         table={table}
         renderToolbar={(currentTable) => (
           <DataTableToolbar>
             <DataTableSearch
               table={currentTable}
-              list='invoice-global-facet-suggestions'
-              placeholder='Search with global facet suggestions...'
+              list="invoice-global-facet-suggestions"
+              placeholder="Search with global facet suggestions..."
             />
           </DataTableToolbar>
         )}
       />
-      <datalist id='invoice-global-facet-suggestions'>
+      <datalist id="invoice-global-facet-suggestions">
         {facetEntries.map((entry) => (
           <option key={entry.label} value={entry.label} />
         ))}
@@ -933,8 +1055,8 @@ function GroupingExample() {
           actions={
             <>
               <Button
-                size='sm'
-                variant='outline'
+                size="sm"
+                variant="outline"
                 onClick={() => {
                   currentTable.setGrouping(['status']);
                 }}
@@ -942,8 +1064,8 @@ function GroupingExample() {
                 Group by status
               </Button>
               <Button
-                size='sm'
-                variant='outline'
+                size="sm"
+                variant="outline"
                 onClick={() => {
                   currentTable.setGrouping(['region']);
                 }}
@@ -951,8 +1073,8 @@ function GroupingExample() {
                 Group by region
               </Button>
               <Button
-                size='sm'
-                variant='ghost'
+                size="sm"
+                variant="ghost"
                 onClick={() => {
                   currentTable.setGrouping([]);
                 }}
@@ -968,7 +1090,10 @@ function GroupingExample() {
 }
 
 function ExpandingExample() {
-  const columns = React.useMemo<ColumnDef<InvoiceRow>[]>(() => [createExpandColumn(), ...invoiceColumns], []);
+  const columns = React.useMemo<ColumnDef<InvoiceRow>[]>(
+    () => [createExpandColumn(), ...invoiceColumns],
+    [],
+  );
   const table = useDataTable({
     data: invoices,
     columns,
@@ -986,10 +1111,7 @@ function ExpandingExample() {
   });
 
   return (
-    <DataTable
-      table={table}
-      renderExpandedContent={(row) => <NotesPanel row={row.original} />}
-    />
+    <DataTable table={table} renderExpandedContent={(row) => <NotesPanel row={row.original} />} />
   );
 }
 
@@ -1013,7 +1135,10 @@ function PaginationExample() {
 }
 
 function RowSelectionExample() {
-  const columns = React.useMemo<ColumnDef<InvoiceRow>[]>(() => [createSelectionColumn(), ...invoiceColumns], []);
+  const columns = React.useMemo<ColumnDef<InvoiceRow>[]>(
+    () => [createSelectionColumn(), ...invoiceColumns],
+    [],
+  );
   const table = useDataTable({
     data: invoices,
     columns,
@@ -1042,7 +1167,10 @@ function RowSelectionExample() {
 }
 
 function RowPinningExample() {
-  const columns = React.useMemo<ColumnDef<InvoiceRow>[]>(() => [createRowPinningColumn(), ...wideInvoiceColumns], []);
+  const columns = React.useMemo<ColumnDef<InvoiceRow>[]>(
+    () => [createRowPinningColumn(), ...wideInvoiceColumns],
+    [],
+  );
   const table = useDataTable({
     data: invoices,
     columns,
@@ -1064,9 +1192,10 @@ function RowPinningExample() {
   });
 
   return (
-    <Box className='grid gap-4'>
+    <Box className="grid gap-4">
       <StoryHint>
-        `Top` prepends the clicked row into the pinned-top section, `Bottom` appends it into the pinned-bottom section, and `Clear` returns it to the center rows.
+        `Top` prepends the clicked row into the pinned-top section, `Bottom` appends it into the
+        pinned-bottom section, and `Clear` returns it to the center rows.
       </StoryHint>
       <DataTable
         table={table}
@@ -1074,8 +1203,8 @@ function RowPinningExample() {
           <DataTableToolbar
             actions={
               <Button
-                size='sm'
-                variant='ghost'
+                size="sm"
+                variant="ghost"
                 onClick={() => {
                   currentTable.resetRowPinning();
                 }}
@@ -1092,7 +1221,7 @@ function RowPinningExample() {
 
 function StylingHooksExample() {
   return (
-    <Box className='grid gap-4'>
+    <Box className="grid gap-4">
       <StoryHint>
         This isolates the shared styling surfaces: `getRowClassName` for row-level treatment and
         `columnDef.meta.headerCellClassName` / `columnDef.meta.cellClassName` for header and body
@@ -1135,14 +1264,19 @@ function StickyHeaderExample() {
   });
 
   return (
-    <Box className='grid w-full gap-4'>
-      <StoryHint>Scroll vertically. The header should remain attached to the top of the viewport.</StoryHint>
+    <Box className="grid w-full gap-4">
+      <StoryHint>
+        Scroll vertically. The header should remain attached to the top of the viewport.
+      </StoryHint>
       <DataTable
         table={table}
         layout={{ stickyHeader: true, maxBodyHeight: 320 }}
         renderToolbar={(currentTable) => (
           <DataTableToolbar>
-            <DataTableSearch table={currentTable} placeholder='Search while the header stays sticky...' />
+            <DataTableSearch
+              table={currentTable}
+              placeholder="Search while the header stays sticky..."
+            />
           </DataTableToolbar>
         )}
       />
@@ -1166,8 +1300,10 @@ function StickyFooterExample() {
   });
 
   return (
-    <Box className='grid w-full gap-4'>
-      <StoryHint>Scroll vertically. The footer summary should stay pinned to the bottom edge of the viewport.</StoryHint>
+    <Box className="grid w-full gap-4">
+      <StoryHint>
+        Scroll vertically. The footer summary should stay pinned to the bottom edge of the viewport.
+      </StoryHint>
       <DataTable
         table={table}
         layout={{ stickyFooter: true, maxBodyHeight: 320 }}
@@ -1178,7 +1314,10 @@ function StickyFooterExample() {
 
           return (
             <TableRow>
-              <TableCell colSpan={currentTable.getVisibleLeafColumns().length} className='bg-background text-sm font-medium'>
+              <TableCell
+                colSpan={currentTable.getVisibleLeafColumns().length}
+                className="bg-background text-sm font-medium"
+              >
                 Filtered premium total: RM {filteredTotal.toFixed(2)}
               </TableCell>
             </TableRow>
@@ -1207,9 +1346,10 @@ function VirtualizationExample() {
   });
 
   return (
-    <Box className='grid gap-4'>
+    <Box className="grid gap-4">
       <StoryHint>
-        This uses the shared `DataTableVirtualized` companion with TanStack Virtual, while preserving the same shared shell, toolbar composition, and sticky header behavior.
+        This uses the shared `DataTableVirtualized` companion with TanStack Virtual, while
+        preserving the same shared shell, toolbar composition, and sticky header behavior.
       </StoryHint>
       <DataTableVirtualized
         table={table}
@@ -1218,7 +1358,10 @@ function VirtualizationExample() {
         layout={{ stickyHeader: true }}
         renderToolbar={(currentTable) => (
           <DataTableToolbar>
-            <DataTableSearch table={currentTable} placeholder='Search the large virtualized dataset...' />
+            <DataTableSearch
+              table={currentTable}
+              placeholder="Search the large virtualized dataset..."
+            />
           </DataTableToolbar>
         )}
       />
@@ -1230,8 +1373,14 @@ export const Sorting: Story = {
   render: () => <SortingExample />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('columnheader', { name: /status/i })).toHaveAttribute('aria-sort', 'ascending');
-    await expect(canvas.getByRole('columnheader', { name: /premium/i })).toHaveAttribute('aria-sort', 'descending');
+    await expect(canvas.getByRole('columnheader', { name: /status/i })).toHaveAttribute(
+      'aria-sort',
+      'ascending',
+    );
+    await expect(canvas.getByRole('columnheader', { name: /premium/i })).toHaveAttribute(
+      'aria-sort',
+      'descending',
+    );
   },
 };
 
@@ -1356,6 +1505,3 @@ export const StickyFooter: Story = {
 export const Virtualization: Story = {
   render: () => <VirtualizationExample />,
 };
-
-
-

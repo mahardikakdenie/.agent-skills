@@ -1,13 +1,18 @@
 import type * as AccordionPrimitive from '@radix-ui/react-accordion';
 import type * as React from 'react';
 
+import type { DisplaySurfaceVariant } from '../utils/display-surface-variants';
+
 export const accordionTypeValues = ['single', 'multiple'] as const;
 
 export type AccordionType = (typeof accordionTypeValues)[number];
 
-interface AccordionBaseProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'defaultValue' | 'onChange'> {
+interface AccordionBaseProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children' | 'defaultValue' | 'onChange'
+> {
   children?: React.ReactNode;
+  variant?: DisplaySurfaceVariant;
   className?: string;
 }
 
@@ -32,6 +37,7 @@ export type AccordionItemProps = Omit<
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>,
   'asChild' | 'className'
 > & {
+  variant?: DisplaySurfaceVariant;
   className?: string;
 };
 

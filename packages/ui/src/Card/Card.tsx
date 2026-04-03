@@ -3,14 +3,6 @@ import * as React from 'react';
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
-import {
-  cardContentVariants,
-  cardDescriptionVariants,
-  cardFooterVariants,
-  cardHeaderVariants,
-  cardRootVariants,
-  cardTitleVariants,
-} from './Card.variants';
 import type {
   CardContentProps,
   CardDescriptionProps,
@@ -19,14 +11,29 @@ import type {
   CardProps,
   CardTitleProps,
 } from './Card.types';
+import {
+  cardContentVariants,
+  cardDescriptionVariants,
+  cardFooterVariants,
+  cardHeaderVariants,
+  cardRootVariants,
+  cardTitleVariants,
+} from './Card.variants';
 
 /**
  * Structural shared surface for grouped content, summary panels, and app-local
  * shells that need consistent spacing and token-driven card styling.
  */
-export const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, ...props }, ref) => (
-  <Box ref={ref} data-slot="card" className={cn(cardRootVariants(), className)} {...props} />
-));
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, variant = 'outline', ...props }, ref) => (
+    <Box
+      ref={ref}
+      data-slot="card"
+      className={cn(cardRootVariants({ variant }), className)}
+      {...props}
+    />
+  ),
+);
 
 Card.displayName = 'Card';
 
@@ -35,7 +42,12 @@ Card.displayName = 'Card';
  */
 export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, ...props }, ref) => (
-    <Box ref={ref} data-slot="card-header" className={cn(cardHeaderVariants(), className)} {...props} />
+    <Box
+      ref={ref}
+      data-slot="card-header"
+      className={cn(cardHeaderVariants(), className)}
+      {...props}
+    />
   ),
 );
 
@@ -80,7 +92,12 @@ CardDescription.displayName = 'CardDescription';
  */
 export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, ...props }, ref) => (
-    <Box ref={ref} data-slot="card-content" className={cn(cardContentVariants(), className)} {...props} />
+    <Box
+      ref={ref}
+      data-slot="card-content"
+      className={cn(cardContentVariants(), className)}
+      {...props}
+    />
   ),
 );
 
@@ -91,7 +108,12 @@ CardContent.displayName = 'CardContent';
  */
 export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, ...props }, ref) => (
-    <Box ref={ref} data-slot="card-footer" className={cn(cardFooterVariants(), className)} {...props} />
+    <Box
+      ref={ref}
+      data-slot="card-footer"
+      className={cn(cardFooterVariants(), className)}
+      {...props}
+    />
   ),
 );
 

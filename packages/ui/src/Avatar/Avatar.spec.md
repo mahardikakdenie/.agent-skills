@@ -32,27 +32,28 @@ Cross-app references show two recurring needs: a conventional profile avatar sur
 
 ## Design Decisions
 
-| Decision | Choice | Rationale |
-| -------- | ------ | --------- |
-| Primitive | `@radix-ui/react-avatar` | Keeps image loading and fallback behavior on an accessible, well-tested primitive. |
-| CVA strategy | slot-based | Root and fallback both need shared size scaling without expanding the public API with extra booleans. |
-| Controlled vs uncontrolled | none | `Avatar` is display-only; apps only pass content and optional event handlers. |
-| Sub-components | no | `vercel-composition-patterns` review does not justify a compound family for this flat identity primitive. |
-| Fallback behavior | fixed internal delay | A small internal `delayMs` avoids flash-of-fallback on fast connections without widening the public interface. |
-| Box-only DOM rule | explicit | Authored JSX must use `Box` for the root, image, fallback, and stories; no direct native tags are authored. |
+| Decision                   | Choice                   | Rationale                                                                                                      |
+| -------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Primitive                  | `@radix-ui/react-avatar` | Keeps image loading and fallback behavior on an accessible, well-tested primitive.                             |
+| CVA strategy               | slot-based               | Root and fallback both need shared size scaling without expanding the public API with extra booleans.          |
+| Controlled vs uncontrolled | none                     | `Avatar` is display-only; apps only pass content and optional event handlers.                                  |
+| Sub-components             | no                       | `vercel-composition-patterns` review does not justify a compound family for this flat identity primitive.      |
+| Fallback behavior          | fixed internal delay     | A small internal `delayMs` avoids flash-of-fallback on fast connections without widening the public interface. |
+| Box-only DOM rule          | explicit                 | Authored JSX must use `Box` for the root, image, fallback, and stories; no direct native tags are authored.    |
 
 ---
 
 ## Props Interface
 
-| Prop | Type | Default | Required | Description |
-| ---- | ---- | ------- | -------- | ----------- |
-| `src` | `string` | `undefined` | No | Image source URL for the avatar image. |
-| `alt` | `string` | `undefined` | No | Accessible image description and the source for derived initials when `fallback` is not provided. |
-| `fallback` | `React.ReactNode` | derived initials or `'?'` | No | Explicit fallback content shown when the image is missing or fails to load. |
-| `size` | `'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | No | Shared avatar size scale. |
-| `className` | `string` | `undefined` | No | Consumer override merged last through `cn()`. |
-| `...props` | `React.HTMLAttributes<HTMLSpanElement>` | - | No | Standard root props such as `id`, `aria-*`, `role`, `tabIndex`, `onClick`, and `data-*`. |
+| Prop        | Type                                    | Default                   | Required | Description                                                                                       |
+| ----------- | --------------------------------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `src`       | `string`                                | `undefined`               | No       | Image source URL for the avatar image.                                                            |
+| `alt`       | `string`                                | `undefined`               | No       | Accessible image description and the source for derived initials when `fallback` is not provided. |
+| `fallback`  | `React.ReactNode`                       | derived initials or `'?'` | No       | Explicit fallback content shown when the image is missing or fails to load.                       |
+| `variant`   | `'outline' \| 'shadow'`                 | `'outline'`               | No       | Shared avatar-shell surface treatment applied to the actual avatar root.                          |
+| `size`      | `'sm' \| 'md' \| 'lg' \| 'xl'`          | `'md'`                    | No       | Shared avatar size scale.                                                                         |
+| `className` | `string`                                | `undefined`               | No       | Consumer override merged last through `cn()`.                                                     |
+| `...props`  | `React.HTMLAttributes<HTMLSpanElement>` | -                         | No       | Standard root props such as `id`, `aria-*`, `role`, `tabIndex`, `onClick`, and `data-*`.          |
 
 ### Derived fallback rule
 
@@ -64,28 +65,35 @@ Cross-app references show two recurring needs: a conventional profile avatar sur
 
 ## Variants
 
-`Avatar` has no visual `variant` prop. The public styling surface is limited to `size` plus consumer `className`.
+`Avatar` keeps the size scale and now adds one narrow surface axis for the shell itself.
+
+### Surface treatment
+
+| Variant   | Behavior                                       | Intended use                                                             |
+| --------- | ---------------------------------------------- | ------------------------------------------------------------------------ |
+| `outline` | Bordered circular shell with no resting shadow | Default identity marker and the fallback when `variant` is omitted       |
+| `shadow`  | Bordered circular shell with `shadow-sm`       | Use when the avatar needs stronger separation from a surrounding surface |
 
 ### Size scale
 
-| Size | Behavior | Intended use |
-| ---- | -------- | ------------ |
-| `sm` | 32px avatar with tight fallback text | Dense rows, tables, compact metadata |
-| `md` | 40px avatar | Default form, list, and header usage |
-| `lg` | 48px avatar | Prominent identity blocks and detail rows |
-| `xl` | 64px avatar | Profile summaries and larger hero identity treatments |
+| Size | Behavior                             | Intended use                                          |
+| ---- | ------------------------------------ | ----------------------------------------------------- |
+| `sm` | 32px avatar with tight fallback text | Dense rows, tables, compact metadata                  |
+| `md` | 40px avatar                          | Default form, list, and header usage                  |
+| `lg` | 48px avatar                          | Prominent identity blocks and detail rows             |
+| `xl` | 64px avatar                          | Profile summaries and larger hero identity treatments |
 
 ---
 
 ## States
 
-| State | Visual Behavior | Accessibility |
-| ----- | --------------- | ------------- |
-| Image loaded | Circular image fills the full avatar frame | `img` uses the provided `alt` string. |
-| Missing source | Fallback content shows immediately inside the muted circular surface | Fallback text stays readable even when no image is available. |
-| Broken image | Fallback replaces the failed image inside the same shell | The shared shell stays stable; no layout shift beyond expected image replacement. |
-| Derived initials | Two-letter or one-letter uppercase initials render when `fallback` is omitted | Initials provide readable identity context when `alt` is meaningful. |
-| Clickable wrapper | Consumer may pass `onClick`, `role`, and `tabIndex` to the root | Interactivity remains consumer-owned so the primitive does not pretend to be a button by default. |
+| State             | Visual Behavior                                                               | Accessibility                                                                                     |
+| ----------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Image loaded      | Circular image fills the full avatar frame                                    | `img` uses the provided `alt` string.                                                             |
+| Missing source    | Fallback content shows immediately inside the muted circular surface          | Fallback text stays readable even when no image is available.                                     |
+| Broken image      | Fallback replaces the failed image inside the same shell                      | The shared shell stays stable; no layout shift beyond expected image replacement.                 |
+| Derived initials  | Two-letter or one-letter uppercase initials render when `fallback` is omitted | Initials provide readable identity context when `alt` is meaningful.                              |
+| Clickable wrapper | Consumer may pass `onClick`, `role`, and `tabIndex` to the root               | Interactivity remains consumer-owned so the primitive does not pretend to be a button by default. |
 
 `Avatar` has no loading spinner, disabled mode, or presence badge in the shared contract.
 
@@ -134,11 +142,7 @@ Cross-app references show two recurring needs: a conventional profile avatar sur
 ### 3. Broken-image fallback content
 
 ```tsx
-<Avatar
-  src="https://example.invalid/avatar.png"
-  alt="Platform team"
-  fallback="PT"
-/>
+<Avatar src="https://example.invalid/avatar.png" alt="Platform team" fallback="PT" />
 ```
 
 ### 4. Consumer-composed group
@@ -155,13 +159,13 @@ Cross-app references show two recurring needs: a conventional profile avatar sur
 
 ## Do / Don't
 
-| Do | Don't |
-| --- | ----- |
-| Pass meaningful `alt` text when the avatar conveys identity. | Rely on a generic `"Avatar"` string as the only accessible label in real usage. |
-| Use `fallback` for explicit initials or short text when parity requires it. | Add shared `status`, `online`, or grouped-stack props to the primitive. |
-| Compose clickable or stacked treatments around `Avatar` with standard HTML props and layout wrappers. | Turn the shared primitive into a router-aware profile menu trigger. |
-| Keep authored JSX on `Box` for the root, image, fallback, and stories. | Hand-write native `span`, `img`, or `div` tags in shared authored JSX. |
-| Use the later shared `Image` contract or app-local media components for large images. | Stretch `Avatar` into a generic responsive media component. |
+| Do                                                                                                    | Don't                                                                           |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Pass meaningful `alt` text when the avatar conveys identity.                                          | Rely on a generic `"Avatar"` string as the only accessible label in real usage. |
+| Use `fallback` for explicit initials or short text when parity requires it.                           | Add shared `status`, `online`, or grouped-stack props to the primitive.         |
+| Compose clickable or stacked treatments around `Avatar` with standard HTML props and layout wrappers. | Turn the shared primitive into a router-aware profile menu trigger.             |
+| Keep authored JSX on `Box` for the root, image, fallback, and stories.                                | Hand-write native `span`, `img`, or `div` tags in shared authored JSX.          |
+| Use the later shared `Image` contract or app-local media components for large images.                 | Stretch `Avatar` into a generic responsive media component.                     |
 
 ---
 
@@ -171,6 +175,7 @@ Cross-app references show two recurring needs: a conventional profile avatar sur
 
 - [x] `Image`
 - [x] `Fallback`
+- [x] `Shadow`
 - [x] `Sizes`
 - [x] `StackedGroup`
 
@@ -186,9 +191,7 @@ Cross-app references show two recurring needs: a conventional profile avatar sur
 
 ## Changelog
 
-| Date | Change |
-| ---- | ------ |
-| 2026-03-12 | Initial Avatar spec |
-
-
-
+| Date       | Change                                                                                    |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| 2026-03-12 | Initial Avatar spec                                                                       |
+| 2026-04-03 | Added normalized `outline` / `shadow` avatar-shell variants with `outline` as the default |

@@ -100,7 +100,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: (args) => (
-    <Box className="w-80 rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <Box className="w-80 rounded-2xl border border-border bg-card p-4">
       <Image
         {...args}
         ratio="video"
@@ -122,7 +122,7 @@ export const Default: Story = {
 
 export const Fallback: Story = {
   render: (args) => (
-    <Box className="w-80 rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <Box className="w-80 rounded-2xl border border-border bg-card p-4">
       <Image
         {...args}
         src=""
@@ -139,8 +139,7 @@ export const Fallback: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Shows the shared fallback tile used when no image source is available.',
+        story: 'Shows the shared fallback tile used when no image source is available.',
       },
     },
   },
@@ -149,31 +148,36 @@ export const Fallback: Story = {
 export const AspectRatios: Story = {
   render: () => (
     <Box className="grid gap-4 md:grid-cols-3">
-      {([
-        {
-          label: 'square',
-          ratio: 'square',
-          wrapperClassName: 'w-full',
-          note: 'Balanced thumbnail and tile layouts.',
-        },
-        {
-          label: 'landscape',
-          ratio: 'video',
-          wrapperClassName: 'w-full',
-          note: 'Best for banners, cards, and article media.',
-        },
-        {
-          label: 'portrait',
-          ratio: 'portrait',
-          wrapperClassName: 'mx-auto w-40',
-          note: 'Narrower document and poster previews.',
-        },
-      ] as const).map(({ ratio, wrapperClassName, note, label }) => (
+      {(
+        [
+          {
+            label: 'square',
+            ratio: 'square',
+            wrapperClassName: 'w-full',
+            note: 'Balanced thumbnail and tile layouts.',
+          },
+          {
+            label: 'landscape',
+            ratio: 'video',
+            wrapperClassName: 'w-full',
+            note: 'Best for banners, cards, and article media.',
+          },
+          {
+            label: 'portrait',
+            ratio: 'portrait',
+            wrapperClassName: 'mx-auto w-40',
+            note: 'Narrower document and poster previews.',
+          },
+        ] as const
+      ).map(({ ratio, wrapperClassName, note, label }) => (
         <Box
           key={label}
-          className="flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
+          className="flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4"
         >
-          <Box as="span" className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <Box
+            as="span"
+            className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
             {label}
           </Box>
           <Box className={wrapperClassName}>
@@ -207,9 +211,12 @@ export const FitModes: Story = {
       {imageFitValues.map((fit) => (
         <Box
           key={fit}
-          className="flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
+          className="flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4"
         >
-          <Box as="span" className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <Box
+            as="span"
+            className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
             {fit}
           </Box>
           <Box className="flex min-h-56 items-center justify-center rounded-xl bg-muted p-4">

@@ -1,6 +1,9 @@
 import * as React from 'react';
 
+import type { DisplaySurfaceVariant } from '../utils/display-surface-variants';
+
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: DisplaySurfaceVariant;
   children?: React.ReactNode;
 }
 

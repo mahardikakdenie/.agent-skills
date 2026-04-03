@@ -8,11 +8,22 @@ export const accordionRootVariants = cva('grid gap-3');
 
 export const accordionItemVariants = cva(
   [
-    'overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm',
+    'overflow-hidden rounded-2xl',
     'transition-colors motion-reduce:transition-none',
     'data-[state=open]:border-ring/30',
     'data-[disabled]:opacity-60',
   ].join(' '),
+  {
+    variants: {
+      variant: {
+        outline: 'border border-border bg-card text-card-foreground shadow-none',
+        shadow: 'border border-border bg-card text-card-foreground shadow-sm',
+      },
+    },
+    defaultVariants: {
+      variant: 'outline',
+    },
+  },
 );
 
 export const accordionHeaderVariants = cva('flex');

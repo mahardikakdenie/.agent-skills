@@ -1,5 +1,5 @@
-import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import * as React from 'react';
 
 import { Badge } from '../Badge';
 import { Box } from '../Box';
@@ -10,7 +10,14 @@ const meta = {
   title: 'Data Display/Card',
   component: Card,
   tags: ['autodocs'],
+  args: {
+    variant: 'outline',
+  },
   argTypes: {
+    variant: {
+      control: 'select',
+      options: ['outline', 'shadow'],
+    },
     className: {
       control: 'text',
     },
@@ -30,8 +37,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-  render: () => (
-    <Card className="max-w-md">
+  render: (args) => (
+    <Card {...args} className="max-w-md">
       <CardHeader className="gap-3">
         <CardTitle>Monthly premium</CardTitle>
         <Box className="text-3xl font-semibold tracking-tight">RM 4,250</Box>
@@ -52,8 +59,8 @@ export const Basic: Story = {
 
 export const HeaderFooter: Story = {
   name: 'Header And Footer',
-  render: () => (
-    <Card className="max-w-lg">
+  render: (args) => (
+    <Card {...args} className="max-w-lg">
       <CardHeader>
         <Box className="flex flex-wrap items-start justify-between gap-3">
           <Box className="space-y-1">
@@ -88,19 +95,23 @@ export const HeaderFooter: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Exercises the named header, content, and footer slots in a realistic approval panel.',
+        story:
+          'Exercises the named header, content, and footer slots in a realistic approval panel.',
       },
     },
   },
 };
 
-export const ElevatedComposition: Story = {
-  render: () => (
-    <Card className="max-w-md shadow-md">
+export const ShadowVariant: Story = {
+  args: {
+    variant: 'shadow',
+  },
+  render: (args) => (
+    <Card {...args} className="max-w-md">
       <CardHeader>
         <CardTitle>Escalation queue</CardTitle>
         <CardDescription>
-          Stronger elevation stays a composition concern through `className`.
+          Stronger elevation now comes from the explicit shared surface variant.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -116,9 +127,8 @@ export const ElevatedComposition: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Shows an elevated card treatment applied through composition instead of a dedicated shared prop.',
+        story: 'Shows the explicit `shadow` surface variant on the actual card root.',
       },
     },
   },
 };
-

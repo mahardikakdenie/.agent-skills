@@ -4,12 +4,8 @@ import * as React from 'react';
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
-import {
-  imageElementVariants,
-  imageFallbackVariants,
-  imageRootVariants,
-} from './Image.variants';
 import type { ImageProps } from './Image.types';
+import { imageElementVariants, imageFallbackVariants, imageRootVariants } from './Image.variants';
 
 const DEFAULT_FALLBACK_LABEL = 'No image available';
 
@@ -61,8 +57,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     forwardedRef,
   ) => {
     const imageRef = React.useRef<HTMLImageElement>(null);
-    const [loadingStatus, setLoadingStatus] =
-      React.useState<ImageLoadingStatus>('idle');
+    const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
 
     React.useImperativeHandle(forwardedRef, () => imageRef.current as HTMLImageElement);
 
@@ -78,14 +73,13 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
       height: ratio === 'auto' ? toCssDimension(height) : undefined,
       aspectRatio: ratio === 'portrait' ? '3 / 4' : undefined,
     } satisfies React.CSSProperties;
-    const fallbackLabel =
-      typeof fallback === 'string' ? fallback : DEFAULT_FALLBACK_LABEL;
+    const fallbackLabel = typeof fallback === 'string' ? fallback : DEFAULT_FALLBACK_LABEL;
     const resolvedFallback =
       fallback && typeof fallback !== 'string' ? (
         fallback
       ) : (
         <Box className="flex flex-col items-center gap-3">
-          <Box className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background shadow-sm">
+          <Box className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background shadow-none">
             <ImageOff aria-hidden="true" className="h-5 w-5" />
           </Box>
           <Box as="span" className="text-sm font-medium">

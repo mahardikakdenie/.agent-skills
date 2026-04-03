@@ -3,6 +3,7 @@ import * as React from 'react';
 import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
+import type { TimelineProps, TimelineStatusTone } from './Timeline.types';
 import {
   timelineBodyVariants,
   timelineConnectorVariants,
@@ -13,7 +14,6 @@ import {
   timelineRootVariants,
   timelineTitleVariants,
 } from './Timeline.variants';
-import type { TimelineProps, TimelineStatusTone } from './Timeline.types';
 
 function resolveTimelineTone(
   itemTone: TimelineStatusTone | undefined,
@@ -31,7 +31,17 @@ function resolveTimelineTone(
  * local to consuming apps.
  */
 export const Timeline = React.forwardRef<HTMLDivElement, TimelineProps>(
-  ({ items, orientation = 'vertical', statusTone = 'default', className, ...props }, ref) => {
+  (
+    {
+      items,
+      orientation = 'vertical',
+      variant = 'outline',
+      statusTone = 'default',
+      className,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <Box
         ref={ref}
@@ -43,6 +53,7 @@ export const Timeline = React.forwardRef<HTMLDivElement, TimelineProps>(
       >
         {items.map((item, index) => {
           const resolvedTone = resolveTimelineTone(item.statusTone, statusTone);
+          const resolvedVariant = item.variant ?? variant;
           const isLastItem = index === items.length - 1;
 
           return (
@@ -60,7 +71,10 @@ export const Timeline = React.forwardRef<HTMLDivElement, TimelineProps>(
               >
                 <Box
                   data-slot="timeline-marker"
-                  className={timelineMarkerVariants({ statusTone: resolvedTone })}
+                  className={timelineMarkerVariants({
+                    variant: resolvedVariant,
+                    statusTone: resolvedTone,
+                  })}
                 >
                   <Box as="span" className="h-2 w-2 rounded-full bg-current" />
                 </Box>
