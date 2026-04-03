@@ -18,7 +18,8 @@ type CompactTablePaginationProps<TData extends RowData> = {
   pageSizeOptions?: number[];
 };
 
-const formatCompactPaginationNumber = (value: number) => new Intl.NumberFormat('id-ID').format(value);
+const formatCompactPaginationNumber = (value: number) =>
+  new Intl.NumberFormat('id-ID').format(value);
 
 export function CompactTablePagination<TData extends RowData>({
   table,
@@ -52,7 +53,7 @@ export function CompactTablePagination<TData extends RowData>({
             size="sm"
             className="w-[5.5rem]"
           >
-            <SelectTrigger className="h-8 min-h-8 w-[5.5rem] rounded-lg border-slate-200 bg-white px-2.5 text-xs shadow-sm hover:border-slate-300">
+            <SelectTrigger className="h-8 min-h-8 w-[5.5rem] rounded-lg border-slate-200 bg-white px-2.5 text-xs shadow-none hover:border-slate-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -66,13 +67,18 @@ export function CompactTablePagination<TData extends RowData>({
             </SelectContent>
           </Select>
           <Box as="span">
-            of <Box as="span" className="text-slate-900">{formatCompactPaginationNumber(rowCount)}</Box> items
+            of{' '}
+            <Box as="span" className="text-slate-900">
+              {formatCompactPaginationNumber(rowCount)}
+            </Box>{' '}
+            items
           </Box>
         </Box>
 
         <Box className="flex items-center justify-between gap-3 md:justify-end">
           <Box as="span" className="text-xs font-medium text-slate-400">
-            Page {formatCompactPaginationNumber(currentPage)} of {formatCompactPaginationNumber(pageCount)}
+            Page {formatCompactPaginationNumber(currentPage)} of{' '}
+            {formatCompactPaginationNumber(pageCount)}
           </Box>
           <Box className="flex items-center gap-2">
             <Button
@@ -85,7 +91,7 @@ export function CompactTablePagination<TData extends RowData>({
               disabled={!table.getCanPreviousPage()}
               title="Prev"
               aria-label="Go to previous page"
-              className="h-8 w-8 rounded-full border-slate-200 p-0 text-slate-600 transition-colors enabled:hover:border-sky-200 enabled:hover:bg-sky-50 enabled:hover:text-sky-700"
+              className="h-8 w-8 rounded-full border-slate-200 p-0 text-slate-600 shadow-none transition-colors enabled:hover:border-sky-200 enabled:hover:bg-sky-50 enabled:hover:text-sky-700 enabled:hover:shadow-none"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -99,7 +105,7 @@ export function CompactTablePagination<TData extends RowData>({
               disabled={!table.getCanNextPage()}
               title="Next"
               aria-label="Go to next page"
-              className="h-8 w-8 rounded-full border-slate-200 p-0 text-slate-600 transition-colors enabled:hover:border-sky-200 enabled:hover:bg-sky-50 enabled:hover:text-sky-700"
+              className="h-8 w-8 rounded-full border-slate-200 p-0 text-slate-600 shadow-none transition-colors enabled:hover:border-sky-200 enabled:hover:bg-sky-50 enabled:hover:text-sky-700 enabled:hover:shadow-none"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

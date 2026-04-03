@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import noData from '@public/images/no-data.webp';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { Download, Search, Upload } from 'react-feather';
@@ -276,7 +276,7 @@ export default function TransactionsPage() {
               <TabsTrigger
                 key={tabName}
                 value={tabName}
-                className="h-[3.25rem] rounded-none border-x-0 border-t-0 border-b-[2px] border-transparent px-5 py-3 text-sm font-normal text-black shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none enabled:data-[state=inactive]:hover:bg-transparent enabled:data-[state=inactive]:hover:text-black"
+                className="h-12 rounded-none border-x-0 border-t-0 border-b-[2px] border-transparent px-4 py-2.5 text-sm font-normal text-black shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none enabled:data-[state=inactive]:hover:bg-transparent enabled:data-[state=inactive]:hover:text-black"
               >
                 <Box as="span" className="mr-2.5">
                   {tabName === 'All' ? 'All Transaction' : tabName}
@@ -298,7 +298,7 @@ export default function TransactionsPage() {
       </Box>
 
       <DataTable
-        className="!gap-3 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
+        className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
         loading={isLoading || isFetching}
         data={transactions}
         columns={transactionTableColumns}
@@ -324,8 +324,8 @@ export default function TransactionsPage() {
         }}
         pageSizeOptions={[10, 20, 30, 50, 100]}
         emptyState={
-          <Box className="flex flex-col items-center justify-center gap-4 py-10">
-            <Image alt="No transaction data" src={noData} width={200} />
+          <Box className="flex min-h-[10rem] flex-col items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+            <Image alt="No transaction data" src={noData} width={128} />
             <Box as="span">No transaction data available</Box>
           </Box>
         }
@@ -346,7 +346,7 @@ export default function TransactionsPage() {
           </Box>
         )}
         renderPagination={(table) => (
-          <Box className="-mt-1 pb-4 md:pb-6">
+          <Box className="-mt-1">
             <CompactTablePagination table={table} pageSizeOptions={[10, 20, 30, 50, 100]} />
           </Box>
         )}
