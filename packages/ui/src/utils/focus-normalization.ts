@@ -1,6 +1,6 @@
 import { cn } from '@repo/helper';
 
-export type FieldShellFocusOwnership = 'composite' | 'direct';
+export type FieldShellFocusOwnership = 'composite' | 'composite-visible' | 'direct';
 export type CompactControlFocusMode = 'standard' | 'embedded';
 export type DenseSurfaceFocusOwnership = 'direct' | 'composite';
 
@@ -61,12 +61,41 @@ function buildFocusRecipe({
   };
 }
 
+function buildHasFocusVisibleRecipe({
+  ringWidth,
+  ringTint,
+  invalidRingTint,
+  includeBorderTint = false,
+  invalidBase,
+}: Omit<BuildFocusRecipeOptions, 'selector' | 'includeOutlineReset'>): FocusRecipe {
+  return {
+    base: cn(
+      includeBorderTint && 'has-[:focus-visible]:border-ring',
+      `has-[:focus-visible]:${ringWidth}`,
+      `has-[:focus-visible]:${ringTint}`,
+    ),
+    invalid: cn(
+      invalidBase,
+      includeBorderTint && 'has-[:focus-visible]:border-destructive',
+      `has-[:focus-visible]:${ringWidth}`,
+      `has-[:focus-visible]:${invalidRingTint}`,
+    ),
+  };
+}
+
 // Keep family differences explicit so component workers can compose the right
 // recipe instead of reusing one loud ring pattern across every control shape.
 export const focusNormalizationRecipes = {
   fieldShell: {
     composite: buildFocusRecipe({
       selector: 'focus-within',
+      ringWidth: 'ring-1',
+      ringTint: 'ring-ring/20',
+      invalidRingTint: 'ring-destructive/20',
+      includeBorderTint: true,
+      invalidBase: 'border-destructive',
+    }),
+    'composite-visible': buildHasFocusVisibleRecipe({
       ringWidth: 'ring-1',
       ringTint: 'ring-ring/20',
       invalidRingTint: 'ring-destructive/20',

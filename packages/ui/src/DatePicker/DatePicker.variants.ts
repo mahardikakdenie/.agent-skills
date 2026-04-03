@@ -6,7 +6,7 @@ import {
 } from '../utils/focus-normalization';
 import { fieldVariantOptions } from '../utils/field-variants';
 
-const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
+const compositeFieldShellFocus = getFieldShellFocusRecipe('composite-visible');
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 

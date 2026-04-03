@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-04-03 - Date Picker Trigger Focus Treatment Synced With Open-State Feedback
+
+Changed:
+
+- Refined the documented date-picker field-shell behavior so `DatePicker`, `DateRangePicker`, and `MonthPicker` no longer imply generic `focus-within` emphasis after the popover closes.
+- Clarified that the picker family keeps shell-owned emphasis through descendant `:focus-visible` plus explicit open-state border feedback while the popover is expanded.
+- Reconciled `02-api-conventions.md` so the normalization output now matches the shipped picker-shell behavior instead of suggesting sticky active treatment after pointer selection.
+
+Impact:
+
+- Downstream picker migrations stay aligned with `Select` and `Combobox`: open state remains visible, but a pointer-made selection can close without leaving the trigger shell looking artificially active.
+- Keyboard users still retain a visible shell focus cue when focus genuinely remains on the trigger or sibling shell actions.
+
+---
+
 ## 2026-04-03 - DataTable Loading Cell Shell Alignment Synced
 
 Changed:

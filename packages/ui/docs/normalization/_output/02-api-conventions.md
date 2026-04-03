@@ -287,7 +287,8 @@ This amendment opens five canonical focus families for `packages/ui`:
 
 | Family                  | Components                                                                                                    | Canonical rule                                                                                                     |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `field-shell-composite` | `Input`, `DatePicker`, `DateRangePicker`, `MonthPicker`                                                       | Outer shell owns focus via `focus-within`; use border emphasis plus a near-shell halo with no detached offset halo |
+| `field-shell-composite` | `Input`                                                                                                       | Outer shell owns focus via `focus-within`; use border emphasis plus a near-shell halo with no detached offset halo |
+| `field-shell-composite-visible` | `DatePicker`, `DateRangePicker`, `MonthPicker`                                                       | Outer shell reacts to descendant `:focus-visible`, while open state may reinforce border emphasis without leaving a sticky post-close active border |
 | `field-shell-direct`    | `Textarea`, `Select`, `Combobox`, date/time inputs inside date pickers                                        | Direct interactive root owns the same calmer field-shell language via `focus-visible`                              |
 | `segmented-slot`        | `OtpInput`                                                                                                    | Separate active and focused-slot emphasis so one slot never carries multiple heavy focus cues                      |
 | `compact-control`       | `Button`, `Checkbox`, `RadioGroup`, `Switch`, embedded field action buttons, `DateRangePicker` preset buttons | Keep direct focus obvious but tighter than field-shell focus                                                       |
@@ -297,6 +298,7 @@ Global focus rules:
 
 - `focus-visible` remains the default for direct interactive roots.
 - `focus-within` remains the default for composite shells that wrap an internal focus target.
+- Popover-backed picker shells such as `DatePicker`, `DateRangePicker`, and `MonthPicker` may key shell emphasis from descendant `:focus-visible` plus explicit open-state border emphasis so pointer selection can close cleanly without leaving a sticky active border behind.
 - Detached `ring-offset-2` halos are no longer the default enterprise recipe for shared field-entry components.
 - Invalid focus may tint toward `destructive`, but it must not introduce a second louder emphasis system by default.
 - Open, active, selected, and highlighted states must not stack a second heavy focus ring on the same element.
