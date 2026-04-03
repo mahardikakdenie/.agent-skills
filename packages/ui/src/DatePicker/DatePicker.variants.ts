@@ -6,7 +6,7 @@ import {
 } from '../utils/focus-normalization';
 import { fieldVariantOptions } from '../utils/field-variants';
 
-const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
+const compositeFieldShellFocus = getFieldShellFocusRecipe('composite-visible');
 const directFieldShellFocus = getFieldShellFocusRecipe('direct');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
@@ -31,15 +31,27 @@ export const datePickerControlVariants = cva(
         true: compositeFieldShellFocus.invalid,
         false: '',
       },
+      open: {
+        true: 'border-ring',
+        false: '',
+      },
       disabled: {
         true: 'cursor-not-allowed opacity-60',
         false: '',
       },
     },
+    compoundVariants: [
+      {
+        invalid: true,
+        open: true,
+        className: 'border-destructive',
+      },
+    ],
     defaultVariants: {
       variant: 'outline',
       size: 'md',
       invalid: false,
+      open: false,
       disabled: false,
     },
   },

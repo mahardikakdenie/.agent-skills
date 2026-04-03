@@ -537,7 +537,13 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
           <PopoverAnchor asChild>
             <Box
               data-slot="date-range-picker-control"
-              className={dateRangePickerControlVariants({ variant, size, invalid: hasError, disabled })}
+              className={dateRangePickerControlVariants({
+                variant,
+                size,
+                invalid: hasError,
+                open,
+                disabled,
+              })}
             >
               <PopoverTrigger asChild>
                 <Box
