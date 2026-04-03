@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-04-03 - DataTable Loading Cell Shell Alignment Synced
+
+Changed:
+
+- Extended the documented `DataTable` loading behavior to match the current `packages/ui/src/DataTable` renderer, which now reuses string-valued `columnDef.meta.cellClassName` on default loading skeleton `<td>` shells.
+- Clarified that loading-row parity now covers shell-level alignment, spacing, width, and pinned-cell class treatment without requiring consumers to replace the entire shared `loadingState`.
+- Reconciled `02-api-conventions.md` and `21-adapter-mapping.md` so thin adapters can keep static body-cell shell classes on the canonical shared path instead of patching loading DOM separately.
+
+Impact:
+
+- Downstream migrations that already rely on static `cellClassName` hooks get closer loading-to-loaded visual parity with less layout shift.
+- Apps that need row-dependent cell classes during loading still need a custom `loadingState`, because function-valued cell class hooks do not resolve without row context.
+
+---
+
 ## 2026-04-03 - DataTable Header Content And Loading Skeleton Hooks Synced
 
 Changed:
