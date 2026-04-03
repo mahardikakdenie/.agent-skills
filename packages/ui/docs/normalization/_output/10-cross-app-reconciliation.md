@@ -79,7 +79,7 @@
 | Spinner | NEW_SHARED_COMPONENT | 8 apps; see `05` | missing | `02` amendment: `size`, `label`, `inline`, `overlay` | Inline wait-state primitive only | P0 | LOW | B4 |
 | Switch | NEW_SHARED_COMPONENT | 9 apps; see `05` | missing | `02` Switch | Shared toggle only; feature semantics stay local | P1 | LOW | B4 |
 | Table | NEW_SHARED_COMPONENT | 12 apps; see `05` | missing | `02` Table | Visual table foundation only; headless logic belongs in `DataTable` | P0 | MEDIUM | B4 |
-| Tabs | NEW_SHARED_COMPONENT | 13 apps; see `05` | missing | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation` | Shared tabs only; route syncing stays local | P1 | MEDIUM | B4 |
+| Tabs | NEW_SHARED_COMPONENT | 13 apps; see `05` | missing | `02` amendment: `value`, `defaultValue`, `onValueChange`, `orientation`, root `variant`, and trigger-level `variant` override | Shared tabs only; route syncing stays local | P1 | MEDIUM | B4 |
 | Textarea | NEW_SHARED_COMPONENT | 18 apps; see `05` | missing | `02` Textarea | Multiline plain-text input only | P0 | LOW | B4 |
 
 ### Wave B5.1 - Date and Overlay Normalization

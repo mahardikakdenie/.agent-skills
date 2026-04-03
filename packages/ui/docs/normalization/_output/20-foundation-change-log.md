@@ -86,6 +86,21 @@ Impact:
 
 ---
 
+## 2026-04-04 - Tabs Added Underline Variant And Explicit Overflow Affordance
+
+Changed:
+
+- Added the public `underline` treatment to `packages/ui/src/Tabs` so shared tabs can cover border-bottom rail patterns without reintroducing app-local styling.
+- Updated `TabsList` to vary horizontal spacing by variant and to keep long horizontal rails inside the shared overflow shell with an explicit track/thumb affordance.
+- Refreshed the normalization output so the documented `Tabs` contract now matches the shipped `outline | ghost | underline` surface.
+
+Impact:
+
+- Consumers now have a first-class shared path for underlined admin rails while `shadow` remains excluded from the public tabs contract.
+- Long trigger rows keep one normalized overflow interaction instead of app-local scroll wrappers and one-off overflow hints.
+
+---
+
 ## 2026-04-03 - Tabs Variant Contract Narrowed Back To What Is Actually Useful
 
 Changed:

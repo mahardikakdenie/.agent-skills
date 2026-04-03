@@ -2,7 +2,7 @@ import type * as TabsPrimitive from '@radix-ui/react-tabs';
 import type * as React from 'react';
 
 export const tabsOrientationValues = ['horizontal', 'vertical'] as const;
-export const tabsVariantValues = ['outline', 'ghost'] as const;
+export const tabsVariantValues = ['outline', 'ghost', 'underline'] as const;
 
 export type TabsOrientation = (typeof tabsOrientationValues)[number];
 export type TabsVariant = (typeof tabsVariantValues)[number];

@@ -409,9 +409,9 @@ Direct adoption guidance:
 
 - Legacy tabsets that already separate a trigger row from panel content map to `Tabs`, `TabsList`, `TabsTrigger`, and `TabsContent`.
 - Existing controlled `value` plus `onChange` or `onValueChange` flows normalize to `value` and `onValueChange`; simple local-state tabsets can normalize to `defaultValue`.
-- Vertical settings rails map to `orientation="vertical"`; wider horizontal trigger sets can rely on the shared overflow behavior instead of adding app-local scroll wrappers directly on the tablist.
+- Vertical settings rails map to `orientation="vertical"`; wider horizontal trigger sets can rely on the shared overflow shell and scrollbar affordance instead of adding app-local scroll wrappers directly on the tablist.
 - Existing panel bodies should stay consumer-owned and move inside `TabsContent` rather than being flattened into new shared props.
-- Older transparent or low-chrome tab treatments should normalize to root `variant="ghost"`; standard shared usage stays on `variant="outline"`, and individual `TabsTrigger` instances can still override between those two shipped treatments locally.
+- Older transparent or low-chrome tab treatments should normalize to root `variant="ghost"`; standard shared usage stays on `variant="outline"`; underline-led admin rails can normalize to `variant="underline"`; and individual `TabsTrigger` instances can still override between the three shipped treatments locally.
 
 Keep local:
 
