@@ -56,8 +56,13 @@ export const createTransactionTableColumns = ({
     minSize: 44,
     meta: {
       headerCellClassName: 'whitespace-nowrap',
-      cellClassName: 'align-top text-slate-500',
+      cellClassName: 'align-middle text-slate-500',
       cellContentClassName: 'whitespace-nowrap',
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-center">
+          <Skeleton className="h-4 w-5 rounded-full" />
+        </Box>
+      ),
     },
     cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
@@ -69,7 +74,7 @@ export const createTransactionTableColumns = ({
     size: 192,
     minSize: 168,
     meta: {
-      cellClassName: 'align-top',
+      cellClassName: 'align-middle',
       cellContentClassName: 'whitespace-normal break-words',
       loadingSkeleton: (
         <Box className="flex min-w-0 items-start gap-2.5">
@@ -110,7 +115,7 @@ export const createTransactionTableColumns = ({
     size: 220,
     minSize: 184,
     meta: {
-      cellClassName: 'align-top',
+      cellClassName: 'align-middle',
       cellContentClassName: 'whitespace-normal break-words',
     },
     cell: ({ row }) => {
@@ -131,7 +136,7 @@ export const createTransactionTableColumns = ({
     size: 164,
     minSize: 144,
     meta: {
-      cellClassName: 'align-top',
+      cellClassName: 'align-middle',
       cellContentClassName: 'whitespace-normal break-words',
     },
     cell: ({ row }) => {
@@ -155,7 +160,7 @@ export const createTransactionTableColumns = ({
     meta: {
       headerCellClassName: 'whitespace-nowrap !px-1.5',
       cellClassName:
-        'align-top whitespace-nowrap !px-1.5 text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
+        'align-middle whitespace-nowrap !px-1.5 text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
       cellContentClassName: 'whitespace-nowrap',
       loadingSkeletonClassName: 'h-4 w-7 rounded-full',
     },
@@ -175,7 +180,7 @@ export const createTransactionTableColumns = ({
     minSize: 120,
     meta: {
       headerCellClassName: 'whitespace-nowrap !px-1.5 text-right',
-      cellClassName: 'align-top whitespace-nowrap !px-1.5 text-right',
+      cellClassName: 'align-middle whitespace-nowrap !px-1.5 text-right',
       cellContentClassName: 'w-full whitespace-nowrap text-right',
     },
     cell: ({ row }) => {
@@ -198,7 +203,7 @@ export const createTransactionTableColumns = ({
     minSize: 88,
     meta: {
       headerCellClassName: 'whitespace-nowrap !px-1 text-center',
-      cellClassName: 'align-top whitespace-nowrap !px-1 text-center',
+      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
       cellContentClassName: 'whitespace-nowrap',
       loadingSkeletonClassName: 'mx-auto h-[1.375rem] w-[4.75rem] rounded-full',
     },
@@ -235,7 +240,7 @@ export const createTransactionTableColumns = ({
     minSize: 68,
     meta: {
       headerCellClassName: 'whitespace-nowrap !px-1 text-center',
-      cellClassName: 'align-top whitespace-nowrap !px-1 text-center',
+      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
       cellContentClassName: 'whitespace-nowrap',
       loadingSkeletonClassName: 'mx-auto h-7 w-[3.25rem] rounded-full',
     },
