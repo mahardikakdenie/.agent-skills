@@ -40,12 +40,8 @@ export const tabsTriggerVariants = cva(
       variant: {
         outline:
           'border border-border bg-background text-foreground shadow-none enabled:data-[state=inactive]:hover:bg-accent/70 enabled:data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-accent/60 data-[state=active]:text-accent-foreground',
-        shadow:
-          'border border-border bg-background text-foreground shadow-sm enabled:data-[state=inactive]:hover:bg-accent/70 enabled:data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-accent/60 data-[state=active]:text-accent-foreground',
         ghost:
           'border border-transparent bg-transparent text-muted-foreground shadow-none enabled:data-[state=inactive]:hover:bg-accent/70 enabled:data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-accent/60 data-[state=active]:text-accent-foreground',
-        default:
-          'border border-border bg-background text-foreground shadow-sm enabled:data-[state=inactive]:hover:bg-accent/70 enabled:data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-accent/60 data-[state=active]:text-accent-foreground',
       },
     },
     defaultVariants: {
