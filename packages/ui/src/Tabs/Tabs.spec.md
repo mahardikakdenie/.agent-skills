@@ -55,7 +55,7 @@ The shared contract is intentionally narrow. The root component only standardize
 | `defaultValue` | `string` | `undefined` | No | Uncontrolled initial tab value. |
 | `onValueChange` | `(value: string) => void` | `undefined` | No | Called when the active tab changes. |
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | No | Changes keyboard navigation and list/panel layout direction. |
-| `variant` | `'outline' \| 'shadow' \| 'ghost' \| 'default'` | `'outline'` | No | Shared navigation-surface treatment applied to `TabsTrigger`. Legacy `default` remains a compatibility alias for `shadow`. |
+| `variant` | `'outline' \| 'ghost'` | `'outline'` | No | Shared tab-trigger treatment applied to `TabsTrigger`. `Tabs` intentionally omits the elevated `shadow` treatment. |
 | `className` | `string` | `undefined` | No | Consumer override merged last through `cn()`. |
 | `children` | `React.ReactNode` | `undefined` | No | `TabsList`, `TabsTrigger`, and `TabsContent` composition. |
 | `...props` | `React.HTMLAttributes<HTMLDivElement>` | - | No | Standard DOM props such as `id`, `data-*`, `aria-*`, and `dir`. |
@@ -72,13 +72,12 @@ The shared contract is intentionally narrow. The root component only standardize
 
 ## Variants
 
-`Tabs` now exposes the shared navigation-surface `variant` contract while still keeping size internal. The root `variant` cascades to triggers, and an individual `TabsTrigger` can override it explicitly when needed.
+`Tabs` keeps size internal and only exposes the two trigger treatments that have a clear job in the shared rail. The root `variant` cascades to triggers, and an individual `TabsTrigger` can override it explicitly when needed.
 
 | Shared treatment | Description | When to use |
 | --- | --- | --- |
 | Default list shell | Tokenized list container with subtle surface separation | General navigation tabs and settings panels |
 | `outline` trigger | Bordered trigger with no resting shadow | Default tab treatment and the fallback when `variant` is omitted |
-| `shadow` trigger | Bordered trigger with `shadow-sm` on the actual tab button | Use when the tab rail should feel more elevated |
 | `ghost` trigger | Borderless transparent trigger | Low-chrome tab rails on already elevated surfaces |
 | Vertical orientation | Stacked list with full-width triggers next to content | Side-rail settings and detail pages |
 | Scrollable horizontal list | Overflow-enabled trigger row without wrapping | Longer tab labels or many sibling tabs |
@@ -235,3 +234,4 @@ The shared contract is intentionally narrow. The root component only standardize
 | --- | --- |
 | 2026-03-10 | Initial Tabs spec |
 | 2026-03-17 | Normalized trigger and panel focus to the shared dense-surface recipe and removed detached offset halos |
+| 2026-04-03 | Removed the unused elevated `shadow`/`default` variant path so the public `Tabs` surface stays on `outline` and `ghost` only |

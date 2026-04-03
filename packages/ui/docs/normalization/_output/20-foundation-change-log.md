@@ -12,7 +12,7 @@
 Changed:
 
 - Introduced one internal navigation-surface variant source of truth in `packages/ui/src/utils/navigation-surface-variants.ts` and realigned the shared navigation-family surfaces around it.
-- Synced `Pagination`, `Tabs`, `DropdownMenu`, `NavigationMenu`, and `Menubar` to the same public `outline | shadow | ghost` vocabulary.
+- Synced `Pagination`, `DropdownMenu`, `NavigationMenu`, and `Menubar` to the same public `outline | shadow | ghost` vocabulary, while `Tabs` only took the subset that proved useful.
 - Switched canonical new usage for those navigation surfaces to `variant='outline'` while keeping legacy `variant='default'` accepted as a compatibility alias for the elevated `shadow` treatment.
 - Extended the normalization `_output` set so `02-api-conventions.md`, `11-master-component-roadmap.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` now match the shipped source instead of the earlier mixed default/variant story.
 
@@ -20,6 +20,21 @@ Impact:
 
 - Downstream migrations can normalize low-chrome, bordered, and elevated navigation affordances through one shared prop family instead of per-component booleans, active-state hacks, or inconsistent defaults.
 - Existing apps that still pass `variant='default'` keep a migration-safe path, but the canonical docs, specs, and stories now point new adoption to `outline`.
+
+---
+
+## 2026-04-03 - Tabs Variant Contract Narrowed Back To What Is Actually Useful
+
+Changed:
+
+- Removed the public `shadow` treatment from `packages/ui/src/Tabs` after reviewing the shipped rail and story coverage.
+- Narrowed the public `Tabs` / `TabsTrigger` variant contract to `outline | ghost` instead of inheriting the full navigation-surface vocabulary.
+- Removed the `Tabs.ShadowVariant` story and updated the spec plus normalization output so the docs stop advertising a variant the component should not expose.
+
+Impact:
+
+- Shared tabs keep the two states that have clear jobs: bordered default rails and transparent low-chrome rails.
+- Consumers no longer have an elevated tab style that duplicates card chrome without improving the interaction.
 
 ---
 

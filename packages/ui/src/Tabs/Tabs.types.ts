@@ -1,11 +1,11 @@
 import type * as TabsPrimitive from '@radix-ui/react-tabs';
 import type * as React from 'react';
 
-import type { NavigationSurfaceVariantProp } from '../utils/navigation-surface-variants';
-
 export const tabsOrientationValues = ['horizontal', 'vertical'] as const;
+export const tabsVariantValues = ['outline', 'ghost'] as const;
 
 export type TabsOrientation = (typeof tabsOrientationValues)[number];
+export type TabsVariant = (typeof tabsVariantValues)[number];
 
 export interface TabsProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'defaultValue' | 'onChange' | 'value'> {
@@ -13,7 +13,7 @@ export interface TabsProps
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   orientation?: TabsOrientation;
-  variant?: NavigationSurfaceVariantProp;
+  variant?: TabsVariant;
   children?: React.ReactNode;
   className?: string;
 }
@@ -29,7 +29,7 @@ export type TabsTriggerProps = Omit<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>,
   'asChild' | 'className'
 > & {
-  variant?: NavigationSurfaceVariantProp;
+  variant?: TabsVariant;
   className?: string;
 };
 

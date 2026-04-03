@@ -7,7 +7,7 @@ import { Button } from '../Button';
 import { Input } from '../Input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
 import type { TabsOrientation, TabsProps } from './Tabs.types';
-import { tabsOrientationValues } from './Tabs.types';
+import { tabsOrientationValues, tabsVariantValues } from './Tabs.types';
 
 interface StoryTab {
   value: string;
@@ -274,7 +274,7 @@ const meta = {
     },
     variant: {
       control: 'select',
-      options: ['outline', 'shadow', 'ghost', 'default'],
+      options: tabsVariantValues,
     },
     onValueChange: {
       action: 'value changed',
@@ -385,11 +385,5 @@ export const ControlledMode: Story = {
           'Shows the controlled `value` plus `onValueChange` path and mirrors the active tab outside the component.',
       },
     },
-  },
-};
-
-export const ShadowVariant: Story = {
-  args: {
-    variant: 'shadow',
   },
 };

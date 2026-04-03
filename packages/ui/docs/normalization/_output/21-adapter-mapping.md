@@ -405,7 +405,7 @@ Direct adoption guidance:
 - Existing controlled `value` plus `onChange` or `onValueChange` flows normalize to `value` and `onValueChange`; simple local-state tabsets can normalize to `defaultValue`.
 - Vertical settings rails map to `orientation="vertical"`; wider horizontal trigger sets can rely on the shared overflow behavior instead of adding app-local scroll wrappers directly on the tablist.
 - Existing panel bodies should stay consumer-owned and move inside `TabsContent` rather than being flattened into new shared props.
-- Older elevated pill rails or low-chrome tab treatments should normalize to root `variant="shadow"` or `variant="ghost"`; individual `TabsTrigger` instances can still override `variant` locally, and legacy `variant="default"` remains a migration-safe alias for `shadow`.
+- Older transparent or low-chrome tab treatments should normalize to root `variant="ghost"`; standard shared usage stays on `variant="outline"`, and individual `TabsTrigger` instances can still override between those two shipped treatments locally.
 
 Keep local:
 
