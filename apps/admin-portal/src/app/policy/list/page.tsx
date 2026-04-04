@@ -4,15 +4,14 @@ import noData from '@public/images/no-data.webp';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo, useState, type ChangeEvent } from 'react';
-import { Download, Search, Upload } from 'react-feather';
+import { useMemo, type ChangeEvent } from 'react';
+import { Download, Upload } from 'react-feather';
 
 import {
   Box,
   Button,
   DataTable,
   DateRangePicker,
-  Input,
   Select,
   SelectContent,
   SelectGroup,
@@ -25,6 +24,7 @@ import {
 } from '@repo/ui';
 
 import { createPolicyTableColumns } from '@/components/tableConfig/policyTableConfig';
+import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { toastNotification } from '@/helpers/app.helper';
 import usePolicies from '@/hooks/usePolicies.hooks';
@@ -54,7 +54,6 @@ function measureTextWidth(label: string, font: string, fallbackCharWidth: number
 export default function PolicyPage() {
   const path = usePathname();
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState('');
   const statusTabs = ['All', 'In Force', 'Grace Period', 'Expired'] as const;
 
   const {
@@ -68,6 +67,7 @@ export default function PolicyPage() {
     page,
     rowsPerPage,
     tab,
+    searchData,
     searchChannel,
     searchCategory,
     date,
@@ -237,6 +237,7 @@ export default function PolicyPage() {
     onGoToDetail: goToDetail,
     getStatusColor,
   });
+  const isPaginationBusy = isLoading || isFetching;
 
   return (
     <Box className="flex min-h-0 flex-1 w-full flex-col gap-4 p-4 md:p-6">
@@ -329,16 +330,22 @@ export default function PolicyPage() {
       </Box>
 
       <Box className="block rounded-xl bg-white">
-        <Tabs value={tab} onValueChange={selectTab} className="w-full">
+        <Tabs
+          value={tab}
+          onValueChange={selectTab}
+          variant="underline"
+          className="w-full [&_[data-slot=tabs-list-shell]]:rounded-md"
+        >
           <TabsList
             aria-label="Policy status tabs"
-            className="w-full justify-start overflow-auto rounded-md border-0 bg-transparent p-0 text-inherit"
+            className="w-full justify-start rounded-md border-0 bg-transparent p-0 text-inherit"
           >
             {statusTabs.map((tabName) => (
               <TabsTrigger
                 key={tabName}
                 value={tabName}
-                className="h-12 rounded-none border-x-0 border-t-0 border-b-[2px] border-transparent px-4 py-2.5 text-sm font-normal text-black shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none enabled:data-[state=inactive]:hover:bg-transparent enabled:data-[state=inactive]:hover:text-black"
+                variant="underline"
+                className="h-12 px-4 py-2.5 text-sm font-normal"
               >
                 <Box as="span" className="mr-2.5">
                   {tabName === 'All' ? 'All Policy' : tabName}
@@ -361,12 +368,12 @@ export default function PolicyPage() {
 
       <DataTable
         className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
-        loading={isLoading || isFetching}
+        loading={isPaginationBusy}
         data={policies}
         columns={policyTableColumns}
         defaultState={{
           columnPinning: {
-            left: ['id', 'customerName'],
+            left: ['id', 'planName'],
             right: ['status', 'action'],
           },
         }}
@@ -376,9 +383,17 @@ export default function PolicyPage() {
           pageCount: totalPages,
           rowCount: totalItems,
           onPageChange: (pageIndex) => {
+            if (isPaginationBusy) {
+              return;
+            }
+
             setPage(pageIndex + 1);
           },
           onPageSizeChange: (pageSize) => {
+            if (isPaginationBusy) {
+              return;
+            }
+
             handleRowsPerPageChange({
               target: { value: String(pageSize) },
             } as ChangeEvent<HTMLSelectElement>);
@@ -393,23 +408,22 @@ export default function PolicyPage() {
         }
         renderToolbar={() => (
           <Box className="w-full">
-            <Input
-              type="text"
-              value={searchValue}
+            <DebouncedSearchInput
+              value={searchData}
               placeholder="Search by Plan Name"
-              aria-label="Search by Plan Name"
-              onValueChange={(value) => {
-                setSearchValue(value);
-                handleSearch(value);
-              }}
+              ariaLabel="Search by Plan Name"
+              onDebouncedChange={handleSearch}
               className="h-10 rounded-xl border-slate-300 bg-white text-slate-900 shadow-none transition-colors placeholder:text-slate-400 focus-within:ring-0 focus-within:shadow-none"
-              rightIcon={<Search aria-hidden="true" className="h-4 w-4 text-[#016da1]" />}
             />
           </Box>
         )}
         renderPagination={(table) => (
           <Box className="-mt-1">
-            <CompactTablePagination table={table} pageSizeOptions={[10, 20, 30, 50, 100]} />
+            <CompactTablePagination
+              table={table}
+              pageSizeOptions={[10, 20, 30, 50, 100]}
+              disabled={isPaginationBusy}
+            />
           </Box>
         )}
         tableOptions={{

@@ -12,7 +12,7 @@ export function usePolicies(
 ) {
   return useQuery({
     queryKey: policyKeys.policyList(params as Record<string, unknown> | undefined),
-    queryFn: () => policyService.getPolicies(params),
+    queryFn: ({ signal }) => policyService.getPolicies(params, { signal }),
     ...options,
   });
 }

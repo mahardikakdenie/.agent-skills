@@ -4,13 +4,12 @@ import noData from '@public/images/no-data.webp';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
-import { Download, Search, Upload } from 'react-feather';
+import { Download, Upload } from 'react-feather';
 
 import {
   Box,
   Button,
   DataTable,
-  Input,
   Select,
   SelectContent,
   SelectGroup,
@@ -23,6 +22,7 @@ import {
 } from '@repo/ui';
 
 import { createTransactionTableColumns } from '@/components/tableConfig/transactionTableConfig';
+import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
@@ -57,8 +57,6 @@ export default function TransactionsPage() {
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState('');
-
   const {
     transactions,
     totalPages,
@@ -221,9 +219,10 @@ export default function TransactionsPage() {
     getStatusColor,
     calculateTotalPremium,
   });
+  const isPaginationBusy = isLoading || isFetching;
 
   if (hasAccess === null) {
-    return <Box>Loading...</Box>;
+    return null;
   }
 
   return (
@@ -267,16 +266,22 @@ export default function TransactionsPage() {
       </Box>
 
       <Box className="block rounded-xl bg-white">
-        <Tabs value={tab} onValueChange={selectTab} className="w-full">
+        <Tabs
+          value={tab}
+          onValueChange={selectTab}
+          variant="underline"
+          className="w-full [&_[data-slot=tabs-list-shell]]:rounded-md"
+        >
           <TabsList
             aria-label="Transaction status tabs"
-            className="w-full justify-start overflow-auto rounded-md border-0 bg-transparent p-0 text-inherit"
+            className="w-full justify-start rounded-md border-0 bg-transparent p-0 text-inherit"
           >
             {statusTabs.map((tabName) => (
               <TabsTrigger
                 key={tabName}
                 value={tabName}
-                className="h-12 rounded-none border-x-0 border-t-0 border-b-[2px] border-transparent px-4 py-2.5 text-sm font-normal text-black shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none enabled:data-[state=inactive]:hover:bg-transparent enabled:data-[state=inactive]:hover:text-black"
+                variant="underline"
+                className="h-12 px-4 py-2.5 text-sm font-normal"
               >
                 <Box as="span" className="mr-2.5">
                   {tabName === 'All' ? 'All Transaction' : tabName}
@@ -299,7 +304,7 @@ export default function TransactionsPage() {
 
       <DataTable
         className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
-        loading={isLoading || isFetching}
+        loading={isPaginationBusy}
         data={transactions}
         columns={transactionTableColumns}
         defaultState={{
@@ -314,9 +319,17 @@ export default function TransactionsPage() {
           pageCount: totalPages,
           rowCount: totalItems,
           onPageChange: (pageIndex) => {
+            if (isPaginationBusy) {
+              return;
+            }
+
             setPage(pageIndex + 1);
           },
           onPageSizeChange: (pageSize) => {
+            if (isPaginationBusy) {
+              return;
+            }
+
             handleRowsPerPageChange({
               target: { value: String(pageSize) },
             } as ChangeEvent<HTMLSelectElement>);
@@ -331,23 +344,22 @@ export default function TransactionsPage() {
         }
         renderToolbar={() => (
           <Box className="w-full">
-            <Input
-              type="text"
-              value={searchValue}
+            <DebouncedSearchInput
+              value={searchData}
               placeholder="Search by Insurance Name"
-              aria-label="Search by Insurance Name"
-              onValueChange={(value) => {
-                setSearchValue(value);
-                handleSearch(value);
-              }}
+              ariaLabel="Search by Insurance Name"
+              onDebouncedChange={handleSearch}
               className="h-10 rounded-xl border-slate-300 bg-white text-slate-900 shadow-none transition-colors placeholder:text-slate-400 focus-within:ring-0 focus-within:shadow-none"
-              rightIcon={<Search aria-hidden="true" className="h-4 w-4 text-[#016da1]" />}
             />
           </Box>
         )}
         renderPagination={(table) => (
           <Box className="-mt-1">
-            <CompactTablePagination table={table} pageSizeOptions={[10, 20, 30, 50, 100]} />
+            <CompactTablePagination
+              table={table}
+              pageSizeOptions={[10, 20, 30, 50, 100]}
+              disabled={isPaginationBusy}
+            />
           </Box>
         )}
         tableOptions={{

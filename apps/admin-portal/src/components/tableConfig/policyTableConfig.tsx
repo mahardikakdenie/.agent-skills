@@ -65,12 +65,12 @@ export const createPolicyTableColumns = ({
     cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
-    id: 'customerName',
-    accessorFn: (policy) => policy?.policy_holder?.name || '-',
-    header: 'Customer Name',
+    id: 'planName',
+    accessorFn: (policy) => policy?.policy_products?.plan_data?.name || '-',
+    header: 'Plan Name',
     enableSorting: false,
-    size: 160,
-    minSize: 136,
+    size: 208,
+    minSize: 176,
     meta: {
       cellClassName: 'align-middle',
       cellContentClassName: 'whitespace-normal break-words',
@@ -79,8 +79,8 @@ export const createPolicyTableColumns = ({
       const policy = row.original;
 
       return (
-        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
-          {policy?.policy_holder?.name || '-'}
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-600">
+          {policy?.policy_products?.plan_data?.name?.split('|').splice(0, 2).join(' - ') || '-'}
         </Box>
       );
     },
@@ -106,12 +106,12 @@ export const createPolicyTableColumns = ({
     },
   },
   {
-    id: 'planName',
-    accessorFn: (policy) => policy?.policy_products?.plan_data?.name || '-',
-    header: 'Plan Name',
+    id: 'customerName',
+    accessorFn: (policy) => policy?.policy_holder?.name || '-',
+    header: 'Customer Name',
     enableSorting: false,
-    size: 208,
-    minSize: 176,
+    size: 160,
+    minSize: 136,
     meta: {
       cellClassName: 'align-middle',
       cellContentClassName: 'whitespace-normal break-words',
@@ -120,8 +120,8 @@ export const createPolicyTableColumns = ({
       const policy = row.original;
 
       return (
-        <Box className="min-w-0 break-words text-sm leading-5 text-slate-600">
-          {policy?.policy_products?.plan_data?.name?.split('|').splice(0, 2).join(' - ') || '-'}
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {policy?.policy_holder?.name || '-'}
         </Box>
       );
     },

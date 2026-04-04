@@ -1,3 +1,5 @@
+import type { AxiosRequestConfig } from "axios";
+
 import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
@@ -10,7 +12,10 @@ const withQuery = (url: string, params?: Record<string, unknown>) => {
   return `${url}?${qs.stringify(params, { arrayFormat: "brackets" })}`;
 };
 
-const get = async <T>(url: string) => (await policyApi.get<T>(url)).data;
+type RequestConfig = Pick<AxiosRequestConfig, "signal">;
+
+const get = async <T>(url: string, config?: RequestConfig) =>
+  (await policyApi.get<T>(url, config)).data;
 const post = async <T>(
   url: string,
   data?: unknown,
@@ -20,8 +25,8 @@ const put = async <T>(url: string, data?: unknown) =>
   (await policyApi.put<T>(url, data)).data;
 
 export const policyService = {
-  getPolicies: (params?: Record<string, unknown>) =>
-    get(withQuery(POLICY_ENDPOINTS.policies, params)),
+  getPolicies: (params?: Record<string, unknown>, config?: RequestConfig) =>
+    get(withQuery(POLICY_ENDPOINTS.policies, params), config),
   getPolicyById: (id: string) => get(POLICY_ENDPOINTS.policyDetail(id)),
   getPolicyStatistics: (params?: Record<string, unknown>) =>
     get(withQuery(POLICY_ENDPOINTS.policyStatistics, params)),

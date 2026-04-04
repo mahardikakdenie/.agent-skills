@@ -1,3 +1,5 @@
+import type { AxiosRequestConfig } from "axios";
+
 import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
@@ -12,15 +14,18 @@ const withQuery = (url: string, params?: Record<string, unknown>) => {
   return `${url}?${qs.stringify(params, { arrayFormat: "brackets" })}`;
 };
 
-const get = async <T>(url: string) => (await transactionApi.get<T>(url)).data;
+type RequestConfig = Pick<AxiosRequestConfig, "signal">;
+
+const get = async <T>(url: string, config?: RequestConfig) =>
+  (await transactionApi.get<T>(url, config)).data;
 const post = async <T>(url: string, data?: unknown) =>
   (await transactionApi.post<T>(url, data)).data;
 const put = async <T>(url: string, data?: unknown) =>
   (await transactionApi.put<T>(url, data)).data;
 
 export const transactionService = {
-  getTransactions: (params?: Record<string, unknown>) =>
-    get(withQuery(TRANSACTION_ENDPOINTS.transactions, params)),
+  getTransactions: (params?: Record<string, unknown>, config?: RequestConfig) =>
+    get(withQuery(TRANSACTION_ENDPOINTS.transactions, params), config),
   getTransactionById: (id: string) =>
     get(TRANSACTION_ENDPOINTS.transactionDetail(id)),
   updateTransactionPayment: (id: string, payload: unknown) =>

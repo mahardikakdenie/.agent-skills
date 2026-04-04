@@ -14,7 +14,7 @@ export function useClaims(
     queryKey: claimKeys.list(
       params as unknown as Record<string, unknown> | undefined
     ),
-    queryFn: () => claimsService.getClaims(params),
+    queryFn: ({ signal }) => claimsService.getClaims(params, { signal }),
     ...options,
   });
 }

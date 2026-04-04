@@ -19,7 +19,7 @@ export function useTransactions(
     queryKey: transactionKeys.transactionList(
       params as Record<string, unknown> | undefined
     ),
-    queryFn: () => transactionService.getTransactions(params),
+    queryFn: ({ signal }) => transactionService.getTransactions(params, { signal }),
     ...options,
   });
 }

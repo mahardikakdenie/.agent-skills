@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import _ from "lodash";
 import { useChannelsV1 } from "@/services/channel/hooks/queries/useChannelsV1";
 import { usePolicies as usePoliciesQuery } from "@/services/policy/hooks/queries/usePolicies";
 import { useCategoriesByChannel } from "@/services/product/hooks/queries/useCategoriesByChannel";
@@ -51,6 +50,17 @@ interface UsePoliciesProps {
 export default function usePolicies(
   isPendingRenewal?: boolean,
 ): UsePoliciesProps {
+  const defaultDateRange = useMemo(() => {
+    const currentDate = new Date();
+    const last30DaysDate = new Date(currentDate);
+    last30DaysDate.setDate(currentDate.getDate() - 30);
+
+    return {
+      from: last30DaysDate,
+      to: currentDate,
+    } satisfies DateRange;
+  }, []);
+
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -60,7 +70,7 @@ export default function usePolicies(
     "40eee5bf-2b92-4d23-be55-f9caa9d3ea88",
   );
   const [searchCategory, setSearchCategory] = useState("All");
-  const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [date, setDate] = useState<DateRange | undefined>(defaultDateRange);
 
   const [policies, setPolicies] = useState<any[]>([]);
   const [channels, setChannels] = useState<any[]>([]);
@@ -136,14 +146,10 @@ export default function usePolicies(
     }
   }, [resCategories]);
 
-  const handleSearch = useMemo(
-    () =>
-      _.debounce((keyword: string) => {
-        setSearchData(keyword);
-        setPage(1);
-      }, 300),
-    [],
-  );
+  const handleSearch = useCallback((keyword: string) => {
+    setSearchData(keyword);
+    setPage(1);
+  }, []);
 
   const handleRowsPerPageChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -184,23 +190,6 @@ export default function usePolicies(
       setPage(1);
     }
   }, [searchData, searchChannel, searchCategory, date?.from, date?.to]);
-
-  useEffect(() => {
-    return () => {
-      handleSearch.cancel?.();
-    };
-  }, [handleSearch]);
-
-  useEffect(() => {
-    const currentDate = new Date();
-    const last30DaysDate = new Date(currentDate);
-    last30DaysDate.setDate(currentDate.getDate() - 30);
-
-    setDate({
-      from: last30DaysDate,
-      to: currentDate,
-    });
-  }, []);
 
   return {
     policies,

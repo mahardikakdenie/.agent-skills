@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 38 |
-| PASS | 5 |
+| PASS | 6 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 30 |
+| DEFERRED_DATA_TABLE | 29 |
 | NOT_STARTED | 79 |
 | OUT_OF_SCOPE | 1 |
 
@@ -53,7 +53,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/transaction/list` | `transaction-list` | `apps/admin-portal/src/app/transaction/list/page.tsx` | YES | YES | `PASS` | 2026-04-03 | migration-log: present; comparison-log: none; screenshots: present | Latest commits `41963542b86e85cd525886019b6ebd7f3da849f1` and `15a85cb9716ee439143ddfafbc32d9297decca0e` land the route-local transaction list UX revamp plus follow-up cell/loading-state alignment across the page, transaction table config, and compact pagination surface, and prior manual smoke verification for `/transaction/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/policy/list` | `policy-list` | `apps/admin-portal/src/app/policy/list/page.tsx` | YES | YES | `PASS` | 2026-04-03 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land route-local policy list table modernization across the page, policy table config, and compact pagination surface, and the latest `policyTableConfig.tsx` follow-up removes the remaining native wrapper elements in favor of `Box` while prior manual smoke verification for `/policy/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/policy/endorsement/list` | `policy-endorsement-list` | `apps/admin-portal/src/app/policy/endorsement/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
-| `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation noted an internal redirect to the querystring variant. |
+| `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `PASS` | 2026-04-04 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the claim list route-local DataTable migration across the page, claim table config, claim hook, and route-local debounced search helper, while prior manual smoke verification for `/claim/list` and screenshots are already recorded in `_migration-log.md` and `_parity-checklist.md`. Earlier smoke revalidation noted an internal redirect to the querystring variant. |
 | `/membership/list` | `membership-list` | `apps/admin-portal/src/app/membership/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state. |
 | `/finance/billing` | `finance-billing` | `apps/admin-portal/src/app/finance/billing/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state. |
 | `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
@@ -261,14 +261,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `claim-list`
 - Smoke route: `YES`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-04`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation noted an internal redirect to the querystring variant.
+- Blocker type: `none`
+- Notes: Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, move debounce ownership into the route-local search helper, and refactor the claim table config/status cell integration; prior manual smoke verification and screenshots already exist, so the earlier DataTable deferment is cleared. Earlier smoke revalidation noted an internal redirect to the querystring variant.
 
 ### /membership/list
 

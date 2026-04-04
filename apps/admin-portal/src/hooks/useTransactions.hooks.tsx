@@ -1,5 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
-import _ from "lodash";
+import React, { useState, useCallback, useEffect } from "react";
 import { useUpdateTransactionStatus } from "@/services/transaction/hooks/mutations/useUpdateTransactionStatus";
 import { useTransactions as useTransactionsQuery } from "@/services/transaction/hooks/queries/useTransactions";
 import toast from "react-hot-toast";
@@ -89,14 +88,10 @@ export default function useTransactions(): UseTransactionsProps {
     }
   }, [resTransactions]);
 
-  const handleSearch = useMemo(
-    () =>
-      _.debounce((keyword: string) => {
-        setSearchData(keyword);
-        setPage(1);
-      }, 300),
-    []
-  );
+  const handleSearch = useCallback((keyword: string) => {
+    setSearchData(keyword);
+    setPage(1);
+  }, []);
 
   const handleRowsPerPageChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -137,12 +132,6 @@ export default function useTransactions(): UseTransactionsProps {
       setPage(1);
     }
   }, [searchData, type]);
-
-  useEffect(() => {
-    return () => {
-      handleSearch.cancel?.();
-    };
-  }, [handleSearch]);
 
   return {
     transactions,

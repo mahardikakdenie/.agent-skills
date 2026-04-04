@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface ClaimItem {
   id: string;
   number: string;
@@ -5,6 +7,7 @@ export interface ClaimItem {
   sla_status?: string;
   currency?: string;
   amount_approved?: number;
+  edited_by?: string;
   policy_data?: {
     policy_holder?: {
       name?: string;
@@ -61,11 +64,16 @@ export interface DocumentItem {
 export interface ClaimsTableConfigProps {
   page: number;
   rowsPerPage: number;
-  canEdit: boolean;
-  openAllStatus: boolean;
-  onStatusChange: (claim: ClaimItem, status: string) => void;
+  claimIdColumnSize: number;
+  customerNameColumnSize: number;
+  planNameColumnSize: number;
+  currencyColumnSize: number;
+  amountColumnSize: number;
+  lastModifiedColumnSize: number;
+  statusColumnSize: number;
+  actionColumnSize: number;
+  renderStatusCell: (claim: ClaimItem) => ReactNode;
   onViewDetail: (claimId: string) => void;
-  getStatusColor: (status: string) => string;
 }
 
 export interface DocumentTableConfigProps {
@@ -100,18 +108,18 @@ export interface ClaimForm {
 }
 
 export enum ClaimFieldInputType {
-  File = "file",
-  FileMultiple = "file multiple",
-  MultipleFile = "multiple file",
-  String = "string",
-  Number = "number",
-  Datetime = "datetime",
-  Date = "date",
-  Select = "select",
-  SelectFromAPI = "select-from-api",
-  Fields = "fields",
-  Radio = "radio",
-  Checkbox = "checkbox",
+  File = 'file',
+  FileMultiple = 'file multiple',
+  MultipleFile = 'multiple file',
+  String = 'string',
+  Number = 'number',
+  Datetime = 'datetime',
+  Date = 'date',
+  Select = 'select',
+  SelectFromAPI = 'select-from-api',
+  Fields = 'fields',
+  Radio = 'radio',
+  Checkbox = 'checkbox',
 }
 
 export interface ClaimFormsRequest {

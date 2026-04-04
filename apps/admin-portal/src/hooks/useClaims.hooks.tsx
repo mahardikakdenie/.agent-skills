@@ -3,7 +3,6 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { useAuth } from "@/context/auth.context";
-import _ from "lodash";
 import { useClaims as useClaimsQuery } from "@/services/claims/hooks/queries";
 import { useChannels } from "@/services/channel/hooks/queries";
 
@@ -301,14 +300,10 @@ export default function useClaims(): UseClaimsProps {
     }
   }, [searchChannel, channels, tokenChannel, searchParams, updateURL]);
 
-  const handleSearch = useMemo(
-    () =>
-      _.debounce((keyword: string) => {
-        setSearchData(keyword);
-        setPageState(1);
-      }, 300),
-    []
-  );
+  const handleSearch = useCallback((keyword: string) => {
+    setSearchData(keyword);
+    setPageState(1);
+  }, []);
 
   const handleRowsPerPageChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -343,12 +338,6 @@ export default function useClaims(): UseClaimsProps {
       setPageState(1);
     }
   }, [searchData]);
-
-  useEffect(() => {
-    return () => {
-      handleSearch.cancel?.();
-    };
-  }, [handleSearch]);
 
   const handleRefetch = useCallback(() => {
     void refetch();

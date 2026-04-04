@@ -1,3 +1,5 @@
+import type { AxiosRequestConfig } from "axios";
+
 import { createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
@@ -18,15 +20,18 @@ const withQuery = (url: string, params?: Record<string, unknown>) => {
 const toRecord = (params?: object) =>
   (params ? (params as unknown as Record<string, unknown>) : undefined);
 
-const get = async <T>(url: string) => (await claimApi.get<T>(url)).data;
+type RequestConfig = Pick<AxiosRequestConfig, "signal">;
+
+const get = async <T>(url: string, config?: RequestConfig) =>
+  (await claimApi.get<T>(url, config)).data;
 const post = async <T>(url: string, data?: unknown) =>
   (await claimApi.post<T>(url, data)).data;
 const put = async <T>(url: string, data?: unknown) =>
   (await claimApi.put<T>(url, data)).data;
 
 export const claimsService = {
-  getClaims: (params?: ListClaimRequest) =>
-    get(withQuery(CLAIM_ENDPOINTS.list, toRecord(params))),
+  getClaims: (params?: ListClaimRequest, config?: RequestConfig) =>
+    get(withQuery(CLAIM_ENDPOINTS.list, toRecord(params)), config),
   getClaimById: (id: string) => get(CLAIM_ENDPOINTS.detail(id)),
   updateClaim: (id: string, data: UpdateClaimGrabRequest | unknown) =>
     put(CLAIM_ENDPOINTS.detail(id), data),
