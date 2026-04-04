@@ -55,7 +55,7 @@ The shared contract is intentionally narrow. The root component only standardize
 | `defaultValue` | `string` | `undefined` | No | Uncontrolled initial tab value. |
 | `onValueChange` | `(value: string) => void` | `undefined` | No | Called when the active tab changes. |
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | No | Changes keyboard navigation and list/panel layout direction. |
-| `variant` | `'outline' \| 'ghost'` | `'outline'` | No | Shared tab-trigger treatment applied to `TabsTrigger`. `Tabs` intentionally omits the elevated `shadow` treatment. |
+| `variant` | `'outline' \| 'ghost' \| 'underline'` | `'outline'` | No | Shared tab-trigger treatment applied to `TabsTrigger`. `Tabs` intentionally omits the elevated `shadow` treatment. |
 | `className` | `string` | `undefined` | No | Consumer override merged last through `cn()`. |
 | `children` | `React.ReactNode` | `undefined` | No | `TabsList`, `TabsTrigger`, and `TabsContent` composition. |
 | `...props` | `React.HTMLAttributes<HTMLDivElement>` | - | No | Standard DOM props such as `id`, `data-*`, `aria-*`, and `dir`. |
@@ -72,15 +72,16 @@ The shared contract is intentionally narrow. The root component only standardize
 
 ## Variants
 
-`Tabs` keeps size internal and only exposes the two trigger treatments that have a clear job in the shared rail. The root `variant` cascades to triggers, and an individual `TabsTrigger` can override it explicitly when needed.
+`Tabs` keeps size internal and only exposes the three trigger treatments that have a clear job in the shared rail. The root `variant` cascades to triggers, and an individual `TabsTrigger` can override it explicitly when needed.
 
 | Shared treatment | Description | When to use |
 | --- | --- | --- |
 | Default list shell | Tokenized list container with subtle surface separation | General navigation tabs and settings panels |
 | `outline` trigger | Bordered trigger with no resting shadow | Default tab treatment and the fallback when `variant` is omitted |
 | `ghost` trigger | Borderless transparent trigger | Low-chrome tab rails on already elevated surfaces |
+| `underline` trigger | Border-bottom-led active state with transparent resting surface | Admin rails and section switchers that already sit on a flat page surface |
 | Vertical orientation | Stacked list with full-width triggers next to content | Side-rail settings and detail pages |
-| Scrollable horizontal list | Overflow-enabled trigger row without wrapping | Longer tab labels or many sibling tabs |
+| Scrollable horizontal list | Overflow-enabled trigger row with edge fade cues plus a shared track/thumb that reveals on hover, thumb drag, or brief shell-level keyboard panning | Longer tab labels or many sibling tabs |
 | App-local visual tuning | `className` on list/trigger/content | Narrow parity deltas that do not justify a new shared prop |
 
 ---
@@ -94,7 +95,7 @@ The shared contract is intentionally narrow. The root component only standardize
 | Focus | Triggers and any focusable panel shell use the shared dense-surface focus treatment without a detached offset halo | Keyboard focus remains visible on every trigger and focusable panel shell |
 | Disabled | Muted opacity and blocked pointer interaction | Exposes disabled semantics through Radix |
 | Vertical | List stacks and triggers stretch to full width | Arrow keys switch to vertical navigation behavior |
-| Scrollable | Horizontal list overflows instead of wrapping | Maintains one tablist with normal keyboard behavior |
+| Scrollable | Horizontal list overflows instead of wrapping, with the shared scrollbar affordance only revealing during hover, thumb drag, or brief shell keyboard scrolling | Maintains one tablist with normal keyboard behavior plus shell-level horizontal panning when the overflow shell itself is focused |
 
 ---
 
@@ -127,6 +128,7 @@ The shared contract is intentionally narrow. The root component only standardize
 
 - Focus stays on the active trigger after keyboard navigation.
 - Changing the selected tab does not move focus into the panel automatically.
+- When the overflow shell itself takes focus for a long horizontal rail, `ArrowLeft`, `ArrowRight`, `Home`, `End`, `PageUp`, and `PageDown` pan the list and briefly reveal the shared scrollbar affordance.
 - Consumers should keep focusable content inside panels in a logical reading order.
 
 ### Screen Reader Notes
@@ -235,3 +237,4 @@ The shared contract is intentionally narrow. The root component only standardize
 | 2026-03-10 | Initial Tabs spec |
 | 2026-03-17 | Normalized trigger and panel focus to the shared dense-surface recipe and removed detached offset halos |
 | 2026-04-03 | Removed the unused elevated `shadow`/`default` variant path so the public `Tabs` surface stays on `outline` and `ghost` only |
+| 2026-04-04 | Added the public `underline` trigger treatment and refined the overflow shell so the shared scrollbar reveals for hover, dragging, and brief shell-level keyboard panning instead of generic focus-within |

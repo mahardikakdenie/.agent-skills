@@ -63,6 +63,7 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
     const localRef = React.useRef<React.ElementRef<typeof TabsPrimitive.List> | null>(null);
     const shellRef = React.useRef<HTMLDivElement | null>(null);
     const trackRef = React.useRef<HTMLDivElement | null>(null);
+    const keyboardScrollTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     const dragStateRef = React.useRef<{
       pointerId: number;
       startX: number;
@@ -79,8 +80,8 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       canScrollEnd: false,
     });
     const [isPointerInside, setIsPointerInside] = React.useState(false);
-    const [hasFocusWithin, setHasFocusWithin] = React.useState(false);
     const [isDraggingThumb, setIsDraggingThumb] = React.useState(false);
+    const [isKeyboardScrolling, setIsKeyboardScrolling] = React.useState(false);
 
     const updateThumbState = React.useCallback(() => {
       const node = localRef.current;
@@ -161,6 +162,19 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
 
     const focusScrollbarShell = React.useCallback(() => {
       shellRef.current?.focus({ preventScroll: true });
+    }, []);
+
+    const revealScrollbarForKeyboardScroll = React.useCallback(() => {
+      setIsKeyboardScrolling(true);
+
+      if (keyboardScrollTimeoutRef.current) {
+        clearTimeout(keyboardScrollTimeoutRef.current);
+      }
+
+      keyboardScrollTimeoutRef.current = setTimeout(() => {
+        setIsKeyboardScrolling(false);
+        keyboardScrollTimeoutRef.current = null;
+      }, 900);
     }, []);
 
     const handleTrackPointerDown = React.useCallback(
@@ -279,7 +293,17 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       };
     }, [children, updateThumbState]);
 
-    const isScrollbarVisible = thumbState.hasOverflow && (isPointerInside || hasFocusWithin || isDraggingThumb);
+    React.useEffect(
+      () => () => {
+        if (keyboardScrollTimeoutRef.current) {
+          clearTimeout(keyboardScrollTimeoutRef.current);
+        }
+      },
+      [],
+    );
+
+    const isScrollbarVisible =
+      thumbState.hasOverflow && (isPointerInside || isDraggingThumb || isKeyboardScrolling);
     const handleShellKeyDown = React.useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
       if (event.target !== event.currentTarget) {
         return;
@@ -296,32 +320,38 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       switch (event.key) {
         case 'ArrowLeft':
           event.preventDefault();
+          revealScrollbarForKeyboardScroll();
           node.scrollBy({ left: -40, behavior: 'auto' });
           break;
         case 'ArrowRight':
           event.preventDefault();
+          revealScrollbarForKeyboardScroll();
           node.scrollBy({ left: 40, behavior: 'auto' });
           break;
         case 'Home':
           event.preventDefault();
+          revealScrollbarForKeyboardScroll();
           node.scrollTo({ left: 0, behavior: 'auto' });
           break;
         case 'End':
           event.preventDefault();
+          revealScrollbarForKeyboardScroll();
           node.scrollTo({ left: node.scrollWidth, behavior: 'auto' });
           break;
         case 'PageUp':
           event.preventDefault();
+          revealScrollbarForKeyboardScroll();
           node.scrollBy({ left: -pageStep, behavior: 'auto' });
           break;
         case 'PageDown':
           event.preventDefault();
+          revealScrollbarForKeyboardScroll();
           node.scrollBy({ left: pageStep, behavior: 'auto' });
           break;
         default:
           break;
       }
-    }, [thumbState.hasOverflow, thumbState.isHorizontal]);
+    }, [revealScrollbarForKeyboardScroll, thumbState.hasOverflow, thumbState.isHorizontal]);
 
     return (
       <Box
@@ -335,10 +365,14 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
         onKeyDown={handleShellKeyDown}
         onPointerEnter={() => setIsPointerInside(true)}
         onPointerLeave={() => setIsPointerInside(false)}
-        onFocusCapture={() => setHasFocusWithin(true)}
         onBlurCapture={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-            setHasFocusWithin(false);
+            setIsKeyboardScrolling(false);
+
+            if (keyboardScrollTimeoutRef.current) {
+              clearTimeout(keyboardScrollTimeoutRef.current);
+              keyboardScrollTimeoutRef.current = null;
+            }
           }
         }}
       >

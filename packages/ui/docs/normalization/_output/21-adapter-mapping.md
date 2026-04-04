@@ -409,8 +409,8 @@ Direct adoption guidance:
 
 - Legacy tabsets that already separate a trigger row from panel content map to `Tabs`, `TabsList`, `TabsTrigger`, and `TabsContent`.
 - Existing controlled `value` plus `onChange` or `onValueChange` flows normalize to `value` and `onValueChange`; simple local-state tabsets can normalize to `defaultValue`.
-- Vertical settings rails map to `orientation="vertical"`; wider horizontal trigger sets can rely on the shared overflow shell, edge fade cues, and reveal-on-interaction scrollbar affordance instead of adding app-local scroll wrappers directly on the tablist.
-- App-local fade masks, hover-only custom scrollbars, or shell-level arrow/page panning that only exist to support long horizontal rails should collapse into the shared `TabsList` shell rather than wrapping the tab row again.
+- Vertical settings rails map to `orientation="vertical"`; wider horizontal trigger sets can rely on the shared overflow shell, edge fade cues, and the shared scrollbar affordance that reveals on hover, thumb drag, or brief shell keyboard panning instead of adding app-local scroll wrappers directly on the tablist.
+- App-local fade masks, hover-only custom scrollbars, or separate shell-level arrow/page panning that only exist to support long horizontal rails should collapse into the shared `TabsList` shell rather than wrapping the tab row again.
 - Existing panel bodies should stay consumer-owned and move inside `TabsContent` rather than being flattened into new shared props.
 - Older transparent or low-chrome tab treatments should normalize to root `variant="ghost"`; standard shared usage stays on `variant="outline"`; underline-led admin rails can normalize to `variant="underline"`; and individual `TabsTrigger` instances can still override between the three shipped treatments locally.
 

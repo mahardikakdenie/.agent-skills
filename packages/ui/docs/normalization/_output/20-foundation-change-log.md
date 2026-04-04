@@ -92,7 +92,7 @@ Changed:
 
 - Added the public `underline` treatment to `packages/ui/src/Tabs` so shared tabs can cover border-bottom rail patterns without reintroducing app-local styling.
 - Updated `TabsList` to vary horizontal spacing by variant and to keep long horizontal rails inside the shared overflow shell with edge fade cues plus an explicit track/thumb affordance.
-- Refined the shared overflow shell so the custom scrollbar only becomes interactive while the rail is hovered, focused, or actively dragging, and so the shell can own horizontal panning keys when it takes focus.
+- Refined the shared overflow shell so the custom scrollbar only becomes interactive while the rail is hovered, actively dragging, or briefly keyboard-panned from the shell, and so the shell can own horizontal panning keys when it takes focus.
 - Refreshed the normalization output so the documented `Tabs` contract now matches the shipped `outline | ghost | underline` surface.
 
 Impact:
