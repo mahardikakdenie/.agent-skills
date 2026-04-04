@@ -114,8 +114,8 @@ function StoryPanel({
   children: React.ReactNode;
 }) {
   return (
-    <Box className="grid gap-5 rounded-2xl border border-border/60 bg-background px-1 py-3">
-      <Box className="grid gap-1">
+    <Box className="grid gap-6">
+      <Box className="grid gap-1.5">
         <Box as="h3" className="text-2xl font-semibold tracking-tight text-foreground">
           {title}
         </Box>
@@ -123,8 +123,8 @@ function StoryPanel({
           {description}
         </Box>
       </Box>
-      <Box>{children}</Box>
-      <Box className="flex justify-end">
+      {children}
+      <Box className="flex justify-end pt-1">
         <Button type="button">Save changes</Button>
       </Box>
     </Box>

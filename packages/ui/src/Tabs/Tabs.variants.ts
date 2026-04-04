@@ -20,9 +20,8 @@ export const tabsListVariants = cva(
   [
     'inline-flex max-w-full items-center text-muted-foreground',
     'data-[orientation=horizontal]:w-full data-[orientation=horizontal]:!overflow-x-auto data-[orientation=horizontal]:!overflow-y-hidden',
-    'data-[orientation=horizontal]:[scrollbar-gutter:stable] data-[orientation=horizontal]:[-webkit-overflow-scrolling:touch] data-[orientation=horizontal]:[scrollbar-width:none] data-[orientation=horizontal]:[scrollbar-color:transparent_transparent] data-[orientation=horizontal]:!pb-5 data-[orientation=horizontal]:!-mb-5',
-    'data-[orientation=horizontal]:[&::-webkit-scrollbar]:h-[5px] data-[orientation=horizontal]:[&::-webkit-scrollbar-track]:bg-transparent data-[orientation=horizontal]:[&::-webkit-scrollbar-thumb]:rounded-full data-[orientation=horizontal]:[&::-webkit-scrollbar-thumb]:bg-transparent',
-    'data-[orientation=horizontal]:hover:[scrollbar-width:thin] data-[orientation=horizontal]:hover:[scrollbar-color:#d9d9d9_transparent] data-[orientation=horizontal]:hover:[&::-webkit-scrollbar-thumb]:bg-[#d9d9d9] data-[orientation=horizontal]:hover:[&::-webkit-scrollbar-thumb:hover]:bg-[#888]',
+    'data-[orientation=horizontal]:[-webkit-overflow-scrolling:touch] data-[orientation=horizontal]:[scrollbar-width:none]',
+    'data-[orientation=horizontal]:[&::-webkit-scrollbar]:h-0 data-[orientation=horizontal]:[&::-webkit-scrollbar]:w-0 data-[orientation=horizontal]:[&::-webkit-scrollbar-track]:bg-transparent data-[orientation=horizontal]:[&::-webkit-scrollbar-thumb]:bg-transparent',
     'data-[orientation=vertical]:grid data-[orientation=vertical]:w-full data-[orientation=vertical]:justify-stretch',
   ].join(' '),
   {

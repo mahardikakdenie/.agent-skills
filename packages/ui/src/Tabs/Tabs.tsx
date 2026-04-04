@@ -61,6 +61,7 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
   ({ className, children, ...props }, ref) => {
     const { variant } = React.use(TabsVariantContext);
     const localRef = React.useRef<React.ElementRef<typeof TabsPrimitive.List> | null>(null);
+    const shellRef = React.useRef<HTMLDivElement | null>(null);
     const trackRef = React.useRef<HTMLDivElement | null>(null);
     const dragStateRef = React.useRef<{
       pointerId: number;
@@ -74,7 +75,12 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       hasOverflow: false,
       width: 0,
       offset: 0,
+      canScrollStart: false,
+      canScrollEnd: false,
     });
+    const [isPointerInside, setIsPointerInside] = React.useState(false);
+    const [hasFocusWithin, setHasFocusWithin] = React.useState(false);
+    const [isDraggingThumb, setIsDraggingThumb] = React.useState(false);
 
     const updateThumbState = React.useCallback(() => {
       const node = localRef.current;
@@ -92,6 +98,8 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
           hasOverflow: false,
           width: 0,
           offset: 0,
+          canScrollStart: false,
+          canScrollEnd: false,
         });
         return;
       }
@@ -105,6 +113,8 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
           hasOverflow: false,
           width: 0,
           offset: 0,
+          canScrollStart: false,
+          canScrollEnd: false,
         });
         return;
       }
@@ -112,12 +122,16 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       const thumbWidth = Math.max((node.clientWidth / node.scrollWidth) * node.clientWidth, 28);
       const travel = Math.max(node.clientWidth - thumbWidth, 0);
       const offset = maxScrollLeft > 0 ? (node.scrollLeft / maxScrollLeft) * travel : 0;
+      const canScrollStart = node.scrollLeft > 1;
+      const canScrollEnd = node.scrollLeft < maxScrollLeft - 1;
 
       setThumbState({
         isHorizontal: true,
         hasOverflow: true,
         width: thumbWidth,
         offset,
+        canScrollStart,
+        canScrollEnd,
       });
     }, []);
 
@@ -145,6 +159,10 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       node.scrollLeft = nextScrollLeft;
     }, []);
 
+    const focusScrollbarShell = React.useCallback(() => {
+      shellRef.current?.focus({ preventScroll: true });
+    }, []);
+
     const handleTrackPointerDown = React.useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
         if (event.button !== 0) {
@@ -152,9 +170,10 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
         }
 
         event.preventDefault();
+        focusScrollbarShell();
         scrollToTrackPosition(event.clientX);
       },
-      [scrollToTrackPosition],
+      [focusScrollbarShell, scrollToTrackPosition],
     );
 
     const handleThumbPointerDown = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
@@ -179,11 +198,13 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
         maxScrollLeft,
         travel,
       };
+      setIsDraggingThumb(true);
 
       event.preventDefault();
       event.stopPropagation();
+      focusScrollbarShell();
       event.currentTarget.setPointerCapture(event.pointerId);
-    }, [thumbState.width]);
+    }, [focusScrollbarShell, thumbState.width]);
 
     const handleThumbPointerMove = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
       const node = localRef.current;
@@ -207,6 +228,7 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       }
 
       dragStateRef.current = null;
+      setIsDraggingThumb(false);
       event.currentTarget.releasePointerCapture(event.pointerId);
     }, []);
 
@@ -257,8 +279,69 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
       };
     }, [children, updateThumbState]);
 
+    const isScrollbarVisible = thumbState.hasOverflow && (isPointerInside || hasFocusWithin || isDraggingThumb);
+    const handleShellKeyDown = React.useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.target !== event.currentTarget) {
+        return;
+      }
+
+      const node = localRef.current;
+
+      if (!node || !thumbState.isHorizontal || !thumbState.hasOverflow) {
+        return;
+      }
+
+      const pageStep = Math.max(Math.round(node.clientWidth * 0.85), 48);
+
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault();
+          node.scrollBy({ left: -40, behavior: 'auto' });
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          node.scrollBy({ left: 40, behavior: 'auto' });
+          break;
+        case 'Home':
+          event.preventDefault();
+          node.scrollTo({ left: 0, behavior: 'auto' });
+          break;
+        case 'End':
+          event.preventDefault();
+          node.scrollTo({ left: node.scrollWidth, behavior: 'auto' });
+          break;
+        case 'PageUp':
+          event.preventDefault();
+          node.scrollBy({ left: -pageStep, behavior: 'auto' });
+          break;
+        case 'PageDown':
+          event.preventDefault();
+          node.scrollBy({ left: pageStep, behavior: 'auto' });
+          break;
+        default:
+          break;
+      }
+    }, [thumbState.hasOverflow, thumbState.isHorizontal]);
+
     return (
-      <Box data-slot="tabs-list-shell" className="relative min-w-0 overflow-hidden">
+      <Box
+        ref={shellRef}
+        data-slot="tabs-list-shell"
+        tabIndex={thumbState.isHorizontal && thumbState.hasOverflow ? -1 : undefined}
+        className={cn(
+          'relative min-w-0 overflow-hidden outline-none transition-[padding] duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none',
+          isScrollbarVisible && 'pb-[5px]',
+        )}
+        onKeyDown={handleShellKeyDown}
+        onPointerEnter={() => setIsPointerInside(true)}
+        onPointerLeave={() => setIsPointerInside(false)}
+        onFocusCapture={() => setHasFocusWithin(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            setHasFocusWithin(false);
+          }
+        }}
+      >
         <TabsPrimitive.List ref={setRefs} asChild {...props}>
           <Box data-slot="tabs-list" className={cn(tabsListVariants({ variant }), className)}>
             {children}
@@ -266,27 +349,48 @@ export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.L
         </TabsPrimitive.List>
 
         {thumbState.isHorizontal && thumbState.hasOverflow ? (
-          <Box
-            ref={trackRef}
-            aria-hidden="true"
-            data-slot="tabs-list-scrollbar-track"
-            className="absolute right-0 bottom-0 left-0 h-[5px] cursor-default bg-transparent"
-            onPointerDown={handleTrackPointerDown}
-          >
+          <>
             <Box
               aria-hidden="true"
-              data-slot="tabs-list-scrollbar-thumb"
-              className="absolute top-0 left-0 h-[5px] cursor-default rounded-full bg-[var(--admin-scrollbar-thumb,#d9d9d9)] hover:bg-[var(--admin-scrollbar-thumb-active,#b5b5b5)]"
-              style={{
-                width: `${thumbState.width}px`,
-                transform: `translateX(${thumbState.offset}px)`,
-              }}
-              onPointerDown={handleThumbPointerDown}
-              onPointerMove={handleThumbPointerMove}
-              onPointerUp={handleThumbPointerEnd}
-              onPointerCancel={handleThumbPointerEnd}
+              data-slot="tabs-list-scroll-cue-start"
+              className={cn(
+                'pointer-events-none absolute inset-y-0 left-0 z-[1] w-8 bg-gradient-to-r from-background via-background/95 to-transparent transition-opacity duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none',
+                thumbState.canScrollStart ? 'opacity-100' : 'opacity-0',
+              )}
             />
-          </Box>
+            <Box
+              aria-hidden="true"
+              data-slot="tabs-list-scroll-cue-end"
+              className={cn(
+                'pointer-events-none absolute inset-y-0 right-0 z-[1] w-8 bg-gradient-to-l from-background via-background/95 to-transparent transition-opacity duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none',
+                thumbState.canScrollEnd ? 'opacity-100' : 'opacity-0',
+              )}
+            />
+            <Box
+              ref={trackRef}
+              aria-hidden="true"
+              data-slot="tabs-list-scrollbar-track"
+              className={cn(
+                'absolute right-0 bottom-0 left-0 z-[2] h-[5px] bg-transparent transition-opacity duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none',
+                isScrollbarVisible ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
+              )}
+              onPointerDown={handleTrackPointerDown}
+            >
+              <Box
+                aria-hidden="true"
+                data-slot="tabs-list-scrollbar-thumb"
+                className="absolute top-0 left-0 h-[5px] cursor-default rounded-full bg-[var(--admin-scrollbar-thumb,#d9d9d9)] transition-colors duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] hover:bg-[var(--admin-scrollbar-thumb-active,#b5b5b5)] motion-reduce:transition-none"
+                style={{
+                  width: `${thumbState.width}px`,
+                  transform: `translateX(${thumbState.offset}px)`,
+                }}
+                onPointerDown={handleThumbPointerDown}
+                onPointerMove={handleThumbPointerMove}
+                onPointerUp={handleThumbPointerEnd}
+                onPointerCancel={handleThumbPointerEnd}
+              />
+            </Box>
+          </>
         ) : null}
       </Box>
     );
