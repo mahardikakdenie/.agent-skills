@@ -77,11 +77,27 @@ export const dataTablePaginationShellVariants = cva('pt-1');
 export const dataTablePaginationMetaVariants = cva('mb-3 flex items-center justify-between gap-3');
 
 export const dataTableResizeHandleVariants = cva(
-  'absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none rounded-full bg-transparent transition-colors hover:bg-border/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+  'group/data-table-resize-handle absolute top-1/2 right-0 z-[6] flex h-[calc(100%-0.875rem)] w-4 -translate-y-1/2 translate-x-[35%] cursor-col-resize touch-none select-none items-center justify-center rounded-full bg-transparent text-border/55 opacity-0 transition-[opacity,background-color,box-shadow,color,transform] duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] [-webkit-tap-highlight-color:transparent] focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none group-hover/data-table-resize:opacity-100',
   {
     variants: {
       resizing: {
-        true: 'bg-ring/60',
+        true: 'opacity-100 bg-background/80 text-ring shadow-[0_0_0_1px_hsl(var(--border)/0.75),0_6px_18px_-16px_hsl(var(--foreground)/0.45)]',
+        false:
+          'hover:bg-background/75 hover:text-muted-foreground active:bg-background/85 focus-visible:bg-background/75 focus-visible:text-foreground/70',
+      },
+    },
+    defaultVariants: {
+      resizing: false,
+    },
+  },
+);
+
+export const dataTableResizeHandleGripVariants = cva(
+  'pointer-events-none block h-8 w-[2px] rounded-full bg-current transition-[height,width,transform] duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none',
+  {
+    variants: {
+      resizing: {
+        true: 'h-10 w-[2.5px]',
         false: '',
       },
     },

@@ -781,8 +781,11 @@ Normalization notes:
 - `meta.cellClassName` styles the semantic `<td>` shell, while `meta.cellContentClassName` styles the shared overflow-aware content wrapper inside that cell.
 - When `meta.cellClassName` is a string, the default loading-row renderer now reuses it on skeleton `<td>` shells as well so alignment, width, spacing, and pinned-cell treatment stay visually in sync before data hydrates.
 - Default loading skeleton rows now follow the table's visible leaf columns. Use `columnDef.meta.loadingSkeletonClassName` for skeleton width/class overrides or `columnDef.meta.loadingSkeleton` for fully custom per-column placeholders before replacing the whole loading surface through `loadingState`.
+- Horizontal overflow now mirrors the shared `Tabs` affordance: edge fade cues only appear while more columns remain off-screen, those cues align to the inner edge of any pinned left or right columns, and the custom scrollbar affordance only reveals during hover, thumb drag, or brief shell-level keyboard panning.
+- Resizable headers now reserve a narrow trailing gutter for the shared separator control so label content, sort affordances, and resize hit-targets stop competing for the same edge pixels.
+- The shared resize affordance is now a focusable separator, not a visually hidden mini-button: drag and touch resizing remain supported, ArrowLeft / ArrowRight provide precise keyboard sizing, Delete resets the active column width, and `columnResizeMode='onEnd'` keeps the grip preview aligned to the pending drag offset.
 - Dependency: `@tanstack/react-table` v8. `DataTableVirtualized` additionally depends on TanStack Virtual through the shared package.
-- Internal helper consolidation is now centered in `DataTable.utils.ts`; layout and sticky style helpers are not split into a separate `DataTable.layout.ts` layer anymore.
+- Internal helper consolidation is now split intentionally between `DataTable.utils.ts` for shared table math and sticky styles plus `DataTable.viewport.tsx` for the owned overflow shell; layout concerns are still not split into a separate `DataTable.layout.ts` layer.
 
 ---
 

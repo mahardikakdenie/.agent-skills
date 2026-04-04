@@ -30,20 +30,21 @@ import {
 import type { DataTableVirtualizedProps } from './DataTable.types';
 import {
   getHeaderCellStyles,
-  resolveDataTableClassName,
+  getPinnedColumnOffsetSizes,
   getTableStyle,
   getViewportStyle,
+  resolveDataTableClassName,
   resolvePageSizeOptions,
   resolveRenderable,
   toCssDimension,
 } from './DataTable.utils';
 import {
   dataTablePaginationShellVariants,
-  dataTableResizeHandleVariants,
   dataTableRootVariants,
   dataTableStatusCellVariants,
-  dataTableViewportVariants,
 } from './DataTable.variants';
+import { DataTableResizeHandle } from './DataTable.resize';
+import { DataTableViewport } from './DataTable.viewport';
 
 type DataTableVirtualizedRenderShellProps<TData extends RowData> =
   DataTableVirtualizedProps<TData> & {
@@ -97,6 +98,7 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
     renderFooter,
   });
   const shouldShowPagination = !loading && table.getRowCount() > 0;
+  const { leftPinnedWidth, rightPinnedWidth } = getPinnedColumnOffsetSizes(table);
   const rowVirtualizer = useVirtualizer({
     count: centerRows.length,
     getScrollElement: () => viewportRef.current,
@@ -119,10 +121,11 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
     >
       {toolbarContent}
 
-      <Box
+      <DataTableViewport
         ref={viewportRef}
-        data-slot="data-table-viewport"
-        className={dataTableViewportVariants({ variant })}
+        variant={variant}
+        leftCueInset={leftPinnedWidth}
+        rightCueInset={rightPinnedWidth}
         style={{
           ...getViewportStyle(layout),
           height: toCssDimension(height),
@@ -135,7 +138,6 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const resizeHandler = header.getResizeHandler();
                   const headerCellClassName = resolveDataTableClassName(
                     header.column.columnDef.meta?.headerCellClassName,
                     {
@@ -163,7 +165,9 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
                       }
                       className={cn(
                         header.column.getIsPinned() ? 'bg-background' : undefined,
-                        header.column.getCanResize() ? 'relative' : undefined,
+                        header.column.getCanResize()
+                          ? 'group/data-table-resize relative select-none pr-5'
+                          : undefined,
                         headerCellClassName,
                       )}
                       colSpan={header.colSpan}
@@ -172,19 +176,7 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
                     >
                       {renderDataTableHeader(header, sortingCount, headerContentClassName)}
                       {header.column.getCanResize() ? (
-                        <Box
-                          as="button"
-                          type="button"
-                          aria-label={`Resize ${header.column.id} column`}
-                          className={dataTableResizeHandleVariants({
-                            resizing: header.column.getIsResizing(),
-                          })}
-                          onDoubleClick={() => {
-                            header.column.resetSize();
-                          }}
-                          onMouseDown={resizeHandler}
-                          onTouchStart={resizeHandler}
-                        />
+                        <DataTableResizeHandle header={header} table={table} />
                       ) : null}
                     </TableHead>
                   );
@@ -274,7 +266,7 @@ function DataTableVirtualizedRenderShell<TData extends RowData>({
 
           {footerContent}
         </Table>
-      </Box>
+      </DataTableViewport>
 
       {shouldShowPagination
         ? (customPagination ?? (

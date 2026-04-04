@@ -283,6 +283,30 @@ export function getTableStyle<TData extends RowData>(
   };
 }
 
+export function getPinnedColumnOffsetSizes<TData extends RowData>(
+  table: DataTableInstance<TData>,
+) {
+  return table.getVisibleLeafColumns().reduce(
+    (offsets, column) => {
+      const pinnedPosition = column.getIsPinned();
+
+      if (pinnedPosition === 'left') {
+        offsets.leftPinnedWidth += column.getSize();
+      }
+
+      if (pinnedPosition === 'right') {
+        offsets.rightPinnedWidth += column.getSize();
+      }
+
+      return offsets;
+    },
+    {
+      leftPinnedWidth: 0,
+      rightPinnedWidth: 0,
+    },
+  );
+}
+
 export function toCssDimension(value?: number | string) {
   if (value === undefined) {
     return undefined;
