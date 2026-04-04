@@ -65,16 +65,18 @@ export const createClaimsTableColumns = ({
     header: 'Claim ID',
     enableSorting: false,
     size: claimIdColumnSize,
-    minSize: 116,
+    minSize: 160,
     meta: {
+      headerCellClassName: 'whitespace-nowrap',
       cellClassName: 'align-middle',
-      cellContentClassName: 'whitespace-normal break-all',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-[8.5rem] rounded-full',
     },
     cell: ({ row }) => {
       const claim = row.original;
 
       return (
-        <Box className="min-w-0 break-all text-sm leading-5 text-slate-700">
+        <Box className="min-w-0 text-sm leading-5 text-slate-700">
           {claim.number || '-'}
         </Box>
       );

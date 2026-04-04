@@ -159,10 +159,29 @@ export default function PolicyPage() {
     }
   };
 
+  const policyNumberColumnSize = useMemo(
+    () =>
+      Math.max(
+        160,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('PLC-20260402-0003', '400 12px Arial', 6.1),
+            measureTextWidth('Policy Number', '500 14px Arial', 6.8),
+            policies.reduce((widest, policy) => {
+              const label = policy?.number || '-';
+
+              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+            }, 0),
+          ) + 52,
+        ),
+      ),
+    [policies],
+  );
+
   const effectiveDateColumnSize = useMemo(
     () =>
       Math.max(
-        116,
+        120,
         Math.ceil(
           Math.max(
             measureTextWidth('Effective Date', '500 14px Arial', 6.8),
@@ -171,7 +190,7 @@ export default function PolicyPage() {
 
               return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
             }, 0),
-          ) + 24,
+          ) + 40,
         ),
       ),
     [policies],
@@ -180,7 +199,7 @@ export default function PolicyPage() {
   const expiryDateColumnSize = useMemo(
     () =>
       Math.max(
-        116,
+        120,
         Math.ceil(
           Math.max(
             measureTextWidth('Expiry Date', '500 14px Arial', 6.8),
@@ -189,7 +208,7 @@ export default function PolicyPage() {
 
               return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
             }, 0),
-          ) + 24,
+          ) + 40,
         ),
       ),
     [policies],
@@ -198,7 +217,7 @@ export default function PolicyPage() {
   const statusColumnSize = useMemo(
     () =>
       Math.max(
-        84,
+        100,
         Math.ceil(
           Math.max(
             measureTextWidth('Status', '500 14px Arial', 6.8),
@@ -207,7 +226,7 @@ export default function PolicyPage() {
 
               return Math.max(widest, measureTextWidth(label, '600 11px Arial', 5.9));
             }, 0),
-          ) + 14,
+          ) + 32,
         ),
       ),
     [policies],
@@ -216,12 +235,12 @@ export default function PolicyPage() {
   const actionColumnSize = useMemo(
     () =>
       Math.max(
-        68,
+        80,
         Math.ceil(
           Math.max(
             measureTextWidth('Action', '500 14px Arial', 6.8),
             measureTextWidth('View', '600 11px Arial', 5.9) + 18,
-          ) + 12,
+          ) + 24,
         ),
       ),
     [],
@@ -230,6 +249,7 @@ export default function PolicyPage() {
   const policyTableColumns = createPolicyTableColumns({
     page,
     rowsPerPage,
+    policyNumberColumnSize,
     effectiveDateColumnSize,
     expiryDateColumnSize,
     statusColumnSize,

@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 38 |
-| PASS | 6 |
+| PASS | 7 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 29 |
+| DEFERRED_DATA_TABLE | 28 |
 | NOT_STARTED | 79 |
 | OUT_OF_SCOPE | 1 |
 
@@ -50,11 +50,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/dashboard/transaction` | `dashboard-transaction` | `apps/admin-portal/src/app/dashboard/transaction/page.tsx` | YES | NO | `PASS` | 2026-03-31 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `c2b874754fb532cc5413215d1debca92b190c5d4` lands route-local migration cleanup for this page, and manual smoke verification for the dashboard route is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/dashboard/policy` | `dashboard-policy` | `apps/admin-portal/src/app/dashboard/policy/page.tsx` | YES | NO | `PASS` | 2026-04-02 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `cc3ad67852e37df51712706be77db29e475aaca4` lands route-local chart consolidation and `Box` cleanup for this page, and prior manual smoke verification for `/dashboard/policy` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/dashboard/claim` | `dashboard-claim` | `apps/admin-portal/src/app/dashboard/claim/page.tsx` | YES | NO | `PASS` | 2026-04-02 | migration-log: present; comparison-log: none; screenshots: present | Latest commit `f544827241360913c1f6e55edb4c32b58fdbe61d` lands route-local vertical bar chart consolidation and `Box` cleanup for this page, and prior manual smoke verification for `/dashboard/claim` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
-| `/transaction/list` | `transaction-list` | `apps/admin-portal/src/app/transaction/list/page.tsx` | YES | YES | `PASS` | 2026-04-03 | migration-log: present; comparison-log: none; screenshots: present | Latest commits `41963542b86e85cd525886019b6ebd7f3da849f1` and `15a85cb9716ee439143ddfafbc32d9297decca0e` land the route-local transaction list UX revamp plus follow-up cell/loading-state alignment across the page, transaction table config, and compact pagination surface, and prior manual smoke verification for `/transaction/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
-| `/policy/list` | `policy-list` | `apps/admin-portal/src/app/policy/list/page.tsx` | YES | YES | `PASS` | 2026-04-03 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land route-local policy list table modernization across the page, policy table config, and compact pagination surface, and the latest `policyTableConfig.tsx` follow-up removes the remaining native wrapper elements in favor of `Box` while prior manual smoke verification for `/policy/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
+| `/transaction/list` | `transaction-list` | `apps/admin-portal/src/app/transaction/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Latest 2026-04-05 updates land route-local table configuration refinements and alignment with the shared DataTable API, and prior manual smoke verification for `/transaction/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
+| `/policy/list` | `policy-list` | `apps/admin-portal/src/app/policy/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Latest 2026-04-05 updates land route-local table configuration refinements and alignment with the shared DataTable API, and prior manual smoke verification for `/policy/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/policy/endorsement/list` | `policy-endorsement-list` | `apps/admin-portal/src/app/policy/endorsement/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
-| `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `PASS` | 2026-04-04 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the claim list route-local DataTable migration across the page, claim table config, claim hook, and route-local debounced search helper, while prior manual smoke verification for `/claim/list` and screenshots are already recorded in `_migration-log.md` and `_parity-checklist.md`. Earlier smoke revalidation noted an internal redirect to the querystring variant. |
-| `/membership/list` | `membership-list` | `apps/admin-portal/src/app/membership/list/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state. |
+| `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Latest 2026-04-05 updates land route-local table configuration refinements, alignment with the shared DataTable API, and status modal Box refactor, while prior manual smoke verification for `/claim/list` and screenshots are already recorded in `_migration-log.md` and `_parity-checklist.md`. |
+| `/membership/list` | `membership-list` | `apps/admin-portal/src/app/membership/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the membership list route-local DataTable migration across the page, membership table config, and membership hook, while prior manual smoke verification for `/membership/list` (noting the expected 403 state) is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/finance/billing` | `finance-billing` | `apps/admin-portal/src/app/finance/billing/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state. |
 | `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/` | `root` | `apps/admin-portal/src/app/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | Home dashboard route with no explicit Batch 9 route-stabilization evidence yet. |
@@ -217,13 +217,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `YES`
 - DataTable dependency: `YES`
 - Status: `PASS`
-- Last checked: `2026-04-03`
+- Last checked: `2026-04-05`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
 - Blocker type: `none`
-- Notes: Latest commits `41963542b86e85cd525886019b6ebd7f3da849f1` and `15a85cb9716ee439143ddfafbc32d9297decca0e` land the route-local transaction list UX revamp plus follow-up cell/loading-state alignment across the page, transaction table config, and compact pagination surface, and prior manual smoke verification for `/transaction/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`.
+- Notes: Latest 2026-04-05 updates land route-local table configuration refinements and alignment with the shared DataTable API, and prior manual smoke verification for `/transaction/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`.
 
 ### /policy/list
 
@@ -232,13 +232,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `YES`
 - DataTable dependency: `YES`
 - Status: `PASS`
-- Last checked: `2026-04-03`
+- Last checked: `2026-04-05`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
 - Blocker type: `none`
-- Notes: Current `apps/admin-portal/src` changes land route-local policy list table modernization across the page, policy table config, and compact pagination surface, and the latest `policyTableConfig.tsx` follow-up removes the remaining native wrapper elements in favor of `Box` while prior manual smoke verification for `/policy/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`.
+- Notes: Latest 2026-04-05 updates land route-local table configuration refinements and alignment with the shared DataTable API, and prior manual smoke verification for `/policy/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`.
 
 ### /policy/endorsement/list
 
@@ -262,13 +262,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `YES`
 - DataTable dependency: `YES`
 - Status: `PASS`
-- Last checked: `2026-04-04`
+- Last checked: `2026-04-05`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
 - Blocker type: `none`
-- Notes: Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, move debounce ownership into the route-local search helper, and refactor the claim table config/status cell integration; prior manual smoke verification and screenshots already exist, so the earlier DataTable deferment is cleared. Earlier smoke revalidation noted an internal redirect to the querystring variant.
+- Notes: Latest 2026-04-05 updates land route-local table configuration refinements, alignment with the shared DataTable API, and status modal Box refactor, while prior manual smoke verification for `/claim/list` and screenshots are already recorded in `_migration-log.md` and `_parity-checklist.md`. Earlier smoke revalidation noted an internal redirect to the querystring variant.
 
 ### /membership/list
 
@@ -276,14 +276,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `membership-list`
 - Smoke route: `YES`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-05`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state.
+- Blocker type: `none`
+- Notes: Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and tab chrome on shared primitives, and implement a cleaner row action details drawer while preserving existing search, channel filtering, upload, export, and detail navigation. Earlier smoke revalidation recorded the expected permission-gated 403 state.
 
 ### /finance/billing
 

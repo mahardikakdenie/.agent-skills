@@ -1420,3 +1420,27 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Shared-ui impact: `No new @repo/ui export is adopted. Replaces native DOM elements with existing shared Box primitives.`
 - Verification note: `Visual and functional parity maintained; modal interaction and layout remains identical.`
 
+## Batch 9 - /membership/list Route Refactor - 2026-04-05
+
+- Route focus: `/membership/list`
+- Migration intent: `Migrate the membership list route onto the shared DataTable instance API, standardize the filter and tab chrome on shared primitives, and implement a cleaner row action details drawer while preserving existing search, channel filtering, upload, export, and detail navigation.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/membership/list/page.tsx` now renders the route shell with `Box`, replaces bespoke status-tab and channel-select markup with shared `Tabs` and `Select`, and mounts the shared `@repo/ui` `DataTable` directly with manual pagination, pinned columns, and compact pagination wiring.
+  - `apps/admin-portal/src/components/tableConfig/membershipTableConfig.tsx` now defines the membership list columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, wrapped content cells, badge-style status rendering, and a shared `Drawer`-based row action detail view.
+  - `apps/admin-portal/src/hooks/useMembership.hooks.tsx` now manages table state (page, limit, status, channel, search) with explicit URL synchronization via `router.replace` and `useSearchParams`, and integrates with the `useInsuredParties` and `useChannelsV1` query hooks.
+- Files changed (route-focused): [`apps/admin-portal/src/app/membership/list/page.tsx`, `apps/admin-portal/src/components/tableConfig/membershipTableConfig.tsx`, `apps/admin-portal/src/hooks/useMembership.hooks.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box, Button, DataTable, Drawer, Select, Skeleton, and Tabs primitives while extending only app-local membership table configuration and pagination styling.`
+- Verification note: `This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /membership/list already present in _migration-log.md and _parity-checklist.md (noting the expected 403 state). No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /membership/list as PASS because the route-local migration has been completed.`
+
+## Batch 9 - Table Configuration Alignment and Refinement - 2026-04-05
+
+- Scope: `claim/list`, `policy/list`, `transaction/list`
+- Migration intent: `Align existing migrated table routes with the latest design patterns, including standardized column metadata, consistent alignment hooks, and consolidated use of shared primitives within table cells and row actions.`
+- Key updates:
+  - `claimTableConfig.tsx`, `policyTableConfig.tsx`, and `transactionTableConfig.tsx` now use `Box` and `Button` consistently for cell rendering and row actions.
+  - Column metadata updated with explicit `size`, `minSize`, and `meta` properties (`headerCellClassName`, `cellClassName`, `cellContentClassName`) to match the updated `DataTable` contract.
+  - Skeletons and loading states refined for better visual consistency during data fetching.
+- Files changed: [`apps/admin-portal/src/components/tableConfig/claimTableConfig.tsx`, `apps/admin-portal/src/components/tableConfig/policyTableConfig.tsx`, `apps/admin-portal/src/components/tableConfig/transactionTableConfig.tsx`, `apps/admin-portal/src/app/claim/list/page.tsx`, `apps/admin-portal/src/app/policy/list/page.tsx`]
+- Shared-ui impact: `Refined composition of existing shared primitives.`
+

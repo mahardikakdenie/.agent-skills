@@ -495,7 +495,24 @@ const ClaimsPage = () => {
     router.push(`${path}/export`);
   };
 
-  const claimIdColumnSize = 136;
+  const claimIdColumnSize = useMemo(
+    () =>
+      Math.max(
+        160,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('CLM-20260211-00009', '400 12px Arial', 6.1),
+            measureTextWidth('Claim ID', '500 14px Arial', 6.8),
+            filteredClaims.reduce((widest, claim) => {
+              const label = claim?.number || '-';
+
+              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+            }, 0),
+          ) + 52,
+        ),
+      ),
+    [filteredClaims],
+  );
   const customerNameColumnSize = 164;
   const planNameColumnSize = 220;
 

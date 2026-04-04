@@ -173,14 +173,10 @@ export function useMembership(): UseMembershipProps {
     }
   }, [channel, searchData]);
 
-  const handleSearch = useMemo(
-    () =>
-      _.debounce((keyword: string) => {
-        setSearchData(keyword);
-        setPageState(1);
-      }, 300),
-    []
-  );
+  const handleSearch = useCallback((keyword: string) => {
+    setSearchData(keyword);
+    setPageState(1);
+  }, []);
 
   const handleRowsPerPageChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -239,10 +235,8 @@ export function useMembership(): UseMembershipProps {
   );
 
   useEffect(() => {
-    return () => {
-      handleSearch.cancel?.();
-    };
-  }, [handleSearch]);
+    // Component cleanup
+  }, []);
 
   return {
     membership: (membershipResponse as any)?.data || [],

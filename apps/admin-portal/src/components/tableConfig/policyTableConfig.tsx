@@ -12,6 +12,7 @@ interface SharedPolicyTableColumnProps {
 }
 
 interface CreatePolicyTableColumnsProps extends SharedPolicyTableColumnProps {
+  policyNumberColumnSize: number;
   effectiveDateColumnSize: number;
   expiryDateColumnSize: number;
   statusColumnSize: number;
@@ -43,6 +44,7 @@ const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat('id-ID
 export const createPolicyTableColumns = ({
   page,
   rowsPerPage,
+  policyNumberColumnSize,
   effectiveDateColumnSize,
   expiryDateColumnSize,
   statusColumnSize,
@@ -69,8 +71,8 @@ export const createPolicyTableColumns = ({
     accessorFn: (policy) => policy?.policy_products?.plan_data?.name || '-',
     header: 'Plan Name',
     enableSorting: false,
-    size: 208,
-    minSize: 176,
+    size: 180,
+    minSize: 160,
     meta: {
       cellClassName: 'align-middle',
       cellContentClassName: 'whitespace-normal break-words',
@@ -87,19 +89,22 @@ export const createPolicyTableColumns = ({
   },
   {
     accessorKey: 'number',
+    id: 'policyNumber',
     header: 'Policy Number',
     enableSorting: false,
-    size: 136,
-    minSize: 116,
+    size: policyNumberColumnSize,
+    minSize: 160,
     meta: {
+      headerCellClassName: 'whitespace-nowrap',
       cellClassName: 'align-middle',
-      cellContentClassName: 'whitespace-normal break-all',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-[8.5rem] rounded-full',
     },
     cell: ({ row }) => {
       const policy = row.original;
 
       return (
-        <Box className="min-w-0 break-all text-sm leading-5 text-slate-700">
+        <Box className="min-w-0 text-sm leading-5 text-slate-700">
           {policy.number || '-'}
         </Box>
       );
@@ -134,8 +139,8 @@ export const createPolicyTableColumns = ({
     size: effectiveDateColumnSize,
     minSize: 116,
     meta: {
-      headerCellClassName: 'whitespace-nowrap !px-1',
-      cellClassName: 'align-middle whitespace-nowrap !px-1',
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle whitespace-nowrap',
       cellContentClassName: 'whitespace-nowrap text-xs tabular-nums text-slate-700',
       loadingSkeletonClassName: 'h-4 w-[6.9rem] rounded-full',
     },
@@ -153,8 +158,8 @@ export const createPolicyTableColumns = ({
     size: expiryDateColumnSize,
     minSize: 116,
     meta: {
-      headerCellClassName: 'whitespace-nowrap !px-1',
-      cellClassName: 'align-middle whitespace-nowrap !px-1',
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle whitespace-nowrap',
       cellContentClassName: 'whitespace-nowrap text-xs tabular-nums text-slate-700',
       loadingSkeletonClassName: 'h-4 w-[6.9rem] rounded-full',
     },
@@ -172,8 +177,8 @@ export const createPolicyTableColumns = ({
     size: statusColumnSize,
     minSize: 84,
     meta: {
-      headerCellClassName: 'whitespace-nowrap !px-1 text-center',
-      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+      headerCellClassName: 'whitespace-nowrap text-center',
+      cellClassName: 'align-middle whitespace-nowrap text-center',
       cellContentClassName: 'whitespace-nowrap',
       loadingSkeletonClassName: 'mx-auto h-[1.375rem] w-[4.75rem] rounded-full',
     },
@@ -209,8 +214,8 @@ export const createPolicyTableColumns = ({
     size: actionColumnSize,
     minSize: 68,
     meta: {
-      headerCellClassName: 'whitespace-nowrap !px-1 text-center',
-      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+      headerCellClassName: 'whitespace-nowrap text-center',
+      cellClassName: 'align-middle whitespace-nowrap text-center',
       cellContentClassName: 'whitespace-nowrap',
       loadingSkeletonClassName: 'mx-auto h-7 w-[3.25rem] rounded-full',
     },

@@ -182,6 +182,7 @@ export const createTransactionTableColumns = ({
       headerCellClassName: 'whitespace-nowrap !px-1.5 text-right',
       cellClassName: 'align-middle whitespace-nowrap !px-1.5 text-right',
       cellContentClassName: 'w-full whitespace-nowrap text-right',
+      loadingSkeletonClassName: 'ml-auto h-4 w-[5.25rem] rounded-full',
     },
     cell: ({ row }) => {
       const transaction = row.original;
