@@ -280,7 +280,7 @@ export function useDataTable<TData extends RowData, TValue = unknown>({
     getGroupedRowModel: manualGrouping ? undefined : getGroupedRowModel(),
     getPaginationRowModel: manualPagination ? undefined : getPaginationRowModel(),
     autoResetPageIndex: tableOptions?.autoResetPageIndex,
-    columnResizeMode: tableOptions?.columnResizeMode,
+    columnResizeMode: tableOptions?.columnResizeMode ?? 'onChange',
     defaultColumn: tableOptions?.defaultColumn,
     debugAll: tableOptions?.debugAll,
     debugColumns: tableOptions?.debugColumns,

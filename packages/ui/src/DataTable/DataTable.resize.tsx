@@ -59,6 +59,12 @@ export function DataTableResizeHandle<TData extends RowData>({
     isResizing && table.options.columnResizeMode !== 'onChange'
       ? (table.getState().columnSizingInfo.deltaOffset ?? 0)
       : 0;
+  const handleStyle = React.useMemo<React.CSSProperties>(
+    () => ({
+      transform: `translate3d(calc(35% + ${previewOffset}px), -50%, 0)`,
+    }),
+    [previewOffset],
+  );
 
   const setColumnSize = React.useCallback(
     (nextSize: number) => {
@@ -129,6 +135,7 @@ export function DataTableResizeHandle<TData extends RowData>({
       className={dataTableResizeHandleVariants({
         resizing: isResizing,
       })}
+      style={handleStyle}
       onDoubleClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -144,7 +151,6 @@ export function DataTableResizeHandle<TData extends RowData>({
         className={dataTableResizeHandleGripVariants({
           resizing: isResizing,
         })}
-        style={previewOffset ? { transform: `translate3d(${previewOffset}px, 0, 0)` } : undefined}
       />
     </Box>
   );
