@@ -310,7 +310,7 @@ export const createDocumentTableColumns = ({
     header: 'Select',
     className: 'w-10',
     render: (document) => (
-      <div className="text-center">
+      <Box className="text-center">
         <Input
           type="checkbox"
           checked={
@@ -332,7 +332,7 @@ export const createDocumentTableColumns = ({
           }}
           className="w-4 h-4 mx-auto"
         />
-      </div>
+      </Box>
     ),
   },
   {
@@ -397,38 +397,38 @@ export const createDocumentTableColumns = ({
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex flex-col px-4 pb-4">
-            <p className="text-sm">
+          <Box className="flex flex-col px-4 pb-4">
+            <Box as="p" className="text-sm">
               Document type:{' '}
               {document.type.toLowerCase() === 'fields'
                 ? document?.fields?.filter((a: any) => a.type.toLowerCase() === 'file')?.[0]
                     ?.name || '-'
                 : document?.name || '-'}
-            </p>
-            <p className="text-sm">
+            </Box>
+            <Box as="p" className="text-sm">
               Criteria:{' '}
               {document.type.toLowerCase() === 'fields'
                 ? document?.fields?.filter((a: any) => a.type.toLowerCase() === 'file')?.[0]
                     ?.criteria || '-'
                 : document?.criteria || '-'}
-            </p>
-            <p className="text-sm">
+            </Box>
+            <Box as="p" className="text-sm">
               Definition:{' '}
               {document.type.toLowerCase() === 'fields'
                 ? document?.fields?.filter((a: any) => a.type.toLowerCase() === 'file')?.[0]
                     ?.definition || '-'
                 : document?.definition || '-'}
-            </p>
-            <hr className="my-4" />
-            <p className="text-sm">
+            </Box>
+            <Box as="hr" className="my-4" />
+            <Box as="p" className="text-sm">
               "
               {document.type.toLowerCase() === 'fields'
                 ? document?.fields?.filter((a: any) => a.type.toLowerCase() === 'file')?.[0]
                     ?.pending_reason_message?.en || '-'
                 : document?.pending_reason_message?.en || '-'}
               "
-            </p>
-          </div>
+            </Box>
+          </Box>
         </DialogContent>
       </Dialog>
     ),

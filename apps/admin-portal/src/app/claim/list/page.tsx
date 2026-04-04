@@ -1,10 +1,11 @@
 'use client';
+
 import noData from '@public/images/no-data.webp';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
-import { AlertCircle, Check, Download, Eye, Plus, Trash2, Upload, X } from 'react-feather';
+import { AlertCircle, Check, Download, Plus, Trash2, Upload, X } from 'react-feather';
 
 import {
   Select,
@@ -32,9 +33,9 @@ import {
   createClaimsTableColumns,
   createDocumentTableColumns,
 } from '@/components/tableConfig/claimTableConfig';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { DataTable as LegacyDataTable } from '@/components/ui/DataTable';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
 import useClaims from '@/hooks/useClaims.hooks';
@@ -748,38 +749,51 @@ const ClaimsPage = () => {
       {isModalOpen && (
         <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <DialogContent className="min-w-96 w-auto max-w-full">
-            <p className="text-center">
+            <Box as="p" className="text-center">
               <AlertCircle width={88} height={88} className="mx-auto text-[#F5AB1D]" />
-            </p>
-            <p className="text-center font-bold mb-0 text-sm">Are you sure?</p>
-            <div className="flex flex-col gap-4">
-              <p className="text-center text-sm">
-                Update <strong>{numberId}</strong> status <br />
-                from <strong>{statusOld}</strong> to <strong>{pendingStatus}</strong>
-              </p>
+            </Box>
+            <Box as="p" className="text-center font-bold mb-0 text-sm">
+              Are you sure?
+            </Box>
+            <Box className="flex flex-col gap-4">
+              <Box as="p" className="text-center text-sm">
+                Update <Box as="strong">{numberId}</Box> status <br />
+                from <Box as="strong">{statusOld}</Box> to <Box as="strong">{pendingStatus}</Box>
+              </Box>
               {pendingStatus === 'Approved' && (
                 <>
                   {selectedClaim.amount && selectedClaim.amount > 0 ? (
                     <>
-                      <div>
-                        <p className="text-sm mb-2">Requested Amount</p>
-                        <div className="relative">
-                          <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                      <Box>
+                        <Box as="p" className="text-sm mb-2">
+                          Requested Amount
+                        </Box>
+                        <Box className="relative">
+                          <Box
+                            as="span"
+                            className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm"
+                          >
                             {currencyApp}
-                          </span>
-                          <div className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
+                          </Box>
+                          <Box className="bg-gray-50 text-sm h-12 w-full flex pl-12 items-center rounded-md border border-gray-200">
                             {formatMoneyClaim(reqAmountApproved)}
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm mb-2">
-                          Approved Amount <span className="!text-red-500">*</span>
-                        </p>
-                        <div className="relative">
-                          <span className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm">
+                          </Box>
+                        </Box>
+                      </Box>
+                      <Box>
+                        <Box as="p" className="text-sm mb-2">
+                          Approved Amount{' '}
+                          <Box as="span" className="!text-red-500">
+                            *
+                          </Box>
+                        </Box>
+                        <Box className="relative">
+                          <Box
+                            as="span"
+                            className="absolute left-0 top-0 h-full inline-flex items-center pl-4 text-sm"
+                          >
                             {currencyApp}
-                          </span>
+                          </Box>
                           <Input
                             type="text"
                             value={amountApproved === 0 ? '' : formatMoneyClaim(amountApproved)}
@@ -787,16 +801,19 @@ const ClaimsPage = () => {
                             className="h-12 pl-12"
                             required
                           />
-                        </div>
-                        <p className="text-xs text-red-500 mt-2">{amApprovedMsg}</p>
-                      </div>
+                        </Box>
+                        <Box as="p" className="text-xs text-red-500 mt-2">
+                          {amApprovedMsg}
+                        </Box>
+                      </Box>
                     </>
                   ) : (
                     ''
                   )}
 
                   {selectedChannel.name != 'drgadget' ? (
-                    <textarea
+                    <Box
+                      as="textarea"
                       name=""
                       id=""
                       rows={4}
@@ -806,7 +823,7 @@ const ClaimsPage = () => {
                       }}
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
                       placeholder="Insert Reason"
-                    ></textarea>
+                    ></Box>
                   ) : (
                     ''
                   )}
@@ -815,11 +832,15 @@ const ClaimsPage = () => {
 
               {pendingStatus === 'Rejected' && (
                 <>
-                  <div className="w-full">
-                    <p className="text-sm mb-2">
-                      Reason <span className="!text-red-500">*</span>
-                    </p>
-                    <textarea
+                  <Box className="w-full">
+                    <Box as="p" className="text-sm mb-2">
+                      Reason{' '}
+                      <Box as="span" className="!text-red-500">
+                        *
+                      </Box>
+                    </Box>
+                    <Box
+                      as="textarea"
                       name=""
                       id=""
                       rows={4}
@@ -831,20 +852,26 @@ const ClaimsPage = () => {
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
                       placeholder="Insert Reason"
                       required
-                    ></textarea>
-                    <p className="text-xs text-red-500">{noteMsg}</p>
-                  </div>
+                    ></Box>
+                    <Box as="p" className="text-xs text-red-500">
+                      {noteMsg}
+                    </Box>
+                  </Box>
                 </>
               )}
 
               {(pendingStatus === 'Lack of Documents Operator' ||
                 pendingStatus === 'Lack of Documents Insurance') && (
                 <>
-                  <div className="w-[600px]">
-                    <p className="text-sm mb-2">
-                      Reason <span className="!text-red-500">*</span>
-                    </p>
-                    <textarea
+                  <Box className="w-[600px]">
+                    <Box as="p" className="text-sm mb-2">
+                      Reason{' '}
+                      <Box as="span" className="!text-red-500">
+                        *
+                      </Box>
+                    </Box>
+                    <Box
+                      as="textarea"
                       name=""
                       id=""
                       rows={4}
@@ -856,17 +883,26 @@ const ClaimsPage = () => {
                       className="w-full text-sm p-2 border border-gray-200 rounded-md"
                       placeholder="Insert detailed reason, e.g.: Harap upload berkas KTP, bukti foto mengalami kerugian, dan foto dokumen keterangan polisi"
                       required
-                    ></textarea>
-                    <p className="text-xs text-red-500">{noteMsg}</p>
-                  </div>
-                  <div className="w-full">
-                    <p className="text-sm">
-                      Lack of Document Reasons <span className="!text-red-500">*</span>
-                    </p>
+                    ></Box>
+                    <Box as="p" className="text-xs text-red-500">
+                      {noteMsg}
+                    </Box>
+                  </Box>
+                  <Box className="w-full">
+                    <Box as="p" className="text-sm">
+                      Lack of Document Reasons{' '}
+                      <Box as="span" className="!text-red-500">
+                        *
+                      </Box>
+                    </Box>
                     {finalSelectedDocuments.length > 0 && (
-                      <ul className="mt-3">
+                      <Box as="ul" className="mt-3">
                         {finalSelectedDocuments.map((doc) => (
-                          <li key={doc.id} className="flex justify-between items-center mb-2 gap-2">
+                          <Box
+                            as="li"
+                            key={doc.id}
+                            className="flex justify-between items-center mb-2 gap-2"
+                          >
                             <Input
                               name="lack_of_documents"
                               value={
@@ -881,11 +917,13 @@ const ClaimsPage = () => {
                             >
                               <Trash2 className="w-5 h-5" />
                             </Button>
-                          </li>
+                          </Box>
                         ))}
-                      </ul>
+                      </Box>
                     )}
-                    <p className="text-xs text-red-500">{docsMsg}</p>
+                    <Box as="p" className="text-xs text-red-500">
+                      {docsMsg}
+                    </Box>
 
                     <Dialog>
                       {filteredClaims.slice(0, 1).map((document) => (
@@ -914,7 +952,7 @@ const ClaimsPage = () => {
                           </DialogTitle>
                         </DialogHeader>
 
-                        <div className="p-4 h-full overflow-auto max-h-[70vh]">
+                        <Box className="p-4 h-full overflow-auto max-h-[70vh]">
                           <LegacyDataTable
                             data={dataDocument.filter(
                               (document) =>
@@ -927,7 +965,7 @@ const ClaimsPage = () => {
                             noDataText="No document data available"
                             className="table-claims"
                           />
-                        </div>
+                        </Box>
 
                         <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
                           <DialogClose asChild>
@@ -942,11 +980,11 @@ const ClaimsPage = () => {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                  </div>
+                  </Box>
                 </>
               )}
 
-              <div className="flex gap-4 justify-center">
+              <Box className="flex gap-4 justify-center">
                 <Button
                   variant="outline"
                   onClick={cancelModal}
@@ -961,8 +999,8 @@ const ClaimsPage = () => {
                 >
                   Yes
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           </DialogContent>
         </Dialog>
       )}

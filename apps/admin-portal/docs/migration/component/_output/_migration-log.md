@@ -1410,3 +1410,13 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Verification note: `This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /claim/list already present in _migration-log.md and _parity-checklist.md, including the earlier internal redirect to the querystring variant. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /claim/list as PASS because the route has been executed in the current migration pass and existing smoke verification evidence and screenshots were already recorded earlier.`
 
+## Batch 9 - /claim/list Native Elements to Box Refactor - 2026-04-04
+
+- Route focus: `/claim/list`
+- Migration intent: `Transform remaining native HTML elements within the status update confirmation modal to use the polymorphic Box component from @repo/ui.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/claim/list/page.tsx` modal render block now completely utilizes `<Box>` and `<Box as="...">` equivalents instead of native `div`, `p`, `strong`, `ul`, `li`, and `textarea` tags.
+- Files changed (route-focused): [`apps/admin-portal/src/app/claim/list/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. Replaces native DOM elements with existing shared Box primitives.`
+- Verification note: `Visual and functional parity maintained; modal interaction and layout remains identical.`
+
