@@ -368,7 +368,7 @@ Direct adoption guidance:
 - Existing row-level visual hooks such as `getRowClassName(item, index)` now map to the shared `getRowClassName={({ row, rowIndex }) => ...}` prop.
 - Legacy header styling fields such as `classNameHeading` now need to map by target: shell-level classes belong on `columnDef.meta.headerCellClassName`, while alignment or label-wrapper classes that should ride on the shared sortable trigger belong on `columnDef.meta.headerContentClassName`.
 - Legacy body-cell styling fields such as `className` now map to `columnDef.meta.cellClassName`.
-- If legacy tables rely on static shell classes for loading alignment, pinned positioning, or spacing parity, keep those classes on string-valued `columnDef.meta.cellClassName` so the shared loading-row renderer can reuse them on skeleton `<td>` shells.
+- If legacy tables rely on static shell classes for loading alignment or spacing parity, keep those classes on string-valued `columnDef.meta.cellClassName` so the shared loading-row renderer can reuse them on skeleton `<td>` shells. Pinned-column marker attributes and sticky offset styles now stay on the shared path automatically for pinned loading cells.
 - Legacy inner-content styling fields such as `contentClassName`, `valueClassName`, or local truncation/alignment helpers now map to `columnDef.meta.cellContentClassName` when the override belongs on the shared overflow-measured body-content wrapper rather than the `<td>` shell.
 - Legacy loading placeholder config can stay on the shared loading-row path by mapping width/class tweaks into `columnDef.meta.loadingSkeletonClassName` or bespoke per-column skeleton content into `columnDef.meta.loadingSkeleton`.
 - App-local horizontal overflow fades, pinned-column mask offsets, or hover-only custom scrollbars that only exist to signal extra columns should be removed during migration; the shared `DataTable` viewport now owns those pinned-aware cues for both standard and virtualized shells.
@@ -387,7 +387,7 @@ Adapter path:
   - Map header-shell classes into `meta.headerCellClassName`.
   - Map header label / sortable-trigger wrapper classes into `meta.headerContentClassName`.
   - Map `className` into `meta.cellClassName`.
-  - Keep shell-level loading-parity classes on string `meta.cellClassName`; function-valued cell class hooks still require row context and do not run for the default loading skeleton rows.
+  - Keep shell-level loading-parity classes on string `meta.cellClassName`; function-valued cell class hooks still require row context and do not run for the default loading skeleton rows, while pinned-column marker attributes and sticky offset styles stay shared automatically for pinned loading cells.
   - Map inner content-wrapper classes such as `contentClassName` or truncation overrides into `meta.cellContentClassName`.
   - Map per-column loading placeholder classes into `meta.loadingSkeletonClassName`, or full custom placeholder nodes into `meta.loadingSkeleton`, when the app should keep the shared loading row instead of replacing `loadingState`.
   - Delete app-local overflow wrappers, edge fades, and custom horizontal scrollbar chrome when they only exist to hint at hidden columns; the shared viewport shell now handles reveal timing and pinned-column cue insets.

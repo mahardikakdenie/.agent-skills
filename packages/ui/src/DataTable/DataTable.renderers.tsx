@@ -104,12 +104,15 @@ export function DataTableDefaultLoadingState<TData extends RowData>({
           {visibleColumns.map((column, cellIndex) => (
             <TableCell
               key={`loading-cell-${rowIndex}-${column.id}`}
+              data-pinned-cell={column.getIsPinned() ? 'true' : undefined}
               className={cn(
+                column.getIsPinned() ? 'relative overflow-hidden bg-background' : undefined,
                 dataTableSkeletonCellVariants(),
                 typeof column.columnDef.meta?.cellClassName === 'string'
                   ? column.columnDef.meta.cellClassName
                   : undefined,
               )}
+              style={getPinnedColumnStyles(column)}
             >
               {rowIndex === 0 && cellIndex === 0 ? (
                 <Box as="span" className="sr-only">
