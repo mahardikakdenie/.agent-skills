@@ -171,6 +171,7 @@ Scope:
 Direct adoption guidance:
 
 - Legacy text, email, password, phone, and numeric field shells map to `Input`.
+- Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Local `errorMessage`, `hasError`, and similar invalid props normalize to `error`; helper and supporting copy map to `helperText`.
 - Leading and trailing inline adornments map to `leftIcon` and `rightIcon`; local clear affordances map to `clearable`.
 - Existing semantic entry hints such as `isCurrency`, `isFormatNumber`, or phone intent normalize to `inputMode="currency" | "number" | "phone"` while formatting and masking stay local.
@@ -304,6 +305,7 @@ Direct adoption guidance:
 - Existing `value`, `defaultValue`, `onChange`, or `onValueChange` flows normalize to `value`, `defaultValue`, and `onValueChange`.
 - Legacy placeholder props such as `placeholderSelect` collapse into `placeholder`.
 - Shared field copy maps to `label`, while inline validation text maps to `error`.
+- Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Existing clear affordances or forced-reset flags normalize to `clearable`, and cleared state should flow through `onValueChange(undefined)` so the trigger returns to its placeholder treatment.
 - Existing border, background, chevron, and placeholder-style overrides should collapse into the canonical shared surface plus `className`, not into new shared mode props.
 - Existing richer option rows with helper text, codes, or lightweight metadata can map to `renderOption`, but trigger text should continue to come from `label`.
@@ -561,6 +563,7 @@ Direct adoption guidance:
 
 - Legacy single-date popover fields and date-trigger buttons map to `DatePicker`.
 - Existing `initialValue`, `minimumDate`, `maximumDate`, `isDisabled`, `isForceClear`, `errorMessage`, and `isLongDate` or similar display-format toggles normalize to `value`, `minDate`, `maxDate`, `disabled`, `clearable`, `error`, and `formatDate`.
+- Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Standalone field labels map to `label`; shared form composition should prefer `FormLabel` plus `FormControl` instead of duplicating field wrapper markup.
 - Existing visual booleans such as `isWithShadow` and one-off shell-density knobs should prefer the shared `variant`, `size`, or `className` paths instead of new DatePicker-specific styling props.
 - Existing clear callbacks should collapse into `onChange(null)` plus `clearable`; month-bound or eligibility windows should map to `minDate` and `maxDate`; single-value date-time flows should enable `withTime` and use `minDateTime` / `maxDateTime` where needed.
@@ -577,6 +580,7 @@ Keep local:
 Direct adoption guidance:
 
 - Legacy date-range dropdowns, report-window pickers, and bounded start/end filter fields map to `DateRangePicker`.
+- Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Existing `defaultFromDate`, `defaultEndDate`, `onDateChange`, and similar split start/end callbacks should normalize to one `value` object plus `onChange`.
 - Existing min/max range bounds map directly to `minDate` and `maxDate`; date-time range bounds map to `minDateTime` and `maxDateTime` when `withTime` is enabled.
 - Existing reset affordances should collapse into `clearable` plus `onChange(null)`.
@@ -617,6 +621,7 @@ Keep local:
 Direct adoption guidance:
 
 - Legacy searchable single-select fields, searchable dropdown buttons, and filter pickers map to `Combobox`.
+- Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Existing selected id or code values normalize to `value`; existing `onChange`, `setValue`, or `onSelect` callbacks normalize to `onValueChange`.
 - Existing controlled search-query props or state normalize to `searchValue`, while query-change handlers normalize to `onSearchValueChange`.
 - Existing option arrays should map to `options` with `{ label, value, disabled?, keywords? }` instead of widening the shared API with app-shaped records.
@@ -703,6 +708,7 @@ Keep local:
 Direct adoption guidance:
 
 - Legacy month-year-only picker fields, billing-month selectors, and reporting-period month dropdowns map to `MonthPicker`.
+- Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Existing month state and callbacks should normalize to `value` and `onChange`; emitted values should stay month-only instead of preserving hidden day-level state.
 - Existing min/max month bounds normalize to `minMonth` and `maxMonth`; clear/reset affordances normalize to `clearable`.
 - Input-like style toggles should prefer the shared `variant`, `size`, or `className` paths instead of introducing new month-picker-specific booleans.
@@ -719,6 +725,7 @@ Keep local:
 Direct adoption guidance:
 
 - Legacy segmented verification-code, PIN, and one-time-password fields map to `OtpInput`.
+- Very compact verification fields map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Existing `code`, `otp`, `pin`, or similar string state should normalize to `value`; change handlers normalize to `onValueChange`.
 - Existing slot-count props should normalize to `length`; shared visual styling should normalize to `variant` and `size`; invalid-state copy should map to `error`.
 - Existing first-slot focus behavior should map to `autoFocus`, while built-in digit sanitization, paste distribution, and focus advance replace app-local key handling.
