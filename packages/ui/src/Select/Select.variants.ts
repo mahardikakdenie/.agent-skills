@@ -107,7 +107,7 @@ export const selectIconVariants = cva('ml-auto shrink-0 text-muted-foreground', 
 
 export const selectContentVariants = cva(
   [
-    'z-50 w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)] max-w-[calc(100vw-1rem)] overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md',
+    'z-50 min-w-[var(--radix-select-trigger-width)] max-w-[calc(100vw-1rem)] overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md',
     'max-h-[min(var(--radix-select-content-available-height),20rem)]',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
@@ -141,7 +141,7 @@ export const selectItemVariants = cva(
   },
 );
 
-export const selectItemTextVariants = cva('line-clamp-1');
+export const selectItemTextVariants = cva('truncate');
 
 export const selectItemIndicatorVariants = cva(
   'absolute inline-flex items-center justify-center text-foreground',

@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-04-04 - Select Variants and Field-Shell Sizing Doc Alignment
+
+Changed:
+
+- Extended the documented `Select` contract to include the recently landed `outline | shadow | ghost` variant family and the `xs | sm | md | lg` sizing baseline.
+- Reconciled `11-master-component-roadmap.md` and `21-adapter-mapping.md` so the normalization `_output` set now explicitly guides `size` mapping for `Select`, `Input`, `Combobox`, `DatePicker`, `DateRangePicker`, `MonthPicker`, and `OtpInput`.
+- Clarified that `Select` now participates in the same shared field-shell visual language as the rest of the input family, with `outline` as the canonical default.
+
+Impact:
+
+- Downstream migrations for `Select` can now map legacy elevated shells and density overrides through the shared `variant` and `size` props instead of using app-local styling.
+- The normalization output set is now internally consistent across the entire field-shell family for both variant and sizing guidance.
+
+---
+
 ## 2026-04-04 - DataTable Loading Pinned-Cell Parity Synced
 
 Changed:
