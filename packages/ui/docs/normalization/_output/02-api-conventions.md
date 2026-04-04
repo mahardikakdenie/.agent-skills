@@ -1112,7 +1112,7 @@ Contract note:
 - Root `variant` cascades to both `TabsList` spacing and `TabsTrigger`.
 - Individual triggers may override `variant` locally without widening the shared tabs layout contract into a public size family.
 - Horizontal `TabsList` overflow stays built into the shared shell, including edge fade cues plus a custom track/thumb affordance when the trigger row exceeds the available width.
-- The shared overflow shell owns reveal-on-interaction behavior for that scrollbar affordance and the matching shell-level horizontal panning keys when the shell itself is focused; apps should not add parallel wrapper DOM just to recreate the same scroll treatment.
+- The shared overflow shell owns reveal-on-interaction behavior for that scrollbar affordance, including hover, thumb drag, and brief reveal during shell-level horizontal panning keys when the shell itself is focused; apps should not add parallel wrapper DOM just to recreate the same scroll treatment.
 - `Tabs` intentionally does not expose the elevated `shadow` or legacy `default` alias used by some other navigation surfaces.
 
 ---
