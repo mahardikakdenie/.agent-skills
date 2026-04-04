@@ -2,7 +2,7 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-04-03
+> Last reconciled: 2026-04-04
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
 
 ---
@@ -86,18 +86,19 @@ Impact:
 
 ---
 
-## 2026-04-04 - Tabs Added Underline Variant And Explicit Overflow Affordance
+## 2026-04-04 - Tabs Added Underline Variant And Interactive Overflow Shell
 
 Changed:
 
 - Added the public `underline` treatment to `packages/ui/src/Tabs` so shared tabs can cover border-bottom rail patterns without reintroducing app-local styling.
-- Updated `TabsList` to vary horizontal spacing by variant and to keep long horizontal rails inside the shared overflow shell with an explicit track/thumb affordance.
+- Updated `TabsList` to vary horizontal spacing by variant and to keep long horizontal rails inside the shared overflow shell with edge fade cues plus an explicit track/thumb affordance.
+- Refined the shared overflow shell so the custom scrollbar only becomes interactive while the rail is hovered, focused, or actively dragging, and so the shell can own horizontal panning keys when it takes focus.
 - Refreshed the normalization output so the documented `Tabs` contract now matches the shipped `outline | ghost | underline` surface.
 
 Impact:
 
 - Consumers now have a first-class shared path for underlined admin rails while `shadow` remains excluded from the public tabs contract.
-- Long trigger rows keep one normalized overflow interaction instead of app-local scroll wrappers and one-off overflow hints.
+- Long trigger rows keep one normalized overflow interaction instead of app-local scroll wrappers, one-off overflow hints, or duplicate shell-level keyboard panning.
 
 ---
 
