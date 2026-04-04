@@ -77,7 +77,7 @@ export const dataTablePaginationShellVariants = cva('pt-1');
 export const dataTablePaginationMetaVariants = cva('mb-3 flex items-center justify-between gap-3');
 
 export const dataTableResizeHandleVariants = cva(
-  'group/data-table-resize-handle absolute top-1/2 right-0 z-[6] flex h-[calc(100%-0.875rem)] w-4 -translate-y-1/2 translate-x-[35%] cursor-col-resize touch-none select-none items-center justify-center rounded-full bg-transparent text-border/55 opacity-0 transition-[opacity,background-color,box-shadow,color,transform] duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] [-webkit-tap-highlight-color:transparent] focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none group-hover/data-table-resize:opacity-100',
+  'group/data-table-resize-handle absolute top-1/2 right-0 z-[6] flex h-[calc(100%-0.875rem)] w-4 cursor-col-resize touch-none select-none items-center justify-center rounded-full bg-transparent text-border/55 opacity-0 transition-[opacity,background-color,box-shadow,color,transform] duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] [-webkit-tap-highlight-color:transparent] focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none group-hover/data-table-resize:opacity-100',
   {
     variants: {
       resizing: {

@@ -239,6 +239,7 @@ Adapter note:
 - Sticky footer stories should avoid unnecessary horizontal overflow when the goal is to demonstrate vertical footer pinning behavior only.
 - `renderStatus`, `emptyState`, and `loadingState` are separate surfaces. `renderStatus` has highest priority.
 - Horizontal overflow now mirrors the shared `Tabs` affordance: edge fade cues only appear when more columns remain off-screen, align to the inner edge of any pinned left/right columns, and the custom scrollbar affordance only reveals during hover, thumb drag, or brief keyboard panning.
+- Column resizing now defaults to live `onChange` feedback so width changes track the drag gesture directly. Consumers can still opt into `columnResizeMode='onEnd'` for heavier tables, and that pending-state preview keeps the full handle aligned to the drag offset instead of separating the grip from its hit area.
 - Column resize handles reserve a small trailing header gutter, reveal a clearer grip on hover or focus, support drag and touch resizing, and expose keyboard resizing via Left / Right Arrow plus Delete reset on the focused separator.
 
 ---
@@ -311,3 +312,4 @@ Notes:
 | 2026-04-03 | Added `meta.cellContentClassName` for inner body-content styling and clarified that automatic overflow tooltips on standard cells only bind to primitive rendered content                         |
 | 2026-04-04 | Added pinned-aware horizontal overflow cues plus Tabs-aligned custom scrollbar affordances for both standard and virtualized DataTable viewports                                                  |
 | 2026-04-04 | Improved column resizing UX with clearer handle affordance, reserved header gutter, keyboard resizing, and `onEnd` drag-preview alignment                                                         |
+| 2026-04-04 | Defaulted shared DataTable resizing to live `columnResizeMode='onChange'` for more intuitive drag feedback while keeping `onEnd` as an explicit opt-in                                            |

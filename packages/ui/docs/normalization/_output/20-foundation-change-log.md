@@ -42,7 +42,7 @@ Impact:
 Changed:
 
 - Extended the documented `DataTable` contract to match the current shared header behavior, which now reserves a small trailing gutter for resize controls instead of overlaying a nearly invisible hit-target directly on header content.
-- Reframed the resize control as a focusable separator with clearer visual grip treatment, keyboard width adjustment on ArrowLeft / ArrowRight, Delete-to-reset, and `columnResizeMode='onEnd'` preview alignment that follows TanStack's pending drag offset.
+- Reframed the resize control as a focusable separator with clearer visual grip treatment, keyboard width adjustment on ArrowLeft / ArrowRight, Delete-to-reset, live `columnResizeMode='onChange'` feedback as the shared default, and `columnResizeMode='onEnd'` preview alignment that keeps the full handle tracking TanStack's pending drag offset when consumers opt into deferred resizing.
 - Reconciled `02-api-conventions.md` and `21-adapter-mapping.md` so downstream migrations stop preserving parallel resize chrome when the app only needed a discoverable or keyboard-usable column-sizing affordance.
 
 Impact:
