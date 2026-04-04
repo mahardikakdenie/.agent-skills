@@ -66,7 +66,7 @@ export const dataTableEmptyTitleVariants = cva(
   'text-sm font-semibold tracking-tight text-foreground',
 );
 
-export const dataTableSkeletonRowVariants = cva('flex items-center py-1');
+export const dataTableSkeletonRowVariants = cva('flex w-full items-center py-1');
 
 export const dataTableSkeletonCellVariants = cva('py-4');
 
