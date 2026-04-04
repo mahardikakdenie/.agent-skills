@@ -7,6 +7,36 @@
 
 ---
 
+## 2026-04-04 - DataTable Overflow Shell Synced With Pinned-Aware Cues
+
+Changed:
+
+- Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` implementation, which now routes both standard and virtualized shells through an owned `DataTableViewport` helper instead of a class-only overflow wrapper.
+- Clarified that horizontal overflow now mirrors the shared `Tabs` affordance: edge fade cues only appear while more columns remain off-screen, cue offsets align against pinned left and right columns, and the custom scrollbar chrome only reveals during hover, thumb drag, or brief shell-level keyboard panning.
+- Reconciled `02-api-conventions.md` and `21-adapter-mapping.md` so downstream migrations stop preserving app-local overflow masks or hover-only scrollbar wrappers when those shells only exist to communicate hidden columns.
+
+Impact:
+
+- Downstream table migrations now have one normalized path for horizontal overflow behavior across `DataTable` and `DataTableVirtualized`, including pinned-column-aware cue placement.
+- Apps can drop wrapper DOM that previously existed just to add fade hints or scrollbar chrome, while keeping real business-specific layout shells only where they exceed the shared table contract.
+
+---
+
+## 2026-04-04 - DataTable Column Resizing Affordance And Keyboard Path Synced
+
+Changed:
+
+- Extended the documented `DataTable` contract to match the current shared header behavior, which now reserves a small trailing gutter for resize controls instead of overlaying a nearly invisible hit-target directly on header content.
+- Reframed the resize control as a focusable separator with clearer visual grip treatment, keyboard width adjustment on ArrowLeft / ArrowRight, Delete-to-reset, and `columnResizeMode='onEnd'` preview alignment that follows TanStack's pending drag offset.
+- Reconciled `02-api-conventions.md` and `21-adapter-mapping.md` so downstream migrations stop preserving parallel resize chrome when the app only needed a discoverable or keyboard-usable column-sizing affordance.
+
+Impact:
+
+- Resizable headers now communicate intent more clearly without stealing optical space from sort labels or forcing apps to add their own resize helper UI.
+- Shared table migrations get one accessible column-sizing path for standard and virtualized shells, while domain-specific table actions still stay outside the shared API.
+
+---
+
 ## 2026-04-03 - Date Picker Trigger Focus Treatment Synced With Open-State Feedback
 
 Changed:

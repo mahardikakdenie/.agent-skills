@@ -787,24 +787,30 @@ function ColumnSizingExample() {
   });
 
   return (
-    <DataTable
-      table={table}
-      renderToolbar={(currentTable) => (
-        <DataTableToolbar
-          actions={
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                currentTable.resetColumnSizing();
-              }}
-            >
-              Reset sizes
-            </Button>
-          }
-        />
-      )}
-    />
+    <Box className="grid gap-4">
+      <StoryHint>
+        Drag a column edge to resize. Focus the handle and use Left or Right Arrow keys for precise
+        changes, or press Delete to reset the active column width.
+      </StoryHint>
+      <DataTable
+        table={table}
+        renderToolbar={(currentTable) => (
+          <DataTableToolbar
+            actions={
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  currentTable.resetColumnSizing();
+                }}
+              >
+                Reset sizes
+              </Button>
+            }
+          />
+        )}
+      />
+    </Box>
   );
 }
 

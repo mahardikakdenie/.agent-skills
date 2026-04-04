@@ -371,6 +371,8 @@ Direct adoption guidance:
 - If legacy tables rely on static shell classes for loading alignment, pinned positioning, or spacing parity, keep those classes on string-valued `columnDef.meta.cellClassName` so the shared loading-row renderer can reuse them on skeleton `<td>` shells.
 - Legacy inner-content styling fields such as `contentClassName`, `valueClassName`, or local truncation/alignment helpers now map to `columnDef.meta.cellContentClassName` when the override belongs on the shared overflow-measured body-content wrapper rather than the `<td>` shell.
 - Legacy loading placeholder config can stay on the shared loading-row path by mapping width/class tweaks into `columnDef.meta.loadingSkeletonClassName` or bespoke per-column skeleton content into `columnDef.meta.loadingSkeleton`.
+- App-local horizontal overflow fades, pinned-column mask offsets, or hover-only custom scrollbars that only exist to signal extra columns should be removed during migration; the shared `DataTable` viewport now owns those pinned-aware cues for both standard and virtualized shells.
+- Legacy resize affordances such as tiny icon buttons, hidden drag rails, or separate keyboard-width steppers at the edge of the header should collapse into the shared separator handle instead of surviving as parallel header chrome.
 - Existing toolbar search inputs should collapse into consumer-owned `renderToolbar={(table) => ...}` composition. Do not assume the Storybook-only `DataTableToolbar` helper is part of the package public API.
 - Existing empty, loading, no-results, and summary rows map to `emptyState`, `loadingState`, `renderStatus`, and `renderFooter`.
 - Existing shared pager layouts can keep the shipped table pagination control through `renderPagination={(table) => ...}` plus `DataTablePagination` instead of rebuilding page-number controls from scratch.
@@ -388,6 +390,8 @@ Adapter path:
   - Keep shell-level loading-parity classes on string `meta.cellClassName`; function-valued cell class hooks still require row context and do not run for the default loading skeleton rows.
   - Map inner content-wrapper classes such as `contentClassName` or truncation overrides into `meta.cellContentClassName`.
   - Map per-column loading placeholder classes into `meta.loadingSkeletonClassName`, or full custom placeholder nodes into `meta.loadingSkeleton`, when the app should keep the shared loading row instead of replacing `loadingState`.
+  - Delete app-local overflow wrappers, edge fades, and custom horizontal scrollbar chrome when they only exist to hint at hidden columns; the shared viewport shell now handles reveal timing and pinned-column cue insets.
+  - Delete app-local resize buttons, drag indicators, or keyboard width steppers when they only exist to make column sizing discoverable; the shared handle now owns the header gutter, focus treatment, and keyboard resizing path.
   - Map `getRowClassName(item, index)` into `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.
   - Keep sorting, filtering, pagination, routing, and business actions in the app adapter or parent surface.
 
