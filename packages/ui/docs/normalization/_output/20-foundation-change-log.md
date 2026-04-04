@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-04-04 - DataTable Loading Pinned-Cell Parity Synced
+
+Changed:
+
+- Extended the documented `DataTable` loading behavior to match the current `packages/ui/src/DataTable` renderer, which now applies the same pinned-cell marker and shared sticky offset styles to default loading skeleton cells as it does to loaded body cells.
+- Clarified that string-valued `columnDef.meta.cellClassName` still only carries shell-class parity, while pinned-column positioning during loading now remains on the shared path without a custom `loadingState`.
+- Reconciled `02-api-conventions.md` and `21-adapter-mapping.md` so downstream migrations stop preserving app-local loading wrappers when the only missing parity was pinned loading-cell behavior.
+
+Impact:
+
+- Downstream tables with pinned columns can keep the default shared loading renderer without losing sticky positioning or pinned-shell cues before data hydrates.
+- Thin adapters only need custom loading surfaces when they require row-dependent class resolution or genuinely app-specific placeholder structure.
+
+---
+
 ## 2026-04-04 - DataTable Overflow Shell Synced With Pinned-Aware Cues
 
 Changed:
