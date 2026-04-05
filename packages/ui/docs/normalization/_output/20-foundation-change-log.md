@@ -22,6 +22,12 @@ Impact:
 
 ---
 
+## 2026-04-05 - DataTable Sticky Status Row And Container-Aware Viewport Synced
+
+- Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` implementation, which now wraps empty and status rows in a sticky, full-width `Box` using `w-[100cqw]` so content remains centered regardless of horizontal scroll position.
+- Added `[container-type:inline-size]` to the shared `DataTableViewport` variants so internal status shells can reliably measure the available display width even when the underlying semantic table exceeds it.
+- Downstream empty-state and loading-state overrides now benefit from this normalized centering behavior without needing to re-implement sticky math or width-constrained wrappers in app code.
+
 ## 2026-04-04 - DataTable Loading Pinned-Cell Parity Synced
 
 Changed:

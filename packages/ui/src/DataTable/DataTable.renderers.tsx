@@ -543,9 +543,14 @@ export function DataTableBodyRow<TData extends RowData>({
 export function renderDataTableStatusRow(content: React.ReactNode, visibleColumnCount: number) {
   return (
     <TableRow>
-      <TableCell colSpan={visibleColumnCount} className={dataTableStatusCellVariants()}>
-        <Box data-slot="data-table-status" className={dataTableStatusContentVariants()}>
-          {content}
+      <TableCell
+        colSpan={visibleColumnCount}
+        className={cn(dataTableStatusCellVariants(), 'p-0')}
+      >
+        <Box className="sticky left-0 flex w-[100cqw] items-center justify-center">
+          <Box data-slot="data-table-status" className={dataTableStatusContentVariants()}>
+            {content}
+          </Box>
         </Box>
       </TableCell>
     </TableRow>
