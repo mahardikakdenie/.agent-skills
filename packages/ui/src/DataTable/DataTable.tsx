@@ -217,14 +217,20 @@ function DataTableRenderShell<TData extends RowData>({
                   />
                 ))}
               </>
-            ) : (
+            ) : resolvedEmptyState ? (
               <TableRow>
-                <TableCell colSpan={visibleColumnCount} className={dataTableStatusCellVariants()}>
-                  {resolvedEmptyState ?? (
-                    <DataTableDefaultEmptyState filtered={renderContext.hasActiveFilters} />
-                  )}
+                <TableCell
+                  colSpan={visibleColumnCount}
+                  className={cn(dataTableStatusCellVariants(), 'p-0')}
+                >
+                  {resolvedEmptyState}
                 </TableCell>
               </TableRow>
+            ) : (
+              renderDataTableStatusRow(
+                <DataTableDefaultEmptyState filtered={renderContext.hasActiveFilters} />,
+                visibleColumnCount,
+              )
             )}
           </TableBody>
 

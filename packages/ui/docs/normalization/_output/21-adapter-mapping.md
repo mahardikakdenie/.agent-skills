@@ -394,8 +394,8 @@ Adapter path:
   - Map per-column loading placeholder classes into `meta.loadingSkeletonClassName`, or full custom placeholder nodes into `meta.loadingSkeleton`, when the app should keep the shared loading row instead of replacing `loadingState`.
   - Delete app-local overflow wrappers, edge fades, and custom horizontal scrollbar chrome when they only exist to hint at hidden columns; the shared viewport shell now handles reveal timing and pinned-column cue insets.
   - Delete app-local resize buttons, drag indicators, or keyboard width steppers when they only exist to make column sizing discoverable; the shared handle now owns the header gutter, focus treatment, and keyboard resizing path.
-  - Map `getRowClassName(item, index)` into `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.
-  - Keep sorting, filtering, pagination, routing, and business actions in the app adapter or parent surface.
+  - Delete app-local sticky-centering wrappers or container-width math from `emptyState`, `loadingState`, and `renderStatus` content; the shared `DataTableViewport` now provides `[container-type:inline-size]` plus a sticky `w-[100cqw]` centering shell so status content stays visually anchored during horizontal scrolling.
+  - Map `getRowClassName(item, index)` into `getRowClassName={({ row, rowIndex }) => legacyGetRowClassName?.(row.original, rowIndex)}`.  - Keep sorting, filtering, pagination, routing, and business actions in the app adapter or parent surface.
 
 Admin-portal Batch 8 / Batch 4 note:
 

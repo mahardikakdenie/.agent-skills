@@ -14,17 +14,20 @@ export const dataTableToolbarActionsVariants = cva(
   'flex flex-wrap items-center gap-2 lg:justify-end',
 );
 
-export const dataTableViewportVariants = cva('w-full max-w-full overflow-auto rounded-lg', {
-  variants: {
-    variant: {
-      outline: 'border border-border bg-background shadow-none',
-      shadow: 'border border-border bg-background shadow-sm',
+export const dataTableViewportVariants = cva(
+  'w-full max-w-full overflow-auto rounded-lg [container-type:inline-size]',
+  {
+    variants: {
+      variant: {
+        outline: 'border border-border bg-background shadow-none',
+        shadow: 'border border-border bg-background shadow-sm',
+      },
+    },
+    defaultVariants: {
+      variant: 'outline',
     },
   },
-  defaultVariants: {
-    variant: 'outline',
-  },
-});
+);
 
 export const dataTableHeaderContentVariants = cva('block min-w-0 max-w-full truncate');
 
