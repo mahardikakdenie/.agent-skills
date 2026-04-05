@@ -61,6 +61,7 @@ export const MonthPicker = React.forwardRef<HTMLButtonElement, MonthPickerProps>
       maxMonth,
       disabled = false,
       clearable = false,
+      placeholder = 'Select month...',
       error = false,
       className,
       id,
@@ -230,7 +231,7 @@ export const MonthPicker = React.forwardRef<HTMLButtonElement, MonthPickerProps>
                 >
                   <CalendarDays aria-hidden="true" className={monthPickerIconVariants({ size })} />
                   <Box as="span" className={monthPickerTriggerTextVariants()}>
-                    {formatMonthPickerValue(selectedMonth) ?? 'Select month...'}
+                    {formatMonthPickerValue(selectedMonth) ?? placeholder}
                   </Box>
                 </Box>
               </PopoverTrigger>

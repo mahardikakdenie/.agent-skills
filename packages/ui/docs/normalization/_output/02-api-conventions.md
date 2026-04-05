@@ -1617,6 +1617,7 @@ export interface MonthPickerProps {
   maxMonth?: Date;
   disabled?: boolean;
   clearable?: boolean;
+  placeholder?: string;
   error?: string | boolean;
   className?: string;
 }

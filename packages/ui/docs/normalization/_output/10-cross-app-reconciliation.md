@@ -119,7 +119,7 @@
 | Component | Classification | Apps that need it | `@repo/ui` status | Canonical API | Cross-app conflicts resolved | Priority | Risk | Target batch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Menubar | NEW_SHARED_COMPONENT | 4 apps; see `05` | missing | `02` amendment: `items`, `onAction`, `disabled` | Long-tail navigation primitive only | P3 | MEDIUM | B5.4 |
-| MonthPicker | NEW_SHARED_COMPONENT | 3 apps; see `05` | missing | `02` amendment: `value`, `onChange`, `minMonth`, `maxMonth` | Month-only contract stays distinct | P3 | MEDIUM | B5.4 |
+| MonthPicker | NEW_SHARED_COMPONENT | 3 apps; see `05` | missing | `02` amendment: `value`, `onChange`, `minMonth`, `maxMonth`, `placeholder` | Month-only contract stays distinct | P3 | MEDIUM | B5.4 |
 | Timeline | NEW_SHARED_COMPONENT | 3 apps; see `05` | missing | `02` amendment: `items`, `orientation`, `statusTone` | Presentation-only timeline only | P3 | MEDIUM | B5.4 |
 | RichTextEditor | NEW_SHARED_COMPONENT (decision-gated) | 1 app; see `05` | missing | Decision-gated API: `value`, `onChange`, `toolbar`, `readonly`, `sanitize` | Do not promote until engine, sanitization, SSR, and bundle policy are approved | P3 | HIGH | B5.4 |
 

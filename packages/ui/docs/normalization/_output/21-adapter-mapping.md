@@ -710,7 +710,7 @@ Direct adoption guidance:
 - Legacy month-year-only picker fields, billing-month selectors, and reporting-period month dropdowns map to `MonthPicker`.
 - Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Existing month state and callbacks should normalize to `value` and `onChange`; emitted values should stay month-only instead of preserving hidden day-level state.
-- Existing min/max month bounds normalize to `minMonth` and `maxMonth`; clear/reset affordances normalize to `clearable`.
+- Existing min/max month bounds normalize to `minMonth` and `maxMonth`; clear/reset affordances normalize to `clearable`; custom empty-state messaging normalizes to `placeholder`.
 - Input-like style toggles should prefer the shared `variant`, `size`, or `className` paths instead of introducing new month-picker-specific booleans.
 - Shared form composition should provide visible labels through `FormLabel` and `FormControl` rather than widening the picker API with a second label contract.
 

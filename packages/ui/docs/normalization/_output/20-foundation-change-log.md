@@ -22,6 +22,20 @@ Impact:
 
 ---
 
+## 2026-04-05 - MonthPicker Placeholder Doc Alignment
+
+Changed:
+
+- Extended the documented `MonthPicker` contract to include the recently landed `placeholder` prop, aligning it with the rest of the date-input family (`DatePicker`, `DateRangePicker`).
+- Reconciled `02-api-conventions.md`, `11-master-component-roadmap.md`, `10-cross-app-reconciliation.md`, and `21-adapter-mapping.md` so the normalization `_output` set now explicitly guides placeholder mapping for month-only selectors.
+
+Impact:
+
+- Downstream migrations for `MonthPicker` can now map legacy empty-state labels through the shared `placeholder` prop instead of using app-side wrapper logic or default-text patches.
+- The date-input family is now internally consistent across single-date, range-date, and month-only picker contracts for common field-shell behaviors.
+
+---
+
 ## 2026-04-05 - DataTable Sticky Status Row And Container-Aware Viewport Synced
 
 - Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` implementation, which now wraps empty and status rows in a sticky, full-width `Box` using `w-[100cqw]` so content remains centered regardless of horizontal scroll position.
