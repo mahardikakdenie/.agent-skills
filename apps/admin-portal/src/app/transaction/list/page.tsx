@@ -140,8 +140,8 @@ export default function TransactionsPage() {
 
   const currencyColumnSize = useMemo(
     () =>
-      Math.max(
-        92,
+      Math.min(
+        120,
         Math.ceil(
           Math.max(
             measureTextWidth('Currency', '500 14px Arial', 7.2),
@@ -158,8 +158,8 @@ export default function TransactionsPage() {
 
   const amountColumnSize = useMemo(
     () =>
-      Math.max(
-        120,
+      Math.min(
+        240,
         Math.ceil(
           Math.max(
             measureTextWidth('Amount', '500 14px Arial', 6.8),
@@ -176,8 +176,8 @@ export default function TransactionsPage() {
 
   const statusColumnSize = useMemo(
     () =>
-      Math.max(
-        88,
+      Math.min(
+        160,
         Math.ceil(
           Math.max(
             measureTextWidth('Status', '500 14px Arial', 6.8),
@@ -226,8 +226,8 @@ export default function TransactionsPage() {
   }
 
   return (
-    <Box className="flex min-h-0 flex-1 w-full flex-col gap-4 p-4 md:p-6">
-      <Box className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
+    <Box className="flex min-h-0 flex-1 w-full flex-col gap-3 p-4 md:p-6">
+      <Box className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
         <Box as="h1" className="text-2xl font-bold text-black">
           Transactions
         </Box>
@@ -337,9 +337,11 @@ export default function TransactionsPage() {
         }}
         pageSizeOptions={[10, 20, 30, 50, 100]}
         emptyState={
-          <Box className="flex min-h-[10rem] flex-col items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
-            <Image alt="No transaction data" src={noData} width={128} />
-            <Box as="span">No transaction data available</Box>
+          <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+            <Box className="flex flex-col items-center justify-center gap-2">
+              <Image alt="No transaction data" src={noData} width={128} />
+              <Box as="span">No transaction data available</Box>
+            </Box>
           </Box>
         }
         renderToolbar={() => (

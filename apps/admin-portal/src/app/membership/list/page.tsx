@@ -80,11 +80,11 @@ export default function MembershipPage() {
         160,
         Math.ceil(
           Math.max(
-            measureTextWidth('INS-20250711-0001', '400 12px Arial', 6.1),
-            measureTextWidth('Policy Number', '500 14px Arial', 6.8),
+            measureTextWidth('INS-20250711-0001', '400 12px Montserrat, Arial, sans-serif', 6.1),
+            measureTextWidth('Policy Number', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.number || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 52,
         ),
@@ -95,13 +95,13 @@ export default function MembershipPage() {
   const subsidiaryColumnSize = useMemo(
     () =>
       Math.max(
-        160,
+        180,
         Math.ceil(
           Math.max(
-            measureTextWidth('Subsidiary / Entity', '500 14px Arial', 6.8),
+            measureTextWidth('Subsidiary / Entity', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.subsidiary || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 24,
         ),
@@ -115,10 +115,10 @@ export default function MembershipPage() {
         116,
         Math.ceil(
           Math.max(
-            measureTextWidth('Employee ID', '500 14px Arial', 6.8),
+            measureTextWidth('Employee ID', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.employee_id || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 24,
         ),
@@ -132,10 +132,10 @@ export default function MembershipPage() {
         160,
         Math.ceil(
           Math.max(
-            measureTextWidth('Employee Name', '500 14px Arial', 6.8),
+            measureTextWidth('Employee Name', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.employee_name || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 24,
         ),
@@ -149,10 +149,10 @@ export default function MembershipPage() {
         160,
         Math.ceil(
           Math.max(
-            measureTextWidth('Member Name', '500 14px Arial', 6.8),
+            measureTextWidth('Member Name', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.member_name || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 24,
         ),
@@ -166,10 +166,10 @@ export default function MembershipPage() {
         92,
         Math.ceil(
           Math.max(
-            measureTextWidth('Gender', '500 14px Arial', 7.2),
+            measureTextWidth('Gender', '500 14px Montserrat, Arial, sans-serif', 7.2),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.gender || '-';
-              return Math.max(widest, measureTextWidth(label, '600 12px Arial', 6.2));
+              return Math.max(widest, measureTextWidth(label, '600 12px Montserrat, Arial, sans-serif', 6.2));
             }, 0),
           ) + 28,
         ),
@@ -180,13 +180,13 @@ export default function MembershipPage() {
   const dobColumnSize = useMemo(
     () =>
       Math.max(
-        116,
+        140,
         Math.ceil(
           Math.max(
-            measureTextWidth('Date of Birth', '500 14px Arial', 6.8),
+            measureTextWidth('Date of Birth', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.date_of_birth || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 24,
         ),
@@ -200,10 +200,10 @@ export default function MembershipPage() {
         140,
         Math.ceil(
           Math.max(
-            measureTextWidth('Member Status', '500 14px Arial', 7.2),
+            measureTextWidth('Member Status', '500 14px Montserrat, Arial, sans-serif', 7.2),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.member_status || '-';
-              return Math.max(widest, measureTextWidth(label, '600 12px Arial', 6.2));
+              return Math.max(widest, measureTextWidth(label, '600 12px Montserrat, Arial, sans-serif', 6.2));
             }, 0),
           ) + 32,
         ),
@@ -214,13 +214,13 @@ export default function MembershipPage() {
   const maritalStatusColumnSize = useMemo(
     () =>
       Math.max(
-        120,
+        130,
         Math.ceil(
           Math.max(
-            measureTextWidth('Marital Status', '500 14px Arial', 7.2),
+            measureTextWidth('Marital Status', '500 14px Montserrat, Arial, sans-serif', 7.2),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.marital_status || '-';
-              return Math.max(widest, measureTextWidth(label, '600 12px Arial', 6.2));
+              return Math.max(widest, measureTextWidth(label, '600 12px Montserrat, Arial, sans-serif', 6.2));
             }, 0),
           ) + 28,
         ),
@@ -234,10 +234,10 @@ export default function MembershipPage() {
         120,
         Math.ceil(
           Math.max(
-            measureTextWidth('Plan', '500 14px Arial', 6.8),
+            measureTextWidth('Plan', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.plan || '-';
-              return Math.max(widest, measureTextWidth(label, '400 13px Arial', 6.6));
+              return Math.max(widest, measureTextWidth(label, '400 13px Montserrat, Arial, sans-serif', 6.6));
             }, 0),
           ) + 28,
         ),
@@ -248,13 +248,13 @@ export default function MembershipPage() {
   const effectiveDateColumnSize = useMemo(
     () =>
       Math.max(
-        136,
+        140,
         Math.ceil(
           Math.max(
-            measureTextWidth('Effective Date', '500 14px Arial', 6.8),
+            measureTextWidth('Effective Date', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.effective_date || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 44,
         ),
@@ -268,10 +268,10 @@ export default function MembershipPage() {
         112,
         Math.ceil(
           Math.max(
-            measureTextWidth('Remarks', '500 14px Arial', 7.2),
+            measureTextWidth('Remarks', '500 14px Montserrat, Arial, sans-serif', 7.2),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.remarks || '-';
-              return Math.max(widest, measureTextWidth(label, '600 12px Arial', 6.2));
+              return Math.max(widest, measureTextWidth(label, '600 12px Montserrat, Arial, sans-serif', 6.2));
             }, 0),
           ) + 36,
         ),
@@ -285,10 +285,10 @@ export default function MembershipPage() {
         160,
         Math.ceil(
           Math.max(
-            measureTextWidth('Bank Name', '500 14px Arial', 6.8),
+            measureTextWidth('Bank Name', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.bank_name || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 36,
         ),
@@ -302,10 +302,10 @@ export default function MembershipPage() {
         160,
         Math.ceil(
           Math.max(
-            measureTextWidth('Branch', '500 14px Arial', 6.8),
+            measureTextWidth('Branch', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.branch || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 36,
         ),
@@ -319,10 +319,10 @@ export default function MembershipPage() {
         136,
         Math.ceil(
           Math.max(
-            measureTextWidth('Bank Number', '500 14px Arial', 6.8),
+            measureTextWidth('Bank Number', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.bank_account_number || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 44,
         ),
@@ -333,13 +333,13 @@ export default function MembershipPage() {
   const bankAccountNameColumnSize = useMemo(
     () =>
       Math.max(
-        160,
+        180,
         Math.ceil(
           Math.max(
-            measureTextWidth('Bank Account Name', '500 14px Arial', 6.8),
+            measureTextWidth('Bank Account Name', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.bank_account_name || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 36,
         ),
@@ -353,10 +353,10 @@ export default function MembershipPage() {
         160,
         Math.ceil(
           Math.max(
-            measureTextWidth('Email', '500 14px Arial', 6.8),
+            measureTextWidth('Email', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.profile?.email || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 36,
         ),
@@ -370,10 +370,10 @@ export default function MembershipPage() {
         136,
         Math.ceil(
           Math.max(
-            measureTextWidth('Membership ID', '500 14px Arial', 6.8),
+            measureTextWidth('Membership ID', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.other_info?.tpa_member_id || '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 44,
         ),
@@ -387,12 +387,12 @@ export default function MembershipPage() {
         144,
         Math.ceil(
           Math.max(
-            measureTextWidth('Submission Date', '500 14px Arial', 6.8),
+            measureTextWidth('Submission Date', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.created_at
                 ? new Date(item.created_at).toISOString().split('T')[0]
                 : '-';
-              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+              return Math.max(widest, measureTextWidth(label, '400 12px Montserrat, Arial, sans-serif', 6.1));
             }, 0),
           ) + 44,
         ),
@@ -406,10 +406,10 @@ export default function MembershipPage() {
         88,
         Math.ceil(
           Math.max(
-            measureTextWidth('Status', '500 14px Arial', 6.8),
+            measureTextWidth('Status', '500 14px Montserrat, Arial, sans-serif', 6.8),
             filteredMembership.reduce((widest, item) => {
               const label = item?.status || '-';
-              return Math.max(widest, measureTextWidth(label, '600 11px Arial', 5.9));
+              return Math.max(widest, measureTextWidth(label, '600 11px Montserrat, Arial, sans-serif', 5.9));
             }, 0),
           ) + 18,
         ),
@@ -423,8 +423,8 @@ export default function MembershipPage() {
         68,
         Math.ceil(
           Math.max(
-            measureTextWidth('Action', '500 14px Arial', 6.8),
-            measureTextWidth('View', '600 11px Arial', 5.9) + 18,
+            measureTextWidth('Action', '500 14px Montserrat, Arial, sans-serif', 6.8),
+            measureTextWidth('View', '600 11px Montserrat, Arial, sans-serif', 5.9) + 18,
           ) + 12,
         ),
       ),
@@ -578,9 +578,11 @@ export default function MembershipPage() {
         }}
         pageSizeOptions={[10, 20, 30, 50, 100]}
         emptyState={
-          <Box className="flex min-h-[10rem] flex-col items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
-            <Image alt="No membership data" src={noData} width={128} />
-            <Box as="span">No membership data available</Box>
+          <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+            <Box className="flex flex-col items-center justify-center gap-2">
+              <Image alt="No membership data" src={noData} width={128} />
+              <Box as="span">No membership data available</Box>
+            </Box>
           </Box>
         }
         renderToolbar={() => (

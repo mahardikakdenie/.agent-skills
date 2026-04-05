@@ -263,10 +263,10 @@ export const createClaimsTableColumns = ({
     enableSorting: false,
     enableResizing: false,
     size: statusColumnSize,
-    minSize: 88,
+    minSize: 210,
     meta: {
-      headerCellClassName: 'whitespace-nowrap !px-1 text-center',
-      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+      headerCellClassName: 'whitespace-nowrap px-2 text-center',
+      cellClassName: 'align-middle whitespace-nowrap px-2 text-center',
       cellContentClassName: 'whitespace-nowrap',
       loadingSkeletonClassName: 'mx-auto h-7 w-[8.75rem] rounded-full',
     },

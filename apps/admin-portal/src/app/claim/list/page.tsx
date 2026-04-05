@@ -497,8 +497,8 @@ const ClaimsPage = () => {
 
   const claimIdColumnSize = useMemo(
     () =>
-      Math.max(
-        160,
+      Math.min(
+        240,
         Math.ceil(
           Math.max(
             measureTextWidth('CLM-20260211-00009', '400 12px Arial', 6.1),
@@ -518,8 +518,8 @@ const ClaimsPage = () => {
 
   const currencyColumnSize = useMemo(
     () =>
-      Math.max(
-        92,
+      Math.min(
+        120,
         Math.ceil(
           Math.max(
             measureTextWidth('Currency', '500 14px Arial', 7.2),
@@ -536,8 +536,8 @@ const ClaimsPage = () => {
 
   const amountColumnSize = useMemo(
     () =>
-      Math.max(
-        136,
+      Math.min(
+        240,
         Math.ceil(
           Math.max(
             measureTextWidth('Requested Amount', '500 14px Arial', 6.8),
@@ -562,8 +562,8 @@ const ClaimsPage = () => {
 
   const lastModifiedColumnSize = useMemo(
     () =>
-      Math.max(
-        116,
+      Math.min(
+        180,
         Math.ceil(
           Math.max(
             measureTextWidth('Last Modified', '500 14px Arial', 6.8),
@@ -582,17 +582,14 @@ const ClaimsPage = () => {
 
   const statusColumnSize = useMemo(
     () =>
-      Math.max(
-        244,
-        Math.ceil(
-          Math.max(
-            measureTextWidth('Status', '500 14px Arial', 6.8),
-            measureTextWidth(LONGEST_CLAIM_STATUS_LABEL, '600 10px Arial', 5.8),
-            ...filteredClaims.map((claim) =>
-              measureTextWidth(claim?.status || '-', '600 10px Arial', 5.8),
-            ),
-          ) + 42,
-        ),
+      Math.ceil(
+        Math.max(
+          measureTextWidth('Status', '500 14px Arial', 7.2),
+          measureTextWidth(LONGEST_CLAIM_STATUS_LABEL, '600 10px Arial', 7.4),
+          ...filteredClaims.map((claim) =>
+            measureTextWidth(claim?.status || '-', '600 10px Arial', 7.4),
+          ),
+        ) + 72,
       ),
     [filteredClaims],
   );
@@ -623,7 +620,7 @@ const ClaimsPage = () => {
     >
       <SelectTrigger
         className={cn(
-          'mx-auto h-7 min-h-7 w-fit min-w-0 max-w-full justify-start gap-0.5 rounded-full px-1.5 text-[10px] font-semibold shadow-none transition-colors focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:flex-none [&_[data-slot=select-value]]:text-left [&_[data-slot=select-icon]]:ml-0.5 [&_[data-slot=select-icon]]:shrink-0 [&_[data-slot=select-icon]]:text-current [&>svg]:h-3.5 [&>svg]:w-3.5',
+          'mx-auto h-7 min-h-7 w-fit min-w-0 max-w-full justify-start gap-0.5 rounded-full px-2.5 text-[10px] font-semibold shadow-none transition-colors focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:flex-none [&_[data-slot=select-value]]:text-left [&_[data-slot=select-icon]]:ml-0.5 [&_[data-slot=select-icon]]:shrink-0 [&_[data-slot=select-icon]]:text-current [&>svg]:h-3.5 [&>svg]:w-3.5',
           getClaimStatusTone(claim.status),
           !canEdit && 'cursor-default opacity-100',
         )}
@@ -685,8 +682,8 @@ const ClaimsPage = () => {
   }
 
   return (
-    <Box className="flex min-h-0 w-full flex-1 flex-col gap-4 p-4 md:p-6">
-      <Box className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
+    <Box className="flex min-h-0 w-full flex-1 flex-col gap-3 p-4 md:p-6">
+      <Box className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
         <Box as="h1" className="text-2xl font-bold text-black">
           Claim List
         </Box>
@@ -1112,9 +1109,11 @@ const ClaimsPage = () => {
         }}
         pageSizeOptions={[10, 20, 30, 50, 100]}
         emptyState={
-          <Box className="flex min-h-[10rem] flex-col items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
-            <Image alt="No claim data" src={noData} width={128} />
-            <Box as="span">No claim data available</Box>
+          <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+            <Box className="flex flex-col items-center justify-center gap-2">
+              <Image alt="No claim data" src={noData} width={128} />
+              <Box as="span">No claim data available</Box>
+            </Box>
           </Box>
         }
         renderToolbar={() => (
