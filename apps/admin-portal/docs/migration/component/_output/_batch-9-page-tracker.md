@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 38 |
-| PASS | 8 |
+| PASS | 9 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 27 |
+| DEFERRED_DATA_TABLE | 26 |
 | NOT_STARTED | 79 |
 | OUT_OF_SCOPE | 1 |
 
@@ -55,7 +55,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/policy/endorsement/list` | `policy-endorsement-list` | `apps/admin-portal/src/app/policy/endorsement/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Latest 2026-04-05 updates land route-local table configuration refinements and alignment with the shared DataTable API, while prior manual smoke verification for `/policy/endorsement/list` is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Latest 2026-04-05 updates land route-local table configuration refinements, alignment with the shared DataTable API, and status modal Box refactor, while prior manual smoke verification for `/claim/list` and screenshots are already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/membership/list` | `membership-list` | `apps/admin-portal/src/app/membership/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the membership list route-local DataTable migration across the page, membership table config, and membership hook, while prior manual smoke verification for `/membership/list` (noting the expected 403 state) is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
-| `/finance/billing` | `finance-billing` | `apps/admin-portal/src/app/finance/billing/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state. |
+| `/finance/billing` | `finance-billing` | `apps/admin-portal/src/app/finance/billing/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the billing list route-local DataTable migration across the page and billing table config, standardizing the filter and period selection on shared primitives, while prior manual smoke verification for `/finance/billing` (noting the expected 403 state) is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/` | `root` | `apps/admin-portal/src/app/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | Home dashboard route with no explicit Batch 9 route-stabilization evidence yet. |
 | `/claim/history` | `claim-history` | `apps/admin-portal/src/app/claim/history/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
@@ -291,14 +291,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `finance-billing`
 - Smoke route: `YES`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-05`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `present`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. Earlier smoke revalidation recorded the expected permission-gated 403 state.
+- Blocker type: `none`
+- Notes: Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and period selection on shared primitives, and implement dynamic column sizing while preserving existing detail and invoice navigation. Earlier smoke revalidation recorded the expected permission-gated 403 state.
 
 ### /masterdata/user
 

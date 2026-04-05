@@ -1,7 +1,9 @@
-import { Button } from "@repo/ui";
-import { formatDate, formatMoney } from "@/lib/formatter";
-import { Column } from "@/components/ui/DataTable";
-import { EyeIcon, File } from "lucide-react";
+import { Eye, FileText } from 'lucide-react';
+
+import { Box, Button, Skeleton, type ColumnDef } from '@repo/ui';
+
+import { formatDate, formatMoney } from '@/lib/formatter';
+import { cn } from '@/lib/utils';
 
 export interface BillingItem {
   id: string;
@@ -23,7 +25,18 @@ export interface BillingTableConfigProps {
   onViewDetail: (id: string, channel: string, type: string) => void;
   onViewInvoice: (id: string, type: string, channel: string) => void;
   searchChannel: string;
+  getStatusColor: (status: string) => string;
+  // Sizes
+  billingNoColumnSize: number;
+  billingDateColumnSize: number;
+  categoryColumnSize: number;
+  currencyColumnSize: number;
+  amountColumnSize: number;
+  statusColumnSize: number;
+  actionColumnSize: number;
 }
+
+const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat('id-ID').format(value);
 
 export const createBillingTableColumns = ({
   page,
@@ -34,105 +47,228 @@ export const createBillingTableColumns = ({
   onViewDetail,
   onViewInvoice,
   searchChannel,
-}: BillingTableConfigProps): Column<BillingItem>[] => {
-  const baseColumns: Column<BillingItem>[] = [
+  getStatusColor,
+  billingNoColumnSize,
+  billingDateColumnSize,
+  categoryColumnSize,
+  currencyColumnSize,
+  amountColumnSize,
+  statusColumnSize,
+  actionColumnSize,
+}: BillingTableConfigProps): ColumnDef<BillingItem>[] => {
+  const columns: ColumnDef<BillingItem>[] = [
     {
-      key: "index",
-      header: "No.",
-      className: "whitespace-nowrap",
-      render: (_, index) => (page - 1) * rowsPerPage + index + 1,
+      id: 'id',
+      header: 'No.',
+      enableSorting: false,
+      enableResizing: false,
+      size: 44,
+      minSize: 44,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap',
+        cellClassName: 'align-middle text-slate-500',
+        cellContentClassName: 'whitespace-nowrap',
+        loadingSkeleton: (
+          <Box className="flex min-w-0 items-center">
+            <Skeleton className="h-4 w-5 rounded-full" />
+          </Box>
+        ),
+      },
+      cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
     },
     {
-      key: "billing_no",
-      header: "Billing No.",
+      id: 'billingNo',
+      accessorKey: 'billing_no',
+      header: 'Billing No.',
+      enableSorting: false,
+      size: billingNoColumnSize,
+      minSize: 160,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap',
+        cellClassName: 'align-middle',
+        cellContentClassName: 'whitespace-nowrap',
+        loadingSkeletonClassName: 'h-4 w-[10.5rem] rounded-full',
+      },
+      cell: ({ row }) => (
+        <Box className="min-w-0 text-sm font-medium leading-5 text-slate-700">
+          {row.original.billing_no || '-'}
+        </Box>
+      ),
     },
     {
-      key: "created_at",
-      header: "Billing Date",
-      render: (billing) => formatDate(billing.created_at, "YYYY-MM-DD"),
+      id: 'billingDate',
+      accessorKey: 'created_at',
+      header: 'Billing Date',
+      enableSorting: false,
+      enableResizing: false,
+      size: billingDateColumnSize,
+      minSize: 110,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap !px-1',
+        cellClassName: 'align-middle whitespace-nowrap !px-1',
+        cellContentClassName: 'whitespace-nowrap text-xs tabular-nums text-slate-700',
+        loadingSkeletonClassName: 'h-4 w-[6.9rem] rounded-full',
+      },
+      cell: ({ row }) => (
+        <Box>{row.original.created_at ? formatDate(row.original.created_at, 'YYYY-MM-DD') : '-'}</Box>
+      ),
     },
   ];
 
-  // Conditionally add Category column if "All" is selected
-  if (searchCategory === "All") {
-    baseColumns.push({
-      key: "category",
-      header: "Category",
-      render: (billing) =>
-        categories.find((c) => c.id === billing.category)?.name || "-",
+  if (searchCategory === 'All') {
+    columns.push({
+      id: 'category',
+      accessorFn: (billing) => categories.find((c) => c.id === billing.category)?.name || '-',
+      header: 'Category',
+      enableSorting: false,
+      enableResizing: false,
+      size: categoryColumnSize,
+      minSize: 120,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap',
+        cellClassName: 'align-middle whitespace-nowrap text-xs font-semibold text-slate-500',
+        cellContentClassName: 'whitespace-nowrap',
+        loadingSkeleton: (
+          <Box className="flex min-w-0 items-center">
+            <Skeleton className="h-4 w-16 rounded-full [tr:nth-child(2n)_&]:w-24 [tr:nth-child(3n)_&]:w-20" />
+          </Box>
+        ),
+      },
+      cell: ({ row }) => (
+        <Box>{categories.find((c) => c.id === row.original.category)?.name || '-'}</Box>
+      ),
     });
   }
 
-  // Add remaining columns
-  baseColumns.push(
+  columns.push(
     {
-      key: "currency",
-      header: "Currency",
-      className: "w-[50px]",
+      id: 'currency',
+      accessorKey: 'currency',
+      header: 'Currency',
+      enableSorting: false,
+      enableResizing: false,
+      size: currencyColumnSize,
+      minSize: 92,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap !px-1.5',
+        cellClassName:
+          'align-middle whitespace-nowrap !px-1.5 text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
+        cellContentClassName: 'whitespace-nowrap',
+        loadingSkeletonClassName: 'h-4 w-7 rounded-full',
+      },
+      cell: ({ row }) => <Box>{row.original.currency || 'IDR'}</Box>,
     },
     {
-      key: "amount",
-      header: "Amount",
-      className: "w-[50px] text-right",
-      classNameHeading: "text-right",
-      render: (billing) =>
-        searchType === "insurer"
-          ? formatMoney(billing.amount)
-          : formatMoney(billing.total - billing.amount),
+      id: 'amount',
+      accessorFn: (billing) =>
+        searchType === 'insurer' ? billing.amount : billing.total - billing.amount,
+      header: 'Amount',
+      enableSorting: false,
+      enableResizing: false,
+      size: amountColumnSize,
+      minSize: 120,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap !px-1.5 text-right',
+        cellClassName: 'align-middle whitespace-nowrap !px-1.5 text-right',
+        cellContentClassName: 'w-full whitespace-nowrap text-right',
+        loadingSkeletonClassName: 'ml-auto h-4 w-[5.25rem] rounded-full',
+      },
+      cell: ({ row }) => {
+        const billing = row.original;
+        const amountValue = searchType === 'insurer' ? billing.amount : billing.total - billing.amount;
+
+        return (
+          <Box className="w-full whitespace-nowrap text-right text-[13px] tabular-nums text-slate-900">
+            {formatMoney(amountValue) || '-'}
+          </Box>
+        );
+      },
     },
     {
-      key: "status",
-      header: "Status",
-      render: (billing) =>
-        billing.status
-          .split("-")
+      id: 'status',
+      accessorKey: 'status',
+      header: 'Status',
+      enableSorting: false,
+      enableResizing: false,
+      size: statusColumnSize,
+      minSize: 100,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap !px-1 text-center',
+        cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+        cellContentClassName: 'whitespace-nowrap',
+        loadingSkeletonClassName: 'mx-auto h-[1.375rem] w-[4.75rem] rounded-full',
+      },
+      cell: ({ row }) => {
+        const status = row.original.status;
+        const label = status
+          .split('-')
           .map(
-            (word: string) =>
-              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            (word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
           )
-          .join(" "),
+          .join(' ');
+
+        return (
+          <Box className="whitespace-nowrap">
+            <Box
+              as="span"
+              className={cn(
+                'inline-flex h-[1.375rem] min-w-20 cursor-default select-none items-center justify-center whitespace-nowrap rounded-full px-3 text-[10px] font-semibold leading-none ring-1 ring-inset',
+                getStatusColor(status),
+                status === 'paid' && 'bg-emerald-50 ring-emerald-200/80',
+                status === 'pending' && 'bg-amber-50 ring-amber-200/80',
+                !['paid', 'pending'].includes(status) && 'bg-slate-50 ring-slate-200/80',
+              )}
+            >
+              {label}
+            </Box>
+          </Box>
+        );
+      },
     },
     {
-      key: "action",
-      header: "Action",
-      render: (billing) => (
-        <div className="flex">
-          <div className="relative group">
+      id: 'action',
+      header: 'Action',
+      enableSorting: false,
+      enableResizing: false,
+      size: actionColumnSize,
+      minSize: 96,
+      meta: {
+        headerCellClassName: 'whitespace-nowrap !px-1 text-center',
+        cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+        cellContentClassName: 'whitespace-nowrap',
+        loadingSkeleton: (
+          <Box className="flex items-center justify-center gap-1.5">
+            <Skeleton className="h-8 w-8 rounded-lg" />
+            <Skeleton className="h-8 w-8 rounded-lg" />
+          </Box>
+        ),
+      },
+      cell: ({ row }) => {
+        const billing = row.original;
+
+        return (
+          <Box className="flex items-center justify-center gap-1">
             <Button
               variant="ghost"
               size="md"
-              className="w-9 px-0"
-              onClick={() =>
-                onViewDetail(billing.id, searchChannel, searchType)
-              }
+              className="h-8 w-8 p-0"
+              onClick={() => onViewDetail(billing.id, searchChannel, searchType)}
             >
-              <EyeIcon className="h-4 w-4" />
+              <Eye className="h-4 w-4" />
             </Button>
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-              View Detail
-            </span>
-          </div>
-          <div className="relative group">
             <Button
               variant="ghost"
               size="md"
-              className="w-9 px-0"
-              onClick={() =>
-                onViewInvoice(billing.id, searchType, searchChannel)
-              }
+              className="h-8 w-8 p-0"
+              onClick={() => onViewInvoice(billing.id, searchType, searchChannel)}
             >
-              <File className="h-4 w-4" />
+              <FileText className="h-4 w-4" />
             </Button>
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-              {searchType === "insurer"
-                ? "View Invoice"
-                : "View Listing Detail"}
-            </span>
-          </div>
-        </div>
-      ),
-    }
+          </Box>
+        );
+      },
+    },
   );
 
-  return baseColumns;
+  return columns;
 };

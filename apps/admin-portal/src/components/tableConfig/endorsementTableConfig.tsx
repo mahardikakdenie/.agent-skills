@@ -195,7 +195,7 @@ export const createEndorsementTableColumns = ({
     meta: {
       headerCellClassName: 'whitespace-nowrap',
       cellClassName:
-        'align-middle whitespace-nowrap text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
+        'align-middle whitespace-nowrap text-xs font-semibold tracking-[0.04em] text-slate-500',
       cellContentClassName: 'whitespace-nowrap',
       loadingSkeleton: (
         <Box className="flex min-w-0 items-center">
@@ -446,18 +446,14 @@ export const createEndorsementDetailsTableColumns = (
       const insuredProfile = item?.insured_parties?.profile || {};
       const isDifferent = `${profile.employee_id}` !== `${insuredProfile.employee_id}`;
 
-      return (
-        <Box className={isDifferent ? 'bg-yellow-50' : ''}>{profile.employee_id || '-'}</Box>
-      );
+      return <Box className={isDifferent ? 'bg-yellow-50' : ''}>{profile.employee_id || '-'}</Box>;
     },
     render: (item: any) => {
       const profile = item?.data?.profile || {};
       const insuredProfile = item?.insured_parties?.profile || {};
       const isDifferent = `${profile.employee_id}` !== `${insuredProfile.employee_id}`;
 
-      return (
-        <Box className={isDifferent ? 'bg-yellow-50' : ''}>{profile.employee_id || '-'}</Box>
-      );
+      return <Box className={isDifferent ? 'bg-yellow-50' : ''}>{profile.employee_id || '-'}</Box>;
     },
   },
   {

@@ -1,5 +1,9 @@
 "use client";
 
+import { useMemo } from "react";
+import { Plus } from "react-feather";
+import { useRouter } from "next/navigation";
+
 import {
   Select,
   SelectContent,
@@ -7,23 +11,40 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  MonthPicker,
+  Box,
+  Button,
+  DataTable,
 } from "@repo/ui";
-import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+
 import { useBilling } from "./hook";
-import { useState } from "react";
-import { Button } from "@repo/ui";
-import { ChevronLeft, ChevronRight, PlusIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { formatDate, formatMoney } from "@/lib/formatter";
+import { formatMoney, formatDate } from "@/lib/formatter";
 import AppURL from "@/constants/app-url.const";
-import { DataTable } from "@/components/ui/DataTable";
 import { createBillingTableColumns } from "@/components/tableConfig/billingTableConfig";
+import { CompactTablePagination } from "@/components/ui/compact-table-pagination";
+
+let tableMeasureContext: CanvasRenderingContext2D | null = null;
+
+function measureTextWidth(label: string, font: string, fallbackCharWidth: number) {
+  if (typeof document === "undefined") {
+    return label.length * fallbackCharWidth;
+  }
+
+  if (!tableMeasureContext) {
+    tableMeasureContext = document.createElement("canvas").getContext("2d");
+  }
+
+  if (!tableMeasureContext) {
+    return label.length * fallbackCharWidth;
+  }
+
+  tableMeasureContext.font = font;
+
+  return tableMeasureContext.measureText(label).width;
+}
 
 export default function BillingPage() {
   const router = useRouter();
-  const [dateTmp, setDateTmp] = useState<Date>(new Date());
 
   const {
     billings,
@@ -40,6 +61,7 @@ export default function BillingPage() {
     searchCategory,
     date,
     isLoadingBillings,
+    isFetchingBillings,
     setPage,
     handleRowsPerPageChange,
     handleTypeChange,
@@ -55,28 +77,6 @@ export default function BillingPage() {
     { name: "Insurer", code: "insurer" },
   ];
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const years = ["2024", "2025", "2026", "2027", "2028", "2029", "2030"];
-
-  const handleClear = () => {
-    handleDateChange(null);
-    setDateTmp(new Date());
-  };
-
   const handleViewDetail = (id: string, channel: string, type: string) => {
     router.push(
       `${AppURL.financeBillingDetail}/${id}?channel=${channel}&type=${type}`
@@ -89,6 +89,145 @@ export default function BillingPage() {
     );
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "paid":
+        return "text-[#00AB4F]";
+      case "pending":
+        return "text-[#CC9B36]";
+      default:
+        return "text-[#CC9B36]";
+    }
+  };
+
+  const billingNoColumnSize = useMemo(
+    () =>
+      Math.min(
+        240,
+        Math.max(
+          160,
+          Math.ceil(
+            Math.max(
+              measureTextWidth("Billing No.", "500 14px Arial", 7.2),
+              billings.reduce((widest, billing) => {
+                const label = billing?.billing_no || "-";
+                return Math.max(widest, measureTextWidth(label, "500 14px Arial", 7.2));
+              }, 0),
+            ) + 35,
+          ),
+        ),
+      ),
+    [billings]
+  );
+
+  const billingDateColumnSize = useMemo(
+    () =>
+      Math.max(
+        110,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Billing Date", "500 14px Arial", 6.8),
+            billings.reduce((widest, billing) => {
+              const bDate = billing?.created_at
+                ? formatDate(billing.created_at, "YYYY-MM-DD")
+                : "-";
+              return Math.max(widest, measureTextWidth(bDate, "400 12px Arial", 6.1));
+            }, 0),
+          ) + 24,
+        ),
+      ),
+    [billings]
+  );
+
+  const categoryColumnSize = useMemo(
+    () =>
+      Math.max(
+        120,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Category", "500 14px Arial", 7.2),
+            billings.reduce((widest, billing) => {
+              const label = categories.find((c) => c.id === billing.category)?.name || "-";
+              return Math.max(widest, measureTextWidth(label, "600 12px Arial", 6.2));
+            }, 0),
+          ) + 28,
+        ),
+      ),
+    [billings, categories]
+  );
+
+  const currencyColumnSize = useMemo(
+    () =>
+      Math.min(
+        120,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Currency", "500 14px Arial", 7.2),
+            billings.reduce((widest, billing) => {
+              const label = billing?.currency || "IDR";
+              return Math.max(widest, measureTextWidth(label, "600 12px Arial", 6.2));
+            }, 0),
+          ) + 28,
+        ),
+      ),
+    [billings]
+  );
+
+  const amountColumnSize = useMemo(
+    () =>
+      Math.min(
+        240,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Amount", "500 14px Arial", 6.8),
+            billings.reduce((widest, billing) => {
+              const amountValue = searchType === "insurer" ? billing.amount : billing.total - billing.amount;
+              const label = formatMoney(amountValue);
+              return Math.max(widest, measureTextWidth(label, "400 13px Arial", 6.6));
+            }, 0),
+          ) + 28,
+        ),
+      ),
+    [billings, searchType]
+  );
+
+  const statusColumnSize = useMemo(
+    () =>
+      Math.min(
+        200,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Status", "500 14px Arial", 6.8),
+            billings.reduce((widest, billing) => {
+              const status = billing?.status || "-";
+              const label = status
+                .split("-")
+                .map(
+                  (word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+                )
+                .join(" ");
+              return Math.max(widest, measureTextWidth(label, "600 10px Arial", 5.9));
+            }, 0),
+          ) + 48,
+        ),
+      ),
+    [billings]
+  );
+
+  const actionColumnSize = useMemo(
+    () =>
+      Math.max(
+        96,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Action", "500 14px Arial", 6.8),
+            measureTextWidth("View Detail", "600 11px Arial", 5.9) + 32,
+          ) + 12,
+        ),
+      ),
+    []
+  );
+
   const columns = createBillingTableColumns({
     page,
     rowsPerPage,
@@ -98,207 +237,164 @@ export default function BillingPage() {
     onViewDetail: handleViewDetail,
     onViewInvoice: handleViewInvoice,
     searchChannel,
+    getStatusColor,
+    billingNoColumnSize,
+    billingDateColumnSize,
+    categoryColumnSize,
+    currencyColumnSize,
+    amountColumnSize,
+    statusColumnSize,
+    actionColumnSize,
   });
 
+  const isPaginationBusy = isLoadingBillings || isFetchingBillings;
+
   return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex flex-wrap justify-start gap-4 pb-4 items-center">
-        <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+    <Box className="flex min-h-0 flex-1 w-full flex-col p-4 md:p-6 gap-3">
+      <Box className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-start lg:justify-between">
+        <Box as="h1" className="text-black font-bold text-2xl shrink-0">
           Billing List
-        </h1>
+        </Box>
 
-        <div className="flex gap-2 sm:w-auto w-full relative">
-          <Button
-            onClick={() => {
-              if (date) {
-                const year = date.getFullYear();
-                const month = date.getMonth();
-                handleDateChange(new Date(year, month - 1, 1));
-                setDateTmp(new Date(year, month - 1, 1));
-              }
-            }}
-            disabled={!date}
-            className={cn(
-              "font-semibold bg-transparent hover:bg-transparent p-0 text-black text-sm cursor-pointer absolute left-2 z-10",
-              !date && "text-gray-500 cursor-not-allowed"
-            )}
-            title="Previous"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant={"outline"}
-                style={{ paddingLeft: "30px" }}
-                className={cn(
-                  "sm:w-[280px] w-full justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
+        <Box className="flex w-full flex-col gap-2.5 lg:w-auto lg:items-end">
+          <Box className="flex w-full flex-col gap-2.5 sm:grid sm:grid-cols-2 sm:gap-3 lg:w-auto lg:flex lg:flex-row lg:flex-wrap lg:justify-end">
+            <Box className="w-full xl:w-[200px] relative">
+              <MonthPicker
+                value={date}
+                onChange={handleDateChange}
+                placeholder="Select Period"
+                clearable
+                className="w-full"
+              />
+            </Box>
+
+            <Box className="w-full xl:w-36">
+              <Select value={searchType} onValueChange={handleTypeChange}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {types.map((item, index) => (
+                      <SelectItem key={index} value={item.code}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Box>
+
+            <Box className="w-full xl:w-48">
+              <Select value={searchChannel} onValueChange={handleChannelChange}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Company" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {companies.map((item, index) => (
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Box>
+
+            <Box className="w-full xl:w-48">
+              <Select
+                disabled={!searchChannel}
+                value={searchCategory}
+                onValueChange={handleCategoryChange}
               >
-                <CalendarIcon className="w-4 h-4 mr-2" />
-                {date
-                  ? formatDate(date.toString(), "MMM, YYYY")
-                  : "Select Period"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent sideOffset={4} className="w-auto p-0" align="start">
-              <div className="flex gap-2 sm:w-auto w-full relative p-4">
-                <Select
-                  value={dateTmp.getMonth().toString()}
-                  onValueChange={(e) => {
-                    setDateTmp(new Date(dateTmp.getFullYear(), parseInt(e), 1));
-                  }}
-                >
-                  <SelectTrigger className="h-10 min-w-36">
-                    <SelectValue placeholder="Month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup className="min-w-36">
-                      {months.map((item, index) => (
-                        <SelectItem key={index} value={index.toString()}>
-                          {item}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={dateTmp.getFullYear().toString()}
-                  onValueChange={(e) => {
-                    setDateTmp(new Date(parseInt(e), dateTmp.getMonth(), 1));
-                  }}
-                >
-                  <SelectTrigger className="h-10">
-                    <SelectValue placeholder="Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {years.map((item, index) => (
-                        <SelectItem key={index} value={item}>
-                          {item}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Button onClick={() => handleDateChange(dateTmp)}>OK</Button>
-                <Button
-                  className="bg-red-600 hover:bg-red-500"
-                  onClick={handleClear}
-                >
-                  Reset
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-          <Button
-            onClick={() => {
-              if (date) {
-                const year = date.getFullYear();
-                const month = date.getMonth();
-                handleDateChange(new Date(year, month + 1, 1));
-                setDateTmp(new Date(year, month + 1, 1));
-              }
-            }}
-            disabled={!date}
-            className={cn(
-              "font-semibold bg-transparent hover:bg-transparent p-0 text-black text-sm cursor-pointer absolute right-2 z-10",
-              !date && "text-gray-500 cursor-not-allowed"
-            )}
-            title="Next"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={"All"} key={-1}>
+                      All Category
+                    </SelectItem>
+                    {categories.map((item, index) => (
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Box>
+          </Box>
 
-        <div className="min-w-36 w-[100px] ml-auto">
-          <Select value={searchType} onValueChange={handleTypeChange}>
-            <SelectTrigger className="h-10">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {types.map((item, index) => (
-                  <SelectItem key={index} value={item.code}>
-                    {item.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+          <Box className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 lg:w-auto">
+            <Button
+              onClick={() => router.push(AppURL.financeBillingAdd)}
+              className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full h-10 px-5 gap-1.5"
+              leftIcon={<Plus className="w-5 h-5" />}
+            >
+              Create Billing
+            </Button>
+          </Box>
+        </Box>
+      </Box>
 
-        <div className="min-w-48 w-[180px]">
-          <Select value={searchChannel} onValueChange={handleChannelChange}>
-            <SelectTrigger className="h-10">
-              <SelectValue placeholder="Company" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {companies.map((item, index) => (
-                  <SelectItem key={index} value={item.id}>
-                    {item.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="min-w-48">
-          <Select
-            disabled={!searchChannel}
-            value={searchCategory}
-            onValueChange={handleCategoryChange}
-          >
-            <SelectTrigger className="h-10">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={"All"} key={-1}>
-                  All Category
-                </SelectItem>
-                {categories.map((item, index) => (
-                  <SelectItem key={index} value={item.id}>
-                    {item.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button
-          onClick={() => router.push(AppURL.financeBillingAdd)}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
-        >
-          <PlusIcon className="w-5 h-5 mr-1" /> Create Billing
-        </Button>
-      </div>
-
-      <div className="text-right mb-2">
+      <Box className="text-right text-black mt-1 -mb-1.5 font-medium">
         {"Total: IDR " + formatMoney(totalAmount)}
-      </div>
+      </Box>
 
       <DataTable
+        className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
+        loading={isPaginationBusy}
         data={billings}
         columns={columns}
-        loading={isLoadingBillings}
-        pagination={{
-          page,
-          totalPages,
-          rowsPerPage,
-          totalItems,
-          onPageChange: setPage,
-          onRowsPerPageChange: handleRowsPerPageChange,
-          rowsPerPageOptions: [10, 20, 30, 50, 100],
+        defaultState={{
+          columnPinning: {
+            left: ["id", "billingNo"],
+            right: ["status", "action"],
+          },
         }}
-        noDataText="No billing data available"
-        className="table-transactions"
+        pagination={{
+          pageIndex: page - 1,
+          pageSize: rowsPerPage,
+          pageCount: totalPages,
+          rowCount: totalItems,
+          onPageChange: (pageIndex) => {
+            if (isPaginationBusy) {
+              return;
+            }
+            setPage(pageIndex + 1);
+          },
+          onPageSizeChange: (pageSize) => {
+            if (isPaginationBusy) {
+              return;
+            }
+            handleRowsPerPageChange({
+              target: { value: String(pageSize) },
+            } as React.ChangeEvent<HTMLSelectElement>);
+          },
+        }}
+        pageSizeOptions={[10, 20, 30, 50, 100]}
+        renderPagination={(table) => (
+          <Box className="-mt-1">
+            <CompactTablePagination
+              table={table}
+              pageSizeOptions={[10, 20, 30, 50, 100]}
+              disabled={isPaginationBusy}
+            />
+          </Box>
+        )}
+        tableOptions={{
+          manualPagination: true,
+          enableColumnPinning: true,
+          enableColumnResizing: true,
+          defaultColumn: {
+            minSize: 48,
+            size: 96,
+          },
+          getRowId: (row, index) => row?.id || `billing-row-${index}`,
+        }}
       />
-    </div>
+    </Box>
   );
 }

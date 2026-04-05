@@ -1457,3 +1457,20 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box, Button, DataTable, Skeleton, and Tabs primitives while extending only app-local endorsement table configuration and pagination styling.`
 - Verification note: `This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /policy/endorsement/list already present in _migration-log.md and _parity-checklist.md. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /policy/endorsement/list as PASS because the route-local migration has been completed.`
+
+## Batch 9 - /finance/billing Route Refactor and Table Refinements - 2026-04-05
+
+- Route focus: \/finance/billing\, \/claim/list\, \/policy/list\
+- Migration intent: \Migrate the billing list route onto the shared DataTable instance API, standardize the filter and date selection on shared primitives, and refine existing migrated table routes (claim, policy, endorsement) for consistent alignment, metadata, and Box-based composition.\
+- Route-local behavior updates:
+  - \pps/admin-portal/src/app/finance/billing/page.tsx\ now renders the route shell with \Box\, replaces bespoke type/channel/category selectors with shared \Select\, and adopts \MonthPicker\ for period filtering.
+  - \pps/admin-portal/src/app/finance/billing/page.tsx\ now mounts the shared \@repo/ui\ \DataTable\ directly with manual pagination, pinned columns, and \CompactTablePagination\ integration.
+  - \pps/admin-portal/src/components/tableConfig/billingTableConfig.tsx\ now defines columns against the shared \ColumnDef\ contract with explicit sizing metadata, wrapped content cells, badge-style status rendering, and shared \Button\ row actions for detail/invoice views.
+  - \pps/admin-portal/src/app/claim/list/page.tsx\ and \pps/admin-portal/src/app/policy/list/page.tsx\ received further alignment refinements for consistent primitive usage and metadata patterns.
+  - \pps/admin-portal/src/components/tableConfig/endorsementTableConfig.tsx\ standardized its column definitions and added details table configuration.
+  - \pps/admin-portal/src/views/layout/layout.view.tsx\ layout shell alignment and minor refinements.
+- Files changed (route-focused): [\pps/admin-portal/src/app/finance/billing/page.tsx\, \pps/admin-portal/src/components/tableConfig/billingTableConfig.tsx\, \pps/admin-portal/src/app/claim/list/page.tsx\, \pps/admin-portal/src/app/policy/list/page.tsx\, \pps/admin-portal/src/components/tableConfig/endorsementTableConfig.tsx\, \pps/admin-portal/src/views/layout/layout.view.tsx\]
+- Shared-ui impact: \No new @repo/ui export is adopted. The routes now compose existing shared Box, Button, DataTable, DateRangePicker, MonthPicker, Select, and Tabs primitives while extending only app-local table configuration and pagination styling.\
+- Verification note: \This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /finance/billing already present in _migration-log.md and _parity-checklist.md (noting the expected 403 state). No new smoke, lint, or build evidence is added in this documentation entry.\
+- Tracker impact: \Batch 9 page tracker can now treat /finance/billing as PASS because the route-local migration has been completed.\
+

@@ -688,20 +688,22 @@ const ClaimsPage = () => {
           Claim List
         </Box>
 
-        <Box className="flex w-full flex-col gap-2.5 xl:w-auto xl:items-end">
-          <Box className="flex w-full flex-col gap-2.5 sm:grid sm:grid-cols-2 sm:gap-3 xl:w-auto xl:flex xl:flex-row xl:flex-nowrap xl:justify-end">
-            <DateRangePicker
-              value={date ?? null}
-              changeBehavior="complete"
-              onChange={(range) =>
-                setDate(range?.from ? { from: range.from, to: range.to } : undefined)
-              }
-              clearable
-              variant="outline"
-              className="w-full sm:col-span-2 xl:w-[280px] xl:shrink-0"
-            />
+        <Box className="flex w-full flex-col gap-3 xl:w-auto xl:items-end">
+          <Box className="flex w-full flex-col gap-3 sm:grid sm:grid-cols-2 xl:w-auto xl:flex xl:flex-row xl:flex-nowrap xl:justify-end xl:gap-4">
+            <Box className="w-full sm:col-span-2 xl:w-[260px] xl:shrink-0">
+              <DateRangePicker
+                value={date ?? null}
+                changeBehavior="complete"
+                onChange={(range) =>
+                  setDate(range?.from ? { from: range.from, to: range.to } : undefined)
+                }
+                clearable
+                variant="outline"
+                className="w-full"
+              />
+            </Box>
 
-            <Box className="w-full xl:w-48 xl:shrink-0">
+            <Box className="w-full xl:w-44 xl:shrink-0">
               <Select value={searchChannel || ''} onValueChange={handleChannelChange}>
                 <SelectTrigger className="h-10">
                   <SelectValue placeholder="Channel" />
