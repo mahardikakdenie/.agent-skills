@@ -4,11 +4,12 @@ import { useMemo } from 'react';
 
 import noData from '@public/images/no-data.webp';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { ChevronLeft, Download } from 'react-feather';
+import { Download } from 'react-feather';
 
 import { Box, Button, DataTable, type ColumnDef } from '@repo/ui';
 
+import { PageHeader } from '@/components/page-header';
+import AppURL from '@/constants/app-url.const';
 import useExportClaim from '@/hooks/useExportClaim.hooks';
 import { cn } from '@/lib/utils';
 
@@ -58,7 +59,6 @@ const measureTextWidth = (label: string, font: string, fallbackCharWidth: number
 };
 
 export default function ExportPage() {
-  const router = useRouter();
   const {
     data,
     isLoading,
@@ -346,39 +346,32 @@ export default function ExportPage() {
     statusColumnSize,
   ]);
 
+  const breadcrumbs = [
+    { label: 'Claim' },
+    { label: 'List', href: AppURL.claimList },
+    { label: 'Export', isCurrentPage: true },
+  ];
+
   return (
-    <Box className="flex flex-col w-full p-4 md:p-6 h-screen overflow-hidden">
-      <Box className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-5">
-        <Box as="h1" className="text-black font-bold text-2xl">
-          Claim List
-        </Box>
-        <Box className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-nowrap sm:items-center sm:justify-end sm:gap-3 md:w-auto">
-          <Box
-            onClick={() => router.back()}
-            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </Box>
+    <Box className="flex flex-col w-full h-screen overflow-hidden">
+      <PageHeader title="Export Claims" breadcrumbs={breadcrumbs} showBackButton={true}>
+        <Button
+          onClick={handleGeneratePdf}
+          className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]"
+          leftIcon={<Download className="w-5 h-5" />}
+        >
+          Generate PDF
+        </Button>
 
-          <Button
-            onClick={handleGeneratePdf}
-            className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]"
-            leftIcon={<Download className="w-5 h-5" />}
-          >
-            Generate PDF
-          </Button>
-
-          <Button
-            onClick={handleGenerateXlsx}
-            className="h-10 rounded-full px-5"
-            leftIcon={<Download className="w-5 h-5" />}
-          >
-            Generate XLSX
-          </Button>
-        </Box>
-      </Box>
-      <Box className="flex-1 min-h-0 bg-white rounded-lg overflow-hidden flex flex-col">
+        <Button
+          onClick={handleGenerateXlsx}
+          className="h-10 rounded-full px-5"
+          leftIcon={<Download className="w-5 h-5" />}
+        >
+          Generate XLSX
+        </Button>
+      </PageHeader>
+      <Box className="flex-1 min-h-0 bg-white rounded-lg overflow-hidden flex flex-col m-4 md:m-6 mt-0">
         <DataTable
           ref={reportTemplateRef as any}
           loading={isLoading}

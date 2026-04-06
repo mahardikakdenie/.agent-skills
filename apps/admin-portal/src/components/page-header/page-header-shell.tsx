@@ -65,18 +65,20 @@ export const PageHeaderShell: React.FC<PageHeaderShellProps> = ({
         </Box>
       </Box>
 
-      {children && <Box className="flex items-center gap-2">{children}</Box>}
+      <Box className="ml-auto flex items-center gap-6">
+        {showBackButton && (
+          <Box
+            as="button"
+            type="button"
+            onClick={onBackClick}
+            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" /> Back
+          </Box>
+        )}
 
-      {showBackButton && (
-        <Box
-          as="button"
-          type="button"
-          onClick={onBackClick}
-          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" /> Back
-        </Box>
-      )}
+        {children && <Box className="flex items-center gap-4">{children}</Box>}
+      </Box>
     </Box>
   );
 };
