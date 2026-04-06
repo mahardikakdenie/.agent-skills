@@ -786,6 +786,7 @@ Normalization notes:
 - Public exports are `DataTable`, `DataTableVirtualized`, `DataTablePagination`, `useDataTable`, `dataTableFacetedFilterFn`, and `dataTableFuzzyFilterFn`.
 - Toolbar/search/filter/view/selection helper controls currently remain Storybook-only utilities, not package exports.
 - Stories prefer explanatory copy above the table instead of relying on captions, but the semantic `caption` prop remains supported.
+- The managed `data` + `columns` path now exposes TanStack's global `enableSorting` toggle through `tableOptions`, so consumers can suppress shared sorting behavior without switching to controlled `table` mode.
 - Shared styling extensibility is now app-agnostic and explicit: row classes map through `getRowClassName(...)`, header-cell shell classes map through `columnDef.meta.headerCellClassName`, shared header-content wrapper classes map through `columnDef.meta.headerContentClassName`, body-cell shell classes map through `columnDef.meta.cellClassName`, and inner body-content wrapper classes map through `columnDef.meta.cellContentClassName`.
 - `meta.headerCellClassName` styles the semantic `<th>` shell, while `meta.headerContentClassName` styles the shared header-content wrapper and sortable trigger content inside it.
 - `meta.cellClassName` styles the semantic `<td>` shell, while `meta.cellContentClassName` styles the shared overflow-aware content wrapper inside that cell.
