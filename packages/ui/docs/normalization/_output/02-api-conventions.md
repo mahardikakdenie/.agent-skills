@@ -415,6 +415,11 @@ Focus note:
 - `Select` belongs to the `field-shell-direct` focus family.
 - Open state may reinforce border emphasis, but it must not layer a second heavy focus ring on top of the trigger's keyboard focus treatment.
 
+Layout note:
+
+- `SelectTrigger` uses `min-w-0` and `overflow-hidden` to ensure long selected values do not force the component to expand beyond its parent flex/grid container.
+- `SelectValue` authors its internal wrapper as `Box as="span"` with `data-slot="select-value-wrapper"` to maintain layout resilience and follow the Box-authored DOM rule.
+
 Story group: `Inputs`
 
 ---

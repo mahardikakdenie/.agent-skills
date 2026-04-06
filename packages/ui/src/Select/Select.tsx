@@ -383,12 +383,17 @@ SelectTrigger.displayName = 'SelectTrigger';
 
 export const SelectValue = React.forwardRef<HTMLSpanElement, SelectValueProps>(
   ({ className, ...props }, ref) => (
-    <SelectPrimitive.Value
-      ref={ref}
-      data-slot="select-value"
+    <Box
+      as="span"
+      data-slot="select-value-wrapper"
       className={cn(selectValueVariants(), className)}
-      {...props}
-    />
+    >
+      <SelectPrimitive.Value
+        ref={ref}
+        data-slot="select-value"
+        {...props}
+      />
+    </Box>
   ),
 );
 
