@@ -3,7 +3,7 @@
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
 > Run date: 2026-03-10
-> Last reconciled: 2026-03-28
+> Last reconciled: 2026-04-06
 
 ## Box
 
@@ -334,6 +334,7 @@ Direct adoption guidance:
 - Legacy settings toggles, binary preference controls, and simple enable-or-disable rows map to `Switch`.
 - Existing `checked`, `defaultChecked`, `onChange`, or `onCheckedChange` flows normalize to `checked`, `defaultChecked`, and `onCheckedChange`.
 - Inline label text maps to `label`; dense settings rows map to `size="sm"`, while larger touch targets map to `size="lg"`.
+- Disabled rows should map to `disabled`; the shared primitive keeps visible checked-vs-unchecked track contrast without needing app-side opacity wrappers.
 - Field-level invalid copy maps to `error`; shared invalid treatment and accessible message wiring stay on the primitive.
 - Longer supporting copy remains consumer composition and should link through `aria-describedby` when needed instead of widening the shared primitive contract.
 

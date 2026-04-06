@@ -69,13 +69,13 @@ export const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitive.R
               aria-describedby={describedBy}
               aria-invalid={invalid || undefined}
               aria-labelledby={labelledBy}
-              className={switchRootVariants({ size, invalid })}
+              className={switchRootVariants({ size, invalid, disabled })}
             >
               <SwitchPrimitive.Thumb asChild>
                 <Box
                   as="span"
                   data-slot="switch-thumb"
-                  className={switchThumbVariants({ size })}
+                  className={switchThumbVariants({ size, disabled })}
                 />
               </SwitchPrimitive.Thumb>
             </Box>

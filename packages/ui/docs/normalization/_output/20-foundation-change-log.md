@@ -2,8 +2,22 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-04-04
+> Last reconciled: 2026-04-06
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-04-06 - Switch Disabled Contrast Doc Alignment
+
+Changed:
+
+- Reconciled the normalized `Switch` contract to match the current `packages/ui/src/Switch` implementation, which now threads `disabled` through the shared track and thumb variants instead of muting the entire control with global opacity.
+- Updated `02-api-conventions.md`, `11-master-component-roadmap.md`, `13-implementation-batches.md`, and `21-adapter-mapping.md` so the normalization `_output` set now documents `defaultChecked`, shared `Switch.Error` coverage, and the contrast-preserving disabled treatment consistently.
+
+Impact:
+
+- Downstream migrations can map uncontrolled toggles directly to `defaultChecked` and should prefer the shared `disabled` treatment for binary settings rows instead of preserving wrapper-level opacity hacks.
+- The normalization output no longer implies that disabled `Switch` states need whole-control opacity reduction to stay canonical on light surfaces.
 
 ---
 

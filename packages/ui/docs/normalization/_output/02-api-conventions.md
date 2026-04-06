@@ -478,6 +478,7 @@ Story group: `Inputs`
 ```ts
 export interface SwitchProps {
   checked?: boolean;
+  defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
   required?: boolean;
@@ -487,6 +488,10 @@ export interface SwitchProps {
   className?: string;
 }
 ```
+
+Behavior note:
+
+- Disabled `Switch` states keep explicit checked-vs-unchecked track contrast instead of muting the entire control with shared opacity.
 
 Story group: `Inputs`
 
