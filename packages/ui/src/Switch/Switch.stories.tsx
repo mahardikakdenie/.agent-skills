@@ -130,7 +130,8 @@ export const DisabledState: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Shows disabled off and disabled on states with muted interaction treatment.',
+        story:
+          'Shows disabled off and disabled on states with muted interaction treatment that still preserves clear track contrast on light surfaces.',
       },
     },
   },
@@ -178,4 +179,3 @@ export const WithDescription: Story = {
     },
   },
 };
-

@@ -82,7 +82,7 @@ This contract stays intentionally narrow, but it now aligns with the rest of the
 | Unchecked | Neutral token surface with the thumb aligned to the start | Exposes `role="switch"` and `aria-checked="false"` through Radix |
 | Checked | Primary track with the thumb aligned to the end | Exposes `aria-checked="true"` |
 | Focus | Visible compact-control focus ring around the track without a detached offset halo | Keyboard focus remains visible on every size |
-| Disabled | Muted opacity and blocked pointer interaction for control and label | Exposes disabled semantics through Radix |
+| Disabled | Muted color treatment and blocked pointer interaction while preserving track contrast | Exposes disabled semantics through Radix |
 | Required | Label shows a destructive asterisk | Required semantics stay on the underlying switch control |
 | Error | Destructive border and label treatment plus inline validation copy when provided | Sets `aria-invalid="true"` and links the message through `aria-describedby` |
 | Description (composed) | Supporting copy can sit below or beside the shared primitive through consumer composition | Consumers link extra copy with `aria-describedby` when needed |
