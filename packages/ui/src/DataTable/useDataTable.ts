@@ -299,6 +299,7 @@ export function useDataTable<TData extends RowData, TValue = unknown>({
     enablePinning: tableOptions?.enablePinning,
     enableRowPinning: tableOptions?.enableRowPinning,
     enableRowSelection: tableOptions?.enableRowSelection,
+    enableSorting: tableOptions?.enableSorting,
     enableSubRowSelection: tableOptions?.enableSubRowSelection,
     filterFns: mergedFilterFns,
     getRowCanExpand: tableOptions?.getRowCanExpand,

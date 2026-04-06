@@ -36,6 +36,20 @@ Impact:
 
 ---
 
+## 2026-04-06 - DataTable Managed Sorting Toggle Doc Alignment
+
+Changed:
+
+- Extended the documented `DataTable` contract to match the current `packages/ui/src/DataTable` implementation, which now exposes TanStack's global `enableSorting` option on the managed `tableOptions` path as well as the controlled table path.
+- Reconciled `02-api-conventions.md` so the normalization `_output` set now makes it explicit that managed `data` + `columns` consumers can disable shared sorting behavior without dropping to controlled `table` mode.
+
+Impact:
+
+- Downstream migrations for read-only or fixed-order tables can keep the simpler managed `useDataTable(...)` path while opting out of global sorting in one place.
+- The normalization output no longer implies that disabling shared sorting requires a controlled TanStack table instance or app-local wrapper logic.
+
+---
+
 ## 2026-04-04 - Select Variants and Field-Shell Sizing Doc Alignment
 
 Changed:

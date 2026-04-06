@@ -90,6 +90,7 @@ export interface DataTableOptions<TData extends RowData> extends Pick<
   | 'enablePinning'
   | 'enableRowPinning'
   | 'enableRowSelection'
+  | 'enableSorting'
   | 'enableSubRowSelection'
   | 'filterFns'
   | 'getRowCanExpand'
