@@ -85,7 +85,7 @@ export default function ExportPage() {
 
               return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
             }, 0),
-          ) + 52,
+          ) + 57,
         ),
       ),
     [data],
@@ -118,8 +118,8 @@ export default function ExportPage() {
         160,
         Math.ceil(
           Math.max(
-            measureTextWidth('Requested Amount', '500 14px Arial', 6.8),
-            measureTextWidth('Approved Amount', '500 14px Arial', 6.8),
+            measureTextWidth('Requested Amount', '500 14px Arial', 7.2),
+            measureTextWidth('Approved Amount', '500 14px Arial', 7.2),
             data.reduce((widest, claim) => {
               const requestedLabel = getReqAmountUi(claim);
               const approvedLabel = getApprovedAmountUi(claim);
@@ -172,9 +172,10 @@ export default function ExportPage() {
         accessorKey: 'number',
         header: 'Claim ID',
         size: claimIdColumnSize,
-        minSize: 160,
+        minSize: 165,
         meta: {
           cellClassName: 'align-middle',
+          loadingSkeletonClassName: 'w-36',
         },
         cell: ({ row }) => (
           <Box className="min-w-0 text-sm leading-5 text-slate-700">
