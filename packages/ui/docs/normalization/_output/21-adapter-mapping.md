@@ -321,6 +321,7 @@ Admin-portal Batch 8 / Batch 4 note:
 - The upstream blocker is resolved by the shared compound export surface now available from `@repo/ui`: `Select`, `SelectTrigger`, `SelectContent`, `SelectGroup`, `SelectItem`, `SelectValue`, `SelectLabel`, `SelectSeparator`, `SelectScrollUpButton`, and `SelectScrollDownButton`.
 - For the 49 current admin-portal files that import from `@/components/ui/select`, the primary migration path is now a direct import-source swap to `@repo/ui` while preserving the existing Radix-style composition and current `value`, `defaultValue`, `onValueChange`, `disabled`, and `className` usage.
 - Sites that manually render trigger text inside `<SelectValue>{...}</SelectValue>` can keep that pattern on the shared component; it remains a supported Radix-compatible composition path.
+- The shared `SelectTrigger` and `SelectValue` now include `min-w-0`, `overflow-hidden`, and a `select-value-wrapper` slot by default; legacy apps with long selected labels or narrow container constraints no longer need to apply local flex-shrink or width-capping overrides to prevent layout breaks.
 - The flat `options` API remains valid and is still the preferred shared default for simple static selects, but admin-portal Batch 8 does not need to flatten existing compound usage during the initial migration.
 - Two known legacy cleanups remain app-side and should be handled during migration because they are not part of the shared contract:
   - Replace the local-only `content` prop on `SelectValue` with standard `placeholder` or explicit children.

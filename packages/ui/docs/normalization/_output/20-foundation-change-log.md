@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-04-06 - Select Trigger and Value Layout Alignment
+
+Changed:
+
+- Extended the documented `Select` structure to match the current `packages/ui/src/Select` implementation, which now wraps the inner `SelectPrimitive.Value` in a `Box` (as a span) with `data-slot="select-value-wrapper"` to ensure consistent layout behavior.
+- Updated `selectTriggerVariants` in the implementation baseline to include `min-w-0` and `overflow-hidden`, preventing long selected values from forcing the trigger to expand beyond its parent container.
+- Reconciled `02-api-conventions.md` and `11-master-component-roadmap.md` so the normalization `_output` set now acknowledges this Box-authored slot structure and the resulting layout resilience.
+
+Impact:
+
+- Downstream migrations for `Select` no longer need to add custom wrapper DOM or flex-shrink overrides to handle long text in the trigger.
+- The `Select` component is now internally consistent with the Box-only DOM rule for authored shared markup while maintaining Radix's semantic output.
+
+---
+
 ## 2026-04-06 - Switch Disabled Contrast Doc Alignment
 
 Changed:

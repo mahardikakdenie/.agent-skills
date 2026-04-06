@@ -30,7 +30,7 @@ export const selectContentLabelVariants = cva('px-3 py-1.5 text-xs font-semibold
 
 export const selectTriggerVariants = cva(
   [
-    'flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-background py-1.5 text-left leading-none',
+    'flex w-full min-w-0 cursor-pointer items-center justify-between gap-2 overflow-hidden rounded-md border bg-background py-1.5 text-left leading-none',
     'transition-colors motion-reduce:transition-none',
     directFieldShellFocus.base,
     'data-[placeholder]:text-muted-foreground data-[state=open]:border-ring',
