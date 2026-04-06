@@ -11,7 +11,7 @@ import Input from "@/components/input";
 import TrashIcon from "@/images/trash.icon";
 import AddIcon from "@/images/add.icon";
 import ChecklistIcon from "@/images/checklist.icon";
-import EditIcon from "@/images/edit.icon";
+import EditIcon from "@/components/icons/edit-icon";
 
 export const MasterdataProductView = () => {
     const [categoryList, setCategoryList] = useState<any[]>([]);

@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 14 |
+| PASS | 15 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 25 |
-| NOT_STARTED | 75 |
+| NOT_STARTED | 74 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -411,14 +411,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `claim-list-import-with-preview`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-07`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor /claim/list/import-with-preview onto shared Box, Button, FileUpload, Table, Select, and Dialog primitives, remove dependencies on legacy views, and implement consolidated icon components (AlertCircleIcon, EditIcon) using Box. |
 
 ### /export-users
 
@@ -1922,6 +1922,10 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 Return:
 
 - total discovered page routes
+- DataTable-dependent page count
+- summary by status
+- any ambiguous routes that were conservatively classified
+- confirmation that _batch-9-page-tracker.md was created or refreshed
 - DataTable-dependent page count
 - summary by status
 - any ambiguous routes that were conservatively classified

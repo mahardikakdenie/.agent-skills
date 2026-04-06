@@ -12,7 +12,7 @@ import {capitalizeStringWithChar, getHeaderPage, getPaddingClass, toastNotificat
 import Input from "@/components/input";
 import searchIcon from "@/images/search.icon";
 import TrashIcon from "@/images/trash.icon";
-import AlertCircleIcon from "@/images/alert-circle.icon";
+import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 import Modal from "@/components/modal";
 import AddIcon from "@/images/add.icon";
 

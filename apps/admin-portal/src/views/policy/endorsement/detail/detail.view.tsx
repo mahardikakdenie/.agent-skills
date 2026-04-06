@@ -26,7 +26,7 @@ import Button from "@/components/button";
 import Modal from "@/components/modal";
 import TextArea from "@/components/textarea";
 
-import AlertCircleIcon from "@/images/alert-circle.icon";
+import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 export const EndorsementDetailView = () => {
   const router = useRouter();
   const path = usePathname();

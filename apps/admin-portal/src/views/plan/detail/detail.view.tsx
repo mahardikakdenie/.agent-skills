@@ -14,7 +14,7 @@ import Input from "@/components/input";
 import AddIcon from "@/images/add.icon";
 import Modal from "@/components/modal";
 import TrashIcon from "@/images/trash.icon";
-import AlertCircleIcon from "@/images/alert-circle.icon";
+import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 
 export const PlanDetailView = () => {
     const [selectedProduct, setSelectedProduct] = useState("");

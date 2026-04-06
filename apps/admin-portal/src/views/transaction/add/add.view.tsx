@@ -22,7 +22,7 @@ import searchIcon from "@/images/search.icon";
 import DownloadIcon from "@/images/download.icon";
 import UploadIcon from "@/images/upload.icon";
 import Modal from "@/components/modal";
-import AlertCircleIcon from "@/images/alert-circle.icon";
+import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 import {ChevronLeft} from "react-feather";
 
 export const TransactionAddView = () => {

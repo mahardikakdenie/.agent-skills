@@ -16,8 +16,8 @@ import {
   capitalizeStringWithChar,
   toastNotification,
 } from '@/helpers/app.helper';
-import AlertCircleIcon from '@/images/alert-circle.icon';
-import EditIcon from '@/images/edit.icon';
+import AlertCircleIcon from '@/components/icons/alert-circle-icon';
+import EditIcon from '@/components/icons/edit-icon';
 import { claimsService } from '@/services/claims/api/claims.service';
 import { productService } from '@/services/product/api/product.service';
 import { useRouter } from 'next/navigation';

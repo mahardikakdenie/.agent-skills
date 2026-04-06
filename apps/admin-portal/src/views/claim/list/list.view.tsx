@@ -16,7 +16,7 @@ import {capitalizeString, forLabelString, getHeaderPage, getPaddingClass, moneyF
 import Input from "@/components/input";
 import searchIcon from "@/images/search.icon";
 import Modal from "@/components/modal";
-import AlertCircleIcon from "@/images/alert-circle.icon";
+import AlertCircleIcon from "@/components/icons/alert-circle-icon";
 import TextArea from "@/components/textarea";
 import CalenderIcon from "@/images/calender.icon";
 import MultipleSelect from "@/components/multiple-select";
