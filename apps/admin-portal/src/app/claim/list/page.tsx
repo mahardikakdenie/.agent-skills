@@ -703,7 +703,7 @@ const ClaimsPage = () => {
               />
             </Box>
 
-            <Box className="w-full xl:w-44 xl:shrink-0">
+            <Box className="w-full xl:w-52 xl:shrink-0">
               <Select value={searchChannel || ''} onValueChange={handleChannelChange}>
                 <SelectTrigger className="h-10">
                   <SelectValue placeholder="Channel" />
@@ -720,7 +720,7 @@ const ClaimsPage = () => {
               </Select>
             </Box>
 
-            <Box className="w-full xl:w-40 xl:shrink-0">
+            <Box className="w-full xl:w-44 xl:shrink-0">
               <Select value={searchSlaStatus} onValueChange={handleSearchSlaStatusChange}>
                 <SelectTrigger className="h-10">
                   <SelectValue placeholder="SLA Status" />

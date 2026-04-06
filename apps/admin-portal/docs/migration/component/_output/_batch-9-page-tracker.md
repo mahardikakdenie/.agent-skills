@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 12 |
+| PASS | 13 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 25 |
-| NOT_STARTED | 77 |
+| NOT_STARTED | 76 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -61,7 +61,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/claim/history` | `claim-history` | `apps/admin-portal/src/app/claim/history/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/claim/list/detail/[id]` | `claim-list-detail-id` | `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor `/claim/list/detail/[id]` onto shared `Tabs`, `Table`, `Dialog`, `Button`, and `Box` composition, replace the legacy journey image helper with inline status-timeline SVG markup, and preserve the existing claim detail and document workflows. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor this missing-document upload subroute onto shared `FileUpload`, `Button`, and `Box` primitives, add an explicit empty state, and rely on the updated detail-claim hook to preserve form values under the new upload flow. This route is treated as PASS for the current Batch 9 tracking pass. |
-| `/claim/list/export` | `claim-list-export` | `apps/admin-portal/src/app/claim/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/claim/list/export` | `claim-list-export` | `apps/admin-portal/src/app/claim/list/export/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor `/claim/list/export` onto shared `DataTable`, `Button`, and `Box` primitives, standardize the PDF/XLSX export actions, and implement dynamic column sizing while preserving existing data fetching and report generation logic. |
 | `/claim/list/import` | `claim-list-import` | `apps/admin-portal/src/app/claim/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/export-users` | `export-users` | `apps/admin-portal/src/app/export-users/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
@@ -381,14 +381,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `claim-list-export`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current `apps/admin-portal/src` changes refactor the `/claim/list/export` route onto shared `@repo/ui` `DataTable`, `Button`, and `Box` primitives. The refactor standardizes the page layout and report-generation buttons, implements dynamic column sizing via `measureTextWidth`, and migrates the supporting `useExportClaim` hook from `.tsx` to `.ts` while preserving the existing PDF/XLSX export logic.
 
 ### /claim/list/import
 

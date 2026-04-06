@@ -281,7 +281,7 @@ export default function PolicyPage() {
               />
             </Box>
 
-            <Box className="w-full xl:w-44 xl:shrink-0">
+            <Box className="w-full xl:w-52 xl:shrink-0">
               <Select value={searchChannel} onValueChange={handleChannelChange}>
                 <SelectTrigger className="h-10">
                   <SelectValue placeholder="Channel" />
@@ -299,7 +299,7 @@ export default function PolicyPage() {
               </Select>
             </Box>
 
-            <Box className="w-full xl:w-44 xl:shrink-0">
+            <Box className="w-full xl:w-52 xl:shrink-0">
               <Select
                 disabled={!searchChannel}
                 value={searchCategory}
