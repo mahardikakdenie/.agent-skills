@@ -1,0 +1,169 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e6]:
+        - button [ref=e7]:
+          - img [ref=e8]
+        - generic [ref=e10] [cursor=pointer]:
+          - generic [ref=e11]:
+            - paragraph [ref=e12]: Hi, Rendra
+            - img [ref=e14]
+          - paragraph [ref=e17]: R
+    - main [ref=e18]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Claim List" [level=1] [ref=e37]
+          - generic [ref=e38]:
+            - generic [ref=e39]
+            - generic [ref=e60]
+        - tablist "Claim status tabs" [ref=e79]:
+          - tab "All Claim 366" [selected] [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]: All Claim
+            - generic [ref=e82]: "366"
+          - tab "Submitted" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]: Submitted
+          - tab "Acknowledged" [ref=e85] [cursor=pointer]:
+            - generic [ref=e86]: Acknowledged
+          - tab "Document Review Operator" [ref=e87] [cursor=pointer]:
+            - generic [ref=e88]: Document Review Operator
+          - tab "Reupload Document Review Operator" [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]: Reupload Document Review Operator
+          - tab "Lack of Documents Operator" [ref=e91] [cursor=pointer]:
+            - generic [ref=e92]: Lack of Documents Operator
+          - tab "Document Review Insurance" [ref=e93] [cursor=pointer]:
+            - generic [ref=e94]: Document Review Insurance
+          - tab "Reupload Document Review Insurance" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: Reupload Document Review Insurance
+          - tab "Lack of Documents Insurance" [ref=e97] [cursor=pointer]:
+            - generic [ref=e98]: Lack of Documents Insurance
+          - tab "Claim Assessment" [ref=e99] [cursor=pointer]:
+            - generic [ref=e100]: Claim Assessment
+          - tab "Approved" [ref=e101] [cursor=pointer]:
+            - generic [ref=e102]: Approved
+          - tab "Rejected" [ref=e103] [cursor=pointer]:
+            - generic [ref=e104]: Rejected
+          - tab "Paid" [ref=e105] [cursor=pointer]:
+            - generic [ref=e106]: Paid
+          - tab "Closed" [ref=e107] [cursor=pointer]:
+            - generic [ref=e108]: Closed
+          - tab "Canceled" [ref=e109] [cursor=pointer]:
+            - generic [ref=e110]: Canceled
+        - generic [ref=e111]:
+          - generic [ref=e114]:
+            - textbox "Search by Claim ID" [ref=e115]
+            - img [ref=e117]
+          - table [ref=e120]:
+            - rowgroup [ref=e121]
+            - rowgroup [ref=e135]
+            - rowgroup [ref=e346]
+    - generic [ref=e20]:
+      - img "logo" [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e368]:
+          - paragraph [ref=e369]: Dashboard
+          - generic [ref=e370] [cursor=pointer]:
+            - img [ref=e372]
+            - paragraph [ref=e375]: Transaction
+        - generic [ref=e376]:
+          - paragraph [ref=e377]: Transaction
+          - generic [ref=e378] [cursor=pointer]:
+            - img "Transaction List" [ref=e380]
+            - paragraph [ref=e381]: Transaction List
+        - generic [ref=e382]:
+          - paragraph [ref=e383]: Policy
+          - generic [ref=e384] [cursor=pointer]:
+            - img "Policy List" [ref=e386]
+            - paragraph [ref=e387]: Policy List
+          - generic [ref=e388] [cursor=pointer]:
+            - img "Pending Renewals" [ref=e390]
+            - paragraph [ref=e391]: Pending Renewals
+          - generic [ref=e392] [cursor=pointer]:
+            - img "Endorsement List" [ref=e394]
+            - paragraph [ref=e395]: Endorsement List
+        - generic [ref=e396]:
+          - paragraph [ref=e397]: Claim
+          - generic [ref=e398] [cursor=pointer]:
+            - img "Claim List" [ref=e400]
+            - paragraph [ref=e401]: Claim List
+          - generic [ref=e402] [cursor=pointer]:
+            - img "Claim History" [ref=e404]
+            - paragraph [ref=e405]: Claim History
+        - generic [ref=e406]:
+          - paragraph [ref=e407]: Sanction
+          - generic [ref=e408] [cursor=pointer]:
+            - img "Sanction List" [ref=e410]
+            - paragraph [ref=e411]: Sanction List
+        - generic [ref=e412]:
+          - paragraph [ref=e413]: Promotion
+          - generic [ref=e414] [cursor=pointer]:
+            - img "Campaign" [ref=e416]
+            - paragraph [ref=e417]: Campaign
+          - generic [ref=e418] [cursor=pointer]:
+            - img "Export Users" [ref=e420]
+            - paragraph [ref=e421]: Export Users
+        - generic [ref=e422]:
+          - paragraph [ref=e423]: Product
+          - generic [ref=e424] [cursor=pointer]:
+            - img "Product Catalog" [ref=e426]
+            - paragraph [ref=e427]: Product Catalog
+        - generic [ref=e428]:
+          - paragraph [ref=e429]: Masterdata
+          - generic [ref=e430] [cursor=pointer]:
+            - img "Product Category" [ref=e432]
+            - paragraph [ref=e433]: Product Category
+          - generic [ref=e434] [cursor=pointer]:
+            - img "Insurance" [ref=e436]
+            - paragraph [ref=e437]: Insurance
+          - generic [ref=e438] [cursor=pointer]:
+            - img "Product" [ref=e440]
+            - paragraph [ref=e441]: Product
+          - generic [ref=e442] [cursor=pointer]:
+            - img "Currency" [ref=e444]
+            - paragraph [ref=e445]: Currency
+          - generic [ref=e446] [cursor=pointer]:
+            - img "Channel" [ref=e448]
+            - paragraph [ref=e449]: Channel
+          - generic [ref=e450] [cursor=pointer]:
+            - img "User" [ref=e452]
+            - paragraph [ref=e453]: User
+          - generic [ref=e454] [cursor=pointer]:
+            - img "Group" [ref=e456]
+            - paragraph [ref=e457]: Group
+          - generic [ref=e458] [cursor=pointer]:
+            - img "Role" [ref=e460]
+            - paragraph [ref=e461]: Role
+          - generic [ref=e462] [cursor=pointer]:
+            - img "Page Management" [ref=e464]
+            - paragraph [ref=e465]: Page Management
+          - generic [ref=e466] [cursor=pointer]:
+            - img "Partner Management" [ref=e468]
+            - paragraph [ref=e469]: Partner Management
+          - generic [ref=e470] [cursor=pointer]:
+            - img "Email Template" [ref=e472]
+            - paragraph [ref=e473]: Email Template
+          - generic [ref=e474] [cursor=pointer]:
+            - img "Email Tag" [ref=e476]
+            - paragraph [ref=e477]: Email Tag
+          - generic [ref=e478] [cursor=pointer]:
+            - img "Holiday Date" [ref=e480]
+            - paragraph [ref=e481]: Holiday Date
+          - generic [ref=e482] [cursor=pointer]:
+            - img "Hospital" [ref=e484]
+            - paragraph [ref=e485]: Hospital
+        - generic [ref=e486]:
+          - paragraph [ref=e487]: Report
+          - generic [ref=e488] [cursor=pointer]:
+            - img "Claim Report" [ref=e490]
+            - paragraph [ref=e491]: Claim Report
+          - generic [ref=e492] [cursor=pointer]:
+            - img "Campaign Report" [ref=e494]
+            - paragraph [ref=e495]: Campaign Report
+          - generic [ref=e496] [cursor=pointer]:
+            - img "Campaign Analytics Report" [ref=e498]
+            - paragraph [ref=e499]: Campaign Analytics Report
+          - generic [ref=e500] [cursor=pointer]:
+            - img "Performance Report" [ref=e502]
+            - paragraph [ref=e503]: Performance Report
+  - button "Open Next.js Dev Tools" [ref=e30] [cursor=pointer]:
+    - img [ref=e31]
+  - alert [ref=e34]

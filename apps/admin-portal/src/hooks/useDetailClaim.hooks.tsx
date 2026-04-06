@@ -112,12 +112,12 @@ export function useDetailClaim(): useDetailClaimProps {
   }, [detailClaimResponse]);
 
   useEffect(() => {
-    const response = (formClaimsResponse as any)?.data;
-    if (!response || !detailClaim) return;
+    const response = (formClaimsResponse as any)?.data || formClaimsResponse;
+    if (!response || !Array.isArray(response) || !detailClaim) return;
 
     const claimForms: any = [
       ...response.filter((item: any) => item.name != "chronology"),
-      ...detailClaim.claim_config.map((item: any) => ({
+      ...(detailClaim.claim_config || []).map((item: any) => ({
         ...item,
         form: "claim_config",
       })),
@@ -126,7 +126,7 @@ export function useDetailClaim(): useDetailClaimProps {
     setFlatClaimForm(claimForms);
     const flattenClaimForms = flattenClaimFormFields(claimForms);
     const missingDocs = Object.keys(flattenClaimForms)
-      .filter((fieldName) => detailClaim?.lack_of_documents?.indexOf(fieldName) > -1)
+      .filter((fieldName) => (detailClaim?.lack_of_documents || []).indexOf(fieldName) > -1)
       .map((fieldName) => flattenClaimForms[fieldName]);
 
     setClaimForms(missingDocs);
@@ -135,6 +135,8 @@ export function useDetailClaim(): useDetailClaimProps {
       const updatedFormValue = { ...prev };
 
       missingDocs.forEach((item: any) => {
+        if (updatedFormValue[item.name]) return;
+        
         const initialValue =
           item.type.toLowerCase() == "file"
             ? {

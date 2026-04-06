@@ -27,9 +27,9 @@ import {
   TableRow,
 } from '@repo/ui';
 
-import { PageHeader } from "@/components/page-header";
-import JourneyVerticalImage from '@/components/ui/journey-vertical.image';
+import { PageHeader } from '@/components/page-header';
 import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { primary } from '@/constants/app-common.const';
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
 import { useDetailClaim } from '@/hooks/useDetailClaim.hooks';
@@ -100,7 +100,6 @@ const DetailClaim = () => {
     claim?.personal_info?.city,
     claim?.personal_info?.state,
   ];
-
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -193,9 +192,9 @@ const DetailClaim = () => {
       const canPreview = hasValue && isPreviewableImage(documentObject.value);
 
       return (
-        <div className="flex flex-col gap-4">
+        <Box className="flex flex-col gap-4">
           {canPreview ? (
-            <div className="bg-gray-50 border border-border rounded-xl flex items-center justify-center p-2">
+            <Box className="bg-gray-50 border border-border rounded-xl flex items-center justify-center p-2">
               <Image
                 className="mx-auto max-w-full h-auto max-h-[50vh] object-contain rounded-lg"
                 src={documentObject.value}
@@ -204,32 +203,32 @@ const DetailClaim = () => {
                 height={600}
                 unoptimized
               />
-            </div>
+            </Box>
           ) : hasValue ? (
-            <div className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
+            <Box className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
               <FileText className="w-10 h-10 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground text-center">
-                This document format cannot be previewed.<br />Please download the file to view its contents.
-              </p>
-            </div>
+              <Box as="p" className="text-sm text-muted-foreground text-center">
+                This document format cannot be previewed.
+                <br />
+                Please download the file to view its contents.
+              </Box>
+            </Box>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
+            <Box className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
               <Inbox className="w-10 h-10 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground text-center">
+              <Box as="p" className="text-sm text-muted-foreground text-center">
                 No document has been uploaded for this requirement.
-              </p>
-            </div>
+              </Box>
+            </Box>
           )}
           {hasValue && (
-            <div className="w-full flex items-center justify-center mt-2">
-              <Button
-                onClick={() => downloadDocument(documentObject.value)}
-              >
+            <Box className="w-full flex items-center justify-center mt-2">
+              <Button onClick={() => downloadDocument(documentObject.value)}>
                 Download Document
               </Button>
-            </div>
+            </Box>
           )}
-        </div>
+        </Box>
       );
     }
 
@@ -238,24 +237,27 @@ const DetailClaim = () => {
 
       if (files.length === 0) {
         return (
-          <div className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
+          <Box className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
             <Inbox className="w-10 h-10 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground text-center">
+            <Box as="p" className="text-sm text-muted-foreground text-center">
               No documents have been uploaded for this requirement.
-            </p>
-          </div>
+            </Box>
+          </Box>
         );
       }
 
       return (
-        <div className="flex flex-col gap-6">
+        <Box className="flex flex-col gap-6">
           {files.map((fileUrl: string, index: number) => {
             const canPreview = isPreviewableImage(fileUrl);
 
             return (
-              <div key={index} className="flex flex-col gap-4 border-b border-border pb-6 last:border-b-0 last:pb-0">
+              <Box
+                key={index}
+                className="flex flex-col gap-4 border-b border-border pb-6 last:border-b-0 last:pb-0"
+              >
                 {canPreview ? (
-                  <div className="bg-gray-50 border border-border rounded-xl flex items-center justify-center p-2">
+                  <Box className="bg-gray-50 border border-border rounded-xl flex items-center justify-center p-2">
                     <Image
                       className="mx-auto max-w-full h-auto max-h-[50vh] object-contain rounded-lg"
                       src={fileUrl}
@@ -264,36 +266,48 @@ const DetailClaim = () => {
                       height={600}
                       unoptimized
                     />
-                  </div>
+                  </Box>
                 ) : (
-                  <div className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
+                  <Box className="flex flex-col items-center justify-center gap-3 w-full py-12 px-6 border border-border border-dashed rounded-xl bg-gray-50/50">
                     <FileText className="w-10 h-10 text-muted-foreground/40" />
-                    <p className="text-sm text-muted-foreground text-center">
-                      This document format cannot be previewed.<br />Please download the file to view its contents.
-                    </p>
-                  </div>
+                    <Box as="p" className="text-sm text-muted-foreground text-center">
+                      This document format cannot be previewed.
+                      <br />
+                      Please download the file to view its contents.
+                    </Box>
+                  </Box>
                 )}
-                <div className="w-full flex items-center justify-center mt-2">
-                  <Button onClick={() => downloadDocument(fileUrl)}>
-                    Download Document
-                  </Button>
-                </div>
-              </div>
+                <Box className="w-full flex items-center justify-center mt-2">
+                  <Button onClick={() => downloadDocument(fileUrl)}>Download Document</Button>
+                </Box>
+              </Box>
             );
           })}
-        </div>
+        </Box>
       );
     }
 
     if (documentType === 'number') {
-      return <p className="text-sm font-medium">{formatMoney(!!documentObject.value ? documentObject.value : 0)}</p>;
+      return (
+        <Box as="p" className="text-sm font-medium">
+          {formatMoney(!!documentObject.value ? documentObject.value : 0)}
+        </Box>
+      );
     }
 
     if (documentType === 'datetime') {
-      return <p className="text-sm font-medium">{!!documentObject.value ? moment(documentObject.value).format('LLLL') : '-'}</p>;
+      return (
+        <Box as="p" className="text-sm font-medium">
+          {!!documentObject.value ? moment(documentObject.value).format('LLLL') : '-'}
+        </Box>
+      );
     }
 
-    return <p className="text-sm font-medium">{!!documentObject.value ? documentObject.value : '-'}</p>;
+    return (
+      <Box as="p" className="text-sm font-medium">
+        {!!documentObject.value ? documentObject.value : '-'}
+      </Box>
+    );
   };
 
   const breadcrumbs = [
@@ -304,9 +318,9 @@ const DetailClaim = () => {
 
   return (
     <ContentLoadingWrapper isLoading={isLoading}>
-      <div className="flex flex-col w-full">
+      <Box className="flex flex-col w-full">
         <PageHeader title="Detail Claim" breadcrumbs={breadcrumbs} showBackButton={true} />
-        <div className="flex flex-col w-full p-4 md:p-6 gap-6">
+        <Box className="flex flex-col w-full p-4 md:p-6 gap-6">
           <Box className="block rounded-xl bg-white shadow-sm">
             <Tabs
               value={tab}
@@ -333,25 +347,54 @@ const DetailClaim = () => {
           </Box>
 
           {tab === 'Summary' && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1 bg-white rounded-xl shadow-sm sm:p-6 p-5 h-fit max-h-full overflow-y-auto flex flex-col gap-4">
-                <p className="font-bold text-lg text-gray-900 border-b pb-3">Status Claim</p>
-                <div className="flex flex-col gap-2 mt-2">
+            <Box className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Box className="lg:col-span-1 bg-white rounded-xl shadow-sm sm:p-6 p-5 h-fit max-h-full overflow-y-auto flex flex-col gap-4">
+                <Box as="p" className="font-bold text-lg text-gray-900 border-b pb-3">
+                  Status Claim
+                </Box>
+                <Box className="flex flex-col gap-2 mt-2">
                   {histories && histories.length > 0 ? (
                     histories.map((h, historyIndex) => {
                       const showUploadDocument =
                         h?.status === 'Lack of Documents Operator' ||
                         h.status === 'Lack of Documents Insurance';
                       return (
-                        <div key={`history-${historyIndex}`} className="flex items-start mt-2">
-                          <div className="mt-1">
-                            {JourneyVerticalImage(historyIndex !== 0 ? '#C4C4C4' : undefined)}
-                          </div>
-                          <div className="ml-4 flex flex-col gap-1.5">
-                            <p className="text-sm font-semibold">
-                              <span className={getStatusColor(h?.status)}>{h?.status}</span>
-                            </p>
-                            <p className="text-xs text-gray-500 font-medium">
+                        <Box key={`history-${historyIndex}`} className="flex items-start mt-2">
+                          <Box className="mt-1">
+                            <Box
+                              as="svg"
+                              width="10"
+                              height="70"
+                              className="min-w-[10px]"
+                              viewBox="0 0 10 70"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <Box
+                                as="line"
+                                x1="4.5"
+                                y1="2.18557e-08"
+                                x2="4.5"
+                                y2="70"
+                                stroke={historyIndex !== 0 ? '#C4C4C4' : primary}
+                                strokeDasharray="2 2"
+                              />
+                              <Box
+                                as="circle"
+                                cx="5"
+                                cy="35"
+                                r="5"
+                                fill={historyIndex !== 0 ? '#C4C4C4' : primary}
+                              />
+                            </Box>
+                          </Box>
+                          <Box className="ml-4 flex flex-col gap-1.5">
+                            <Box as="p" className="text-sm font-semibold">
+                              <Box as="span" className={getStatusColor(h?.status)}>
+                                {h?.status}
+                              </Box>
+                            </Box>
+                            <Box as="p" className="text-xs text-gray-500 font-medium">
                               {h?.created_at
                                 ? `${new Date(h.created_at).toLocaleDateString('en-US', {
                                     year: 'numeric',
@@ -363,29 +406,35 @@ const DetailClaim = () => {
                                     hour12: true,
                                   })}`
                                 : '-'}
-                            </p>
+                            </Box>
 
-                            <div className="mt-1">
+                            <Box className="mt-1">
                               {h?.note && h.status !== 'Reupload Document Review Operator' && (
-                                <p className="text-xs text-red-500 font-medium">{h.note}</p>
+                                <Box as="p" className="text-xs text-red-500 font-medium">
+                                  {h.note}
+                                </Box>
                               )}
 
                               {showUploadDocument &&
                                 getMissingDocuments(h?.lack_of_documents || []).length > 0 && (
-                                  <ul className="list-disc ml-4 mt-2">
+                                  <Box as="ul" className="list-disc ml-4 mt-2">
                                     {getMissingDocuments(h?.lack_of_documents || []).map(
                                       (claimForm, index) => (
-                                        <li key={index} className="text-xs text-red-500 font-medium py-0.5">
+                                        <Box
+                                          as="li"
+                                          key={index}
+                                          className="text-xs text-red-500 font-medium py-0.5"
+                                        >
                                           {claimForm?.label.en ||
                                             claimForm?.label_multilanguage?.en ||
                                             claimForm.label ||
                                             ''}
-                                        </li>
+                                        </Box>
                                       ),
                                     )}
-                                  </ul>
+                                  </Box>
                                 )}
-                            </div>
+                            </Box>
 
                             {showUploadDocument && historyIndex === 0 && (
                               <Button
@@ -398,38 +447,48 @@ const DetailClaim = () => {
                                 Upload Document
                               </Button>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       );
                     })
                   ) : (
-                    <p className="text-sm text-gray-500">No claim histories available</p>
+                    <Box as="p" className="text-sm text-gray-500">
+                      No claim histories available
+                    </Box>
                   )}
-                </div>
-              </div>
-              <div className="lg:col-span-2 flex flex-col gap-6">
-                <div className="bg-white flex flex-col gap-4 rounded-xl shadow-sm sm:p-6 p-5">
-                  <p className="font-bold text-lg text-gray-900 border-b pb-3">Detail Claim</p>
-                  <div className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
-                    <div className="text-gray-500 font-medium">Claim Number</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.number || '-'}</div>
+                </Box>
+              </Box>
+              <Box className="lg:col-span-2 flex flex-col gap-6">
+                <Box className="bg-white flex flex-col gap-4 rounded-xl shadow-sm sm:p-6 p-5">
+                  <Box as="p" className="font-bold text-lg text-gray-900 border-b pb-3">
+                    Detail Claim
+                  </Box>
+                  <Box className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
+                    <Box className="text-gray-500 font-medium">Claim Number</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">{claim?.number || '-'}</Box>
 
-                    <div className="text-gray-500 font-medium">Customer Name</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.policy_data?.policy_holder?.name || '-'}</div>
+                    <Box className="text-gray-500 font-medium">Customer Name</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.policy_data?.policy_holder?.name || '-'}
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">Plan Name</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.package?.plan?.name.split('|').join(' - ') || '-'}</div>
+                    <Box className="text-gray-500 font-medium">Plan Name</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.package?.plan?.name.split('|').join(' - ') || '-'}
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">Benefit</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.benefit?.description_en || '-'}</div>
+                    <Box className="text-gray-500 font-medium">Benefit</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.benefit?.description_en || '-'}
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">Requested Amount</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">
+                    <Box className="text-gray-500 font-medium">Requested Amount</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
                       {(() => {
                         const claimValue = claim?.claim?.find(
                           (d: any) => d.type === 'Number' && d.name === 'claim',
@@ -439,48 +498,58 @@ const DetailClaim = () => {
 
                         return !isNaN(numericValue) ? formatMoneyClaim(numericValue) : '-';
                       })()}
-                    </div>
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">Approved Amount</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">
+                    <Box className="text-gray-500 font-medium">Approved Amount</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
                       {formatMoneyClaim(
                         claim?.amount_approved != null ? claim?.amount_approved : 0,
                       )}
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white flex flex-col gap-4 rounded-xl shadow-sm sm:p-6 p-5">
-                  <p className="font-bold text-lg text-gray-900 border-b pb-3">Informasi Pemegang Polis</p>
-                  <div className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
+                    </Box>
+                  </Box>
+                </Box>
+                <Box className="bg-white flex flex-col gap-4 rounded-xl shadow-sm sm:p-6 p-5">
+                  <Box as="p" className="font-bold text-lg text-gray-900 border-b pb-3">
+                    Informasi Pemegang Polis
+                  </Box>
+                  <Box className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
                     {policyVisibility.name && (
                       <Fragment>
-                        <div className="text-gray-500 font-medium">Customer Name</div>
-                        <div className="text-gray-400">:</div>
-                        <div className="font-semibold text-gray-900">{claim?.policy_data?.policy_holder?.name || '-'}</div>
+                        <Box className="text-gray-500 font-medium">Customer Name</Box>
+                        <Box className="text-gray-400">:</Box>
+                        <Box className="font-semibold text-gray-900">
+                          {claim?.policy_data?.policy_holder?.name || '-'}
+                        </Box>
                       </Fragment>
                     )}
                     {policyVisibility.phone && (
                       <Fragment>
-                        <div className="text-gray-500 font-medium">Phone Number</div>
-                        <div className="text-gray-400">:</div>
-                        <div className="font-semibold text-gray-900">{claim?.policy_data?.policy_holder?.phone || '-'}</div>
+                        <Box className="text-gray-500 font-medium">Phone Number</Box>
+                        <Box className="text-gray-400">:</Box>
+                        <Box className="font-semibold text-gray-900">
+                          {claim?.policy_data?.policy_holder?.phone || '-'}
+                        </Box>
                       </Fragment>
                     )}
                     {policyVisibility.email && (
                       <Fragment>
-                        <div className="text-gray-500 font-medium">Email</div>
-                        <div className="text-gray-400">:</div>
-                        <div className="font-semibold text-gray-900">{claim?.policy_data?.policy_holder?.email || '-'}</div>
+                        <Box className="text-gray-500 font-medium">Email</Box>
+                        <Box className="text-gray-400">:</Box>
+                        <Box className="font-semibold text-gray-900">
+                          {claim?.policy_data?.policy_holder?.email || '-'}
+                        </Box>
                       </Fragment>
                     )}
-                  </div>
-                </div>
-                <div className="bg-white flex flex-col gap-4 rounded-xl shadow-sm sm:p-6 p-5">
-                  <p className="font-bold text-lg text-gray-900 border-b pb-3">Informasi Tertanggung</p>
-                  <div className="flex flex-col lg:flex-row gap-8 mt-2">
-                    <div className="lg:min-w-64 lg:w-64 shrink-0">
-                      <div className="w-full border rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
+                  </Box>
+                </Box>
+                <Box className="bg-white flex flex-col gap-4 rounded-xl shadow-sm sm:p-6 p-5">
+                  <Box as="p" className="font-bold text-lg text-gray-900 border-b pb-3">
+                    Informasi Tertanggung
+                  </Box>
+                  <Box className="flex flex-col lg:flex-row gap-8 mt-2">
+                    <Box className="lg:min-w-64 lg:w-64 shrink-0">
+                      <Box className="w-full border rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
                         <Image
                           src={imageUrl}
                           alt="ID Card"
@@ -488,46 +557,54 @@ const DetailClaim = () => {
                           height={300}
                           className="w-full h-auto object-cover"
                         />
-                      </div>
-                    </div>
-                    <div className="w-full grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm content-start">
-                      <div className="text-gray-500 font-medium">No. Polis</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">{claim?.policy_data?.number || '-'}</div>
+                      </Box>
+                    </Box>
+                    <Box className="w-full grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm content-start">
+                      <Box className="text-gray-500 font-medium">No. Polis</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
+                        {claim?.policy_data?.number || '-'}
+                      </Box>
 
-                      <div className="text-gray-500 font-medium">No. Peserta</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">{claim?.participant_data?.number || '-'}</div>
+                      <Box className="text-gray-500 font-medium">No. Peserta</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
+                        {claim?.participant_data?.number || '-'}
+                      </Box>
 
-                      <div className="text-gray-500 font-medium">Nama Lengkap</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">
+                      <Box className="text-gray-500 font-medium">Nama Lengkap</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
                         {claim?.participant_data?.data?.data?.name ||
                           claim?.participant_data?.data?.name ||
                           '-'}
-                      </div>
+                      </Box>
 
                       {danaInfoVisibility && (
                         <Fragment>
-                          <div className="text-gray-500 font-medium">Plat Nomor</div>
-                          <div className="text-gray-400">:</div>
-                          <div className="font-semibold text-gray-900">
+                          <Box className="text-gray-500 font-medium">Plat Nomor</Box>
+                          <Box className="text-gray-400">:</Box>
+                          <Box className="font-semibold text-gray-900">
                             {claim?.participant_data?.data?.data?.licensePlate ||
                               claim?.participant_data?.data?.licensePlate ||
                               '-'}
-                          </div>
+                          </Box>
                         </Fragment>
                       )}
 
-                      <div className="text-gray-500 font-medium">Gender</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">{claim?.participant_data?.data?.gender || '-'}</div>
+                      <Box className="text-gray-500 font-medium">Gender</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
+                        {claim?.participant_data?.data?.gender || '-'}
+                      </Box>
 
-                      <div className="text-gray-500 font-medium">Kode Negara</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">{claim?.participant_data?.data?.country_code || '-'}</div>
+                      <Box className="text-gray-500 font-medium">Kode Negara</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
+                        {claim?.participant_data?.data?.country_code || '-'}
+                      </Box>
 
-                      <div className="text-gray-500 font-medium">
+                      <Box className="text-gray-500 font-medium">
                         {claim?.participant_data?.data?.data?.passport_no
                           ? 'No. Passport'
                           : claim?.participant_data?.data?.passport_no
@@ -537,96 +614,121 @@ const DetailClaim = () => {
                               : claim?.participant_data?.data?.identification_number
                                 ? 'No. Identitas'
                                 : ''}
-                      </div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">
+                      </Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
                         {claim?.participant_data?.data?.data?.passport_no ||
                           claim?.participant_data?.data?.passport_no ||
                           claim?.participant_data?.data?.nik ||
                           '-'}
-                      </div>
+                      </Box>
 
-                      <div className="text-gray-500 font-medium">Kewarganegaraan</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">
+                      <Box className="text-gray-500 font-medium">Kewarganegaraan</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
                         {claim?.participant_data?.data?.data?.nationality ||
                           claim?.participant_data?.data?.nationality ||
                           '-'}
-                      </div>
+                      </Box>
 
-                      <div className="text-gray-500 font-medium">Tgl. Lahir</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">
+                      <Box className="text-gray-500 font-medium">Tgl. Lahir</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
                         {claim?.participant_data?.data?.data?.dob ||
                           claim?.participant_data?.data?.dob ||
                           '-'}
-                      </div>
+                      </Box>
 
-                      <div className="text-gray-500 font-medium">Tempat Lahir</div>
-                      <div className="text-gray-400">:</div>
-                      <div className="font-semibold text-gray-900">{claim?.participant_data?.data?.pob || '-'}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-xl shadow-sm flex flex-col gap-4 p-5 sm:p-6">
-                  <p className="font-bold text-lg text-gray-900 border-b pb-3">Informasi Pribadi</p>
-                  <div className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
-                    <div className="text-gray-500 font-medium">Nomor Handpone</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.personal_info?.phone || '-'}</div>
+                      <Box className="text-gray-500 font-medium">Tempat Lahir</Box>
+                      <Box className="text-gray-400">:</Box>
+                      <Box className="font-semibold text-gray-900">
+                        {claim?.participant_data?.data?.pob || '-'}
+                      </Box>
+                    </Box>
+                  </Box>
+                </Box>
+                <Box className="bg-white rounded-xl shadow-sm flex flex-col gap-4 p-5 sm:p-6">
+                  <Box as="p" className="font-bold text-lg text-gray-900 border-b pb-3">
+                    Informasi Pribadi
+                  </Box>
+                  <Box className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
+                    <Box className="text-gray-500 font-medium">Nomor Handpone</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.personal_info?.phone || '-'}
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">Alamat</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900 leading-relaxed">{personalInfo.filter(Boolean).join(', ') || '-'}</div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-xl shadow-sm flex flex-col gap-4 p-5 sm:p-6">
-                  <p className="font-bold text-lg text-gray-900 border-b pb-3">Informasi Rekening</p>
-                  <div className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
-                    <div className="text-gray-500 font-medium">Nama</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.bank_info?.account_name || '-'}</div>
+                    <Box className="text-gray-500 font-medium">Alamat</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900 leading-relaxed">
+                      {personalInfo.filter(Boolean).join(', ') || '-'}
+                    </Box>
+                  </Box>
+                </Box>
+                <Box className="bg-white rounded-xl shadow-sm flex flex-col gap-4 p-5 sm:p-6">
+                  <Box as="p" className="font-bold text-lg text-gray-900 border-b pb-3">
+                    Informasi Rekening
+                  </Box>
+                  <Box className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
+                    <Box className="text-gray-500 font-medium">Nama</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.bank_info?.account_name || '-'}
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">Nama Bank</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.bank_info?.bank?.name || '-'}</div>
+                    <Box className="text-gray-500 font-medium">Nama Bank</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.bank_info?.bank?.name || '-'}
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">Cabang Bank</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.bank_info?.branch || '-'}</div>
+                    <Box className="text-gray-500 font-medium">Cabang Bank</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.bank_info?.branch || '-'}
+                    </Box>
 
-                    <div className="text-gray-500 font-medium">No. Rekening</div>
-                    <div className="text-gray-400">:</div>
-                    <div className="font-semibold text-gray-900">{claim?.bank_info?.account_number || '-'}</div>
-                  </div>
-                </div>
-                {integrationInfoVisibility && claim?.other_info?.third_party?.identifiers && typeof claim.other_info.third_party.identifiers === 'object' && Object.keys(claim.other_info.third_party.identifiers).length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm flex flex-col gap-4 p-5 sm:p-6">
-                    <p className="font-bold text-lg text-gray-900 border-b pb-3">Informasi Integrasi Asuransi</p>
-                    <div className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
-                      {Object.entries(claim.other_info.third_party.identifiers).map(
-                        ([key, value]: [string, any]) => (
-                          <Fragment key={key}>
-                            <div className="text-gray-500 font-medium">
-                              {key
-                                .split('_')
-                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                .join(' ')}
-                            </div>
-                            <div className="text-gray-400">:</div>
-                            <div className="font-semibold text-gray-900">{String(value || '-')}</div>
-                          </Fragment>
-                        ),
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+                    <Box className="text-gray-500 font-medium">No. Rekening</Box>
+                    <Box className="text-gray-400">:</Box>
+                    <Box className="font-semibold text-gray-900">
+                      {claim?.bank_info?.account_number || '-'}
+                    </Box>
+                  </Box>
+                </Box>
+                {integrationInfoVisibility &&
+                  claim?.other_info?.third_party?.identifiers &&
+                  typeof claim.other_info.third_party.identifiers === 'object' &&
+                  Object.keys(claim.other_info.third_party.identifiers).length > 0 && (
+                    <Box className="bg-white rounded-xl shadow-sm flex flex-col gap-4 p-5 sm:p-6">
+                      <Box as="p" className="font-bold text-lg text-gray-900 border-b pb-3">
+                        Informasi Integrasi Asuransi
+                      </Box>
+                      <Box className="grid grid-cols-[130px_10px_1fr] sm:grid-cols-[160px_10px_1fr] gap-y-4 text-sm mt-2">
+                        {Object.entries(claim.other_info.third_party.identifiers).map(
+                          ([key, value]: [string, any]) => (
+                            <Fragment key={key}>
+                              <Box className="text-gray-500 font-medium">
+                                {key
+                                  .split('_')
+                                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                  .join(' ')}
+                              </Box>
+                              <Box className="text-gray-400">:</Box>
+                              <Box className="font-semibold text-gray-900">
+                                {String(value || '-')}
+                              </Box>
+                            </Fragment>
+                          ),
+                        )}
+                      </Box>
+                    </Box>
+                  )}
+              </Box>
+            </Box>
           )}
           {tab === 'Documents' && (
-            <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 overflow-hidden">
-              <div className="overflow-x-auto w-full">
+            <Box className="bg-white rounded-xl shadow-sm p-4 md:p-6 overflow-hidden">
+              <Box className="overflow-x-auto w-full">
                 <Table className="w-full">
                   <TableHeader>
                     <TableRow>
@@ -643,31 +745,37 @@ const DetailClaim = () => {
                         <TableRow key={index}>
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>
-                            <div className="flex gap-2 items-center">
+                            <Box className="flex gap-2 items-center">
                               {doc?.label?.en || doc?.label || '-'}
                               {doc?.insured_type &&
                                 ' - ' +
                                   doc?.insured_type.charAt(0).toUpperCase() +
                                   doc?.insured_type.slice(1)}
-                            </div>
+                            </Box>
                           </TableCell>
                           <TableCell>{doc?.date ? moment(doc.date).format('LLLL') : '-'}</TableCell>
                           <TableCell>
                             {claimHasValue(doc) ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                              <Box
+                                as="span"
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
+                              >
                                 Completed
-                              </span>
+                              </Box>
                             ) : (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                              <Box
+                                as="span"
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
+                              >
                                 Pending
-                              </span>
+                              </Box>
                             )}
                           </TableCell>
                           <TableCell className="text-center">
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               variant="primary"
-                              className="rounded-full" 
+                              className="rounded-full"
                               onClick={() => viewDocument(doc)}
                             >
                               View
@@ -678,47 +786,53 @@ const DetailClaim = () => {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={5} className="h-64 text-center">
-                          <div className="flex flex-col items-center justify-center text-gray-500">
-                            <Image src={noData} alt="No Data" width={120} height={120} className="mb-4" />
-                            <p>No transaction data available</p>
-                          </div>
+                          <Box className="flex flex-col items-center justify-center text-gray-500">
+                            <Image
+                              src={noData}
+                              alt="No Data"
+                              width={120}
+                              height={120}
+                              className="mb-4"
+                            />
+                            <Box as="p">No transaction data available</Box>
+                          </Box>
                         </TableCell>
                       </TableRow>
                     )}
                   </TableBody>
                 </Table>
-              </div>
-            </div>
+              </Box>
+            </Box>
           )}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       <Dialog open={isViewDocument} onClose={() => setIsViewDocument(false)}>
-        <DialogContent
-          size="lg"
-          title={docToOpen?.label?.en || docToOpen?.label || '-'}
-        >
+        <DialogContent size="lg" title={docToOpen?.label?.en || docToOpen?.label || '-'}>
           <DialogClose asChild>
-            <button
+            <Box
+              as="button"
               type="button"
               className="absolute right-4 top-4 rounded-md p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none cursor-pointer outline-none"
             >
               <X className="h-5 w-5" />
-              <span className="sr-only">Close</span>
-            </button>
+              <Box as="span" className="sr-only">
+                Close
+              </Box>
+            </Box>
           </DialogClose>
-          <div className="flex flex-col gap-6 mt-4">
+          <Box className="flex flex-col gap-6 mt-4">
             {docToOpen?.type?.toLowerCase() === 'fields'
               ? docToOpen.fields.map((field: FieldType, index: number) => (
-                  <div key={index} className="flex flex-col gap-2">
-                    <div className="text-sm sm:text-base font-semibold" key={field.name}>
+                  <Box key={index} className="flex flex-col gap-2">
+                    <Box className="text-sm sm:text-base font-semibold" key={field.name}>
                       {field?.label_multilanguage?.en || field?.label || '-'}
-                    </div>
+                    </Box>
                     {renderDocumentsDetails(field)}
-                  </div>
+                  </Box>
                 ))
               : docToOpen && renderDocumentsDetails(docToOpen)}
-          </div>
+          </Box>
         </DialogContent>
       </Dialog>
     </ContentLoadingWrapper>

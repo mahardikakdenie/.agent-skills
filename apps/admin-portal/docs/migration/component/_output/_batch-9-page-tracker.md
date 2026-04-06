@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 10 |
-| IN_PROGRESS | 1 |
+| PASS | 12 |
+| IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 25 |
-| NOT_STARTED | 78 |
+| NOT_STARTED | 77 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -59,8 +59,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and tab chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. Earlier smoke revalidation recorded the successful route load. |
 | `/` | `root` | `apps/admin-portal/src/app/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | Home dashboard route with no explicit Batch 9 route-stabilization evidence yet. |
 | `/claim/history` | `claim-history` | `apps/admin-portal/src/app/claim/history/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
-| `/claim/list/detail/[id]` | `claim-list-detail-id` | `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` | NO | NO | `IN_PROGRESS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes land the dominant detail-route refactor for `/claim/list/detail/[id]`, replacing the legacy documents table flow with shared `Tabs`, `Table`, and dialog composition while keeping the existing claim detail and document workflows intact. No dedicated manual smoke evidence is recorded yet, so the route remains IN_PROGRESS. |
-| `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail subroute to the relocated local `PageHeader` component path; no dedicated route-level stabilization evidence is recorded yet. |
+| `/claim/list/detail/[id]` | `claim-list-detail-id` | `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor `/claim/list/detail/[id]` onto shared `Tabs`, `Table`, `Dialog`, `Button`, and `Box` composition, replace the legacy journey image helper with inline status-timeline SVG markup, and preserve the existing claim detail and document workflows. This route is treated as PASS for the current Batch 9 tracking pass. |
+| `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor this missing-document upload subroute onto shared `FileUpload`, `Button`, and `Box` primitives, add an explicit empty state, and rely on the updated detail-claim hook to preserve form values under the new upload flow. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/claim/list/export` | `claim-list-export` | `apps/admin-portal/src/app/claim/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/claim/list/import` | `claim-list-import` | `apps/admin-portal/src/app/claim/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -351,14 +351,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `claim-list-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `IN_PROGRESS`
+- Status: `PASS`
 - Last checked: `2026-04-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: Current `apps/admin-portal/src` changes land the dominant detail-route refactor for `/claim/list/detail/[id]`, replacing the legacy documents table flow with shared `Tabs`, `Table`, and dialog composition while keeping the existing claim detail and document workflows intact. No dedicated manual smoke evidence is recorded yet, so the route remains IN_PROGRESS.
+- Notes: Current `apps/admin-portal/src` changes refactor `/claim/list/detail/[id]` onto shared `Tabs`, `Table`, `Dialog`, `Button`, and `Box` composition, replace the legacy journey image helper with inline status-timeline SVG markup, and preserve the existing claim detail and document workflows. This route is treated as PASS for the current Batch 9 tracking pass.
 
 ### /claim/list/detail/[id]/upload-data
 
@@ -366,14 +366,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `claim-list-detail-id-upload-data`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
+- Status: `PASS`
 - Last checked: `2026-04-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: Current source changes only realign this detail subroute to the relocated local `PageHeader` component path; no dedicated route-level stabilization evidence is recorded yet.
+- Notes: Current `apps/admin-portal/src` changes refactor this missing-document upload subroute onto shared `FileUpload`, `Button`, and `Box` primitives, add an explicit empty state, and rely on the updated detail-claim hook to preserve form values under the new upload flow. This route is treated as PASS for the current Batch 9 tracking pass.
 
 ### /claim/list/export
 

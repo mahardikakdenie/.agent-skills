@@ -5,7 +5,7 @@ import {Claim, ClaimHistory} from "@/types/claim";
 import {claimsService} from "@/services/claims/api/claims.service";
 import NotFound from "@/components/not-found";
 import {forLabelString, getBreadcrumbs, getHeaderPage, moneyFormatter, toastNotification} from "@/helpers/app.helper";
-import JourneyVerticalImage from "@/images/journey-vertical.image";
+import { primary } from "@/constants/app-common.const";
 import moment from "moment";
 import {useScreen} from "@/context/screen.context";
 import Button from "@/components/button";
@@ -214,7 +214,24 @@ export const ClaimDetailView = () => {
                                     (h.status !== "Draft") && (
                                         <div key={`history-${historyIndex}`} className="flex items-center">
                                             <div className="w-1/12">
-                                                {JourneyVerticalImage(historyIndex !== 0 ? "#C4C4C4" : undefined)}
+                                                <svg
+                                                    width="10"
+                                                    height="70"
+                                                    className="min-w-[10px]"
+                                                    viewBox="0 0 10 70"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <line
+                                                        x1="4.5"
+                                                        y1="2.18557e-08"
+                                                        x2="4.5"
+                                                        y2="70"
+                                                        stroke={historyIndex !== 0 ? "#C4C4C4" : primary}
+                                                        strokeDasharray="2 2"
+                                                    />
+                                                    <circle cx="5" cy="35" r="5" fill={historyIndex !== 0 ? "#C4C4C4" : primary} />
+                                                </svg>
                                             </div>
                                             <div className="w-11/12">
                                                 <p className="text-sm lg:text-base font-medium">{h.status || "-"}</p>
