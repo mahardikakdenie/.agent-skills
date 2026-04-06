@@ -1,14 +1,16 @@
-﻿import React from "react";
-import { ChevronLeft } from "react-feather";
-import Link from "next/link";
+import Link from 'next/link';
+import React from 'react';
+import { ChevronLeft } from 'react-feather';
+
 import {
+  Box,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@repo/ui";
+} from '@repo/ui';
 
 export interface PageHeaderBreadcrumbItem {
   label: string;
@@ -30,12 +32,12 @@ export const PageHeaderShell: React.FC<PageHeaderShellProps> = ({
   breadcrumbs,
   showBackButton = true,
   onBackClick,
-  className = "",
+  className = '',
   children,
 }) => {
   return (
-    <div className={`bg-white md:px-6 p-4 flex items-center ${className}`}>
-      <div className="flex-1">
+    <Box className={`bg-white md:px-6 p-4 flex items-center ${className}`}>
+      <Box className="flex-1">
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumb className="sm:block hidden">
             <BreadcrumbList>
@@ -58,19 +60,23 @@ export const PageHeaderShell: React.FC<PageHeaderShellProps> = ({
             </BreadcrumbList>
           </Breadcrumb>
         )}
-        <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">{title}</h2>
-      </div>
+        <Box as="h2" className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+          {title}
+        </Box>
+      </Box>
 
-      {children && <div className="flex items-center gap-2">{children}</div>}
+      {children && <Box className="flex items-center gap-2">{children}</Box>}
 
       {showBackButton && (
-        <div
+        <Box
+          as="button"
+          type="button"
           onClick={onBackClick}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" /> Back
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };

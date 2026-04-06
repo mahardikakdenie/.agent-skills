@@ -1,6 +1,6 @@
-﻿import React from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { PageHeaderShell, type PageHeaderBreadcrumbItem } from "./PageHeaderShell";
+import { PageHeaderShell, type PageHeaderBreadcrumbItem } from "./page-header-shell";
 
 interface PageHeaderProps {
   title: string;
