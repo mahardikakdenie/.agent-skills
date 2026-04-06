@@ -1,10 +1,11 @@
-"use client";
-import React from "react";
-import Image from "next/image";
-import { formatMoney } from "@/lib/formatter";
-import { Search } from "react-feather";
-import { Input } from "@repo/ui";
-import emptyStateSearchPrompt from "@public/images/empty-state-search-prompt.svg";
+'use client';
+
+import emptyStateSearchPrompt from '@public/images/empty-state-search-prompt.svg';
+import Image from 'next/image';
+import React from 'react';
+import { Search } from 'react-feather';
+
+import { Input } from '@repo/ui';
 import {
   Select,
   SelectContent,
@@ -12,10 +13,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui";
-import { DataTable } from "@/components/ui/DataTable";
-import { useClaimHistory } from "@/hooks/useClaimHistory.hooks";
-import { createClaimHistoryTableColumns } from "@/components/tableConfig/claimHistoryTableConfig";
+} from '@repo/ui';
+
+import { createClaimHistoryTableColumns } from '@/components/tableConfig/claimHistoryTableConfig';
+import { DataTable } from '@/components/ui/DataTable';
+import { useClaimHistory } from '@/hooks/useClaimHistory.hooks';
+import { formatMoney } from '@/lib/formatter';
 
 export default function ClaimHistoryPage() {
   const {
@@ -78,9 +81,7 @@ export default function ClaimHistoryPage() {
   return (
     <div className="flex flex-col w-full p-4 md:p-6">
       <div className="flex flex-wrap justify-start pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">
-          Claim History
-        </h1>
+        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">Claim History</h1>
       </div>
 
       <div className="flex bg-white rounded-xl gap-4 mb-3 p-6">
@@ -96,12 +97,7 @@ export default function ClaimHistoryPage() {
               value={searchData}
               onChange={(e) => handleSearch(e.target.value)}
               className="h-10"
-              rightIcon={
-                <Search
-                  aria-hidden="true"
-                  className="h-4 w-4 text-[#016da1]"
-                />
-              }
+              rightIcon={<Search aria-hidden="true" className="h-4 w-4 text-[#016da1]" />}
             />
           </div>
           {!isSearchParamValid && (
@@ -120,11 +116,10 @@ export default function ClaimHistoryPage() {
               disabled={disableSelectPolicy}
             >
               <SelectTrigger className="h-10">
-                <SelectValue placeholder={disableSelectPolicy ? "-" : ""} />
+                <SelectValue placeholder={disableSelectPolicy ? '-' : ''} />
               </SelectTrigger>
               <SelectContent>
-                {!disableSelectPolicy &&
-                  renderPolicy(claimHistoryData?.policies ?? [])}
+                {!disableSelectPolicy && renderPolicy(claimHistoryData?.policies ?? [])}
               </SelectContent>
             </Select>
           </div>
@@ -139,13 +134,10 @@ export default function ClaimHistoryPage() {
               disabled={disableSelectPlan}
             >
               <SelectTrigger className="h-10">
-                <SelectValue
-                  placeholder={disableSelectPlan ? "-" : "All Plan"}
-                />
+                <SelectValue placeholder={disableSelectPlan ? '-' : 'All Plan'} />
               </SelectTrigger>
               <SelectContent>
-                {!disableSelectPlan &&
-                  renderPlan(claimHistoryData?.plans ?? [])}
+                {!disableSelectPlan && renderPlan(claimHistoryData?.plans ?? [])}
               </SelectContent>
             </Select>
           </div>
@@ -189,5 +181,3 @@ export default function ClaimHistoryPage() {
     </div>
   );
 }
-
-

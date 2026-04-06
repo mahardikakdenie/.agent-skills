@@ -1474,3 +1474,19 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Verification note: \This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /finance/billing already present in _migration-log.md and _parity-checklist.md (noting the expected 403 state). No new smoke, lint, or build evidence is added in this documentation entry.\
 - Tracker impact: \Batch 9 page tracker can now treat /finance/billing as PASS because the route-local migration has been completed.\
 
+## Batch 9 - /masterdata/user Route Refactor and Miscellaneous Cleanup - 2026-04-06
+
+- Route focus: `/masterdata/user`, `/claim/history`
+- Migration intent: `Migrate the masterdata user route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. Apply miscellaneous alignment and layout fixes to claim history, membership table, and global css.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/user/page.tsx` now renders the route shell with `Box`, replaces bespoke user role select markup with shared `Select`, and mounts the shared `@repo/ui` `DataTable` directly with manual pagination, pinned columns, empty states, and `CompactTablePagination` integration.
+  - `apps/admin-portal/src/components/tableConfig/usersTableConfig.tsx` now defines the user list columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, wrapped content cells, badge-style status rendering, and a shared `Button`-based row action view.
+  - `apps/admin-portal/src/app/claim/history/page.tsx` had its native header layout replaced with standard markup.
+  - `apps/admin-portal/src/components/tableConfig/membershipTableConfig.tsx` text formatting alignment adjustments.
+  - `apps/admin-portal/src/views/layout/layout.view.tsx` temporarily disabled `403 - Forbidden` gate.
+  - `apps/admin-portal/src/app/globals.css` tweaked disabled button styling to exclude `data-slot="switch-control"`.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/user/page.tsx`, `apps/admin-portal/src/components/tableConfig/usersTableConfig.tsx`, `apps/admin-portal/src/app/claim/history/page.tsx`, `apps/admin-portal/src/components/tableConfig/membershipTableConfig.tsx`, `apps/admin-portal/src/views/layout/layout.view.tsx`, `apps/admin-portal/src/app/globals.css`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The routes now compose existing shared Box, Button, DataTable, Input, Select, Switch, and Skeleton primitives while extending only app-local table configuration and pagination styling.`
+- Verification note: `This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /masterdata/user already present in _migration-log.md and _parity-checklist.md. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /masterdata/user as PASS because the route-local migration has been completed.`
+

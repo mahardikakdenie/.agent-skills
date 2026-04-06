@@ -93,7 +93,7 @@
 .table-policy table th:last-child {
   white-space: nowrap;
 }
-button[disabled] {
+button[disabled]:not([data-slot="switch-control"]) {
   background: #eee;
   box-shadow: none !important;
 }
@@ -226,7 +226,7 @@ main {
 .td-search-params {
   word-break: break-all;
 }
-button:disabled {
+button:disabled:not([data-slot="switch-control"]) {
   opacity: 0.4;
 }
 [vaul-drawer][vaul-drawer-visible="true"][vaul-drawer-direction="right"] {

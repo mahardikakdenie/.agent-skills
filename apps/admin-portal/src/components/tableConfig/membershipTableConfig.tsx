@@ -268,7 +268,7 @@ export const createMembershipTableColumns = ({
     meta: {
       headerCellClassName: 'whitespace-nowrap',
       cellClassName:
-        'align-middle whitespace-nowrap text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
+        'align-middle whitespace-nowrap text-xs font-semibold text-slate-500',
       cellContentClassName: 'whitespace-nowrap',
     },
     cell: ({ row }) => {
