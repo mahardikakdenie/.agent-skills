@@ -17,7 +17,7 @@ import AppURL from "@/constants/app-url.const";
 import { useParams } from "next/navigation";
 import { usePolicyDetail } from "@/hooks/useDetailPolicy.hooks";
 import { ContentLoadingWrapper } from "@/components/ui/loading";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/ui/DataTable";
 
 export default function DetailPolicy() {

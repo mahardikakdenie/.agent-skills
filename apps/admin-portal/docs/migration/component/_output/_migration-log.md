@@ -1504,3 +1504,18 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Accessibility note: `This follow-up resolves the 2026-03-27 Breadcrumb migration note that flagged PageHeaderShell's clickable <div> back affordance; the back control is now a semantic button.`
 - Verification note: `This logging update is based on the current local component and caller source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 
+## Batch 9 - /claim/list/detail/[id] Route Refactor and Detail Caller Alignment - 2026-04-06
+
+- Route focus: `/claim/list/detail/[id]`
+- Supporting callers: `/claim/list/detail/[id]/upload-data`, `/membership/list/detail/[id]`, `/policy/list/detail/[id]`, `/policy/endorsement/list/detail/[id]`
+- Migration intent: `Refactor the dominant claim detail route onto the current local header path and shared primitive composition, especially around the summary/documents split and document preview flow, while treating the other touched detail pages only as supporting PageHeader caller alignments.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` now imports `PageHeader` from `@/components/page-header`, replaces the bespoke summary/documents tab chrome with shared `Tabs`, and keeps the existing route data-fetching, permission checks, claim history lookup, and missing-document wiring intact.
+  - `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` now replaces the legacy local `DataTable` document listing and per-row inline dialog trigger flow with shared `Table`, `Dialog`, and `Button` primitives plus centralized viewer state for the active document.
+  - `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` now renders clearer file-preview states for single-file and multi-file requirements, including explicit empty and non-previewable placeholders plus download actions, while preserving the existing document inspection behavior.
+  - `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx`, `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx`, `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx`, and `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx` now align their `PageHeader` imports to the relocated local component path without introducing broader route-local migration claims for those pages.
+- Files changed (route-focused): [`apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx`, `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx`, `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx`, `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx`, `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The dominant claim detail refactor now composes existing shared Button, Dialog, Table, and Tabs primitives, while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current claim-detail route source changes plus supporting PageHeader caller alignment updates. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /claim/list/detail/[id] as IN_PROGRESS because committed route-local migration work has landed without dedicated manual smoke evidence yet. The supporting detail callers touched only by the PageHeader relocation should remain conservatively classified as NOT_STARTED until route-specific stabilization evidence exists.`
+

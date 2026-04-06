@@ -19,7 +19,7 @@ import {
   createEndorsementDetailsTableColumns,
 } from "@/components/tableConfig/endorsementTableConfig";
 import { ContentLoadingWrapper } from "@/components/ui/loading";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageHeader } from "@/components/page-header";
 
 export default function DetailEndorsement() {
   const router = useRouter();

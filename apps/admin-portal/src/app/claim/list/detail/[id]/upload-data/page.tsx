@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Form, Field } from "react-final-form";
 import { useParams } from "next/navigation";
 
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@repo/ui";
 import UploadFile from "@/components/ui/FileUpload";
 import { ContentLoadingWrapper } from "@/components/ui/loading";

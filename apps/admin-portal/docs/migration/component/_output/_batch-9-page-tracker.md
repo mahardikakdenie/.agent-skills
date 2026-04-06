@@ -34,13 +34,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | Total discovered page.tsx routes | 115 |
 | In-scope pages | 114 |
 | Smoke routes | 10 |
-| DataTable-dependent pages | 38 |
-| PASS | 9 |
-| IN_PROGRESS | 0 |
+| DataTable-dependent pages | 37 |
+| PASS | 10 |
+| IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 26 |
-| NOT_STARTED | 79 |
+| DEFERRED_DATA_TABLE | 25 |
+| NOT_STARTED | 78 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -56,11 +56,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/claim/list` | `claim-list` | `apps/admin-portal/src/app/claim/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Latest 2026-04-05 updates land route-local table configuration refinements, alignment with the shared DataTable API, and status modal Box refactor, while prior manual smoke verification for `/claim/list` and screenshots are already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/membership/list` | `membership-list` | `apps/admin-portal/src/app/membership/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the membership list route-local DataTable migration across the page, membership table config, and membership hook, while prior manual smoke verification for `/membership/list` (noting the expected 403 state) is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/finance/billing` | `finance-billing` | `apps/admin-portal/src/app/finance/billing/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the billing list route-local DataTable migration across the page and billing table config, standardizing the filter and period selection on shared primitives, while prior manual smoke verification for `/finance/billing` (noting the expected 403 state) is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
-| `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: present | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and tab chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. Earlier smoke revalidation recorded the successful route load. |
 | `/` | `root` | `apps/admin-portal/src/app/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | Home dashboard route with no explicit Batch 9 route-stabilization evidence yet. |
 | `/claim/history` | `claim-history` | `apps/admin-portal/src/app/claim/history/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
-| `/claim/list/detail/[id]` | `claim-list-detail-id` | `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
-| `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/claim/list/detail/[id]` | `claim-list-detail-id` | `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` | NO | NO | `IN_PROGRESS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes land the dominant detail-route refactor for `/claim/list/detail/[id]`, replacing the legacy documents table flow with shared `Tabs`, `Table`, and dialog composition while keeping the existing claim detail and document workflows intact. No dedicated manual smoke evidence is recorded yet, so the route remains IN_PROGRESS. |
+| `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail subroute to the relocated local `PageHeader` component path; no dedicated route-level stabilization evidence is recorded yet. |
 | `/claim/list/export` | `claim-list-export` | `apps/admin-portal/src/app/claim/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/claim/list/import` | `claim-list-import` | `apps/admin-portal/src/app/claim/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -119,14 +119,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/role/detail/[id]` | `masterdata-role-detail-id` | `apps/admin-portal/src/app/masterdata/role/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/user/add` | `masterdata-user-add` | `apps/admin-portal/src/app/masterdata/user/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/user/detail/[id]` | `masterdata-user-detail-id` | `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/membership/list/detail/[id]` | `membership-list-detail-id` | `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/membership/list/detail/[id]` | `membership-list-detail-id` | `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail page to the relocated local `PageHeader` component path; no dedicated route-level stabilization evidence is recorded yet. |
 | `/membership/list/export` | `membership-list-export` | `apps/admin-portal/src/app/membership/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/membership/list/upload` | `membership-list-upload` | `apps/admin-portal/src/app/membership/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/policy/endorsement/list/detail/[id]` | `policy-endorsement-list-detail-id` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/policy/endorsement/list/detail/[id]` | `policy-endorsement-list-detail-id` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail page to the relocated local `PageHeader` component path; its route-local DataTable usage is still intact and no dedicated route-level stabilization evidence is recorded yet. |
 | `/policy/endorsement/list/detail/[id]/upload` | `policy-endorsement-list-detail-id-upload` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/endorsement/list/export` | `policy-endorsement-list-export` | `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/endorsement/list/upload` | `policy-endorsement-list-upload` | `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/policy/list/detail/[id]` | `policy-list-detail-id` | `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/policy/list/detail/[id]` | `policy-list-detail-id` | `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail page to the relocated local `PageHeader` component path; its route-local DataTable usage is still intact and no dedicated route-level stabilization evidence is recorded yet. |
 | `/policy/list/export` | `policy-list-export` | `apps/admin-portal/src/app/policy/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/list/import` | `policy-list-import` | `apps/admin-portal/src/app/policy/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/pending-renewals` | `policy-pending-renewals` | `apps/admin-portal/src/app/policy/pending-renewals/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
@@ -350,15 +350,15 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Page file: `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx`
 - Route label: `claim-list-detail-id`
 - Smoke route: `NO`
-- DataTable dependency: `YES`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- DataTable dependency: `NO`
+- Status: `IN_PROGRESS`
+- Last checked: `2026-04-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+- Notes: Current `apps/admin-portal/src` changes land the dominant detail-route refactor for `/claim/list/detail/[id]`, replacing the legacy documents table flow with shared `Tabs`, `Table`, and dialog composition while keeping the existing claim detail and document workflows intact. No dedicated manual smoke evidence is recorded yet, so the route remains IN_PROGRESS.
 
 ### /claim/list/detail/[id]/upload-data
 
@@ -367,13 +367,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `NO`
 - DataTable dependency: `NO`
 - Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Last checked: `2026-04-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current source changes only realign this detail subroute to the relocated local `PageHeader` component path; no dedicated route-level stabilization evidence is recorded yet.
 
 ### /claim/list/export
 
@@ -1252,13 +1252,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `NO`
 - DataTable dependency: `NO`
 - Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Last checked: `2026-04-06`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current source changes only realign this detail page to the relocated local `PageHeader` component path; no dedicated route-level stabilization evidence is recorded yet.
 
 ### /membership/list/export
 
@@ -1297,13 +1297,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `NO`
 - DataTable dependency: `YES`
 - Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Last checked: `2026-04-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+- Notes: Current source changes only realign this detail page to the relocated local `PageHeader` component path; its route-local DataTable usage is still intact and no dedicated route-level stabilization evidence is recorded yet.
 
 ### /policy/endorsement/list/detail/[id]/upload
 
@@ -1357,13 +1357,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `NO`
 - DataTable dependency: `YES`
 - Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Last checked: `2026-04-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+- Notes: Current source changes only realign this detail page to the relocated local `PageHeader` component path; its route-local DataTable usage is still intact and no dedicated route-level stabilization evidence is recorded yet.
 
 ### /policy/list/export
 

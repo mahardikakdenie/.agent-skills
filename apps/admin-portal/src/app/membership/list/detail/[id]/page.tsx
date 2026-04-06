@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useMembershipDetail } from "@/hooks/useMembershipDetail.hooks";
 import AppURL from "@/constants/app-url.const";
 import { ContentLoadingWrapper } from "@/components/ui/loading";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageHeader } from "@/components/page-header";
 
 export default function DetailMembership() {
   const params = useParams();
