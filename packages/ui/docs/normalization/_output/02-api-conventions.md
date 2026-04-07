@@ -541,6 +541,7 @@ export interface DrawerProps {
   open?: boolean;
   onClose?: () => void;
   direction?: 'bottom' | 'right' | 'left' | 'top'; // default: 'bottom'
+  handleOnly?: boolean;
   children: React.ReactNode;
 }
 
@@ -878,12 +879,17 @@ export interface DatePickerProps {
   disabled?: boolean;
   clearable?: boolean;
   required?: boolean;
+  presentation?: 'popover' | 'drawer'; // default: 'popover'
+  icon?: React.ReactNode;
+  iconPosition?: 'start' | 'end'; // default: 'start'
+  drawerTitle?: string;
   label?: string;
   placeholder?: string;
   error?: string | boolean;
   open?: boolean;
   onClose?: () => void;
   className?: string;
+  classNames?: Record<string, string>;
 }
 ```
 
@@ -899,6 +905,7 @@ Surface policy:
 
 - Date-only `DatePicker` usage keeps the popover chrome bare so the shared `Calendar` stays visually aligned to the trigger without an extra decorative frame.
 - `DatePicker` with `withTime` upgrades to a framed two-column panel with the compact calendar on the left and the time rail on the right.
+- `presentation="drawer"` shifts the floating surface from a `Popover` to a bottom `Drawer`, which is especially useful for mobile viewports, optionally framed by a `drawerTitle`.
 
 Migration note: `initialValue` -> `value`; `minimumDate`/`maximumDate` -> `minDate`/`maxDate`; datetime-specific bounds map to `minDateTime`/`maxDateTime`; `isForceClear` -> `clearable`; `isDisabled` -> `disabled`; `isLongDate` and similar display-format toggles -> `formatDate`.
 
