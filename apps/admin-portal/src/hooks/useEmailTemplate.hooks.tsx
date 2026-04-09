@@ -113,8 +113,8 @@ export function useEmailTemplate() {
   }, [router]);
 
   const handleRowsPerPageChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(e.target.value));
+    (pageSize: number) => {
+      setRowsPerPage(pageSize);
       setPage(1);
     },
     []
