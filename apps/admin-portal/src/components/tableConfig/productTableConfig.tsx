@@ -1,43 +1,115 @@
-import { Column } from "@/components/ui/DataTable";
-import { Button } from "@repo/ui";
+import { Box, Button, Skeleton, type ColumnDef } from "@repo/ui";
 
 interface ProductTableConfigProps {
+  page: number;
+  rowsPerPage: number;
   handleEdit: (id: string) => void;
   canEdit: boolean;
 }
 
+const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat("id-ID").format(value);
+
 export const createProductTableColumns = ({
+  page,
+  rowsPerPage,
   handleEdit,
   canEdit,
-}: ProductTableConfigProps): Column<any>[] => [
+}: ProductTableConfigProps): ColumnDef<any>[] => [
   {
-    key: "index",
+    id: "id",
     header: "No.",
-    render: (_, index) => index + 1,
+    enableSorting: false,
+    enableResizing: false,
+    size: 44,
+    minSize: 44,
+    meta: {
+      headerCellClassName: "whitespace-nowrap",
+      cellClassName: "align-middle text-slate-500",
+      cellContentClassName: "whitespace-nowrap",
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-center">
+          <Skeleton className="h-4 w-5 rounded-full" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
-    key: "name",
+    id: "name",
+    accessorFn: (item) => item?.name || "-",
     header: "Insurance Name",
+    enableSorting: false,
+    size: 164,
+    minSize: 144,
+    meta: {
+      cellClassName: "align-middle",
+      cellContentClassName: "whitespace-normal break-words",
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const formattedName = item?.name
+        ? item.name
+            .split("-")
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ")
+        : "-";
+
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {formattedName}
+        </Box>
+      );
+    },
   },
   {
-    key: "total",
+    id: "total",
+    accessorFn: (item) => item?._count?.products || 0,
     header: "Total Product",
-    render: (item) => item?._count?.products || 0,
+    enableSorting: false,
+    size: 164,
+    minSize: 144,
+    meta: {
+      cellClassName: "align-middle",
+      cellContentClassName: "whitespace-normal break-words",
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const total = item?._count?.products || 0;
+
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {total}
+        </Box>
+      );
+    },
   },
   {
-    key: "action",
+    id: "action",
     header: "Action",
-    render: (item) => (
-      <div className="flex gap-4 items-center">
+    enableSorting: false,
+    enableResizing: false,
+    size: 68,
+    minSize: 68,
+    meta: {
+      headerCellClassName: "whitespace-nowrap !px-1 text-center",
+      cellClassName: "align-middle whitespace-nowrap !px-1 text-center",
+      cellContentClassName: "whitespace-nowrap",
+      loadingSkeletonClassName: "mx-auto h-7 w-[3.25rem] rounded-full",
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
         <Button
+          size="xs"
           variant="secondary"
           disabled={!canEdit}
           onClick={() => handleEdit(item.id)}
-          className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
+          className="h-7 rounded-full px-4 text-[11px] font-semibold shadow-none bg-[#016DA1] hover:bg-[#016DA1]/90 text-white"
         >
           Edit
         </Button>
-      </div>
-    ),
+      );
+    },
   },
 ];
