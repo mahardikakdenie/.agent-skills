@@ -61,6 +61,7 @@ function DataTableRenderShell<TData extends RowData>({
   table,
   variant = 'outline',
   loading = false,
+  enablePagination = true,
   getRowClassName,
   renderToolbar,
   renderPagination,
@@ -99,7 +100,7 @@ function DataTableRenderShell<TData extends RowData>({
     layout,
     renderFooter,
   });
-  const shouldShowPagination = !loading && table.getRowCount() > 0;
+  const shouldShowPagination = enablePagination && !loading && table.getRowCount() > 0;
   const { leftPinnedWidth, rightPinnedWidth } = getPinnedColumnOffsetSizes(table);
 
   return (

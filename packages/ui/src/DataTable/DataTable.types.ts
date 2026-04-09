@@ -171,6 +171,7 @@ export interface DataTableShellProps<
 > extends React.HTMLAttributes<HTMLDivElement> {
   variant?: DisplaySurfaceVariant;
   loading?: boolean;
+  enablePagination?: boolean;
   getRowClassName?: DataTableRowClassName<TData>;
   renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode;
   renderPagination?: (table: DataTableInstance<TData>) => React.ReactNode;

@@ -709,6 +709,7 @@ export interface DataTablePaginationConfig {
 export interface DataTableShellProps<TData extends RowData> {
   variant?: 'outline' | 'shadow'; // default: 'outline'
   loading?: boolean;
+  enablePagination?: boolean;
   getRowClassName?: DataTableRowClassName<TData>;
   renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode;
   renderPagination?: (table: DataTableInstance<TData>) => React.ReactNode;
