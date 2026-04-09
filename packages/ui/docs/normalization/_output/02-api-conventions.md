@@ -625,7 +625,8 @@ Story group: `Overlays`
 
 ```ts
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'success' | 'info' | 'warning' | 'destructive';
+  variant?: 'outline' | 'shadow' | 'default' | 'success' | 'info' | 'warning' | 'destructive';
+  tone?: 'default' | 'success' | 'info' | 'warning' | 'destructive';
   title?: string;
   description?: string;
   children?: React.ReactNode;
