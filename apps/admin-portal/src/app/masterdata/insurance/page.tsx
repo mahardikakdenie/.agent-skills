@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Box, Button, DataTable } from "@repo/ui";
-import { PlusIcon } from "lucide-react";
-import { useInsurance } from "@/hooks/useIsurance.hooks";
-import { createInsuranceTableColumns } from "@/components/tableConfig/insuranceTableConfig";
+import noData from '@public/images/no-data.webp';
+import { PlusIcon } from 'lucide-react';
+import Image from 'next/image';
+
+import { Box, Button, DataTable } from '@repo/ui';
+
+import { createInsuranceTableColumns } from '@/components/tableConfig/insuranceTableConfig';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import noData from "@public/images/no-data.webp";
+import { useInsurance } from '@/hooks/useIsurance.hooks';
 
 export default function InsurancePage() {
   const {
@@ -39,12 +41,12 @@ export default function InsurancePage() {
   });
 
   return (
-    <div className="flex min-h-0 flex-1 w-full flex-col gap-3 p-4 md:p-6">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
-        <h1 className="text-2xl font-bold text-black">
+    <Box className="flex min-h-0 flex-1 w-full flex-col gap-3 p-4 md:p-6">
+      <Box className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
+        <Box as="h1" className="text-2xl font-bold text-black">
           Insurance
-        </h1>
-        <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 xl:w-auto 2xl:flex-nowrap">
+        </Box>
+        <Box className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 xl:w-auto 2xl:flex-nowrap">
           <Button
             onClick={addNewInsurance}
             disabled={!canCreate}
@@ -53,8 +55,8 @@ export default function InsurancePage() {
           >
             Add New
           </Button>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       <DataTable
         className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
@@ -117,6 +119,6 @@ export default function InsurancePage() {
           getRowId: (row, index) => row?.id || `insurance-row-${index}`,
         }}
       />
-    </div>
+    </Box>
   );
 }

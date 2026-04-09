@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Box, Button, DataTable, Tabs, TabsList, TabsTrigger } from "@repo/ui";
-import { Plus } from "react-feather";
-import noData from "@public/images/no-data.webp";
-import { CompactTablePagination } from "@/components/ui/compact-table-pagination";
-import { useProduct } from "@/hooks/useProduct.hooks";
-import { createProductTableColumns } from "@/components/tableConfig/productTableConfig";
+import noData from '@public/images/no-data.webp';
+import Image from 'next/image';
+import { Plus } from 'react-feather';
+
+import { Box, Button, DataTable, Tabs, TabsList, TabsTrigger } from '@repo/ui';
+
+import { createProductTableColumns } from '@/components/tableConfig/productTableConfig';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { useProduct } from '@/hooks/useProduct.hooks';
 
 export default function Product() {
   const {
@@ -21,7 +23,6 @@ export default function Product() {
     canEdit,
     canCreate,
     isLoading,
-    isLoadingCategories,
     setPage,
     setRowsPerPage,
     selectTab,
@@ -59,40 +60,33 @@ export default function Product() {
       </Box>
 
       <Box className="block rounded-xl bg-white">
-        {isLoadingCategories ? (
-          <div className="p-5 text-center w-full">Loading categories...</div>
-        ) : (
-          <Tabs
-            value={selectedTab}
-            onValueChange={selectTab}
-            variant="underline"
-            className="w-full [&_[data-slot=tabs-list-shell]]:rounded-md"
+        <Tabs
+          value={selectedTab}
+          onValueChange={selectTab}
+          variant="underline"
+          className="w-full [&_[data-slot=tabs-list-shell]]:rounded-md"
+        >
+          <TabsList
+            aria-label="Product categories tabs"
+            className="w-full justify-start rounded-md border-0 bg-transparent p-0 text-inherit overflow-auto"
           >
-            <TabsList
-              aria-label="Product categories tabs"
-              className="w-full justify-start rounded-md border-0 bg-transparent p-0 text-inherit overflow-auto"
-            >
-              {categories.map((category) => (
-                <TabsTrigger
-                  key={category.id}
-                  value={category.id}
-                  variant="underline"
-                  className="h-12 px-4 py-2.5 text-sm font-normal whitespace-nowrap"
-                >
-                  <Box as="span" className="mr-2.5">
-                    {category.name
-                      .split("-")
-                      .map(
-                        (word: string) =>
-                          word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")}
-                  </Box>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        )}
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category.id}
+                value={category.id}
+                variant="underline"
+                className="h-12 px-4 py-2.5 text-sm font-normal whitespace-nowrap"
+              >
+                <Box as="span" className="mr-2.5">
+                  {category.name
+                    .split('-')
+                    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')}
+                </Box>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </Box>
 
       <DataTable

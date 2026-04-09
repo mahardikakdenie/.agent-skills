@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useAuth } from "@/context/auth.context";
-import { Insurance } from "@/services/masterdata/insurance.service";
-import AppURL from "@/constants/app-url.const";
-import { useCategories, useInsurances } from "@/services/product/hooks/queries";
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useState, useCallback, useEffect } from 'react';
+
+import AppURL from '@/constants/app-url.const';
+import { useAuth } from '@/context/auth.context';
+import { Insurance } from '@/services/masterdata/insurance.service';
+import { useCategories, useInsurances } from '@/services/product/hooks/queries';
 
 interface UseProductProps {
   insurances: Insurance[];
@@ -41,14 +42,16 @@ export function useProduct(): UseProductProps {
   const { permissionList } = useAuth();
 
   const [page, setPageState] = useState(() => {
-    return parseInt(searchParams.get("page") || "1", 10);
+    return parseInt(searchParams.get('page') || '1', 10);
   });
 
   const [rowsPerPage, setRowsPerPageState] = useState(() => {
-    return parseInt(searchParams.get("limit") || "10", 10);
+    return parseInt(searchParams.get('limit') || '10', 10);
   });
 
-  const [selectedTab, setSelectedTab] = useState<string>("");
+  const [selectedTab, setSelectedTab] = useState<string>(() => {
+    return searchParams.get('tab') || '';
+  });
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -60,7 +63,7 @@ export function useProduct(): UseProductProps {
       const current = new URLSearchParams(Array.from(searchParams.entries()));
 
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
+        if (value !== undefined && value !== null && value !== '') {
           current.set(key, String(value));
         } else {
           current.delete(key);
@@ -68,11 +71,11 @@ export function useProduct(): UseProductProps {
       });
 
       const search = current.toString();
-      const query = search ? `?${search}` : "";
+      const query = search ? `?${search}` : '';
 
       router.replace(`${pathname}${query}`, { scroll: false });
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   const setPage = useCallback(
@@ -80,7 +83,7 @@ export function useProduct(): UseProductProps {
       setPageState(newPage);
       updateURL({ page: newPage });
     },
-    [updateURL]
+    [updateURL],
   );
 
   const setRowsPerPage = useCallback(
@@ -89,7 +92,7 @@ export function useProduct(): UseProductProps {
       setPageState(1);
       updateURL({ limit: newRowsPerPage, page: 1 });
     },
-    [updateURL]
+    [updateURL],
   );
 
   const selectTab = useCallback(
@@ -98,15 +101,15 @@ export function useProduct(): UseProductProps {
       setPageState(1);
       updateURL({ tab: tabId, page: 1 });
     },
-    [updateURL]
+    [updateURL],
   );
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = permissionList.includes("Masterdata.Read");
-      const editBtn = permissionList.includes("Masterdata.Update");
-      const deleteBtn = permissionList.includes("Masterdata.Delete");
-      const createBtn = permissionList.includes("Masterdata.Create");
+      const access = permissionList.includes('Masterdata.Read');
+      const editBtn = permissionList.includes('Masterdata.Update');
+      const deleteBtn = permissionList.includes('Masterdata.Delete');
+      const createBtn = permissionList.includes('Masterdata.Create');
 
       setCanEdit(editBtn);
       setCanDelete(deleteBtn);
@@ -121,19 +124,18 @@ export function useProduct(): UseProductProps {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: categoriesResponse, isLoading: isLoadingCategories } = useCategories(
-    undefined,
-    {
+  const { data: categoriesResponse, isLoading: isLoadingCategories } = useCategories(undefined, {
     staleTime: 300000,
     refetchOnWindowFocus: false,
   });
 
   const categoriesData: any = categoriesResponse;
   const categories = categoriesData?.data ?? categoriesData ?? [];
+  const activeTab = selectedTab || categories[0]?.id || '';
 
   useEffect(() => {
     if (categories.length > 0 && !selectedTab) {
-      const tabFromUrl = searchParams.get("tab");
+      const tabFromUrl = searchParams.get('tab');
       const initialTab = tabFromUrl || categories[0].id;
       setSelectedTab(initialTab);
     }
@@ -149,30 +151,31 @@ export function useProduct(): UseProductProps {
     {
       page,
       pageSize: rowsPerPage,
-      categoryId: selectedTab === "Travel" ? "" : selectedTab,
+      categoryId: activeTab === 'Travel' ? '' : activeTab,
     },
     {
-      enabled: !!selectedTab,
+      enabled: !!activeTab,
       staleTime: 30000,
       refetchOnWindowFocus: false,
       retry: 2,
-    }
+    },
   );
 
   const insuranceData: any = insuranceResponse;
 
   const handleEdit = useCallback(
     (insuranceId: string) => {
-      router.push(
-        AppURL.masterdataProductDetailWithParams(selectedTab, insuranceId)
-      );
+      router.push(AppURL.masterdataProductDetailWithParams(activeTab, insuranceId));
     },
-    [router, selectedTab]
+    [router, activeTab],
   );
 
   const addNewProduct = useCallback(() => {
     router.push(AppURL.masterdataProductAdd);
   }, [router]);
+
+  const isBootstrappingTab = isLoadingCategories || (categories.length > 0 && !selectedTab);
+  const isTableLoading = isBootstrappingTab || isLoading;
 
   return {
     insurances: insuranceData?.data || [],
@@ -182,7 +185,7 @@ export function useProduct(): UseProductProps {
 
     page,
     rowsPerPage,
-    selectedTab,
+    selectedTab: activeTab,
 
     hasAccess,
     canEdit,
@@ -193,7 +196,7 @@ export function useProduct(): UseProductProps {
     setRowsPerPage,
     selectTab,
 
-    isLoading,
+    isLoading: isTableLoading,
     isLoadingCategories,
     isError,
     error,
@@ -203,4 +206,3 @@ export function useProduct(): UseProductProps {
     addNewProduct,
   };
 }
-
