@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 24 |
+| PASS | 25 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 16 |
+| DEFERRED_DATA_TABLE | 15 |
 | NOT_STARTED | 74 |
 | OUT_OF_SCOPE | 1 |
 
@@ -1930,3 +1930,4 @@ Return:
 - summary by status
 - any ambiguous routes that were conservatively classified
 - confirmation that _batch-9-page-tracker.md was created or refreshed
+tion that _batch-9-page-tracker.md was created or refreshed
