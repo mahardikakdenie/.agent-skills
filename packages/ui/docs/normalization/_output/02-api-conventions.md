@@ -625,7 +625,8 @@ Story group: `Overlays`
 
 ```ts
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'success' | 'info' | 'warning' | 'destructive';
+  variant?: 'outline' | 'shadow' | 'default' | 'success' | 'info' | 'warning' | 'destructive';
+  tone?: 'default' | 'success' | 'info' | 'warning' | 'destructive';
   title?: string;
   description?: string;
   children?: React.ReactNode;
@@ -1032,7 +1033,8 @@ Story group: `Inputs`
 
 ```ts
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' | 'info';
+  variant?: 'outline' | 'solid' | 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'info';
+  tone?: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'info';
   size?: 'sm' | 'md' | 'lg'; // default: 'md'
   className?: string;
   children: React.ReactNode;
@@ -1040,6 +1042,8 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 ```
 
 Story group: `Feedback`
+
+## Migration note: legacy semantic variants mapping to `variant` are internally resolved to `tone` with `variant="solid"` as the fallback base. Primary surface variants are `outline` (default) and `solid`.
 
 ---
 
@@ -1741,3 +1745,4 @@ process.env.NEXT_PUBLIC_*
 
 // FORBIDDEN - boolean proliferation (> 3 booleans -> use variant or mode)
 ```
+

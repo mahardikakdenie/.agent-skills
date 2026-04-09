@@ -24,7 +24,7 @@ function resolveBadgePresentation(
 } {
   if (!variant || variant === 'outline' || variant === 'solid') {
     return {
-      variant: variant ?? 'outline',
+      variant: variant === 'solid' ? 'solid' : 'outline',
       tone: tone ?? 'default',
     };
   }

@@ -2,8 +2,23 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-04-06
+> Last reconciled: 2026-04-09
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-04-09 - Alert and Badge Default Variant Refinement
+
+Changed:
+
+- Refined the internal presentation resolution for `Alert` and `Badge` to explicitly default to `outline` when `variant` is falsy or undefined, ensuring consistent behavior across all consumption patterns.
+- Updated `02-api-conventions.md` to reflect the full canonical interface for `Alert` and `Badge`, including the separate `tone` prop and the surface-variant family (`outline | shadow` for Alert, `outline | solid` for Badge).
+- Reconciled the migration notes to clarify how legacy semantic `variant` values map to the new `tone` system with appropriate surface-variant fallbacks.
+
+Impact:
+
+- Downstream migrations for `Alert` and `Badge` no longer risk fallback inconsistencies when passing empty or undefined variants from legacy adapters.
+- The normalization `_output` set is now fully aligned with the multi-prop presentation model (`variant` + `tone`) used in the current `@repo/ui` implementation.
 
 ---
 

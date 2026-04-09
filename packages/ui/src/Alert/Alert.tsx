@@ -24,7 +24,7 @@ function resolveAlertPresentation(
 } {
   if (!variant || variant === 'outline' || variant === 'shadow') {
     return {
-      variant: variant ?? 'outline',
+      variant: variant === 'shadow' ? 'shadow' : 'outline',
       tone: tone ?? 'default',
     };
   }
