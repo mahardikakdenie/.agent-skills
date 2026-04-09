@@ -564,10 +564,11 @@ Keep local:
 Direct adoption guidance:
 
 - Legacy single-date popover fields and date-trigger buttons map to `DatePicker`.
+- Mobile-specific bottom sheet pickers or date modals map to `presentation="drawer"`.
 - Existing `initialValue`, `minimumDate`, `maximumDate`, `isDisabled`, `isForceClear`, `errorMessage`, and `isLongDate` or similar display-format toggles normalize to `value`, `minDate`, `maxDate`, `disabled`, `clearable`, `error`, and `formatDate`.
 - Very compact or specialized toolbar usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Standalone field labels map to `label`; shared form composition should prefer `FormLabel` plus `FormControl` instead of duplicating field wrapper markup.
-- Existing visual booleans such as `isWithShadow` and one-off shell-density knobs should prefer the shared `variant`, `size`, or `className` paths instead of new DatePicker-specific styling props.
+- Existing visual booleans such as `isWithShadow` and one-off shell-density knobs should prefer the shared `variant`, `size`, `className`, or `classNames` paths instead of new DatePicker-specific styling props.
 - Existing clear callbacks should collapse into `onChange(null)` plus `clearable`; month-bound or eligibility windows should map to `minDate` and `maxDate`; single-value date-time flows should enable `withTime` and use `minDateTime` / `maxDateTime` where needed.
 - Legacy date-only popover fields should keep the shared calendar as the primary surface instead of adding a second decorative wrapper; framed side-rail chrome belongs only to `withTime` usage.
 

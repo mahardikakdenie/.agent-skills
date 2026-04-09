@@ -6,6 +6,7 @@ import { cn } from '@repo/helper';
 
 import { Box } from '../Box';
 import { Calendar } from '../Calendar';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../Drawer';
 import { Label } from '../Label';
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '../Popover';
 import {
@@ -57,15 +58,21 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
       disabled = false,
       clearable = false,
       required = false,
+      presentation = 'popover',
+      icon,
+      iconPosition = 'start',
+      drawerTitle,
       label,
       placeholder,
       error = false,
       open,
       onClose,
       className,
+      classNames,
       id,
       type,
       name,
+      onClick,
       onBlur,
       onFocus,
       tabIndex,
@@ -207,6 +214,165 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
       setDraftTime(formatDatePickerTimeValue(nextDateTime));
     };
 
+    const handleDrawerTriggerClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+      onClick?.(event);
+
+      if (!event.defaultPrevented) {
+        handleOpen();
+      }
+    };
+
+    const triggerIcon = (
+      <Box
+        as="span"
+        aria-hidden="true"
+        data-slot="date-picker-trigger-icon"
+        className={cn(datePickerIconVariants({ size }), classNames?.triggerIcon)}
+      >
+        {icon ?? <CalendarDays aria-hidden="true" className="h-full w-full" />}
+      </Box>
+    );
+
+    const triggerText = (
+      <Box
+        as="span"
+        data-slot="date-picker-trigger-text"
+        className={cn(datePickerTriggerTextVariants(), classNames?.triggerText)}
+      >
+        {formatDatePickerValue(selectedDate, formatDate, { withTime }) ?? resolvedPlaceholder}
+      </Box>
+    );
+
+    const renderTrigger = (handleClick?: React.MouseEventHandler<HTMLButtonElement>) => (
+      <Box
+        as="button"
+        ref={triggerRef}
+        id={triggerId}
+        type={type ?? 'button'}
+        name={name}
+        disabled={disabled}
+        tabIndex={tabIndex}
+        aria-label={ariaLabel}
+        aria-labelledby={labelledBy}
+        aria-describedby={describedBy}
+        aria-invalid={hasError || undefined}
+        aria-expanded={resolvedOpen}
+        aria-haspopup="dialog"
+        data-slot="date-picker-trigger"
+        className={cn(datePickerTriggerVariants({ size, hasValue, disabled }), classNames?.trigger)}
+        {...props}
+        onBlur={onBlur}
+        onClick={handleClick ?? onClick}
+        onFocus={onFocus}
+      >
+        {iconPosition === 'start' ? triggerIcon : null}
+        {triggerText}
+        {iconPosition === 'end' ? triggerIcon : null}
+      </Box>
+    );
+
+    const control = (
+      <Box
+        data-slot="date-picker-control"
+        className={cn(
+          datePickerControlVariants({
+            variant,
+            size,
+            invalid: hasError,
+            open: resolvedOpen,
+            disabled,
+          }),
+          classNames?.control,
+        )}
+      >
+        {presentation === 'popover' ? (
+          <PopoverTrigger asChild>{renderTrigger()}</PopoverTrigger>
+        ) : (
+          renderTrigger(handleDrawerTriggerClick)
+        )}
+
+        {clearable && hasValue && !disabled ? (
+          <Box
+            as="button"
+            type="button"
+            aria-label={withTime ? 'Clear date and time' : 'Clear date'}
+            data-slot="date-picker-clear"
+            className={datePickerActionButtonVariants({ size })}
+            onMouseDown={(event) => {
+              event.preventDefault();
+            }}
+            onClick={handleClear}
+          >
+            <X aria-hidden="true" className={datePickerIconVariants({ size })} />
+          </Box>
+        ) : null}
+      </Box>
+    );
+
+    const calendar = (
+      <Calendar
+        mode={mode}
+        month={visibleMonth}
+        onMonthChange={setVisibleMonth}
+        selected={selectedDate ?? undefined}
+        onSelect={handleSelect}
+        disabled={disabledMatchers}
+        fromMonth={fromMonth}
+        toMonth={toMonth}
+        className={classNames?.calendar}
+        initialFocus
+      />
+    );
+
+    const calendarContent = withTime ? (
+      <Box
+        data-slot="date-picker-panel"
+        className={cn(
+          datePickerPanelVariants(),
+          'grid-cols-[auto_auto]',
+          classNames?.panel,
+        )}
+      >
+        {calendar}
+
+        <Box
+          data-slot="date-picker-time-section"
+          className={cn(datePickerTimeSectionVariants(), classNames?.timeSection)}
+        >
+          <Box
+            as="label"
+            id={timeInputLabelId}
+            htmlFor={timeInputId}
+            className={datePickerTimeLabelVariants()}
+          >
+            <Box as="span">Time</Box>
+          </Box>
+
+          <Box
+            as="input"
+            id={timeInputId}
+            type="time"
+            step={60}
+            value={draftTime}
+            min={timeBounds.min}
+            max={timeBounds.max}
+            disabled={disabled || !selectedDate}
+            aria-labelledby={timeInputLabelId}
+            className={cn(datePickerTimeInputVariants({ invalid: hasError }), classNames?.timeInput)}
+            onChange={handleTimeChange}
+          />
+
+          {hintText ? (
+            <Box id={hintId} as="p" className={datePickerHintVariants()}>
+              {hintText}
+            </Box>
+          ) : null}
+        </Box>
+      </Box>
+    ) : (
+      calendar
+    );
+
     return (
       <Box data-slot="date-picker-field" className={cn(datePickerFieldVariants(), className)}>
         {label ? (
@@ -215,138 +381,60 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
           </Label>
         ) : null}
 
-        <Popover open={resolvedOpen} onOpen={handleOpen} onClose={handleClose}>
-          <PopoverAnchor asChild>
-            <Box
-              data-slot="date-picker-control"
-              className={datePickerControlVariants({
-                variant,
-                size,
-                invalid: hasError,
-                open: resolvedOpen,
-                disabled,
-              })}
+        {presentation === 'popover' ? (
+          <Popover open={resolvedOpen} onOpen={handleOpen} onClose={handleClose}>
+            <PopoverAnchor asChild>{control}</PopoverAnchor>
+            <PopoverContent
+              align="start"
+              side="bottom"
+              sideOffset={6}
+              className={cn(
+                datePickerContentVariants({ chrome: withTime ? 'framed' : 'bare' }),
+                classNames?.popoverContent,
+              )}
             >
-              <PopoverTrigger asChild>
+              {calendarContent}
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <>
+            {control}
+            <Drawer open={resolvedOpen} onClose={handleClose}>
+              <DrawerContent className={classNames?.drawerContent}>
                 <Box
-                  as="button"
-                  ref={triggerRef}
-                  id={triggerId}
-                  type={type ?? 'button'}
-                  name={name}
-                  disabled={disabled}
-                  tabIndex={tabIndex}
-                  aria-label={ariaLabel}
-                  aria-labelledby={labelledBy}
-                  aria-describedby={describedBy}
-                  aria-invalid={hasError || undefined}
-                  aria-expanded={resolvedOpen}
-                  aria-haspopup="dialog"
-                  data-slot="date-picker-trigger"
-                  className={datePickerTriggerVariants({ size, hasValue, disabled })}
-                  onBlur={onBlur}
-                  onFocus={onFocus}
-                  {...props}
+                  data-slot="date-picker-drawer-body"
+                  className={cn(
+                    'grid justify-items-center gap-3 px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]',
+                    classNames?.drawerBody,
+                  )}
                 >
-                  <CalendarDays aria-hidden="true" className={datePickerIconVariants({ size })} />
-                  <Box as="span" className={datePickerTriggerTextVariants()}>
-                    {formatDatePickerValue(selectedDate, formatDate, { withTime }) ?? resolvedPlaceholder}
-                  </Box>
-                </Box>
-              </PopoverTrigger>
-
-              {clearable && hasValue && !disabled ? (
-                <Box
-                  as="button"
-                  type="button"
-                  aria-label={withTime ? 'Clear date and time' : 'Clear date'}
-                  data-slot="date-picker-clear"
-                  className={datePickerActionButtonVariants({ size })}
-                  onMouseDown={(event) => {
-                    event.preventDefault();
-                  }}
-                  onClick={handleClear}
-                >
-                  <X aria-hidden="true" className={datePickerIconVariants({ size })} />
-                </Box>
-              ) : null}
-            </Box>
-          </PopoverAnchor>
-          <PopoverContent
-            align="start"
-            side="bottom"
-            sideOffset={6}
-            className={datePickerContentVariants({ chrome: withTime ? 'framed' : 'bare' })}
-          >
-            {withTime ? (
-              <Box
-                data-slot="date-picker-panel"
-                className={cn(datePickerPanelVariants(), 'grid-cols-[auto_auto]')}
-              >
-                <Calendar
-                  mode={mode}
-                  month={visibleMonth}
-                  onMonthChange={setVisibleMonth}
-                  selected={selectedDate ?? undefined}
-                  onSelect={handleSelect}
-                  disabled={disabledMatchers}
-                  fromMonth={fromMonth}
-                  toMonth={toMonth}
-                  initialFocus
-                />
-
-                <Box
-                  data-slot="date-picker-time-section"
-                  className={datePickerTimeSectionVariants()}
-                >
-                  <Box
-                    as="label"
-                    id={timeInputLabelId}
-                    htmlFor={timeInputId}
-                    className={datePickerTimeLabelVariants()}
-                  >
-                    <Box as="span">Time</Box>
-                  </Box>
-
-                  <Box
-                    as="input"
-                    id={timeInputId}
-                    type="time"
-                    step={60}
-                    value={draftTime}
-                    min={timeBounds.min}
-                    max={timeBounds.max}
-                    disabled={disabled || !selectedDate}
-                    aria-labelledby={timeInputLabelId}
-                    className={datePickerTimeInputVariants({ invalid: hasError })}
-                    onChange={handleTimeChange}
-                  />
-
-                  {hintText ? (
-                    <Box id={hintId} as="p" className={datePickerHintVariants()}>
-                      {hintText}
-                    </Box>
+                  {drawerTitle ? (
+                    <DrawerHeader className={cn('w-full px-0 py-0', classNames?.drawerHeader)}>
+                      <DrawerTitle
+                        className={cn(
+                          'text-base font-semibold leading-6 text-foreground',
+                          classNames?.drawerTitle,
+                        )}
+                      >
+                        {drawerTitle}
+                      </DrawerTitle>
+                    </DrawerHeader>
                   ) : null}
+
+                  {calendarContent}
                 </Box>
-              </Box>
-            ) : (
-              <Calendar
-                mode={mode}
-                month={visibleMonth}
-                onMonthChange={setVisibleMonth}
-                selected={selectedDate ?? undefined}
-                onSelect={handleSelect}
-                disabled={disabledMatchers}
-                fromMonth={fromMonth}
-                toMonth={toMonth}
-                initialFocus
-              />
-            )}
-          </PopoverContent>
-        </Popover>
+              </DrawerContent>
+            </Drawer>
+          </>
+        )}
 
         {typeof error === 'string' ? (
-          <Box as="p" id={errorId} role="alert" className={datePickerMessageVariants()}>
+          <Box
+            as="p"
+            id={errorId}
+            role="alert"
+            className={cn(datePickerMessageVariants(), classNames?.message)}
+          >
             {error}
           </Box>
         ) : null}

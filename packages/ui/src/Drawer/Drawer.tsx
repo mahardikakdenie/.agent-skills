@@ -51,7 +51,13 @@ function hasDisplayName(node: React.ReactNode, displayName: string): boolean {
 /**
  * Shared drawer root for bottom-sheet and side-panel overlay flows.
  */
-export function Drawer({ open, onClose, direction = 'bottom', children }: DrawerProps) {
+export function Drawer({
+  open,
+  onClose,
+  direction = 'bottom',
+  handleOnly = false,
+  children,
+}: DrawerProps) {
   const handleOpenChange = React.useCallback(
     (nextOpen: boolean) => {
       if (!nextOpen) {
@@ -63,7 +69,12 @@ export function Drawer({ open, onClose, direction = 'bottom', children }: Drawer
 
   return (
     <DrawerDirectionContext.Provider value={direction}>
-      <DrawerPrimitive.Root direction={direction} open={open} onOpenChange={handleOpenChange}>
+      <DrawerPrimitive.Root
+        direction={direction}
+        handleOnly={handleOnly}
+        open={open}
+        onOpenChange={handleOpenChange}
+      >
         {children}
       </DrawerPrimitive.Root>
     </DrawerDirectionContext.Provider>

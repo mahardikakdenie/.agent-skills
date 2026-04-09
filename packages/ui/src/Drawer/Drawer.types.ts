@@ -9,6 +9,7 @@ export interface DrawerProps {
   open?: boolean;
   onClose?: () => void;
   direction?: DrawerDirection;
+  handleOnly?: boolean;
   children: React.ReactNode;
 }
 

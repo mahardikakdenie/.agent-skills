@@ -1467,3 +1467,20 @@ Impact:
 
 - The canonical shared date family now consists of `Calendar`, `DatePicker`, `DateRangePicker`, and `MonthPicker`.
 - Ready apps should map single-value date-time inputs to `DatePicker` with `withTime` and bounded start/end date-time windows to `DateRangePicker` with `withTime`.
+
+---
+
+## 2026-04-07 - DatePicker Drawer Presentation & Drawer Updates
+
+Changed:
+
+- Expanded `DatePicker` to support a `presentation="drawer"` mode for mobile-friendly bottom sheet flows, alongside the default `popover` presentation.
+- Added `icon` and `iconPosition` props to `DatePicker` for trigger customization.
+- Added a comprehensive `classNames` slot API to `DatePicker` to allow styling of internal sub-components (e.g., `trigger`, `panel`, `calendar`, `drawerContent`).
+- Added a `handleOnly` prop to the `Drawer` component to allow interaction strictly via the drag handle.
+- Realigned `02-api-conventions.md` to reflect the newly expanded `DatePickerProps` and `DrawerProps`.
+
+Impact:
+
+- Downstream apps can now implement responsive date picking (popover on desktop, drawer on mobile) using a single `DatePicker` component, reducing the need for local wrapper logic.
+- Customizations to the date picker trigger (icons, slot classes) are now canonically supported without needing overriding global CSS.
