@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { TrashIcon } from "lucide-react";
+import { Trash } from "react-feather";
 
 import {
   Box,
@@ -120,15 +120,15 @@ export const createInsuranceTableColumns = ({
     header: "Action",
     enableSorting: false,
     enableResizing: false,
-    size: 110,
-    minSize: 68,
+    size: 120,
+    minSize: 120,
     meta: {
       headerCellClassName: "whitespace-nowrap !px-1 text-center",
       cellClassName: "align-middle whitespace-nowrap !px-1 text-center",
       cellContentClassName: "whitespace-nowrap flex justify-center",
       loadingSkeleton: (
-        <Box className="flex justify-center items-center gap-2">
-          <Skeleton className="h-7 w-[3.25rem] rounded-full" />
+        <Box className="flex items-center justify-center gap-2">
+          <Skeleton className="h-7 w-[60px] rounded-full" />
           <Skeleton className="h-7 w-7 rounded-md" />
         </Box>
       ),
@@ -137,25 +137,24 @@ export const createInsuranceTableColumns = ({
       const item = row.original;
 
       return (
-        <Box className="flex gap-2 items-center justify-center">
-          {canEdit && (
-            <Button
-              variant="secondary"
-              onClick={() => handleEdit(item.id)}
-              className="bg-[#016DA1] hover:bg-[#016DA1]/90 text-white px-3.5 rounded-full h-7 text-[11px] font-semibold"
-            >
-              Edit
-            </Button>
-          )}
-          {canDelete && (
-            <Button
-              variant="ghost"
-              onClick={() => handleDelete(item.id)}
-              className="text-red-600 px-0 h-7 w-7 hover:bg-transparent"
-            >
-              <TrashIcon className="w-4 h-4" />
-            </Button>
-          )}
+        <Box className="flex items-center justify-center gap-2">
+          <Button
+            size="xs"
+            disabled={!canEdit}
+            onClick={() => handleEdit(item.id)}
+            className="h-7 rounded-full bg-[#016DA1] px-4 text-[13px] font-medium text-white shadow-none hover:bg-[#015a85]"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            disabled={!canDelete}
+            onClick={() => handleDelete(item.id)}
+            className="h-7 w-7 rounded-md p-0 text-red-600 hover:bg-red-50 hover:!text-red-700"
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
         </Box>
       );
     },

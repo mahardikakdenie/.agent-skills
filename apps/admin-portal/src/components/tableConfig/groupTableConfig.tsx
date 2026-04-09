@@ -1,7 +1,6 @@
-import { Column } from "@/components/ui/DataTable";
-import { Button } from "@repo/ui";
-import { Trash } from "react-feather";
+import { Box, Button, Skeleton, type ColumnDef } from "@repo/ui";
 import { format } from "date-fns";
+import { Trash } from "react-feather";
 
 interface GroupTableConfigProps {
   page: number;
@@ -12,6 +11,8 @@ interface GroupTableConfigProps {
   canDelete: boolean;
 }
 
+const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat("id-ID").format(value);
+
 export const createGroupTableColumns = ({
   page,
   rowsPerPage,
@@ -19,56 +20,147 @@ export const createGroupTableColumns = ({
   handleDelete,
   canEdit,
   canDelete,
-}: GroupTableConfigProps): Column<any>[] => [
+}: GroupTableConfigProps): ColumnDef<any>[] => [
   {
-    key: "index",
+    id: "id",
     header: "No.",
-    render: (_, index) => (page - 1) * rowsPerPage + index + 1,
+    enableSorting: false,
+    enableResizing: false,
+    size: 44,
+    minSize: 44,
+    meta: {
+      headerCellClassName: "whitespace-nowrap",
+      cellClassName: "align-middle text-slate-500",
+      cellContentClassName: "whitespace-nowrap",
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-center">
+          <Skeleton className="h-4 w-5 rounded-full" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
-    key: "name",
+    id: "name",
+    accessorFn: (item) => item?.name || "-",
     header: "Group Name",
-    render: (item) => item.name || "-",
+    enableSorting: false,
+    size: 164,
+    minSize: 144,
+    meta: {
+      cellClassName: "align-middle",
+      cellContentClassName: "whitespace-normal break-words",
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {item?.name || "-"}
+        </Box>
+      );
+    },
   },
   {
-    key: "users",
+    id: "users",
+    accessorFn: (item) => item?._count?.account_groups || 0,
     header: "Users",
-    render: (item) => item._count?.account_groups || 0,
+    enableSorting: false,
+    size: 164,
+    minSize: 144,
+    meta: {
+      cellClassName: "align-middle",
+      cellContentClassName: "whitespace-normal break-words",
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const total = item?._count?.account_groups || 0;
+
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {total}
+        </Box>
+      );
+    },
   },
   {
-    key: "updated_at",
+    accessorKey: "updated_at",
     header: "Last Activity",
-    render: (item) =>
-      item.updated_at ? format(new Date(item.updated_at), "dd-MM-yyyy") : "N/A",
+    enableSorting: false,
+    enableResizing: false,
+    size: 140,
+    minSize: 116,
+    meta: {
+      headerCellClassName: "whitespace-nowrap",
+      cellClassName: "align-middle whitespace-nowrap",
+      cellContentClassName: "whitespace-nowrap text-xs tabular-nums text-slate-700",
+      loadingSkeletonClassName: "h-4 w-[6.9rem] rounded-full",
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const formatted = item?.updated_at ? format(new Date(item.updated_at), "dd-MM-yyyy") : "N/A";
+      return <Box>{formatted}</Box>;
+    },
   },
   {
-    key: "created_at",
-    header: "Created at",
-    render: (item) =>
-      item.created_at ? format(new Date(item.created_at), "dd-MM-yyyy") : "N/A",
+    accessorKey: "created_at",
+    header: "Created At",
+    enableSorting: false,
+    enableResizing: false,
+    size: 140,
+    minSize: 116,
+    meta: {
+      headerCellClassName: "whitespace-nowrap",
+      cellClassName: "align-middle whitespace-nowrap",
+      cellContentClassName: "whitespace-nowrap text-xs tabular-nums text-slate-700",
+      loadingSkeletonClassName: "h-4 w-[6.9rem] rounded-full",
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const formatted = item?.created_at ? format(new Date(item.created_at), "dd-MM-yyyy") : "N/A";
+      return <Box>{formatted}</Box>;
+    },
   },
   {
-    key: "action",
+    id: "action",
     header: "Action",
-    render: (item) => (
-      <div className="flex gap-4 items-center">
-        <Button
-          variant="secondary"
-          disabled={!canEdit}
-          onClick={() => handleEdit(item.id)}
-          className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-        >
-          Edit
-        </Button>
-        <Button
-          variant="ghost"
-          disabled={!canDelete}
-          onClick={() => handleDelete(item.id)}
-          className="text-red-600 px-0"
-        >
-          <Trash />
-        </Button>
-      </div>
-    ),
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 120,
+    meta: {
+      headerCellClassName: "whitespace-nowrap !px-1 text-center",
+      cellClassName: "align-middle whitespace-nowrap !px-1 text-center",
+      cellContentClassName: "whitespace-nowrap flex justify-center",
+      loadingSkeleton: (
+        <Box className="flex items-center justify-center gap-2">
+          <Skeleton className="h-7 w-[60px] rounded-full" />
+          <Skeleton className="h-7 w-7 rounded-md" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="flex items-center justify-center gap-2">
+          <Button
+            size="xs"
+            disabled={!canEdit}
+            onClick={() => handleEdit(item.id)}
+            className="h-7 rounded-full bg-[#016DA1] px-4 text-[13px] font-medium text-white shadow-none hover:bg-[#015a85]"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            disabled={!canDelete}
+            onClick={() => handleDelete(item.id)}
+            className="h-7 w-7 rounded-md p-0 text-red-600 hover:bg-red-50 hover:!text-red-700"
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        </Box>
+      );
+    },
   },
 ];

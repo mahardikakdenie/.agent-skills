@@ -82,21 +82,22 @@ export const createProductCatalogTableColumns = ({
     key: "actions",
     header: "Action",
     render: (product) => (
-      <div className="flex gap-4 items-center w-20">
+      <div className="flex items-center justify-center gap-2">
         <Button
-          variant="secondary"
+          size="xs"
           onClick={() => onViewDetail(product.id)}
-          className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
+          className="h-7 rounded-full bg-[#016DA1] px-4 text-[13px] font-medium text-white shadow-none hover:bg-[#015a85]"
         >
           View
         </Button>
         <Button
           variant="ghost"
-          onClick={() => onDelete(product.id)}
+          size="xs"
           disabled={!canDelete}
-          className="text-red-600 px-0"
+          onClick={() => onDelete(product.id)}
+          className="h-7 w-7 rounded-md p-0 text-red-600 hover:bg-red-50 hover:!text-red-700"
         >
-          <Trash />
+          <Trash className="h-4 w-4" />
         </Button>
       </div>
     ),
