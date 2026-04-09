@@ -1,6 +1,8 @@
-import { Box, Button, Skeleton, type ColumnDef } from "@repo/ui";
-import { Trash } from "react-feather";
-import { capitalizeStringWithChar } from "@/lib/formatter";
+import { Trash } from 'react-feather';
+
+import { Box, Button, Skeleton, type ColumnDef } from '@repo/ui';
+
+import { capitalizeStringWithChar } from '@/lib/formatter';
 
 export interface EmailTemplate {
   id: string;
@@ -37,8 +39,8 @@ export const createEmailTemplateTableColumns = ({
   actionColumnSize = 120,
 }: EmailTemplateTableConfigProps): ColumnDef<EmailTemplate>[] => [
   {
-    id: "index",
-    header: "No.",
+    id: 'index',
+    header: 'No.',
     enableSorting: false,
     enableResizing: false,
     size: 44,
@@ -56,9 +58,9 @@ export const createEmailTemplateTableColumns = ({
     cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
-    id: "subject",
-    accessorFn: (item) => item.subject || "-",
-    header: "Subject",
+    id: 'subject',
+    accessorFn: (item) => item.subject || '-',
+    header: 'Subject',
     enableSorting: false,
     size: subjectColumnSize,
     minSize: 144,
@@ -70,15 +72,15 @@ export const createEmailTemplateTableColumns = ({
       const item = row.original;
       return (
         <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
-          {item.subject || "-"}
+          {item.subject || '-'}
         </Box>
       );
     },
   },
   {
-    id: "journey",
-    accessorFn: (item) => item.journey || "-",
-    header: "Journey",
+    id: 'journey',
+    accessorFn: (item) => item.journey || '-',
+    header: 'Journey',
     enableSorting: false,
     size: journeyColumnSize,
     minSize: 144,
@@ -90,40 +92,39 @@ export const createEmailTemplateTableColumns = ({
       const item = row.original;
       return (
         <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
-          {item.journey || "-"}
+          {item.journey || '-'}
         </Box>
       );
     },
   },
   {
-    id: "type",
-    accessorFn: (item) => item.type || "-",
-    header: "Channel",
+    id: 'type',
+    accessorFn: (item) => item.type || '-',
+    header: 'Channel',
     enableSorting: false,
     enableResizing: false,
     size: channelColumnSize,
     minSize: 92,
     meta: {
       headerCellClassName: 'whitespace-nowrap',
-      cellClassName:
-        'align-middle whitespace-nowrap text-xs font-semibold text-slate-500',
+      cellClassName: 'align-middle whitespace-nowrap text-xs font-semibold text-slate-500',
       cellContentClassName: 'whitespace-nowrap',
     },
     cell: ({ row }) => {
       const item = row.original;
-      return <Box>{capitalizeStringWithChar(item.type) || "-"}</Box>;
+      return <Box>{capitalizeStringWithChar(item.type) || '-'}</Box>;
     },
   },
   {
-    id: "action",
-    header: "Action",
+    id: 'action',
+    header: 'Action',
     enableSorting: false,
     enableResizing: false,
     size: actionColumnSize,
     minSize: 120,
     meta: {
-      headerCellClassName: 'whitespace-nowrap !px-1 text-center',
-      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+      headerCellClassName: 'whitespace-nowrap text-center',
+      cellClassName: 'align-middle whitespace-nowrap text-center',
       cellContentClassName: 'whitespace-nowrap flex justify-center',
       loadingSkeleton: (
         <Box className="flex items-center justify-center gap-2">

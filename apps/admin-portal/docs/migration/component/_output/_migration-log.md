@@ -1488,7 +1488,21 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/user/page.tsx`, `apps/admin-portal/src/components/tableConfig/usersTableConfig.tsx`, `apps/admin-portal/src/app/claim/history/page.tsx`, `apps/admin-portal/src/components/tableConfig/membershipTableConfig.tsx`, `apps/admin-portal/src/views/layout/layout.view.tsx`, `apps/admin-portal/src/app/globals.css`]
 - Shared-ui impact: `No new @repo/ui export is adopted. The routes now compose existing shared Box, Button, DataTable, Input, Select, Switch, and Skeleton primitives while extending only app-local table configuration and pagination styling.`
 - Verification note: `This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /masterdata/user already present in _migration-log.md and _parity-checklist.md. No new smoke, lint, or build evidence is added in this documentation entry.`
-- Tracker impact: `Batch 9 page tracker can now treat /masterdata/user as PASS because the route-local migration has been completed.`
+- Tracker impact: `Batch 9 page tracker can now treat /masterdata/email-template as PASS because the route-local migration has been completed.`
+
+## Batch 9 - /masterdata/email-tag Route Refactor - 2026-04-10
+
+- Route focus: `/masterdata/email-tag`
+- Migration intent: `Migrate the masterdata email tag route onto the shared DataTable instance API, standardize the table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/email-tag/page.tsx` now renders the route shell with `Box`, mounts the shared `@repo/ui` `DataTable` directly with manual pagination, pinned columns, and `CompactTablePagination` integration.
+  - `apps/admin-portal/src/components/tableConfig/emailTagTableConfig.tsx` now defines the email tag list columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, wrapped content cells, and standardized shared `Button`-based row actions.
+  - Implemented dynamic column sizing via `measureTextWidth` to ensure visual balance for variable-length fields.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/email-tag/page.tsx`, `apps/admin-portal/src/components/tableConfig/emailTagTableConfig.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box, Button, DataTable, and Skeleton primitives while extending only app-local table configuration and pagination styling.`
+- Verification note: `This logging update is based on the current route-local source changes plus previously recorded manual smoke verification for /masterdata/email-tag already present in _migration-log.md and _parity-checklist.md. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /masterdata/email-tag as PASS because the route-local migration has been completed.`
+
 
 ## Batch 9 - PageHeader Local Component Relocation and Semantics Refresh - 2026-04-06
 

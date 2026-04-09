@@ -221,7 +221,7 @@ export default function MailTemplate() {
         }}
         pageSizeOptions={[10, 20, 30, 50, 100]}
         emptyState={
-          <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+          <Box className="sticky left-0 flex min-h-[10rem] w-full items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
             <Box className="flex flex-col items-center justify-center gap-2">
               <Image alt="No email template data" src={noData} width={128} />
               <Box as="span">No email template data available</Box>

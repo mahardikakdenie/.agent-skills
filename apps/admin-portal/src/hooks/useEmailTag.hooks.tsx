@@ -87,13 +87,10 @@ export function useEmailTag() {
     router.push(`${AppURL.masterdataEmailTag}/add`);
   }, [router]);
 
-  const handleRowsPerPageChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(e.target.value));
-      setPage(1);
-    },
-    []
-  );
+  const handleRowsPerPageChange = useCallback((pageSize: number) => {
+    setRowsPerPage(pageSize);
+    setPage(1);
+  }, []);
 
   return {
     tags: tagsData?.data || [],

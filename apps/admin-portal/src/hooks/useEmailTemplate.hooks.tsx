@@ -43,7 +43,7 @@ export function useEmailTemplate() {
     checkAccess();
   }, [router, permissionList]);
 
-  const { data: categoriesResponse } = useCategories(undefined, {
+  const { data: categoriesResponse, isLoading: isCategoriesLoading } = useCategories(undefined, {
     enabled: hasAccess === true,
     staleTime: 300000,
   });
@@ -137,7 +137,7 @@ export function useEmailTemplate() {
     canEdit,
     canCreate,
     canDelete,
-    isLoading: isLoading || hasAccess === null,
+    isLoading: isLoading || isCategoriesLoading || hasAccess === null || (categories.length > 0 && !selectedTab),
     isError,
     error,
     setPage,
