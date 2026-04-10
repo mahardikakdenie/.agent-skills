@@ -1,88 +1,252 @@
-import { Column } from "@/components/ui/DataTable";
+import { Box, Skeleton, type ColumnDef } from '@repo/ui';
 
 interface HospitalTableConfigProps {
   page: number;
   rowsPerPage: number;
 }
 
+const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat('id-ID').format(value);
+
 export const createHospitalTableColumns = ({
   page,
   rowsPerPage,
-}: HospitalTableConfigProps): Column<any>[] => [
+}: HospitalTableConfigProps): ColumnDef<any>[] => [
   {
-    key: "index",
-    header: "No.",
-    className: "whitespace-nowrap w-12 py-2",
-    render: (_, index) => (page - 1) * rowsPerPage + index + 1,
+    id: 'index',
+    header: 'No.',
+    enableSorting: false,
+    enableResizing: false,
+    size: 44,
+    minSize: 44,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-center">
+          <Skeleton className="h-4 w-5 rounded-full" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
-    key: "id_provider",
-    header: "Profile ID",
-    className: "min-w-32 py-2",
-    render: (item) => item.reference?.id_provider,
+    id: 'id_provider',
+    accessorFn: (item) => item?.reference?.id_provider || '-',
+    header: 'Profile ID',
+    enableSorting: false,
+    size: 120,
+    minSize: 100,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-[8.5rem] rounded-full',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 text-sm leading-5 text-slate-700">
+          {item?.reference?.id_provider || '-'}
+        </Box>
+      );
+    },
   },
   {
-    key: "name",
-    header: "Provider Name",
-    className: "min-w-48 py-2",
-    render: (item) => item.name,
+    id: 'name',
+    accessorFn: (item) => item?.name || '-',
+    header: 'Provider Name',
+    enableSorting: false,
+    size: 240,
+    minSize: 180,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {item?.name || '-'}
+        </Box>
+      );
+    },
   },
   {
-    key: "provider_type",
-    header: "Provider Type",
-    className: "min-w-36 py-2",
-    render: (item) => item.reference?.provider_type,
+    id: 'provider_type',
+    accessorFn: (item) => item?.reference?.provider_type || '-',
+    header: 'Provider Type',
+    enableSorting: false,
+    enableResizing: false,
+    size: 130,
+    minSize: 92,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle whitespace-nowrap text-xs font-semibold text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return <Box>{item?.reference?.provider_type || '-'}</Box>;
+    },
   },
   {
-    key: "name_province",
-    header: "Province",
-    className: "min-w-36 py-2",
-    render: (item) => item.reference?.name_province,
+    id: 'name_province',
+    accessorFn: (item) => item?.reference?.name_province || '-',
+    header: 'Province',
+    enableSorting: false,
+    size: 164,
+    minSize: 144,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {item?.reference?.name_province || '-'}
+        </Box>
+      );
+    },
   },
   {
-    key: "name_city",
-    header: "City",
-    className: "min-w-36 py-2",
-    render: (item) => item.reference?.name_city,
+    id: 'name_city',
+    accessorFn: (item) => item?.reference?.name_city || '-',
+    header: 'City',
+    enableSorting: false,
+    size: 164,
+    minSize: 144,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {item?.reference?.name_city || '-'}
+        </Box>
+      );
+    },
   },
   {
-    key: "address",
-    header: "Address",
-    className: "min-w-64 py-2 whitespace-nowrap",
-    render: (item) => item.reference?.address,
+    id: 'address',
+    accessorFn: (item) => item?.reference?.address || '-',
+    header: 'Address',
+    enableSorting: false,
+    size: 264,
+    minSize: 144,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {item?.reference?.address || '-'}
+        </Box>
+      );
+    },
   },
   {
-    key: "long",
-    header: "Longitude",
-    className: "min-w-32 py-2",
-    render: (item) => item.reference?.long,
+    id: 'long',
+    accessorFn: (item) => item?.reference?.long || '-',
+    header: 'Longitude',
+    enableSorting: false,
+    size: 130,
+    minSize: 110,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {item?.reference?.long || '-'}
+        </Box>
+      );
+    },
   },
   {
-    key: "lat",
-    header: "Latitude",
-    className: "min-w-32 py-2",
-    render: (item) => item.reference?.lat,
+    id: 'lat',
+    accessorFn: (item) => item?.reference?.lat || '-',
+    header: 'Latitude',
+    enableSorting: false,
+    size: 130,
+    minSize: 110,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {item?.reference?.lat || '-'}
+        </Box>
+      );
+    },
   },
   {
-    key: "outpatient",
-    header: "Facility OP",
-    className: "min-w-32 py-2 ",
-    render: (item) => (
-      <div className="uppercase">{item.reference?.outpatient}</div>
-    ),
+    id: 'outpatient',
+    accessorFn: (item) => item?.reference?.outpatient || '-',
+    header: 'Facility OP',
+    enableSorting: false,
+    enableResizing: false,
+    size: 130,
+    minSize: 92,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName:
+        'align-middle whitespace-nowrap text-xs font-semibold text-slate-500 uppercase',
+      cellContentClassName: 'whitespace-nowrap uppercase',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return <Box className="uppercase">{item?.reference?.outpatient || '-'}</Box>;
+    },
   },
   {
-    key: "inpatient",
-    header: "Facility IP",
-    className: "min-w-32 py-2",
-    render: (item) => (
-      <div className="uppercase">{item.reference?.inpatient}</div>
-    ),
+    id: 'inpatient',
+    accessorFn: (item) => item?.reference?.inpatient || '-',
+    header: 'Facility IP',
+    enableSorting: false,
+    enableResizing: false,
+    size: 130,
+    minSize: 92,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName:
+        'align-middle whitespace-nowrap text-xs font-semibold text-slate-500 uppercase',
+      cellContentClassName: 'whitespace-nowrap uppercase',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return <Box className="uppercase">{item?.reference?.inpatient || '-'}</Box>;
+    },
   },
   {
-    key: "phone",
-    header: "Phone",
-    className: "min-w-32 py-2",
-    render: (item) => item.reference?.phone,
+    id: 'phone',
+    accessorFn: (item) => item?.reference?.phone || '-',
+    header: 'Phone',
+    enableSorting: false,
+    size: 160,
+    minSize: 116,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-all',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return (
+        <Box className="min-w-0 break-all text-sm leading-5 text-slate-700">
+          {item?.reference?.phone || '-'}
+        </Box>
+      );
+    },
   },
 ];
