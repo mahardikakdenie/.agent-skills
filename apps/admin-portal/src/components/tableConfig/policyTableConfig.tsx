@@ -103,11 +103,7 @@ export const createPolicyTableColumns = ({
     cell: ({ row }) => {
       const policy = row.original;
 
-      return (
-        <Box className="min-w-0 text-sm leading-5 text-slate-700">
-          {policy.number || '-'}
-        </Box>
-      );
+      return <Box className="min-w-0 text-sm leading-5 text-slate-700">{policy.number || '-'}</Box>;
     },
   },
   {
@@ -241,87 +237,247 @@ export const createPendingRenewalsTableColumns = ({
   onGoToDetail,
   getStatusColor,
   getStageColor,
+  policyNumberColumnSize = 240,
+  expiryDateColumnSize = 180,
+  statusColumnSize = 160,
+  actionColumnSize = 80,
 }: SharedPolicyTableColumnProps & {
   getStageColor?: (stage: string) => string;
-}): LegacyColumn<PolicyTableRow>[] => [
+  policyNumberColumnSize?: number;
+  expiryDateColumnSize?: number;
+  statusColumnSize?: number;
+  actionColumnSize?: number;
+}): ColumnDef<PolicyTableRow>[] => [
   {
-    key: 'id',
+    id: 'id',
     header: 'No.',
-    render: (_, index) => (page - 1) * rowsPerPage + index + 1,
+    enableSorting: false,
+    enableResizing: false,
+    size: 44,
+    minSize: 44,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+    },
+    cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
-    key: 'policy_holder.name',
+    id: 'customerName',
+    accessorFn: (policy) => policy?.policy_holder?.name || '-',
     header: 'Customer Name',
-    render: (policy) => {
-      return <Box className="flex items-center gap-2">{policy?.policy_holder?.name || '-'}</Box>;
+    enableSorting: false,
+    size: 160,
+    minSize: 136,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
+
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {policy?.policy_holder?.name || '-'}
+        </Box>
+      );
     },
   },
   {
-    key: 'number',
+    accessorKey: 'number',
+    id: 'policyNumber',
     header: 'Policy Number',
-    render: (policy) => {
-      return <Box>{policy.number}</Box>;
+    enableSorting: false,
+    size: policyNumberColumnSize,
+    minSize: 160,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-[8.5rem] rounded-full',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
+
+      return <Box className="min-w-0 text-sm leading-5 text-slate-700">{policy.number || '-'}</Box>;
     },
   },
   {
-    key: 'policy_products.plan_data.name',
+    id: 'planName',
+    accessorFn: (policy) => policy?.policy_products?.plan_data?.name || '-',
     header: 'Plan Name',
-    render: (policy) => {
+    enableSorting: false,
+    size: 180,
+    minSize: 160,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
+
       return (
-        <Box className="min-w-44">
-          {policy?.policy_products?.plan_data?.name?.split('|').join(' - ') || '-'}
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-600">
+          {policy?.policy_products?.plan_data?.name?.split('|').splice(0, 2).join(' - ') || '-'}
         </Box>
       );
     },
   },
   {
-    key: 'end_date',
+    accessorKey: 'end_date',
     header: 'Expiry Date',
-    render: (policy) => {
-      return <Box className="whitespace-nowrap">{policy?.end_date || '-'}</Box>;
+    enableSorting: false,
+    enableResizing: false,
+    size: expiryDateColumnSize,
+    minSize: 116,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle whitespace-nowrap',
+      cellContentClassName: 'whitespace-nowrap text-xs tabular-nums text-slate-700',
+      loadingSkeletonClassName: 'h-4 w-[6.9rem] rounded-full',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
+
+      return <Box>{policy?.end_date || '-'}</Box>;
     },
   },
   {
-    key: 'stage',
+    id: 'stage',
+    accessorFn: (policy) => policy?.notification_log?.[0]?.stage || '-',
     header: 'Stage',
-    render: (policy) => {
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 92,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap !px-1.5',
+      cellClassName:
+        'align-middle whitespace-nowrap !px-1.5 text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-7 rounded-full',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
       const stageColor =
-        getStageColor?.(policy?.notification_log[0]?.stage || '') || 'text-gray-600';
+        getStageColor?.(policy?.notification_log?.[0]?.stage || '') || 'text-gray-600';
+
       return (
-        <Box className="whitespace-nowrap font-semibold">
-          <Box as="span" className={stageColor}>
-            {policy?.notification_log[0]?.stage || '-'}
-          </Box>
+        <Box className={cn('whitespace-nowrap font-semibold', stageColor)}>
+          {policy?.notification_log?.[0]?.stage || '-'}
         </Box>
       );
     },
   },
   {
-    key: 'email_status',
+    id: 'email_status',
+    accessorFn: (policy) => policy?.notification_log?.[0]?.status || '-',
     header: 'Email Status',
-    render: (policy) => {
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 92,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap !px-1.5',
+      cellClassName:
+        'align-middle whitespace-nowrap !px-1.5 text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-12 rounded-full',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
       return (
-        <Box className="whitespace-nowrap font-semibold">
-          <Box as="span" className={getStatusColor(policy?.notification_log[0]?.status || '')}>
-            {policy?.notification_log[0]?.status || '-'}
-          </Box>
+        <Box
+          className={cn(
+            'whitespace-nowrap font-semibold',
+            getStatusColor(policy?.notification_log?.[0]?.status || ''),
+          )}
+        >
+          {policy?.notification_log?.[0]?.status || '-'}
         </Box>
       );
     },
   },
   {
-    key: 'email_sent',
+    id: 'email_sent',
+    accessorFn: (policy) => policy?.notification_log?.length || '-',
     header: 'Email Sent',
-    render: (policy) => {
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 92,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap !px-1.5',
+      cellClassName:
+        'align-middle whitespace-nowrap !px-1.5 text-xs font-semibold uppercase tracking-[0.04em] text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-7 rounded-full',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
+
       return <Box>{policy?.notification_log?.length || '-'}</Box>;
     },
   },
   {
-    key: 'action',
-    header: 'Action',
-    render: (policy) => {
+    accessorKey: 'status',
+    header: 'Status',
+    enableSorting: false,
+    enableResizing: false,
+    size: statusColumnSize,
+    minSize: 84,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap text-center',
+      cellClassName: 'align-middle whitespace-nowrap text-center',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'mx-auto h-[1.375rem] w-[4.75rem] rounded-full',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
+      const status = policy?.status || '-';
+
       return (
-        <Button onClick={() => onGoToDetail(policy.id)} className="rounded-full">
+        <Box className="whitespace-nowrap">
+          <Box
+            as="span"
+            className={cn(
+              'inline-flex h-[1.375rem] min-w-[4.75rem] cursor-default select-none items-center justify-center whitespace-nowrap rounded-full px-1 text-[10px] font-semibold leading-none ring-1 ring-inset',
+              getStatusColor(status),
+              ['Pending', 'In Force'].includes(status) && 'bg-sky-50 ring-sky-200/80',
+              status === 'Grace Period' && 'bg-amber-50 ring-amber-200/80',
+              status === 'Expired' && 'bg-slate-50 ring-slate-200/80',
+              !['Pending', 'In Force', 'Grace Period', 'Expired'].includes(status) &&
+                'bg-slate-50 ring-slate-200/80',
+            )}
+          >
+            {status}
+          </Box>
+        </Box>
+      );
+    },
+  },
+  {
+    id: 'action',
+    header: 'Action',
+    enableSorting: false,
+    enableResizing: false,
+    size: actionColumnSize,
+    minSize: 68,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap text-center',
+      cellClassName: 'align-middle whitespace-nowrap text-center',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'mx-auto h-7 w-[3.25rem] rounded-full',
+    },
+    cell: ({ row }) => {
+      const policy = row.original;
+
+      return (
+        <Button
+          size="xs"
+          onClick={() => onGoToDetail(policy.id || '')}
+          className="h-7 rounded-full px-2.5 text-[11px] font-semibold shadow-none"
+        >
           View
         </Button>
       );

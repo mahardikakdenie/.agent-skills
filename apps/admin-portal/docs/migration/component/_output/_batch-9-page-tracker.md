@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 26 |
+| PASS | 27 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 13 |
+| DEFERRED_DATA_TABLE | 12 |
 | NOT_STARTED | 74 |
 | OUT_OF_SCOPE | 1 |
 
@@ -129,7 +129,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/policy/list/detail/[id]` | `policy-list-detail-id` | `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail page to the relocated local `PageHeader` component path; its route-local DataTable usage is still intact and no dedicated route-level stabilization evidence is recorded yet. |
 | `/policy/list/export` | `policy-list-export` | `apps/admin-portal/src/app/policy/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/list/import` | `policy-list-import` | `apps/admin-portal/src/app/policy/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/policy/pending-renewals` | `policy-pending-renewals` | `apps/admin-portal/src/app/policy/pending-renewals/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/policy/pending-renewals` | `policy-pending-renewals` | `apps/admin-portal/src/app/policy/pending-renewals/page.tsx` | NO | YES | `PASS` | 2026-04-13 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API and standardize the filter and table chrome on shared primitives. |
 | `/product-category` | `product-category` | `apps/admin-portal/src/app/product-category/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/product-category/[category]` | `product-category-category` | `apps/admin-portal/src/app/product-category/[category]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/product-category/[category]/add` | `product-category-category-add` | `apps/admin-portal/src/app/product-category/[category]/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -1401,14 +1401,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `policy-pending-renewals`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-13`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+- Blocker type: `none`
+- Notes: Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API and standardize the filter and table chrome on shared primitives.
 
 ### /product-category
 
