@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 27 |
+| PASS | 28 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 12 |
+| DEFERRED_DATA_TABLE | 11 |
 | NOT_STARTED | 74 |
 | OUT_OF_SCOPE | 1 |
 
@@ -150,7 +150,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/report/campaign-analytics` | `report-campaign-analytics` | `apps/admin-portal/src/app/report/campaign-analytics/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/report/performance` | `report-performance` | `apps/admin-portal/src/app/report/performance/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/sanction/list` | `sanction-list` | `apps/admin-portal/src/app/sanction/list/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/sanction/list` | `sanction-list` | `apps/admin-portal/src/app/sanction/list/page.tsx` | NO | YES | `PASS` | 2026-04-14 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/sanction/list/add` | `sanction-list-add` | `apps/admin-portal/src/app/sanction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/sanction/list/detail/[id]` | `sanction-list-detail-id` | `apps/admin-portal/src/app/sanction/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/sanction/list/upload` | `sanction-list-upload` | `apps/admin-portal/src/app/sanction/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -1716,14 +1716,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `sanction-list`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-14`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+- Blocker type: `none`
+- Notes: Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation.
 
 ### /sanction/list/add
 
