@@ -1,17 +1,47 @@
-"use client";
-import { Button } from "@repo/ui";
-import { Plus, X, Edit } from "react-feather";
+'use client';
+
+import noData from '@public/images/no-data.webp';
+import { format } from 'date-fns';
+import Image from 'next/image';
+import React, { useMemo } from 'react';
+import { Plus, X } from 'react-feather';
+
 import {
+  Box,
+  Button,
+  DataTable,
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "@repo/ui";
-import { format } from "date-fns";
-import { DataTable } from "@/components/ui/DataTable";
-import { useCampaign } from "@/hooks/useCampaign.hooks";
-import { createCampaignTableColumns } from "@/components/tableConfig/campaignTableConfig";
+} from '@repo/ui';
+
+import { createCampaignTableColumns } from '@/components/tableConfig/campaignTableConfig';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { useCampaign } from '@/hooks/useCampaign.hooks';
+import { cn } from '@/lib/utils';
+
+let tableMeasureContext: CanvasRenderingContext2D | null = null;
+function measureTextWidth(label: string, font: string, fallbackCharWidth: number) {
+  if (typeof document === 'undefined') {
+    return label.length * fallbackCharWidth;
+  }
+
+  if (!tableMeasureContext) {
+    tableMeasureContext = document.createElement('canvas').getContext('2d');
+  }
+
+  if (!tableMeasureContext) {
+    return label.length * fallbackCharWidth;
+  }
+
+  tableMeasureContext.font = font;
+
+  return tableMeasureContext.measureText(label).width;
+}
 
 export default function PromotionPage() {
   const {
@@ -52,9 +82,22 @@ export default function PromotionPage() {
     renderStatus,
   } = useCampaign();
 
-  if (hasAccess === null) {
-    return <div>Loading...</div>;
-  }
+  const nameColumnSize = useMemo(
+    () =>
+      Math.max(
+        164,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('Campaign Name', '500 14px Arial', 6.8),
+            (promotions || []).reduce((widest: number, item: any) => {
+              const label = item?.name || '-';
+              return Math.max(widest, measureTextWidth(label, '400 13px Arial', 6.6));
+            }, 0),
+          ) + 28,
+        ),
+      ),
+    [promotions],
+  );
 
   const campaignTableColumns = createCampaignTableColumns({
     page,
@@ -63,301 +106,372 @@ export default function PromotionPage() {
     handleDelete,
     canDelete,
     renderStatus,
+    nameColumnSize,
   });
 
+  if (hasAccess === null) {
+    return null;
+  }
+
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="sm:text-2xl text-xl font-semibold">
+    <Box className="flex min-h-0 flex-1 w-full flex-col gap-3 p-4 md:p-6">
+      <Box className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
+        <Box as="h1" className="text-2xl font-bold text-black">
           Promotions Campaign
-        </h1>
-        <Button
-          onClick={addNewCampaign}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center"
-        >
-          <Plus className="w-5 h-5 mr-1" /> Add Campaign
-        </Button>
-      </div>
+        </Box>
+        <Box className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 xl:w-auto 2xl:flex-nowrap">
+          <Button
+            onClick={addNewCampaign}
+            className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d] sm:ml-auto xl:ml-0"
+            leftIcon={<Plus className="w-5 h-5" />}
+          >
+            Add Campaign
+          </Button>
+        </Box>
+      </Box>
 
       <DataTable
+        className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
         loading={isLoading}
-        data={promotions}
+        data={promotions || []}
         columns={campaignTableColumns}
-        search={{
-          placeholder: "Search by Campaign Name",
-          onSearch: handleSearch,
+        defaultState={{
+          columnPinning: {
+            left: ['index', 'name'],
+            right: ['action'],
+          },
         }}
         pagination={{
-          page,
-          totalPages,
-          totalItems,
-          rowsPerPage,
-          onPageChange: setPage,
-          onRowsPerPageChange: (e) => setRowsPerPage(Number(e.target.value)),
-          rowsPerPageOptions: [10, 20, 30, 50],
+          pageIndex: page - 1,
+          pageSize: rowsPerPage,
+          pageCount: totalPages,
+          rowCount: totalItems,
+          onPageChange: (pageIndex) => {
+            if (isLoading) return;
+            setPage(pageIndex + 1);
+          },
+          onPageSizeChange: (pageSize) => {
+            if (isLoading) return;
+            setRowsPerPage(pageSize);
+          },
         }}
-        noDataText="No campaign data available"
-        className="campaign-table"
+        pageSizeOptions={[10, 20, 30, 50, 100]}
+        emptyState={
+          <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+            <Box className="flex flex-col items-center justify-center gap-2">
+              <Image alt="No campaign data" src={noData} width={128} />
+              <Box as="span">No campaign data available</Box>
+            </Box>
+          </Box>
+        }
+        renderToolbar={() => (
+          <Box className="w-full">
+            <DebouncedSearchInput
+              value=""
+              placeholder="Search by Campaign Name"
+              ariaLabel="Search by Campaign Name"
+              onDebouncedChange={handleSearch}
+              className="h-10 rounded-xl border-slate-300 bg-white text-slate-900 shadow-none transition-colors placeholder:text-slate-400 focus-within:ring-0 focus-within:shadow-none"
+            />
+          </Box>
+        )}
+        renderPagination={(table) => (
+          <Box className="-mt-1">
+            <CompactTablePagination
+              table={table}
+              pageSizeOptions={[10, 20, 30, 50, 100]}
+              disabled={isLoading}
+            />
+          </Box>
+        )}
+        tableOptions={{
+          manualPagination: true,
+          enableColumnPinning: true,
+          enableColumnResizing: true,
+          defaultColumn: {
+            minSize: 48,
+            size: 96,
+          },
+          getRowId: (row, index) => row?.campaign_id || `campaign-row-${index}`,
+        }}
       />
 
       <Drawer direction="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerClose asChild>
+        <DrawerContent className="max-w-[30rem]">
+          <DrawerHeader className="gap-0 pb-0">
+            <DrawerClose className="absolute right-3 top-3">
               <Button
                 variant="ghost"
-                className="absolute right-2 top-2"
+                className="h-8 w-8 rounded-full p-0 shadow-none"
                 onClick={() => setDrawerOpen(false)}
-                aria-label="Close campaign details"
               >
-                <X />
+                <X className="h-4.5 w-4.5" />
               </Button>
             </DrawerClose>
-            <DrawerTitle className="text-black font-bold text-2xl">
+            <DrawerTitle className="pr-10 text-2xl font-bold tracking-tight text-black">
               Campaign Details
             </DrawerTitle>
+            <DrawerDescription className="mt-4 block text-inherit">
+              <Box className="flex flex-col w-full h-full max-h-[calc(100vh-8rem)] overflow-y-auto px-1 pt-1 pb-4">
+                {isDetailLoading ? (
+                  <Box className="flex flex-1 items-center justify-center py-10 text-sm font-medium text-black">
+                    Loading campaign details...
+                  </Box>
+                ) : detailError ? (
+                  <Box className="flex flex-1 items-center justify-center py-10 text-sm font-medium text-red-600">
+                    {detailError}
+                  </Box>
+                ) : !selectedPromotion ? (
+                  <Box className="flex flex-1 items-center justify-center py-10 text-sm font-medium text-black">
+                    No campaign details available.
+                  </Box>
+                ) : (
+                  <React.Fragment>
+                    <Box className="flex flex-col gap-4">
+                      <Box className="w-full rounded-2xl bg-slate-50/80 p-4 ring-1 ring-slate-200/70 md:p-5">
+                        <Box className="flex flex-col gap-3.5 text-black">
+                          <Box className="grid gap-3">
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Campaign Name</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.name}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Promotion Type</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.type}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Start Date</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900 tabular-nums">
+                                {selectedPromotion?.start_date
+                                  ? format(new Date(selectedPromotion.start_date), 'dd-MM-yyyy')
+                                  : 'N/A'}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">End Date</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900 tabular-nums">
+                                {selectedPromotion?.end_date
+                                  ? format(new Date(selectedPromotion.end_date), 'dd-MM-yyyy')
+                                  : 'N/A'}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Value</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900 tabular-nums">
+                                {selectedPromotion?.value_type === 'percentage'
+                                  ? `${selectedPromotion?.value}%`
+                                  : `${selectedPromotion?.value_currency} ${Number(
+                                      selectedPromotion?.value,
+                                    ).toLocaleString()}`}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Status</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words font-semibold text-warning">
+                                <Box
+                                  as="span"
+                                  className={getStatusColor(selectedPromotion?.active ?? false)}
+                                >
+                                  {selectedPromotion?.active ? 'Active' : 'Inactive'}
+                                </Box>
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">
+                                Minimum Transaction Amount
+                              </Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.minimum_amount}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">
+                                Maximum Discount Amount
+                              </Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.maximum_amount}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Channels</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.embedded_discount_channels &&
+                                selectedPromotion.embedded_discount_channels.length > 0 ? (
+                                  selectedPromotion.embedded_discount_channels.map(
+                                    (channel: { channel_id: string }) => (
+                                      <Box as="p" key={channel.channel_id}>
+                                        • {channelNames.get(channel.channel_id) || 'Unknown'}
+                                      </Box>
+                                    ),
+                                  )
+                                ) : (
+                                  <Box as="p">No channels</Box>
+                                )}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Insurances</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.embedded_discount_insurances &&
+                                selectedPromotion.embedded_discount_insurances.length > 0 ? (
+                                  selectedPromotion.embedded_discount_insurances.map(
+                                    (insurance: { insurance_id: string }) => (
+                                      <Box as="p" key={insurance.insurance_id}>
+                                        • {insuranceNames.get(insurance.insurance_id) || 'Unknown'}
+                                      </Box>
+                                    ),
+                                  )
+                                ) : (
+                                  <Box as="p">No insurances</Box>
+                                )}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Products</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.embedded_discount_products &&
+                                selectedPromotion.embedded_discount_products.length > 0 ? (
+                                  selectedPromotion.embedded_discount_products.map(
+                                    (product: { product_id: string }) => (
+                                      <Box as="p" key={product.product_id}>
+                                        • {productNames.get(product.product_id) || 'Unknown'}
+                                      </Box>
+                                    ),
+                                  )
+                                ) : (
+                                  <Box as="p">No products</Box>
+                                )}
+                              </Box>
+                            </Box>
+                            <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                              <Box className="font-medium text-slate-700">Plans</Box>
+                              <Box className="text-slate-400">:</Box>
+                              <Box className="min-w-0 break-words text-slate-900">
+                                {selectedPromotion?.embedded_discount_plans &&
+                                selectedPromotion.embedded_discount_plans.length > 0 ? (
+                                  selectedPromotion.embedded_discount_plans.map(
+                                    (plan: { plan_id: string }) => (
+                                      <Box as="p" key={plan.plan_id}>
+                                        • {planNames.get(plan.plan_id) || 'Unknown'}
+                                      </Box>
+                                    ),
+                                  )
+                                ) : (
+                                  <Box as="p">No plans</Box>
+                                )}
+                              </Box>
+                            </Box>
+                          </Box>
+                        </Box>
+                      </Box>
+
+                      {selectedPromotion?.type === 'embedded' && (
+                        <Box className="mt-4 w-full rounded-2xl bg-slate-50/80 p-4 ring-1 ring-slate-200/70 md:p-5">
+                          <Box className="flex flex-col gap-3.5 text-black">
+                            <Box as="h3" className="text-[14px] font-bold text-slate-900">
+                              Embedded Details
+                            </Box>
+                            <Box className="grid gap-3">
+                              {Array.isArray(embeddedDiscount) && embeddedDiscount.length > 0 ? (
+                                embeddedDiscount.map((embedded: any, index: number) => (
+                                  <Box
+                                    key={index}
+                                    className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5"
+                                  >
+                                    <Box className="font-medium text-slate-700">
+                                      Total Discount Usage
+                                    </Box>
+                                    <Box className="text-slate-400">:</Box>
+                                    <Box className="min-w-0 break-words text-slate-900 tabular-nums">
+                                      {`${embedded.currency} ${(
+                                        embedded.total_transaction_amount -
+                                        embedded.total_discount_amount
+                                      ).toLocaleString()}`}
+                                    </Box>
+                                  </Box>
+                                ))
+                              ) : (
+                                <Box as="p" className="text-[13px] text-slate-500">
+                                  Total Discount Usage is not available.
+                                </Box>
+                              )}
+                            </Box>
+                          </Box>
+                        </Box>
+                      )}
+
+                      {selectedPromotion?.type === 'voucher' && vouchers.length > 0 && (
+                        <Box className="mt-4 w-full rounded-2xl bg-slate-50/80 p-4 ring-1 ring-slate-200/70 md:p-5">
+                          <Box className="flex flex-col gap-3.5 text-black">
+                            <Box as="h3" className="text-[14px] font-bold text-slate-900">
+                              Voucher Details
+                            </Box>
+                            <Box className="grid gap-4">
+                              {vouchers.map((voucher: any, index: number) => (
+                                <Box
+                                  key={index}
+                                  className="grid gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-slate-200/50"
+                                >
+                                  <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                                    <Box className="font-medium text-slate-700">Code</Box>
+                                    <Box className="text-slate-400">:</Box>
+                                    <Box className="min-w-0 break-words text-slate-900">
+                                      {voucher.code}
+                                    </Box>
+                                  </Box>
+                                  <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                                    <Box className="font-medium text-slate-700">Usage Limit</Box>
+                                    <Box className="text-slate-400">:</Box>
+                                    <Box className="min-w-0 break-words text-slate-900 tabular-nums">
+                                      {voucher.usage_limit}
+                                    </Box>
+                                  </Box>
+                                  <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                                    <Box className="font-medium text-slate-700">Used Count</Box>
+                                    <Box className="text-slate-400">:</Box>
+                                    <Box className="min-w-0 break-words text-slate-900 tabular-nums">
+                                      {voucher.used_count}
+                                    </Box>
+                                  </Box>
+                                </Box>
+                              ))}
+                            </Box>
+                          </Box>
+                        </Box>
+                      )}
+
+                      <Box className="flex justify-center pt-2">
+                        <Button
+                          onClick={() => handleEditCampaign(selectedPromotion.campaign_id)}
+                          disabled={!canEdit}
+                          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center h-10 min-w-32 shadow-none"
+                        >
+                          Edit
+                        </Button>
+                      </Box>
+                    </Box>
+                  </React.Fragment>
+                )}
+              </Box>
+            </DrawerDescription>
           </DrawerHeader>
-          <div className="flex flex-col w-full h-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl overflow-y-auto">
-            {isDetailLoading ? (
-              <div className="flex flex-1 items-center justify-center text-sm font-medium text-black">
-                Loading campaign details...
-              </div>
-            ) : detailError ? (
-              <div className="flex flex-1 items-center justify-center text-sm font-medium text-red-600">
-                {detailError}
-              </div>
-            ) : !selectedPromotion ? (
-              <div className="flex flex-1 items-center justify-center text-sm font-medium text-black">
-                No campaign details available.
-              </div>
-            ) : (
-              <>
-                <div className="rounded-lg flex flex-col gap-4 text-black">
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">
-                  Campaign Name
-                </div>
-                <div className="max-w-1 w-1">:</div>
-                <div>{selectedPromotion?.name}</div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">
-                  Promotion Type
-                </div>
-                <div className="max-w-1 w-1">:</div>
-                <div>{selectedPromotion?.type}</div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">Start Date</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {selectedPromotion?.start_date
-                    ? format(
-                        new Date(selectedPromotion.start_date),
-                        "dd-MM-yyyy"
-                      )
-                    : "N/A"}
-                </div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">End Date</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {selectedPromotion?.end_date
-                    ? format(new Date(selectedPromotion.end_date), "dd-MM-yyyy")
-                    : "N/A"}
-                </div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">Value</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {selectedPromotion?.value_type === "percentage"
-                    ? `${selectedPromotion?.value}%`
-                    : `${selectedPromotion?.value_currency} ${Number(
-                        selectedPromotion?.value
-                      ).toLocaleString()}`}
-                </div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">Status</div>
-                <div className="max-w-1 w-1">:</div>
-                <div className="text-warning">
-                  <span
-                    className={getStatusColor(
-                      selectedPromotion?.active ?? false
-                    )}
-                  >
-                    {selectedPromotion?.active ? "Active" : "Inactive"}
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">
-                  Minimum Transaction Amount
-                </div>
-                <div className="max-w-1 w-1">:</div>
-                <div>{selectedPromotion?.minimum_amount}</div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">
-                  Maximum Discount Amount
-                </div>
-                <div className="max-w-1 w-1">:</div>
-                <div>{selectedPromotion?.maximum_amount}</div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">Channels</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {selectedPromotion?.embedded_discount_channels &&
-                  selectedPromotion.embedded_discount_channels.length > 0 ? (
-                    selectedPromotion.embedded_discount_channels.map(
-                      (channel: { channel_id: string }) => (
-                        <p key={channel.channel_id}>
-                          • {channelNames.get(channel.channel_id) || "Unknown"}
-                        </p>
-                      )
-                    )
-                  ) : (
-                    <p>No channels</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">Insurances</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {selectedPromotion?.embedded_discount_insurances &&
-                  selectedPromotion.embedded_discount_insurances.length > 0 ? (
-                    selectedPromotion.embedded_discount_insurances.map(
-                      (insurance: { insurance_id: string }) => (
-                        <p key={insurance.insurance_id}>
-                          •{" "}
-                          {insuranceNames.get(insurance.insurance_id) ||
-                            "Unknown"}
-                        </p>
-                      )
-                    )
-                  ) : (
-                    <p>No insurances</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">Products</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {selectedPromotion?.embedded_discount_products &&
-                  selectedPromotion.embedded_discount_products.length > 0 ? (
-                    selectedPromotion.embedded_discount_products.map(
-                      (product: { product_id: string }) => (
-                        <p key={product.product_id}>
-                          • {productNames.get(product.product_id) || "Unknown"}
-                        </p>
-                      )
-                    )
-                  ) : (
-                    <p>No products</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="sm:min-w-40 sm:w-40 min-w-32">Plans</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {selectedPromotion?.embedded_discount_plans &&
-                  selectedPromotion.embedded_discount_plans.length > 0 ? (
-                    selectedPromotion.embedded_discount_plans.map(
-                      (plan: { plan_id: string }) => (
-                        <p key={plan.plan_id}>
-                          • {planNames.get(plan.plan_id) || "Unknown"}
-                        </p>
-                      )
-                    )
-                  ) : (
-                    <p>No plans</p>
-                  )}
-                </div>
-              </div>
-
-              {selectedPromotion?.type === "embedded" && (
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold">Embedded Details</h3>
-                  {Array.isArray(embeddedDiscount) &&
-                  embeddedDiscount.length > 0 ? (
-                    embeddedDiscount.map((embedded, index) => (
-                      <div
-                        key={index}
-                        className="mb-4 p-4 border rounded-lg bg-white shadow-md"
-                      >
-                        <div className="flex gap-2">
-                          <div className="sm:min-w-40 sm:w-40 min-w-32">
-                            Total Discount Usage
-                          </div>
-                          <div className="max-w-1 w-1">:</div>
-                          <div>
-                            {`${embedded.currency} ${(
-                              embedded.total_transaction_amount -
-                              embedded.total_discount_amount
-                            ).toLocaleString()}`}
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>Total Discount Usage is not available.</p>
-                  )}
-                </div>
-              )}
-
-              {selectedPromotion?.type === "voucher" && vouchers.length > 0 && (
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold">Voucher Details</h3>
-                  {vouchers.map((voucher, index) => (
-                    <div
-                      key={index}
-                      className="mb-4 p-4 border rounded-lg bg-white shadow-md"
-                    >
-                      <div className="flex gap-2">
-                        <div className="sm:min-w-40 sm:w-40 min-w-32">Code</div>
-                        <div className="max-w-1 w-1">:</div>
-                        <div>{voucher.code}</div>
-                      </div>
-                      <div className="flex gap-2">
-                        <div className="sm:min-w-40 sm:w-40 min-w-32">
-                          Usage Limit
-                        </div>
-                        <div className="max-w-1 w-1">:</div>
-                        <div>{voucher.usage_limit}</div>
-                      </div>
-                      <div className="flex gap-2">
-                        <div className="sm:min-w-40 sm:w-40 min-w-32">
-                          Used Count
-                        </div>
-                        <div className="max-w-1 w-1">:</div>
-                        <div>{voucher.used_count}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-                <div className="flex justify-center mt-4">
-                  <button
-                    onClick={() => handleEditCampaign(selectedPromotion.campaign_id)}
-                    disabled={!canEdit}
-                    className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2 flex items-center justify-center"
-                  >
-                    <Edit className="w-4 h-4 mr-2" /> Edit
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
         </DrawerContent>
       </Drawer>
-    </div>
+    </Box>
   );
 }
