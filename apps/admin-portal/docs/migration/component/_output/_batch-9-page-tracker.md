@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 28 |
+| PASS | 29 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 11 |
-| NOT_STARTED | 74 |
+| NOT_STARTED | 73 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -63,7 +63,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor this missing-document upload subroute onto shared `FileUpload`, `Button`, and `Box` primitives, add an explicit empty state, and rely on the updated detail-claim hook to preserve form values under the new upload flow. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/claim/list/export` | `claim-list-export` | `apps/admin-portal/src/app/claim/list/export/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor `/claim/list/export` onto shared `DataTable`, `Button`, and `Box` primitives, standardize the PDF/XLSX export actions, and implement dynamic column sizing while preserving existing data fetching and report generation logic. |
 | `/claim/list/import` | `claim-list-import` | `apps/admin-portal/src/app/claim/list/import/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /claim/list/import onto shared Box, Button, and FileUpload primitives, remove the legacy view dependency, and implement inline file-to-base64 conversion for direct claim import submission. |
-| `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `PASS` | 2026-04-15 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /claim/list/import-with-preview onto shared Box, Button, FileUpload, Table, Select, and Dialog primitives, remove dependencies on legacy views, and implement consolidated icon components (AlertCircleIcon, EditIcon) using Box. |
 | `/export-users` | `export-users` | `apps/admin-portal/src/app/export-users/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/finance/billing/add` | `finance-billing-add` | `apps/admin-portal/src/app/finance/billing/add/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
 | `/finance/billing/detail/[id]` | `finance-billing-detail-id` | `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
