@@ -226,7 +226,7 @@ export default function PolicyPage() {
 
               return Math.max(widest, measureTextWidth(label, '600 11px Arial', 5.9));
             }, 0),
-          ) + 32,
+          ) + 60,
         ),
       ),
     [policies],

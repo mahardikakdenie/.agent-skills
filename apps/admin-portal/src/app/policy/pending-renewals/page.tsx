@@ -147,7 +147,7 @@ export default function PendingRenewals() {
 
               return Math.max(widest, measureTextWidth(label, '600 11px Arial', 5.9));
             }, 0),
-          ) + 40,
+          ) + 60,
         ),
       ),
     [policies],

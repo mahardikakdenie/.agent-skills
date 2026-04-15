@@ -171,7 +171,7 @@ export const createPolicyTableColumns = ({
     enableSorting: false,
     enableResizing: false,
     size: statusColumnSize,
-    minSize: 84,
+    minSize: 100,
     meta: {
       headerCellClassName: 'whitespace-nowrap text-center',
       cellClassName: 'align-middle whitespace-nowrap text-center',
@@ -425,7 +425,7 @@ export const createPendingRenewalsTableColumns = ({
     enableSorting: false,
     enableResizing: false,
     size: statusColumnSize,
-    minSize: 84,
+    minSize: 100,
     meta: {
       headerCellClassName: 'whitespace-nowrap text-center',
       cellClassName: 'align-middle whitespace-nowrap text-center',
