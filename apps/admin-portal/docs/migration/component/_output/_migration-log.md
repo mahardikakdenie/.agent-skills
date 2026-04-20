@@ -1735,3 +1735,17 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Verification note: `This logging update is based on the current route-local source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /export-users as PASS because the route-local migration has been completed.`
 
+## Batch 9 - /sanction/list/upload Route Refactor - 2026-04-20
+
+- Route focus: /sanction/list/upload
+- Migration intent: `Refactor the sanction list upload page onto the current shared primitive stack, standardizing the layout and file-upload interaction while preserving the existing sanction-blacklist submission logic and CSV requirement guidance.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/sanction/list/upload/page.tsx` now renders the route shell with `Box`, adopts shared `@repo/ui` `FileUpload`, `Button`, and `Badge` primitives, and standardizes the page header via the local `PageHeader` component.
+  - The refactor removes native HTML layout tags in favor of `Box` and `Box as="..."` equivalents, including the CSV requirement list which now uses `Box` for structured labeling and `Badge` for requirement status.
+  - Standardized the back affordance as a semantic `Box` with `ChevronLeft` icon, keeping the existing `goBack` navigation logic.
+  - `apps/admin-portal/src/hooks/useUploadSanction.hooks.tsx` handles the multi-step upload process: access checking, PapaParse-based CSV processing, field validation (including email and date formats), and batch creation via the `useCreateBlacklist` mutation hook.
+- Files changed (route-focused): [`apps/admin-portal/src/app/sanction/list/upload/page.tsx`, `apps/admin-portal/src/hooks/useUploadSanction.hooks.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, FileUpload, and Badge primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current sanction upload route source changes and supporting hook refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /sanction/list/upload as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+

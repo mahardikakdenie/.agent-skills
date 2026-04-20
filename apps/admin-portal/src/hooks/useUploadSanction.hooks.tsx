@@ -52,21 +52,15 @@ interface UseUploadSanctionProps {
   hasAccess: boolean | null;
   showAlert: boolean;
   errorMessage: string | null;
-  fileName: string | null;
-  isDragging: boolean;
+  selectedFile: File | null;
 
   isLoadingSources: boolean;
   isLoadingInsurances: boolean;
   isLoadingCountries: boolean;
   isUploading: boolean;
 
-  fileInputRef: React.RefObject<HTMLInputElement>;
-
-  handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleDragOver: (e: React.DragEvent) => void;
-  handleDragLeave: () => void;
-  handleDrop: (e: React.DragEvent) => void;
-  handleUpload: (e: React.FormEvent) => Promise<void>;
+  handleFileChange: (file: File | File[] | null) => void;
+  handleUpload: () => Promise<void>;
   setShowAlert: (show: boolean) => void;
   goBack: () => void;
 }
@@ -78,12 +72,9 @@ export function useUploadSanction(): UseUploadSanctionProps {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [csvData, setCsvData] = useState<ParsedRowData[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -127,8 +118,6 @@ export function useUploadSanction(): UseUploadSanctionProps {
   const createBlacklistMutation = useCreateBlacklist({
     onError: (error) => {
       console.error("Failed to upload sanctions:", error);
-      setErrorMessage("Failed to create sanction. Please try again.");
-      setShowAlert(true);
       setIsUploading(false);
     },
   });
@@ -213,16 +202,19 @@ export function useUploadSanction(): UseUploadSanctionProps {
     [insurancesData, sourcesData]
   );
 
-  const handleFileUpload = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (file && file.type === "text/csv") {
-        setFileName(file.name);
-        handleFileParse(file);
+  const handleFileChange = useCallback(
+    (file: File | File[] | null) => {
+      const singleFile = Array.isArray(file) ? file[0] : file;
 
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+      if (!singleFile) {
+        setSelectedFile(null);
+        setCsvData([]);
+        return;
+      }
+
+      if (singleFile.type === "text/csv" || singleFile.name.endsWith(".csv")) {
+        setSelectedFile(singleFile);
+        handleFileParse(singleFile);
       } else {
         setErrorMessage("Please upload a valid CSV file.");
         setShowAlert(true);
@@ -231,124 +223,85 @@ export function useUploadSanction(): UseUploadSanctionProps {
     [handleFileParse]
   );
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+  const handleUpload = useCallback(async () => {
+    setErrorMessage(null);
+    setShowAlert(false);
 
-  const handleDragLeave = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+    if (csvData.length === 0) {
+      throw new Error("Failed to create sanction: CSV file is empty.");
+    }
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-      const file = e.dataTransfer.files[0];
-      if (file && file.type === "text/csv") {
-        setFileName(file.name);
-        handleFileParse(file);
-      } else {
-        setErrorMessage("Please upload a valid CSV file.");
-        setShowAlert(true);
-      }
-    },
-    [handleFileParse]
-  );
+    const requiredFields = [
+      "first_name",
+      "id_number",
+      "phone_number",
+      "email",
+      "blacklist_date",
+      "blacklist_reason",
+    ];
 
-  const handleUpload = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setErrorMessage(null);
-      setShowAlert(false);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-      if (csvData.length === 0) {
-        setErrorMessage("Failed to create sanction: CSV file is empty.");
-        setShowAlert(true);
-        return;
-      }
+    const isDataValid = csvData.every((row: ParsedRowData) => {
+      const isSourceValid = new Set(
+        (sourcesData || []).map((s: Source) => s.source_name.toLowerCase())
+      );
 
-      const requiredFields = [
-        "first_name",
-        "id_number",
-        "phone_number",
-        "email",
-        "blacklist_date",
-        "blacklist_reason",
-      ];
+      return (
+        requiredFields.every(
+          (field) =>
+            row[field as keyof ParsedRowData] != null &&
+            row[field as keyof ParsedRowData] !== ""
+        ) &&
+        emailRegex.test(row.email) &&
+        dateRegex.test(row.blacklist_date) &&
+        isSourceValid.has(row.source_name.toLowerCase())
+      );
+    });
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!isDataValid) {
+      throw new Error("Invalid data in the CSV document file.");
+    }
 
-      const isDataValid = csvData.every((row: ParsedRowData) => {
-        const isSourceValid = new Set(
-          (sourcesData || []).map((s: Source) => s.source_name.toLowerCase())
-        );
+    try {
+      setIsUploading(true);
+      const sources = sourcesData || [];
 
-        return (
-          requiredFields.every(
-            (field) =>
-              row[field as keyof ParsedRowData] != null &&
-              row[field as keyof ParsedRowData] !== ""
-          ) &&
-          emailRegex.test(row.email) &&
-          dateRegex.test(row.blacklist_date) &&
-          isSourceValid.has(row.source_name.toLowerCase())
-        );
-      });
+      await Promise.all(
+        csvData.map(async (row) => {
+          const sanctionData = {
+            id_number: row.id_number.toString(),
+            first_name: row.first_name,
+            middle_name: row.middle_name || null,
+            last_name: row.last_name || null,
+            phone_number: row.phone_number.toString(),
+            email: row.email,
+            blacklist_reason: row.blacklist_reason,
+            source_id: row.source_name
+              ? sources.find(
+                  (s: Source) =>
+                    s.source_name.toLowerCase() ===
+                    row.source_name.toLowerCase()
+                )?.id
+              : null,
+            country: "IDN",
+            id_type: "KTP",
+            created_at: new Date().toISOString(),
+            date_blacklisted: row.blacklist_date,
+          };
 
-      if (!isDataValid) {
-        setErrorMessage("Invalid data in the CSV document file.");
-        setShowAlert(true);
-        return;
-      }
+          await createBlacklistMutation.mutateAsync(sanctionData as any);
+        })
+      );
 
-      try {
-        setIsUploading(true);
-        const sources = sourcesData || [];
-
-        await Promise.all(
-          csvData.map(async (row) => {
-            const sanctionData = {
-              id_number: row.id_number.toString(),
-              first_name: row.first_name,
-              middle_name: row.middle_name || null,
-              last_name: row.last_name || null,
-              phone_number: row.phone_number.toString(),
-              email: row.email,
-              blacklist_reason: row.blacklist_reason,
-              source_id: row.source_name
-                ? sources.find(
-                    (s: Source) =>
-                      s.source_name.toLowerCase() ===
-                      row.source_name.toLowerCase()
-                  )?.id
-                : null,
-              country: "IDN",
-              id_type: "KTP",
-              created_at: new Date().toISOString(),
-              date_blacklisted: row.blacklist_date,
-            };
-
-            await createBlacklistMutation.mutateAsync(sanctionData as any);
-          })
-        );
-
-        setErrorMessage("Sanction Uploaded!");
-        setShowAlert(true);
-
-        setTimeout(() => {
-          setShowAlert(false);
-          router.push(AppURL.sanctionList);
-        }, 2000);
-      } catch (error) {
-        console.error("Failed to upload sanctions:", error);
-      } finally {
-        setIsUploading(false);
-      }
-    },
-    [csvData, sourcesData, createBlacklistMutation, router]
-  );
+      setTimeout(() => {
+        router.push(AppURL.sanctionList);
+      }, 2000);
+    } finally {
+      setIsUploading(false);
+    }
+  }, [csvData, sourcesData, createBlacklistMutation, router]);
 
   const goBack = useCallback(() => {
     router.push(AppURL.sanctionList);
@@ -363,20 +316,14 @@ export function useUploadSanction(): UseUploadSanctionProps {
     hasAccess,
     showAlert,
     errorMessage,
-    fileName,
-    isDragging,
+    selectedFile,
 
     isLoadingSources,
     isLoadingInsurances,
     isLoadingCountries,
     isUploading: isUploading || createBlacklistMutation.isPending,
 
-    fileInputRef,
-
-    handleFileUpload,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
+    handleFileChange,
     handleUpload,
     setShowAlert,
     goBack,

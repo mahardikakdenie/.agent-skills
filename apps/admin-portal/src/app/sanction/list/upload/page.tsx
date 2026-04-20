@@ -1,213 +1,126 @@
-"use client";
-import React from "react";
-import Link from "next/link";
-import { FaSave } from "react-icons/fa";
-import { ChevronLeft } from "react-feather";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from "@repo/ui";
-import { useUploadSanction } from "@/hooks/useUploadSanction.hooks";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
+'use client';
 
-const ErrorModal = ({
-  isOpen,
-  message,
-  onClose,
-}: {
-  isOpen: boolean;
-  message: string;
-  onClose: () => void;
-}) => {
-  if (!isOpen) return null;
+import React from 'react';
+import { ChevronLeft, Upload } from 'react-feather';
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded shadow-md w-1/3">
-        <h2 className="text-lg font-semibold mb-4">Alert</h2>
-        <p>{message}</p>
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { Box, Button, FileUpload, Badge } from '@repo/ui';
+
+import { PageHeader } from '@/components/page-header';
+import AppURL from '@/constants/app-url.const';
+import { useScreen } from '@/context/screen.context';
+import { useUploadSanction } from '@/hooks/useUploadSanction.hooks';
+import { toastPromise } from '@/lib/toast';
 
 export default function UploadSanctionPage() {
-  const {
-    hasAccess,
-    showAlert,
-    errorMessage,
-    fileName,
-    isDragging,
+  const { hasAccess, selectedFile, handleFileChange, handleUpload, isUploading, goBack } =
+    useUploadSanction();
 
-    isUploading,
-
-    fileInputRef,
-
-    handleFileUpload,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
-    handleUpload,
-    setShowAlert,
-    goBack,
-  } = useUploadSanction();
+  const { setLoading } = useScreen();
 
   if (hasAccess === false) {
     return null;
   }
 
+  const handleFormSubmit = async () => {
+    setLoading(true);
+    const uploadPromise = handleUpload();
+    try {
+      await toastPromise(uploadPromise, {
+        loading: 'Uploading sanction data...',
+        success: <Box as="b">Sanction data uploaded successfully!</Box>,
+        error: 'Upload failed!',
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const breadcrumbs = [
+    { label: 'Sanction' },
+    { label: 'List', href: AppURL.sanctionList },
+    { label: 'Upload', isCurrentPage: true },
+  ];
+
   return (
-    <ContentLoadingWrapper isLoading={isUploading}>
-      <div className="flex flex-col w-full gap-4">
-        <form onSubmit={handleUpload}>
-          <div className="bg-white md:px-6 p-4 flex items-center">
-            <div>
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                      <Link href="/sanction/list">Sanction List</Link>
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Upload Sanction</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-              <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-                Upload Blacklist
-              </h2>
-            </div>
-            <div className="flex space-x-4 ml-auto">
-              <div
-                onClick={goBack}
-                className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Back
-              </div>
-              <button
-                type="submit"
-                disabled={isUploading}
-                className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-2 disabled:opacity-50"
-              >
-                {isUploading ? (
-                  <span>Saving...</span>
-                ) : (
-                  <>
-                    <FaSave className="mr-2" />
-                    Submit
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+    <Box className="flex flex-col w-full">
+      <PageHeader title="Upload Blacklist" breadcrumbs={breadcrumbs} showBackButton={false}>
+        <Box
+          onClick={goBack}
+          className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4" /> Back
+        </Box>
+        <Button
+          onClick={handleFormSubmit}
+          disabled={!selectedFile || isUploading}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-5 h-10 ml-4"
+          leftIcon={<Upload className="w-5 h-5" />}
+        >
+          {isUploading ? 'Saving...' : 'Submit'}
+        </Button>
+      </PageHeader>
 
-          {showAlert && (
-            <ErrorModal
-              isOpen={showAlert}
-              message={errorMessage || ""}
-              onClose={() => setShowAlert(false)}
-            />
-          )}
+      <Box className="flex flex-col w-full p-4 md:p-6 gap-6">
+        <Box className="p-4 sm:p-6 bg-white rounded-lg shadow-sm">
+          <FileUpload accept=".csv" value={selectedFile} onChange={handleFileChange} clearable />
 
-          <div className="w-full flex flex-col p-4 sm:p-6">
-            <div className="bg-white md:px-6 p-4">
-              <div
-                className={`flex flex-col items-center justify-center border-2 border-dashed rounded-md p-6 cursor-pointer transition-colors
-              ${
-                isDragging
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-300 bg-white"
-              }`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                <p className="text-gray-500 mb-4">
-                  Drag and drop your CSV file here, or
-                </p>
-                <label
-                  htmlFor="fileUpload"
-                  className="px-4 py-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full cursor-pointer"
-                >
-                  Browse Files
-                </label>
-                <input
-                  id="fileUpload"
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileUpload}
-                  ref={fileInputRef}
-                  className="hidden"
-                />
-              </div>
+          <Box className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-100">
+            <Box as="h3" className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Box className="w-1.5 h-6 bg-[#F5BA41] rounded-full" />
+              CSV Format Requirements
+            </Box>
+            <Box as="p" className="text-sm text-gray-600 mb-6">
+              To ensure a successful upload, your CSV file should include the following columns:
+            </Box>
 
-              {fileName && (
-                <div className="mt-4 text-gray-600">
-                  <p>
-                    Selected file:{" "}
-                    <span className="font-semibold">{fileName}</span>
-                  </p>
-                </div>
-              )}
-
-              <div className="mt-6 p-4 bg-gray-50 rounded-md">
-                <h3 className="text-lg font-semibold mb-2">
-                  CSV Format Requirements
-                </h3>
-                <p className="text-sm text-gray-600 mb-2">
-                  Your CSV file should contain the following columns:
-                </p>
-                <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                  <li>
-                    <strong>first_name</strong> (required)
-                  </li>
-                  <li>
-                    <strong>middle_name</strong> (optional)
-                  </li>
-                  <li>
-                    <strong>last_name</strong> (optional)
-                  </li>
-                  <li>
-                    <strong>id_number</strong> (required)
-                  </li>
-                  <li>
-                    <strong>phone_number</strong> (required)
-                  </li>
-                  <li>
-                    <strong>email</strong> (required, valid email format)
-                  </li>
-                  <li>
-                    <strong>source_name</strong> (required, must match existing
-                    source)
-                  </li>
-                  <li>
-                    <strong>blacklist_date</strong> (required, format:
-                    YYYY-MM-DD)
-                  </li>
-                  <li>
-                    <strong>blacklist_reason</strong> (required)
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </ContentLoadingWrapper>
+            <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
+              <RequirementItem label="first_name" required />
+              <RequirementItem label="middle_name" />
+              <RequirementItem label="last_name" />
+              <RequirementItem label="id_number" required />
+              <RequirementItem label="phone_number" required />
+              <RequirementItem label="email" required sub="valid email format" />
+              <RequirementItem label="source_name" required sub="must match existing source" />
+              <RequirementItem label="blacklist_date" required sub="format: YYYY-MM-DD" />
+              <RequirementItem label="blacklist_reason" required />
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
+
+const RequirementItem = ({
+  label,
+  required,
+  sub,
+}: {
+  label: string;
+  required?: boolean;
+  sub?: string;
+}) => (
+  <Box className="flex flex-col">
+    <Box className="flex items-center gap-2">
+      <Box as="span" className="font-mono text-sm font-semibold text-gray-800">
+        {label}
+      </Box>
+      {required ? (
+        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+          Required
+        </Badge>
+      ) : (
+        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+          Optional
+        </Badge>
+      )}
+    </Box>
+    {sub && (
+      <Box as="span" className="text-xs text-gray-500 mt-1 italic">
+        {sub}
+      </Box>
+    )}
+  </Box>
+);
