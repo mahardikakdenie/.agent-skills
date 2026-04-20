@@ -14,6 +14,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from '@repo/ui';
@@ -306,98 +307,124 @@ export default function SanctionPage() {
       />
 
       <Drawer direction="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerClose className="absolute right-2 top-2">
-              <Button variant="ghost" onClick={() => setDrawerOpen(false)}>
-                <X />
+        <DrawerContent className="max-w-[30rem]">
+          <DrawerHeader className="gap-0 pb-2 md:pb-4">
+            <DrawerClose className="absolute right-3 top-3">
+              <Button
+                variant="ghost"
+                onClick={() => setDrawerOpen(false)}
+                className="h-8 w-8 rounded-full p-0 shadow-none"
+              >
+                <X className="h-4.5 w-4.5" />
               </Button>
             </DrawerClose>
-            <DrawerTitle className="text-black font-bold text-2xl">Details</DrawerTitle>
+            <DrawerTitle className="pr-10 text-2xl font-bold tracking-tight text-black">
+              Sanction Details
+            </DrawerTitle>
           </DrawerHeader>
-          <Box className="flex flex-col w-full h-full p-4 md:p-6 bg-[#F8F8F8] mt-5 rounded-xl overflow-y-auto">
-            <Box className="rounded-lg flex flex-col gap-4 text-black">
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Sanction ID</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>{selectedSanction?.id}</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-bold text-[#016DA1]">
-                <Box className="min-w-40 w-40">Identity Details</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Name</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>
-                  {`${selectedSanction?.first_name || ''}${
-                    selectedSanction?.middle_name ? ` ${selectedSanction.middle_name}` : ''
-                  }${selectedSanction?.last_name ? ` ${selectedSanction.last_name}` : ''}`}
-                </Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-bold text-[#016DA1]">
-                <Box className="min-w-40 w-40">Personal Details</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">ID Number</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>{selectedSanction?.id_number}</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Phone Number</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>{selectedSanction?.phone_number}</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Email</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>{selectedSanction?.email}</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-bold text-[#016DA1]">
-                <Box className="min-w-40 w-40">Details</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Blacklisted Date</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>
-                  {selectedSanction?.date_blacklisted
-                    ? format(new Date(selectedSanction.date_blacklisted), 'dd-MM-yyyy')
-                    : 'N/A'}
-                </Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Blacklisted Reason</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>{selectedSanction?.blacklist_reason}</Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Created At</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>
-                  {selectedSanction?.created_at
-                    ? format(new Date(selectedSanction.created_at), 'dd-MM-yyyy')
-                    : 'N/A'}
-                </Box>
-              </Box>
-              <Box className="flex gap-2 text-sm font-medium">
-                <Box className="min-w-40 w-40">Updated At</Box>
-                <Box className="max-w-1 w-1">:</Box>
-                <Box>
-                  {selectedSanction?.updated_at
-                    ? format(new Date(selectedSanction.updated_at), 'dd-MM-yyyy')
-                    : 'N/A'}
-                </Box>
-              </Box>
-            </Box>
+          <Box className="flex-1 overflow-y-auto px-6 pt-2 pb-6 md:pb-8">
+            <DrawerDescription className="block text-inherit">
+              <Box className="w-full rounded-2xl bg-slate-50/80 p-4 ring-1 ring-slate-200/70 md:p-5">
+                <Box className="flex flex-col gap-3.5 text-black">
+                  <Box className="grid gap-3">
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Sanction ID</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-all text-slate-900">
+                        {selectedSanction?.id || '-'}
+                      </Box>
+                    </Box>
 
-            <Box className="flex justify-center mt-4">
-              <Button
-                onClick={() => selectedSanction && handleEditSanction(selectedSanction.id)}
-                disabled={!canEdit}
-                className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-4 py-2 flex items-center justify-center h-10 min-w-32"
-              >
-                Edit
-              </Button>
-            </Box>
+                    <Box className="col-span-full pt-1 pb-0.5">
+                      <Box className="text-[13px] font-bold text-[#016DA1]">Identity Details</Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Name</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {`${selectedSanction?.first_name || ''}${
+                          selectedSanction?.middle_name ? ` ${selectedSanction.middle_name}` : ''
+                        }${selectedSanction?.last_name ? ` ${selectedSanction.last_name}` : ''}`.trim() ||
+                          '-'}
+                      </Box>
+                    </Box>
+
+                    <Box className="col-span-full pt-1 pb-0.5">
+                      <Box className="text-[13px] font-bold text-[#016DA1]">Personal Details</Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">ID Number</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {selectedSanction?.id_number || '-'}
+                      </Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Phone Number</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {selectedSanction?.phone_number || '-'}
+                      </Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Email</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {selectedSanction?.email || '-'}
+                      </Box>
+                    </Box>
+
+                    <Box className="col-span-full pt-1 pb-0.5">
+                      <Box className="text-[13px] font-bold text-[#016DA1]">Details</Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Blacklisted Date</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {selectedSanction?.date_blacklisted
+                          ? format(new Date(selectedSanction.date_blacklisted), 'dd-MM-yyyy')
+                          : 'N/A'}
+                      </Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Blacklisted Reason</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {selectedSanction?.blacklist_reason || '-'}
+                      </Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Created At</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {selectedSanction?.created_at
+                          ? format(new Date(selectedSanction.created_at), 'dd-MM-yyyy')
+                          : 'N/A'}
+                      </Box>
+                    </Box>
+                    <Box className="grid grid-cols-[minmax(6.75rem,8rem)_0.5rem_minmax(0,1fr)] items-start gap-x-2.5 text-left text-[13px] leading-5">
+                      <Box className="font-medium text-slate-700">Updated At</Box>
+                      <Box className="text-slate-400">:</Box>
+                      <Box className="min-w-0 break-words text-slate-900">
+                        {selectedSanction?.updated_at
+                          ? format(new Date(selectedSanction.updated_at), 'dd-MM-yyyy')
+                          : 'N/A'}
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  <Box className="pt-0">
+                    <Button
+                      onClick={() => selectedSanction && handleEditSanction(selectedSanction.id)}
+                      disabled={!canEdit}
+                      className="h-9 w-full rounded-full bg-[#F5BA41] px-4 text-black shadow-none hover:bg-[#e6a92d]"
+                    >
+                      Edit
+                    </Button>
+                  </Box>
+                </Box>
+              </Box>
+            </DrawerDescription>
           </Box>
         </DrawerContent>
       </Drawer>
