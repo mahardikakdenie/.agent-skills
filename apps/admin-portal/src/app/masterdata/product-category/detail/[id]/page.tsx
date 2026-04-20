@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useProductCategoryForm } from "@/hooks/useProductCategoryForm.hooks";
-import { ProductCategoryForm } from "@/components/forms/ProductCategoryForm";
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { ProductCategoryForm } from '@/components/forms/product-category-form';
+import { useProductCategoryForm } from '@/hooks/useProductCategoryForm.hooks';
 
 export default function EditProductCategoryPage() {
   const { id } = useParams();
@@ -21,7 +22,7 @@ export default function EditProductCategoryPage() {
     setShowAlert,
     goBack,
     loadCategoryDetail,
-  } = useProductCategoryForm("edit");
+  } = useProductCategoryForm('edit');
 
   useEffect(() => {
     if (id) {

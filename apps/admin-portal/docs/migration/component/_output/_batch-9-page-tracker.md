@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 31 |
+| PASS | 33 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 10 |
-| NOT_STARTED | 72 |
+| NOT_STARTED | 70 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -110,8 +110,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/partner-management/detail/[id]` | `masterdata-partner-management-detail-id` | `apps/admin-portal/src/app/masterdata/partner-management/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/product` | `masterdata-product` | `apps/admin-portal/src/app/masterdata/product/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API and standardize the filter and table chrome on shared primitives. |
 | `/masterdata/product-category` | `masterdata-product-category` | `apps/admin-portal/src/app/masterdata/product-category/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
-| `/masterdata/product-category/add` | `masterdata-product-category-add` | `apps/admin-portal/src/app/masterdata/product-category/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/product-category/detail/[id]` | `masterdata-product-category-detail-id` | `apps/admin-portal/src/app/masterdata/product-category/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/product-category/add` | `masterdata-product-category-add` | `apps/admin-portal/src/app/masterdata/product-category/add/page.tsx` | NO | NO | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product-category/add route onto the refactored ProductCategoryForm, standardizing the form layout and interaction with shared Box, Button, Dialog, and Input primitives. |
+| `/masterdata/product-category/detail/[id]` | `masterdata-product-category-detail-id` | `apps/admin-portal/src/app/masterdata/product-category/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product-category/detail/[id] route onto the refactored ProductCategoryForm, standardizing the form layout and interaction with shared Box, Button, Dialog, and Input primitives. |
 | `/masterdata/product/add` | `masterdata-product-add` | `apps/admin-portal/src/app/masterdata/product/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/product/detail` | `masterdata-product-detail` | `apps/admin-portal/src/app/masterdata/product/detail/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/role` | `masterdata-role` | `apps/admin-portal/src/app/masterdata/role/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the table chrome on shared primitives, and add compact pagination and explicit empty-state handling while preserving existing add and detail navigation. |
@@ -1116,14 +1116,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-product-category-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-20`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product-category/add` route onto the refactored `ProductCategoryForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Input` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product category creation logic.
 
 ### /masterdata/product-category/detail/[id]
 
@@ -1131,14 +1131,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-product-category-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-20`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product-category/detail/[id]` route onto the refactored `ProductCategoryForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Input` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product category update logic.
 
 ### /masterdata/product/add
 

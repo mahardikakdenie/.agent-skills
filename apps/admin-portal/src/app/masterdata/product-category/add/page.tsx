@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useProductCategoryForm } from "@/hooks/useProductCategoryForm.hooks";
-import { ProductCategoryForm } from "@/components/forms/ProductCategoryForm";
+import { ProductCategoryForm } from '@/components/forms/product-category-form';
+import { useProductCategoryForm } from '@/hooks/useProductCategoryForm.hooks';
 
 export default function AddProductCategoryPage() {
   const {
@@ -16,7 +16,7 @@ export default function AddProductCategoryPage() {
     handleSave,
     setShowAlert,
     goBack,
-  } = useProductCategoryForm("create");
+  } = useProductCategoryForm('create');
 
   return (
     <ProductCategoryForm
