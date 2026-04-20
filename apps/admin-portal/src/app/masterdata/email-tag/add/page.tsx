@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEmailTagForm } from "@/hooks/useEmailTagForm.hooks";
-import EmailTagForm from "@/components/forms/EmailTagForm";
+import { EmailTagForm } from '@/components/forms/email-tag-form';
+import { useEmailTagForm } from '@/hooks/useEmailTagForm.hooks';
 
 export default function AddEmailTag() {
   const {
@@ -14,7 +14,7 @@ export default function AddEmailTag() {
     isSaving,
     handleSave,
     goBack,
-  } = useEmailTagForm("create");
+  } = useEmailTagForm('create');
 
   return (
     <EmailTagForm

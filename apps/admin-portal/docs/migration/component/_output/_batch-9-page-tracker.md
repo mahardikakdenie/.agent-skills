@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 34 |
+| PASS | 36 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 10 |
-| NOT_STARTED | 69 |
+| NOT_STARTED | 67 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -84,8 +84,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/currency/add` | `masterdata-currency-add` | `apps/admin-portal/src/app/masterdata/currency/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/currency/detail/[id]` | `masterdata-currency-detail-id` | `apps/admin-portal/src/app/masterdata/currency/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/email-tag` | `masterdata-email-tag` | `apps/admin-portal/src/app/masterdata/email-tag/page.tsx` | NO | YES | `PASS` | 2026-04-10 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
-| `/masterdata/email-tag/add` | `masterdata-email-tag-add` | `apps/admin-portal/src/app/masterdata/email-tag/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/email-tag/detail/[id]` | `masterdata-email-tag-detail-id` | `apps/admin-portal/src/app/masterdata/email-tag/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-tag/add` | `masterdata-email-tag-add` | `apps/admin-portal/src/app/masterdata/email-tag/add/page.tsx` | NO | NO | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/email-tag/add route onto the refactored EmailTagForm, standardizing the form layout and interaction with shared Box, Button, Input, and Select primitives. |
+| `/masterdata/email-tag/detail/[id]` | `masterdata-email-tag-detail-id` | `apps/admin-portal/src/app/masterdata/email-tag/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/email-tag/detail/[id] route onto the refactored EmailTagForm, standardizing the form layout and interaction with shared Box, Button, Input, and Select primitives. |
 | `/masterdata/email-template` | `masterdata-email-template` | `apps/admin-portal/src/app/masterdata/email-template/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/masterdata/email-template/add` | `masterdata-email-template-add` | `apps/admin-portal/src/app/masterdata/email-template/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/email-template/detail/[id]` | `masterdata-email-template-detail-id` | `apps/admin-portal/src/app/masterdata/email-template/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -726,14 +726,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-email-tag-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-20`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/email-tag/add` route onto the refactored `EmailTagForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Input`, and `Select` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing email tag creation logic.
 
 ### /masterdata/email-tag/detail/[id]
 
@@ -741,14 +741,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-email-tag-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-20`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/email-tag/detail/[id]` route onto the refactored `EmailTagForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Input`, and `Select` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing email tag update logic.
 
 ### /masterdata/email-template
 

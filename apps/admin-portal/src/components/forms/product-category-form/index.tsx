@@ -148,7 +148,7 @@ export function ProductCategoryForm({
                       id="name"
                       type="text"
                       placeholder="Enter category name"
-                      className="w-full h-12 border-slate-300 bg-transparent focus:border-[#F5BA41] transition-colors"
+                      className="w-full h-12 border-slate-300 bg-transparent"
                       {...field}
                     />
                   )}
@@ -180,7 +180,7 @@ export function ProductCategoryForm({
                       id="icon"
                       type="text"
                       placeholder="Enter icon URL"
-                      className="w-full h-12 border-slate-300 bg-transparent focus:border-[#F5BA41] transition-colors"
+                      className="w-full h-12 border-slate-300 bg-transparent"
                       {...field}
                     />
                   )}
