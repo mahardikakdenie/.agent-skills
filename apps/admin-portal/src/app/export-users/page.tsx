@@ -1,21 +1,22 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Check, Plus, Trash2, X, Download } from "lucide-react";
-import { Input } from "@repo/ui";
-import { Button } from "@repo/ui";
-import Image from "next/image";
-import emptyStateSearchPrompt from "@public/images/empty-state-search-prompt.svg";
+import emptyStateSearchPrompt from '@public/images/empty-state-search-prompt.svg';
+import { Check, Plus, X, Download } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
+import { Trash } from 'react-feather';
+
 import {
+  Box,
+  Button,
+  DataTable,
+  Input,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui";
-import { SelectAutocomplete } from "@/components/ui/Fields/SelectAutocomplete";
-import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -23,12 +24,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@repo/ui";
-import { DataTable } from "@/components/ui/DataTable";
-import { useExportUsers } from "@/hooks/useExportUsers.hooks";
-import { createExportUsersTableColumns } from "@/components/tableConfig/exportUserTableConfig";
+} from '@repo/ui';
+
+import { createExportUsersTableColumns } from '@/components/tableConfig/exportUserTableConfig';
+import { SelectAutocomplete } from '@/components/ui/Fields/SelectAutocomplete';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { useExportUsers } from '@/hooks/useExportUsers.hooks';
+import { cn } from '@/lib/utils';
 
 const ExportUsersPage = () => {
+  const [isFilterDialogOpen, setIsFilterDialogOpen] = React.useState(false);
   const {
     customers,
     totalPages,
@@ -80,100 +85,139 @@ const ExportUsersPage = () => {
     isSearchingPlans,
   } = useExportUsers();
 
-  const exportUsersTableColumns = createExportUsersTableColumns({
-    page,
-    rowsPerPage: limit,
-  });
-
-  const renderEmptyState = () => (
-    <div className="flex flex-col gap-4 items-center justify-center py-14">
-      <Image alt="no data" src={emptyStateSearchPrompt} width={200} />
-      <div className="text-[#939597] text-base">
-        {!isFiltered
-          ? "No filters yet. Add one to start building your audience."
-          : "No data found"}
-      </div>
-    </div>
+  const exportUsersTableColumns = React.useMemo(
+    () =>
+      createExportUsersTableColumns({
+        page,
+        rowsPerPage: limit,
+      }),
+    [page, limit],
   );
 
+  const renderEmptyState = () => {
+    const isNoResults = isFiltered && customers.length === 0;
+
+    return (
+      <Box className="flex min-h-[14rem] items-center justify-center py-12 px-6">
+        <Box className="flex flex-col items-center justify-center gap-5 max-w-xs text-center">
+          <Image
+            alt="no data"
+            src={emptyStateSearchPrompt}
+            className="opacity-90 transition-all duration-300 w-[160px] sm:w-[200px]"
+          />
+
+          <Box className="flex flex-col gap-1.5">
+            <Box as="h3" className="text-lg font-bold text-black">
+              {isNoResults ? 'No results found' : 'Build your audience'}
+            </Box>
+            <Box as="p" className="text-[#939597] text-sm leading-relaxed">
+              {isNoResults
+                ? 'Try adjusting or clearing your filters.'
+                : 'Add filters to start narrowing down your list.'}
+            </Box>
+          </Box>
+
+          {isNoResults && (
+            <Button
+              variant="outline"
+              onClick={resetAllFilters}
+              className="h-9 px-6 border-[#016DA1] text-[#016DA1] hover:bg-blue-50 rounded-full text-xs font-semibold transition-all active:scale-95"
+            >
+              Clear All Filters
+            </Button>
+          )}
+        </Box>
+      </Box>
+    );
+  };
+
   return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex flex-wrap justify-start pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">
+    <Box className="flex flex-col w-full p-4 md:p-6 gap-3">
+      <Box className="flex flex-wrap justify-start pb-1 items-center">
+        <Box as="h1" className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">
           Export Users
-        </h1>
-        <div className="flex space-x-4 ml-auto">
+        </Box>
+        <Box className="flex space-x-4 ml-auto">
           <Button
             disabled={dataToDownload.length < 1}
             onClick={handleGenerateXlsx}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs"
+            className="h-10 px-5 bg-[#F5BA41] text-black enabled:hover:bg-[#e6a92d] disabled:bg-[#F2F2F2] disabled:text-[#939597] disabled:opacity-100 rounded-full transition-colors duration-200"
+            leftIcon={<Download className="w-5 h-5" />}
           >
-            <Download className="w-5 h-5 mr-1" /> Generate XLSX
+            Generate XLSX
           </Button>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <div className="flex bg-white rounded-xl gap-4 mb-3 p-6">
-        <div className="w-full">
-          <div className="flex items-center justify-between">
-            <p className="text-sm">Selected Filters</p>
-            <div className="flex flex-col items-center justify-center">
-              <div className="flex items-center justify-between">
-                <div
-                  onClick={resetAllFilters}
-                  className="text-sm font-bold text-[#016DA1] hover:text-[#2d9ae6] cursor-pointer mr-3"
+      <Box className="flex bg-white rounded-xl gap-4 mb-0.5 p-4">
+        <Box className="w-full">
+          <Box className="flex items-center justify-between">
+            <Box as="p" className="text-sm">
+              Selected Filters
+            </Box>
+            <Box className="flex flex-col items-center justify-center">
+              <Box className="flex items-center justify-between">
+                <Box
+                  onClick={filteredUsers.length > 0 || isFiltered ? resetAllFilters : undefined}
+                  className={cn(
+                    'text-sm font-bold mr-3 transition-colors',
+                    filteredUsers.length > 0 || isFiltered
+                      ? 'text-[#016DA1] hover:text-[#2d9ae6] cursor-pointer'
+                      : 'text-[#939597] cursor-not-allowed opacity-70',
+                  )}
                 >
                   Reset Filter
-                </div>
+                </Box>
                 <Button
-                  disabled={filteredUsers.length < 1}
+                  disabled={filteredUsers.length < 1 || isLoading}
                   onClick={handleGetFilteredData}
-                  className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs"
+                  className="bg-[#016DA1] text-white enabled:hover:bg-[#015a85] disabled:bg-[#F2F2F2] disabled:text-[#939597] disabled:opacity-100 rounded-full transition-colors duration-200"
                 >
-                  Get Users
+                  {isLoading ? 'Loading...' : 'Get Users'}
                 </Button>
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
+          </Box>
 
           {filteredUsers.length > 0 && (
-            <ul className="mt-3 max-h-24 overflow-y-auto">
+            <Box as="ul" className="mt-2 max-h-24 overflow-y-auto">
               {filteredUsers.map((f: any, index: number) => (
-                <li
-                  key={index}
-                  className="flex justify-between items-center mb-2 gap-2"
-                >
-                  <div className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent">
+                <Box as="li" key={index} className="flex justify-between items-center mb-1.5 gap-2">
+                  <Box className="bg-[#F8F8F8] py-2 px-4 w-full text-sm text-[#525252] rounded-md border-transparent">
                     {f.label}: {f.valueView}
-                  </div>
+                  </Box>
                   <Button
-                    className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                    variant="ghost"
+                    size="xs"
+                    className="h-7 w-7 p-0 rounded-md text-red-600 hover:bg-red-50 hover:!text-red-700"
                     onClick={() => handleDeleteSelectedFilter(index)}
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash className="h-4 w-4" />
                   </Button>
-                </li>
+                </Box>
               ))}
-            </ul>
+            </Box>
           )}
 
-          <Dialog>
+          <Dialog open={isFilterDialogOpen} onClose={() => setIsFilterDialogOpen(false)}>
             <DialogTrigger asChild>
               <Button
-                color="warning"
-                className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black w-auto mt-4"
+                onClick={() => setIsFilterDialogOpen(true)}
+                className="h-10 px-5 bg-[#F5BA41] hover:bg-[#e6a92d] rounded-full text-black w-auto mt-2"
+                leftIcon={<Plus className="w-5 h-5" />}
               >
-                <Plus className="w-4 h-4 mr-2" /> Add Filter
+                Add Filter
               </Button>
             </DialogTrigger>
-            <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
-              <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
-                <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+            <DialogContent className="p-0 w-[600px] max-w-full overflow-hidden rounded-3xl">
+              <DialogHeader className="py-4 px-6 border-b border-gray-100">
+                <DialogTitle className="text-[#016DA1] text-lg font-bold flex items-center justify-between">
                   Filters
-                  <DialogClose className="ml-auto">
+                  <DialogClose asChild>
                     <Button
-                      type="button"
-                      className="bg-transparent hover:bg-transparent text-black p-0"
+                      variant="ghost"
+                      size="xs"
+                      className="h-8 w-8 p-0 rounded-md hover:bg-gray-100 text-gray-500"
                     >
                       <X className="w-5 h-5" />
                     </Button>
@@ -181,14 +225,11 @@ const ExportUsersPage = () => {
                 </DialogTitle>
               </DialogHeader>
 
-              <div className="p-4 h-full overflow-auto max-h-[70vh]">
-                <div className="relative mb-4">
-                  <div className="min-w-48">
-                    <Select
-                      value={selectedFilter}
-                      onValueChange={setSelectedFilter}
-                    >
-                      <SelectTrigger className="h-10">
+              <Box className="p-6 h-full overflow-auto max-h-[70vh] flex flex-col gap-4">
+                <Box className="relative">
+                  <Box className="w-full">
+                    <Select value={selectedFilter} onValueChange={setSelectedFilter}>
+                      <SelectTrigger className="h-11 border-gray-200">
                         <SelectValue placeholder="Select Filter" />
                       </SelectTrigger>
                       <SelectContent>
@@ -199,19 +240,19 @@ const ExportUsersPage = () => {
                                 <SelectItem key={index} value={item.id}>
                                   {item.name}
                                 </SelectItem>
-                              )
+                              ),
                           )}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
-                  </div>
-                </div>
+                  </Box>
+                </Box>
 
-                {selectedFilter === "channel_id" && (
-                  <div className="relative mb-4">
-                    <div className="min-w-48">
+                {selectedFilter === 'channel_id' && (
+                  <Box className="relative">
+                    <Box className="w-full">
                       <Select value={channel} onValueChange={setChannel}>
-                        <SelectTrigger className="h-10">
+                        <SelectTrigger className="h-11 border-gray-200">
                           <SelectValue placeholder="Select Channel" />
                         </SelectTrigger>
                         <SelectContent>
@@ -230,15 +271,15 @@ const ExportUsersPage = () => {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
 
-                {selectedFilter === "product_id" && (
-                  <div className="relative mb-4">
-                    <div className="min-w-48">
+                {selectedFilter === 'product_id' && (
+                  <Box className="relative">
+                    <Box className="w-full">
                       <Select value={product} onValueChange={setProduct}>
-                        <SelectTrigger className="h-10">
+                        <SelectTrigger className="h-11 border-gray-200">
                           <SelectValue placeholder="Select Product" />
                         </SelectTrigger>
                         <SelectContent>
@@ -257,14 +298,13 @@ const ExportUsersPage = () => {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
 
-                {/* Plan Filter with Autocomplete - SIMPLIFIED! */}
-                {selectedFilter === "plan_id" && (
-                  <div className="relative mb-4">
-                    <div className="min-w-48">
+                {selectedFilter === 'plan_id' && (
+                  <Box className="relative">
+                    <Box className="w-full">
                       <SelectAutocomplete
                         value={plan}
                         onValueChange={setPlan}
@@ -278,22 +318,19 @@ const ExportUsersPage = () => {
                         searchValue={planSearchQuery}
                         loading={isLoadingFilters && !planSearchQuery}
                         isSearching={isSearchingPlans}
-                        triggerClassName="h-10"
+                        triggerClassName="h-11 border-gray-200"
                         emptyText="No plans found"
                       />
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
 
-                {selectedFilter === "frequent_buyers" && (
-                  <div>
-                    <div className="relative mb-4">
-                      <div className="min-w-48">
-                        <Select
-                          value={frequentBuyersSign}
-                          onValueChange={setFrequentBuyersSign}
-                        >
-                          <SelectTrigger className="h-10">
+                {selectedFilter === 'frequent_buyers' && (
+                  <Box className="flex flex-col gap-4">
+                    <Box className="relative">
+                      <Box className="w-full">
+                        <Select value={frequentBuyersSign} onValueChange={setFrequentBuyersSign}>
+                          <SelectTrigger className="h-11 border-gray-200">
                             <SelectValue placeholder="Select Type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -306,32 +343,28 @@ const ExportUsersPage = () => {
                             </SelectGroup>
                           </SelectContent>
                         </Select>
-                      </div>
-                    </div>
-                    <div>
+                      </Box>
+                    </Box>
+                    <Box>
                       <Input
                         disabled={!frequentBuyersSign}
                         name="frequentBuyersValue"
                         type="number"
                         min={1}
                         value={frequentBuyersValue}
-                        onChange={(e) =>
-                          setFrequentBuyersValue(Number(e.target.value))
-                        }
-                        className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent"
+                        onChange={(e) => setFrequentBuyersValue(Number(e.target.value))}
+                        className="bg-[#F8F8F8] py-3 px-4 w-full text-sm text-[#525252] rounded-md border-transparent h-11"
+                        placeholder="Enter value"
                       />
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
 
-                {selectedFilter === "birthday_month" && (
-                  <div className="relative mb-4">
-                    <div className="min-w-48">
-                      <Select
-                        value={birthdayMonth}
-                        onValueChange={setBirthdayMonth}
-                      >
-                        <SelectTrigger className="h-10">
+                {selectedFilter === 'birthday_month' && (
+                  <Box className="relative">
+                    <Box className="w-full">
+                      <Select value={birthdayMonth} onValueChange={setBirthdayMonth}>
+                        <SelectTrigger className="h-11 border-gray-200">
                           <SelectValue placeholder="Select Month" />
                         </SelectTrigger>
                         <SelectContent>
@@ -344,53 +377,81 @@ const ExportUsersPage = () => {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
-              </div>
+              </Box>
 
-              <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
+              <DialogFooter className="justify-center sm:justify-center p-6 border-t border-gray-100">
                 <DialogClose asChild>
                   <Button
                     type="button"
-                    className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-                    onClick={handleAddFilterData}
+                    className="h-10 px-8 bg-[#F5BA41] hover:bg-[#e6a92d] rounded-full text-black font-semibold transition-all duration-200 shadow-sm"
+                    onClick={() => {
+                      handleAddFilterData();
+                      setIsFilterDialogOpen(false);
+                    }}
+                    leftIcon={<Check className="w-5 h-5" />}
                   >
-                    <Check className="w-4 h-4 mr-2" /> Add
+                    Add
                   </Button>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <div className="w-full bg-white rounded-xl p-4">
+      <Box className="w-full bg-white rounded-xl p-4">
         {isFiltered && (customers.length > 0 || isLoading) ? (
           <DataTable
+            className="!gap-3 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
             loading={isLoading}
             data={customers}
             columns={exportUsersTableColumns}
             pagination={{
-              page,
-              totalPages,
-              totalItems,
-              rowsPerPage: limit,
-              onPageChange: setPage,
-              onRowsPerPageChange: handleLimitChange,
-              rowsPerPageOptions: [10, 20, 30, 50, 100],
+              pageIndex: page - 1,
+              pageSize: limit,
+              pageCount: totalPages,
+              rowCount: totalItems,
+              onPageChange: (pageIndex) => {
+                if (isLoading) return;
+                setPage(pageIndex + 1);
+              },
+              onPageSizeChange: (pageSize) => {
+                if (isLoading) return;
+                handleLimitChange({ target: { value: String(pageSize) } } as any);
+              },
             }}
-            noDataText="No customer data available"
-            className="export-users-table"
+            pageSizeOptions={[10, 20, 30, 50, 100]}
+            emptyState={renderEmptyState()}
+            renderPagination={(table) => (
+              <Box className="-mt-1">
+                <CompactTablePagination
+                  table={table}
+                  pageSizeOptions={[10, 20, 30, 50, 100]}
+                  disabled={isLoading}
+                />
+              </Box>
+            )}
+            tableOptions={{
+              manualPagination: true,
+              enableColumnPinning: true,
+              enableColumnResizing: true,
+              defaultColumn: {
+                minSize: 48,
+                size: 96,
+              },
+              getRowId: (row, index) => row?.id || `export-user-row-${index}`,
+            }}
           />
         ) : (
           renderEmptyState()
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
-ExportUsersPage.displayName = "ExportUsersPage";
+ExportUsersPage.displayName = 'ExportUsersPage';
 export default ExportUsersPage;
-

@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 29 |
+| PASS | 30 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 11 |
+| DEFERRED_DATA_TABLE | 10 |
 | NOT_STARTED | 73 |
 | OUT_OF_SCOPE | 1 |
 
@@ -64,7 +64,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/claim/list/export` | `claim-list-export` | `apps/admin-portal/src/app/claim/list/export/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor `/claim/list/export` onto shared `DataTable`, `Button`, and `Box` primitives, standardize the PDF/XLSX export actions, and implement dynamic column sizing while preserving existing data fetching and report generation logic. |
 | `/claim/list/import` | `claim-list-import` | `apps/admin-portal/src/app/claim/list/import/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /claim/list/import onto shared Box, Button, and FileUpload primitives, remove the legacy view dependency, and implement inline file-to-base64 conversion for direct claim import submission. |
 | `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `PASS` | 2026-04-15 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /claim/list/import-with-preview onto shared Box, Button, FileUpload, Table, Select, and Dialog primitives, remove dependencies on legacy views, and implement consolidated icon components (AlertCircleIcon, EditIcon) using Box. |
-| `/export-users` | `export-users` | `apps/admin-portal/src/app/export-users/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/export-users` | `export-users` | `apps/admin-portal/src/app/export-users/page.tsx` | NO | YES | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /export-users route onto shared @repo/ui DataTable, Button, and Box primitives, standardize the filter and dialog chrome, and implement dynamic column sizing while preserving existing Excel export and filter behavior. |
 | `/finance/billing/add` | `finance-billing-add` | `apps/admin-portal/src/app/finance/billing/add/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
 | `/finance/billing/detail/[id]` | `finance-billing-detail-id` | `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
 | `/finance/billing/detail/[id]/export` | `finance-billing-detail-id-export` | `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -426,14 +426,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `export-users`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-20`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+- Blocker type: `none`
+- Notes: Current apps/admin-portal/src changes refactor the `/export-users` route onto shared `@repo/ui` `DataTable`, `Button`, and `Box` primitives. The refactor standardizes the filter and dialog chrome, implements dynamic column sizing via `createExportUsersTableColumns`, and migrates the route onto the shared `DataTable` instance API with manual pagination and compact pagination helpers while preserving existing Excel export and audience-building flows.
 
 ### /finance/billing/add
 
