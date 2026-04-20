@@ -101,8 +101,7 @@ export default function ImportPage() {
   };
 
   const breadcrumbs = [
-    { label: 'Claim' },
-    { label: 'List', href: AppURL.claimList },
+    { label: 'Claim List', href: AppURL.claimList },
     { label: 'Import', isCurrentPage: true },
   ];
 

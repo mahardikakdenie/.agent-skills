@@ -42,8 +42,7 @@ function UploadData() {
   }, [params.id, getDetailClaim]);
 
   const breadcrumbs = [
-    { label: 'Claim' },
-    { label: 'List', href: AppURL.claimList },
+    { label: 'Claim List', href: AppURL.claimList },
     { label: 'Detail', href: `${AppURL.claimDetail}/${params.id}` },
     { label: 'Upload Data', isCurrentPage: true },
   ];

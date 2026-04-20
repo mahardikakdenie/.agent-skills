@@ -347,8 +347,7 @@ export default function ExportPage() {
   ]);
 
   const breadcrumbs = [
-    { label: 'Claim' },
-    { label: 'List', href: AppURL.claimList },
+    { label: 'Claim List', href: AppURL.claimList },
     { label: 'Export', isCurrentPage: true },
   ];
 

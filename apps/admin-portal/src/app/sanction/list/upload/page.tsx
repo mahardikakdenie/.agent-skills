@@ -38,8 +38,7 @@ export default function UploadSanctionPage() {
   };
 
   const breadcrumbs = [
-    { label: 'Sanction' },
-    { label: 'List', href: AppURL.sanctionList },
+    { label: 'Sanction List', href: AppURL.sanctionList },
     { label: 'Upload', isCurrentPage: true },
   ];
 

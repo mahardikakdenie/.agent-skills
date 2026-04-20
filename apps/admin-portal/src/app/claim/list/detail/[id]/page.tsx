@@ -311,8 +311,7 @@ const DetailClaim = () => {
   };
 
   const breadcrumbs = [
-    { label: 'Claim' },
-    { label: 'List', href: AppURL.claimList },
+    { label: 'Claim List', href: AppURL.claimList },
     { label: 'Detail', isCurrentPage: true },
   ];
 

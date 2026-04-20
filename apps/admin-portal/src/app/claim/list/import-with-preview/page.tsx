@@ -516,8 +516,7 @@ export default function ImportWithPreviewPage() {
   };
 
   const breadcrumbs = [
-    { label: 'Claim' },
-    { label: 'List', href: AppURL.claimList },
+    { label: 'Claim List', href: AppURL.claimList },
     { label: 'Import With Preview', isCurrentPage: true },
   ];
 
