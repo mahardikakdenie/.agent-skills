@@ -57,7 +57,7 @@ export default function UploadSanctionPage() {
           className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-5 h-10 ml-4"
           leftIcon={<Upload className="w-5 h-5" />}
         >
-          {isUploading ? 'Saving...' : 'Submit'}
+          {isUploading ? 'Uploading...' : 'Upload'}
         </Button>
       </PageHeader>
 

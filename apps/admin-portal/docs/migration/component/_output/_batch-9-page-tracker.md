@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 33 |
+| PASS | 34 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 10 |
-| NOT_STARTED | 70 |
+| NOT_STARTED | 69 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -98,7 +98,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/holiday-date/add` | `masterdata-holiday-date-add` | `apps/admin-portal/src/app/masterdata/holiday-date/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/holiday-date/detail/[id]` | `masterdata-holiday-date-detail-id` | `apps/admin-portal/src/app/masterdata/holiday-date/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/hospital` | `masterdata-hospital` | `apps/admin-portal/src/app/masterdata/hospital/page.tsx` | NO | YES | `PASS` | 2026-04-10 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
-| `/masterdata/hospital/upload` | `masterdata-hospital-upload` | `apps/admin-portal/src/app/masterdata/hospital/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| /masterdata/hospital/upload | masterdata-hospital-upload | apps/admin-portal/src/app/masterdata/hospital/upload/page.tsx | NO | NO | PASS | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /masterdata/hospital/upload onto shared Box, Button, and FileUpload primitives, remove the dependency on the legacy HospitalUploadForm, and implement inline file parsing to support the updated hospital upload hook. |
 | `/masterdata/insurance` | `masterdata-insurance` | `apps/admin-portal/src/app/masterdata/insurance/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/masterdata/insurance/add` | `masterdata-insurance-add` | `apps/admin-portal/src/app/masterdata/insurance/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/insurance/detail/[id]` | `masterdata-insurance-detail-id` | `apps/admin-portal/src/app/masterdata/insurance/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -936,14 +936,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-hospital-upload`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-20`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/hospital/upload` route onto shared `@repo/ui` `Box`, `Button`, and `FileUpload` primitives. The refactor removes the dependency on the legacy `HospitalUploadForm`, standardizes the page header via the local `PageHeader` component, and implements inline file parsing to support direct base64 upload via the updated `useHospitalUpload` hook.
 
 ### /masterdata/insurance
 

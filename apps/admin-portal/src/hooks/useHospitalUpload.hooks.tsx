@@ -47,18 +47,14 @@ export function useHospitalUpload(): UseHospitalUploadProps {
   const uploadHospitalMutation = useUploadReferenceHospital({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hospitals"] });
-      toast.success("File uploaded successfully!");
       setUploadStatus("success");
 
       setTimeout(() => {
         router.push(AppURL.masterdataHospital);
-      }, 1500);
+      }, 2000);
     },
     onError: (error: any) => {
       console.error("Upload failed:", error);
-      toast.error(
-        error?.response?.data?.message || "Upload failed. Please try again."
-      );
       setUploadStatus("error");
     },
   });

@@ -1750,3 +1750,18 @@ Batch 1 outputs remain valid; migration can continue from the next planned batch
 - Verification note: `This logging update is based on the current product category add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat both /masterdata/product-category/add and /masterdata/product-category/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+## Batch 9 - /masterdata/hospital/upload and /sanction/list/upload Route Refactor - 2026-04-20
+
+- Route focus: `/masterdata/hospital/upload`, `/sanction/list/upload`
+- Migration intent: `Refactor the hospital and sanction upload routes onto the current shared primitive stack, standardizing the layout and file-upload interaction while preserving the existing import and batch creation logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/hospital/upload/page.tsx` now renders the route shell with `Box`, adopts shared `@repo/ui` `FileUpload` and `Button` primitives, and standardizes the page header via the local `PageHeader` component.
+  - The refactor removes the dependency on the legacy `HospitalUploadForm` and implements inline file parsing and base64 conversion to support the updated `useHospitalUpload` hook.
+  - `apps/admin-portal/src/app/sanction/list/upload/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, and `FileUpload` primitives, standardizing the page layout and requirement list.
+  - `apps/admin-portal/src/hooks/useHospitalUpload.hooks.tsx` now supports direct base64 file upload and removes the dependency on the deleted form component.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/hospital/upload/page.tsx`, `apps/admin-portal/src/app/sanction/list/upload/page.tsx`, `apps/admin-portal/src/hooks/useHospitalUpload.hooks.tsx`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/HospitalUploadForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, and FileUpload primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current hospital and sanction upload route source changes and hook migration. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat both /masterdata/hospital/upload and /sanction/list/upload as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
