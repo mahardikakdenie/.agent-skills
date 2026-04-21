@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 36 |
+| PASS | 38 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 10 |
-| NOT_STARTED | 67 |
+| NOT_STARTED | 65 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -66,7 +66,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `PASS` | 2026-04-15 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /claim/list/import-with-preview onto shared Box, Button, FileUpload, Table, Select, and Dialog primitives, remove dependencies on legacy views, and implement consolidated icon components (AlertCircleIcon, EditIcon) using Box. |
 | `/export-users` | `export-users` | `apps/admin-portal/src/app/export-users/page.tsx` | NO | YES | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /export-users route onto shared @repo/ui DataTable, Button, and Box primitives, standardize the filter and dialog chrome, and implement dynamic column sizing while preserving existing Excel export and filter behavior. |
 | `/finance/billing/add` | `finance-billing-add` | `apps/admin-portal/src/app/finance/billing/add/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
-| `/finance/billing/detail/[id]` | `finance-billing-detail-id` | `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/finance/billing/detail/[id]` | `finance-billing-detail-id` | `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current Pole docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
 | `/finance/billing/detail/[id]/export` | `finance-billing-detail-id-export` | `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/billing/detail/[id]/import` | `finance-billing-detail-id-import` | `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/billing/detail/[id]/invoice` | `finance-billing-detail-id-invoice` | `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -95,8 +95,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/group/add` | `masterdata-group-add` | `apps/admin-portal/src/app/masterdata/group/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/group/detail/[id]` | `masterdata-group-detail-id` | `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/holiday-date` | `masterdata-holiday-date` | `apps/admin-portal/src/app/masterdata/holiday-date/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
-| `/masterdata/holiday-date/add` | `masterdata-holiday-date-add` | `apps/admin-portal/src/app/masterdata/holiday-date/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/holiday-date/detail/[id]` | `masterdata-holiday-date-detail-id` | `apps/admin-portal/src/app/masterdata/holiday-date/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/holiday-date/add` | `masterdata-holiday-date-add` | `apps/admin-portal/src/app/masterdata/holiday-date/add/page.tsx` | NO | NO | `PASS` | 2026-04-21 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/holiday-date/add route onto the refactored HolidayDateForm, standardizing the form layout and interaction with shared Box, Button, Select, Input, and DatePicker primitives. |
+| `/masterdata/holiday-date/detail/[id]` | `masterdata-holiday-date-detail-id` | `apps/admin-portal/src/app/masterdata/holiday-date/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-21 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/holiday-date/detail/[id] route onto the refactored HolidayDateForm, standardizing the form layout and interaction with shared Box, Button, Select, Input, and DatePicker primitives. |
 | `/masterdata/hospital` | `masterdata-hospital` | `apps/admin-portal/src/app/masterdata/hospital/page.tsx` | NO | YES | `PASS` | 2026-04-10 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | /masterdata/hospital/upload | masterdata-hospital-upload | apps/admin-portal/src/app/masterdata/hospital/upload/page.tsx | NO | NO | PASS | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /masterdata/hospital/upload onto shared Box, Button, and FileUpload primitives, remove the dependency on the legacy HospitalUploadForm, and implement inline file parsing to support the updated hospital upload hook. |
 | `/masterdata/insurance` | `masterdata-insurance` | `apps/admin-portal/src/app/masterdata/insurance/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
@@ -891,14 +891,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-holiday-date-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-21`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/holiday-date/add` route onto the refactored `HolidayDateForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Select`, `Input`, and `DatePicker` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing holiday creation logic.
 
 ### /masterdata/holiday-date/detail/[id]
 
@@ -906,14 +906,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-holiday-date-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-21`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/holiday-date/detail/[id]` route onto the refactored `HolidayDateForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Select`, `Input`, and `DatePicker` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing holiday update logic.
 
 ### /masterdata/hospital
 
