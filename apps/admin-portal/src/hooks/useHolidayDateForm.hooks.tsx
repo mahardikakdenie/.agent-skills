@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
@@ -91,51 +91,61 @@ export function useHolidayDateForm(
 
   const { data: holidayDetailResponse, isLoading: isLoadingDetail } =
     useCalendarDetail(holidayId || "", {
-    enabled: !!holidayId && isEdit,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+      enabled: !!holidayId && isEdit,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+    });
 
   const holidayDetailData: any = holidayDetailResponse;
   const holidayDetail =
-    holidayDetailData?.data?.[0] ?? holidayDetailData?.data ?? holidayDetailData;
+    holidayDetailData?.data?.[0] ??
+    (Array.isArray(holidayDetailData?.data)
+      ? holidayDetailData?.data?.[0]
+      : holidayDetailData?.data) ??
+    (Array.isArray(holidayDetailData)
+      ? holidayDetailData[0]
+      : holidayDetailData);
+
+  const types = useMemo(
+    () => [
+      { name: "Joint Leave", code: "Joint Leave" },
+      { name: "National Holiday", code: "National Holiday" },
+    ],
+    []
+  );
+
+  const countries = useMemo(
+    () => [
+      { name: "Indonesia", code: "id" },
+      { name: "Malaysia", code: "my" },
+    ],
+    []
+  );
 
   useEffect(() => {
     if (holidayDetail && isEdit) {
-      const formData = {
-        name: holidayDetail.name || "",
-        type: holidayDetail.type || "",
-        country: holidayDetail.country || "",
-        date: holidayDetail.date
-          ? formatDate(holidayDetail.date, "YYYY-MM-DD")
-          : "",
-      };
-
-      reset(formData, {
-        keepErrors: false,
-        keepDirty: false,
-        keepIsSubmitted: false,
-        keepTouched: false,
-        keepIsValid: false,
-        keepSubmitCount: false,
-      });
-
-      setTimeout(() => {
-        if (watch("type") !== holidayDetail.type) {
-          setValue("type", holidayDetail.type || "", {
+      if (watch("name") !== holidayDetail.name) {
+        setValue("name", holidayDetail.name || "", { shouldValidate: true });
+      }
+      if (watch("type") !== holidayDetail.type) {
+        setValue("type", holidayDetail.type || "", { shouldValidate: true });
+      }
+      if (watch("country") !== holidayDetail.country) {
+        setValue("country", holidayDetail.country || "", {
+          shouldValidate: true,
+        });
+      }
+      if (holidayDetail.date) {
+        const formattedDate = formatDate(holidayDetail.date, "YYYY-MM-DD");
+        if (watch("date") !== formattedDate) {
+          setValue("date", formattedDate, {
             shouldValidate: true,
           });
         }
-
-        if (watch("country") !== holidayDetail.country) {
-          setValue("country", holidayDetail.country || "", {
-            shouldValidate: true,
-          });
-        }
-      }, 100);
+      }
     }
-  }, [holidayDetail, isEdit, reset, setValue, watch]);
+  }, [holidayDetail, isEdit, setValue, watch]);
 
   const handleSaveError = useCallback((error: any) => {
     console.error("Save failed:", error);
@@ -209,16 +219,6 @@ export function useHolidayDateForm(
   const goBack = useCallback(() => {
     router.push(AppURL.masterdataHolidayDate);
   }, [router]);
-
-  const types = [
-    { name: "Joint Leave", code: "Joint Leave" },
-    { name: "National Holiday", code: "National Holiday" },
-  ];
-
-  const countries = [
-    { name: "Indonesia", code: "id" },
-    { name: "Malaysia", code: "my" },
-  ];
 
   return {
     handleSubmit,
