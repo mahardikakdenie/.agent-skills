@@ -1,66 +1,209 @@
-"use client";
+'use client';
 
-import { Button } from "@repo/ui";
+import noData from '@public/images/no-data.webp';
+import Image from 'next/image';
+import { useEffect, useMemo, useState } from 'react';
+
 import {
+  Box,
+  Button,
+  DataTable,
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Skeleton,
   Tabs,
-  TabsContent,
   TabsList,
   TabsTrigger,
-} from "@repo/ui";
-import { useProduct } from "@/app/masterdata/product/hooks";
-import { Dialog } from "@repo/ui";
-import { useEffect, useState } from "react";
-import { productService } from "@/services/product/api/product.service";
-import Image from "next/image";
-import noData from "@public/images/no-data.webp";
-import { Eye, ChevronLeft, ChevronRight } from "react-feather";
-import { useScreen } from "@/context/screen.context";
+  type ColumnDef,
+} from '@repo/ui';
 
-const AssignPlan = ({
-  id,
-  channelName,
+import { useProduct } from '@/app/masterdata/product/hooks';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { useScreen } from '@/context/screen.context';
+import { cn } from '@/lib/utils';
+import { productService } from '@/services/product/api/product.service';
+
+const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat('id-ID').format(value);
+
+const createAssignPlanTableColumns = ({
+  page,
+  rowsPerPage,
+  isPlanAssigned,
+  openConfirmDialog,
 }: {
-  id: string;
-  channelName: string;
-}) => {
+  page: number;
+  rowsPerPage: number;
+  isPlanAssigned: (planId: string) => boolean;
+  openConfirmDialog: (planId: string, type: 'assign' | 'unassign') => void;
+}): ColumnDef<any>[] => [
+  {
+    id: 'id',
+    header: 'No.',
+    enableSorting: false,
+    enableResizing: false,
+    size: 44,
+    minSize: 44,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-center">
+          <Skeleton className="h-4 w-5 rounded-full" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
+  },
+  {
+    id: 'insurer',
+    header: 'Insurer',
+    accessorFn: (product) => product.products.insurances.name,
+    enableSorting: false,
+    size: 192,
+    minSize: 168,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-start gap-2.5">
+          <Skeleton className="h-8 w-8 min-w-8 rounded-xl" />
+          <Box className="min-w-0 flex-1 pt-0.5">
+            <Skeleton className="h-4 w-[7.5rem] rounded-full" />
+          </Box>
+        </Box>
+      ),
+    },
+    cell: ({ row }) => {
+      const product = row.original;
+      return (
+        <Box className="flex min-w-0 items-start gap-2.5">
+          <Box className="inline-flex h-8 w-8 min-w-8 items-center justify-center overflow-hidden rounded-xl bg-slate-50 ring-1 ring-slate-200/80">
+            <Image
+              src={product.products.insurances.logo_url || '/images/no-image.png'}
+              alt=""
+              width={100}
+              height={50}
+            />
+          </Box>
+          <Box className="min-w-0 flex-1">
+            <Box as="p" className="break-words text-sm leading-5 text-slate-900">
+              {product.products.insurances.name}
+            </Box>
+          </Box>
+        </Box>
+      );
+    },
+  },
+  {
+    id: 'planName',
+    header: 'Plan Name',
+    accessorFn: (product) => product.name,
+    enableSorting: false,
+    size: 220,
+    minSize: 184,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const product = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-600">
+          {product.name.split('|').map((item: string, i: number) => (
+            <Box key={i}>{item}</Box>
+          ))}
+        </Box>
+      );
+    },
+  },
+  {
+    id: 'product',
+    header: 'Product',
+    accessorFn: (product) => product.products.name,
+    enableSorting: false,
+    size: 164,
+    minSize: 144,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const product = row.original;
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+          {product.products.name}
+        </Box>
+      );
+    },
+  },
+  {
+    id: 'action',
+    header: 'Action',
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 100,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap !px-1 text-center',
+      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'mx-auto h-7 w-[3.25rem] rounded-full',
+    },
+    cell: ({ row }) => {
+      const product = row.original;
+      return isPlanAssigned(product.id) ? (
+        <Button
+          type="button"
+          size="xs"
+          onClick={() => openConfirmDialog(product.id, 'unassign')}
+          className="h-7 rounded-full !bg-red-600 px-4 text-[10px] font-bold text-white transition-all hover:!bg-red-700 active:scale-[0.96] shadow-none border-none"
+        >
+          Unassign
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          size="xs"
+          onClick={() => openConfirmDialog(product.id, 'assign')}
+          className="h-7 rounded-full !bg-[#016DA1] px-4 text-[10px] font-bold text-white transition-all hover:!bg-[#015a8a] active:scale-[0.96] shadow-none border-none"
+        >
+          Assign
+        </Button>
+      );
+    },
+  },
+];
+
+const AssignPlan = ({ id, channelName }: { id: string; channelName: string }) => {
   const { fetchCategories, categories } = useProduct();
-  const [activeTab, setActiveTab] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>('');
   const [products, setProducts] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  const { setLoading } = useScreen();
+  const { setLoading, isLoading } = useScreen();
 
   const [assignedPlans, setAssignedPlans] = useState<any[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<{
     planId: string;
-    type: "assign" | "unassign";
+    type: 'assign' | 'unassign';
   } | null>(null);
 
-  // Separate useEffect for initial category fetch
   useEffect(() => {
     const loadCategories = async () => {
-      await fetchCategories("");
+      await fetchCategories('');
     };
     loadCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // New useEffect to set default tab when categories are loaded
   useEffect(() => {
     if (categories.length > 0 && !activeTab) {
       setActiveTab(categories[0].id);
@@ -68,7 +211,6 @@ const AssignPlan = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 
-  // Separate useEffect for fetching plans when activeTab changes
   useEffect(() => {
     if (activeTab) {
       const category = categories.find((cat) => cat.id === activeTab);
@@ -107,7 +249,7 @@ const AssignPlan = ({
         setTotalItems(response.meta.total);
       }
     } catch (error) {
-      console.error("Failed to fetch plans:", error);
+      console.error('Failed to fetch plans:', error);
     } finally {
       setLoading(false);
     }
@@ -118,40 +260,22 @@ const AssignPlan = ({
     setPage(1);
   };
 
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
-
-  const handlePreviousPage = () => {
-    setPage((prev) => Math.max(1, prev - 1));
-  };
-
-  const handleNextPage = () => {
-    setPage((prev) => Math.min(totalPages, prev + 1));
-  };
-
   const formatCategoryName = (name: string) => {
     return name
-      .split("-")
+      .split('-')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(' ');
   };
 
   const isPlanAssigned = (planId: string) => {
     return assignedPlans.some((ap) => ap.plan === planId);
   };
 
-  const getChannelPlanId = (planId: string) => {
-    const assignedPlan = assignedPlans.find((ap) => ap.plan === planId);
-    return assignedPlan?.plan;
-  };
-
   const handleActionConfirm = async () => {
     if (!selectedAction) return;
 
     try {
-      if (selectedAction.type === "assign") {
+      if (selectedAction.type === 'assign') {
         await productService.assignChannelPlans({
           channel: id,
           plans: [selectedAction.planId],
@@ -164,13 +288,11 @@ const AssignPlan = ({
         });
       }
 
-      // Refresh assigned plans
       const response: any = await productService.getChannelPackagesByChannel(id);
       if (response) {
         setAssignedPlans(response?.data || response || []);
       }
 
-      // Refresh current tab
       if (activeTab) {
         const category = categories.find((cat) => cat.id === activeTab);
         if (category) {
@@ -178,196 +300,150 @@ const AssignPlan = ({
         }
       }
     } catch (error) {
-      console.error("Failed to process plan:", error);
+      console.error('Failed to process plan:', error);
     } finally {
       setDialogOpen(false);
       setSelectedAction(null);
     }
   };
 
-  const openConfirmDialog = (planId: string, type: "assign" | "unassign") => {
+  const openConfirmDialog = (planId: string, type: 'assign' | 'unassign') => {
     setSelectedAction({ planId, type });
     setDialogOpen(true);
   };
 
+  const columns = useMemo(
+    () =>
+      createAssignPlanTableColumns({
+        page,
+        rowsPerPage,
+        isPlanAssigned,
+        openConfirmDialog,
+      }),
+    [page, rowsPerPage, assignedPlans],
+  );
+
   return (
     <>
-      <div className="w-full">
+      <Box className="w-full flex flex-col gap-4">
         <Tabs
           value={activeTab}
-          defaultValue={categories[0]?.id}
+          onValueChange={handleTabChange}
+          variant="underline"
           className="w-full"
         >
-          <div className="relative"></div>
-          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            <TabsList className="inline-flex min-w-full border-b pb-0">
-              {categories.map((category) => (
-                <TabsTrigger
-                  key={category.id}
-                  value={category.id}
-                  onClick={() => handleTabChange(category.id)}
-                  className="min-w-[150px] whitespace-nowrap"
-                >
+          <TabsList
+            aria-label="Product categories tabs"
+            className="w-full justify-start rounded-none border-b border-slate-100 bg-transparent p-0 text-inherit overflow-auto"
+          >
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category.id}
+                value={category.id}
+                variant="underline"
+                className="h-11 px-4 py-2 text-sm font-semibold whitespace-nowrap"
+              >
+                <Box as="span" className="mr-2">
                   {formatCategoryName(category.name)}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-
-          {categories.map((category) => (
-            <TabsContent key={category.id} value={category.id}>
-              <div className="p-4">
-                <Table className="table-product-catalog">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="whitespace-nowrap">
-                        Insurer
-                      </TableHead>
-                      <TableHead className="min-w-44">Plan Name</TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Product
-                      </TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Action
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {products.length > 0 ? (
-                      products.map((product, index) => (
-                        <TableRow key={product.id}>
-                          <TableCell>
-                            <div className="flex gap-2 items-center">
-                              <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                                <Image
-                                  src={product.products.insurances.logo_url}
-                                  alt=""
-                                  width={100}
-                                  height={50}
-                                  className="w-full h-auto"
-                                />
-                              </div>
-                              {product.products.insurances.name}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {product.name
-                              .split("|")
-                              .map((item: string, i: number) => (
-                                <div key={i}>{item}</div>
-                              ))}
-                          </TableCell>
-                          <TableCell>{product.products.name}</TableCell>
-                          <TableCell>
-                            {isPlanAssigned(product.id) ? (
-                              <Button
-                                variant="secondary"
-                                onClick={() =>
-                                  openConfirmDialog(product.id, "unassign")
-                                }
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 rounded-full"
-                              >
-                                Unassign
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="secondary"
-                                onClick={() =>
-                                  openConfirmDialog(product.id, "assign")
-                                }
-                                className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                              >
-                                Assign
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow className="hover:!bg-white">
-                        <TableCell colSpan={5}>
-                          <div className="flex flex-col gap-4 items-center justify-center py-14">
-                            <Image alt="no data" src={noData} width={200} />
-                            No plans available
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        <div className="flex justify-center items-center gap-2 font-normal">
-                          <label htmlFor="rowsPerPage">Showing:</label>
-                          <select
-                            id="rowsPerPage"
-                            className="p-2 border rounded"
-                            value={rowsPerPage}
-                            onChange={handleRowsPerPageChange}
-                          >
-                            {[10, 20, 30, 50].map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                          <span className="mr-2">of {totalItems} items</span>
-                          <button
-                            onClick={handlePreviousPage}
-                            disabled={page === 1}
-                            className="disabled:opacity-50"
-                          >
-                            <ChevronLeft />
-                          </button>
-                          <button
-                            onClick={handleNextPage}
-                            disabled={page === totalPages}
-                            className="disabled:opacity-50"
-                          >
-                            <ChevronRight />
-                          </button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-            </TabsContent>
-          ))}
+                </Box>
+              </TabsTrigger>
+            ))}
+          </TabsList>
         </Tabs>
-      </div>
+
+        <DataTable
+          className="!gap-3 pb-0 [&_th]:px-2 [&_th]:py-2.5 [&_td]:px-2 [&_td]:py-3"
+          loading={isLoading}
+          data={products}
+          columns={columns}
+          defaultState={{
+            columnPinning: {
+              left: ['id', 'insurer'],
+              right: ['action'],
+            },
+          }}
+          pagination={{
+            pageIndex: page - 1,
+            pageSize: rowsPerPage,
+            pageCount: totalPages,
+            rowCount: totalItems,
+            onPageChange: (pageIndex) => {
+              if (isLoading) return;
+              setPage(pageIndex + 1);
+            },
+            onPageSizeChange: (pageSize) => {
+              if (isLoading) return;
+              setRowsPerPage(pageSize);
+              setPage(1);
+            },
+          }}
+          pageSizeOptions={[10, 20, 30, 50, 100]}
+          emptyState={
+            <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+              <Box className="flex flex-col items-center justify-center gap-2">
+                <Image alt="No plan available" src={noData} width={128} />
+                <Box as="span">No plans available</Box>
+              </Box>
+            </Box>
+          }
+          renderPagination={(table) => (
+            <Box className="-mt-1">
+              <CompactTablePagination
+                table={table}
+                pageSizeOptions={[10, 20, 30, 50, 100]}
+                disabled={isLoading}
+              />
+            </Box>
+          )}
+          tableOptions={{
+            manualPagination: true,
+            enableColumnPinning: true,
+            enableColumnResizing: true,
+            defaultColumn: {
+              minSize: 48,
+              size: 96,
+            },
+            getRowId: (row, index) => row?.id || `assign-plan-row-${index}`,
+          }}
+        />
+      </Box>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {selectedAction?.type === "assign"
-                ? "Assign Plan"
-                : "Unassign Plan"}
+        <DialogContent className="max-w-[420px] gap-0 border-none p-0 sm:rounded-[28px]">
+          <DialogHeader className="p-6 text-left">
+            <DialogTitle className="text-xl font-bold tracking-tight text-slate-900">
+              {selectedAction?.type === 'assign' ? 'Assign Plan' : 'Unassign Plan'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="mt-1.5 text-sm font-medium text-slate-500/90">
               Are you sure you want to {selectedAction?.type} this plan?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex gap-2">
+
+          <Box className="h-px w-full bg-slate-100" />
+
+          <DialogFooter className="flex flex-row items-center justify-end gap-2.5 p-6 sm:justify-end">
             <Button
+              type="button"
               variant="outline"
               onClick={() => {
                 setDialogOpen(false);
                 setSelectedAction(null);
               }}
+              className="h-10 rounded-xl border-slate-200 px-5 text-sm font-semibold text-slate-600 shadow-none transition-colors hover:bg-slate-50 hover:text-slate-700"
             >
               Cancel
             </Button>
             <Button
+              type="button"
               onClick={handleActionConfirm}
-              className={
-                selectedAction?.type === "assign"
-                  ? "bg-[#016DA1] hover:bg-[#016DA1] text-white"
-                  : "bg-red-600 hover:bg-red-700 text-white"
-              }
+              className={cn(
+                'h-10 rounded-xl px-6 text-sm font-bold text-white shadow-none transition-all active:scale-[0.98] border-none',
+                selectedAction?.type === 'assign'
+                  ? '!bg-[#016DA1] hover:!bg-[#015a8a]'
+                  : '!bg-red-600 hover:!bg-red-700',
+              )}
             >
-              {selectedAction?.type === "assign" ? "Assign" : "Unassign"}
+              {selectedAction?.type === 'assign' ? 'Assign' : 'Unassign'}
             </Button>
           </DialogFooter>
         </DialogContent>

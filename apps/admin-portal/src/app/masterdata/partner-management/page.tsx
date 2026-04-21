@@ -50,7 +50,7 @@ export default function PartnerIntegration() {
           Partner Management
         </Box>
         <Box className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 xl:w-auto 2xl:flex-nowrap">
-          <Box className="w-full sm:min-w-52 sm:flex-1 xl:w-64 xl:flex-none">
+          <Box className="w-full sm:min-w-56 sm:flex-1 xl:w-68 xl:flex-none">
             <Input
               type="text"
               placeholder="Search by Name or Email"

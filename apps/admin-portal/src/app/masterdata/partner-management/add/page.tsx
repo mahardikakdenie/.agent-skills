@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { usePartnerManagementForm } from "@/hooks/usePartnerManagementForm.hooks";
-import PartnerManagementForm from "@/components/forms/PartnerManagementForm";
+import PartnerManagementForm from '@/components/forms/partner-management-form';
+import { usePartnerManagementForm } from '@/hooks/usePartnerManagementForm.hooks';
 
 export default function AddPartner() {
   const {
@@ -17,7 +17,7 @@ export default function AddPartner() {
     handleSave,
     generateApiKey,
     goBack,
-  } = usePartnerManagementForm("create");
+  } = usePartnerManagementForm('create');
 
   return (
     <PartnerManagementForm

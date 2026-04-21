@@ -7,12 +7,7 @@ import { Controller } from 'react-hook-form';
 import {
   Input,
   Button,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Combobox,
   Box,
 } from '@repo/ui';
 
@@ -41,11 +36,9 @@ interface EmailTagFormProps {
 
 export function EmailTagForm({
   mode,
-  tagId,
   handleSubmit,
   control,
   errors,
-  setValue,
   journeys,
   isLoadingDetail,
   isLoadingJourneys,
@@ -54,12 +47,16 @@ export function EmailTagForm({
   onBack,
 }: EmailTagFormProps) {
   const isEdit = mode === 'edit';
-  const [isJourneyOpen, setIsJourneyOpen] = React.useState(false);
 
   const breadcrumbs = [
     { label: 'Email Tag', href: AppURL.masterdataEmailTag },
     { label: isEdit ? 'Update Email Tag' : 'Create Email Tag', isCurrentPage: true },
   ];
+
+  const journeyOptions = journeys.map((jour: any) => ({
+    label: jour.name,
+    value: jour.code,
+  }));
 
   return (
     <ContentLoadingWrapper isLoading={isSaving || isLoadingDetail}>
@@ -94,7 +91,6 @@ export function EmailTagForm({
                   as="label"
                   htmlFor="journey"
                   className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
-                  onClick={() => setIsJourneyOpen(true)}
                 >
                   Journey{' '}
                   <Box as="span" className="text-red-500">
@@ -106,33 +102,18 @@ export function EmailTagForm({
                   control={control}
                   rules={{ required: 'Journey is required' }}
                   render={({ field }) => (
-                    <Select
+                    <Combobox
+                      id="journey"
                       value={field.value}
                       onValueChange={field.onChange}
-                      open={isJourneyOpen}
-                      onOpen={() => setIsJourneyOpen(true)}
-                      onClose={() => setIsJourneyOpen(false)}
-                    >
-                      <SelectTrigger
-                        id="journey"
-                        className="w-full h-12 border-slate-300 select-status bg-transparent hover:cursor-pointer py-2"
-                      >
-                        <SelectValue placeholder="Select Journey" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {isLoadingJourneys ? (
-                            <Box className="px-2 py-1.5 text-sm text-gray-500">Loading...</Box>
-                          ) : (
-                            journeys.map((jour: any) => (
-                              <SelectItem key={jour.id} value={jour.code}>
-                                {jour.name}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                      options={journeyOptions}
+                      size="lg"
+                      placeholder={isLoadingJourneys ? 'Loading...' : 'Select Journey'}
+                      disabled={isLoadingJourneys}
+                      className={`bg-transparent ${
+                        errors.journey ? 'border-destructive' : 'border-slate-300'
+                      }`}
+                    />
                   )}
                 />
                 {errors.journey && (
@@ -162,9 +143,10 @@ export function EmailTagForm({
                       {...field}
                       id="tag"
                       type="text"
+                      size="lg"
                       placeholder="Insert Email Tag Name"
-                      className={`h-12 border-slate-300 bg-transparent ${
-                        errors.tag ? 'border-red-500' : ''
+                      className={`bg-transparent ${
+                        errors.tag ? 'border-red-500' : 'border-slate-300'
                       }`}
                     />
                   )}
