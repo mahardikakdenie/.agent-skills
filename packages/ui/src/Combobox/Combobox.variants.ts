@@ -42,7 +42,7 @@ export const comboboxTriggerVariants = cva(
         xs: 'min-h-8 px-2.5 text-xs',
         sm: 'min-h-9 px-3 text-sm',
         md: 'min-h-10 px-3 text-sm',
-        lg: 'min-h-11 px-4 text-base',
+        lg: 'min-h-12 px-4 text-base',
       },
       invalid: {
         true: directFieldShellFocus.invalid,
@@ -144,7 +144,7 @@ export const comboboxSearchRowVariants = cva(
         xs: 'min-h-8 px-2.5',
         sm: 'min-h-9 px-3',
         md: 'min-h-10 px-3',
-        lg: 'min-h-11 px-4',
+        lg: 'min-h-12 px-4',
       },
     },
     defaultVariants: {

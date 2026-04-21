@@ -2,8 +2,25 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-04-09
+> Last reconciled: 2026-04-21
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-04-21 - Field-Shell Sizing and Input Padding Refinement
+
+Changed:
+
+- Updated the canonical field-shell sizing scale across `Input`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, and `MonthPicker` to use `min-h-12` (48px) for the `lg` size, aligning it with the higher-density `xl` action baseline and the documented canonical example.
+- Refined the `Input` internal structure by moving size-specific padding from the outer `input-control` shell directly onto the `input-element` and `input-affix` slots for the `lg` size, while reducing the default gap to `0`.
+- Normalized authored shared markup in `Input` by removing explicit `as="span"` and `aria-hidden="true"` from internal icon wrappers, relying on `Box` default flex behavior for cleaner alignment inside the composite shell.
+- Reconciled `02-api-conventions.md` so the canonical CVA variant example now reflects the established `xs | sm | md | lg` sizing and padding baseline.
+
+Impact:
+
+- Downstream migrations for the shared field family now target a 48px height for `lg` layouts, ensuring visual parity across static, searchable, and input-based controls.
+- The `Input` component now supports more precise icon-to-text alignment by owning padding at the element level for its largest size.
+- The normalization output set is now fully aligned with the implementation regarding field-shell density and internal structure.
 
 ---
 

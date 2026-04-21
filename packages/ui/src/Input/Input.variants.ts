@@ -26,7 +26,7 @@ export const inputLabelVariants = cva('text-sm font-medium leading-none', {
 
 export const inputControlVariants = cva(
   [
-    'flex w-full items-center gap-2 rounded-md border',
+    'flex w-full items-center gap-0 rounded-md border',
     'transition-colors motion-reduce:transition-none',
     compositeFieldShellFocus.base,
   ].join(' '),
@@ -34,10 +34,10 @@ export const inputControlVariants = cva(
     variants: {
       variant: fieldVariantOptions,
       size: {
-        xs: 'min-h-8 px-2.5',
-        sm: 'min-h-9 px-3',
+        xs: 'min-h-8 px-2',
+        sm: 'min-h-9 px-2.5',
         md: 'min-h-10 px-3',
-        lg: 'min-h-11 px-4',
+        lg: 'min-h-12 px-0',
       },
       invalid: {
         true: compositeFieldShellFocus.invalid,
@@ -66,10 +66,10 @@ export const inputElementVariants = cva(
   {
     variants: {
       size: {
-        xs: 'text-xs',
-        sm: 'text-sm',
-        md: 'text-sm',
-        lg: 'text-base',
+        xs: 'px-2 text-xs',
+        sm: 'px-2.5 text-sm',
+        md: 'px-3 text-sm',
+        lg: 'px-4 text-base',
       },
     },
     defaultVariants: {
@@ -78,13 +78,13 @@ export const inputElementVariants = cva(
   },
 );
 
-export const inputAffixVariants = cva('shrink-0 text-muted-foreground', {
+export const inputAffixVariants = cva('shrink-0 text-muted-foreground flex items-center justify-center h-full', {
   variants: {
     size: {
-      xs: 'text-xs [&_svg]:h-3.5 [&_svg]:w-3.5',
-      sm: 'text-sm [&_svg]:h-4 [&_svg]:w-4',
-      md: 'text-sm [&_svg]:h-4 [&_svg]:w-4',
-      lg: 'text-base [&_svg]:h-[18px] [&_svg]:w-[18px]',
+      xs: 'text-xs [&_svg]:h-3.5 [&_svg]:w-3.5 px-2',
+      sm: 'text-sm [&_svg]:h-4 [&_svg]:w-4 px-2.5',
+      md: 'text-sm [&_svg]:h-4 [&_svg]:w-4 px-3',
+      lg: 'text-base [&_svg]:h-[18px] [&_svg]:w-[18px] px-0',
     },
   },
   defaultVariants: {
