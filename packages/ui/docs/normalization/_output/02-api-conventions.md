@@ -1708,9 +1708,10 @@ const componentVariants = cva('base-classes-here', {
       ghost: 'hover:bg-accent hover:text-accent-foreground',
     },
     size: {
-      sm: 'h-8 px-3 text-xs',
-      md: 'h-10 px-4 text-sm', // DEFAULT
-      lg: 'h-12 px-8 text-base',
+      xs: 'h-8 px-2.5 text-xs',
+      sm: 'h-9 px-3 text-sm',
+      md: 'h-10 px-3 text-sm', // DEFAULT
+      lg: 'h-12 px-4 text-base',
     },
   },
   defaultVariants: {

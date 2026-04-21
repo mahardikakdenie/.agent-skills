@@ -26,7 +26,7 @@ export const monthPickerControlVariants = cva(
         xs: 'min-h-8 px-2.5',
         sm: 'min-h-9 px-3',
         md: 'min-h-10 px-3',
-        lg: 'min-h-11 px-4',
+        lg: 'min-h-12 px-4',
       },
       invalid: {
         true: compositeFieldShellFocus.invalid,

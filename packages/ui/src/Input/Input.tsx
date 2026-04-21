@@ -178,9 +178,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         >
           {leftIcon ? (
             <Box
-              as="span"
               data-slot="input-left-icon"
-              aria-hidden="true"
               className={inputAffixVariants({ size })}
             >
               {leftIcon}

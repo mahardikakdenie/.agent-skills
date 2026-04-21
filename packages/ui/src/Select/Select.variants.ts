@@ -42,7 +42,7 @@ export const selectTriggerVariants = cva(
         xs: 'min-h-8 px-2.5 text-xs',
         sm: 'min-h-9 px-3 text-sm',
         md: 'min-h-10 px-3 text-sm',
-        lg: 'min-h-11 px-4 text-base',
+        lg: 'min-h-12 px-4 text-base',
       },
       invalid: {
         true: [directFieldShellFocus.invalid, 'data-[state=open]:border-destructive'].join(' '),
@@ -132,7 +132,7 @@ export const selectItemVariants = cva(
         xs: 'min-h-8 py-1.5 pl-2.5 pr-7 text-xs',
         sm: 'min-h-9 py-2 pl-3 pr-8 text-sm',
         md: 'min-h-10 py-2 pl-3 pr-8 text-sm',
-        lg: 'min-h-11 py-2.5 pl-4 pr-10 text-base',
+        lg: 'min-h-12 py-2.5 pl-4 pr-10 text-base',
       },
     },
     defaultVariants: {
