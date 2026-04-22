@@ -131,7 +131,7 @@ Direct adoption guidance:
 - Existing `checked`, `defaultChecked`, `onChange`, or `onCheckedChange` flows normalize to `checked`, `defaultChecked`, and `onCheckedChange`.
 - Inline field copy maps to `label`, `description`, and `error`; required indicators stay on `required` instead of app-local suffix markup.
 - Partial-selection or "select all" states map to `checked="indeterminate"`.
-- Dense list or table controls map to `size="sm"`; general form usage maps to `size="md"`.
+- Dense list or table controls map to `size="sm"`; general form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 
 Keep local:
 
