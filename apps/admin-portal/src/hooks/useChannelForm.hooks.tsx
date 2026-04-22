@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import AppURL from "@/constants/app-url.const";
+import toast from "react-hot-toast";
 import { useChannelDetailV1 } from "@/services/channel/hooks/queries";
 import {
   useCreateChannel,
@@ -25,16 +26,12 @@ interface UseChannelFormProps {
   channelId: string;
 
   hasAccess: boolean | null;
-  showAlert: boolean;
-  alertMessage: string;
-  alertType: "success" | "error";
   isEdit: boolean;
 
   isLoadingDetail: boolean;
   isSaving: boolean;
 
   handleSave: (formData: ChannelFormData) => void;
-  setShowAlert: (show: boolean) => void;
   goBack: () => void;
   loadChannelDetail: (id: string) => void;
 }
@@ -62,9 +59,6 @@ export function useChannelForm(
   });
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState<"success" | "error">("success");
   const [channelId, setChannelId] = useState<string>("");
 
   useEffect(() => {
@@ -105,25 +99,23 @@ export function useChannelForm(
   }, [channelDetail, reset, isEdit]);
 
   const handleSaveSuccess = useCallback(() => {
-    setAlertType("success");
-    setAlertMessage(
+    toast.success(
       isEdit
         ? "Channel Updated Successfully!"
         : "Channel Created Successfully!"
     );
-    setShowAlert(true);
 
     setTimeout(() => {
-      setShowAlert(false);
       router.back();
     }, 2000);
   }, [isEdit, router]);
 
-  const handleSaveError = useCallback((error: unknown) => {
+  const handleSaveError = useCallback((error: any) => {
     console.error("Failed to save channel:", error);
-    setAlertType("error");
-    setAlertMessage("Failed to save channel. Please try again.");
-    setShowAlert(true);
+    toast.error(
+      error?.response?.data?.message ||
+      "Failed to save channel. Please try again."
+    );
   }, []);
 
   const createChannelMutation = useCreateChannel({
@@ -142,13 +134,8 @@ export function useChannelForm(
 
   const handleSave = useCallback(
     async (formData: ChannelFormData) => {
-      setAlertMessage("");
-      setShowAlert(false);
-
       if (!formData.name || !formData.type) {
-        setAlertType("error");
-        setAlertMessage("Please fill in all required fields.");
-        setShowAlert(true);
+        toast.error("Please fill in all required fields.");
         return;
       }
 
@@ -164,9 +151,6 @@ export function useChannelForm(
       channelId,
       createChannelMutation,
       updateChannelMutation,
-      setAlertMessage,
-      setShowAlert,
-      setAlertType,
     ]
   );
 
@@ -189,16 +173,12 @@ export function useChannelForm(
     channelId,
 
     hasAccess,
-    showAlert,
-    alertMessage,
-    alertType,
     isEdit,
 
     isLoadingDetail,
     isSaving: createChannelMutation.isPending || updateChannelMutation.isPending,
 
     handleSave,
-    setShowAlert,
     goBack,
     loadChannelDetail,
   };

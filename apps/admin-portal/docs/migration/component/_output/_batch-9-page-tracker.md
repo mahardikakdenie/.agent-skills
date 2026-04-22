@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 44 |
+| PASS | 46 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 10 |
-| NOT_STARTED | 59 |
+| NOT_STARTED | 57 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -78,8 +78,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/finance/partner-comm/detail/[id]` | `finance-partner-comm-detail-id` | `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/unmatch-billing` | `finance-unmatch-billing` | `apps/admin-portal/src/app/finance/unmatch-billing/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/masterdata/channel` | `masterdata-channel` | `apps/admin-portal/src/app/masterdata/channel/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
-| `/masterdata/channel/add` | `masterdata-channel-add` | `apps/admin-portal/src/app/masterdata/channel/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/channel/detail/[id]` | `masterdata-channel-detail-id` | `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/channel/add` | `masterdata-channel-add` | `apps/admin-portal/src/app/masterdata/channel/add/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/channel/add route onto the refactored ChannelForm, standardizing the form layout and interaction with shared Box, Button, Input, and Select primitives. |
+| `/masterdata/channel/detail/[id]` | `masterdata-channel-detail-id` | `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/channel/detail/[id] route onto the refactored ChannelForm, standardizing the form layout and interaction with shared Box, Button, Input, and Select primitives. |
 | `/masterdata/currency` | `masterdata-currency` | `apps/admin-portal/src/app/masterdata/currency/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/masterdata/currency/add` | `masterdata-currency-add` | `apps/admin-portal/src/app/masterdata/currency/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/currency/detail/[id]` | `masterdata-currency-detail-id` | `apps/admin-portal/src/app/masterdata/currency/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -636,14 +636,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-channel-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-22`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/channel/add` route onto the refactored `ChannelForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Input`, and `Select` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing channel creation logic.
 
 ### /masterdata/channel/detail/[id]
 
@@ -651,14 +651,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-channel-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-22`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/channel/detail/[id]` route onto the refactored `ChannelForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Input`, and `Select` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing channel update logic.
 
 ### /masterdata/currency
 

@@ -1,39 +1,22 @@
-"use client";
+'use client';
 
-import { useChannelForm } from "@/hooks/useChannelForm.hooks";
-import { ChannelForm } from "@/components/forms/ChannelForm";
+import { ChannelForm } from '@/components/forms/channel-form';
+import { useChannelForm } from '@/hooks/useChannelForm.hooks';
 
 export default function AddChannels() {
-  const {
-    handleSubmit,
-    control,
-    errors,
-    watch,
-    showAlert,
-    alertMessage,
-    alertType,
-    isLoadingDetail,
-    isSaving,
-    handleSave,
-    setShowAlert,
-    goBack,
-  } = useChannelForm("create");
+  const { handleSubmit, control, errors, isLoadingDetail, isSaving, handleSave, goBack } =
+    useChannelForm('create');
 
   return (
     <ChannelForm
+      mode="create"
       handleSubmit={handleSubmit}
       control={control}
       errors={errors}
-      watch={watch}
-      showAlert={showAlert}
-      alertMessage={alertMessage}
-      alertType={alertType}
-      isEdit={false}
       isLoadingDetail={isLoadingDetail}
       isSaving={isSaving}
       onSave={handleSave}
       onBack={goBack}
-      onCloseAlert={() => setShowAlert(false)}
     />
   );
 }

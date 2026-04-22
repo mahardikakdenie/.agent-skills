@@ -332,6 +332,22 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
   - The permission management table now uses shared `Table` primitives and aligns action buttons with the current design-system treatment.
 - Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/role/add/page.tsx`, `apps/admin-portal/src/app/masterdata/role/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/role-form/index.tsx`]
 - Local files deleted: [`apps/admin-portal/src/components/forms/RoleForm/index.tsx`]
-- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Input, Combobox, Checkbox, Table, and Textarea primitives while PageHeader remains app-local.`
-- Verification note: `This logging update is based on the current role add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Input, Combobox, Checkbox, Table, and Textarea primitives while PageHeader remains app-local.`       
+- Verification note: `This logging update is based on the current role add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`    
 - Tracker impact: `Batch 9 page tracker should now treat both /masterdata/role/add and /masterdata/role/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+
+## Batch 9 - /masterdata/channel/add and /masterdata/channel/detail/[id] Route Refactor - 2026-04-22
+
+- Route focus: `/masterdata/channel/add`, `/masterdata/channel/detail/[id]`
+- Migration intent: `Refactor the channel add and detail routes onto the current shared primitive stack, standardizing the form layout and interaction while preserving existing channel creation and update logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/channel/add/page.tsx` and `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx` now use the refactored `ChannelForm` component.
+  - `apps/admin-portal/src/components/forms/channel-form/index.tsx` replaces the legacy `apps/admin-portal/src/components/forms/ChannelForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Input`, and `Select` primitives.
+  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and leverages `ContentLoadingWrapper` for consistent loading states during detail fetching and submission.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/channel/add/page.tsx`, `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx`, `apps/admin-portal/src/hooks/useChannelForm.hooks.tsx`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/ChannelForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Input, and Select primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current channel add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat both /masterdata/channel/add and /masterdata/channel/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
