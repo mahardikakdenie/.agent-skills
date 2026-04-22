@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useRoleForm } from "@/hooks/useRoleForm.hooks";
-import RoleForm from "@/components/forms/RoleForm";
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+import RoleForm from '@/components/forms/role-form';
+import { useRoleForm } from '@/hooks/useRoleForm.hooks';
 
 export default function EditRolePage() {
   const params = useParams();
-  const roleId =
-    typeof params.id === "string" ? params.id : params.id?.[0] || "";
+  const roleId = typeof params.id === 'string' ? params.id : params.id?.[0] || '';
 
   const {
     handleSubmit,
@@ -35,7 +35,7 @@ export default function EditRolePage() {
     selectMenu,
     setPermissionFields,
     goBack,
-  } = useRoleForm("edit");
+  } = useRoleForm('edit');
 
   useEffect(() => {
     if (roleId) {

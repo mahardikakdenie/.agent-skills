@@ -2691,7 +2691,7 @@
 
 ### RoleForm
 
-- **File:** src/components/forms/RoleForm/index.tsx
+- **File:** src/components/forms/role-form/index.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** N/A
 - **@repo/ui status:** missing

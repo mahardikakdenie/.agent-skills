@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRoleForm } from "@/hooks/useRoleForm.hooks";
-import RoleForm from "@/components/forms/RoleForm";
+import RoleForm from '@/components/forms/role-form';
+import { useRoleForm } from '@/hooks/useRoleForm.hooks';
 
 export default function AddRolePage() {
   const {
@@ -28,7 +28,7 @@ export default function AddRolePage() {
     selectMenu,
     setPermissionFields,
     goBack,
-  } = useRoleForm("create");
+  } = useRoleForm('create');
 
   return (
     <RoleForm
