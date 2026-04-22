@@ -6,26 +6,56 @@ import {
 } from '../utils/focus-normalization';
 import { fieldVariantOptions } from '../utils/field-variants';
 
-const directFieldShellFocus = getFieldShellFocusRecipe('direct');
+const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
 export const textareaFieldVariants = cva('grid w-full gap-1.5');
 
-export const textareaControlVariants = cva('relative w-full');
-
-export const textareaElementVariants = cva(
+export const textareaControlVariants = cva(
   [
-    'min-h-24 w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm text-foreground',
+    'relative flex w-full flex-col rounded-md border',
     'transition-colors motion-reduce:transition-none',
-    'placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60',
-    directFieldShellFocus.base,
+    compositeFieldShellFocus.base,
   ].join(' '),
   {
     variants: {
       variant: fieldVariantOptions,
+      size: {
+        xs: 'min-h-8',
+        sm: 'min-h-9',
+        md: 'min-h-10',
+        lg: 'min-h-12',
+      },
       invalid: {
-        true: directFieldShellFocus.invalid,
+        true: compositeFieldShellFocus.invalid,
         false: '',
+      },
+      disabled: {
+        true: 'cursor-not-allowed opacity-60',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      variant: 'outline',
+      size: 'md',
+      invalid: false,
+      disabled: false,
+    },
+  },
+);
+
+export const textareaElementVariants = cva(
+  [
+    'min-h-24 w-full resize-y border-0 bg-transparent text-foreground outline-none',
+    'placeholder:text-muted-foreground disabled:cursor-not-allowed',
+  ].join(' '),
+  {
+    variants: {
+      size: {
+        xs: 'px-2 py-1.5 text-xs',
+        sm: 'px-2.5 py-2 text-sm',
+        md: 'px-3 py-2.5 text-sm',
+        lg: 'px-4 py-3 text-base',
       },
       clearable: {
         true: 'pr-10',
@@ -33,8 +63,7 @@ export const textareaElementVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'outline',
-      invalid: false,
+      size: 'md',
       clearable: false,
     },
   },

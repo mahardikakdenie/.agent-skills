@@ -2,7 +2,7 @@
 
 > Batch: Batch 2 - Design System Foundation
 > Branch: feat/ui
-> Run date: 2026-03-06
+> Run date: 2026-04-22
 > Inputs: 27 per-app baseline summaries reconciled
 
 ---

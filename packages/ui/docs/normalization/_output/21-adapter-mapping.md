@@ -2,8 +2,8 @@
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
-> Run date: 2026-03-10
-> Last reconciled: 2026-04-06
+> Run date: 2026-04-22
+> Last reconciled: 2026-04-22
 
 ## Box
 
@@ -131,7 +131,7 @@ Direct adoption guidance:
 - Existing `checked`, `defaultChecked`, `onChange`, or `onCheckedChange` flows normalize to `checked`, `defaultChecked`, and `onCheckedChange`.
 - Inline field copy maps to `label`, `description`, and `error`; required indicators stay on `required` instead of app-local suffix markup.
 - Partial-selection or "select all" states map to `checked="indeterminate"`.
-- Dense list or table controls map to `size="sm"`; general form usage maps to `size="md"`.
+- Dense list or table controls map to `size="sm"`; general form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 
 Keep local:
 
@@ -188,13 +188,14 @@ Keep local:
 Direct adoption guidance:
 
 - Legacy `Textarea`, `TextArea`, remarks fields, notes boxes, and plain-text description inputs map to `Textarea`.
+- Very compact or specialized usage maps to `size="xs"`; dense table/list controls map to `size="sm"`; standard form usage maps to `size="md"`; larger touch targets map to `size="lg"`.
 - Existing invalid props such as `errorMessage`, `hasError`, or `error` normalize to the shared `error` contract; helper or hint copy maps to `helperText`.
 - Existing clear buttons or `onClear` handlers collapse into `clearable`, while controlled value flows normalize to `value`, `defaultValue`, `onChange`, and `onValueChange`.
 - Native textarea attributes such as `rows`, `maxLength`, `minLength`, `name`, `placeholder`, and `autoComplete` stay on the shared primitive.
 
 Keep local:
 
-- Auto-grow implementations, custom resize modes, or explicit height variants such as `compact`, `auto-grow`, `height`, or `shadow`.
+- Auto-grow implementations, custom resize modes, or explicit height variants such as `auto-grow` or `height`.
 - Rich-text, markdown, mention, upload, or editor-style surfaces.
 - Domain-aware wrappers that still compute validation copy, apply business formatting, or trigger workflow side effects while editing.
 

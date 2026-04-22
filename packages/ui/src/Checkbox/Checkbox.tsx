@@ -40,6 +40,7 @@ export const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimiti
       error = false,
       size = 'md',
       className,
+      labelClassName,
       id,
       'aria-describedby': ariaDescribedBy,
       'aria-labelledby': ariaLabelledBy,
@@ -123,6 +124,7 @@ export const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimiti
                   className={cn(
                     checkboxLabelVariants({ size, tone: labelTone }),
                     disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+                    labelClassName,
                   )}
                 >
                   {label}
