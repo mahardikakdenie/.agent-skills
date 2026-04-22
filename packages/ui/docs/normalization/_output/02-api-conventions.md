@@ -264,6 +264,8 @@ export interface TextareaProps extends Omit<
   clearable?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onValueChange?: (value: string) => void;
+  fieldClassName?: string;
+  textareaClassName?: string;
   className?: string;
 }
 ```
@@ -444,6 +446,7 @@ export interface CheckboxProps extends Omit<
   description?: string;
   size?: 'sm' | 'md' | 'lg'; // default: 'md'
   error?: string | boolean;
+  labelClassName?: string;
   className?: string;
 }
 ```

@@ -19,4 +19,5 @@ export interface CheckboxProps
   error?: string | boolean;
   size?: CheckboxSize;
   className?: string;
+  labelClassName?: string;
 }

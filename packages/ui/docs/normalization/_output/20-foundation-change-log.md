@@ -1527,10 +1527,12 @@ Changed:
 - Removed `Textarea` from the frozen sizing-exception set in `02-api-conventions.md`, `13-implementation-batches.md`, and the change log.
 - Realigned `packages/ui/src/Textarea` implementation so its height, padding, and typography now scale with the requested `size` prop while preserving native row-driven height behavior.
 - Verified and documented `Checkbox` sizing support for `sm | md | lg`, ensuring its direct adoption guidance in `21-adapter-mapping.md` matches the shipped `size="lg"` implementation.
+- Added `labelClassName` to `Checkbox` and `fieldClassName` / `textareaClassName` to `Textarea` to support targetable styling overrides for internal sub-components.
 - Updated the canonical roadmap in `11-master-component-roadmap.md` to include `Checkbox.Sizes` and `Input.Sizes` in the validated SDD requirements.
 
 Impact:
 
 - The shared field-shell density contract now covers the entire multiline and single-line text entry family (`Input`, `Textarea`), plus selection (`Select`, `Combobox`) and date pickers.
 - Downstream apps can now use the same `size` vocabulary across the full field-entry surface without local CSS overrides for textarea density.
+- Styling overrides for complex primitives are now canonically supported through dedicated class name slots, reducing reliance on brittle global CSS selectors.
 - Verification gates for `Checkbox` and `Input` now explicitly include sizing-family tests as part of the standard baseline.

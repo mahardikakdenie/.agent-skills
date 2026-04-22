@@ -30,6 +30,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       label,
       helperText,
       clearable = false,
+      fieldClassName,
+      textareaClassName,
       className,
       id,
       value,
@@ -93,7 +95,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     };
 
     return (
-      <Box data-slot="textarea-field" className={cn(textareaFieldVariants(), className)}>
+      <Box data-slot="textarea-field" className={cn(textareaFieldVariants(), fieldClassName)}>
         {label ? (
           <Label htmlFor={textareaId} required={required} disabled={disabled} tone={labelTone}>
             {label}
@@ -102,7 +104,15 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
         <Box
           data-slot="textarea-control"
-          className={textareaControlVariants()}
+          className={cn(
+            textareaControlVariants({
+              variant,
+              size,
+              invalid: hasError,
+              disabled,
+            }),
+            className,
+          )}
         >
           <Box
             as="textarea"
@@ -117,12 +127,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             autoComplete={autoComplete ?? 'off'}
             aria-invalid={hasError || undefined}
             aria-describedby={describedBy}
-            className={textareaElementVariants({
-              variant,
-              size,
-              invalid: hasError,
-              clearable: showClearButton,
-            })}
+            className={cn(
+              textareaElementVariants({
+                size,
+                clearable: showClearButton,
+              }),
+              textareaClassName,
+            )}
             onChange={handleChange}
             {...props}
           />

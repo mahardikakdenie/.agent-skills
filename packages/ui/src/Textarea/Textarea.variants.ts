@@ -6,35 +6,31 @@ import {
 } from '../utils/focus-normalization';
 import { fieldVariantOptions } from '../utils/field-variants';
 
-const directFieldShellFocus = getFieldShellFocusRecipe('direct');
+const compositeFieldShellFocus = getFieldShellFocusRecipe('composite');
 const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
 export const textareaFieldVariants = cva('grid w-full gap-1.5');
 
-export const textareaControlVariants = cva('relative w-full');
-
-export const textareaElementVariants = cva(
+export const textareaControlVariants = cva(
   [
-    'w-full resize-y rounded-md border bg-background text-foreground',
+    'relative w-full rounded-md border bg-background',
     'transition-colors motion-reduce:transition-none',
-    'placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60',
-    directFieldShellFocus.base,
+    compositeFieldShellFocus.base,
   ].join(' '),
   {
     variants: {
       variant: fieldVariantOptions,
       size: {
-        xs: 'min-h-16 px-2 py-1.5 text-xs',
-        sm: 'min-h-20 px-2.5 py-2 text-sm',
-        md: 'min-h-24 px-3 py-2.5 text-sm',
-        lg: 'min-h-32 px-4 py-3 text-base',
+        sm: 'min-h-9',
+        md: 'min-h-10',
+        lg: 'min-h-12',
       },
       invalid: {
-        true: directFieldShellFocus.invalid,
+        true: compositeFieldShellFocus.invalid,
         false: '',
       },
-      clearable: {
-        true: 'pr-10',
+      disabled: {
+        true: 'cursor-not-allowed opacity-60',
         false: '',
       },
     },
@@ -42,6 +38,30 @@ export const textareaElementVariants = cva(
       variant: 'outline',
       size: 'md',
       invalid: false,
+      disabled: false,
+    },
+  },
+);
+
+export const textareaElementVariants = cva(
+  [
+    'min-h-24 w-full resize-y bg-transparent px-3 py-2.5 text-sm text-foreground outline-none',
+    'placeholder:text-muted-foreground disabled:cursor-not-allowed',
+  ].join(' '),
+  {
+    variants: {
+      size: {
+        sm: 'text-sm',
+        md: 'text-sm',
+        lg: 'text-base',
+      },
+      clearable: {
+        true: 'pr-10',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
       clearable: false,
     },
   },
