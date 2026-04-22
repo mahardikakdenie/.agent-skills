@@ -2,7 +2,7 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Run date: 2026-03-09
+> Run date: 2026-04-22
 > Input authority: `03-migration-plan.md`, `00`-`06` normalization outputs, and the deduplicated per-app backlog merge in `12-master-backlog.csv`
 
 ## 1. Planning Assumptions

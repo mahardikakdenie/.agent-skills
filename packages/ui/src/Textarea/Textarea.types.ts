@@ -7,7 +7,7 @@ import {
 } from '../utils/field-variants';
 
 export const textareaVariantValues = fieldVariantValues;
-export const textareaSizeValues = ['sm', 'md', 'lg'] as const;
+export const textareaSizeValues = ['xs', 'sm', 'md', 'lg'] as const;
 
 export type TextareaVariant = FieldVariant | FieldVariantAlias;
 export type TextareaSize = (typeof textareaSizeValues)[number];

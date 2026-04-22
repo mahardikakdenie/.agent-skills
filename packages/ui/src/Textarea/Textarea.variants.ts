@@ -13,7 +13,7 @@ export const textareaFieldVariants = cva('grid w-full gap-1.5');
 
 export const textareaControlVariants = cva(
   [
-    'relative w-full rounded-md border bg-background',
+    'relative flex w-full flex-col rounded-md border',
     'transition-colors motion-reduce:transition-none',
     compositeFieldShellFocus.base,
   ].join(' '),
@@ -21,6 +21,7 @@ export const textareaControlVariants = cva(
     variants: {
       variant: fieldVariantOptions,
       size: {
+        xs: 'min-h-8',
         sm: 'min-h-9',
         md: 'min-h-10',
         lg: 'min-h-12',
@@ -45,15 +46,16 @@ export const textareaControlVariants = cva(
 
 export const textareaElementVariants = cva(
   [
-    'min-h-24 w-full resize-y bg-transparent px-3 py-2.5 text-sm text-foreground outline-none',
+    'min-h-24 w-full resize-y border-0 bg-transparent text-foreground outline-none',
     'placeholder:text-muted-foreground disabled:cursor-not-allowed',
   ].join(' '),
   {
     variants: {
       size: {
-        sm: 'text-sm',
-        md: 'text-sm',
-        lg: 'text-base',
+        xs: 'px-2 py-1.5 text-xs',
+        sm: 'px-2.5 py-2 text-sm',
+        md: 'px-3 py-2.5 text-sm',
+        lg: 'px-4 py-3 text-base',
       },
       clearable: {
         true: 'pr-10',

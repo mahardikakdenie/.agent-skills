@@ -2,7 +2,7 @@
 
 > **Batch:** Batch 2 - Design System Foundation
 > **Branch:** `feat/ui`
-> **Run date:** 2026-03-06
+> **Run date:** 2026-04-22
 > **Source:** `06-component-standards.md 2 Prop Naming Conventions`
 > **Breaking change rule:** After Batch 3 begins, any change to canonical prop names or variant values requires a Foundation Amendment PR.
 
