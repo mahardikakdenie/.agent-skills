@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 40 |
+| PASS | 42 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 10 |
-| NOT_STARTED | 63 |
+| NOT_STARTED | 61 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -103,8 +103,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/insurance/add` | `masterdata-insurance-add` | `apps/admin-portal/src/app/masterdata/insurance/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/insurance/detail/[id]` | `masterdata-insurance-detail-id` | `apps/admin-portal/src/app/masterdata/insurance/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/page-management` | `masterdata-page-management` | `apps/admin-portal/src/app/masterdata/page-management/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
-| `/masterdata/page-management/add` | `masterdata-page-management-add` | `apps/admin-portal/src/app/masterdata/page-management/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/page-management/detail/[id]` | `masterdata-page-management-detail-id` | `apps/admin-portal/src/app/masterdata/page-management/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/page-management/add` | `masterdata-page-management-add` | `apps/admin-portal/src/app/masterdata/page-management/add/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/page-management/add route onto the refactored PageManagementForm, standardizing the form layout and interaction with shared Box, Button, Input, and Table primitives. |
+| `/masterdata/page-management/detail/[id]` | `masterdata-page-management-detail-id` | `apps/admin-portal/src/app/masterdata/page-management/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/page-management/detail/[id] route onto the refactored PageManagementForm, standardizing the form layout and interaction with shared Box, Button, Input, and Table primitives. |
 | `/masterdata/partner-management` | `masterdata-partner-management` | `apps/admin-portal/src/app/masterdata/partner-management/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/masterdata/partner-management/add` | `masterdata-partner-management-add` | `apps/admin-portal/src/app/masterdata/partner-management/add/page.tsx` | NO | NO | `PASS` | 2026-04-21 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/partner-management/add route onto the refactored PartnerManagementForm, standardizing the form layout and interaction with shared Box, Button, Input, Select, and Combobox primitives. |
 | `/masterdata/partner-management/detail/[id]` | `masterdata-partner-management-detail-id` | `apps/admin-portal/src/app/masterdata/partner-management/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-21 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/partner-management/detail/[id] route onto the refactored PartnerManagementForm and refactored AssignPlan component, standardizing the form layout and interaction with shared Box, Button, DataTable, Dialog, Input, Select, Combobox, Skeleton, and Tabs primitives. |
@@ -1011,14 +1011,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-page-management-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-22`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/page-management/add` route onto the refactored `PageManagementForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Input`, and `Table` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing page creation logic.
 
 ### /masterdata/page-management/detail/[id]
 
@@ -1026,14 +1026,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-page-management-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-22`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/page-management/detail/[id]` route onto the refactored `PageManagementForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Input`, and `Table` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing page update and permission management logic.
 
 ### /masterdata/partner-management
 

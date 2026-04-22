@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { usePageManagementForm } from "@/hooks/usePageManagementForm.hooks";
-import PageManagementForm from "@/components/forms/PageManagementForm";
+import PageManagementForm from '@/components/forms/page-management-form';
+import { usePageManagementForm } from '@/hooks/usePageManagementForm.hooks';
 
 export default function AddPage() {
   const {
@@ -16,7 +16,7 @@ export default function AddPage() {
     handleAddPermission,
     handleDeletePermission,
     handleChangePermission,
-  } = usePageManagementForm("create");
+  } = usePageManagementForm('create');
 
   return (
     <PageManagementForm

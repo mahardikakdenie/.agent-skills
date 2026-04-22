@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { usePageManagementForm } from "@/hooks/usePageManagementForm.hooks";
-import PageManagementForm from "@/components/forms/PageManagementForm";
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+import PageManagementForm from '@/components/forms/page-management-form';
+import { usePageManagementForm } from '@/hooks/usePageManagementForm.hooks';
 
 export default function EditPage() {
   const params = useParams();
-  const pageId =
-    typeof params.id === "string" ? params.id : params.id?.[0] || "";
+  const pageId = typeof params.id === 'string' ? params.id : params.id?.[0] || '';
 
   const {
     handleSubmit,
@@ -24,7 +24,7 @@ export default function EditPage() {
     handleDeletePermission,
     handleChangePermission,
     goBack,
-  } = usePageManagementForm("edit");
+  } = usePageManagementForm('edit');
 
   useEffect(() => {
     if (pageId) {
