@@ -1516,3 +1516,18 @@ Impact:
 
 - Downstream apps can now implement responsive date picking (popover on desktop, drawer on mobile) using a single `DatePicker` component, reducing the need for local wrapper logic.
 - Customizations to the date picker trigger (icons, slot classes) are now canonically supported without needing overriding global CSS.
+
+---
+
+## 2026-04-22 - Textarea Sizing Normalization
+
+Changed:
+
+- Promoted `Textarea` into the shared field-shell size family, adding support for `xs | sm | md | lg` (default `md`).
+- Removed `Textarea` from the frozen sizing-exception set in `02-api-conventions.md`, `13-implementation-batches.md`, and the change log.
+- Realigned `packages/ui/src/Textarea` implementation so its height, padding, and typography now scale with the requested `size` prop while preserving native row-driven height behavior.
+
+Impact:
+
+- The shared field-shell density contract now covers the entire multiline and single-line text entry family (`Input`, `Textarea`), plus selection (`Select`, `Combobox`) and date pickers.
+- Downstream apps can now use the same `size` vocabulary across the full field-entry surface without local CSS overrides for textarea density.

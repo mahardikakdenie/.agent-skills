@@ -185,7 +185,7 @@ Story group: `Buttons`
 Sizing note:
 
 - `Button` keeps the shared action-control size family `xs | sm | md | lg | xl`, default `md`.
-- `xs`, `sm`, `md`, and `lg` align by height with the shared field-shell family used by `Input`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, and `MonthPicker`, so adjacent action and field controls do not need compensating size overrides.
+- `xs`, `sm`, `md`, and `lg` align by height with the shared field-shell family used by `Input`, `Textarea`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, and `MonthPicker`, so adjacent action and field controls do not need compensating size overrides.
 - `xl` remains the action-only extension for higher-emphasis layouts and does not imply a matching field-shell size.
 
 ---
@@ -232,9 +232,9 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 
 Sizing-family note:
 
-- The shared field-shell size family now covers `Input`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, and `MonthPicker` with `xs | sm | md | lg`, default `md`.
+- The shared field-shell size family now covers `Input`, `Textarea`, `Select`, `Combobox`, `DatePicker`, `DateRangePicker`, and `MonthPicker` with `xs | sm | md | lg`, default `md`.
 - `OtpInput` remains a separate segmented-input size family with `sm | md | lg`, default `md`.
-- `Textarea`, `Pagination`, `Dialog`, and `Calendar` remain frozen sizing exceptions in this amendment.
+- `Pagination`, `Dialog`, and `Calendar` remain frozen sizing exceptions in this amendment.
 
 Focus-family note:
 
@@ -251,9 +251,10 @@ Story group: `Inputs`
 ```ts
 export interface TextareaProps extends Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-  'onChange'
+  'onChange' | 'size'
 > {
   variant?: 'outline' | 'shadow' | 'ghost' | 'default'; // default: 'outline'
+  size?: 'xs' | 'sm' | 'md' | 'lg'; // default: 'md'
   error?: string | boolean;
   disabled?: boolean;
   required?: boolean;
@@ -269,8 +270,9 @@ export interface TextareaProps extends Omit<
 
 Sizing note:
 
-- `Textarea` has no public `size` prop in the shared contract.
-- Height remains row-driven through native textarea behavior and consumer-provided `rows`.
+- `Textarea` now supports the standard field-shell `size` family (`xs`, `sm`, `md`, `lg`) for height, padding, and typography scaling.
+- Minimum height and vertical padding scale with the requested `size`.
+- Height remains adjustable through native textarea behavior and consumer-provided `rows`.
 
 Focus note:
 

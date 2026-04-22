@@ -23,6 +23,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
       variant = 'outline',
+      size = 'md',
       error = false,
       disabled = false,
       required = false,
@@ -118,6 +119,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             aria-describedby={describedBy}
             className={textareaElementVariants({
               variant,
+              size,
               invalid: hasError,
               clearable: showClearButton,
             })}

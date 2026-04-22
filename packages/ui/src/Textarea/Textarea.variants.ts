@@ -15,7 +15,7 @@ export const textareaControlVariants = cva('relative w-full');
 
 export const textareaElementVariants = cva(
   [
-    'min-h-24 w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm text-foreground',
+    'w-full resize-y rounded-md border bg-background text-foreground',
     'transition-colors motion-reduce:transition-none',
     'placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60',
     directFieldShellFocus.base,
@@ -23,6 +23,12 @@ export const textareaElementVariants = cva(
   {
     variants: {
       variant: fieldVariantOptions,
+      size: {
+        xs: 'min-h-16 px-2 py-1.5 text-xs',
+        sm: 'min-h-20 px-2.5 py-2 text-sm',
+        md: 'min-h-24 px-3 py-2.5 text-sm',
+        lg: 'min-h-32 px-4 py-3 text-base',
+      },
       invalid: {
         true: directFieldShellFocus.invalid,
         false: '',
@@ -34,6 +40,7 @@ export const textareaElementVariants = cva(
     },
     defaultVariants: {
       variant: 'outline',
+      size: 'md',
       invalid: false,
       clearable: false,
     },
