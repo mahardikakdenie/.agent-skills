@@ -24,15 +24,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Combobox,
 } from '@repo/ui';
 
 import { createExportUsersTableColumns } from '@/components/tableConfig/exportUserTableConfig';
-import { SelectAutocomplete } from '@/components/ui/Fields/SelectAutocomplete';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useExportUsers } from '@/hooks/useExportUsers.hooks';
+import { useHasMounted } from '@/hooks/useHasMounted';
 import { cn } from '@/lib/utils';
 
 const ExportUsersPage = () => {
+  const hasMounted = useHasMounted();
   const [isFilterDialogOpen, setIsFilterDialogOpen] = React.useState(false);
   const {
     customers,
@@ -249,80 +251,57 @@ const ExportUsersPage = () => {
                 </Box>
 
                 {selectedFilter === 'channel_id' && (
-                  <Box className="relative">
-                    <Box className="w-full">
-                      <Select value={channel} onValueChange={setChannel}>
-                        <SelectTrigger className="h-11 border-gray-200">
-                          <SelectValue placeholder="Select Channel" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {isLoadingFilters ? (
-                              <SelectItem value="loading" disabled>
-                                Loading...
-                              </SelectItem>
-                            ) : (
-                              channelList.map((item: any, index: number) => (
-                                <SelectItem key={index} value={item.id}>
-                                  {item.name}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </Box>
-                  </Box>
+                  <Combobox
+                    value={channel}
+                    onValueChange={setChannel}
+                    options={channelList
+                      .filter((item: any) => item?.id)
+                      .map((item: any) => ({
+                        value: String(item.id),
+                        label: String(item.name || 'Unknown Channel'),
+                      }))}
+                    placeholder="Select Channel"
+                    loading={isLoadingFilters}
+                    className="w-full"
+                    triggerClassName="h-11 border-gray-200"
+                  />
                 )}
 
                 {selectedFilter === 'product_id' && (
-                  <Box className="relative">
-                    <Box className="w-full">
-                      <Select value={product} onValueChange={setProduct}>
-                        <SelectTrigger className="h-11 border-gray-200">
-                          <SelectValue placeholder="Select Product" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {isLoadingFilters ? (
-                              <SelectItem value="loading" disabled>
-                                Loading...
-                              </SelectItem>
-                            ) : (
-                              productList.map((item: any, index: number) => (
-                                <SelectItem key={index} value={item.id}>
-                                  {item.name}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </Box>
-                  </Box>
+                  <Combobox
+                    value={product}
+                    onValueChange={setProduct}
+                    options={productList
+                      .filter((item: any) => item?.id)
+                      .map((item: any) => ({
+                        value: String(item.id),
+                        label: String(item.name || 'Unknown Product'),
+                      }))}
+                    placeholder="Select Product"
+                    loading={isLoadingFilters}
+                    className="w-full"
+                    triggerClassName="h-11 border-gray-200"
+                  />
                 )}
 
                 {selectedFilter === 'plan_id' && (
-                  <Box className="relative">
-                    <Box className="w-full">
-                      <SelectAutocomplete
-                        value={plan}
-                        onValueChange={setPlan}
-                        options={planList.map((item: any) => ({
-                          value: item.id,
-                          label: item.name,
-                        }))}
-                        placeholder="Select Plan"
-                        searchPlaceholder="Search plans..."
-                        onSearchChange={handlePlanSearch}
-                        searchValue={planSearchQuery}
-                        loading={isLoadingFilters && !planSearchQuery}
-                        isSearching={isSearchingPlans}
-                        triggerClassName="h-11 border-gray-200"
-                        emptyText="No plans found"
-                      />
-                    </Box>
-                  </Box>
+                  <Combobox
+                    value={plan}
+                    onValueChange={setPlan}
+                    options={planList
+                      .filter((item: any) => item?.id)
+                      .map((item: any) => ({
+                        value: String(item.id),
+                        label: String(item.name || 'Unknown Plan'),
+                      }))}
+                    placeholder="Select Plan"
+                    searchPlaceholder="Search plans..."
+                    onSearchValueChange={handlePlanSearch}
+                    searchValue={planSearchQuery}
+                    loading={(isLoadingFilters && !planSearchQuery) || isSearchingPlans}
+                    className="w-full"
+                    triggerClassName="h-11 border-gray-200"
+                  />
                 )}
 
                 {selectedFilter === 'frequent_buyers' && (
