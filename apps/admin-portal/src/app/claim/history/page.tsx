@@ -3,10 +3,11 @@
 import emptyStateSearchPrompt from '@public/images/empty-state-search-prompt.svg';
 import Image from 'next/image';
 import React from 'react';
-import { Search } from 'react-feather';
 
-import { Input } from '@repo/ui';
 import {
+  Box,
+  Combobox,
+  DataTable,
   Select,
   SelectContent,
   SelectGroup,
@@ -16,7 +17,7 @@ import {
 } from '@repo/ui';
 
 import { createClaimHistoryTableColumns } from '@/components/tableConfig/claimHistoryTableConfig';
-import { DataTable } from '@/components/ui/DataTable';
+import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { useClaimHistory } from '@/hooks/useClaimHistory.hooks';
 import { formatMoney } from '@/lib/formatter';
 
@@ -39,20 +40,30 @@ export default function ClaimHistoryPage() {
     handleSelectPolicy,
   } = useClaimHistory();
 
-  const claimHistoryTableColumns = React.useMemo(() => createClaimHistoryTableColumns(), []);
-
-  const renderPlan = (plans: { planId: string; planName: string }[]) => {
-    if (plans.length === 0) return null;
-    return (
-      <SelectGroup>
-        {plans.map((plan, index) => (
-          <SelectItem key={index} value={plan.planId}>
-            {plan.planName}
-          </SelectItem>
-        ))}
-      </SelectGroup>
-    );
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Approved':
+      case 'Paid':
+        return 'text-[#00AB4F]';
+      case 'Pending':
+        return 'text-[#CC9B36]';
+      case 'Rejected':
+      case 'Declined':
+        return 'text-[#E83F3F]';
+      default:
+        return 'text-[#016DA1]';
+    }
   };
+
+  const claimHistoryTableColumns = React.useMemo(
+    () =>
+      createClaimHistoryTableColumns({
+        page: 1,
+        rowsPerPage: 1000,
+        getStatusColor,
+      }),
+    [],
+  );
 
   const renderPolicy = (policies: { policyId: string; policyNo: string }[]) => {
     if (policies.length === 0) return null;
@@ -68,48 +79,48 @@ export default function ClaimHistoryPage() {
   };
 
   const renderEmptyState = () => (
-    <div className="w-full bg-white rounded-xl p-4">
-      <div className="flex flex-col gap-4 items-center justify-center py-14">
+    <Box className="w-full rounded-xl bg-white p-4">
+      <Box className="flex flex-col items-center justify-center gap-4 py-14">
         <Image alt="no data" src={emptyStateSearchPrompt} width={200} />
-        <div className="text-[#939597] text-base">
+        <Box className="text-base text-[#939597]">
           Enter NIK / Passport / Claim Number to view claim history
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex flex-wrap justify-start pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">Claim History</h1>
-      </div>
+    <Box className="flex w-full flex-col p-4 md:p-6">
+      <Box className="flex items-center justify-start pb-4 flex-wrap">
+        <Box as="h1" className="mt-2 w-full text-2xl font-bold text-black sm:w-auto">
+          Claim History
+        </Box>
+      </Box>
 
-      <div className="flex bg-white rounded-xl gap-4 mb-3 p-6">
-        <div className="flex w-full flex-col">
-          <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
+      <Box className="mb-3 flex gap-4 rounded-xl bg-white p-6">
+        <Box className="flex w-full flex-col">
+          <Box className="mb-1.5 whitespace-nowrap text-xs font-medium">
             NIK / Passport / Claim Number
-          </div>
-          <div className="mb-1.5">
-            <Input
-              type="text"
-              placeholder="Search by Claim ID"
-              aria-label="Search claim history by claim ID"
+          </Box>
+          <Box className="mb-1.5">
+            <DebouncedSearchInput
               value={searchData}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="h-10"
-              rightIcon={<Search aria-hidden="true" className="h-4 w-4 text-[#016da1]" />}
+              placeholder="Search by Claim ID"
+              ariaLabel="Search claim history by claim ID"
+              onDebouncedChange={handleSearch}
+              className="h-10 pr-1.5"
             />
-          </div>
+          </Box>
           {!isSearchParamValid && (
-            <p className="text-[#E83F3F] text-xs">
+            <Box as="p" className="text-xs text-[#E83F3F]">
               Please double-check your ID card, NIK, passport, or claim number
-            </p>
+            </Box>
           )}
-        </div>
+        </Box>
 
-        <div className="flex w-full flex-col">
-          <div className="text-xs mb-1.5 font-medium">Policy Number</div>
-          <div>
+        <Box className="flex w-full flex-col">
+          <Box className="mb-1.5 text-xs font-medium">Policy Number</Box>
+          <Box>
             <Select
               value={selectedPolicyId}
               onValueChange={handleSelectPolicy}
@@ -122,62 +133,60 @@ export default function ClaimHistoryPage() {
                 {!disableSelectPolicy && renderPolicy(claimHistoryData?.policies ?? [])}
               </SelectContent>
             </Select>
-          </div>
-        </div>
+          </Box>
+        </Box>
 
-        <div className="flex w-full flex-col">
-          <div className="text-xs mb-1.5 font-medium">Plan Name</div>
-          <div>
-            <Select
+        <Box className="flex w-full flex-col">
+          <Box className="mb-1.5 text-xs font-medium">Plan Name</Box>
+          <Box>
+            <Combobox
+              options={(claimHistoryData?.plans ?? []).map((plan) => ({
+                label: plan.planName,
+                value: plan.planId,
+              }))}
               value={selectedPlanId}
               onValueChange={handleSelectPlan}
               disabled={disableSelectPlan}
-            >
-              <SelectTrigger className="h-10">
-                <SelectValue placeholder={disableSelectPlan ? '-' : 'All Plan'} />
-              </SelectTrigger>
-              <SelectContent>
-                {!disableSelectPlan && renderPlan(claimHistoryData?.plans ?? [])}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+              placeholder={disableSelectPlan ? '-' : 'All Plan'}
+              triggerClassName="h-10"
+            />
+          </Box>
+        </Box>
+      </Box>
 
       {claimHistoryData?.data?.length ? (
-        <div className="w-full bg-white rounded-xl p-4">
-          <div className="bg-white flex flex-wrap flex-start gap-16 shadow p-4 mb-6">
-            <div className="flex">
-              <div className="mr-3 text-base">Claim Limit</div>
-              <div className="font-bold text-[#016DA1]">
+        <Box className="w-full rounded-xl bg-white p-4">
+          <Box className="mb-6 flex flex-start flex-wrap gap-16 p-4 shadow bg-white">
+            <Box className="flex">
+              <Box className="mr-3 text-base">Claim Limit</Box>
+              <Box className="font-bold text-[#016DA1]">
                 {formatMoney(Number(claimHistoryData?.totalLimit))}
-              </div>
-            </div>
-            <div className="flex">
-              <div className="mr-3 text-base">Total Paid</div>
-              <div className="font-bold text-[#016DA1]">
+              </Box>
+            </Box>
+            <Box className="flex">
+              <Box className="mr-3 text-base">Total Paid</Box>
+              <Box className="font-bold text-[#016DA1]">
                 {formatMoney(Number(claimHistoryData?.totalPaid))}
-              </div>
-            </div>
-            <div className="flex">
-              <div className="mr-3 text-base">Remaining Claim Limit</div>
-              <div className="font-bold text-[#016DA1]">
+              </Box>
+            </Box>
+            <Box className="flex">
+              <Box className="mr-3 text-base">Remaining Claim Limit</Box>
+              <Box className="font-bold text-[#016DA1]">
                 {formatMoney(Number(claimHistoryData?.remainingClaimLimit))}
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
+          </Box>
 
           <DataTable
             loading={isLoading}
             data={claimHistoryData.data}
             columns={claimHistoryTableColumns}
             className="claim-history-table"
-            noDataText="No claim history available"
           />
-        </div>
+        </Box>
       ) : (
         renderEmptyState()
       )}
-    </div>
+    </Box>
   );
 }

@@ -399,3 +399,17 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Combobox, Dialog, Input, and Table primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the technical resolution of the reported "Maximum update depth exceeded" error and the successful refactor onto shared primitives. The fix has been verified through code analysis of the render cycle and state dependencies.`
 - Tracker impact: `Batch 9 page tracker should now treat both /masterdata/currency/add and /masterdata/currency/detail/[id] as PASS because the stability issues have been resolved and the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /claim/history Route Refactor - 2026-04-23
+
+- Route focus: `/claim/history`
+- Migration intent: `Refactor the claim history route onto the current shared primitive stack, standardizing the search filters, summary boxes, and table rendering while migrating onto the shared DataTable instance API.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/claim/history/page.tsx` now renders the route shell with `Box`, replaces bespoke plan selection with shared `Combobox`, and adopts shared `Select` for policy number selection.
+  - The route now mounts the shared `@repo/ui` `DataTable` directly, featuring a consolidated summary section for Claim Limit, Total Paid, and Remaining Claim Limit using `Box` composition and `formatMoney` primitives.
+  - `apps/admin-portal/src/components/tableConfig/claimHistoryTableConfig.tsx` defines the history list columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, loading skeletons, badge-style status rendering via `cn` and `getStatusColor`, and right-aligned currency formatting using `formatMoneyClaim`.
+  - Implemented a cleaner empty state using shared `Box` and the `empty-state-search-prompt` asset.
+- Files changed (route-focused): [`apps/admin-portal/src/app/claim/history/page.tsx`, `apps/admin-portal/src/components/tableConfig/claimHistoryTableConfig.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Combobox, DataTable, Select, and Skeleton primitives while PageHeader-style title treatment remains local.`
+- Verification note: `This logging update is based on the current claim history route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /claim/history as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
