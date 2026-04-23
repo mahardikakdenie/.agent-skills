@@ -14,6 +14,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
+  Combobox,
   DataTable,
   DateRangePicker,
   Select,
@@ -177,6 +178,15 @@ export default function ReportCampaignPage() {
     ],
   );
 
+  const insuranceComboboxOptions = useMemo(
+    () =>
+      insuranceOptions.map((insurance) => ({
+        label: insurance.name,
+        value: insurance.id,
+      })),
+    [insuranceOptions],
+  );
+
   if (hasAccess !== true) {
     return null;
   }
@@ -280,23 +290,14 @@ export default function ReportCampaignPage() {
             >
               Select Insurance
             </Box>
-            <Select value={selectedInsurance} onValueChange={handleInsuranceChange}>
-              <SelectTrigger
-                id="insurance"
-                className="h-10 w-full border-gray-300 bg-transparent py-2"
-              >
-                <SelectValue placeholder="Select an Insurance" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {insuranceOptions.map((insurance) => (
-                    <SelectItem key={insurance.id} value={insurance.id}>
-                      {insurance.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Combobox
+              id="insurance"
+              value={selectedInsurance}
+              onValueChange={handleInsuranceChange}
+              options={insuranceComboboxOptions}
+              placeholder="Select an Insurance"
+              className="w-full"
+            />
           </Box>
         )}
       </Box>
