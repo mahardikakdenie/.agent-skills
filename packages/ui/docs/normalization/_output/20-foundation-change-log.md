@@ -7,6 +7,21 @@
 
 ---
 
+## 2026-04-23 - Label Interaction and Layout Refinement
+
+Changed:
+
+- Realigned `packages/ui/src/Label`, `Input`, `Select`, and `Combobox` label variants to use `cursor-pointer` by default.
+- Applied `w-fit` to the shared label container across the field-entry family to ensure hit-targets stay bounded to the visible caption, preventing accidental focus triggers in adjacent whitespace.
+- Updated `02-api-conventions.md` and `21-adapter-mapping.md` to reflect the new interaction baseline for shared field labels.
+
+Impact:
+
+- Label interaction is now more discoverable and user-friendly by providing visual feedback through the pointer cursor.
+- Label hit-targets are now precisely bounded to their visible content, improving layout resilience and reducing the risk of unintentional field focus when interacting with nearby layout elements.
+
+---
+
 ## 2026-04-23 - Button and Combobox Structure and API Refinement
 
 Changed:

@@ -11,7 +11,7 @@ const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
 export const inputFieldVariants = cva('grid w-full gap-1.5');
 
-export const inputLabelVariants = cva('text-sm font-medium leading-none', {
+export const inputLabelVariants = cva('w-fit cursor-pointer text-sm font-medium leading-none', {
   variants: {
     tone: {
       default: 'text-foreground',

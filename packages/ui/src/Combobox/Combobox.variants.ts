@@ -13,7 +13,7 @@ const embeddedActionFocus = getCompactControlFocusRecipe('embedded');
 
 export const comboboxFieldVariants = cva('flex flex-col gap-1.5');
 
-export const comboboxLabelVariants = cva('text-sm font-medium', {
+export const comboboxLabelVariants = cva('w-fit cursor-pointer text-sm font-medium', {
   variants: {
     tone: {
       default: 'text-foreground',

@@ -2,7 +2,7 @@
 
 > Batch: Batch 2 - Design System Foundation
 > Branch: feat/ui
-> Run date: 2026-04-22
+> Run date: 2026-04-23
 > Inputs: 27 per-app baseline summaries from packages/ui/docs/normalization/per-app
 > Required references read: migration-batch-prompts.md (Batch 2), 02-design-system-foundation.md, 06-component-standards.md
 > Current @repo/ui export surface: Box only

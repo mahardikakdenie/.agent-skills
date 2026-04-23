@@ -13,7 +13,7 @@ export const selectFieldVariants = cva('grid w-full gap-1.5');
 
 export const selectControlVariants = cva('relative w-full');
 
-export const selectLabelVariants = cva('text-sm font-medium leading-none', {
+export const selectLabelVariants = cva('w-fit cursor-pointer text-sm font-medium leading-none', {
   variants: {
     tone: {
       default: 'text-foreground',
