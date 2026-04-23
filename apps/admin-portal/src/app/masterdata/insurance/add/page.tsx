@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useInsuranceForm } from "@/hooks/useInsuranceForm.hooks";
-import { InsuranceForm } from "@/components/forms/InsuranceForm";
+import { InsuranceForm } from '@/components/forms/insurance-form';
+import { useInsuranceForm } from '@/hooks/useInsuranceForm.hooks';
 
 export default function AddInsurance() {
   const {
@@ -17,7 +17,7 @@ export default function AddInsurance() {
     handleSave,
     setShowAlert,
     goBack,
-  } = useInsuranceForm("create");
+  } = useInsuranceForm('create');
 
   return (
     <InsuranceForm
@@ -28,7 +28,7 @@ export default function AddInsurance() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      isEdit={false}
+      mode="create"
       isLoadingDetail={isLoadingDetail}
       isSaving={isSaving}
       onSave={handleSave}

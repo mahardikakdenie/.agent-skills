@@ -443,3 +443,20 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box, Button, DataTable, and Skeleton primitives while extending only app-local table configuration and pagination styling.`
 - Verification note: `This logging update is based on the current broker fee route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /finance/broker-fee as PASS because the route-local migration has been completed.`
+
+## Batch 9 - /masterdata/insurance/add and /masterdata/insurance/detail/[id] Route Refactor - 2026-04-23
+
+- Route focus: `/masterdata/insurance/add`, `/masterdata/insurance/detail/[id]`
+- Migration intent: `Refactor the insurance add and detail routes onto the current shared primitive stack, standardizing the form layout and interaction while preserving existing insurance creation and update logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/insurance/add/page.tsx` and `apps/admin-portal/src/app/masterdata/insurance/detail/[id]/page.tsx` now use the refactored `InsuranceForm` component.
+  - `apps/admin-portal/src/components/forms/insurance-form/index.tsx` replaces the legacy `apps/admin-portal/src/components/forms/InsuranceForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Input` primitives.
+  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and restricts label clickable areas to the text only using `inline-block`.
+  - Adopts `ContentLoadingWrapper` for consistent loading states during data fetching and submission.
+  - Implements a shared `Dialog`-based success/error feedback flow and integrates standardized breadcrumbs.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/insurance/add/page.tsx`, `apps/admin-portal/src/app/masterdata/insurance/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/insurance-form/index.tsx`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/InsuranceForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Dialog, and Input primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current insurance add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat both /masterdata/insurance/add and /masterdata/insurance/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+

@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useInsuranceForm } from "@/hooks/useInsuranceForm.hooks";
-import { InsuranceForm } from "@/components/forms/InsuranceForm";
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { InsuranceForm } from '@/components/forms/insurance-form';
+import { useInsuranceForm } from '@/hooks/useInsuranceForm.hooks';
 
 export default function EditInsuranceProduct() {
   const { id } = useParams();
@@ -22,7 +23,7 @@ export default function EditInsuranceProduct() {
     setShowAlert,
     goBack,
     loadInsuranceDetail,
-  } = useInsuranceForm("edit");
+  } = useInsuranceForm('edit');
 
   useEffect(() => {
     if (id) {
@@ -39,7 +40,7 @@ export default function EditInsuranceProduct() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      isEdit={true}
+      mode="edit"
       isLoadingDetail={isLoadingDetail}
       isSaving={isSaving}
       onSave={handleSave}
