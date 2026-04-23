@@ -2,7 +2,7 @@ import { cva } from 'class-variance-authority';
 
 export const labelVariants = cva(
   [
-    'inline-flex max-w-full items-start gap-1.5 select-none text-sm font-medium leading-5',
+    'inline-flex max-w-full cursor-pointer items-start gap-1.5 select-none text-sm font-medium leading-5',
     'transition-colors motion-reduce:transition-none',
     'peer-disabled:cursor-not-allowed peer-disabled:text-muted-foreground peer-disabled:opacity-70',
   ].join(' '),

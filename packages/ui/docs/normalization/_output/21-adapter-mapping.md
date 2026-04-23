@@ -2,8 +2,8 @@
 
 > Batch: Batch 4 - Build Shared Components
 > Branch: `feat/ui`
-> Run date: 2026-04-22
-> Last reconciled: 2026-04-22
+> Run date: 2026-04-23
+> Last reconciled: 2026-04-23
 
 ## Box
 
@@ -223,6 +223,7 @@ Direct adoption guidance:
 
 - Legacy field captions, checkbox labels, radio labels, and simple form-copy wrappers map to `Label`.
 - Existing `htmlFor` or `for` linkage should map directly to `htmlFor`; visual required suffixes map to the shared `required` prop.
+- Label interaction now includes `cursor-pointer` and `w-fit` by default to improve focus discoverability and maintain a bounded hit-target.
 - Local muted or invalid caption styling should normalize to `tone="muted"` or `tone="destructive"` instead of app-specific color classes.
 
 Keep local:

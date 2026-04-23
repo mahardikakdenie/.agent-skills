@@ -2,7 +2,7 @@
 
 > **Batch:** Batch 2 - Design System Foundation
 > **Branch:** `feat/ui`
-> **Run date:** 2026-04-22
+> **Run date:** 2026-04-23
 > **Source:** `06-component-standards.md 2 Prop Naming Conventions`
 > **Breaking change rule:** After Batch 3 begins, any change to canonical prop names or variant values requires a Foundation Amendment PR.
 
@@ -242,6 +242,10 @@ Focus-family note:
 - The visible focus treatment belongs on the outer shell via `focus-within`.
 - The approved recipe is border emphasis plus a subtle near-shell halo. Detached `ring-offset-2` halos are no longer the canonical target for this family.
 
+Interaction note:
+
+- `Input` label variants now use `cursor-pointer` and `w-fit` by default to improve focus discoverability and maintain a bounded hit-target.
+
 Story group: `Inputs`
 
 ---
@@ -418,6 +422,10 @@ Focus note:
 
 - `Select` belongs to the `field-shell-direct` focus family.
 - Open state may reinforce border emphasis, but it must not layer a second heavy focus ring on top of the trigger's keyboard focus treatment.
+
+Interaction note:
+
+- `Select` label variants now use `cursor-pointer` and `w-fit` by default to improve focus discoverability and maintain a bounded hit-target.
 
 Layout note:
 
@@ -969,6 +977,10 @@ Focus note:
 - `Combobox` belongs to the `field-shell-direct` focus family.
 - Open state may not stack a second heavy ring on top of the trigger's keyboard focus treatment.
 
+Interaction note:
+
+- `Combobox` label variants now use `cursor-pointer` and `w-fit` by default to improve focus discoverability and maintain a bounded hit-target.
+
 Contract note:
 
 - Search text may stay internal or be controlled through `searchValue`; parent-owned async search still flows through `onSearchValueChange`.
@@ -1097,6 +1109,11 @@ export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> 
 ```
 
 Story group: `Inputs`
+
+Interaction note:
+
+- `Label` now uses `cursor-pointer` by default, improving the discoverability of linked field focus.
+- The shared label variants use `w-fit` to ensure the hit-target remains bounded to the visible text, preventing layout breaks and accidental clicks in adjacent whitespace.
 
 ---
 
