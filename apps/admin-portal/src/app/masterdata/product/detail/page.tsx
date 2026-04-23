@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useProductForm } from "@/hooks/useProductForm.hooks";
-import { ProductForm } from "@/components/forms/ProductForm";
+import { useEffect } from 'react';
+
+import { ProductForm } from '@/components/forms/product-form';
+import { useProductForm } from '@/hooks/useProductForm.hooks';
 
 export default function EditProduct() {
   const {
@@ -29,12 +30,12 @@ export default function EditProduct() {
     setShowAlert,
     goBack,
     loadProductDetail,
-  } = useProductForm("edit");
+  } = useProductForm('edit');
 
   useEffect(() => {
     const searchParam = new URLSearchParams(window.location.search);
-    const insuranceId = searchParam.get("insurance-id") ?? "";
-    const categoryId = searchParam.get("category-id") ?? "";
+    const insuranceId = searchParam.get('insurance-id') ?? '';
+    const categoryId = searchParam.get('category-id') ?? '';
 
     if (categoryId && insuranceId) {
       loadProductDetail(categoryId, insuranceId);
@@ -55,7 +56,7 @@ export default function EditProduct() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      isEdit={true}
+      mode="edit"
       isLoadingCategories={isLoadingCategories}
       isLoadingInsurances={isLoadingInsurances}
       isLoadingProducts={isLoadingProducts}

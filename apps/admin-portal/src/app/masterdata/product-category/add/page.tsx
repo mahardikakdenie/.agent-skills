@@ -26,7 +26,7 @@ export default function AddProductCategoryPage() {
       watch={watch}
       showAlert={showAlert}
       errorMessage={errorMessage}
-      isEdit={false}
+      mode="create"
       isLoadingDetail={isLoadingDetail}
       isSaving={isSaving}
       onSave={handleSave}

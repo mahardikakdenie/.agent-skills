@@ -19,6 +19,7 @@ import { ContentLoadingWrapper } from '@/components/ui/loading';
 import AppURL from '@/constants/app-url.const';
 
 interface ProductCategoryFormProps {
+  mode: 'create' | 'edit';
   handleSubmit: any;
   control: any;
   errors: any;
@@ -26,7 +27,6 @@ interface ProductCategoryFormProps {
 
   showAlert: boolean;
   errorMessage: string;
-  isEdit: boolean;
 
   isLoadingDetail: boolean;
   isSaving: boolean;
@@ -37,19 +37,21 @@ interface ProductCategoryFormProps {
 }
 
 export function ProductCategoryForm({
+  mode,
   handleSubmit,
   control,
   errors,
   watch,
   showAlert,
   errorMessage,
-  isEdit,
   isLoadingDetail,
   isSaving,
   onSave,
   onBack,
   onCloseAlert,
 }: ProductCategoryFormProps) {
+  const isEdit = mode === 'edit';
+
   const breadcrumbs = [
     { label: 'Product Category', href: AppURL.masterdataProductCategory },
     { label: isEdit ? 'Update Product Category' : 'Create Product Category', isCurrentPage: true },
@@ -128,6 +130,7 @@ export function ProductCategoryForm({
 
           <Box className="flex flex-col w-full p-4 md:p-6 gap-6">
             <Box className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-x-6 gap-y-4 shadow-sm border border-slate-100">
+              <Box className="text-primary font-bold sm:col-span-2">Product Category Details</Box>
               <Box>
                 <Box
                   as="label"
@@ -147,8 +150,11 @@ export function ProductCategoryForm({
                     <Input
                       id="name"
                       type="text"
+                      size="lg"
                       placeholder="Enter category name"
-                      className="w-full h-12 border-slate-300 bg-transparent"
+                      className={`bg-transparent ${
+                        errors.name ? 'border-red-500' : 'border-slate-300'
+                      }`}
                       {...field}
                     />
                   )}
@@ -179,8 +185,11 @@ export function ProductCategoryForm({
                     <Input
                       id="icon"
                       type="text"
+                      size="lg"
                       placeholder="Enter icon URL"
-                      className="w-full h-12 border-slate-300 bg-transparent"
+                      className={`bg-transparent ${
+                        errors.icon ? 'border-red-500' : 'border-slate-300'
+                      }`}
                       {...field}
                     />
                   )}

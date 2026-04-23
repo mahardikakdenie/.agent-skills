@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 46 |
+| PASS | 48 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 10 |
-| NOT_STARTED | 57 |
+| NOT_STARTED | 55 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -110,10 +110,10 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/partner-management/detail/[id]` | `masterdata-partner-management-detail-id` | `apps/admin-portal/src/app/masterdata/partner-management/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-21 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/partner-management/detail/[id] route onto the refactored PartnerManagementForm and refactored AssignPlan component, standardizing the form layout and interaction with shared Box, Button, DataTable, Dialog, Input, Select, Combobox, Skeleton, and Tabs primitives. |
 | `/masterdata/product` | `masterdata-product` | `apps/admin-portal/src/app/masterdata/product/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API and standardize the filter and table chrome on shared primitives. |
 | `/masterdata/product-category` | `masterdata-product-category` | `apps/admin-portal/src/app/masterdata/product-category/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
-| `/masterdata/product-category/add` | `masterdata-product-category-add` | `apps/admin-portal/src/app/masterdata/product-category/add/page.tsx` | NO | NO | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product-category/add route onto the refactored ProductCategoryForm, standardizing the form layout and interaction with shared Box, Button, Dialog, and Input primitives. |
-| `/masterdata/product-category/detail/[id]` | `masterdata-product-category-detail-id` | `apps/admin-portal/src/app/masterdata/product-category/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product-category/detail/[id] route onto the refactored ProductCategoryForm, standardizing the form layout and interaction with shared Box, Button, Dialog, and Input primitives. |
-| `/masterdata/product/add` | `masterdata-product-add` | `apps/admin-portal/src/app/masterdata/product/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/product/detail` | `masterdata-product-detail` | `apps/admin-portal/src/app/masterdata/product/detail/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/product-category/add` | `masterdata-product-category-add` | `apps/admin-portal/src/app/masterdata/product-category/add/page.tsx` | NO | NO | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product-category/add route onto the refactored ProductCategoryForm, standardizing the form layout and interaction with shared Box, Button, Dialog, and Input primitives. Recent refinements aligned label and input semantics with the current Box-based stack. |
+| `/masterdata/product-category/detail/[id]` | `masterdata-product-category-detail-id` | `apps/admin-portal/src/app/masterdata/product-category/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product-category/detail/[id] route onto the refactored ProductCategoryForm, standardizing the form layout and interaction with shared Box, Button, Dialog, and Input primitives. Recent refinements aligned label and input semantics with the current Box-based stack. |
+| `/masterdata/product/add` | `masterdata-product-add` | `apps/admin-portal/src/app/masterdata/product/add/page.tsx` | NO | NO | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product/add route onto the refactored ProductForm, standardizing the form layout and interaction with shared Box, Button, Combobox, Dialog, Input, and Table primitives. |
+| `/masterdata/product/detail` | `masterdata-product-detail` | `apps/admin-portal/src/app/masterdata/product/detail/page.tsx` | NO | NO | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/product/detail route onto the refactored ProductForm, standardizing the form layout and interaction with shared Box, Button, Combobox, Dialog, Input, and Table primitives. |
 | `/masterdata/role` | `masterdata-role` | `apps/admin-portal/src/app/masterdata/role/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the table chrome on shared primitives, and add compact pagination and explicit empty-state handling while preserving existing add and detail navigation. |
 | `/masterdata/role/add` | `masterdata-role-add` | `apps/admin-portal/src/app/masterdata/role/add/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/role/add route onto the refactored RoleForm, standardizing the form layout and interaction with shared Box, Button, Input, Combobox, Checkbox, Table, and Textarea primitives. |
 | `/masterdata/role/detail/[id]` | `masterdata-role-detail-id` | `apps/admin-portal/src/app/masterdata/role/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/role/detail/[id] route onto the refactored RoleForm, standardizing the form layout and interaction with shared Box, Button, Input, Combobox, Checkbox, Table, and Textarea primitives. |
@@ -1117,13 +1117,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `NO`
 - DataTable dependency: `NO`
 - Status: `PASS`
-- Last checked: `2026-04-20`
+- Last checked: `2026-04-23`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product-category/add` route onto the refactored `ProductCategoryForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Input` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product category creation logic.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product-category/add` route onto the refactored `ProductCategoryForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Input` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product category creation logic. Recent refinements aligned label and input semantics with the current Box-based stack.
 
 ### /masterdata/product-category/detail/[id]
 
@@ -1132,13 +1132,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Smoke route: `NO`
 - DataTable dependency: `NO`
 - Status: `PASS`
-- Last checked: `2026-04-20`
+- Last checked: `2026-04-23`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product-category/detail/[id]` route onto the refactored `ProductCategoryForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Input` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product category update logic.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product-category/detail/[id]` route onto the refactored `ProductCategoryForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Input` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product category update logic. Recent refinements aligned label and input semantics with the current Box-based stack.
 
 ### /masterdata/product/add
 
@@ -1146,14 +1146,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-product-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-23`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product/add` route onto the refactored `ProductForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Combobox`, `Dialog`, `Input`, and `Table` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product creation logic.
 
 ### /masterdata/product/detail
 
@@ -1161,14 +1161,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-product-detail`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-23`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/product/detail` route onto the refactored `ProductForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Combobox`, `Dialog`, `Input`, and `Table` primitives, and standardizes the page header via the local `PageHeader` component while preserving existing product update logic.
 
 ### /masterdata/role
 

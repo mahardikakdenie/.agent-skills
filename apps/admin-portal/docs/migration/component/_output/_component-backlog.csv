@@ -156,7 +156,7 @@
 "PackageForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/product-catalog/package.form.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "ProductCategoryForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/product-category.form.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "ProductCategoryForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/ProductCategoryForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
-"ProductForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/ProductForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
+"ProductForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/product-form/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "RoleForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/role-form/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "SanctionForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/SanctionForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "SourceForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/SourceForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""

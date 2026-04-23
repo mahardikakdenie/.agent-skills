@@ -38,7 +38,7 @@ export default function EditProductCategoryPage() {
       watch={watch}
       showAlert={showAlert}
       errorMessage={errorMessage}
-      isEdit={true}
+      mode="edit"
       isLoadingDetail={isLoadingDetail}
       isSaving={isSaving}
       onSave={handleSave}

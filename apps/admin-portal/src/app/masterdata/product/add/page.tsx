@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useProductForm } from "@/hooks/useProductForm.hooks";
-import { ProductForm } from "@/components/forms/ProductForm";
+import { ProductForm } from '@/components/forms/product-form';
+import { useProductForm } from '@/hooks/useProductForm.hooks';
 
 export default function AddProduct() {
   const {
@@ -27,7 +27,7 @@ export default function AddProduct() {
     handleDeleteProduct,
     setShowAlert,
     goBack,
-  } = useProductForm("create");
+  } = useProductForm('create');
 
   return (
     <ProductForm
@@ -43,7 +43,7 @@ export default function AddProduct() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      isEdit={false}
+      mode="create"
       isLoadingCategories={isLoadingCategories}
       isLoadingInsurances={isLoadingInsurances}
       isLoadingProducts={isLoadingProducts}
