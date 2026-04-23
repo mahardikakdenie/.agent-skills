@@ -39,7 +39,7 @@ export default function ClaimHistoryPage() {
     handleSelectPolicy,
   } = useClaimHistory();
 
-  const claimHistoryTableColumns = createClaimHistoryTableColumns();
+  const claimHistoryTableColumns = React.useMemo(() => createClaimHistoryTableColumns(), []);
 
   const renderPlan = (plans: { planId: string; planName: string }[]) => {
     if (plans.length === 0) return null;

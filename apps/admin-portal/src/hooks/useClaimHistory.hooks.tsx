@@ -139,10 +139,7 @@ export function useClaimHistory(): UseClaimHistoryProps {
   );
 
   const mapResponse = useCallback(
-    (
-      response: any,
-      preserveAllOptions: boolean = false
-    ): ClaimHistorySummary => {
+    (response: any): ClaimHistorySummary => {
       const dataResponse = response.data;
 
       const mappedData: ClaimHistoryDetail[] = dataResponse?.map(
@@ -157,7 +154,7 @@ export function useClaimHistory(): UseClaimHistoryProps {
           paid: Number(claim.paid) || 0,
           remainingLimit: Number(claim.remainingLimit) || 0,
         })
-      );
+      ) || [];
 
       const currentPlans: { planId: string; planName: string }[] = [];
       dataResponse?.forEach((claim: any) => {
@@ -176,30 +173,16 @@ export function useClaimHistory(): UseClaimHistoryProps {
 
       const currentPolicies = response.availablePolicies || [];
 
-      if (preserveAllOptions) {
-        setAllAvailablePlans(currentPlans);
-        setAllAvailablePolicies(currentPolicies);
-
-        if (currentPlans.length > 0 || currentPolicies.length > 0) {
-          setDisableSelectPlan(false);
-          setDisableSelectPolicy(false);
-        }
-      }
-
       return {
         data: mappedData,
-
-        plans: allAvailablePlans.length > 0 ? allAvailablePlans : currentPlans,
-        policies:
-          allAvailablePolicies.length > 0
-            ? allAvailablePolicies
-            : currentPolicies,
+        plans: currentPlans,
+        policies: currentPolicies,
         totalLimit: Number(response.totalLimit) || 0,
         totalPaid: Number(response.totalPaid) || 0,
         remainingClaimLimit: Number(response.remainingClaimLimit) || 0,
       };
     },
-    [allAvailablePlans, allAvailablePolicies]
+    []
   );
 
   const allOptionsParams = searchData
@@ -245,7 +228,15 @@ export function useClaimHistory(): UseClaimHistoryProps {
     }
 
     const payload = (allOptionsResponse as any)?.data ?? allOptionsResponse;
-    setAllOptionsData(mapResponse(payload, true));
+    const mapped = mapResponse(payload);
+    setAllOptionsData(mapped);
+
+    if (mapped.plans.length > 0 || mapped.policies.length > 0) {
+      setAllAvailablePlans(mapped.plans);
+      setAllAvailablePolicies(mapped.policies);
+      setDisableSelectPlan(false);
+      setDisableSelectPolicy(false);
+    }
   }, [allOptionsResponse, mapResponse]);
 
   useEffect(() => {
@@ -256,31 +247,29 @@ export function useClaimHistory(): UseClaimHistoryProps {
 
     const payload =
       (filteredClaimHistoryResponse as any)?.data ?? filteredClaimHistoryResponse;
-    const mappedResponse = mapResponse(payload, false);
+    const mappedResponse = mapResponse(payload);
 
     if (mappedResponse.data.length > 0) {
       setIsSearchParamValid(true);
       setFilteredClaimHistoryData(mappedResponse);
-      return;
+    } else {
+      setIsSearchParamValid(false);
+      setFilteredClaimHistoryData(null);
     }
-
-    setIsSearchParamValid(false);
-    setFilteredClaimHistoryData(null);
   }, [filteredClaimHistoryResponse, mapResponse]);
 
   const isLoading = isLoadingAllOptions || isLoadingFilteredData;
 
   const claimHistoryData = useMemo(() => {
-    if (filteredClaimHistoryData) {
-      return filteredClaimHistoryData;
-    }
+    const data = filteredClaimHistoryData || allOptionsData;
+    if (!data) return null;
 
-    if (allOptionsData) {
-      return allOptionsData;
-    }
-
-    return null;
-  }, [filteredClaimHistoryData, allOptionsData]);
+    return {
+      ...data,
+      plans: allAvailablePlans.length > 0 ? allAvailablePlans : data.plans,
+      policies: allAvailablePolicies.length > 0 ? allAvailablePolicies : data.policies,
+    };
+  }, [filteredClaimHistoryData, allOptionsData, allAvailablePlans, allAvailablePolicies]);
 
   useEffect(() => {
     const checkAccess = async () => {
